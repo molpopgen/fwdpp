@@ -1,0 +1,21 @@
+Begin3
+Title:		fwdpp
+Version:	@VERSION@
+Entered-date:	@ISODATE@
+Description:	A C++ template library for forward-time population genetic simulations
+		@configure_input@
+		Please edit fwdpp.lsm.in to fix the Keywords and
+		Primary-site entries, add several more lines of
+		description here if appropriate, and to delete these
+		instructions.
+Keywords:	[substitute your keywords here]
+Author: 	krthornt@uci.edu (Kevin Thornton)
+Maintained-by:	krthornt@uci.edu (Kevin Thornton)
+Primary-site:	metlab.unc.edu pub/Linux/apps/some/directory
+		31k fwdpp-@VERSION@.tar.gz
+		500  fwdpp.lsm
+Alternate-site: 
+Original-site:  
+Platforms:      
+Copying-policy:	GNU copyleft
+End
