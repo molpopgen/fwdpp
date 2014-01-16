@@ -247,6 +247,7 @@ int main(int argc, char ** argv)
 					 can remove them, making the simulation faster, etc.
 				       */
 				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}
       Sequence::SimData sdata;
@@ -263,4 +264,5 @@ int main(int argc, char ** argv)
 	  std::cout << "//\nsegsites: 0\n";
 	}      
     }
+  return 0;
 }
