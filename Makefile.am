@@ -7,4 +7,4 @@ SUBDIRS=fwdpp
 #  following and add `chk' to the EXTRA_DIST list
 #TESTS=chk
 fwdpp_SOURCES=
-EXTRA_DIST=doc/fwdpp.doxygen examples/*.cc examples/Makefile
+EXTRA_DIST=doc/fwdpp.doxygen examples/*.cc examples/Makefile LICENSE
