@@ -141,8 +141,9 @@ int main(int argc, char ** argv)
   fixation_times.clear();
   double wbar;
 
-  lookup_table_type lookup;  //recombination map is uniform[0,1)
-  
+  lookup_table_type lookup;  
+
+  //recombination map is uniform[0,1)  
   boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
 
   for( generation = 0; generation < ngens; ++generation )
