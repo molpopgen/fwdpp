@@ -1267,7 +1267,7 @@ sample_diploid(gsl_rng * r,
 	      p2g2 = insert_if_not_found( *((pptr2+p2)->second),&*(pop_ptr) );
 	    }
 
-	  NREC += rec_pol( p2g1,p2g1, tpop );
+	  NREC += rec_pol( p2g1,p2g2, tpop );
 	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	  assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
 		  != (pop_ptr)->end() );
