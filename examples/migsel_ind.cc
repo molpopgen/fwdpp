@@ -210,7 +210,6 @@ int main( int argc, char ** argv )
 						 &diploids,
 						 &mutations,
 						 &Ns[0],
-						 &Ns[0],
 						 mu_neutral + mu_del,
 						 boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
 						 boost::bind(KTfwd::genetics101(),_1,_2,_3,
