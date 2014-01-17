@@ -40,6 +40,7 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/initms.hpp>
 #include <fwdpp/IO.hpp>
+#include <fwdpp/recombination_methods_ind.hpp>
 #endif
 
 /*! \mainpage Introduction
