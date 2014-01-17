@@ -20,6 +20,8 @@
 
 #include <fcntl.h>
 
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
@@ -139,7 +141,10 @@ int main(int argc, char ** argv)
   fixation_times.clear();
   double wbar;
 
-  lookup_table_type lookup;
+  lookup_table_type lookup;  //recombination map is uniform[0,1)
+  
+  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
+
   for( generation = 0; generation < ngens; ++generation )
     {
       wbar = KTfwd::sample_diploid(r,
@@ -149,11 +154,13 @@ int main(int argc, char ** argv)
 				   N,     
 				   mu,   
 				   boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				   littler,
-				   boost::bind(gsl_rng_uniform,r),
+				   boost::bind(KTfwd::genetics101(),_1,_2,
+					       &gametes,
+					       littler,
+					       r,
+					       recmap),
 				   boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				   boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				   boost::bind(KTfwd::update_if_exists_insert<gtype,glist>,_1,_2),
 				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
 				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);

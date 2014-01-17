@@ -200,6 +200,9 @@ int main( int argc, char ** argv )
   vbf.push_back(boost::bind(multiplicative_diploid(),_1,_2,2.));
   vbf.push_back(boost::bind(multiplicative_diploid_minus(),_1,_2,2.));
 
+  //recombination map is uniform[0,1)
+  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
+
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {
       std::vector<double> wbars = sample_diploid(r,
@@ -207,13 +210,15 @@ int main( int argc, char ** argv )
 						 &diploids,
 						 &mutations,
 						 &Ns[0],
+						 &Ns[0],
 						 mu_neutral + mu_del,
 						 boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-						 littler,
-						 boost::bind(gsl_rng_uniform,r),
+						 boost::bind(KTfwd::genetics101(),_1,_2,_3,
+							     littler,
+							     r,
+							     recmap),
 						 boost::bind(insert_at_end<mtype,mlist>,_1,_2),
 						 boost::bind(insert_at_end<gtype,glist>,_1,_2),
-						 boost::bind(update_if_exists_insert<gtype,glist>,_1,_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation
 						 boost::bind(mutation_remover(),_1,0,4*N),
