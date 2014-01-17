@@ -8,7 +8,7 @@
   2.  Implementing a mutation model (infinitely-many sites)
   3.  Iterating a population through its life cycle
   4.  Outputting a sample in "ms" format
- */
+*/
 
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
@@ -17,14 +17,14 @@
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
-
+#include <boost/function.hpp>
 #include <vector>
 #include <list>
 /*
   We define a new mutation type, derived from the base class KTfwd::mutation_base.
   This type adds a selection coefficient (s), dominance coefficient (h),
   and the generation when the mutation first appeared in the population (g)
- */
+*/
 struct mutation_with_age : public KTfwd::mutation_base
 {
   unsigned g;
@@ -32,7 +32,7 @@ struct mutation_with_age : public KTfwd::mutation_base
   /*
     The constructor initializes all class data, including that of the base class via a constructor
     call to the base class.
-   */
+  */
   mutation_with_age(const unsigned & __o,const double & position, const unsigned & count, const bool & isneutral = true)
     : KTfwd::mutation_base(position,count,isneutral),g(__o),s(0.),h(0.)
   {	
@@ -75,12 +75,12 @@ typedef std::list<gtype > list;
   We accomplish this via a lookup table of the current mutation positions.  The function object
   KTfwd::equal_eps is used as a replacement for std::operator==(double,double) in order to ensure
   that values differing by <= DBL_EPSILON (~10^-17 on most systems) are not allowed, as they cause problems.
- */
+*/
 typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
 
 /*
   This function generates neutral mutations under the infinitely-many sites assumption
- */
+*/
 mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
 					      lookup_table_type * lookup)
 {
@@ -90,11 +90,11 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
     An alternative implementation of the while loop below would be:
     while( std::find_if( mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos) != mutations->end()) )
     {
-      pos = gsl_rng_uniform(r);
+    pos = gsl_rng_uniform(r);
     }
 
     However, that operation is typically much slower, esp. as the mutation rate gets higher
-   */
+  */
   while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
     { 
       pos = gsl_rng_uniform(r);  //if it does, generate a new one
@@ -126,7 +126,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
     That check may be expensive at run-time, but is easily disabled by recompiling using -DNDEBUG
 
     An example of such a debugging routine is KTfwd::check_sum
-   */
+  */
   assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
 
   //return constructor call to mutation type
@@ -151,7 +151,7 @@ int main(int argc, char ** argv)
 
     For individual simulation (UNLIKE GAMETE-BASED SIMS!!!),
     r = rho/(4N)
-   */
+  */
   const double littler = rho/double(4*N);
   
   //Write the command line to stderr
@@ -163,6 +163,9 @@ int main(int argc, char ** argv)
   gsl_rng_set(r,seed);
 
   unsigned twoN = 2*N;
+
+  //recombination map is uniform[0,1)
+  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
 
   while(nreps--)
     {
@@ -179,75 +182,80 @@ int main(int argc, char ** argv)
       unsigned generation;
       double wbar;
       lookup_table_type lookup;  //this is our lookup table for the mutation model
+
       for( generation = 0; generation < ngens; ++generation )
-	{
-	  //Iterate the population through 1 generation
-	  wbar = KTfwd::sample_diploid(r,
-				       &gametes,  //non-const pointer to gametes
-				       &diploids, //non-const pointer to diploids
-				       &mutations, //non-const pointer to mutations
-				       N,     //current pop size, remains constant
-				       mu,    //mutation rate per gamete
+      	{
+      	  //Iterate the population through 1 generation
+      	  wbar = KTfwd::sample_diploid(r,
+      				       &gametes,  //non-const pointer to gametes
+      				       &diploids, //non-const pointer to diploids
+      				       &mutations, //non-const pointer to mutations
+      				       N,     //current pop size, remains constant
+      				       mu,    //mutation rate per gamete
+      				       /*
+      					 The mutation model (defined above) will pass each gamete
+      					 to be mutated to the mutation model function.  Again, _1
+      					 is used as a placeholder for that gamete.
+      				       */
+      				       boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
+				       //The recombination policy
+      				       boost::bind(KTfwd::genetics101(),_1,_2,
+						   &gametes,
+      						   littler,
+      						   r,
+      						   recmap),
 				       /*
-					 The mutation model (defined above) will pass each gamete
-					 to be mutated to the mutation model function.  Again, _1
-					 is used as a placeholder for that gamete.
+					 Policy to insert new mutations at the end of the mutations list
 				       */
-				       boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				       littler, //probalility of recombination in a diploid
-				       boost::bind(gsl_rng_uniform,r), //the genetic map is uniform (0,1]
-					 /*
-					   Policy to insert new mutations at the end of the mutations list
-					 */
-				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-					 /*
-					   Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
-					   If mutation results in a new gamete, add that gamete to the 
-					   end of gametes. This is always the case under infinitely-many sites,
-					   but for other mutation models, mutation may result in a new
-					   copy identical to an existing gamete.  If so,
-					   that gamete's frequency increases by 1.
-					  */
-				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-					 /*
-					   Policy telling KTfwd::mutate how to add recombined gametes into the gamete pool.
-					  */
-				       boost::bind(KTfwd::update_if_exists_insert<gtype,glist>,_1,_2),
+      				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				       /*
-					 Fitness is multiplicative over sites.
-
-					 The fitness model takes two gametes as arguments.  
-					 The gametes are passed to this function by 
-					 KTfwd::sample_diploid, and the _1 and _2 are placeholders for
-					 those gametes (see documentation for boost/bind.hpp for details).
-					 The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
-					 AA, Aa, and aa, respectively, where a is a mutation with
-					 selection coefficient s and dominance h, and the fitness of 
-					 the diploid is the product of fitness over sites
-
-					 There is no selection in this simulation, but this
-					 function is called anyways to illustrate it as multiplicative
-					 models are very common in population genetics
+					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
+					 If mutation results in a new gamete, add that gamete to the 
+					 end of gametes. This is always the case under infinitely-many sites,
+					 but for other mutation models, mutation may result in a new
+					 copy identical to an existing gamete.  If so,
+					 that gamete's frequency increases by 1.
 				       */
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
+      				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
 				       /*
-					 For each gamete still extant afte sampling,
-					 remove the pointers to any mutations that have 
-					 been fixed or lost from the population.
+					 Policy telling KTfwd::mutate how to add recombined gametes into the gamete pool.
+				       */
+      				       //boost::bind(KTfwd::update_if_exists_insert<gtype,glist>,_1,_2),
+      				       /*
+      					 Fitness is multiplicative over sites.
+
+      					 The fitness model takes two gametes as arguments.  
+      					 The gametes are passed to this function by 
+      					 KTfwd::sample_diploid, and the _1 and _2 are placeholders for
+      					 those gametes (see documentation for boost/bind.hpp for details).
+      					 The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
+      					 AA, Aa, and aa, respectively, where a is a mutation with
+      					 selection coefficient s and dominance h, and the fitness of 
+      					 the diploid is the product of fitness over sites
+
+      					 There is no selection in this simulation, but this
+      					 function is called anyways to illustrate it as multiplicative
+      					 models are very common in population genetics
+      				       */
+      				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
+      				       /*
+      					 For each gamete still extant afte sampling,
+      					 remove the pointers to any mutations that have 
+      					 been fixed or lost from the population.
 					 
-					 For more complex models such as quantitative
-					 traits evolving towards an optimum, one may not
-					 with to remove fixations.  In that case,
-					 replace the line below with
-					 boost::bind(KTfwd::mutation_remover(),_1,twoN));
+      					 For more complex models such as quantitative
+      					 traits evolving towards an optimum, one may not
+      					 with to remove fixations.  In that case,
+      					 replace the line below with
+      					 boost::bind(KTfwd::mutation_remover(),_1,twoN));
 
-					 Under multiplicative fitness and Wright-Fisher sampling
-					 proportional to relative fitness, fixed mutations
-					 are just a constant applied to everyone's fitness, so we 
-					 can remove them, making the simulation faster, etc.
-				       */
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
-	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
+      					 Under multiplicative fitness and Wright-Fisher sampling
+      					 proportional to relative fitness, fixed mutations
+      					 are just a constant applied to everyone's fitness, so we 
+      					 can remove them, making the simulation faster, etc.
+      				       */
+      				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+      	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}
       Sequence::SimData sdata;

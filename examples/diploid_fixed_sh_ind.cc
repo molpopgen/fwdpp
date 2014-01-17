@@ -11,6 +11,7 @@
 #include <functional>
 #include <cassert>
 #include <iomanip>
+#include <boost/function.hpp>
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
@@ -75,6 +76,10 @@ int main(int argc, char ** argv)
   gsl_rng_set(r,seed);
 
   unsigned twoN = 2*N;
+
+  //recombination map is uniform[0,1)
+  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
+
   while(nreps--)
     {
       //population begins monomorphic w/1 gamete and no mutations
@@ -106,11 +111,13 @@ int main(int argc, char ** argv)
 				       N,
 				       mu_neutral+mu_del,
 				       boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-				       littler,
-				       boost::bind(gsl_rng_uniform,r),
+				       boost::bind(KTfwd::genetics101(),_1,_2,
+						   &gametes,
+      						   littler,
+      						   r,
+      						   recmap),
 				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				       boost::bind(KTfwd::update_if_exists_insert<gtype,glist>,_1,_2),
 				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
 				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
