@@ -198,7 +198,7 @@ int main(int argc, char ** argv)
       					 is used as a placeholder for that gamete.
       				       */
       				       boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				       //The recombination policy
+				       //The recombination policy includes the uniform crossover rate
       				       boost::bind(KTfwd::genetics101(),_1,_2,
 						   &gametes,
       						   littler,
