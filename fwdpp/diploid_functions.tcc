@@ -737,7 +737,6 @@ namespace KTfwd
 		  p2g1 = (pptr+p2)->first;
 		  p2g2 = (pptr+p2)->second;
 		  
-		  //NREC += rec_pol(p1g1,p1g2,p2g1,p2g2);
 		  NREC += rec_pol(p1g1,p1g2);
 		  NREC += rec_pol(p2g1,p2g2);
 		  
@@ -1029,15 +1028,9 @@ sample_diploid(gsl_rng * r,
 	  p1g1 = (pptr+p1)->first;
 	  p1g2 = (pptr+p1)->second;
 
-	  // if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
-	  //   {
-	  //     //Then one chromosome inherited is a non-parental type from p1
-	  //     NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
-	  //   }
-
 	  tpop = &*pop_ptr;
 	  NREC += rec_pol(p1g1,p1g2,tpop);
-	  //(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+	  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 
 	  /*
 	    If the individual is not inbred, then we pick a 
@@ -1065,31 +1058,15 @@ sample_diploid(gsl_rng * r,
 	    {
 	      p2g1 = (pptr2+p2)->first;
 	      p2g2 = (pptr2+p2)->second;
-	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
-	      // 	{
-	      // 	  //The other chromosome inherited is a non-parental type from p2
-	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-	      // 	}
-	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	    }
 	  else
 	    {
 	      //We may need to put p2's gametes into the pop pointed to by pop_ptr
 	      p2g1 = insert_if_not_found( *((pptr2+p2)->first),&*(pop_ptr) );
 	      p2g2 = insert_if_not_found( *((pptr2+p2)->second),&*(pop_ptr) );
-
-	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
-	      // 	{
-	      // 	  //The other chromo inherited is a non-parental type from p2
-	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-	      // 	}
-	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-	      // assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
-	      // 	      != (pop_ptr)->end() );
 	    }
 
 	  NREC += rec_pol(p2g1,p2g2,tpop);
-
 	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	  assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
 		  != (pop_ptr)->end() );
@@ -1251,12 +1228,6 @@ sample_diploid(gsl_rng * r,
 	  p1g1 = (pptr+p1)->first;
 	  p1g2 = (pptr+p1)->second;
 
-	  // if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
-	  //   {
-	  //     //Then one chromosome inherited is a non-parental type from p1
-	  //     NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
-	  //   }
-
 	  tpop = &*pop_ptr;
 	  NREC += rec_pol( p1g1,p1g2,tpop);
 
@@ -1288,34 +1259,18 @@ sample_diploid(gsl_rng * r,
 	    {
 	      p2g1 = (pptr2+p2)->first;
 	      p2g2 = (pptr2+p2)->second;
-	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
-	      // 	{
-	      // 	  //Other chrom is non-parental type from p2
-	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-	      // 	}	      
-	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	    }
 	  else
 	    {
 	      //We may need to put p2's gametes into the pop pointed to by pop_ptr
 	      p2g1 = insert_if_not_found( *((pptr2+p2)->first),&*(pop_ptr) );
 	      p2g2 = insert_if_not_found( *((pptr2+p2)->second),&*(pop_ptr) );
-
-	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
-	      // 	{
-	      // 	  //Other chrom is non-parental type from p2
-	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-	      // 	}
-	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-	      // assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
-	      // 	      != (pop_ptr)->end() );
 	    }
 
 	  NREC += rec_pol( p2g1,p2g1, tpop );
 	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	  assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
 		  != (pop_ptr)->end() );
-
 
 	  (dptr+i)->first->n++;
 	  assert((dptr+i)->first->n <= 2*demesize);
