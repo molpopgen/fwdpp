@@ -199,11 +199,9 @@ unsigned recombine(gsl_rng * r,
      \param N_curr The population size
      \param mu The total mutation rate per gamete
      \param mmodel Mutation model policy
-     \param littler The probability of a single recombination event between g1 and g2
-     \param mf Recombination policy which generates crossover positions
+     \param rec_pol Recombination model policy
      \param mpolicy Policy determining how new mutations are added to the population
      \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
-     \param gpolicy_rec Policy determining how new gametes are added to population after a recombination event
      \param ff Policy calculating the fitness of a diploid
      \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
      \param f Probability that a mating is a selfing event
@@ -211,39 +209,36 @@ unsigned recombine(gsl_rng * r,
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
    */
-  template< typename gamete_type,
-	    typename list_type_allocator,
-	    typename list_type_allocator2,
-	    typename vector_type_allocator,
-	    typename diploid_fitness_function,
-	    typename mutation_removal_policy,
-	    typename mutation_model,
-	    typename genetic_map,
-	    typename mutation_insertion_policy,
-	    typename gamete_insertion_policy,
-	    typename gamete_insertion_policy2,
-	    template<typename,typename> class gamete_list_type,
-	    template<typename,typename> class mutation_list_type,
-	    template<typename,typename> class diploid_vector_type>
+template< typename gamete_type,
+	  typename gamete_list_type_allocator,
+	  typename mutation_list_type_allocator,
+	  typename diploid_vector_type_allocator,
+	  typename diploid_fitness_function,
+	  typename mutation_removal_policy,
+	  typename mutation_model,
+	  typename recombination_policy,
+	  typename mutation_insertion_policy,
+	  typename gamete_insertion_policy,
+	  template<typename,typename> class gamete_list_type,
+	  template<typename,typename> class mutation_list_type,
+	  template<typename,typename> class diploid_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,list_type_allocator > * gametes,
-		 diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,list_type_allocator >::iterator,
-					       typename gamete_list_type< gamete_type,list_type_allocator >::iterator>,
-				     vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,list_type_allocator2 > * mutations, 
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
+		 diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+					       typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+		 diploid_vector_type_allocator> * diploids,
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned & N_curr, 
 		 const double & mu,
 		 const mutation_model & mmodel,
-		 const double & littler,
-		 const genetic_map & mf,
+		 const recombination_policy & rec_pol,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
-		 const gamete_insertion_policy2 & gpolicy_rec,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f = 0);
-
+ 
   /*! \brief Sample the next generation of dipliods in an individual-based simulation.  Changing population size case.
     \param r GSL random number generator
     \param gametes Pointer to list of gametes currently in population
@@ -253,11 +248,9 @@ unsigned recombine(gsl_rng * r,
     \param N_next The population size in the next generation
     \param mu The total mutation rate per gamete
     \param mmodel Mutation model policy
-    \param littler The probability of a single recombination event between g1 and g2
-    \param mf Recombination policy which generates crossover positions
+    \param rec_pol Recombination model policy
     \param mpolicy Policy determining how new mutations are added to the population
     \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
-    \param gpolicy_rec Policy determining how new gametes are added to population after a recombination event
     \param ff Policy calculating the fitness of a diploid
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param f Probability that a mating is a selfing event
@@ -266,38 +259,35 @@ unsigned recombine(gsl_rng * r,
      \return The mean fitness of the parental generation
    */
 template< typename gamete_type,
-	  typename list_type_allocator,
-	  typename list_type_allocator2,
-	  typename vector_type_allocator,
+	  typename gamete_list_type_allocator,
+	  typename mutation_list_type_allocator,
+	  typename diploid_vector_type_allocator,
 	  typename diploid_fitness_function,
 	  typename mutation_removal_policy,
 	  typename mutation_model,
-	  typename genetic_map,
+	  typename recombination_policy,
 	  typename mutation_insertion_policy,
 	  typename gamete_insertion_policy,
-	  typename gamete_insertion_policy2,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type>
-double
-sample_diploid(gsl_rng * r,
-	       gamete_list_type<gamete_type,list_type_allocator > * gametes,
-	       diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,list_type_allocator >::iterator,
-					     typename gamete_list_type< gamete_type,list_type_allocator >::iterator>,
-				   vector_type_allocator> * diploids,
-	       mutation_list_type<typename gamete_type::mutation_type,list_type_allocator2 > * mutations, 
-	       const unsigned & N_curr, 
-	       const unsigned & N_next, 
-	       const double & mu,
-	       const mutation_model & mmodel,
-	       const double & littler,
-	       const genetic_map & mf,
-	       const mutation_insertion_policy & mpolicy,
-	       const gamete_insertion_policy & gpolicy_mut,
-	       const gamete_insertion_policy2 & gpolicy_rec,
-	       const diploid_fitness_function & ff,
-	       const mutation_removal_policy & mp,
-	       const double & f = 0);
+  double
+  sample_diploid(gsl_rng * r,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
+		 diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+					       typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+		 diploid_vector_type_allocator> * diploids,
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+		 const unsigned & N_curr, 
+		 const unsigned & N_next, 
+		 const double & mu,
+		 const mutation_model & mmodel,
+		 const recombination_policy & rec_pol,
+		 const mutation_insertion_policy & mpolicy,
+		 const gamete_insertion_policy & gpolicy_mut,
+		 const diploid_fitness_function & ff,
+		 const mutation_removal_policy & mp,
+		 const double & f = 0);
 
   /*! \brief Evolve a metapopulation where demes are not changing size.  For individual-based sims.
     Evolve a metapopulation where demes are not changing size.  For individual-based sims.
@@ -308,11 +298,9 @@ sample_diploid(gsl_rng * r,
      \param N_curr The population sizes.  There must be diploids->size() values in this array
      \param mu The total mutation rate per gamete
      \param mmodel Mutation model policy
-     \param littler The probability of a single recombination event between g1 and g2
-     \param mf Recombination policy which generates crossover positions
+     \param rec_pol Recombination model policy
      \param mpolicy Policy determining how new mutations are added to the population
      \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
-     \param gpolicy_rec Policy determining how new gametes are added to population after a recombination event
      \param ffs Container of fitness functions.  One for each deme.
      \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
      \param mig Migration policy.  This function/function object must take a single size_t (values 0 to metapop->size()-1).  If no migration event occurs, the passed value is returned.  Otherwise, a size_t representing the index of the deme from which the other parent comes (aka the migrant) is returned.
@@ -323,46 +311,43 @@ sample_diploid(gsl_rng * r,
 
      \example migsel_ind.cc
    */
-  template< typename gamete_type,
-	    typename metapop_gamete_vector_type_allocator,
-	    typename metapop_diploid_vector_type_allocator,
-	    typename gamete_list_type_allocator,
-	    typename mutation_list_type_allocator,
-	    typename diploid_vector_type_allocator,
-	    typename diploid_fitness_function_container,
-	    typename mutation_removal_policy,
-	    typename mutation_model,
-	    typename genetic_map,
-	    typename migration_policy,
-	    typename mutation_insertion_policy,
-	    typename gamete_insertion_policy,
-	    typename gamete_insertion_policy2,
-	    template<typename,typename> class gamete_list_type,
-	    template<typename,typename> class mutation_list_type,
-	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_gamete_vector_type,
-	    template<typename,typename> class metapop_diploid_vector_type>
-  std::vector< double >
-  sample_diploid(gsl_rng * r,
-		 metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-	 metapop_gamete_vector_type_allocator > * metapop,
-		 metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-									     typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-								   diploid_vector_type_allocator>,
-					       metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const unsigned * N_curr, 
-		 const double & mu,
-		 const mutation_model & mmodel,
-		 const double & littler,
-		 const genetic_map & mf,
-		 const mutation_insertion_policy & mpolicy,
-		 const gamete_insertion_policy & gpolicy_mut,
-		 const gamete_insertion_policy2 & gpolicy_rec,
-		 const diploid_fitness_function_container & ffs,
-		 const mutation_removal_policy & mp,
-		 const migration_policy & mig,
-		 const double * f = NULL);
+template< typename gamete_type,
+	  typename metapop_gamete_vector_type_allocator,
+	  typename metapop_diploid_vector_type_allocator,
+	  typename gamete_list_type_allocator,
+	  typename mutation_list_type_allocator,
+	  typename diploid_vector_type_allocator,
+	  typename diploid_fitness_function_container,
+	  typename mutation_removal_policy,
+	  typename mutation_model,
+	  typename recombination_policy,
+	  typename migration_policy,
+	  typename mutation_insertion_policy,
+	  typename gamete_insertion_policy,
+	  template<typename,typename> class gamete_list_type,
+	  template<typename,typename> class mutation_list_type,
+	  template<typename,typename> class diploid_vector_type,
+	  template<typename,typename> class metapop_gamete_vector_type,
+	  template<typename,typename> class metapop_diploid_vector_type>
+std::vector< double >
+sample_diploid(gsl_rng * r,
+	       metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
+	       metapop_gamete_vector_type_allocator > * metapop,
+  metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+							      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+						    diploid_vector_type_allocator>,
+				metapop_diploid_vector_type_allocator > * diploids,
+	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+	       const unsigned * N_curr, 
+	       const double & mu,
+	       const mutation_model & mmodel,
+	       const recombination_policy & rec_pol,
+	       const mutation_insertion_policy & mpolicy,
+	       const gamete_insertion_policy & gpolicy_mut,
+	       const diploid_fitness_function_container & ffs,
+	       const mutation_removal_policy & mp,
+	       const migration_policy & mig,
+	       const double * f = NULL);
 
   /*! \brief Evolve a metapopulation where demes may be changing size.  For individual-based sims.
     Evolve a metapopulation where demes may be changing size.  For individual-based sims.
@@ -374,11 +359,9 @@ sample_diploid(gsl_rng * r,
     \param N_next The population sizes in the daughter generation.  There must be diploids->size() values in this array
     \param mu The total mutation rate per gamete
     \param mmodel Mutation model policy
-    \param littler The probability of a single recombination event between g1 and g2
-    \param mf Recombination policy which generates crossover positions
+    \param rec_pol Recombination model policy
     \param mpolicy Policy determining how new mutations are added to the population
     \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
-    \param gpolicy_rec Policy determining how new gametes are added to population after a recombination event
     \param ffs Container of fitness functions.  One for each deme.
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param mig Migration policy.  This function/function object must take a single size_t (values 0 to metapop->size()-1).  If no migration event occurs, the passed value is returned.  Otherwise, a size_t representing the index of the deme from which the other parent comes (aka the migrant) is returned.
@@ -387,47 +370,44 @@ sample_diploid(gsl_rng * r,
     \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
     \return The mean fitness of the parental generation
   */
-  template< typename gamete_type,
-	    typename metapop_gamete_vector_type_allocator,
-	    typename metapop_diploid_vector_type_allocator,
-	    typename gamete_list_type_allocator,
-	    typename mutation_list_type_allocator,
-	    typename diploid_vector_type_allocator,
-	    typename diploid_fitness_function_container,
-	    typename mutation_removal_policy,
-	    typename mutation_model,
-	    typename genetic_map,
-	    typename migration_policy,
-	    typename mutation_insertion_policy,
-	    typename gamete_insertion_policy,
-	    typename gamete_insertion_policy2,
-	    template<typename,typename> class gamete_list_type,
-	    template<typename,typename> class mutation_list_type,
-	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_gamete_vector_type,
-	    template<typename,typename> class metapop_diploid_vector_type>
-  std::vector< double >
-  sample_diploid(gsl_rng * r,
-		 metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-		 metapop_gamete_vector_type_allocator > * metapop,
-		 metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-									     typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-								   diploid_vector_type_allocator>,
-					       metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const unsigned * N_curr, 
-		 const unsigned * N_next, 
-		 const double & mu,
-		 const mutation_model & mmodel,
-		 const double & littler,
-		 const genetic_map & mf,
-		 const mutation_insertion_policy & mpolicy,
-		 const gamete_insertion_policy & gpolicy_mut,
-		 const gamete_insertion_policy2 & gpolicy_rec,
-		 const diploid_fitness_function_container & ffs,
-		 const mutation_removal_policy & mp,
-		 const migration_policy & mig,
-		 const double * f = NULL);
+template< typename gamete_type,
+	  typename metapop_gamete_vector_type_allocator,
+	  typename metapop_diploid_vector_type_allocator,
+	  typename gamete_list_type_allocator,
+	  typename mutation_list_type_allocator,
+	  typename diploid_vector_type_allocator,
+	  typename diploid_fitness_function_container,
+	  typename mutation_removal_policy,
+	  typename mutation_model,
+	  typename recombination_policy,
+	  typename migration_policy,
+	  typename mutation_insertion_policy,
+	  typename gamete_insertion_policy,
+	  template<typename,typename> class gamete_list_type,
+	  template<typename,typename> class mutation_list_type,
+	  template<typename,typename> class diploid_vector_type,
+	  template<typename,typename> class metapop_gamete_vector_type,
+	  template<typename,typename> class metapop_diploid_vector_type>
+std::vector< double >
+sample_diploid(gsl_rng * r,
+	       metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
+	       metapop_gamete_vector_type_allocator > * metapop,
+  metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+							      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+						    diploid_vector_type_allocator>,
+				metapop_diploid_vector_type_allocator > * diploids,
+  mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+	       const unsigned * N_curr, 
+	       const unsigned * N_next, 
+	       const double & mu,
+	       const mutation_model & mmodel,
+	       const recombination_policy & rec_pol,
+	       const mutation_insertion_policy & mpolicy,
+	       const gamete_insertion_policy & gpolicy_mut,
+	       const diploid_fitness_function_container & ffs,
+	       const mutation_removal_policy & mp,
+	       const migration_policy & mig,
+	       const double * f = NULL);
 
   /*! \brief recombination for individual-based forward simulations
     \param r GSL random number generator

@@ -653,156 +653,8 @@ namespace KTfwd
 	    }
 
   //CODE FOR INDIVIDUAL-BASED FORWARD SIMULATIONS IS BELOW
-template< typename gamete_type,
-	  typename gamete_list_type_allocator,
-	  typename mutation_list_type_allocator,
-	  typename diploid_vector_type_allocator,
-	  typename diploid_fitness_function,
-	  typename mutation_removal_policy,
-	  typename mutation_model,
-	  typename genetic_map,
-	  typename mutation_insertion_policy,
-	  typename gamete_insertion_policy,
-	  typename gamete_insertion_policy2,
-	  template<typename,typename> class gamete_list_type,
-	  template<typename,typename> class mutation_list_type,
-	  template<typename,typename> class diploid_vector_type>
-double
-sample_diploid(gsl_rng * r,
-	       gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
-	       diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-					     typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-				   diploid_vector_type_allocator> * diploids,
-	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-	       const unsigned & N_curr, 
-	       const double & mu,
-	       const mutation_model & mmodel,
-	       const double & littler,
-	       const genetic_map & mf,
-	       const mutation_insertion_policy & mpolicy,
-	       const gamete_insertion_policy & gpolicy_mut,
-	       const gamete_insertion_policy2 & gpolicy_rec,
-	       const diploid_fitness_function & ff,
-	       const mutation_removal_policy & mp,
-	       const double & f)
-{
-  assert(N_curr == diploids->size());
-  typedef diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-					typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-			      diploid_vector_type_allocator> dipctr;
-  std::vector<double> fitnesses(diploids->size());
-  double wbar = 0.;
-  
-  for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator itr = mutations->begin() ; 
-       itr != mutations->end() ; ++itr )
-    {
-      itr->n = 0;
-    }
-  const typename dipctr::iterator dptr = diploids->begin();
 
-  for( unsigned i = 0 ; i < N_curr ; ++i )
-    {
-      (dptr+i)->first->n = 0;
-      (dptr+i)->second->n = 0;
-      fitnesses[i] = ff((dptr+i)->first,(dptr+i)->second);
-      wbar += fitnesses[i];
-    }
-    wbar /= double(diploids->size());
-    
-#ifndef NDEBUG
-    for( unsigned i = 0 ; i < diploids->size() ; ++i )
-      {
-	assert( (dptr+i)->first->n == 0 );
-	assert( (dptr+i)->second->n == 0 );
-      }
-    for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; itr != gametes->end() ;++itr)
-      {
-	assert(itr->n==0);
-      }
-#endif
-    gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
-
-    dipctr parents(*diploids); //copy the parents
-    const typename dipctr::iterator pptr = parents.begin();
-    typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
-    unsigned NREC=0;
-    for( unsigned i = 0 ; i < N_curr ; ++i )
-      {
-	size_t p1 = gsl_ran_discrete(r,lookup);
-	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
-	assert(p1<diploids->size());
-	assert(p2<diploids->size());
-
-	p1g1 = (pptr+p1)->first;
-	p1g2 = (pptr+p1)->second;
-	p2g1 = (pptr+p2)->first;
-	p2g2 = (pptr+p2)->second;
-
-	/* Genetics 101:
-	   Recombination results in 2 parental and 2 non-parental gametes.  
-	   Each of those 4 gametes is equally-likely to be inherited.
-	   Thus, with prob. of 50%, the offspring inherits a non-parental from parent 1,
-	   and likewise from parent 2, again with prob. of 50%.
-
-	   This means we don't have to run the recombination function all of the time.
-	   Rather, we just ask if the descendant inherets a parental or non-parental type
-	   from each of the parents.
-
-	   Also, if a parent is homozygous (e.g., p1g1 == p1g2), then we don't
-	   need to run the recombination function as parental and non-parental gametes 
-	   are identical.
-
-	   The above is useful b/c recombination can be computationally expensive
-	 */
-	
-	if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 ) //then a non-parental type is inherited from p1 and p1 has two different gametes
-	  {
-	    NREC += recombine_gametes(r,littler,gametes,p1g1,p1g2,mf,gpolicy_rec);
-	  }
-
-	if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) //then a non-parental type is inherited from p12and p2 has two different gametes
-	  {
-	    NREC += recombine_gametes(r,littler,gametes,p2g1,p2g2,mf,gpolicy_rec);
-	  }
-
-	(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-	(dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-
-	(dptr+i)->first->n++;
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_curr );
-	(dptr+i)->second->n++;
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_curr );
-
-	adjust_mutation_counts((dptr+i)->first,1);
-	adjust_mutation_counts((dptr+i)->second,1);
-
-	//now, add new mutations
-	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
-      }
-#ifndef NDEBUG
-    for( unsigned i = 0 ; i < diploids->size() ; ++i )
-      {
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_curr );
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_curr );
-      }
-#endif
-    gametes->remove_if(boost::bind(n_is_zero(),_1));
-    for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
-	 itr != gametes->end() ; ++itr )
-      {
-	itr->mutations.erase( std::remove_if(itr->mutations.begin(),itr->mutations.end(),mp),itr->mutations.end() );
-	itr->smutations.erase( std::remove_if(itr->smutations.begin(),itr->smutations.end(),mp),itr->smutations.end() );
-      }
-    assert(check_sum(gametes,2*N_curr));
-    gsl_ran_discrete_free(lookup);
-    return wbar;
-  }
-
+  //single deme, constant N
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
@@ -810,10 +662,134 @@ sample_diploid(gsl_rng * r,
 	    typename diploid_fitness_function,
 	    typename mutation_removal_policy,
 	    typename mutation_model,
-	    typename genetic_map,
+	    typename recombination_policy,
 	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
-	    typename gamete_insertion_policy2,
+	    template<typename,typename> class gamete_list_type,
+	    template<typename,typename> class mutation_list_type,
+	    template<typename,typename> class diploid_vector_type>
+  double
+  sample_diploid(gsl_rng * r,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
+		 diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+					       typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+				     diploid_vector_type_allocator> * diploids,
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+		 const unsigned & N_curr, 
+		 const double & mu,
+		 const mutation_model & mmodel,
+		 const recombination_policy & rec_pol,
+		 const mutation_insertion_policy & mpolicy,
+		 const gamete_insertion_policy & gpolicy_mut,
+		 const diploid_fitness_function & ff,
+		 const mutation_removal_policy & mp,
+		 const double & f)
+	    {
+	      assert(N_curr == diploids->size());
+	      typedef diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+						    typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+					  diploid_vector_type_allocator> dipctr;
+	      std::vector<double> fitnesses(diploids->size());
+	      double wbar = 0.;
+	      
+	      for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator itr = mutations->begin() ; 
+		   itr != mutations->end() ; ++itr )
+		{
+		  itr->n = 0;
+		}
+	      const typename dipctr::iterator dptr = diploids->begin();
+	      
+	      for( unsigned i = 0 ; i < N_curr ; ++i )
+		{
+		  (dptr+i)->first->n = 0;
+		  (dptr+i)->second->n = 0;
+		  fitnesses[i] = ff((dptr+i)->first,(dptr+i)->second);
+		  wbar += fitnesses[i];
+		}
+	      wbar /= double(diploids->size());
+	      
+#ifndef NDEBUG
+	      for( unsigned i = 0 ; i < diploids->size() ; ++i )
+		{
+		  assert( (dptr+i)->first->n == 0 );
+		  assert( (dptr+i)->second->n == 0 );
+		}
+	      for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; itr != gametes->end() ;++itr)
+		{
+		  assert(itr->n==0);
+		}
+#endif
+	      gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
+	      
+	      dipctr parents(*diploids); //copy the parents
+	      const typename dipctr::iterator pptr = parents.begin();
+	      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
+	      unsigned NREC=0;
+	      for( unsigned i = 0 ; i < N_curr ; ++i )
+		{
+		  size_t p1 = gsl_ran_discrete(r,lookup);
+		  size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
+		  assert(p1<diploids->size());
+		  assert(p2<diploids->size());
+		  
+		  p1g1 = (pptr+p1)->first;
+		  p1g2 = (pptr+p1)->second;
+		  p2g1 = (pptr+p2)->first;
+		  p2g2 = (pptr+p2)->second;
+		  
+		  //NREC += rec_pol(p1g1,p1g2,p2g1,p2g2);
+		  NREC += rec_pol(p1g1,p1g2);
+		  NREC += rec_pol(p2g1,p2g2);
+		  
+		  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+		  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+		  
+		  (dptr+i)->first->n++;
+		  assert( (dptr+i)->first->n > 0 );
+		  assert( (dptr+i)->first->n <= 2*N_curr );
+		  (dptr+i)->second->n++;
+		  assert( (dptr+i)->second->n > 0 );
+		  assert( (dptr+i)->second->n <= 2*N_curr );
+		  
+		  adjust_mutation_counts((dptr+i)->first,1);
+		  adjust_mutation_counts((dptr+i)->second,1);
+		  
+		  //now, add new mutations
+		  (dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+		  (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		}
+#ifndef NDEBUG
+	      for( unsigned i = 0 ; i < diploids->size() ; ++i )
+		{
+		  assert( (dptr+i)->first->n > 0 );
+		  assert( (dptr+i)->first->n <= 2*N_curr );
+		  assert( (dptr+i)->second->n > 0 );
+		  assert( (dptr+i)->second->n <= 2*N_curr );
+		}
+#endif
+	      gametes->remove_if(boost::bind(n_is_zero(),_1));
+	      for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
+		   itr != gametes->end() ; ++itr )
+		{
+		  itr->mutations.erase( std::remove_if(itr->mutations.begin(),itr->mutations.end(),mp),itr->mutations.end() );
+		  itr->smutations.erase( std::remove_if(itr->smutations.begin(),itr->smutations.end(),mp),itr->smutations.end() );
+		}
+	      assert(check_sum(gametes,2*N_curr));
+	      gsl_ran_discrete_free(lookup);
+	      return wbar;
+	    }
+
+  //single deme, N changing
+  template< typename gamete_type,
+	    typename gamete_list_type_allocator,
+	    typename mutation_list_type_allocator,
+	    typename diploid_vector_type_allocator,
+	    typename diploid_fitness_function,
+	    typename mutation_removal_policy,
+	    typename mutation_model,
+	    typename recombination_policy,
+	    typename mutation_insertion_policy,
+	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type>
@@ -828,137 +804,111 @@ sample_diploid(gsl_rng * r,
 		 const unsigned & N_next, 
 		 const double & mu,
 		 const mutation_model & mmodel,
-		 const double & littler,
-		 const genetic_map & mf,
+		 const recombination_policy & rec_pol,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
-		 const gamete_insertion_policy2 & gpolicy_rec,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
     assert(N_curr == diploids->size());
-
+    
     for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator>::iterator itr = mutations->begin() ; 
 	 itr != mutations->end() ; ++itr )
       {
 	itr->n = 0;
       }
-    
+	      
     typedef diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
 					  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
 				diploid_vector_type_allocator> dipctr;
-    std::vector<double> fitnesses(diploids->size());
-    double wbar = 0.;
+std::vector<double> fitnesses(diploids->size());
+double wbar = 0.;
 
-    typename dipctr::iterator dptr = diploids->begin();
-    for( unsigned i = 0 ; i < N_curr ; ++i )
-      {
-	(dptr+i)->first->n = 0;
-	(dptr+i)->second->n = 0;
-	fitnesses[i] = ff((dptr+i)->first,(dptr+i)->second);
-	wbar += fitnesses[i];
-      }
-    wbar /= double(diploids->size());
-
+typename dipctr::iterator dptr = diploids->begin();
+for( unsigned i = 0 ; i < N_curr ; ++i )
+		{
+		  (dptr+i)->first->n = 0;
+		  (dptr+i)->second->n = 0;
+		  fitnesses[i] = ff((dptr+i)->first,(dptr+i)->second);
+		  wbar += fitnesses[i];
+		}
+	      wbar /= double(diploids->size());
+	      
 #ifndef NDEBUG
-    for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; itr != gametes->end() ;++itr)
-      {
-	assert(itr->n==0);
-      }
+	      for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; itr != gametes->end() ;++itr)
+		{
+		  assert(itr->n==0);
+		}
 #endif
-    gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
-
-    dipctr parents(*diploids); //copy the parents
-    const typename dipctr::iterator pptr = parents.begin();
-
-    //Change the population size
-    if( diploids->size() != N_next)
-      {
-	diploids->resize(N_next);
-	dptr = diploids->begin();
-      }
-    unsigned NREC=0;
-    assert(diploids->size()==N_next);
-    typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
-    for( unsigned i = 0 ; i < N_next ; ++i )
-      {
-	assert(dptr==diploids->begin());
-	assert( (dptr+i) < diploids->end() );
-	size_t p1 = gsl_ran_discrete(r,lookup);
-	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
-	assert(p1<diploids->size());
-	assert(p2<diploids->size());
-
-	p1g1 = (pptr+p1)->first;
-	p1g2 = (pptr+p1)->second;
-	p2g1 = (pptr+p2)->first;
-	p2g2 = (pptr+p2)->second;
-
-	/* Genetics 101:
-	   Recombination results in 2 parental and 2 non-parental gametes.  
-	   Each of those 4 gametes is equally-likely to be inherited.
-	   Thus, with prob. of 50%, the offspring inherits a non-parental from parent 1,
-	   and likewise from parent 2, again with prob. of 50%.
-
-	   This means we don't have to run the recombination function all of the time.
-	   Rather, we just ask if the descendant inherets a parental or non-parental type
-	   from each of the parents.
-
-	   Also, if a parent is homozygous (e.g., p1g1 == p1g2), then we don't
-	   need to run the recombination function as parental and non-parental gametes 
-	   are identical.
-
-	   The above is useful b/c recombination can be computationally expensive
-	 */
-	
-	if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 ) //then a non-parental type is inherited from p1 and p1 has two different gametes
-	  {
-	    NREC += recombine_gametes(r,littler,gametes,p1g1,p1g2,mf,gpolicy_rec);
-	  }
-
-	if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) //then a non-parental type is inherited from p12and p2 has two different gametes
-	  {
-	    NREC += recombine_gametes(r,littler,gametes,p2g1,p2g2,mf,gpolicy_rec);
-	  }
-
-	(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-	(dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-
-	(dptr+i)->first->n++;
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_next );
-	(dptr+i)->second->n++;
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_next );
-
-	adjust_mutation_counts((dptr+i)->first,1);
-	adjust_mutation_counts((dptr+i)->second,1);
-
-	//now, add new mutations
-	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
-      }
+	      gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
+	      
+	      dipctr parents(*diploids); //copy the parents
+	      const typename dipctr::iterator pptr = parents.begin();
+	      
+	      //Change the population size
+	      if( diploids->size() != N_next)
+		{
+		  diploids->resize(N_next);
+		  dptr = diploids->begin();
+		}
+	      unsigned NREC=0;
+	      assert(diploids->size()==N_next);
+	      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
+	      for( unsigned i = 0 ; i < N_next ; ++i )
+		{
+		  assert(dptr==diploids->begin());
+		  assert( (dptr+i) < diploids->end() );
+		  size_t p1 = gsl_ran_discrete(r,lookup);
+		  size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
+		  assert(p1<diploids->size());
+		  assert(p2<diploids->size());
+		  
+		  p1g1 = (pptr+p1)->first;
+		  p1g2 = (pptr+p1)->second;
+		  p2g1 = (pptr+p2)->first;
+		  p2g2 = (pptr+p2)->second;
+		  
+		  NREC += rec_pol(p1g1,p1g2);
+		  NREC += rec_pol(p2g1,p2g2);
+		  
+		  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+		  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+		  
+		  (dptr+i)->first->n++;
+		  assert( (dptr+i)->first->n > 0 );
+		  assert( (dptr+i)->first->n <= 2*N_next );
+		  (dptr+i)->second->n++;
+		  assert( (dptr+i)->second->n > 0 );
+		  assert( (dptr+i)->second->n <= 2*N_next );
+		  
+		  adjust_mutation_counts((dptr+i)->first,1);
+		  adjust_mutation_counts((dptr+i)->second,1);
+		  
+		  //now, add new mutations
+		  (dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+		  (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		}
 #ifndef NDEBUG
-    for( unsigned i = 0 ; i < diploids->size() ; ++i )
-      {
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_next );
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_next );
-      }
+	      for( unsigned i = 0 ; i < diploids->size() ; ++i )
+		{
+		  assert( (dptr+i)->first->n > 0 );
+		  assert( (dptr+i)->first->n <= 2*N_next );
+		  assert( (dptr+i)->second->n > 0 );
+		  assert( (dptr+i)->second->n <= 2*N_next );
+		}
 #endif
-    gametes->remove_if(boost::bind(n_is_zero(),_1));
-    for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
-	 itr != gametes->end() ; ++itr )
-      {
-	itr->mutations.erase( std::remove_if(itr->mutations.begin(),itr->mutations.end(),mp),itr->mutations.end() );
-	itr->smutations.erase( std::remove_if(itr->smutations.begin(),itr->smutations.end(),mp),itr->smutations.end() );
-      }
-    assert(check_sum(gametes,2*N_next));
-    gsl_ran_discrete_free(lookup);
-    return wbar;
-  }
+	      gametes->remove_if(boost::bind(n_is_zero(),_1));
+	      for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
+		   itr != gametes->end() ; ++itr )
+		{
+		  itr->mutations.erase( std::remove_if(itr->mutations.begin(),itr->mutations.end(),mp),itr->mutations.end() );
+		  itr->smutations.erase( std::remove_if(itr->smutations.begin(),itr->smutations.end(),mp),itr->smutations.end() );
+		}
+	      assert(check_sum(gametes,2*N_next));
+	      gsl_ran_discrete_free(lookup);
+	      return wbar;
+	    }
 
 //Metapopulation version of sample_diploid for individual-based simulations
 template< typename gamete_type,
@@ -970,11 +920,10 @@ template< typename gamete_type,
 	  typename diploid_fitness_function_container,
 	  typename mutation_removal_policy,
 	  typename mutation_model,
-	  typename genetic_map,
+	  typename recombination_policy,
 	  typename migration_policy,
 	  typename mutation_insertion_policy,
 	  typename gamete_insertion_policy,
-	  typename gamete_insertion_policy2,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
@@ -988,19 +937,17 @@ sample_diploid(gsl_rng * r,
 							      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
 						    diploid_vector_type_allocator>,
 				metapop_diploid_vector_type_allocator > * diploids,
-  mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-  const unsigned * N_curr, 
-  const double & mu,
-  const mutation_model & mmodel,
-  const double & littler,
-  const genetic_map & mf,
-  const mutation_insertion_policy & mpolicy,
-  const gamete_insertion_policy & gpolicy_mut,
-  const gamete_insertion_policy2 & gpolicy_rec,
-  const diploid_fitness_function_container & ffs,
-  const mutation_removal_policy & mp,
-  const migration_policy & mig,
-  const double * f)
+	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+	       const unsigned * N_curr, 
+	       const double & mu,
+	       const mutation_model & mmodel,
+	       const recombination_policy & rec_pol,
+	       const mutation_insertion_policy & mpolicy,
+	       const gamete_insertion_policy & gpolicy_mut,
+	       const diploid_fitness_function_container & ffs,
+	       const mutation_removal_policy & mp,
+	       const migration_policy & mig,
+	       const double * f)
 {
   assert( metapop->size() == diploids->size() );
   
@@ -1015,6 +962,9 @@ sample_diploid(gsl_rng * r,
 
   typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_ctr;
   
+  //we need tpop b/c saying &*pop_ptr below will result in passing a const pointer on at least some compilers (e.g., like mine, which seems lame)
+  gamete_ctr * tpop;
+
   typedef metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_ctr::iterator,
 								      typename gamete_ctr::iterator>,
 							    diploid_vector_type_allocator>,
@@ -1064,8 +1014,8 @@ sample_diploid(gsl_rng * r,
   //Update the diploids
   popindex = 0;
   unsigned NREC=0;
-typename pop_ctr::iterator pop_ptr = metapop->begin();
-typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
+  typename pop_ctr::iterator pop_ptr = metapop->begin();
+  typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
   for( typename diploid_ctr::iterator ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr, ++pop_ptr,++popindex )
     {
       unsigned demesize =*(N_curr+popindex);
@@ -1079,13 +1029,15 @@ typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
 	  p1g1 = (pptr+p1)->first;
 	  p1g2 = (pptr+p1)->second;
 
-	  if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
-	    {
-	      //Then one chromosome inherited is a non-parental type from p1
-	      NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
-	    }
+	  // if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
+	  //   {
+	  //     //Then one chromosome inherited is a non-parental type from p1
+	  //     NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
+	  //   }
 
-	  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+	  tpop = &*pop_ptr;
+	  NREC += rec_pol(p1g1,p1g2,tpop);
+	  //(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 
 	  /*
 	    If the individual is not inbred, then we pick a 
@@ -1113,12 +1065,12 @@ typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
 	    {
 	      p2g1 = (pptr2+p2)->first;
 	      p2g2 = (pptr2+p2)->second;
-	      if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
-		{
-		  //The other chromosome inherited is a non-parental type from p2
-		  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-		}
-	      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
+	      // 	{
+	      // 	  //The other chromosome inherited is a non-parental type from p2
+	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
+	      // 	}
+	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	    }
 	  else
 	    {
@@ -1126,15 +1078,21 @@ typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
 	      p2g1 = insert_if_not_found( *((pptr2+p2)->first),&*(pop_ptr) );
 	      p2g2 = insert_if_not_found( *((pptr2+p2)->second),&*(pop_ptr) );
 
-	      if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
-		{
-		  //The other chromo inherited is a non-parental type from p2
-		  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-		}
-	      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-	      assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
-		      != (pop_ptr)->end() );
+	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
+	      // 	{
+	      // 	  //The other chromo inherited is a non-parental type from p2
+	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
+	      // 	}
+	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	      // assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
+	      // 	      != (pop_ptr)->end() );
 	    }
+
+	  NREC += rec_pol(p2g1,p2g2,tpop);
+
+	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	  assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
+		  != (pop_ptr)->end() );
 
 	  (dptr+i)->first->n++;
 	  assert((dptr+i)->first->n <= 2*demesize);
@@ -1178,11 +1136,10 @@ template< typename gamete_type,
 	  typename diploid_fitness_function_container,
 	  typename mutation_removal_policy,
 	  typename mutation_model,
-	  typename genetic_map,
+	  typename recombination_policy,
 	  typename migration_policy,
 	  typename mutation_insertion_policy,
 	  typename gamete_insertion_policy,
-	  typename gamete_insertion_policy2,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
@@ -1197,19 +1154,17 @@ sample_diploid(gsl_rng * r,
 						    diploid_vector_type_allocator>,
 				metapop_diploid_vector_type_allocator > * diploids,
   mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-  const unsigned * N_curr, 
-  const unsigned * N_next, 
-  const double & mu,
-  const mutation_model & mmodel,
-  const double & littler,
-  const genetic_map & mf,
-  const mutation_insertion_policy & mpolicy,
-  const gamete_insertion_policy & gpolicy_mut,
-  const gamete_insertion_policy2 & gpolicy_rec,
-  const diploid_fitness_function_container & ffs,
-  const mutation_removal_policy & mp,
-  const migration_policy & mig,
-  const double * f)
+	       const unsigned * N_curr, 
+	       const unsigned * N_next, 
+	       const double & mu,
+	       const mutation_model & mmodel,
+	       const recombination_policy & rec_pol,
+	       const mutation_insertion_policy & mpolicy,
+	       const gamete_insertion_policy & gpolicy_mut,
+	       const diploid_fitness_function_container & ffs,
+	       const mutation_removal_policy & mp,
+	       const migration_policy & mig,
+	       const double * f)
 {
   assert( metapop->size() == diploids->size() );
   
@@ -1224,6 +1179,9 @@ sample_diploid(gsl_rng * r,
 
   typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_ctr;
   
+  //we need tpop b/c saying &*pop_ptr below will result in passing a const pointer on at least some compilers (e.g., like mine, which seems lame)
+  gamete_ctr * tpop;
+
   typedef metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_ctr::iterator,
 								      typename gamete_ctr::iterator>,
 							    diploid_vector_type_allocator>,
@@ -1293,11 +1251,14 @@ sample_diploid(gsl_rng * r,
 	  p1g1 = (pptr+p1)->first;
 	  p1g2 = (pptr+p1)->second;
 
-	  if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
-	    {
-	      //Then one chromosome inherited is a non-parental type from p1
-	      NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
-	    }
+	  // if( p1g1 != p1g2 && gsl_rng_uniform(r) <= 0.5 )
+	  //   {
+	  //     //Then one chromosome inherited is a non-parental type from p1
+	  //     NREC += recombine_gametes(r,littler,&*(pop_ptr),p1g1,p1g2,mf,gpolicy_rec);
+	  //   }
+
+	  tpop = &*pop_ptr;
+	  NREC += rec_pol( p1g1,p1g2,tpop);
 
 	  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 
@@ -1327,12 +1288,12 @@ sample_diploid(gsl_rng * r,
 	    {
 	      p2g1 = (pptr2+p2)->first;
 	      p2g2 = (pptr2+p2)->second;
-	      if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
-		{
-		  //Other chrom is non-parental type from p2
-		  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-		}	      
-	      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 )
+	      // 	{
+	      // 	  //Other chrom is non-parental type from p2
+	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
+	      // 	}	      
+	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	    }
 	  else
 	    {
@@ -1340,15 +1301,21 @@ sample_diploid(gsl_rng * r,
 	      p2g1 = insert_if_not_found( *((pptr2+p2)->first),&*(pop_ptr) );
 	      p2g2 = insert_if_not_found( *((pptr2+p2)->second),&*(pop_ptr) );
 
-	      if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
-		{
-		  //Other chrom is non-parental type from p2
-		  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
-		}
-	      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-	      assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
-		      != (pop_ptr)->end() );
+	      // if( p2g1 != p2g2 && gsl_rng_uniform(r) <= 0.5 ) 
+	      // 	{
+	      // 	  //Other chrom is non-parental type from p2
+	      // 	  NREC += recombine_gametes(r,littler,&*(pop_ptr),p2g1,p2g2,mf,gpolicy_rec);
+	      // 	}
+	      // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	      // assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
+	      // 	      != (pop_ptr)->end() );
 	    }
+
+	  NREC += rec_pol( p2g1,p2g1, tpop );
+	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	  assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
+		  != (pop_ptr)->end() );
+
 
 	  (dptr+i)->first->n++;
 	  assert((dptr+i)->first->n <= 2*demesize);
@@ -1416,7 +1383,7 @@ unsigned recombine_gametes( gsl_rng * r,
 #endif
       for(unsigned i = 0 ; i < nbreaks ; ++i)
 	{
-	  pos.push_back(mf());
+	  pos.push_back(mf(r));
 	}
       std::sort(pos.begin(),pos.end());
       pos.push_back(std::numeric_limits<double>::max());
