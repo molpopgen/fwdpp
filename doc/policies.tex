@@ -1,0 +1,145 @@
+\documentclass{article}
+\author{Kevin R. Thornton}
+\title{Policies in \texttt{fwdpp}}
+\usepackage{fullpage}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{color}
+\usepackage{hyperref}
+
+\hypersetup{
+colorlinks=true,
+    linkcolor=blue,          % color of internal links (change box color with linkbordercolor)
+    citecolor=blue,        % color of links to bibliography
+    filecolor=blue,      % color of file links
+    urlcolor=blue           % color of external links
+}
+
+\lstset { %
+    language=C++,
+    tabsize=4
+%    backgroundcolor=\color{red}, % set backgroundcolor
+%    basicstyle=\footnotesize,% basic font setting
+}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+This document is intended to be an in-depth discussion of policies and their role in implementing forward-time population genetic simulations using the C++ template library \texttt{fwdpp}.  We will first describe what policies are using standard C++ examples, and then we will get into the harder stuff.
+
+An understanding of C++ fundamentals, including containers, their iterators, and how they relate to the standard algorithms, is assumed knowledge here.
+
+\section{Policies in C++}
+\subsection{Policies are everywhere}
+Policies are a part of every programming language.  Generally-speaking, they modify the behavior of what functions are with (or to) data.  In other words, they turn a generic function into a piece of code doing a specific task.  Let's start with the rather trivial example of sorting a vector:
+
+\begin{lstlisting}
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main ( int argc, char ** argv )
+{
+  vector<unsigned> vu;
+
+  //fill vu with data
+  for( unsigned i = 10 ; i > 1 ; --i )
+  {
+    vu.push_back(i);
+  }
+
+  sort(vu.begin(),vu.end());
+}
+\end{lstlisting}
+
+The above example is 100\% standard C++.  But what is going on under the hood of the sort function is quite interesting.  A bubble sort algorithm is being executed, and the values are being compared via a call to this function:
+\begin{lstlisting}
+  template <class T> struct less : binary_function <T,T,bool> {
+    bool operator() (const T& x, const T& y) const {return x<y;}
+  };
+\end{lstlisting}
+
+\subsection{Policies are often function objects}
+The structure called less is a ``function object'', and is the policy being employed in the bubble sort.  Further, is a template, meaning it works on any data type for which operator$<$ is defined.  The detail that less inherits from binary\_function is important for how it plugs into the sort algorithm, but we'll deal with those issues later.
+
+The way such a function object is used looks like:
+\begin{lstlisting}
+  int x = 5, y = 6;
+  /*
+  The less() instantiates a (temporary) object of type less<T>,
+  where T = int in this case.
+  the (x,y) passes those to variables to the operator() of less.
+  (This is where the term
+  ``function object'', or functor for short, comes from.
+  */
+  bool x_is_less = less()(x,y);
+\end{lstlisting}
+
+\subsection{Policies change behavior of algorithms}
+OK, so now we hopefully have a basic understanding of what a policy is and that algorithms in C++ work through policies implemented as function objects.  This lets us change the behavior of algorithms:
+\begin{lstlisting}
+  #include <functional> //need this header for std::greater<T>
+  //Sort in descending order (biggest values @ front of vu after sort)
+  sort( vu.begin(), vu.end(), greater<int>() );
+\end{lstlisting}
+Same bubble sort, different outcome because of different policy.
+
+\subsection{Binding extends what policies can do}
+We can further modify the behavior of policies by sending additional arguments along with the policy as it goes to the algorithm.  This is called binding an argument to a function call. For example, let's find the first value in our vector that is $\geq 5$:
+\begin{lstlisting}
+  //we need these headers
+  #include <functional>
+  #include <iostream>
+
+  vector<unsigned>::iterator itr = find_if( vu.begin(), 
+  vu.end(), 
+  bind2nd( greater_equal<int>(), 5 ) );
+
+  //print out the value pointed to by the iterator, 
+  //if and only if we found something.  In C++,
+  //when a policy never finds anything, 
+  //the end of the container is returned by tradition
+  if( itr != vu.end() )
+  {
+    cout << *itr << '\n';
+  }
+\end{lstlisting}
+
+The find\_if algorithm takes each value in the range and evaluates it via the policy.  Here, the policy is greater\_equal, which takes two arguments.  The second argument is provided by using the standard-library function bind2nd, which results in the value 5 being the second value passed to the policy's operator().  The standard binders are OK, but the ones in the boost (\url{http://www.boost.org}) libraries are far superior:
+
+\begin{lstlisting}
+  //we need these headers
+  #include <functional>
+  #include <iostream>
+  #include <boost/bind.hpp>
+
+  vector<unsigned>::iterator itr = find_if( vu.begin(), 
+  vu.end(), 
+  //here, _1 is a placeholder for a value that the algorithm must provide
+  boost::bind( greater_equal<int>(),_1, 5 ) );
+
+  //print out the value pointed to by the iterator, 
+  //if and only if we found something.  In C++,
+  //when a policy never finds anything, 
+  //the end of the container is returned by tradition
+  if( itr != vu.end() )
+  {
+    cout << *itr << '\n';
+  }
+\end{lstlisting}
+
+The boost binders are preferred because they can send up to 9 variables (some, all, or none being placeholders) to algorithms.
+
+\subsection{Summary so far}
+\begin{enumerate}
+\item Policies change how algorithms behave
+\item Policies are often templates
+\item Policies are often function objects
+\item Policies + binders + algorithms = a reusable code base that can do lots of different (and often quite complicated) things when the right policy is written.
+\item Policies can often be quite short to implement (see the definition of less above).  This doesn't have to be the case, but it often works out that way in practice.
+\end{enumerate}
+\end{document}
