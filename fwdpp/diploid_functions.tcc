@@ -1338,7 +1338,7 @@ unsigned recombine_gametes( gsl_rng * r,
 #endif
       for(unsigned i = 0 ; i < nbreaks ; ++i)
 	{
-	  pos.push_back(mf(r));
+	  pos.push_back(mf());
 	}
       std::sort(pos.begin(),pos.end());
       pos.push_back(std::numeric_limits<double>::max());
