@@ -311,7 +311,7 @@ The mutation policy is passed to any of the various sample\_diploid functions in
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
 \subsection{Recombination}
-\subsubsection{How recombination is modeled in \texttt{fwdpp}}
+\subsubsection{\label{recmodel}How recombination is modeled in \texttt{fwdpp}}
 \subsubsection{Recombination map functions}
 In \texttt{fwdpp}, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval $[0,1)$:
 
@@ -342,7 +342,58 @@ Let us write a recombination map function that models a strong hotspot of crossi
 Either of the above code blocks results in a variable called recmap which is a function object representing a function call that takes no additional arguments and returns a double.  The variable recmap can be passed to the algorithm as the recombination (sometimes called genetic in the library documentation) map policy.
 
 Note that the above policies were implemented by \textit{synthesiszing} a new function object type from a boost::bind operation via the boost::function template class.  You may synthesize all of your policies into variables this way, but it is not required.  However, the next subsection will reveal a case where it is required.
+
+Note that gamete-based simulations only require this policy.
+
 \subsubsection{Recombination model policy functions}
+Individual-based simulations require a recombination model policy.  This policy is a function/function object that takes two non-const references to iterators to gametes as arguments and returns an unsigned integer representing the number of crossovers between the two gamets.  (Note that the return value will never been seen by a library user.  It basically exists to help debug things deeper in the library if and when it comes to that.)  
+
+The library provides the policy \texttt{KTfwd::genetics101} which implements the model of crossing over described in Section \ref{recmodel}.  
+
+The policy looks like this:
+\begin{lstlisting}
+  struct genetics101
+  {
+    typedef unsigned result_type;
+    template<typename gamete_iterator_type,
+             typename gamete_list_type_allocator,
+             template<typename,typename> class gamete_list_type,
+             typename rec_pos_generator>
+    unsigned operator()( gamete_iterator_type & g1,
+                         gamete_iterator_type & g2,
+                         gamete_list_type< typename gamete_iterator_type::value_type,
+                                           gamete_list_type_allocator > * gametes,
+                                           const double & littler,
+                                           gsl_rng * r,
+                                           const rec_pos_generator & rp) const
+       {
+         typedef gamete_list_type< typename gamete_iterator_type::value_type, 
+                                   gamete_list_type_allocator > glist_t;
+         unsigned NREC = 0;
+         if( g1 != g2 && gsl_rng_uniform(r) <= 0.5 )
+         //then a non-parental type is inherited from p1 and p1 has two different gametes                                    
+         {
+           NREC += recombine_gametes(r,littler,gametes,g1,g2,rp,
+           boost::bind(update_if_exists_insert<typename gamete_iterator_type::value_type,glist_t>,
+           _1,gametes));
+         }
+         return NREC;
+       }
+     };
+\end{lstlisting}
+
+The main thing a library user needs to focus on is the argument list for \texttt{operator()}.  Specifically, it requires a variable of type rec\_pos\_generator which is stated in the documentation to be a recombination map policy. We pass this recombination model in an individual-based simulation to sample\_diploid like this:
+
+\begin{lstlisting}
+  boost::bind(KTfwd::genetics101(),  //the rec. model
+             _1,_2,                  //placeholder for iterators to gametes
+             &gametes,               //pointer to gamete list
+             littler,                //Avg. # of crossovers b/w two gametes per region per generation
+             r,                      //a gsl_rng *
+             recmap)                 //A genetic map policy like the one we made above
+\end{lstlisting}
+
+\textbf{Important: if you try to pass something like boost::bind(gsl\_rng\_uniform,r) (to model a uniform genetic map) instead of a synthesized policy like the ``recmaps'' from above, your code is unlikely to compile.  Getting boost::binds to work within other boost::binds requires wizardry that is unlikely to be worth your time to learn.  (I've never bothered.)}
 \subsection{Migration}
 \subsection{Fitness}
 \end{document}
