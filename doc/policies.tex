@@ -146,6 +146,11 @@ The boost binders are preferred because they can send up to 9 variables (some, a
 \item Policies can often be quite short to implement (see the definition of less above).  This doesn't have to be the case, but it often works out that way in practice.
 \end{enumerate}
 
+\section{Algorithms in \texttt{fwdpp}}
+For individual-based simulations, the primary algorithms are sample\_diploid and remove\_lost and/or remove\_fixed\_lost.  For gamete-baesd simulations, additional algorithms include the functions mutate, recombine, and migrate (and/or migrate\_from\_to).  All of these functions are in the name space \texttt{KTfwd} and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
+
+Some of the code in some of these algorithms is quite complex, largely because generic templates can have hideous syntax.  You should't have to worry about that unless you like seeing how the sausage is made.  Most users of \texttt{fwdpp} will be writing custom policies to stick into these algorithms and will likely be starting from the examples in order to get oriented.  For them, the necessary information is to understand what is required of a policy.  That is the subject of the remainder of this document.
+
 \section{Policy requirements in \texttt{fwdpp}}
 This section discusses the requirements placed on policies in \texttt{fwdpp}.  These requirements are essentially standards placed on data types in order to ensure that simulations behave properly. (Note that ``behave properly'' is not the same as ``are implemented correctly''!  It is totally possible to have a simulation that compiles with no warnings and runs without crashing but is not the model you had in mind.)  The policy requirements are enforced during compilation, such that a nonconforming policy cannot result in a compiled simulation program.
 
@@ -202,7 +207,7 @@ The mutation base class is not sufficient for any interesting sorts of simulatio
 };
 \end{lstlisting}
 
-What does a mutation policy (model) need to do?  \textbf{The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulations mutation type with a count of 1.}
+What does a mutation policy (model) need to do?  \textbf{The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulation's mutation type with a count of 1.}
 
 \subsubsection{Example: the infinitely-many sites model of mutation}
 This mutation model states that a new mutation occurs at a site not currently segregatig in the population.  This statement implies the following:
