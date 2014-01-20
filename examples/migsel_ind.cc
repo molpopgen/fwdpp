@@ -201,7 +201,7 @@ int main( int argc, char ** argv )
   vbf.push_back(boost::bind(multiplicative_diploid_minus(),_1,_2,2.));
 
   //recombination map is uniform[0,1)
-  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
+  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
 
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {

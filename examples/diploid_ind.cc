@@ -165,7 +165,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  boost::function<double(const gsl_rng *)> recmap = boost::bind(gsl_rng_uniform,_1);
+  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
 
   while(nreps--)
     {
