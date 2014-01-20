@@ -346,7 +346,7 @@ Note that the above policies were implemented by \textit{synthesiszing} a new fu
 Note that gamete-based simulations only require this policy.
 
 \subsubsection{Recombination model policy functions}
-Individual-based simulations require a recombination model policy.  This policy is a function/function object that takes two non-const references to iterators to gametes as arguments and returns an unsigned integer representing the number of crossovers between the two gamets.  (Note that the return value will never been seen by a library user.  It basically exists to help debug things deeper in the library if and when it comes to that.)  
+Individual-based simulations require a recombination model policy.  This policy is a function/function object that takes two non-const references to iterators to gametes as arguments and returns an unsigned integer representing the number of crossovers between the two gametes.  (Note that the return value will never been seen by a library user.  It basically exists to help debug things deeper in the library if and when it comes to that.)  
 
 The library provides the policy \texttt{KTfwd::genetics101} which implements the model of crossing over described in Section \ref{recmodel}.  
 
