@@ -299,13 +299,45 @@ The mutation policy is passed to any of the various sample\_diploid functions in
 
 \begin{lstlisting}
   boost::bind(mutmodel,r,&mutations,
-              mu_neutral, mut_selected,
+              mu_neutral, mu_selected,
               mean_s, &lookup);
 \end{lstlisting}
 
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
 \subsection{Recombination}
+\subsubsection{How recombination is modeled in \texttt{fwdpp}}
+\subsubsection{Recombination map functions}
+In \texttt{fwdpp}, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval $[0,1)$:
+
+\begin{lstlisting}
+  #include <boost/function.hpp>
+  #include <boost/bind.hpp>
+  #include <gsl/gls_rng.h>
+  //gsl_rng * r assumed to be initialized already...
+  boost::function< double(void) > recmap = boost::bind( gsl_rng_uniform, r);
+\end{lstlisting}
+
+Let us write a recombination map function that models a strong hotspot of crossing over.  The positions will still be on the interval $[0,1)$.  A fraction $p$ of the recombination events will come from a uniform distribution and $1-p$ will come from a beta distribution with parameters $a$ and $b$.  The genetic map looks like this:
+\begin{lstlisting}
+  double mixture_map(gsl_rng * r, 
+                     const double & p,
+                     const double & a,
+                     const double & b)
+      {
+        return (gsl_rng_uniform(r) <= p) ? gsl_rng_uniform(r) : gsl_ran_beta(r,a,b);
+      }
+  /*
+     This is a hot hotspot.  say hist( c(runif(1e3),rbeta(9e3,100,100) ) ) in R 
+     to see density of crossover positions
+  */
+  boost::function< double(void) > recmap = boost::bind( mixture_map,r,0.1,100,100);
+\end{lstlisting}
+
+Either of the above code blocks results in a variable called recmap which is a function object representing a function call that takes no additional arguments and returns a double.  The variable recmap can be passed to the algorithm as the recombination (sometimes called genetic in the library documentation) map policy.
+
+Note that the above policies were implemented by \textit{synthesiszing} a new function object type from a boost::bind operation via the boost::function template class.  You may synthesize all of your policies into variables this way, but it is not required.  However, the next subsection will reveal a case where it is required.
+\subsubsection{Recombination model policy functions}
 \subsection{Migration}
 \subsection{Fitness}
 \end{document}
