@@ -17,9 +17,9 @@ colorlinks=true,
 
 \lstset { %
     language=C++,
-    tabsize=4
+    tabsize=4,
 %    backgroundcolor=\color{red}, % set backgroundcolor
-%    basicstyle=\footnotesize,% basic font setting
+    basicstyle=\footnotesize,% basic font setting
 }
 \begin{document}
 \maketitle
@@ -59,6 +59,9 @@ int main ( int argc, char ** argv )
 The above example is 100\% standard C++.  But what is going on under the hood of the sort function is quite interesting.  A bubble sort algorithm is being executed, and the values are being compared via a call to this function:
 \begin{lstlisting}
   template <class T> struct less : binary_function <T,T,bool> {
+    //algorithms can't guess return types,
+    //and therefore often need this typedef
+    typedef bool result_type;
     bool operator() (const T& x, const T& y) const {return x<y;}
   };
 \end{lstlisting}
@@ -74,7 +77,7 @@ The way such a function object is used looks like:
   where T = int in this case.
   the (x,y) passes those to variables to the operator() of less.
   (This is where the term
-  ``function object'', or functor for short, comes from.
+  ``function object'', or functor for short, comes from.)
   */
   bool x_is_less = less()(x,y);
 \end{lstlisting}
@@ -132,7 +135,7 @@ The find\_if algorithm takes each value in the range and evaluates it via the po
   }
 \end{lstlisting}
 
-The boost binders are preferred because they can send up to 9 variables (some, all, or none being placeholders) to algorithms.
+The boost binders are preferred because they can send up to 9 variables (some, all, or none being placeholders) to algorithms.  They're just easier to work with, too.  The only downside is needing boost installed, but if you're using C++, you need boost anyways, because you need the binders.  Circular logic FTW!
 
 \subsection{Summary so far}
 \begin{enumerate}
@@ -142,4 +145,167 @@ The boost binders are preferred because they can send up to 9 variables (some, a
 \item Policies + binders + algorithms = a reusable code base that can do lots of different (and often quite complicated) things when the right policy is written.
 \item Policies can often be quite short to implement (see the definition of less above).  This doesn't have to be the case, but it often works out that way in practice.
 \end{enumerate}
+
+\section{Policy requirements in \texttt{fwdpp}}
+This section discusses the requirements placed on policies in \texttt{fwdpp}.  These requirements are essentially standards placed on data types in order to ensure that simulations behave properly. (Note that ``behave properly'' is not the same as ``are implemented correctly''!  It is totally possible to have a simulation that compiles with no warnings and runs without crashing but is not the model you had in mind.)  The policy requirements are enforced during compilation, such that a nonconforming policy cannot result in a compiled simulation program.
+
+\subsection{Mutation policies}
+This is the mutation base class  provided by \texttt{fwdpp}
+\begin{lstlisting}
+  /*! \brief Base class for mutations
+    At minimum, a mutation must contain a position and a count in the population.	
+    You can derive from this class, for instance to add selection coefficients,
+    counts in different sexes, etc.
+  */
+  struct KTfwd::mutation_base
+  {
+    /// Mutation position
+    mutable double pos;
+    /// Count of mutation in the population
+    unsigned n;
+    /// Is the mutation neutral or not?
+    bool neutral;
+    /// Used internally (don't worry about it for now...)
+    bool checked;
+    mutation_base(const double & position, 
+    const unsigned & count, const bool & isneutral = true)
+      : pos(position),n(count),neutral(isneutral),checked(false)
+    {	
+    }
+    virtual ~mutation_base(){}
+};
+\end{lstlisting}
+
+The above code defines a mutation as something with a position (stored as a double), a count (unsigned integer), a boolean declaring the mutation to be neutral or not, and another boolean called ``checked'' which is very important but should only be directly manipulated by internal library functions (unless you really geek out and see what the internals are doing.  In that case--go nuts.)
+
+The mutation base class is not sufficient for any interesting sorts of simulations.  Rather, one must derive a class from it with more data types.  The library provides a class called mutation, which is probably the standard type of mutation that a population geneticist would think of (this class is also in the library's namespace KTfwd):
+
+\begin{lstlisting}
+  struct mutation : public mutation_base
+  //!The simplest mutation type, adding just a selection 
+  //coefficient and dominance to the interface
+  {
+    /// selection coefficient
+    mutable double s;
+    /// dominance coefficient
+    mutable double h;
+    mutation( const double & position, const double & sel_coeff,const unsigned & count,
+	      const double & dominance = 0.5) 
+      : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)
+    {
+    }
+    bool operator==(const mutation & rhs) const
+    {
+      return( fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
+	      this->s == rhs.s );
+    }
+};
+\end{lstlisting}
+
+What does a mutation policy (model) need to do?  \textbf{The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulations mutation type with a count of 1.}
+
+\subsubsection{Example: the infinitely-many sites model of mutation}
+This mutation model states that a new mutation occurs at a site not currently segregatig in the population.  This statement implies the following:
+\begin{enumerate}
+\item We need a method to rapidly choose mutation positions that don't currently exist in the (meta-)population.
+\item Each gamete containing a new mutation is by definition a new gamete in the (meta-)population.  If we did \#1 correctly, then the newly-mutated gamete differs from all others in the population by at least 1 new mutation.
+\end{enumerate}
+
+We will now implement this mutation model for the mutation type ``mutation'' defined above.  In order to add some complexity to our mutation model, we will make the additional modeling assumptions:
+\begin{enumerate}
+\item Mutation positions are continuous on the interval $[0,1)$.
+\item Neutral mutations arise at rate $\mu$ per gamete per generation
+\item Selected mutations arise at rate $\mu_s$ per gamete per generation.
+\item The selection coefficient for a newly-arising mutation is exponentially-distributed with mean $s_m$.  Further, half the time, selected mutations are deleterious ($s < 0$).  Otherwise, they are beneficial ($s > 0$).
+\item Dominance will be uniform from 0 to 2.  (We'll be scaling fitness as $1, 1+hs, 1+2s$ for genotypes AA, Aa, and aa, respectively.)
+\end{enumerate}
+
+From a programming point of view, we need a means to lookup all mutation positions currently segregating in the population.  \texttt{fwdpp} provides support for lookup tables that conform to the behavior of the type \texttt{std::map}.  While one could use a type like 
+\begin{lstlisting}
+  std::map<double,bool>
+\end{lstlisting}
+it is more efficient to use a hash table like 
+\begin{lstlisting}
+  #include <boost/unordered_set.hpp> //need this header
+  typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+\end{lstlisting}
+
+The above code creates a new data type called ``lookup\_table\_type'' that hashes doubles with the data type KTfwd::equal\_eps as its comparison operator.  That comparison operation is provided by the library and looks like this:
+\begin{lstlisting}
+  struct equal_eps
+  {
+    typedef bool result_type;
+    template<typename T>
+    inline bool operator()(const T & lhs, const T & rhs) const
+    {
+      return( std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon() );
+    }
+  };
+\end{lstlisting}
+
+Note that you could provide your own equality comparison policy for the hashing table.  This one would be excellent, and should be included int the library in future versions as it may be the most robust:
+\begin{lstlisting}
+  struct equality_comparison_strict
+  {
+    typedef bool result_type;
+    template<typename T>
+    inline bool operator()(const T & lhs, const T & rhs) const
+    {
+      return( !(lhs > rhs) && !(lhs < rhs) );
+    }
+  };
+\end{lstlisting}
+
+We can now completely define our mutation model as a function (we could do it as a function object, too).  We assume that we are using the boost list type and boost's memory pool allocator:
+
+\begin{lstlisting}
+  typedef KTfwd::mutation mtype;
+  typedef boost::pool_allocator<mtype> mut_allocator;
+  typedef boost::container::list<mtype,mut_allocator > mlist;
+  mtype mutmodel( gsl_rng * r, mlist * mutations,
+                  const double & mu_neutral,
+                  const double & mu_selected,
+                  const double & mean_s,
+                  lookup_table_type * lookup )
+    {
+      //get new mutation position
+      double pos = gsl_rng_uniform(r);
+      //this is very rapid lookup...
+      while( lookup->find(pos) != lookup->end() )
+      {
+        pos = gsl_rng_uniform(r);
+      }
+      //ok, we have new position, so put it in lookup table
+      lookup->insert(pos);
+
+      //law of TTL prob
+      bool neutral = (gsl_rng_uniform(r) <= (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
+
+      //return neutral mutation
+      if ( neutral ) { return mtype(pos,0,1,0); }
+
+      //get selection coefficient
+      double s = gsl_ran_exponential(r,mean_s);
+      if( gsl_ran_uniform(r) <= 0.5 ) { s = -1.*s; }
+
+      //the gsl_ran_flat call generates the dominance
+      return mtype(pos,s,1,gsl_ran_flat(r,0.,2.));
+    }
+\end{lstlisting}
+
+That is is--the mutation model is complete.  We still need to deal with how mutations are entered into data structures representing the population, but we'll treat that later.
+
+The mutation policy is passed to any of the various sample\_diploid functions in the library like this:
+
+\begin{lstlisting}
+  boost::bind(mutmodel,r,&mutations,
+              mu_neutral, mut_selected,
+              mean_s, &lookup);
+\end{lstlisting}
+
+Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
+
+\subsection{Recombination}
+\subsection{Migration}
+\subsection{Fitness}
 \end{document}
