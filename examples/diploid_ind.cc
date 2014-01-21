@@ -217,10 +217,6 @@ int main(int argc, char ** argv)
 					 that gamete's frequency increases by 1.
 				       */
       				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				       /*
-					 Policy telling KTfwd::mutate how to add recombined gametes into the gamete pool.
-				       */
-      				       //boost::bind(KTfwd::update_if_exists_insert<gtype,glist>,_1,_2),
       				       /*
       					 Fitness is multiplicative over sites.
 
@@ -239,7 +235,7 @@ int main(int argc, char ** argv)
       				       */
       				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
       				       /*
-      					 For each gamete still extant afte sampling,
+      					 For each gamete still extant after sampling,
       					 remove the pointers to any mutations that have 
       					 been fixed or lost from the population.
 					 
