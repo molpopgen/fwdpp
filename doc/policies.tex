@@ -156,6 +156,13 @@ This section discusses the requirements placed on policies in \texttt{fwdpp}.  T
 
 In the following sections, we will discuss policy requirements, how the built-in policies work, and also create some new policies.  We'll build some policies for a simple quantitative trait with selection simulation, and later on combine them all to see how sample\_diploid would actually be called (for the case of a constant-sized population in an individual-based simulation).  For additional and more complex examples, see the code for the example programs that come with the library.
 
+Caveat emptor:
+
+\begin{enumerate}
+\item This document has been written ad lib, and there may be errors in the implementation of policies below.  (The policies that are directly from the library have been copy/pasted, and so will be ok.)
+\item The code blocks below are really pseudocode.  The include directives are put in there are guides.   Obviously, none of what is below constitutes the complete implementation of a simulation.  For that, see the examples that come with the library.
+\end{enumerate}
+
 \subsection{Mutation policies}
 This is the mutation base class  provided by \texttt{fwdpp}
 \begin{lstlisting}
@@ -440,7 +447,9 @@ The policy looks like this:
      };
 \end{lstlisting}
 
-The main thing a library user needs to focus on is the argument list for \texttt{operator()}.  Specifically, it requires a variable of type rec\_pos\_generator which is stated in the documentation to be a recombination map policy. We pass this recombination model in an individual-based simulation to sample\_diploid like this:
+The main thing a library user needs to focus on is the argument list for \texttt{operator()}.  Specifically, it requires a variable of type rec\_pos\_generator which is stated in the documentation to be a recombination map policy. Thus, a recombination model is a policy that requires another policy.  Further, \textbf{a recombination policy is passed non-const references to iterators to two gametes (g1 and g2 in the code above). Those iterators are updated in place.  In the event of no recombination, g1 and g2 remain unchanged.  Otherwise, g1 and g2 are modified to point to the new recombinants, which are new gametes inersted into the population at a count of 1.}
+
+We pass this recombination model in an individual-based simulation to sample\_diploid like this:
 
 \begin{lstlisting}
   boost::bind(KTfwd::genetics101(),  //the rec. model
