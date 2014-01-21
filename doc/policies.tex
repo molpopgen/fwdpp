@@ -365,7 +365,9 @@ OK, our mutation model is going to be the following.  It is infinitely-many site
 
 \subsection{Recombination}
 \subsubsection{\label{recmodel}How recombination is modeled in \texttt{fwdpp}}
-Poisson number of crossovers.  Returns either unchanged gametes or new gametes with frequencies of 1.
+Currently, recombination is modeled as follows.  In a diploid, there number of crossovers between gametes is Poisson distributed with mean $r$.  There is no notion of interference in establishing crossover positions.  (However, that can be done with a clever policy.)
+
+Note: what I describe as $r$ above is the usual definition in population genetics. However, gamete-based simulations (confusingly, I admit) use r/2, because the per-generation r is used to determine how many recombination events a gamete is involved in.  In other words, it is treated as a ``per-gamete'' parameter.  There is more detail on this in the main library documentation, and you'll see in the example simulations that I divide $\rho$ (the population-scaled rate of recombination) by $8N$ to get ``littler'' rather than the more common $4N$.  (Again, to be clear, $r=\rho/4N$ for individual-based simulations.)
 
 \subsubsection{Recombination map functions}
 In \texttt{fwdpp}, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval $[0,1)$:
