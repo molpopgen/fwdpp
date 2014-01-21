@@ -212,6 +212,7 @@ The mutation base class is not sufficient for any interesting sorts of simulatio
 What does a mutation policy (model) need to do?  \textbf{The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulation's mutation type with a count of 1.}
 
 \subsubsection{Example: the infinitely-many sites model of mutation}
+\label{infsites}
 This mutation model states that a new mutation occurs at a site not currently segregatig in the population.  This statement implies the following:
 \begin{enumerate}
 \item We need a method to rapidly choose mutation positions that don't currently exist in the (meta-)population.
@@ -593,6 +594,15 @@ To use the above policy:
 Please note that a long-running annoyance with open-source C++ compilers (GCC!) is whether or not exp, pow, log, etc., are in namespace std or in the global namespace.  This can vary from version to version and across operating systems.  Sometimes, you need to say \texttt{std::exp} when on another system that fails and you need \texttt{::exp}.
 
 \subsection{Updating and removal policies}
+
+During the course of a simulation, new mutation and gamete types come and go.  New types must be entered in to their approproate containers.  The relevant policies are basically searches followed by either a member variable update or an insertion.  For example, consider our mutation model policy in section \ref{infsites}.  The mutation returned from that function is not currently found in our mutation list (because it has a unique position).  Therefore, the relevant policy is just to insert the new mutation at the end of the doubly-linked list of mutations.  Likewise, a gamete with a new mutation from that model cannot be identical to any currently-segregating gamete.  Therefore, a good policy is just to insert it at the end of the doubly-linked list of gametes (or push it back to the vector of gametes in a gamete-based simulation).  However, a recombination event could make either a new gamete or a pre-existing gamete.  Thus, a policy to insert a recombinant gamete should do the following:
+\begin{enumerate}
+\item Figure out of the gamete is new or not.
+\item If it is new, add it to the end of the gamete container.
+\item It it is not new, do something intelligent, such as return the iterator to the pre-existing version of that gamete in the container.
+\end{enumerate}
+
+These types of policies are simple.  See \texttt{fwdpp/insertion\_policies.hpp} and \texttt{fwdpp/fwd\_functional.hpp}.  The latter contains the functions passed to remove\_lost and remove\_fixed\_lost--see the example programs (and the next section here) for concrete examples.
 
 \section{Putting it all togeter (kinda)}
 Ok, once we have defined our mutation types, our containers, and our policies, a single generation of a constant-sized population in an individual-based simulation is evolved a follows:
