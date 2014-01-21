@@ -741,8 +741,8 @@ namespace KTfwd
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup);
 	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
-	assert(p1<parents->size());
-	assert(p2<parents->size());
+	assert(p1<parents.size());
+	assert(p2<parents.size());
 	
 	p1g1 = (pptr+p1)->first;
 	p1g2 = (pptr+p1)->second;
@@ -950,12 +950,12 @@ namespace KTfwd
 		      ptr->resize(demesize);
 		    }
 		  const typename demedips::iterator dptr = ptr->begin();
-		  typename demedips::iterator pptr=(parents.begin()+popindex)->begin(),pptr2;
+		  //typename demedips::iterator pptr=(parents.begin()+popindex)->begin(),pptr2;
 		  for( unsigned i = 0 ; i < demesize ; ++i )
 		    {
 		      //figure out if parent 1 is migrant or not
 		      size_t deme_first_parent = mig(popindex),deme_other_parent=popindex;
-		      pptr=(parents.begin()+deme_first_parent)->begin();
+		      typename demedips::iterator pptr=(parents.begin()+deme_first_parent)->begin();
 		      size_t p1 = gsl_ran_discrete(r,lookups[deme_first_parent]),p2;
 		      
 		      tpop = &*pop_ptr;
@@ -984,6 +984,7 @@ namespace KTfwd
 			an argument.  It returns popindex if there is no migration,
 			else it returns the index of the deme of a migrant parent
 		      */
+		      typename demedips::iterator pptr2=(parents.begin()+deme_other_parent)->end();
 		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
 			{
 			  pptr2=(parents.begin()+popindex)->begin();
@@ -997,7 +998,7 @@ namespace KTfwd
 			  p2 = gsl_ran_discrete(r,lookups[deme_other_parent]);
 			  assert( (pptr2+p2) < (parents.begin() + deme_other_parent)->end() );
 			}
-		      
+		      assert( pptr2 != (parents.begin() + deme_other_parent)->end() );
 		      if(deme_other_parent == popindex)
 			{
 			  p2g1 = (pptr2+p2)->first;
