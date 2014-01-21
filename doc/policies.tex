@@ -154,6 +154,8 @@ Some of the code in some of these algorithms is quite complex, largely because g
 \section{Policy requirements in \texttt{fwdpp}}
 This section discusses the requirements placed on policies in \texttt{fwdpp}.  These requirements are essentially standards placed on data types in order to ensure that simulations behave properly. (Note that ``behave properly'' is not the same as ``are implemented correctly''!  It is totally possible to have a simulation that compiles with no warnings and runs without crashing but is not the model you had in mind.)  The policy requirements are enforced during compilation, such that a nonconforming policy cannot result in a compiled simulation program.
 
+In the following sections, we will discuss policy requirements, how the built-in policies work, and also create some new policies.  We'll build some policies for a simple quantitative trait with selection simulation, and later on combine them all to see how sample\_diploid would actually be called (for the case of a constant-sized population in an individual-based simulation).  For additional and more complex examples, see the code for the example programs that come with the library.
+
 \subsection{Mutation policies}
 This is the mutation base class  provided by \texttt{fwdpp}
 \begin{lstlisting}
@@ -310,8 +312,61 @@ The mutation policy is passed to any of the various sample\_diploid functions in
 
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
+\subsubsection{A model for quantitative trait simulations}
+Let's define a model where a mutation affecting fitness does so via its effect size, $e$, which is Gaussian-distributed with mean zero and standard deviation $\sigma_e$.
+
+We need a mutation class:
+\begin{lstlisting}
+  struct mut_e : public KTfwd::mutation_base
+  {
+    double e;
+    mut_e( const double & __pos,
+           const unsigned & __n,
+           const bool & __neut,
+           const double & __e ) : KTfwd::mutation_base(__pos,__n,__neut),e(__e)
+           {
+           }
+  };
+
+ typedef mut_e mtype;
+\end{lstlisting}
+
+OK, our mutation model is going to be the following.  It is infinitely-many sites with both neutral and non-neutral mutations:
+\begin{lstlisting}
+   typedef KTfwd::mutation mtype;
+   typedef boost::pool_allocator<mtype> mut_allocator;
+   typedef boost::container::list<mtype,mut_allocator > mlist;
+   mtype mutmodel_Qtrait( gsl_rng * r, mlist * mutations,
+                          const double & mu_neutral,
+                          const double & mu_selected,
+                          const double & sigma_e,
+                          lookup_table_type * lookup )
+    {
+      //get new mutation position
+      double pos = gsl_rng_uniform(r);
+      //this is very rapid lookup...
+      while( lookup->find(pos) != lookup->end() )
+      {
+        pos = gsl_rng_uniform(r);
+      }
+      //ok, we have new position, so put it in lookup table
+      lookup->insert(pos);
+
+      //law of TTL prob
+      bool neutral = (gsl_rng_uniform(r) <= (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
+
+      //return neutral mutation
+      if ( neutral ) { return mtype(pos,1,true,0); }
+
+      //the gsl_ran_gaussian call determines the effect size
+      return mtype(pos,1,gsl_ran_gaussian(r,sigma_e),false);
+    }
+\end{lstlisting}
+
 \subsection{Recombination}
 \subsubsection{\label{recmodel}How recombination is modeled in \texttt{fwdpp}}
+Poisson number of crossovers.  Returns either unchanged gametes or new gametes with frequencies of 1.
+
 \subsubsection{Recombination map functions}
 In \texttt{fwdpp}, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval $[0,1)$:
 
@@ -395,5 +450,192 @@ The main thing a library user needs to focus on is the argument list for \texttt
 
 \textbf{Important: if you try to pass something like boost::bind(gsl\_rng\_uniform,r) (to model a uniform genetic map) instead of a synthesized policy like the ``recmaps'' from above, your code is unlikely to compile.  Getting boost::binds to work within other boost::binds requires wizardry that is unlikely to be worth your time to learn.  (I've never bothered.)}
 \subsection{Migration}
+Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing \texttt{KTfwd::migrate}) that does what you need it to and is implemented in terms of \texttt{KTfwdd::migrate\_from\_to}.
+
+For individual-based simulations involving a metapopulations, parent 1 comes from population $i$ and may or not be a migrant.  Parent two comes from population $j$ and $j = i$ in the case of no migration, otherwise $j \neq i$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  \textbf{A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population $i$, and the return value is the index of population $j$.}
+
+For example, let's assume two demes with migration rate $m$.  Here, $m$ is the probability that a parent is a migrant. This migration rate is equal between the two demes.  Because we are in a C-like language, the values allowed for the size\_t are $0 \leq i \leq 1$.  The migration policy is thus defined as follows:
+
+\begin{lstlisting}
+  size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
+  {
+    //if parent is a migrant
+    if( gsl_rng_uniform(r) <= mig_prob )
+    {
+      //return other population
+      return ! source_pop;
+    }
+    //else, not a migrant
+    return source_pop;
+  }
+\end{lstlisting}
+
+And we pass it to sample\_diploid like this:
+\begin{lstlisting}
+  boost::bind(migpop, //the policy
+              _1,     //placeholder for population index i
+               r,     //gsl_rng *
+               m)     //migration rate
+\end{lstlisting}
 \subsection{Fitness}
+The ability to define custom fitness policies is perhaps the most useful feature of \texttt{fwdpp}.  Broadly-speaking, there are two typical types of fitness models used in population genetics.  The first are what I call site-based models, such as the model of multipicative fitness across sites.  In this standard model, each non-neutral site is effectively its own gene.  The second class are models are haplotype- or region- based, in that fitness depends on the effect sizes of the maternal and paternal haplotypes that a diploid inherited.  The library supports both types.  Haplotype-based fitness models are often efficient to compute, but site-based models can be done badly.  The library provides additional assistance for site-based models.
+
+\textbf{A fitness policy is a function or function object taking two iterators pointing to gametes are arguments are returning a double.  The pointers are the diploid's haplotypes, and the return value is the fitness.}
+\subsubsection{Site-dependent models of fitness}
+The library provides a fitness policy called site\_dependent\_fitness.  This function object requires two additional policies defining what to do with homozygous sites and heterozygous sites.  The library provides the necessary policies in order to define a composite policy called multiplicative\_diploid:
+\begin{lstlisting}
+  //homozygote policy
+  struct multiplicative_fitness_updater_hom
+  {
+    /*
+    Works on interator to mutation that has
+    a selection coefficient s
+    */
+    typedef void result_type;
+    template<typename iterator_type>
+    inline void operator()(double & fitness, const iterator_type & m1,const double & scaling = 2.) const
+    {
+      fitness *= ( 1. + scaling*m1->s );
+    }
+  };
+  //heterozygote policy
+  struct multiplicative_fitness_updater_het
+  {
+    /*
+    Works on interator to mutation that has
+    a selection coefficient s and 
+    domeinance h
+    */
+    typedef void result_type;
+    template<typename iterator_type>
+    inline void operator()(double & fitness, const iterator_type & m1) const
+    {
+      fitness *= ( 1. + m1->s*m1->h );
+    }
+  };
+
+  //now, the fitness policy itself
+  struct multiplicative_diploid
+  {
+    typedef double result_type;
+    template< typename iterator_type>
+    inline double operator()(const iterator_type & g1, const iterator_type & g2,
+                             const double scaling = 1.) const
+    {
+      return site_dependent_fitness()(g1,g2,
+                                      boost::bind(multiplicative_fitness_updater_hom(),_1,_2,scaling),
+                                      boost::bind(multiplicative_fitness_updater_het(),_1,_2),
+                                      1.);
+    }
+  };
+\end{lstlisting}
+
+That last variable, scaling, means that fitness is the product of $1, 1+sh, 1+s \times scaling$ over sites.  This allows you to recreate results from the different parts of the literature that use $scaling = 1$ and 2.  Many classic results are based on a scaling of 2.
+
+To use the multiplicative fitness policy in your simulations, this goes to sample\_diploid
+\begin{lstlisting}
+  boost::bind(multiplicative_diploid(),_1,_2,2.)
+\end{lstlisting}
+
+\subsubsection{Haplotype based fitness policies}
+Here is one that assume a user-defined mutation type with effect size $e$ associated with it.  The effect of a haplotype is additive, the genetic model is recessive, and the phenotype is the genetic effect + a Gaussian random variable with standard deviation sigma.  Finally, fitnesses are under Gaussian stabilizing selection with a standard deviation of 1 and mean 0.
+
+\begin{lstlisting}
+struct hapfitness
+{
+  typedef result_type double;
+  template<typename gam_itr
+  double operator()(const gam_itr & g1,
+                    const gam_itr & g2,
+                    gsl_rng * r,
+                    const double & sigmaE) const
+   {
+     double sum1=0.,sum2=0.;
+     typedef typename gam_itr::value_type::mutation_container::const_iterator mci;
+     for( mci mitr = g1.smutations.begin() ; mitr != g1.smutations.end() ; ++mitr )
+     {
+       //mitr is an iterator to an iterator!
+       sum1 += (*mitr)->e;
+     }
+     for( mci mitr = g2.smutations.begin() ; mitr != g2.smutations.end() ; ++mitr )
+     {
+       //mitr is an iterator to an iterator!
+       sum2 += (*mitr)->e;
+     }
+
+     //make sum1 be the value closest to 0
+     if( fabs(sum1) > fabs(sum2) ) { std::swap(sum1,sum2); }
+
+     //add noise to fitness
+     //Using sum1 as the genetic part makes the model recessive
+     double pheno = sum1 + gsl_ran_gaussian(r,sigmaE);
+     
+     /*
+       Return fitnees under Gaussian stabilizing model.
+       This is the only part of the Gaussian pdf that
+       matters.  The rest is a constant
+       and so won't affect sampling prop to fitness.
+      */
+     return std::exp( -std::pow(pheno,2) /2. );
+   }
+};
+\end{lstlisting}
+
+To use the above policy:
+\begin{lstlisting}
+  boost::bind( hapfitness(),
+               _1,_2,
+               r,sigmaE );
+\end{lstlisting}
+
+Please note that a long-running annoyance with open-source C++ compilers (GCC!) is whether or not exp, pow, log, etc., are in namespace std or in the global namespace.  This can vary from version to version and across operating systems.  Sometimes, you need to say \texttt{std::exp} when on another system that fails and you need \texttt{::exp}.
+
+\subsection{Updating and removal policies}
+
+\section{Putting it all togeter (kinda)}
+Ok, once we have defined our mutation types, our containers, and our policies, a single generation of a constant-sized population in an individual-based simulation is evolved a follows:
+\begin{lstlisting}
+  double wbar = KTfwd::sample_diploid(r,
+                                      &gametes,  //non-const pointer to gametes
+                                      &diploids, //non-const pointer to diploids
+                                      &mutations, //non-const pointer to mutations
+                                      N,     //current pop size, remains constant
+                                      mu,    //mutation rate per gamete
+                                      /*
+                                      The mutation model (defined above) will pass each gamete
+      					 to be mutated to the mutation model function.  Again, _1
+      					 is used as a placeholder for that gamete.
+      				       */
+      				       boost::bind(mutmodel_Qtrait,r,_1,mu_neutral,mu_selected,sigma_e,&lookup),
+				       //The recombination policy includes the recombination map policy
+      				       boost::bind(KTfwd::genetics101(),_1,_2,
+						   &gametes,
+      						   littler,
+      						   r,
+      						   recmap),
+				       /*
+					 Policy to insert new mutations at the end of the mutations list
+				       */
+      				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
+				       /*
+					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
+					 If mutation results in a new gamete, add that gamete to the 
+					 end of gametes. This is always the case under infinitely-many sites,
+					 but for other mutation models, mutation may result in a new
+					 copy identical to an existing gamete.  If so,
+					 that gamete's frequency increases by 1.
+				       */
+      				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
+      				       boost::bind(  boost::bind( hapfitness(),
+                                                   _1,_2,
+                                                   r,sigmaE ),
+      				       /*
+                                         Only remove lost mutations
+      				       */
+      				       boost::bind(KTfwd::mutation_remover(),_1,0));
+          //Clean up the mutations list.  This also resets ``checked'' in each mutation to zero,
+          //which is that ``internal detail'' referred to above
+          //We don't removed fixed mutations b/c this is a quantitative trait simulation
+      	  KTfwd::remove_fixed_lost(&mutations,&lookup,generation);
+\end{lstlisting}
 \end{document}
