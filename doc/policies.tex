@@ -461,6 +461,9 @@ We pass this recombination model in an individual-based simulation to sample\_di
 \end{lstlisting}
 
 \textbf{Important: if you try to pass something like boost::bind(gsl\_rng\_uniform,r) (to model a uniform genetic map) instead of a synthesized policy like the ``recmaps'' from above, your code is unlikely to compile.  Getting boost::binds to work within other boost::binds requires wizardry that is unlikely to be worth your time to learn.  (I've never bothered.)}
+
+Note: if you want to write a new recombination policy, you probably want to proceed by modifying how it interacts with the the recombination map policy.  For example, if a recombination at position $x$ means that the next position must be $\geq 1.5x$ (in some model of interference).  Doing so requires making a custom version of the \texttt{KTfwd::recombine\_gametes} function.  If you read the code for that function, you will see where the recombination map policy is called.  If you try to modify the code below that, then good luck to you.  It isn't super-complicated, but tread with caution.
+
 \subsection{Migration}
 Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing \texttt{KTfwd::migrate}) that does what you need it to and is implemented in terms of \texttt{KTfwdd::migrate\_from\_to}.
 
@@ -548,6 +551,15 @@ To use the multiplicative fitness policy in your simulations, this goes to sampl
 \begin{lstlisting}
   boost::bind(multiplicative_diploid(),_1,_2,2.)
 \end{lstlisting}
+
+If you wish to create your own site-dependent fitness policies, the recipe is:
+\begin{enumerate}
+\item Create your own versions of the policies determining what happens in diploids homozygous vs. heterozygous for a mutation.  \textbf{These policies are passed the current fitness from the algorithm and an iterator to a mutation object.}
+\item Write a wrapper function like multiplicative\_diploid that passes these policies to \texttt{KTfwd::site\_dependent\_fitness}, \textbf{which itself is a policy requiring that iterators to two gametes, the homozygote/heterozygote policies, and a starting value for fitness be passed to it.}  In the example of the built-in multiplicative fitness policy, that value of $1$ that is passed as the last argument to \texttt{KTfwd::site\_dependent\_fitness} is the initial value of fitness for a diploid.  In other words, $w = 1$ initially, and $w$ is then modified by \texttt{KTfwd::multiplicative\_fitness\_updater\_het} or \texttt{KTfwd::multiplicative\_fitness\_updater\_hom} as appropriate.
+\item This wrapper function is your new fitness policy.
+\end{enumerate}
+
+Note: the implementation  \texttt{KTfwd::site\_dependent\_fitness} is a lot of iterator/pointer arithmetic.
 
 \subsubsection{Haplotype based fitness policies}
 Here is one that assume a user-defined mutation type with effect size $e$ associated with it.  The effect of a haplotype is additive, the genetic model is recessive, and the phenotype is the genetic effect + a Gaussian random variable with standard deviation sigma.  Finally, fitnesses are under Gaussian stabilizing selection with a standard deviation of 1 and mean 0.
