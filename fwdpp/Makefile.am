@@ -17,4 +17,5 @@ pkginclude_HEADERS=debug.hpp \
 	mutation.tcc \
 	sampling_functions.hpp \
 	sampling_functions.tcc \
-	util.hpp
+	util.hpp \
+	recombination_methods_ind.hpp
