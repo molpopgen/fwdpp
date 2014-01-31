@@ -36,6 +36,10 @@ The first two are excellent books for people already familiar with C++ syntax bu
 
 The library user will also need some familiarity with the [boost](http://www.boost.org) libraries, especially "bind" and "function".  I refer the user to the boost website for the relevant documentation.
 
+##A note about which version to use
+
+This code is distributed via my gitub [account](http://www.github.com/molpopgen).  The "master" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that the version number in the configure script on master/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in master/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at master.  Also note that master may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
+
 ##Which C++?
 
 fwdpp does not use any features from then newly-released C++11 standard.  The new standard extends/simplifies the language, and therefore I expect the current code base to be C++11-compliant. As compiler support for C++11 becomes more widespread, the library will likely start to use some of those features, which will drastically improve readability of some of the nastier bits of template wizardry.
