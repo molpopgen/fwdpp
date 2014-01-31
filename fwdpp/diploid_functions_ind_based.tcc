@@ -332,16 +332,19 @@ namespace KTfwd
 		      ptr->resize(demesize);
 		    }
 		  const typename demedips::iterator dptr = ptr->begin();
-		  //typename demedips::iterator pptr=(parents.begin()+popindex)->begin(),pptr2;
+		  tpop = &*pop_ptr;
 		  for( unsigned i = 0 ; i < demesize ; ++i )
 		    {
-		      //figure out if parent 1 is migrant or not
+		      /* Figure out if parent 1 is migrant or not.
+
+			A migration policy takes the current deme (popindex) as
+			an argument.  It returns popindex if there is no migration,
+			else it returns the index of the deme of a migrant parent
+		      */
 		      size_t deme_first_parent = mig(popindex),deme_other_parent=popindex;
 		      typename demedips::iterator pptr=(parents.begin()+deme_first_parent)->begin();
 		      size_t p1 = gsl_ran_discrete(r,lookups[deme_first_parent]),p2;
-		      
-		      tpop = &*pop_ptr;
-		      
+
 		      if( popindex == deme_first_parent )
 			//not migrant
 			{
@@ -354,17 +357,11 @@ namespace KTfwd
 			  p1g1 = insert_if_not_found( *((pptr+p1)->first),tpop );
 			  p1g2 = insert_if_not_found( *((pptr+p1)->second),tpop );
 			}
-		      
-		      NREC += rec_pol(p1g1,p1g2,tpop);
-		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+		     
 		      
 		      /*
 			If the individual is not inbred, then we pick a 
-			deme from the migration policy.
-			
-			A migration policy takes the current deme (popindex) as
-			an argument.  It returns popindex if there is no migration,
-			else it returns the index of the deme of a migrant parent
+			deme from the migration policy for parent 2
 		      */
 		      typename demedips::iterator pptr2=(parents.begin()+deme_other_parent)->end();
 		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
@@ -393,7 +390,9 @@ namespace KTfwd
 			  p2g2 = insert_if_not_found( *((pptr2+p2)->second),tpop );
 			}
 		      
+		      NREC += rec_pol(p1g1,p1g2,tpop);
 		      NREC += rec_pol( p2g1,p2g2, tpop );
+		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 		      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 		      assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
 			      != (pop_ptr)->end() );
