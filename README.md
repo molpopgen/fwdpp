@@ -221,13 +221,14 @@ The program writes the data to the output file and then reads it in again. This 
 
 This program simulates the "recurrent hitch-hiking" model in which the expected number of fixations of beneficial codominant mutations per site per 4N generations is Lambda. The output is ms-format (just one block for neutral mutations). This model is one of the most thoroughly-studied models of the effect of selection on linked variation. See, for example:
 
-Wiehe, T. H. and W. Stephan, 1993 Analysis of a genetic hitchhiking model, and its application to DNA polymorphism data from Drosophila melanogaster. Molecular Biology and Evolution 10: 842–854.
-Kaplan, N. L., R. R. Hudson and C. H. Langley, 1989 The ”hitchhiking effect” revisited. Genetics 123: 887–899.
-Braverman, J. M., R. R. Hudson, N. L. Kaplan, C. H. Langley and W. Stephan, 1995 The hitchhiking effect on the site frequency spectrum of DNA polymorphisms. Genetics 140: 783–796.
-Przeworski, M., 2002 The Signature of Positive Selection at Randomly Chosen Loci. Genetics 160: 1179.
-The model in this program allows selected mutations within the region with neutral mutation rate theta (the so-called “neutral” or “sampled” region in the coalescent literature treating RHH via the structured coalescent). In general, the majority of selected sites will appear up to s/r\_bp base pairs, where r is the recombination rate per base pair.
+1. Wiehe, T. H. and W. Stephan, 1993 Analysis of a genetic hitchhiking model, and its application to DNA polymorphism data from Drosophila melanogaster. Molecular Biology and Evolution 10: 842–854.
+2. Kaplan, N. L., R. R. Hudson and C. H. Langley, 1989 The "hitchhiking effect" revisited. Genetics 123: 887–899.
+4. Braverman, J. M., R. R. Hudson, N. L. Kaplan, C. H. Langley and W. Stephan, 1995 The hitchhiking effect on the site frequency spectrum of DNA polymorphisms. Genetics 140: 783–796.
+4. Przeworski, M., 2002 The Signature of Positive Selection at Randomly Chosen Loci. Genetics 160: 1179.
 
-The population is simulated for g generations with only neutral mutations, followed by g2 more generations with neutral and selected mutations. The selection coefficient, s, must be > 0, but the program doesn’t check for this, so just enter an appropriate value please. The output is in ms format, and only contains data for neutral mutations, so any segregating selected mutations will not be output. The region with mutation rate theta is L base pairs long. L is really only used to calculate r\_bp, which is rho/(4*N*(L-1)), as there are L-1 possible positions for recombination to occur in a region of L nucleotides.
+The model in this program allows selected mutations within the region with neutral mutation rate theta (the so-called "neutral" or "sampled" region in the coalescent literature treating RHH via the structured coalescent). In general, the majority of selected sites will appear up to s/r\_bp base pairs, where r is the recombination rate per base pair.
+
+The population is simulated for g generations with only neutral mutations, followed by g2 more generations with neutral and selected mutations. The selection coefficient, s, must be > 0, but the program doesn't check for this, so just enter an appropriate value please. The output is in ms format, and only contains data for neutral mutations, so any segregating selected mutations will not be output. The region with mutation rate theta is L base pairs long. L is really only used to calculate r\_bp, which is rho/(4*N*(L-1)), as there are L-1 possible positions for recombination to occur in a region of L nucleotides.
 
 Usage:
 
