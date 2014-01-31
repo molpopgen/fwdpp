@@ -21,3 +21,42 @@
 Comments are welcome.
 
 	- Kevin Thornton <krthornt@uci.edu>
+
+#Introduction
+
+##Citation
+
+The manuscript describing fwdpp is currently on [arxiv](http://arxiv.org/abs/1401.3786).
+
+#Dependencies
+
+fwdpp depends upon the following libraries:
+
+[boost](http://www.boost.org)<br>
+[GSL](http://gnu.org/software/gsl)<br>
+[zlib](http://zlib.net)<br>
+[libsequence](http://github.com/molpopgen/libsequence)<br>
+
+The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
+
+#Installation
+
+./configure<br>
+make<br>
+make install<br>
+
+##If dependent libraries are in non-stanard locations.
+
+For example, if libsequence is in /opt:
+
+CXXFLAGS=-I/opt/include LDFLAGS="$LDFLAGS -L/opt/lib" ./configure<br>
+make<br>
+make install
+
+##Installing in a custom location
+
+./configure --prefix=/path/2/where/you/want it
+
+For example:
+
+./configure --prefix=$HOME
