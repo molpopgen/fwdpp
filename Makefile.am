@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS = foreign
 bin_PROGRAMS=fwdpp
 SUBDIRS=fwdpp
 #  uncomment the following if fwdpp requires the math library
