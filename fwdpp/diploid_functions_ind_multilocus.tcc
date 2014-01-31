@@ -55,42 +55,44 @@ sample_diploid(gsl_rng * r,
   typedef glist_vector_type< gamete_list_type<gamete_type,gamete_list_type_allocator >,
 			     glist_vector_type_allocator > multiloc_gcont;
 
-typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_cont;
+  typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_cont;
+  
+  typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+							  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+						locus_vector_type_allocator>,
+			      diploid_vector_type_allocator> dipctr;
+  
+  typedef locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+				      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+			    locus_vector_type_allocator> loci_ctr;
 
-typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-							typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-					      locus_vector_type_allocator>,
-			    diploid_vector_type_allocator> dipctr;
- 
- typedef typename locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-					      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-				    locus_vector_type_allocator>::iterator locus_itr;
- 
- std::vector<double> fitnesses(diploids->size());
- double wbar = 0.;
- 
- typename dipctr::iterator dptr = diploids->begin();
- for( unsigned i = 0 ; i < N_curr ; ++i,++dptr )
-   {
-     for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
-       {
-	 j->first->n = 0;
-	 j->second->n = 0;
-       }
-     fitnesses[i] = ff( dptr );
-     wbar += fitnesses[i];
-   }
- wbar /= double(diploids->size());
- dptr = diploids->begin();
- 
+  typedef typename loci_ctr::iterator locus_itr;
+  
+  std::vector<double> fitnesses(diploids->size());
+  double wbar = 0.;
+  
+  typename dipctr::iterator dptr = diploids->begin();
+  for( unsigned i = 0 ; i < N_curr ; ++i,++dptr )
+    {
+      for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
+	{
+	  j->first->n = 0;
+	  j->second->n = 0;
+	}
+      fitnesses[i] = ff( dptr );
+      wbar += fitnesses[i];
+    }
+  wbar /= double(diploids->size());
+  dptr = diploids->begin();
+  
 #ifndef NDEBUG
- for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
-   {
-     for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = i->begin() ; itr != i->end() ;++itr)
-       {
-	 assert(itr->n==0);
-       }
-   }
+  for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
+    {
+      for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = i->begin() ; itr != i->end() ;++itr)
+	{
+	  assert(itr->n==0);
+	}
+    }
 #endif
  
  gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
@@ -116,7 +118,13 @@ typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_typ
      assert(p1<parents.size());
      assert(p2<parents.size());
      
-     //single-locus version commented out beow
+     std::vector<unsigned> nrecs( gametes->size() , 0u ); //store the number of recs per locus
+
+     //Need to store a vector of the equivalent of p1g1,p1g2 out to png1,png2
+     loci_ctr p1c( *(dptr+p1) ),
+       p2c( *(dptr+p2) );
+
+     //single-locus version commented out beow  to use as reference
      // p1g1 = (pptr+p1)->first;
      // p1g2 = (pptr+p1)->second;
      // p2g1 = (pptr+p2)->first;
