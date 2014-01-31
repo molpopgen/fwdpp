@@ -122,7 +122,7 @@ typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_typ
      // p2g1 = (pptr+p2)->first;
      // p2g2 = (pptr+p2)->second;
 	
-	// //Need a multilocus version of this bad boy
+	// //Need a multilocus version of this bad boy -- or do we?
 	// NREC += rec_pol(p1g1,p1g2);
 	// NREC += rec_pol(p2g1,p2g2);
 	
