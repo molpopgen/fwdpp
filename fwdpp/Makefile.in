@@ -185,6 +185,7 @@ pkginclude_HEADERS = debug.hpp \
 	diploid_functions.tcc \
 	diploid_functions_gamete_based.tcc \
 	diploid_functions_ind_based.tcc \
+	diploid_functions_ind_multilocus.tcc \
 	diploid_functions_recombine_gametes.tcc \
 	diploid.hh \
 	fitness_policies.hpp \
@@ -215,9 +216,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign fwdpp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu fwdpp/Makefile
+	  $(AUTOMAKE) --foreign fwdpp/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

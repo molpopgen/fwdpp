@@ -5,6 +5,7 @@ pkginclude_HEADERS=debug.hpp \
 	diploid_functions.tcc \
 	diploid_functions_gamete_based.tcc \
 	diploid_functions_ind_based.tcc \
+	diploid_functions_ind_multilocus.tcc \
 	diploid_functions_recombine_gametes.tcc \
 	diploid.hh \
 	fitness_policies.hpp \
