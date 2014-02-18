@@ -166,9 +166,11 @@ int main(int argc, char ** argv)
 
       //Now, grow the population to size N3;
       unsigned currentN = N2,nextN;
-      for( ; generation < ngens + ngens2 ; ++generation )
+      unsigned gens_since_bneck = 0;
+      for( ; generation < ngens + ngens2 ; ++generation,++gens_since_bneck )
 	{
-	  nextN = round( N2*std::pow(G,generation+1) );
+	  nextN = round( N2*std::pow(G,gens_since_bneck+1) );
+	  assert(nextN > 0);
 	  wbar = KTfwd::sample_diploid(r,
 				       &gametes,
 				       &diploids,
