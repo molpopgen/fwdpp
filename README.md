@@ -123,7 +123,7 @@ Then,
 > CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure<br>
 > make install<br>
 
-Any you can compile the examples as described above.
+And now you can compile the examples as described above.
 
 
 ##Examples
