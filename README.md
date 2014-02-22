@@ -119,7 +119,7 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 Then,
 
 > tar xzf fwdpp-version.tar.gz<br>
-> tar xzf fwdpp-version<br>
+> cd fwdpp-version<br>
 > CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure<br>
 > make install<br>
 
