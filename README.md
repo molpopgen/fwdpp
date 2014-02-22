@@ -81,6 +81,51 @@ For example:
 
 ./configure --prefix=$HOME
 
+##"Fast" installation into a user's $HOME folder
+
+If you do not have permission for anything other than a local install, there is a [script](https://gist.github.com/molpopgen/9160680) that will install gsl-1.1.6, boost 1.5.5, and the master branch of libsequence into your home directory.  This means that header files end up in $HOME/include and run-time libraries end up in $HOME/lib.  (Typically, the "should" be in /usr/local instead of $HOME, but you may not have the permissions to install there).
+
+First, get libsequence and its dependencies all installed:
+
+> git clone https://gist.github.com/molpopgen/9160680<br>
+> cd 9160680<br>
+> (At this point, edit the script if you are an OS X user)<br>
+> bash libseq _ local.sh<br>
+
+The above takes a while.
+
+Now, you can get fwdpp installed.  Below, we cover how to install both the master branch or a stable release into $HOME.
+
+Once installed, you should see the directory $HOME/include/fwdpp, and it should be full of header files.  Nothing goes in $HOME/lib.
+
+To get the master branch from git:
+
+> git clone https://github.com/molpopgen/fwdpp<br>
+> cd fwdpp<br>
+> CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure --prefix=$HOME<br>
+> make install
+
+Then, you can compile the example programs:
+
+> cd examples<br>
+> LDFLAGS=-I$HOME/lib make
+
+See below for how to run the examples.
+
+If you want a stable release of fwdpp (rather than the master branch which may be semi-experimental), click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
+
+On a decent browser, when you click on a release, it should be called fwdpp-version.tar.ga.  Sometimes, though, you may get version.tar.gz.  This is a browser-by-github interaction problem.  On my systems, I get the correct result.
+
+Then,
+
+> tar xzf fwdpp-version.tar.g
+> tar xzf fwdpp-version
+> CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure
+> make install
+
+Any you can compile the examples as described above.
+
+
 ##Examples
 
 The best documentation of how to use the library are the example simulations in the examples/ subdirectory.
