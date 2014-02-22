@@ -1,3 +1,10 @@
+/*
+  How often does gsl_rng_uniform return the same value when using
+  a different comparison function, and is it any slower?
+
+  Usage: ./gsl_rng_test2 seed nreps
+*/
+
 #include <iostream>
 #include <cstdlib>
 #include <fwdpp/diploid.hh>

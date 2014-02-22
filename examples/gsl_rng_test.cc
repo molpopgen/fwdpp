@@ -1,3 +1,9 @@
+/*
+  How often does gsl_rng_uniform return the same value?
+
+  Usage: ./gsl_rng_test seed nreps
+*/
+
 #include <iostream>
 #include <cstdlib>
 
