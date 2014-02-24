@@ -50,6 +50,14 @@ The manuscript describing fwdpp is currently on [arxiv](http://arxiv.org/abs/140
 
 #Dependencies
 
+##System requirements
+
+You must have the following on your system:
+
+1. A C++ compiler equivalent to gcc 4.6 or greater.  On OS X, this likely means that you should be running OS X Mavericks with Xcode installed, and have then installed the command line tools (which is done from within Xcode.)
+2. Ideally, one should have the [git](http://git-scm.com/book/en/Getting-Started-Installing-Git) command line tools installed.  These are likely already installed on many systems.
+
+##Library dependencies
 fwdpp depends upon the following libraries:
 
 [boost](http://www.boost.org)<br>
@@ -61,9 +69,29 @@ The first three are  available as pre-built packages on most Linux distributions
 
 #Installation
 
-./configure<br>
-make<br>
-make install<br>
+##Obtaining the source code
+
+To obtain the master branch from github:
+
+> git clone https://www.github.com/molpopgen/fwdpp.git
+
+To obtain a specific release, go to this projects git [repository](https://www.github.com/molpopgen/fwdpp), click on [releases](https://github.com/molpopgen/fwdpp/releases), and then select the version that you wish to download.  _NOTE:_ this should result in a download called fwdpp-version.tar.gz, but some browsers will download it as version.tar.gz, omitting the project name.  The following instructions assume that the name was not omitted.  It if was, adjust accordingly.__
+
+##The case of a standard system with all dependencies installed in standard locations
+
+If you cloned the git repo:
+> cd fwdpp
+
+If you downloaded a release:
+
+> tar xzf fwdpp-version.tar.gz<br>
+> cd fwdpp-version<br>
+
+Then:
+
+> ./configure<br>
+> make<br>
+> make install<br>
 
 ##If dependent libraries are in non-stanard locations.
 
@@ -83,13 +111,12 @@ For example:
 
 ##"Fast" installation into a user's $HOME folder
 
-If you do not have permission for anything other than a local install, there is a [script](https://gist.github.com/molpopgen/9160680) that will install gsl-1.1.6, boost 1.5.5, and the master branch of libsequence into your home directory.  This means that header files end up in $HOME/include and run-time libraries end up in $HOME/lib.  (Typically, the "should" be in /usr/local instead of $HOME, but you may not have the permissions to install there).
+If you do not have permission for anything other than a local install, there is a [script](https://www.github.com/molpopgen/install_libseq) that will install gsl-1.1.6, boost 1.5.5, and the master branch of libsequence into your home directory.  This means that header files end up in $HOME/include and run-time libraries end up in $HOME/lib.  (Typically, the "should" be in /usr/local instead of $HOME, but you may not have the permissions to install there).
 
 First, get libsequence and its dependencies all installed:
 
-> git clone https://gist.github.com/molpopgen/9160680<br>
-> cd 9160680<br>
-> (At this point, edit the script if you are an OS X user)<br>
+> git clone https://www.github.com/molpopgen/install_libseq.git<br>
+> cd install_libseq<br>
 > bash libseq _ local.sh<br>
 
 The above takes a while.
