@@ -407,7 +407,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  new_gamete1.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
 	  new_gamete2.mutations.reserve(ibeg->mutations.size()+jbeg->mutations.size());
 	  new_gamete2.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
-	  short SWITCH_I = 0,SWITCH_J = 0;
+	  short SWITCH = 0;
 	  size_t dummy = 0;
 	  mcont_iterator itr = ibeg->mutations.begin(),
 	    jtr = jbeg->mutations.begin(),
@@ -420,7 +420,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      //iterate over neutral mutations from parent i
 	      for( ; itr < ibeg->mutations.end() && (*itr)->pos < pos[dummy] ;++itr)
 		{
-		  switch(SWITCH_I)
+		  switch(SWITCH)
 		    {
 		    case 0:
 #ifndef NDEBUG
@@ -446,7 +446,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      //iterate over selected mutations from parent i
 	      for( ; itr_s < ibeg->smutations.end() && (*itr_s)->pos < pos[dummy] ;++itr_s)
 		{
-		  switch(SWITCH_I)
+		  switch(SWITCH)
 		    {
 		    case 0:
 #ifndef NDEBUG
@@ -472,7 +472,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      //iterate over neutral mutations from parent j
 	      for( ; jtr < jbeg->mutations.end() && (*jtr)->pos < pos[dummy] ;++jtr)
 		{
-		  switch(SWITCH_J)
+		  switch(SWITCH)
 		    {
 		    case 1:
 #ifndef NDEBUG
@@ -498,7 +498,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      //iterate over selected mutations from parent j
 	      for( ; jtr_s < jbeg->smutations.end() && (*jtr_s)->pos < pos[dummy] ;++jtr_s)
 		{
-		  switch(SWITCH_J)
+		  switch(SWITCH)
 		    {
 		    case 1:
 #ifndef NDEBUG
@@ -520,8 +520,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		      break;
 		    }
 		}
-	      SWITCH_I=!SWITCH_I;
-	      SWITCH_J=!SWITCH_J;
+	      SWITCH=!SWITCH;
 	    }
 #ifndef NDEBUG
 	  unsigned __nm1 = new_gamete1.mutations.size()+new_gamete1.smutations.size(),

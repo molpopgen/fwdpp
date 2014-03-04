@@ -51,7 +51,7 @@ namespace KTfwd
 	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
-	short SWITCH_I = 0,SWITCH_J = 0;
+	short SWITCH = 0;
 	size_t dummy = 0;
 	typename iterator_type::value_type::mcont_iterator itr = g1->mutations.begin(),
 	  jtr = g2->mutations.begin(),
@@ -64,7 +64,7 @@ namespace KTfwd
 	    //iterate over neutral mutations from parent i
 	    for( ; itr < g1->mutations.end() && (*itr)->pos < pos[dummy] ;++itr)
 	      {
-		switch(SWITCH_I)
+		switch(SWITCH)
 		  {
 		  case 0:
 #ifndef NDEBUG
@@ -90,7 +90,7 @@ namespace KTfwd
 	    //iterate over selected mutations from parent i
 	    for( ; itr_s < g1->smutations.end() && (*itr_s)->pos < pos[dummy] ;++itr_s)
 	      {
-		switch(SWITCH_I)
+		switch(SWITCH)
 		  {
 		  case 0:
 #ifndef NDEBUG
@@ -116,7 +116,7 @@ namespace KTfwd
 	    //iterate over neutral mutations from parent j
 	    for( ; jtr < g2->mutations.end() && (*jtr)->pos < pos[dummy] ;++jtr)
 	      {
-		switch(SWITCH_J)
+		switch(SWITCH)
 		  {
 		  case 1:
 #ifndef NDEBUG
@@ -142,7 +142,7 @@ namespace KTfwd
 	  //iterate over selected mutations from parent j
 	  for( ; jtr_s < g2->smutations.end() && (*jtr_s)->pos < pos[dummy] ;++jtr_s)
 	    {
-	      switch(SWITCH_J)
+	      switch(SWITCH)
 		{
 		case 1:
 #ifndef NDEBUG
@@ -164,8 +164,7 @@ namespace KTfwd
 		  break;
 		}
 	    }
-	  SWITCH_I=!SWITCH_I;
-	  SWITCH_J=!SWITCH_J;
+	  SWITCH=!SWITCH;
 	  }
 	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),fake_less());
 	std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),fake_less());
