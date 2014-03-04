@@ -407,7 +407,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  new_gamete1.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
 	  new_gamete2.mutations.reserve(ibeg->mutations.size()+jbeg->mutations.size());
 	  new_gamete2.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
-	  short SWITCH_I = 0,SWITCH_J = 0, SWITCH_Is = 0, SWITCH_Js = 0;
+	  short SWITCH_I = 0,SWITCH_J = 0;
 	  size_t dummy = 0;
 	  mcont_iterator itr = ibeg->mutations.begin(),
 	    jtr = jbeg->mutations.begin(),
@@ -442,12 +442,11 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		      break;
 		    }
 		}
-	      SWITCH_I=!SWITCH_I;
 
 	      //iterate over selected mutations from parent i
 	      for( ; itr_s < ibeg->smutations.end() && (*itr_s)->pos < pos[dummy] ;++itr_s)
 		{
-		  switch(SWITCH_Is)
+		  switch(SWITCH_I)
 		    {
 		    case 0:
 #ifndef NDEBUG
@@ -469,7 +468,6 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		      break;
 		    }
 		}
-	      SWITCH_Is=!SWITCH_Is;
 
 	      //iterate over neutral mutations from parent j
 	      for( ; jtr < jbeg->mutations.end() && (*jtr)->pos < pos[dummy] ;++jtr)
@@ -496,12 +494,11 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		      break;
 		    }
 		}
-	      SWITCH_J=!SWITCH_J;
 
 	      //iterate over selected mutations from parent j
 	      for( ; jtr_s < jbeg->smutations.end() && (*jtr_s)->pos < pos[dummy] ;++jtr_s)
 		{
-		  switch(SWITCH_Js)
+		  switch(SWITCH_J)
 		    {
 		    case 1:
 #ifndef NDEBUG
@@ -523,7 +520,8 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		      break;
 		    }
 		}
-	      SWITCH_Js=!SWITCH_Js;
+	      SWITCH_I=!SWITCH_I;
+	      SWITCH_J=!SWITCH_J;
 	    }
 #ifndef NDEBUG
 	  unsigned __nm1 = new_gamete1.mutations.size()+new_gamete1.smutations.size(),
