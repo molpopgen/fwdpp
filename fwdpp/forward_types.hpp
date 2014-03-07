@@ -7,7 +7,7 @@
 #include <limits>
 #include <vector>
 #include <list>
-
+#include <cmath>
 #include <boost/static_assert.hpp>
 #include <boost/type_traits/is_base_and_derived.hpp>
 
@@ -49,7 +49,7 @@ namespace KTfwd
     }
     bool operator==(const mutation & rhs) const
     {
-      return( fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
+      return( std::fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
 	      this->s == rhs.s );
     }
 };
