@@ -2745,7 +2745,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=fwdpp
- VERSION=0.1.9
+ VERSION=0.2.1
 
 
 cat >>confdefs.h <<_ACEOF
