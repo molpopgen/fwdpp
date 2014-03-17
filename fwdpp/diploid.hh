@@ -224,7 +224,7 @@
   \endcode
 
   We may wish to keep track of when mutations arise in the population, so that we can track fixations times, etc.:
-  /code
+  \code
   struct mutation_with_origin : public KTfwd::mutation
   //records the generation when the mutation entered the population
   {
