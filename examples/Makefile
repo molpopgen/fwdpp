@@ -7,7 +7,7 @@ OPT=-O2  -funroll-all-loops -fno-default-inline
 #OPT=
 CXXFLAGS=$(OPT) -Wall -W -I..  $(DEBUG)
 
-TARGETS=diploid diploid_ind diploid_fixed_sh diploid_twopop_mig diploid_binaryIO RHH bneck_selection migsel_ind diploid_binaryIO_ind diploid_fixed_sh_ind gsl_rng_test gsl_rng_test2 
+TARGETS=diploid diploid_ind diploid_fixed_sh diploid_twopop_mig diploid_binaryIO RHH bneck_selection migsel_ind diploid_binaryIO_ind diploid_fixed_sh_ind gsl_rng_test gsl_rng_test2 TFL2013
 all: diploid.o diploid_ind.o diploid_binaryIO.o diploid_binaryIO_ind.o diploid_fixed_sh.o diploid_twopop_mig.o RHH.o diploid_fixed_sh_ind.o bneck_selection.o migsel_ind.o gsl_rng_test.o gsl_rng_test2.o TFL2013.o
 	$(CXX) $(CXXFLAGS) -o diploid diploid.o -lsequence -lz -lgsl -lgslcblas -lboost_system $(LDFLAGS)
 	$(CXX) $(CXXFLAGS) -o diploid_ind diploid_ind.o -lsequence -lz -lgsl -lgslcblas -lboost_system $(LDFLAGS)
