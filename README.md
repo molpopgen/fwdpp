@@ -334,6 +334,35 @@ n = sample size to take from the population.<br>
 nreps = # replicates to simulate<br>
 seed = random number seed.<br>
 
+####TFL2013
+
+This is the simulation from Thornton, Foran, and Long (2013) Properties and Modeling of GWAS when Complex Disease Risk Is Due to Non-Complementing, Deleterious Mutations in Genes of Large Effect. PLoS Genetics 9: e1003258. The manuscript is available [here](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1003258). See that paper for modeling details.
+
+Usage:
+
+./TFL2013 N mu\_disease mu\_neutral littler esize dist sdE sdS burnin evolve msfile phenofile effectfile
+
+Where:<br>
+N = diploid population number<br>
+mu\_disease = mutation rate to causative mutations (per gamete)<br>
+mu\_neutral = mutation rate to neutral mutations (per gamete)<br>
+littler = Recombination rate per diploid<br>
+esize = Effect size of causative mutation.<br>
+dist = boolean.  If 0, then esize is fixed.  If 1, then esize is the mean of an exponentural with mean esize<br>
+sdE = standard deviation in Gaussian noise added to phenotype<br>
+sdS = standard deviation in Gaussian fitness function. (Should probably just set to 1.)<br>
+burnin = number of generations to evolve with no causative mutations.<br>
+evolve = number of generations to evolve with neutral and causative mutations.<br>
+msfile = File to write the entire population in "ms" format.  Each sequential pair of gametes is a different diploids. Output is gzipped.<br>
+phenofile = File to write phenotypes of population.  Two columns: genetic component first, then Gaussian noise component.  The phenotype is the sum of the two.  Order of phenotypes is same as order of diploids in msfile.  Gzipped<br>
+effectfile = File to write positions and effect sizes of causative mutations. Gzipped.<br>
+
+Example from the PLoS Genetics paper:
+
+./TFL2013 20000 0.000125 0.00125 0.00125 0.5 1 0.075 1 0 160000 msfile.gz phenotypes.gz effects.gz
+
+will simulate a mean effect size of 0.5 (exponentially-distributed).  The above will take probably many hours to run.
+
 #Documentation
 
 The documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
