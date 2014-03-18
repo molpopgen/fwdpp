@@ -23,15 +23,19 @@
 namespace KTfwd
 {
   template< typename gamete_type,
-	    typename vector_allocator_type,
+	    typename gamete_allocator_type,
+	    typename gamete_allocator_type2,
 	    typename mutation_type,
-	    typename list_allocator_type,
-	    template<typename,typename> class vector_type,
-	    template<typename,typename> class list_type >
-  void valid_copy( const vector_type<gamete_type,vector_allocator_type> & gametes,
-		   const list_type<mutation_type,list_allocator_type> & mutations,
-		   vector_type<gamete_type,vector_allocator_type> & gametes_destination,
-		   list_type<mutation_type,list_allocator_type> & mutations_destination )
+	    typename mutation_allocator_type,
+	    typename mutation_allocator_type2,
+	    template<typename,typename> class source_gamete_container,
+	    template<typename,typename> class source_mut_container,
+	    template<typename,typename> class dest_gamete_container,
+	    template<typename,typename> class dest_mut_container>
+  void valid_copy( const source_gamete_container<gamete_type,gamete_allocator_type> & gametes,
+		   const source_mut_container<mutation_type,mutation_allocator_type> & mutations,
+		   dest_gamete_container<gamete_type,gamete_allocator_type2> & gametes_destination,
+		   dest_mut_container<mutation_type,mutation_allocator_type2> & mutations_destination )
   /*!
     If you ever need to store (and later restore) the state of the population, a naive copy operation
     is not sufficient, because of all the pointers from the gametes container to elements
@@ -42,8 +46,9 @@ namespace KTfwd
   {
     BOOST_STATIC_ASSERT( (boost::is_same<typename gamete_type::mutation_type,mutation_type>::value) );
 
-    typedef typename list_type<mutation_type,list_allocator_type>::iterator literator;  
-    typedef typename list_type<mutation_type,list_allocator_type>::const_iterator cliterator;
+    typedef typename source_gamete_container<gamete_type,gamete_allocator_type>::const_iterator giterator;
+    typedef typename source_mut_container<mutation_type,mutation_allocator_type>::iterator literator;  
+    typedef typename source_mut_container<mutation_type,mutation_allocator_type>::const_iterator cliterator;
     typedef typename gamete_type::mutation_container::const_iterator gciterator;
     gametes_destination.clear();
     mutations_destination.clear();
@@ -56,24 +61,24 @@ namespace KTfwd
 	mutlookup[j->pos]=j;
       }
     
-    for(unsigned i=0;i<gametes.size();++i)
+    for( giterator i = gametes.begin() ; i != gametes.end() ; ++i )
       {
 	//copy construct so that all public, etc., data
 	//are properly initialized
-	gamete_type new_gamete(gametes[i]);
+	gamete_type new_gamete(*i);//gametes[i]);
 	new_gamete.mutations.clear();
 	new_gamete.smutations.clear();
-	for(gciterator itr = gametes[i].mutations.begin() ; 
-	    itr != gametes[i].mutations.end() ; ++itr)
+	for(gciterator itr = i->mutations.begin() ; 
+	    itr != i->mutations.end() ; ++itr)
 	  {
 	    new_gamete.mutations.push_back( mutlookup[(*itr)->pos] );
 	  }
-	for(gciterator itr = gametes[i].smutations.begin() ; 
-	    itr != gametes[i].smutations.end() ; ++itr)
+	for(gciterator itr = i->smutations.begin() ; 
+	    itr != i->smutations.end() ; ++itr)
 	  {
 	    new_gamete.smutations.push_back( mutlookup[(*itr)->pos] );
 	  }
-	gametes_destination.push_back(new_gamete);
+	gametes_destination.insert(gametes_destination.end(),new_gamete);
       }
   }
 
