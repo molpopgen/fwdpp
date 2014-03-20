@@ -67,6 +67,26 @@ fwdpp depends upon the following libraries:
 
 The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
 
+##Obtaining the source code
+
+###Obtaining the master branch
+You have a few options:
+<ol>
+<li> Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
+<li> Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
+</ol>
+
+###Obtaining a specific release
+Again, a few options:
+<ol>
+<li> Click on "Releases" at https://github.com/molpopgen/fwdpp, then download the one you want </li>
+<li> Clone the repo (see previous section)</li>
+<ol>
+<li> Get a list of releases by saying "git tag -l" </li>
+<li> Checkout the release you want.  For example "git checkout 0.2.0"</li>
+</ol>
+</ol>
+
 #Installation
 
 ##Obtaining the source code
