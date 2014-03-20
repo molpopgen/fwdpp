@@ -89,14 +89,6 @@ Again, a few options:
 
 #Installation
 
-##Obtaining the source code
-
-To obtain the master branch from github:
-
-> git clone https://www.github.com/molpopgen/fwdpp.git
-
-To obtain a specific release, go to this projects git [repository](https://www.github.com/molpopgen/fwdpp), click on [releases](https://github.com/molpopgen/fwdpp/releases), and then select the version that you wish to download.  _NOTE:_ this should result in a download called fwdpp-version.tar.gz, but some browsers will download it as version.tar.gz, omitting the project name.  The following instructions assume that the name was not omitted.  It if was, adjust accordingly.__
-
 ##The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
