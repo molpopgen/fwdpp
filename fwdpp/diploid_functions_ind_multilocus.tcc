@@ -36,7 +36,7 @@ sample_diploid(gsl_rng * r,
 	       const unsigned & N_next, 
 	       const double & mu,
 	       const mutation_model_container & mmodel,
-	       const recombination_policy_container & rec_pol,
+	       const recombination_policy_container & rec_policies,
 	       const double * r_between_loci,
 	       const mutation_insertion_policy & mpolicy,
 	       const gamete_insertion_policy & gpolicy_mut,
@@ -109,20 +109,73 @@ sample_diploid(gsl_rng * r,
  unsigned NREC=0;
  assert(diploids->size()==N_next);
  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
- for( unsigned i = 0 ; i < N_next ; ++i )
+ for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
    {
      assert(dptr==diploids->begin());
-     assert( (dptr+i) < diploids->end() );
+     assert( (dptr+curr_dip) < diploids->end() );
      size_t p1 = gsl_ran_discrete(r,lookup);
      size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
      assert(p1<parents.size());
      assert(p2<parents.size());
      
-     std::vector<unsigned> nrecs( gametes->size() , 0u ); //store the number of recs per locus
+     //std::vector<unsigned> nrecs_p1( gametes->size() , 0u ),nrecs_p2( gametes->size,0u ); //store the number of recs per locus
 
      //Need to store a vector of the equivalent of p1g1,p1g2 out to png1,png2
-     loci_ctr p1c( *(dptr+p1) ),
-       p2c( *(dptr+p2) );
+     loci_ctr p1c( *(pptr+p1) ),
+       p2c( *(pptr+p2) );
+
+     /*
+       Recombine -- updating via a bit field of 3 values.  
+       The fields are:
+       1.  Was last gamete g1 or g2?
+       2.  Was last # crossovers even or odd?
+       3.  Do we crossover b/w locus i and i-1?
+     */
+     int LW1=0,LW2=0;
+     unsigned NR1=0,NR2=0;
+     //Mendel:
+     bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
+       p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
+     for( unsigned i = 0 ; i < p1c.size() ; ++i )
+       {
+	 locus_itr ptr2cdip = (dptr+curr_dip)->begin();
+	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
+	 //HARD PART IS HERE
+	 if ( i > 1 )
+	   {
+	     int val = ( LW1 |= ( (NR1%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
+	     bool need_swap = (val != 2 && val != 4 && val != 7);
+	     if( need_swap )
+	       {
+		 std::swap( p1c[i].first,p1c[i].second );
+	       }
+	     LW1 = (!(val==2||val==4||val==6||val==7));
+	   }
+	 NR1 = temp;
+	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+
+	 temp= rec_policies[i]( p2c[i].first, p2c[i].second );
+	 //HARD PART IS HERE
+	 if ( i > 1 )
+	   {
+	     int val = ( LW2 |= ( (NR2%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
+	     bool need_swap = (val != 2 && val != 4 && val != 7);
+	     if( need_swap )
+	       {
+		 std::swap( p2c[i].first,p2c[i].second );
+	       }
+	     LW2 = (!(val==2||val==4||val==6||val==7));
+	   }
+	 NR2 = temp;
+	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
+	 
+	 (ptr2cdip+i)->first->n++;
+	 (ptr2cdip+i)->second->n++;
+	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
+	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+       }
 
      //single-locus version commented out beow  to use as reference
      // p1g1 = (pptr+p1)->first;
