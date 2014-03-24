@@ -149,7 +149,7 @@ sample_diploid(gsl_rng * r,
 	       {
 		 std::swap( p1c[i].first,p1c[i].second );
 	       }
-	     LW1 = (!(val==2||val==4||val==6||val==7));
+	     LW1 = (!(val==2||val==4||val==7));
 	   }
 	 NR1 = temp;
 	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
@@ -164,7 +164,7 @@ sample_diploid(gsl_rng * r,
 	       {
 		 std::swap( p2c[i].first,p2c[i].second );
 	       }
-	     LW2 = (!(val==2||val==4||val==6||val==7));
+	     LW2 = (!(val==2||val==4||val==7));
 	   }
 	 NR2 = temp;
 	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
