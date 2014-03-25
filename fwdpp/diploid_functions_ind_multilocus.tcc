@@ -57,7 +57,6 @@ sample_diploid(gsl_rng * r,
   typedef diploid_vector_type<loci_ctr,
 			      diploid_vector_type_allocator> dipctr;
  
-
   typedef typename loci_ctr::iterator locus_itr;
 
 #ifndef NDEBUG
@@ -94,19 +93,7 @@ sample_diploid(gsl_rng * r,
 	}
     }
 #endif
-  // for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
-  //   {
-  //     for( unsigned i = 0 ; i < N_curr ; ++i )
-  // 	{
-  // 	  for( locus_itr k = (*j)[i].begin() ; k != (*j)[i].end() ; ++k)
-  // 	    {
-  // 	      k->first->n = 0;
-  // 	      k->second->n = 0;
-  // 	    }
-  // 	  fitnesses[i] = ff( (*j)[i] );
-  // 	  wbar += fitnesses[i];
-  // 	}
-  //   }
+
   wbar /= double(diploids->size());
   dptr = diploids->begin();
  
@@ -121,7 +108,7 @@ sample_diploid(gsl_rng * r,
      diploids->resize(N_next);
      dptr = diploids->begin();
    }
- //unsigned NREC=0;
+
  assert(diploids->size()==N_next);
  //typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
  for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
@@ -130,17 +117,15 @@ sample_diploid(gsl_rng * r,
      assert( (dptr+curr_dip) < diploids->end() );
      size_t p1 = gsl_ran_discrete(r,lookup);
      size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
-     std::cout << "parents: " << p1 << ' ' << p2 << '\n';
      assert(p1<N_curr);
      assert(p2<N_curr);
      
-     //std::vector<unsigned> nrecs_p1( gametes->size() , 0u ),nrecs_p2( gametes->size,0u ); //store the number of recs per locus
-
      //Need to store a vector of the equivalent of p1g1,p1g2 out to p1gn,p2gn
      //This is a trivial copying of iterators, so not that expensive
      loci_ctr p1c( *(pptr+p1) ),
        p2c( *(pptr+p2) );
-
+     assert( p1c == *(pptr+p1) );
+     assert( p2c == *(pptr+p2) );
      /*
        Recombine -- updating via a bit field of 3 values.  
        The fields are:
@@ -155,9 +140,9 @@ sample_diploid(gsl_rng * r,
      //Mendel:
      bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
        p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
+     locus_itr ptr2cdip = (dptr+curr_dip)->begin();
      for( unsigned i = 0 ; i < p1c.size() ; ++i )
        {
-	 locus_itr ptr2cdip = (dptr+curr_dip)->begin();
 	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	 //HARD PART IS HERE
 	 if ( i > 1 )
