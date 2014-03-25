@@ -2,6 +2,8 @@
 #ifndef __DIPLOID_FUNCTIONS_IND_MULTILOC_TCC__
 #define __DIPLOID_FUNCTIONS_IND_MULTILOC_TCC__
 
+#include <fwdpp/mutation.hpp>
+
 namespace KTfwd
 {
 //single deme, N changing
@@ -51,11 +53,11 @@ sample_diploid(gsl_rng * r,
     {
       itr->n = 0;
     }
-  
-  typedef glist_vector_type< gamete_list_type<gamete_type,gamete_list_type_allocator >,
-			     glist_vector_type_allocator > multiloc_gcont;
 
   typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_cont;
+  
+  typedef glist_vector_type< gamete_cont, glist_vector_type_allocator > multiloc_gcont;
+
   
   typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
 							  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
@@ -79,7 +81,7 @@ sample_diploid(gsl_rng * r,
 	  j->first->n = 0;
 	  j->second->n = 0;
 	}
-      fitnesses[i] = ff( dptr );
+      fitnesses[i] = ff( *dptr );
       wbar += fitnesses[i];
     }
   wbar /= double(diploids->size());
@@ -190,8 +192,12 @@ sample_diploid(gsl_rng * r,
 	 (ptr2cdip+i)->second->n++;
 	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
 	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
-	 (ptr2cdip+i)->first = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->second = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+	 //typename gamete_cont * t = (gametes+i);
+	 //(ptr2cdip+i)->first = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+
+	 //The below is freaking ugly.
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu,&(*gametes)[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu,&(*gametes)[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
        }
 
      //single-locus version commented out beow  to use as reference
@@ -222,10 +228,16 @@ sample_diploid(gsl_rng * r,
 	// (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
 #ifndef NDEBUG
-    for( unsigned i = 0 ; i < diploids->size() ; ++i )
-      {
-	//check that gamete counts are all ok
-      }
+ for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
+   {
+     unsigned sum = 0;
+     for (typename gamete_cont::const_iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
+       {
+	 assert( sum && sum <= 2*N_next );
+	 sum += gptr->n;
+       }
+     assert(sum == 2*N_next);
+   }
 #endif
 
     for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
