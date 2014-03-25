@@ -128,9 +128,9 @@ sample_diploid(gsl_rng * r,
      /*
        Recombine -- updating via a bit field of 3 values.  
        The fields are:
-       1.  Was last gamete g1 or g2?
-       2.  Was last # crossovers even or odd?
-       3.  Do we crossover b/w locus i and i-1?
+       1.  Was last gamete g1 or g2?  This is LW1/2
+       2.  Was last # crossovers even or odd?  This is NR1/2
+       3.  Do we crossover b/w locus i and i-1?   This is determined by sampling from r_between_loci.
      */
      int LW1=0,LW2=0;
      unsigned NR1=0,NR2=0;
