@@ -144,30 +144,44 @@ sample_diploid(gsl_rng * r,
 	 if ( i > 1 )
 	   {
 	     int val = ( LW1 |= ( (NR1%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
-	     int need_swap = (val != 2 && val != 4 && val != 7);
-	     if( need_swap )
-	       {
-		 std::swap( p1c[i].first,p1c[i].second );
-	       }
-	     LW1 = need_swap;
+	     //int need_swap = (val != 2 && val != 4 && val != 7);
+	     LW1 = (val != 2 && val != 4 && val != 7);
+	     // if( LW1 )
+	     //   {
+	     // 	 //std::swap( p1c[i].first,p1c[i].second );
+	     // 	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].second : p1c[i].first;
+	     //   }
+	     // else
+	     //   {
+	     // 	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	     //   }
+	     
+	     (ptr2cdip+i)->first = (LW1) ? ( (p1g1) ? p1c[i].second : p1c[i].first ) : ((p1g1) ? p1c[i].first : p1c[i].second);
+	     //LW1 = need_swap;
 	   }
 	 NR1 = temp;
-	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	 //(ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
 
 	 temp= rec_policies[i]( p2c[i].first, p2c[i].second );
 	 //HARD PART IS HERE
 	 if ( i > 1 )
 	   {
 	     int val = ( LW2 |= ( (NR2%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
-	     bool need_swap = (val != 2 && val != 4 && val != 7);
-	     if( need_swap )
-	       {
-		 std::swap( p2c[i].first,p2c[i].second );
-	       }
-	     LW2 = need_swap;
+	     LW2 = (val != 2 && val != 4 && val != 7);
+	     // if( LW2 )
+	     //   {
+	     // 	 //std::swap( p2c[i].first,p2c[i].second );
+	     // 	 (ptr2cdip+i)->second = (p1g2) ? p2c[i].second : p2c[i].first;
+	     //   }
+	     // else
+	     //   {
+	     // 	 (ptr2cdip+i)->second = (p1g2) ? p2c[i].first : p2c[i].second;
+	     //   }
+	     (ptr2cdip+i)->second = (LW2) ? ((p1g2) ? p2c[i].second : p2c[i].first) : ((p1g2) ? p2c[i].first : p2c[i].second);
+	     //LW2 = need_swap;
 	   }
 	 NR2 = temp;
-	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
+	 //(ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
 	 
 	 (ptr2cdip+i)->first->n++;
 	 (ptr2cdip+i)->second->n++;
