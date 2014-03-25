@@ -188,7 +188,7 @@ sample_diploid(gsl_rng * r,
 		       << (ptr2cdip+i)->first->mutations[j]->n << ' '
 		       << (ptr2cdip+i)->first->mutations[j]->checked << " | ";
 	   }
-	     std::cerr << '\n';
+	 std::cerr << '\n';
 	 if(!(ptr2cdip+i)->first->mutations.empty())
 	   {
 	     std::cerr << '\n';
