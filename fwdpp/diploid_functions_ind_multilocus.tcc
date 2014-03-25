@@ -50,14 +50,13 @@ sample_diploid(gsl_rng * r,
   
   typedef glist_vector_type< gamete_cont, glist_vector_type_allocator > multiloc_gcont;
 
-  typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-							  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-						locus_vector_type_allocator>,
-			      diploid_vector_type_allocator> dipctr;
-  
   typedef locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
 				      typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
 			    locus_vector_type_allocator> loci_ctr;
+
+  typedef diploid_vector_type<loci_ctr,
+			      diploid_vector_type_allocator> dipctr;
+ 
 
   typedef typename loci_ctr::iterator locus_itr;
 
