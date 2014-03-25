@@ -110,6 +110,12 @@ sample_diploid(gsl_rng * r,
    }
 
  assert(diploids->size()==N_next);
+
+ std::vector< gamete_cont * > ptr_to_gametes;
+ for( typename multiloc_gcont::iterator itr = gametes->begin() ; itr != gametes->end() ; ++itr )
+   {
+     ptr_to_gametes.push_back( &*itr );
+   }
  //typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
  for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
    {
@@ -187,12 +193,11 @@ sample_diploid(gsl_rng * r,
 	   {
 	     std::cerr << '\n';
 	   }
-	 //typename gamete_cont * t = (gametes+i);
-	 //(ptr2cdip+i)->first = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 //gamete_cont * t = &(*(gametes->begin()+i));
 
 	 //The below is freaking ugly.
-	 (ptr2cdip+i)->first = mutate_gamete( r,mu,&(*gametes)[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->second = mutate_gamete( r,mu,&(*gametes)[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
        }
 
      //single-locus version commented out beow  to use as reference
