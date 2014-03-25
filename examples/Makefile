@@ -1,10 +1,10 @@
 CXX=c++
 DEBUG=-DNDEBUG
-DEBUG=-g
-#DEBUG=
+#DEBUG=-g
+DEBUG=
 OPT=-O2  -funroll-all-loops
 #OPT=-O2 -pg
-OPT=
+#OPT=
 CXXFLAGS=$(OPT) -Wall -W -I..  $(DEBUG)
 
 TARGETS=diploid diploid_ind diploid_fixed_sh diploid_twopop_mig diploid_binaryIO RHH bneck_selection migsel_ind diploid_binaryIO_ind diploid_fixed_sh_ind gsl_rng_test gsl_rng_test2 TFL2013
