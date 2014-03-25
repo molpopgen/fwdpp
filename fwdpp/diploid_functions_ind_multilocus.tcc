@@ -151,9 +151,10 @@ sample_diploid(gsl_rng * r,
        {
 	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	 //HARD PART IS HERE
-	 if ( i > 1 )
+	 if ( i > 0 )
 	   {
 	     int val = ( LW1 |= ( (NR1%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
+	     std::cout << "val: " << val << '\n';
 	     LW1 = (val != 2 && val != 4 && val != 7) ? 1 : 0;
 	     (ptr2cdip+i)->first = (LW1) ? ( (p1g1) ? p1c[i].second : p1c[i].first ) : ((p1g1) ? p1c[i].first : p1c[i].second);
 	   }
@@ -161,7 +162,7 @@ sample_diploid(gsl_rng * r,
 
 	 temp= rec_policies[i]( p2c[i].first, p2c[i].second );
 	 //HARD PART IS HERE
-	 if ( i > 1 )
+	 if ( i > 0 )
 	   {
 	     int val = ( LW2 |= ( (NR2%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
 	     LW2 = (val != 2 && val != 4 && val != 7) ? 1 : 0;
