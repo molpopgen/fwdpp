@@ -108,7 +108,7 @@ sample_diploid(gsl_rng * r,
    }
  unsigned NREC=0;
  assert(diploids->size()==N_next);
- typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
+ //typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
  for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
    {
      assert(dptr==diploids->begin());
@@ -177,7 +177,7 @@ sample_diploid(gsl_rng * r,
 	     //   {
 	     // 	 (ptr2cdip+i)->second = (p1g2) ? p2c[i].first : p2c[i].second;
 	     //   }
-	     (ptr2cdip+i)->second = (LW2) ? ((p1g2) ? p2c[i].second : p2c[i].first) : ((p1g2) ? p2c[i].first : p2c[i].second);
+	     (ptr2cdip+i)->second = (LW2) ? ((p2g1) ? p2c[i].second : p2c[i].first) : ((p2g1) ? p2c[i].first : p2c[i].second);
 	     //LW2 = need_swap;
 	   }
 	 NR2 = temp;
