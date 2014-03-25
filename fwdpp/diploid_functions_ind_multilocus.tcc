@@ -46,19 +46,10 @@ sample_diploid(gsl_rng * r,
 	       const mutation_removal_policy & mp,
 	       const double & f)
 {
-  assert(N_curr == diploids->size());
-  
-  for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator>::iterator itr = mutations->begin() ; 
-       itr != mutations->end() ; ++itr )
-    {
-      itr->n = 0;
-    }
-
   typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_cont;
   
   typedef glist_vector_type< gamete_cont, glist_vector_type_allocator > multiloc_gcont;
 
-  
   typedef diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
 							  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
 						locus_vector_type_allocator>,
@@ -69,33 +60,56 @@ sample_diploid(gsl_rng * r,
 			    locus_vector_type_allocator> loci_ctr;
 
   typedef typename loci_ctr::iterator locus_itr;
+
+#ifndef NDEBUG
+  assert(diploids->size()==N_curr);
+#endif
+
+  for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator>::iterator itr = mutations->begin() ; 
+       itr != mutations->end() ; ++itr )
+    {
+      itr->n = 0;
+    }
   
-  std::vector<double> fitnesses(diploids->size());
+  std::vector<double> fitnesses(N_curr);
   double wbar = 0.;
   
   typename dipctr::iterator dptr = diploids->begin();
   for( unsigned i = 0 ; i < N_curr ; ++i,++dptr )
-    {
-      for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
-	{
-	  j->first->n = 0;
-	  j->second->n = 0;
-	}
-      fitnesses[i] = ff( *dptr );
-      wbar += fitnesses[i];
-    }
-  wbar /= double(diploids->size());
-  dptr = diploids->begin();
-  
+  {
+    for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
+      {
+	j->first->n=0;
+	j->second->n=0;
+      }
+    fitnesses[i] += ff( *dptr );
+    wbar += fitnesses[i];
+  }
+
 #ifndef NDEBUG
-  for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
+  for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
     {
-      for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = i->begin() ; itr != i->end() ;++itr)
+      for (typename gamete_cont::const_iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
 	{
-	  assert(itr->n==0);
+	  assert( ! gptr->n );
 	}
     }
 #endif
+  // for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
+  //   {
+  //     for( unsigned i = 0 ; i < N_curr ; ++i )
+  // 	{
+  // 	  for( locus_itr k = (*j)[i].begin() ; k != (*j)[i].end() ; ++k)
+  // 	    {
+  // 	      k->first->n = 0;
+  // 	      k->second->n = 0;
+  // 	    }
+  // 	  fitnesses[i] = ff( (*j)[i] );
+  // 	  wbar += fitnesses[i];
+  // 	}
+  //   }
+  wbar /= double(diploids->size());
+  dptr = diploids->begin();
  
  gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
  
@@ -117,8 +131,9 @@ sample_diploid(gsl_rng * r,
      assert( (dptr+curr_dip) < diploids->end() );
      size_t p1 = gsl_ran_discrete(r,lookup);
      size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
-     assert(p1<parents.size());
-     assert(p2<parents.size());
+     std::cout << "parents: " << p1 << ' ' << p2 << '\n';
+     assert(p1<N_curr);
+     assert(p2<N_curr);
      
      //std::vector<unsigned> nrecs_p1( gametes->size() , 0u ),nrecs_p2( gametes->size,0u ); //store the number of recs per locus
 
@@ -190,8 +205,28 @@ sample_diploid(gsl_rng * r,
 	 
 	 (ptr2cdip+i)->first->n++;
 	 (ptr2cdip+i)->second->n++;
+	 std::cerr << "before:\n";
+	 for( unsigned j = 0 ; j < (ptr2cdip+i)->first->mutations.size() ; ++j )
+	   {
+	     std::cerr << i << ' '<< (ptr2cdip+i)->first->mutations[j]->pos << ' '
+		       << (ptr2cdip+i)->first->mutations[j]->n << ' '
+		       << (ptr2cdip+i)->first->mutations[j]->checked << " | ";
+	   }
+	 std::cerr << '\n'; 
 	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
 	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
+	 std::cerr << "after:\n";
+	 for( unsigned j = 0 ; j < (ptr2cdip+i)->first->mutations.size() ; ++j )
+	   {
+	     std::cerr << i << ' '<< (ptr2cdip+i)->first->mutations[j]->pos << ' '
+		       << (ptr2cdip+i)->first->mutations[j]->n << ' '
+		       << (ptr2cdip+i)->first->mutations[j]->checked << " | ";
+	   }
+	     std::cerr << '\n';
+	 if(!(ptr2cdip+i)->first->mutations.empty())
+	   {
+	     std::cerr << '\n';
+	   }
 	 //typename gamete_cont * t = (gametes+i);
 	 //(ptr2cdip+i)->first = mutate_gamete( r,mu,(gametes+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
 
@@ -227,19 +262,6 @@ sample_diploid(gsl_rng * r,
 	// (dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	// (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
-#ifndef NDEBUG
- for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
-   {
-     unsigned sum = 0;
-     for (typename gamete_cont::const_iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
-       {
-	 assert( sum && sum <= 2*N_next );
-	 sum += gptr->n;
-       }
-     assert(sum == 2*N_next);
-   }
-#endif
-
     for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
       {
        	i->remove_if(boost::bind(n_is_zero(),_1));
@@ -249,6 +271,33 @@ sample_diploid(gsl_rng * r,
 	    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
 	  }
       }
+#ifndef NDEBUG
+    for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
+      {
+	unsigned sum = 0;
+	for (typename gamete_cont::const_iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
+	  {
+	    //make sure that mutation frequencies are >= gamete frequencies
+	    for( unsigned j = 0 ; j < gptr->mutations.size() ; ++j )
+	      {
+		std::cout << gptr->n << ' ' <<  gptr->mutations[j]->n  << '\n';
+		assert( gptr->mutations[j]->n >= gptr->n );
+	      }
+	    for( unsigned j = 0 ; j < gptr->smutations.size() ; ++j )
+	      {
+		assert( gptr->smutations[j]->n >= gptr->n );
+	      }
+	    
+	    sum += gptr->n;
+	    if(!( sum && sum <= 2*N_next ))
+	      {
+		std::cerr << sum << ' ' << 2*N_next << '\n';
+	      }
+	    assert( sum && sum <= 2*N_next );
+	  }
+	assert(sum == 2*N_next);
+      }
+#endif
     gsl_ran_discrete_free(lookup);
     return wbar;
   }
