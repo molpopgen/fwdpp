@@ -106,7 +106,7 @@ sample_diploid(gsl_rng * r,
      diploids->resize(N_next);
      dptr = diploids->begin();
    }
- unsigned NREC=0;
+ //unsigned NREC=0;
  assert(diploids->size()==N_next);
  //typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
  for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
@@ -120,7 +120,8 @@ sample_diploid(gsl_rng * r,
      
      //std::vector<unsigned> nrecs_p1( gametes->size() , 0u ),nrecs_p2( gametes->size,0u ); //store the number of recs per locus
 
-     //Need to store a vector of the equivalent of p1g1,p1g2 out to png1,png2
+     //Need to store a vector of the equivalent of p1g1,p1g2 out to p1gn,p2gn
+     //This is a trivial copying of iterators, so not that expensive
      loci_ctr p1c( *(pptr+p1) ),
        p2c( *(pptr+p2) );
 
