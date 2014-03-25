@@ -144,12 +144,12 @@ sample_diploid(gsl_rng * r,
 	 if ( i > 1 )
 	   {
 	     int val = ( LW1 |= ( (NR1%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
-	     bool need_swap = (val != 2 && val != 4 && val != 7);
+	     int need_swap = (val != 2 && val != 4 && val != 7);
 	     if( need_swap )
 	       {
 		 std::swap( p1c[i].first,p1c[i].second );
 	       }
-	     LW1 = (!(val==2||val==4||val==7));
+	     LW1 = need_swap;
 	   }
 	 NR1 = temp;
 	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
@@ -164,7 +164,7 @@ sample_diploid(gsl_rng * r,
 	       {
 		 std::swap( p2c[i].first,p2c[i].second );
 	       }
-	     LW2 = (!(val==2||val==4||val==7));
+	     LW2 = need_swap;
 	   }
 	 NR2 = temp;
 	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
