@@ -193,9 +193,6 @@ sample_diploid(gsl_rng * r,
 	   {
 	     std::cerr << '\n';
 	   }
-	 //gamete_cont * t = &(*(gametes->begin()+i));
-
-	 //The below is freaking ugly.
 	 (ptr2cdip+i)->first = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
 	 (ptr2cdip+i)->second = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
        }
