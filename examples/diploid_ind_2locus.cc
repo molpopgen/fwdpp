@@ -187,16 +187,10 @@ int main(int argc, char ** argv)
   const double rbw = 0.1;
   while(nreps--)
     {
-      std::cout << nreps << '\n';
       //the population begins with 1 gamete with no mutations amd initial count 2N
       //glist gametes(1,gtype(twoN));
       std::vector< glist > gametes (2, glist(1,gtype(twoN) ));
       //Establish the list of diploids.  Here, there is only 1 gamete, so it is easy:
-      /*
-			     std::vector< std::pair< glist::iterator, glist::iterator> > diploids(N,
-			     std::make_pair(gametes.begin(),
-			     gametes.begin()));
-      */
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(2);
       idip[0] = std::make_pair( gametes[0].begin(),gametes[0].begin() );
       idip[1] = std::make_pair( gametes[1].begin(),gametes[1].begin() );
@@ -208,19 +202,13 @@ int main(int argc, char ** argv)
       unsigned generation=0;
       double wbar;
       lookup_table_type lookup;  //this is our lookup table for the mutation model
-
+      //rec policies
+      recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
+      recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
       for( generation = 0; generation < ngens; ++generation )
       	{
-	  std::cout << generation << ' ' << gametes[0].size() << ' ' << gametes[1].size() << ' ' << mutations.size() << ' ';
-	  /*
-	  boost::function<mtype(mlist *)> mpol1 = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,0.),
-	    mpol2 = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,1.);
-	  */
 	  mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,0.);
 	  mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,1.);
-	  //rec policies
-	  recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
-	  recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
       	  //Iterate the population through 1 generation
 	  KTfwd::sample_diploid( r,
 	  			 &gametes,
@@ -237,14 +225,8 @@ int main(int argc, char ** argv)
 	  			 boost::bind(no_selection_multi(),_1),
 	  			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N),
 	  			 0.);
-	  std::cout << mutations.size() << ' ';
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
-	  std::cout << mutations.size() << ' ' << fixations.size() << ' ' << lookup.size() << '\n';
-	  //assert(KTfwd::check_sum(gametes,twoN));
-	  for( mlist::iterator itr = mutations.begin() ; itr != mutations.end() ; ++itr )
-	    {
-	      //std::cerr << itr->pos << ' ' << itr->n << '\n';
-	    }
+	  std::cout << generation << ' ' << fixations.size() << '\n';
 	}
     }
   return 0;
