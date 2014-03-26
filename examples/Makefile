@@ -1,7 +1,7 @@
 CXX=c++
 DEBUG=-DNDEBUG
 #DEBUG=-g
-DEBUG=
+#DEBUG=
 OPT=-O2  -funroll-all-loops
 #OPT=-O2 -pg
 #OPT=
