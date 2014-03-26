@@ -226,7 +226,6 @@ int main(int argc, char ** argv)
 	  			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N),
 	  			 0.);
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
-	  std::cout << generation << ' ' << fixations.size() << '\n';
 	}
     }
   return 0;
