@@ -150,4 +150,23 @@ The above three variables define a bit set which can take on values 0 through 7.
   \end{tikzpicture} 
   \caption{\label{logic}The logic for updating}
 \end{figure}
+
+Using logic like Figure \ref{logic}, the full table of how to treat the bitset is given in Table \ref{bitset}.
+
+\begin{table}[!h]
+  \centering
+  \begin{tabular}{ccccc}
+    \texttt{LW} & \texttt{NR} & \texttt{XO} & value & \texttt{LW2} \\
+    \hline
+    0 & 0 & 0 & 0 & 1 \\ %000
+    1 & 0 & 0 & 1 & 1 \\ %100
+    0 & 2 & 0 & 2 & 0 \\ %010
+    1 & 2 & 0 & 3 & 1 \\ %110
+    0 & 0 & 4 & 4 & 0 \\ %001
+    1 & 0 & 4 & 5 & 1 \\ %101
+    0 & 2 & 4 & 6 & 1 \\ %011
+    1 & 2 & 4 & 7 & 0 \\ %111
+  \end{tabular}
+  \caption{\label{bitset}Bitset}
+\end{table}
 \end{document}
