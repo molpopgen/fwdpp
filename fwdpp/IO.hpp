@@ -41,6 +41,7 @@ namespace KTfwd
 
     \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
     in turn allowing file locking which speeds up performance on distributed file systems.
+    \example diploid_binaryIO.cc
    */
   template< typename gamete_type,
 	    typename vector_type_allocator,
@@ -170,6 +171,7 @@ namespace KTfwd
 
     \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
     in turn allowing file locking which speeds up performance on distributed file systems.
+    \example diploid_binaryIO_ind.cc
    */
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,

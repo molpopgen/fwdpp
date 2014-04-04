@@ -68,6 +68,7 @@ namespace KTfwd
   \param metapopsize Sum of values in [twoNs,twoNs+metapop->size())
   \param ffs A vector fitness functions taking two gamete_type as arguments.  Each deme can have a different fitness function
   \param mp A policy determining how mutations are removed from populatio after sampling.  See KTfwd::mutation_remover for example
+  \example diploid_twopop_mig.cc
 */
 template< typename gamete_type,
 	  typename vector_type_allocator1,
@@ -208,6 +209,7 @@ unsigned recombine(gsl_rng * r,
 
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
+     \example diploid_ind.cc
    */
 template< typename gamete_type,
 	  typename gamete_list_type_allocator,
@@ -257,6 +259,8 @@ template< typename gamete_type,
     
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
+     \example bneck_selection.cc 
+     \example TFL2013.cc
    */
 template< typename gamete_type,
 	  typename gamete_list_type_allocator,

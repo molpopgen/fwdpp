@@ -1,4 +1,4 @@
-/*  \include diploid.cc
+/*  \include TFL2013.cc
   Simulation from Thornton, Foran, and Long (2013) PLoS Genetics.
 
   Rewritten to use the fwdpp library v >= 0.2.0
