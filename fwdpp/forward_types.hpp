@@ -70,6 +70,7 @@ struct gamete_base
   typedef typename list_type::iterator mutation_list_type_iterator;
   typedef std::vector< mutation_list_type_iterator > mutation_container;
   typedef typename mutation_container::iterator mcont_iterator;
+  typedef typename mutation_container::const_iterator mcont_const_iterator;
   /// mutations is for neutral mutations, smutations for selected...
   mutation_container mutations,smutations;
   gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
