@@ -43,6 +43,7 @@ namespace KTfwd
     an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as boost::bind.  See KTfwd::multiplicative_fitness_updater_hom and KTfwd::multiplicative_fitness_updater_het for examples.  The iterators g1 and g2 must point to objects in the class hierarchy of KTfwd::gamete_base.
 
     \note This function is unwieldy to call directly.  It is best to define your two policies and write a wrapper function calling this function. See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.  
+    \example diploid_fixed_sh_ind.cc
    */
   struct site_dependent_fitness
   {
