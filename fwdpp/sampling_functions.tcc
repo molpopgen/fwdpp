@@ -488,6 +488,36 @@ ms_sample_separate( gsl_rng * r,
     }
   return rv;
 }
+
+//Individual-based sims, multilocus algorithm
+template<typename iterator_type,
+	 typename allocator,
+	 typename outer_allocator,
+	 template<typename,typename> class vector_type,
+	 template<typename,typename> class outer_vector_type>
+std::vector< std::vector< std::pair<double,std::string> > >
+ms_sample( gsl_rng * r,
+	   const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+	   const unsigned & n,
+	   const bool & remove_fixed)
+{
+  typedef std::vector< std::vector< std::pair<double,std::string> > > rvtype;
+  typedef rvtype::iterator rvtype_itr;
+  typedef rvtype::const_iterator rvtype_const_itr;
+  typedef outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > dip_ctr;
+  rvtype rv( diploids->size() );
+
+  std::vector< typename dip_ctr::size_type > individuals;
+  for( unsigned i = 0 ; i < n/2  ; ++i )
+    {
+      individuals.push_back( typename dip_ctr::size_type( gsl_ran_flat(r,0,diploids->size()) ) );
+    }
+
+  //Go over each indidivual's mutations and update the return value
+  for( unsigned ind = 0 ; ind < individuals.size() ; ++ind )
+    {
+    }
+}
 }
 
 #endif
