@@ -81,7 +81,7 @@ typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > looku
 /*
   This function generates neutral mutations under the infinitely-many sites assumption
 */
-mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
+mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * generation,mlist * mutations,
 					      lookup_table_type * lookup, const double & beg)
 {
   //Generate new mutation position on the interval [0,1)
@@ -132,7 +132,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
   assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
 
   //return constructor call to mutation type
-  return mutation_with_age(generation,pos,1,true);
+  return mutation_with_age(*generation,pos,1,true);
 }
  
 struct no_selection_multi
@@ -165,10 +165,6 @@ int main(int argc, char ** argv)
     r = rho/(4N)
   */
   const double littler = rho/double(4*N);
-  
-  //Write the command line to stderr
-  std::copy(argv,argv+argc,std::ostream_iterator<char*>(std::cerr," "));
-  std::cerr << '\n';
   
   //Initiate random number generation system
   gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
@@ -205,10 +201,10 @@ int main(int argc, char ** argv)
       //rec policies
       recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
       recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
+      mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,0.);
+      mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,1.);
       for( generation = 0; generation < ngens; ++generation )
       	{
-	  mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,0.);
-	  mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup,1.);
       	  //Iterate the population through 1 generation
 	  KTfwd::sample_diploid( r,
 	  			 &gametes,
