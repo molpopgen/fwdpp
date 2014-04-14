@@ -95,6 +95,7 @@ int main(int argc, char ** argv)
   const double rbw[2] = {0.001,0.0001};
   while(nreps--)
     {
+      cout << nreps << '\n';
       std::vector< glist > gametes (3, glist(1,gtype(twoN) ));
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(3);
       idip[0] = std::make_pair( gametes[0].begin(),gametes[0].begin() );
@@ -136,7 +137,13 @@ int main(int argc, char ** argv)
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
       vector< vector< std::pair<double,string> > > gam_sample = ms_sample(r,&diploids,samplesize,true);
-									  
+      SimData l0,l1,l2;
+      l0.assign( gam_sample[0].begin(), gam_sample[0].end() );
+      l1.assign( gam_sample[1].begin(), gam_sample[1].end() );
+      l2.assign( gam_sample[2].begin(), gam_sample[2].end() );
+      cout << l0 << '\n'
+	   << l1 << '\n'
+	   << l2 << '\n';
     }
   return 0;
 }
