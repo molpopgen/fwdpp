@@ -540,7 +540,6 @@ ms_sample( gsl_rng * r,
 		{
 		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
 		  rv[rv_count][rv[rv_count].size()-1].second[ 2*ind ] = '1';
-		  //.push_back( std::make_pair(mutpos,std::string(n,'0')) );
 		}
 	      else
 		{
@@ -550,6 +549,44 @@ ms_sample( gsl_rng * r,
 	  //Gamete 2, neutral muts
 	  for( mut_itr mut = locus->second->mutations.begin() ; 
 	       mut < locus->second->mutations.end() ; ++mut )
+	    {
+	      double mutpos = (*mut)->pos;
+	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
+						rv[rv_count].end(),
+						std::bind2nd(find_mut_pos(),mutpos));
+
+	      if ( mitr == rv[rv_count].end() )
+		{
+		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
+		  rv[rv_count][rv[rv_count].size()-1].second[ 2*ind + 1] = '1';
+		}
+	      else
+		{
+		  mitr->second[2*ind + 1] = '1';
+		}
+	    }
+	  //Gamete 1, selected muts
+	  for( mut_itr mut = locus->first->smutations.begin() ; 
+	       mut < locus->first->smutations.end() ; ++mut )
+	    {
+	      double mutpos = (*mut)->pos;
+	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
+						rv[rv_count].end(),
+						std::bind2nd(find_mut_pos(),mutpos));
+
+	      if ( mitr == rv[rv_count].end() )
+		{
+		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
+		  rv[rv_count][rv[rv_count].size()-1].second[ 2*ind ] = '1';
+		}
+	      else
+		{
+		  mitr->second[2*ind] = '1';
+		}
+	    }
+	  //Gamete 2, selected muts
+	  for( mut_itr mut = locus->second->smutations.begin() ; 
+	       mut < locus->second->smutations.end() ; ++mut )
 	    {
 	      double mutpos = (*mut)->pos;
 	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
