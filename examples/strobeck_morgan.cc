@@ -68,7 +68,7 @@ int main(int argc, char ** argv)
   const unsigned seed = (argc==1) ? 0 : atoi(argv[argument++]);        //Random number seed
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
-  const double theta = 1;
+  const double theta = 10.;
   const double rho = 1;
   const unsigned ngens = 10*N;
   const unsigned samplesize = 2;
