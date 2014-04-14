@@ -605,6 +605,28 @@ ms_sample( gsl_rng * r,
 	    }
 	}
     }
+  
+  if( remove_fixed )
+    {
+      for( unsigned i = 0 ; i < rv.size() ; ++i )
+	{
+	  if( ! rv[i].empty() )
+	    {
+	      rv_inner_itr mitr = rv[i].end() - 1;
+	      while ( mitr >= rv[i].begin() )
+		{
+		  unsigned c = std::count(mitr->second.begin(),
+					  mitr->second.end(), '1');
+		  if(c==n)
+		    {
+		      rv[i].erase(mitr);
+		      mitr = rv[i].end();
+		    }
+		  mitr--;
+		}
+	    }
+	}
+    }
   //sort on position
   for( unsigned i = 0 ; i < rv.size() ; ++i )
     {
