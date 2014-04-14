@@ -504,7 +504,11 @@ ms_sample( gsl_rng * r,
   typedef std::vector< std::vector< std::pair<double,std::string> > > rvtype;
   typedef rvtype::iterator rvtype_itr;
   typedef rvtype::const_iterator rvtype_const_itr;
-  typedef outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > dip_ctr;
+  typedef std::vector< std::pair<double,std::string> >::iterator rv_inner_itr;
+  typedef vector_type< std::pair<iterator_type,iterator_type>, allocator > genotype;
+  typedef outer_vector_type< genotype, outer_allocator > dip_ctr;
+  typedef typename iterator_type::value_type::mcont_iterator mut_itr;
+
   rvtype rv( diploids->size() );
 
   std::vector< typename dip_ctr::size_type > individuals;
@@ -514,9 +518,62 @@ ms_sample( gsl_rng * r,
     }
 
   //Go over each indidivual's mutations and update the return value
+  typename dip_ctr::const_iterator dbegin = diploids->begin();
   for( unsigned ind = 0 ; ind < individuals.size() ; ++ind )
     {
+      unsigned rv_count=0;
+      for( typename genotype::const_iterator locus = (diploids->begin()+ind)->begin() ; 
+	   locus < (diploids->begin()+ind)->end() ; ++locus, ++rv_count )
+	{
+	  //finally, we can go over mutations
+
+	  //Gamete 1, neutral muts
+	  for( mut_itr mut = locus->first->mutations.begin() ; 
+	       mut < locus->first->mutations.end() ; ++mut )
+	    {
+	      double mutpos = (*mut)->pos;
+	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
+						rv[rv_count].end(),
+						std::bind2nd(find_mut_pos(),mutpos));
+
+	      if ( mitr == rv[rv_count].end() )
+		{
+		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
+		  rv[rv_count][rv[rv_count].size()-1].second[ 2*ind ] = '1';
+		  //.push_back( std::make_pair(mutpos,std::string(n,'0')) );
+		}
+	      else
+		{
+		  mitr->second[2*ind] = '1';
+		}
+	    }
+	  //Gamete 2, neutral muts
+	  for( mut_itr mut = locus->second->mutations.begin() ; 
+	       mut < locus->second->mutations.end() ; ++mut )
+	    {
+	      double mutpos = (*mut)->pos;
+	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
+						rv[rv_count].end(),
+						std::bind2nd(find_mut_pos(),mutpos));
+
+	      if ( mitr == rv[rv_count].end() )
+		{
+		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
+		  rv[rv_count][rv[rv_count].size()-1].second[ 2*ind + 1] = '1';
+		}
+	      else
+		{
+		  mitr->second[2*ind + 1] = '1';
+		}
+	    }
+	}
     }
+  //sort on position
+  for( unsigned i = 0 ; i < rv.size() ; ++i )
+    {
+      std::sort(rv[i].begin(),rv[i].end(),sortpos());
+    }
+  return rv;
 }
 }
 
