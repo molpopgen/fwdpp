@@ -65,14 +65,14 @@ struct no_selection_multi
 int main(int argc, char ** argv)
 {
   int argument=1;
+  const unsigned seed = (argc==1) ? 0 : atoi(argv[argument++]);        //Random number seed
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 1;
   const double rho = 1;
   const unsigned ngens = 10*N;
-  const unsigned samplesize1 = 2;
+  const unsigned samplesize = 2;
   int nreps = 1000;
-  const unsigned seed = atoi(argv[argument++]);        //Random number seed
 
   const double mu = theta/double(4*N);                 //per-gamete mutation rate
   const double littler = rho/double(4*N);
@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
 
       recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
       recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
-      recpols[2] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[2],littler,r,recmap2);
+      recpols[2] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[2],littler,r,recmap3);
       mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,0.);
       mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,1.);
       mmodels[2] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,2.);
@@ -135,6 +135,8 @@ int main(int argc, char ** argv)
 	  			 0.);
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
+      vector< vector< std::pair<double,string> > > gam_sample = ms_sample(r,&diploids,samplesize,true);
+									  
     }
   return 0;
 }
