@@ -14,8 +14,8 @@ all: gsl_rng_test.o gsl_rng_test2.o gsl_rng_test_std.o gsl_rng_test2_std.o phiab
 	$(CXX) $(CXXFLAGS) -o gsl_rng_test_std gsl_rng_test_std.o -lgsl -lgslcblas $(LDFLAGS)
 	$(CXX) $(CXXFLAGS) -o gsl_rng_test2_std gsl_rng_test2_std.o -lgsl -lgslcblas $(LDFLAGS)
 	$(CXX) $(CXXFLAGS) -o strobeck_morgan strobeck_morgan.o -lsequence -lz -lgsl -lgslcblas -lboost_system $(LDFLAGS)
-	$(CC) $(CCFLAGS) -o phiab phiab.o -lm
-	$(CXX) $(CXXFLAGS) -o pmono pmono.o -lsequence
+	$(CC) $(CCFLAGS) -o phiab phiab.o -lm $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o pmono pmono.o -lsequence -lz $(LDFLAGS)
 
 clean:
 	rm -f *.o $(TARGETS)
