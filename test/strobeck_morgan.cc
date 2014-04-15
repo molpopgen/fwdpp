@@ -70,14 +70,25 @@ double mslike_map( gsl_rng * r, const double & beg, const double & L )
 int main(int argc, char ** argv)
 {
   int argument=1;
-  const unsigned seed = (argc==1) ? 0 : atoi(argv[argument++]);        //Random number seed
+  if ( argc != 3 )
+    {
+      cerr << "usage: strobeck_morgan nreps seed\n";
+      exit(10);
+    }
+  unsigned nreps = atoi(argv[argument++]);
+  const unsigned seed = atoi(argv[argument++]);        //Random number seed
+
+  if (!nreps)
+    {
+      cerr << "Error: nreps = " << nreps << '\n';
+      exit(10);
+    }
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 20.;
   const double rho = 0.02;
   const unsigned ngens = 10*N;
   const unsigned samplesize = 2;
-  int nreps = 1000;
 
   const double mu = theta/double(4*N);                 //per-gamete mutation rate
   const double littler = rho/double(4*N);
