@@ -62,14 +62,19 @@ struct no_selection_multi
   }
 };
 
+double mslike_map( gsl_rng * r, const double & beg, const double & L )
+{
+  return beg + double(unsigned(L*gsl_rng_uniform(r)))/L;
+}
+		   
 int main(int argc, char ** argv)
 {
   int argument=1;
   const unsigned seed = (argc==1) ? 0 : atoi(argv[argument++]);        //Random number seed
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
-  const double theta = 10.;
-  const double rho = 1;
+  const double theta = 20.;
+  const double rho = 0.02;
   const unsigned ngens = 10*N;
   const unsigned samplesize = 2;
   int nreps = 1000;
@@ -83,10 +88,16 @@ int main(int argc, char ** argv)
 
   unsigned twoN = 2*N;
 
-  //recombination map is uniform[0,1) for all three loci
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r),
-    recmap2 = boost::bind(gsl_ran_flat,r,1.,2.),
-    recmap3 = boost::bind(gsl_ran_flat,r,2.,3.);
+  /*
+    The crossover maps are "mslike", in the sense that gene is now 
+    modeled as a string of partially-linked infinitely-many alleles loci
+    (sensu Hudson 1983).  This means that intervals of size 1/L are non-recombining
+    yet mutations will fall within them, satisfying the assumptions of Strobeck 
+    and Morgan.
+   */
+  boost::function<double(void)> recmap = boost::bind(mslike_map,r,0.,L),
+    recmap2 = boost::bind(mslike_map,r,1.,L),
+    recmap3 = boost::bind(mslike_map,r,2.,L);
 
   //need vectors of recombination maps, mutation policies, and fitness models
   std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(3);
@@ -95,7 +106,6 @@ int main(int argc, char ** argv)
   const double rbw[2] = {0.001,0.0001};
   while(nreps--)
     {
-      cout << nreps << '\n';
       std::vector< glist > gametes (3, glist(1,gtype(twoN) ));
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(3);
       idip[0] = std::make_pair( gametes[0].begin(),gametes[0].begin() );
@@ -141,9 +151,29 @@ int main(int argc, char ** argv)
       l0.assign( gam_sample[0].begin(), gam_sample[0].end() );
       l1.assign( gam_sample[1].begin(), gam_sample[1].end() );
       l2.assign( gam_sample[2].begin(), gam_sample[2].end() );
-      cout << l0 << '\n'
-	   << l1 << '\n'
-	   << l2 << '\n';
+      unsigned mcount = 0;
+      unsigned mono1=0,mono2=0,mono3=0;
+      for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
+	{
+	  if( *i < 1./L ) ++mcount;
+	}
+      if(!mcount) ++mono1;
+
+      mcount = 0;
+      for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() && *i < 1. + 1./L ; ++i )
+	{
+	  if( *i < 1. + 1./L ) ++mcount;
+	}
+      if(!mcount) ++mono2;
+
+      mcount = 0;
+      for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() && *i < 2. + 1./L ; ++i )
+	{
+	  if( *i < 2. + 1./L ) ++mcount;
+	}
+      if(!mcount) ++mono3;
+
+      cout << (mono1 && mono2) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
     }
   return 0;
 }
