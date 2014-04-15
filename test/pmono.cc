@@ -45,5 +45,5 @@ int main(int argc, char **argv)
             ++nmono;
         }
     }
-  cerr << nmono << ' ' << nruns << ' ' << low << ' ' << ttl << '\n';
+  cout << nmono << ' ' << nruns << ' ' << low << ' ' << ttl << '\n';
 }
