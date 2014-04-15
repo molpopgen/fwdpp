@@ -522,8 +522,8 @@ ms_sample( gsl_rng * r,
   for( unsigned ind = 0 ; ind < individuals.size() ; ++ind )
     {
       unsigned rv_count=0;
-      for( typename genotype::const_iterator locus = (diploids->begin()+ind)->begin() ; 
-	   locus < (diploids->begin()+ind)->end() ; ++locus, ++rv_count )
+      for( typename genotype::const_iterator locus = (dbegin+ind)->begin() ; 
+	   locus < (dbegin+ind)->end() ; ++locus, ++rv_count )
 	{
 	  //finally, we can go over mutations
 
