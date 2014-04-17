@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 20.;
-  const double rho = 1;
+  const double rho = 20;
   const unsigned ngens = 10*N;
   const unsigned samplesize = 2;
 
@@ -178,6 +178,24 @@ int main(int argc, char ** argv)
       //There is a bug in the distribution of S...
       cout << l0.numsites() << ' ' << l1.numsites() << ' ' << l2.numsites() << ' '
 	   << nm1 << ' ' << nm2 << ' ' << nm3 << '\n';
+      cerr << "0: ";
+      for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() ; ++i )
+       	{
+	  cerr << *i << ' ';
+       	}
+      cerr << '\n';
+      cerr << "1: ";
+      for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() ; ++i )
+       	{
+	  cerr << *i << ' ';
+       	}
+      cerr << '\n';
+      cerr << "2: ";
+      for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() ; ++i )
+       	{
+	  cerr << *i << ' ';
+       	}
+      cerr << '\n';
       // unsigned mcount = 0,mcount1=0;
       // unsigned mono1=0,mono2=0,mono3=0;
       // for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
