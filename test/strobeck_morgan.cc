@@ -64,7 +64,8 @@ struct no_selection_multi
 
 double mslike_map( gsl_rng * r, const double & beg, const double & L )
 {
-  return beg + double(unsigned(L*gsl_rng_uniform(r)))/L;
+  //return beg + double(unsigned(L*gsl_rng_uniform(r)))/L;
+  return beg + double(unsigned(gsl_ran_flat(r,1.,L-1.)))/L;
 }
 		   
 int main(int argc, char ** argv)
@@ -86,13 +87,14 @@ int main(int argc, char ** argv)
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 20.;
-  const double rho = 0.02;
+  const double rho = 1;
   const unsigned ngens = 10*N;
   const unsigned samplesize = 2;
 
   const double mu = theta/double(4*N);                 //per-gamete mutation rate
   const double littler = rho/double(4*N);
   
+  const std::vector<double> mus(3,mu);
   //Initiate random number generation system
   gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
   gsl_rng_set(r,seed);
@@ -146,7 +148,7 @@ int main(int argc, char ** argv)
 	  			 &mutations,
 	  			 N,
 	  			 N,
-	  			 mu,
+				 &mus[0],
 	  			 mmodels,
 	  			 recpols,
 	  			 rbw,
@@ -158,33 +160,48 @@ int main(int argc, char ** argv)
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
       vector< vector< std::pair<double,string> > > gam_sample = ms_sample(r,&diploids,samplesize,true);
+      unsigned nm1=0,nm2=0,nm3=0;
+      for( mlist::const_iterator i = mutations.begin() ; i != mutations.end() ; ++i )
+	{
+	  double pos = i->pos;
+	  unsigned n = i->n;
+	  assert(n);
+	  if( pos < 1. ) ++nm1;
+	  else if ( pos < 2.) ++nm2;
+	  else ++nm3;
+	}
       SimData l0,l1,l2;
       l0.assign( gam_sample[0].begin(), gam_sample[0].end() );
       l1.assign( gam_sample[1].begin(), gam_sample[1].end() );
       l2.assign( gam_sample[2].begin(), gam_sample[2].end() );
-      unsigned mcount = 0;
-      unsigned mono1=0,mono2=0,mono3=0;
-      for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
-	{
-	  if( *i < 1./L ) ++mcount;
-	}
-      if(!mcount) ++mono1;
 
-      mcount = 0;
-      for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() && *i < 1. + 1./L ; ++i )
-	{
-	  if( *i < 1. + 1./L ) ++mcount;
-	}
-      if(!mcount) ++mono2;
+      //There is a bug in the distribution of S...
+      cout << l0.numsites() << ' ' << l1.numsites() << ' ' << l2.numsites() << ' '
+	   << nm1 << ' ' << nm2 << ' ' << nm3 << '\n';
+      // unsigned mcount = 0,mcount1=0;
+      // unsigned mono1=0,mono2=0,mono3=0;
+      // for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
+      // 	{
+      // 	  if( *i < 1./L ) ++mcount;
+      // 	  else if ( *i >= 1.-1./L ) ++mcount1;
+      // 	}
+      // if(!mcount) ++mono1;
 
-      mcount = 0;
-      for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() && *i < 2. + 1./L ; ++i )
-	{
-	  if( *i < 2. + 1./L ) ++mcount;
-	}
-      if(!mcount) ++mono3;
+      // mcount = 0;
+      // for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() && *i < 1. + 1./L ; ++i )
+      // 	{
+      // 	  if( *i < 1. + 1./L ) ++mcount;
+      // 	}
+      // if(!mcount) ++mono2;
 
-      cout << (mono1 && mono2) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
+      // mcount = 0;
+      // for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() && *i < 2. + 1./L ; ++i )
+      // 	{
+      // 	  if( *i < 2. + 1./L ) ++mcount;
+      // 	}
+      // if(!mcount) ++mono3;
+
+      // cout << (mono1 && mono2) << ' ' << (mono1 && !mcount1) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
     }
   return 0;
 }
