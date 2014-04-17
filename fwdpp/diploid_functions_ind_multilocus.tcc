@@ -64,28 +64,40 @@ sample_diploid(gsl_rng * r,
   assert(diploids->size()==N_curr);
 #endif
 
+  //Adjust all mutation frequencies down to 0
   for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator>::iterator itr = mutations->begin() ; 
        itr != mutations->end() ; ++itr )
     {
       itr->n = 0;
     }
   
+  //Vector of parental fitnesses
   std::vector<double> fitnesses(N_curr);
   double wbar = 0.;
   
+  //Go over parents
   typename dipctr::iterator dptr = diploids->begin();
   for( unsigned i = 0 ; i < N_curr ; ++i,++dptr )
   {
+    //set parental gamete counts to 0 for each locus
     for( locus_itr j = dptr->begin() ; j != dptr->end() ; ++j )
       {
 	j->first->n=0;
 	j->second->n=0;
       }
+    //Calculate the fitness of this parent
     fitnesses[i] += ff( *dptr );
+    //increment pop. mean fitness
     wbar += fitnesses[i];
   }
 
 #ifndef NDEBUG
+  /*
+    If we are debugging, let's make sure that every gamete has been set to n = 0.
+    Rationale for check:  if we are failing to update data types properly, then
+    it is possible that the "gamete pool" contains items not carried by any diploids.
+    If so, this assertion will fail.
+  */
   for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
     {
       for (typename gamete_cont::const_iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
@@ -96,28 +108,30 @@ sample_diploid(gsl_rng * r,
 #endif
 
   wbar /= double(diploids->size());
-  dptr = diploids->begin();
+  dptr = diploids->begin();  //reset to beginning of diploids
+  
+  gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
  
- gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
+  dipctr parents(*diploids); //Copy the parents.  Exact copy of diploids--same fitnesses, etc.
+  const typename dipctr::iterator pptr = parents.begin(); //the first parent
  
- dipctr parents(*diploids); //copy the parents
- const typename dipctr::iterator pptr = parents.begin();
+  //Change the population size and reset dptr to avoid iterator invalidation
+  if( diploids->size() != N_next)
+    {
+      diploids->resize(N_next);
+      dptr = diploids->begin();
+    }
+  
+  assert(diploids->size()==N_next);
  
- //Change the population size
- if( diploids->size() != N_next)
-   {
-     diploids->resize(N_next);
-     dptr = diploids->begin();
+  //WTF is this for?
+  /*
+  std::vector< gamete_cont * > ptr_to_gametes;
+  for( typename multiloc_gcont::iterator itr = gametes->begin() ; itr != gametes->end() ; ++itr )
+    {
+      ptr_to_gametes.push_back( &*itr );
    }
-
- assert(diploids->size()==N_next);
-
- std::vector< gamete_cont * > ptr_to_gametes;
- for( typename multiloc_gcont::iterator itr = gametes->begin() ; itr != gametes->end() ; ++itr )
-   {
-     ptr_to_gametes.push_back( &*itr );
-   }
-
+  */
  for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
    {
      assert(dptr==diploids->begin());
@@ -133,6 +147,29 @@ sample_diploid(gsl_rng * r,
        p2c( *(pptr+p2) );
      assert( p1c == *(pptr+p1) );
      assert( p2c == *(pptr+p2) );
+
+     //Temporary debug mode: drift and mutation only!!!!  OK--this seems good based on some limited testing
+     //recombination, too! OK--this seems good based on some limited testing.
+     //All testing so far based on n=2 using strobeck_morgan.cc
+     bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
+       p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
+     locus_itr ptr2cdip = (dptr+curr_dip)->begin();
+     for ( unsigned i = 0 ; i < p1c.size() ; ++i )
+       {
+	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
+	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
+	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
+
+	 (ptr2cdip+i)->first->n++;
+	 (ptr2cdip+i)->second->n++;
+
+	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
+	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
+
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
+       }
      /*
        Recombine -- updating via a bit field of 3 values.  
        The fields are:
@@ -142,6 +179,7 @@ sample_diploid(gsl_rng * r,
 
        The above establises a bitset that may take on values 0 thru 7.
      */
+     /*
      int LW1=0,LW2=0;
      unsigned NR1=0,NR2=0;
      //Mendel:
@@ -184,10 +222,13 @@ sample_diploid(gsl_rng * r,
 	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
 	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
 
-	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+	 //(ptr2cdip+i)->first = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 //(ptr2cdip+i)->second = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
        }
-      }
+     */
+   }
     for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
       {
        	i->remove_if(boost::bind(n_is_zero(),_1));
