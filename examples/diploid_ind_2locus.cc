@@ -156,7 +156,8 @@ int main(int argc, char ** argv)
   int nreps = atoi(argv[argument++]);                  //Number of replicates to simulate
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
 
-  const double mu = theta/double(4*N);                 //per-gamete mutation rate
+  //const double mu = theta/double(4*N);                 //per-gamete mutation rate
+  const std::vector<double> mu(2,theta/double(4*N));
   
   /*
     littler r is the recombination rate per region per generation.
@@ -180,7 +181,7 @@ int main(int argc, char ** argv)
   std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(2);
   std::vector< boost::function<mtype(mlist *)> > mmodels(2);
 
-  const double rbw = 0.1;
+  const double rbw = 0.;//0.1;
   while(nreps--)
     {
       //the population begins with 1 gamete with no mutations amd initial count 2N
@@ -212,7 +213,8 @@ int main(int argc, char ** argv)
 	  			 &mutations,
 	  			 N,
 	  			 N,
-	  			 mu,
+				 &mu[0],
+	  			 //mu,
 	  			 mmodels,
 	  			 recpols,
 	  			 &rbw,
@@ -221,8 +223,17 @@ int main(int argc, char ** argv)
 	  			 boost::bind(no_selection_multi(),_1),
 	  			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N),
 	  			 0.);
+	  assert( check_sum(gametes[0],twoN) );
+	  assert( check_sum(gametes[1],twoN) );
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
+      unsigned nm1=0,nm2=0;
+      for(mlist::const_iterator i = mutations.begin() ; i != mutations.end() ; ++i )
+	{
+	  if ( i->pos < 1.)++nm1;
+	  else ++nm2;
+	}
+      std::cout << nm1 << '\t' << nm2 << '\n';
     }
   return 0;
 }
