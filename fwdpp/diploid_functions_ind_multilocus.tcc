@@ -36,7 +36,7 @@ sample_diploid(gsl_rng * r,
 	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 	       const unsigned & N_curr, 
 	       const unsigned & N_next, 
-	       const double & mu,
+	       const double * mu,
 	       const mutation_model_container & mmodel,
 	       const recombination_policy_container & rec_policies,
 	       const double * r_between_loci,
@@ -164,7 +164,7 @@ sample_diploid(gsl_rng * r,
 	   }
 	 NR1 = temp;
 
-	 temp= rec_policies[i]( p2c[i].first, p2c[i].second );
+	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
 	 if ( i > 0 )
 	   {
 	     int val = ( LW2 |= ( (NR2%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
@@ -184,8 +184,8 @@ sample_diploid(gsl_rng * r,
 	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
 	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
 
-	 (ptr2cdip+i)->first = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->second = mutate_gamete( r,mu,ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
        }
       }
     for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
