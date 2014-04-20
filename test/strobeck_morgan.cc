@@ -8,6 +8,7 @@
 #include <boost/function.hpp>
 #include <vector>
 #include <list>
+#include <sstream>
 
 using namespace std;
 using namespace Sequence;
@@ -87,9 +88,9 @@ int main(int argc, char ** argv)
   const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 20.;
-  const double rho = 20;
+  const double rho = 1;
   const unsigned ngens = 10*N;
-  const unsigned samplesize = 2;
+  const unsigned samplesize = 20;
 
   const double mu = theta/double(4*N);                 //per-gamete mutation rate
   const double littler = rho/double(4*N);
@@ -116,7 +117,8 @@ int main(int argc, char ** argv)
   std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(3);
   std::vector< boost::function<mtype(mlist *)> > mmodels(3);
 
-  const double rbw[2] = {0.001,0.0001};
+  const double rbw[2] = {1./4e3,1./4e3}; //rho b/w each locus pair = 1
+  ostringstream buffer;
   while(nreps--)
     {
       std::vector< glist > gametes (3, glist(1,gtype(twoN) ));
@@ -175,9 +177,15 @@ int main(int argc, char ** argv)
       l1.assign( gam_sample[1].begin(), gam_sample[1].end() );
       l2.assign( gam_sample[2].begin(), gam_sample[2].end() );
 
-      //There is a bug in the distribution of S...
+      buffer << l0 << '\n' << l1 << '\n' << l2 << '\n';
+      //There is a bug in the distribution of S, which is due to the multilocus updater
+      //cout << l0 << '\n';exit(10);
+
+      /*
       cout << l0.numsites() << ' ' << l1.numsites() << ' ' << l2.numsites() << ' '
 	   << nm1 << ' ' << nm2 << ' ' << nm3 << '\n';
+      */
+      /*
       cerr << "0: ";
       for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() ; ++i )
        	{
@@ -196,6 +204,7 @@ int main(int argc, char ** argv)
 	  cerr << *i << ' ';
        	}
       cerr << '\n';
+      */
       // unsigned mcount = 0,mcount1=0;
       // unsigned mono1=0,mono2=0,mono3=0;
       // for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
@@ -221,5 +230,6 @@ int main(int argc, char ** argv)
 
       // cout << (mono1 && mono2) << ' ' << (mono1 && !mcount1) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
     }
+  cout << buffer.str() << '\n';
   return 0;
 }
