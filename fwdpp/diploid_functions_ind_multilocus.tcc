@@ -148,17 +148,51 @@ sample_diploid(gsl_rng * r,
      assert( p1c == *(pptr+p1) );
      assert( p2c == *(pptr+p2) );
 
+     //Using just the routines below give correct E[S] for n = 20.  It must be the bitset nonsense that is incorrect.
      //Temporary debug mode: drift and mutation only!!!!  OK--this seems good based on some limited testing
      //recombination, too! OK--this seems good based on some limited testing.
      //All testing so far based on n=2 using strobeck_morgan.cc
+
+     //For 3 locus (test/strobeck_morgan.cc), the dist. of 
+     //summary stats looks great vis-a-vis ms for N=20,theta=20,rho=1, N=1e3,10N gens
      bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
        p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
      locus_itr ptr2cdip = (dptr+curr_dip)->begin();
+     bool LO1 = true, LO2 = true;
      for ( unsigned i = 0 ; i < p1c.size() ; ++i )
        {
 	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
+	 if ( i > 0 )
+	   {
+	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
+	     bool obw = (nrbw%2!=0) ? true : false;
+	     //bool dummy = p1g1;
+	     p1g1 = (LO1) ? !p1g1 : p1g1;
+	     p1g1 = (obw) ? !p1g1 : p1g1;
+	     /*
+	     if ( nrbw )
+	       {
+		 std::cerr << nrbw << ' ' << obw << ' ' << dummy << ' ' << p1g1 << '\n';
+	       }
+	     */
+	   }
+	     /*(ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	   }
+	 else
+	   {
+	     (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	     }*/
 	 (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	 LO1 = (temp % 2 != 0.) ? true : false;
+
 	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
+	 if ( i > 0 )
+	   {
+	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
+	     bool obw = (nrbw%2!=0) ? true : false;
+	     p1g1 = (LO1) ? !p2g1 : p2g1;
+	     p1g1 = (obw) ? !p2g1 : p2g1;
+	   }
 	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
 
 	 (ptr2cdip+i)->first->n++;
