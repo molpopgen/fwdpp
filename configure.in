@@ -19,6 +19,9 @@ AC_PROG_INSTALL
 AC_PROG_CC
 AC_PROG_CXX
 AC_LANG(C++)
+
+AM_MAINTAINER_MODE([enable])
+
 dnl Checks for libraries.
 dnl check for libsequence 
 AC_LANG_SAVE
