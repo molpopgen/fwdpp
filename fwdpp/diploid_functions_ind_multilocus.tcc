@@ -190,10 +190,11 @@ sample_diploid(gsl_rng * r,
 	   {
 	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
 	     bool obw = (nrbw%2!=0) ? true : false;
-	     p2g1 = (LO1) ? !p2g1 : p2g1;
+	     p2g1 = (LO2) ? !p2g1 : p2g1;
 	     p2g1 = (obw) ? !p2g1 : p2g1;
 	   }
 	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
+	 LO2 = (temp % 2 != 0.) ? true : false;
 
 	 (ptr2cdip+i)->first->n++;
 	 (ptr2cdip+i)->second->n++;
