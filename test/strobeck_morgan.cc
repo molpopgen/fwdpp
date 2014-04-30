@@ -72,20 +72,20 @@ double mslike_map( gsl_rng * r, const double & beg, const double & L )
 int main(int argc, char ** argv)
 {
   int argument=1;
-  if ( argc != 3 )
+  if ( argc != 5 )
     {
-      cerr << "usage: strobeck_morgan nreps seed\n";
+      cerr << "usage: strobeck_morgan nreps seed outfile\n";
       exit(10);
     }
+  const unsigned N = atoi(argv[argument++]); //Population size
   unsigned nreps = atoi(argv[argument++]);
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
-
+  const char * outfile = argv[argument++];
   if (!nreps)
     {
       cerr << "Error: nreps = " << nreps << '\n';
       exit(10);
     }
-  const unsigned N = 1000; //Population size
   const double L = 1000; //Locus length in psuedo-sites a-la ms.
   const double theta = 20.;
   const double rho = 1;
@@ -230,6 +230,8 @@ int main(int argc, char ** argv)
 
       // cout << (mono1 && mono2) << ' ' << (mono1 && !mcount1) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
     }
-  cout << buffer.str() << '\n';
+  ofstream o(outfile);
+  o << buffer.str() << '\n';
+  o.close();
   return 0;
 }
