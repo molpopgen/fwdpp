@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_INIT(fwdpp/diploid.hh)
 dnl Every other copy of the package version number gets its value from here
-AM_INIT_AUTOMAKE(fwdpp, 0.2.2)
+AM_INIT_AUTOMAKE(fwdpp, 0.2.3)
 
 dnl create a config.h file (Automake will add -DHAVE_CONFIG_H)
 AM_CONFIG_HEADER(config.h)
@@ -19,6 +19,9 @@ AC_PROG_INSTALL
 AC_PROG_CC
 AC_PROG_CXX
 AC_LANG(C++)
+
+AM_MAINTAINER_MODE([enable])
+
 dnl Checks for libraries.
 dnl check for libsequence 
 AC_LANG_SAVE

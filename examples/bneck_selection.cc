@@ -157,7 +157,7 @@ int main(int argc, char ** argv)
 				   boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				   boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
 				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N2));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N2);
       generation++;
       
@@ -188,7 +188,7 @@ int main(int argc, char ** argv)
 				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
 				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
 				       boost::bind(KTfwd::mutation_remover(),_1,0,2*nextN));
-	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*currentN);
+	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*nextN);
 	  currentN=nextN;
 	}
       Sequence::SimData neutral_muts,selected_muts;

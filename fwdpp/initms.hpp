@@ -55,7 +55,7 @@ namespace KTfwd
 	  {
 	    if((d)[ind][site]=='1')++c;
 	  }
-	if(i != d.pend()-2)
+	if(i < d.pend()-2)
 	  {
 	    if(*(i+1) == *(i+2))
 	      {
