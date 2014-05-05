@@ -66,9 +66,9 @@ struct no_selection_multi
 double mslike_map( gsl_rng * r, const double & beg, const double & L )
 {
   //return beg + double(unsigned(L*gsl_rng_uniform(r)))/L;
-  return beg + double(unsigned(gsl_ran_flat(r,1.,L-1.)))/L;
+  return beg + double(unsigned(gsl_ran_flat(r,1.,L)))/L;
 }
-		   
+	
 int main(int argc, char ** argv)
 {
   int argument=1;
@@ -162,76 +162,15 @@ int main(int argc, char ** argv)
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
       vector< vector< std::pair<double,string> > > gam_sample = ms_sample(r,&diploids,samplesize,true);
-      unsigned nm1=0,nm2=0,nm3=0;
-      for( mlist::const_iterator i = mutations.begin() ; i != mutations.end() ; ++i )
-	{
-	  double pos = i->pos;
-	  unsigned n = i->n;
-	  assert(n);
-	  if( pos < 1. ) ++nm1;
-	  else if ( pos < 2.) ++nm2;
-	  else ++nm3;
-	}
       SimData l0,l1,l2;
       l0.assign( gam_sample[0].begin(), gam_sample[0].end() );
       l1.assign( gam_sample[1].begin(), gam_sample[1].end() );
       l2.assign( gam_sample[2].begin(), gam_sample[2].end() );
 
       buffer << l0 << '\n' << l1 << '\n' << l2 << '\n';
-      //There is a bug in the distribution of S, which is due to the multilocus updater
-      //cout << l0 << '\n';exit(10);
-
-      /*
-      cout << l0.numsites() << ' ' << l1.numsites() << ' ' << l2.numsites() << ' '
-	   << nm1 << ' ' << nm2 << ' ' << nm3 << '\n';
-      */
-      /*
-      cerr << "0: ";
-      for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() ; ++i )
-       	{
-	  cerr << *i << ' ';
-       	}
-      cerr << '\n';
-      cerr << "1: ";
-      for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() ; ++i )
-       	{
-	  cerr << *i << ' ';
-       	}
-      cerr << '\n';
-      cerr << "2: ";
-      for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() ; ++i )
-       	{
-	  cerr << *i << ' ';
-       	}
-      cerr << '\n';
-      */
-      // unsigned mcount = 0,mcount1=0;
-      // unsigned mono1=0,mono2=0,mono3=0;
-      // for( SimData::const_pos_iterator i = l0.pbegin() ; i != l0.pend() && *i < 1./L ; ++i )
-      // 	{
-      // 	  if( *i < 1./L ) ++mcount;
-      // 	  else if ( *i >= 1.-1./L ) ++mcount1;
-      // 	}
-      // if(!mcount) ++mono1;
-
-      // mcount = 0;
-      // for( SimData::const_pos_iterator i = l1.pbegin() ; i != l1.pend() && *i < 1. + 1./L ; ++i )
-      // 	{
-      // 	  if( *i < 1. + 1./L ) ++mcount;
-      // 	}
-      // if(!mcount) ++mono2;
-
-      // mcount = 0;
-      // for( SimData::const_pos_iterator i = l2.pbegin() ; i != l2.pend() && *i < 2. + 1./L ; ++i )
-      // 	{
-      // 	  if( *i < 2. + 1./L ) ++mcount;
-      // 	}
-      // if(!mcount) ++mono3;
-
-      // cout << (mono1 && mono2) << ' ' << (mono1 && !mcount1) << ' ' << (mono1 && mono3) << ' ' << (mono2 && mono3) << '\n';
     }
   ofstream o(outfile);
   o << buffer.str() << '\n';
   o.close();
-  return 0;
+  exit(0);
 }
