@@ -34,3 +34,5 @@ The summary stats are:
 Two comparisons are made to diploid.  One is with N=100 and another with N = 1000.
 
 This test merely eyeballs the agreement of the forward and backwards simulations.  Ideally, you'd do many more simulations and conduct statistical tests on the distributions (as was done in the fwdpp paper).  You can modify NSIMS and this test to do such analysis if you wish.
+
+The output that I get (which also shows the seeds I used) is [here](NeutralModelsKRT.md).
