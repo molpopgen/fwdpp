@@ -60,10 +60,10 @@ You must have the following on your system:
 ##Library dependencies
 fwdpp depends upon the following libraries:
 
-[boost](http://www.boost.org)<br>
-[GSL](http://gnu.org/software/gsl)<br>
-[zlib](http://zlib.net)<br>
-[libsequence](http://github.com/molpopgen/libsequence)<br>
+1.  [boost](http://www.boost.org).  Please make sure that you have a recent version of boost.
+2.  [GSL](http://gnu.org/software/gsl)
+3.  [zlib](http://zlib.net)
+4.  [libsequence](http://github.com/molpopgen/libsequence).
 
 The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
 
