@@ -13,3 +13,5 @@ This test estimates the fixation probability of a mutation subject to genic sele
 To execute this test, process the file FixProb.Rmd from the folder fwdpp/test that comes with the library source code.  Be sure to compile the examples in fwdpp/examples first!
 
 You can see the output that I get on my office machine by looking at the file [FixProbKRT.md](FixProbKRT.md).  (Note: if you run this example, you'll likely over-write the figure that my file is expecting to load!!)
+
+This test compares an R implementation to a simple fwdpp program.  The best agreement to analytical predictions is for the smallest selection coefficients, as expected given the assumptions behind the analytical results.
