@@ -58,8 +58,17 @@ int main( int argc, char ** argv )
       //make a new gamete containing this new mutation
       gtype mutant(1);
       mutant.smutations.push_back(mitr);
-      //make first gamete of 1st diploid the mutant
-      diploids[0].first = gametes.insert(gametes.end(),mutant);
+      //make a random gamete the mutant.  Pick individual first, then gamete
+      unsigned ind = unsigned(gsl_ran_flat(r,0.,double(N)));
+      unsigned gam = (gsl_rng_uniform(r)<=0.5) ? 0 : 1;
+      if(!gam)
+	{
+	  diploids[ind].first = gametes.insert(gametes.end(),mutant);
+	}
+      else
+	{
+	  diploids[ind].second = gametes.insert(gametes.end(),mutant);
+	}
 
       while(mitr->n > 0 && mitr->n < 2*N)
 	{
