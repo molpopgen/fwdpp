@@ -104,6 +104,12 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
 
 int main(int argc, char ** argv)
 {
+  if (argc != 9)
+    {
+      std::cerr << "Too few arguments\n"
+		<< "Usage: diploid_binaryIO N theta rho ngens replicate_no indexfile hapfile seed\n";
+      exit(10);
+    } 
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
   const double theta = atof(argv[argument++]);

@@ -135,6 +135,12 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
  
 int main(int argc, char ** argv)
 {
+  if (argc != 8)
+    {
+      std::cerr << "Too few arguments\n"
+		<< "Usage: diploid_ind N theta rho ngens samplesize nreps seed\n";
+      exit(10);
+    } 
   int argument=1;
   const unsigned N = atoi(argv[argument++]);           //Number of diploids
   const double theta = atof(argv[argument++]);         //4*n*mutation rate.  Note: mutation rate is per REGION, not SITE!!
