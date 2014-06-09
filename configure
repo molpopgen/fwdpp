@@ -4798,6 +4798,22 @@ else
 fi
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost/container/vector.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost/container/list.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+fi
+
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
   HAVE_LIBSEQ=1
