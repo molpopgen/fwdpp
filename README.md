@@ -60,7 +60,7 @@ You must have the following on your system:
 ##Library dependencies
 fwdpp depends upon the following libraries:
 
-1.  [boost](http://www.boost.org).  Please make sure that you have a recent version of boost.
+1.  [boost](http://www.boost.org).
 2.  [GSL](http://gnu.org/software/gsl)
 3.  [zlib](http://zlib.net)
 4.  [libsequence](http://github.com/molpopgen/libsequence).
@@ -71,10 +71,10 @@ The first three are  available as pre-built packages on most Linux distributions
 
 ###Obtaining the master branch
 You have a few options:
-<ol>
-<li> Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
-<li> Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
-</ol>
+
+1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
+2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
+
 
 ###Obtaining a specific release
 Again, a few options:
