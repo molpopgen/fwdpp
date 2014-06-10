@@ -51,6 +51,8 @@ If you have a Gride Engine (GE) queuing system, you can run the fwdpp part of th
 
 These scripts assume that all binaries are available in your user's path, and that your cluster is setup to automatically cd to SGE_O_WORKDIR.
 
+You will need to replace "queuename" with the appropriate queue names for your cluster, add lines to add relevant modules, etc.
+
 Job 1 runs the simulations:
 
 ```{sh}
