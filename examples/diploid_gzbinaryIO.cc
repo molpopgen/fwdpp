@@ -18,8 +18,6 @@
 #include <functional>
 #include <cassert>
 
-#include <fcntl.h>
-
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
@@ -193,7 +191,6 @@ int main(int argc, char ** argv)
   mlist mutations2;
 
   gzf = gzopen( hapfile, "rb" ); //read mode, binary
-  gzseek( gzf, offset, SEEK_SET );
   read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),gzf);
   gzclose(gzf);
 
