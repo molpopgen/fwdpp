@@ -6,6 +6,8 @@ Many of these tests are meant to be run from within Rstudio using Rmarkdown (Rmd
 
 Some of the longer tests will not use Rstudio, and realistically require a cluster to perform.
 
+These tests are intended to run in "reasonable time", meaning that the number of replicates is small, often <= 1,000.
+
 ##Test 1: fixation probability
 
 This test estimates the fixation probability of a mutation subject to genic selection.  It uses the example program pfix, which comes with the library.
