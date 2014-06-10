@@ -48,6 +48,31 @@ fwdpp does not use any features from then newly-released C++11 standard.  The ne
 
 The manuscript describing fwdpp is currently on [arxiv](http://arxiv.org/abs/1401.3786).
 
+#Documentation
+
+##Online
+The library's reference manual can be found at [molpopgen.org](http://www.molpopgen.org/software/fwdpp/doc/html/index.html).
+
+A pdf file describing the implementation of policies is [here](http://molpopgen.org/resources/policies.pdf).
+
+__Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
+
+We are also looking into moving the docs to a github page, which will change the above links.
+
+##Built from source
+The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
+
+The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
+
+cd doc<br>
+pdflatex policies<br>
+pdflatex policies<br>
+
+One runs pdflatex twice to ensure that cross-references within the document are processed properly.
+
+##Example documentation
+The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
+
 #Dependencies
 
 ##System requirements
@@ -375,27 +400,3 @@ Example from the PLoS Genetics paper:
 
 will simulate a mean effect size of 0.5 (exponentially-distributed).  The above will take probably many hours to run.
 
-#Documentation
-
-##Online
-The library's reference manual can be found at [molpopgen.org](http://www.molpopgen.org/software/fwdpp/doc/html/index.html).
-
-A pdf file describing the implementation of policies is [here](http://molpopgen.org/resources/policies.pdf).
-
-__Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
-
-We are also looking into moving the docs to a github page, which will change the above links.
-
-##Built from source
-The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
-
-The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
-
-cd doc<br>
-pdflatex policies<br>
-pdflatex policies<br>
-
-One runs pdflatex twice to ensure that cross-references within the document are processed properly.
-
-##Example documentation
-The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
