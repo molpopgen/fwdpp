@@ -184,6 +184,12 @@ int main(int argc, char ** argv)
       
   KTfwd::write_binary_pop(&gametes,&mutations,&diploids,boost::bind(mwriter(),_1,_2),buffer);
 
+  /*
+    Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
+    as done in diploid_binaryIO.cc.  See https://github.com/molpopgen/BigDataFormats
+    for why not.
+   */
+
   //Now, write output to a gzipped file
 
   //Read back in
@@ -191,7 +197,7 @@ int main(int argc, char ** argv)
   glist gametes2;
   std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
 
-  gzFile gzout = gzopen( hapfile, "ab" ); //open in append mode.  The b = binary mode.  Not required on all systems, but never hurts.
+  gzFile gzout = gzopen( hapfile, "wb" ); //open in write mode.  The b = binary mode.  Not required on all systems, but never hurts.
   gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
   gzclose(gzout);
 

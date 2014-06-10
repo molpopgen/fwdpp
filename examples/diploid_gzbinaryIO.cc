@@ -183,7 +183,7 @@ int main(int argc, char ** argv)
   KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
 
   //Write buffer to gzfile
-  gzFile gzf = gzopen( hapfile, "ab" ); //append mode, binary
+  gzFile gzf = gzopen( hapfile, "ab" ); //write mode, binary
   gzwrite( gzf, buffer.str().c_str(), buffer.str().size() );
   gzclose( gzf );
 
