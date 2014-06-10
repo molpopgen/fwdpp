@@ -378,7 +378,7 @@ will simulate a mean effect size of 0.5 (exponentially-distributed).  The above 
 #Documentation
 
 ##Online
-The library's reference manual can be found at [molpopgen.org](http://www.molpopgen.org/fwdpp/doc/html).
+The library's reference manual can be found at [molpopgen.org](http://molpopgen.org/software/fwdpp/doc/html/index.htmll).
 
 A pdf file describing the implementation of policies is [here](http://molpopgen.org/resources/policies.pdf).
 
