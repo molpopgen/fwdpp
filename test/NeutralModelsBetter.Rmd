@@ -89,11 +89,11 @@ f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
 ms=read.table(f,header=T,colClasses=rep("numeric",21))
 
 plotit(fwdpp,ms)
-m1000=matrix(data=NA,ncol=2,nrow=ncol(ms),dimnames=list(NULL,c("stat","pv")))
+m10000=matrix(data=NA,ncol=2,nrow=ncol(ms),dimnames=list(NULL,c("stat","pv")))
 for( i in 1:ncol(ms) )
   {
-    m1000[i,1]=dimnames(ms)[[2]][i]
-    m1000[i,2]=ks.test(ms[,i],fwdpp[,i])$p.value
+    m10000[i,1]=dimnames(ms)[[2]][i]
+    m10000[i,2]=ks.test(ms[,i],fwdpp[,i])$p.value
     }
-print(m1000)
+print(m10000)
 ```
