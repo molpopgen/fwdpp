@@ -33,6 +33,56 @@ The summary stats are:
 
 Two comparisons are made to diploid.  One is with N=100 and another with N = 1000.
 
-This test merely eyeballs the agreement of the forward and backwards simulations.  Ideally, you'd do many more simulations and conduct statistical tests on the distributions (as was done in the fwdpp paper).  You can modify NSIMS and this test to do such analysis if you wish.
-
 The output that I get (which also shows the seeds I used) is [here](NeutralModelsKRT.md).
+
+##Test 3: a more rigorous comparison of neutral models to Hudson's ms.
+
+This test is executed via NeutralModelsBetter.Rmd.  It is the same idea as the preceeding, except that 1,000 forward simulations are run and the p-values of Kolmogorov-Smirnov tests comparing the distributions of summary statistics between fwdpp and ms are printed.  Additionally, N=10,000 is also simulated.
+
+__Warning:__ this test will take hours-to-days to run.  The N=10,000 case really should be done on a cluster.
+
+Typically, you will see more differences between fwdpp and ms for smaller N.  This is expected.  Recall that ms simulates a sample of size n taken from an infinitely-large Wright-Fisher population.  In contrast, the forward simulation is taking a sample of the same size n from a much smaller population.  However, as the N in the forward simulation increases, one should see convergence in outcomes to the predictions of the infinite-N models.
+
+It is very important to understand that the 21 p-values reported for each value of N are __not__ the outcomes of indepdent statistical tests.   For example, statisics 1,3, and 4 in the list in the preceeding section are highly correlated with one another, and correlations exists between any pair of statistics summarizing variation data.  Thus, the rate at which the K-S test will reject the null model may cannot be assumed to be the usual alpha.
+
+###Running this test on a cluster
+
+If you have a Gride Engine (GE) queuing system, you can run the fwdpp part of this test using a script like the following.  (Note: this script is bad practice, as it writes each replicate to a separate file.  It would be much smarter to pipe the output through a [file locking tool](https://github.com/molpopgen/atomic_locker), but I skip that here in the interest of simplicity.)
+
+These scripts assume that all binaries are available in your user's path, and that your cluster is setup to automatically cd to SGE_O_WORKDIR.
+
+Job 1 runs the simulations:
+
+```{sh}
+#!/bin/sh
+
+#$ -q queuename
+# Set up array job of 1,000 job
+#$ -t 1-1000
+#Name the job
+#$ -N job1
+#Define model params
+N=1000
+G=`echo "10*$N"|bc`
+#give each task unique seed.  This method controls for 2 jobs starting at same time such that RANDOM returns same seed
+SEED=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
+
+diploid $N 10 10 $G 10 1 $SEED | gzip > out.$N.$SGE_TASK_ID.gz
+```
+
+Job 2 cleans up after job 1:
+
+```{sh}
+#$/bin/sh
+
+#$ -N cleanup
+#Do not execute in queue until job 1 is done
+#$ -hold_jid job1
+
+N=1000
+zcat out.$N.*.gz | msstats | gzip > msstats.$N.gz
+```
+
+You can them process the output in R as done in the Rmd file for this test.
+
+Users of torque/pbs will need to figure out how to do the above on their own.
