@@ -63,6 +63,13 @@
   3. diploid_fixed_sh.cc: The same as diploid.cc with the addition of a mutation rate to mutations with selection coefficient s and dominance h, with evolution under the multiplicative fitness model\n
   4. diploid_twopop_mig.cc: Evolution of a single population which then splits into two, followed by a period of migration.\n
   \n
+  The above examples apply the library's gamete-based sampling algorithm.  For models with selection, an individual-based algorithm will typically be faster.  The use of fwdpp's individual-based machinery is shown in these example programs:\n
+  1. diploid_ind.cc\n
+  2. diploid_binaryIO_ind.cc\n
+  3. diploid_fixed_sh_ind.cc\n
+  \n
+  The individual-based examples are identical in use to the gamete-based examples, but differ in implementation.
+
   To use the library in your own code, include the library's main header:\n
   \code
   #include <fwdpp/diploid.hh>
