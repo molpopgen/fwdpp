@@ -33,8 +33,9 @@ N=100
 ====
 ```{r}
 seed=as.integer(runif(1,0,4.2e8))
-print(paste("../examples/diploid 100 10 10 1000 10 ",NSIMS,seed,"|msstats"))
-f=pipe(paste("../examples/diploid 100 10 10 1000 10 ",NSIMS,seed,"|msstats"))
+cli=paste("../examples/diploid_ind 100 10 10 1000 10 ",NSIMS,seed,"|msstats")
+print(cli)
+f=pipe(cli)
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
@@ -49,8 +50,9 @@ N=1000
 ====
 ```{r}
 seed=as.integer(runif(1,0,4.2e8))
-print(paste("../examples/diploid 1000 10 10 10000 10 ",NSIMS,seed,"|msstats"))
-f=pipe(paste("../examples/diploid 1000 10 10 10000 10 ",NSIMS,seed,"|msstats"))
+cli=paste("../examples/diploid_ind 1000 10 10 10000 10 ",NSIMS,seed,"|msstats")
+print(cli)
+f=pipe(cli)
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
