@@ -43,7 +43,7 @@ __Warning:__ this test will take hours-to-days to run.  The N=10,000 case really
 
 Typically, you will see more differences between fwdpp and ms for smaller N.  This is expected.  Recall that ms simulates a sample of size n taken from an infinitely-large Wright-Fisher population.  In contrast, the forward simulation is taking a sample of the same size n from a much smaller population.  However, as the N in the forward simulation increases, one should see convergence in outcomes to the predictions of the infinite-N models.
 
-It is very important to understand that the 21 p-values reported for each value of N are __not__ the outcomes of indepdent statistical tests.   For example, statisics 1,3, and 4 in the list in the preceeding section are highly correlated with one another, and correlations exists between any pair of statistics summarizing variation data.  Thus, the rate at which the K-S test will reject the null model may cannot be assumed to be the usual alpha.
+It is very important to understand that the 21 p-values reported for each value of N are __not__ the outcomes of indepdent statistical tests.   For example, statisics 1,3, and 4 in the list in the preceeding section are highly correlated with one another, and correlations exists between any pair of statistics summarizing variation data.  Thus, the rate at which the K-S test will reject the null model cannot be assumed to be the usual alpha.
 
 ###Running this test on a cluster
 
