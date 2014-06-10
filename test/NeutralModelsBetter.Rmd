@@ -9,7 +9,7 @@ opts_chunk$set(fig.width=12, fig.height=8, fig.path='NeutralModelsBetter/',
 NSIMS=1000
 ```
 
-```{r,echo=F}
+```{r,echo=FALSE}
 plotit=function(fwdpp,ms)
 {
  par(mfrow=c(2,2))
