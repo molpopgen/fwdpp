@@ -45,7 +45,7 @@ Let's build a matrix of parameters, output values from our two simulations, and 
 
 OK, now plot (black is fwdpp, red is R, and horiz. lines are analytical values for N=1e3):
 
-![plot of chunk unnamed-chunk-3](PFixFigs/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-3](PFixFigsKRT/unnamed-chunk-3.png) 
 
 
 The two simulation methods are in very good agreement.  Remember that the error around each point is binomially-distributed, as the only two outcomes of the simulation are fixation or loss.
