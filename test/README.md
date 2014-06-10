@@ -1,4 +1,4 @@
-#Tests of the library performance
+#Testing the accuracy of fwdpp
 
 This folder contains various methods for testing that fwdpp gives correct output.
 
