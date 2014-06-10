@@ -26,10 +26,10 @@ The test plots the ECDF of four statistics calculated based on 1,000 replicates 
 
 The summary stats are:
 
-1. S = number of segregating sites (Watterson 1975)
-2. "Pi" or "sum of site heterogzygosity" = sum of 2pq over the S sites. (Nei, Tajima, others).
-3. Minimum number of recombination events (Hudson and Kaplan)
-4. H', a normalized version of Fay and Wu's H.
+1. S = number of segregating sites ([Watterson, 1975](http://www.ncbi.nlm.nih.gov/pubmed/1145509))
+2. "Pi" or "sum of site heterogzygosity" = sum of 2pq over the S sites. (Nei, [Tajima](http://www.genetics.org/content/105/2/437.abstract), others).
+3. Minimum number of recombination events ([Hudson and Kaplan](http://www.genetics.org/content/111/1/147.abstract))
+4. [Zeng et al.'s H'](http://www.genetics.org/content/174/3/1431.abstract), a normalized version of [Fay and Wu's H](http://www.genetics.org/content/155/3/1405.abstract).
 
 Two comparisons are made to diploid.  One is with N=100 and another with N = 1000.
 
