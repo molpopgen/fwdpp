@@ -22,7 +22,7 @@ This test is performed by executing NeutralModels.Rmd in fwdpp/test.
 
 It assumes that you have [msstats](https://github.com/molpopgen/msstats) installed and in your user's path.  You also need Hudson's [ms](http://home.uchicago.edu:~/rhudson1) in your path.
 
-The test plots the ECDF of four statistics calculated based on 1,000 replicates of ms and compares them to 100 replicates of the example program "diploid".  The parameters are theta = rho = 10.
+The test plots the ECDF of four statistics calculated based on 1,000 replicates of ms and compares them to 100 replicates of the example program "diploid_ind".  The parameters are theta = rho = 10.
 
 The summary stats are:
 
@@ -31,7 +31,7 @@ The summary stats are:
 3. Minimum number of recombination events ([Hudson and Kaplan](http://www.genetics.org/content/111/1/147.abstract))
 4. [Zeng et al.'s H'](http://www.genetics.org/content/174/3/1431.abstract), a normalized version of [Fay and Wu's H](http://www.genetics.org/content/155/3/1405.abstract).
 
-Two comparisons are made to diploid.  One is with N=100 and another with N = 1000.
+Two comparisons are made to diploid_ind.  One is with N=100 and another with N = 1000.
 
 The output that I get (which also shows the seeds I used) is [here](NeutralModelsKRT.md).
 
@@ -69,7 +69,7 @@ G=`echo "10*$N"|bc`
 #give each task unique seed.  This method controls for 2 jobs starting at same time such that RANDOM returns same seed
 SEED=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
 
-diploid $N 10 10 $G 10 1 $SEED | gzip > out.$N.$SGE_TASK_ID.gz
+diploid_ind $N 10 10 $G 10 1 $SEED | gzip > out.$N.$SGE_TASK_ID.gz
 ```
 
 Job 2 cleans up after job 1:
