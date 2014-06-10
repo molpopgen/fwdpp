@@ -14,7 +14,7 @@ This test estimates the fixation probability of a mutation subject to genic sele
 
 To execute this test, process the file FixProb.Rmd from the folder fwdpp/test that comes with the library source code.  Be sure to compile the examples in fwdpp/examples first!
 
-You can see the output that I get on my office machine by looking at the file [FixProbKRT.md](FixProbKRT.md).  (Note: if you run this example, you'll likely over-write the figure that my file is expecting to load!!)
+You can see the output that I get on my office machine by looking at the file [FixProbKRT.md](FixProbKRT.md).  
 
 This test compares an R implementation to a simple fwdpp program.  The best agreement to analytical predictions is for the smallest selection coefficients, as expected given the assumptions behind the analytical results.
 
@@ -39,13 +39,15 @@ The output that I get (which also shows the seeds I used) is [here](NeutralModel
 
 ##Test 3: a more rigorous comparison of neutral models to Hudson's ms.
 
-This test is executed via NeutralModelsBetter.Rmd.  It is the same idea as the preceeding, except that 1,000 forward simulations are run and the p-values of Kolmogorov-Smirnov tests comparing the distributions of summary statistics between fwdpp and ms are printed.  Additionally, N=10,000 is also simulated.
+This test is executed via NeutralModelsBetter.Rmd.  It is the same idea as the preceeding, except that 1,000 forward simulations are run and the p-values of Kolmogorov-Smirnov tests comparing the distributions of summary statistics between fwdpp and ms are printed.  Additionally, N=10,000 is also simulated (but only 100 replicates).
 
-__Warning:__ this test will take hours-to-days to run.  The N=10,000 case really should be done on a cluster.
+__Warning:__ this test will take hours-to-days to run.  The N=10,000 case really should be done on a cluster.  For this reason, only 100 replicates are done for N=10,000.
 
 Typically, you will see more differences between fwdpp and ms for smaller N.  This is expected.  Recall that ms simulates a sample of size n taken from an infinitely-large Wright-Fisher population.  In contrast, the forward simulation is taking a sample of the same size n from a much smaller population.  However, as the N in the forward simulation increases, one should see convergence in outcomes to the predictions of the infinite-N models.
 
 It is very important to understand that the 21 p-values reported for each value of N are __not__ the outcomes of indepdent statistical tests.   For example, statisics 1,3, and 4 in the list in the preceeding section are highly correlated with one another, and correlations exists between any pair of statistics summarizing variation data.  Thus, the rate at which the K-S test will reject the null model cannot be assumed to be the usual alpha.
+
+The output that I got on my iMac (and the seeds used) are found in [NeutralModelsBetterKRT.md](NeutralModelsBetterKRT.md).
 
 ###Running this test on a cluster
 
