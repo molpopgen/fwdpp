@@ -171,25 +171,20 @@ int main(int argc, char ** argv)
       unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, boost::bind(gsl_rng_uniform,r));
       assert(KTfwd::check_sum(gametes,twoN));
     }
+
+  /*
+    Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
+    as done in diploid_binaryIO.cc.  See https://github.com/molpopgen/BigDataFormats
+    for why not.
+   */
+    
+  //Write pop to buffer in binary format
   std::ostringstream buffer;
-      
   KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
 
-  FILE * fp = fopen( hapfile, "ab" );
-  fseek(fp, -4, SEEK_END);
-  std::cerr << ftell(fp) << '\n';
-  uint32_t gzsize;
-  fread(&gzsize,4,1,fp);
-  std::cerr << ftell(fp) << '\n';
-  std::cerr << "size = " << gzsize << '\n';
-  z_off_t offset = ftell(fp);
+  //Write buffer to gzfile
   gzFile gzf = gzopen( hapfile, "ab" ); //append mode, binary
-
-  //We now need to get the size of the gzfile.
-  //z_off_t offset = gzoffset(gzf);
-  std::cerr << "offset = " << offset << '\n';
   gzwrite( gzf, buffer.str().c_str(), buffer.str().size() );
-  std::cerr << gzoffset( gzf ) << ' ' << gztell( gzf ) << '\n';
   gzclose( gzf );
 
 
@@ -201,6 +196,7 @@ int main(int argc, char ** argv)
   gzseek( gzf, offset, SEEK_SET );
   read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),gzf);
   gzclose(gzf);
+
   //Now, compare what we wrote to what we read
   std::cout << "Mutations:\n";
   mlist::iterator mitr1 = mutations.begin(),mitr2=mutations2.begin();
