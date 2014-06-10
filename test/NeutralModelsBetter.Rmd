@@ -39,7 +39,7 @@ f=pipe(cli)
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
-f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats"))
 ms=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
@@ -63,7 +63,7 @@ f=pipe(cli)
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
-f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats"))
 ms=read.table(f,header=T,colClasses=rep("numeric",21))
 
 plotit(fwdpp,ms)
@@ -76,16 +76,17 @@ for( i in 1:ncol(ms) )
 print(m1000)
 ```
 
-N=10000
+N=10000 (only do 100 sims, as this would take too long...)
 ====
 ```{r}
+NSIMS=100
 cli=paste("../examples/diploid_ind 10000 10 10 100000 10 ",NSIMS,seed,"|msstats")
 print(cli)
 f=pipe(cli)
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
-f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats"))
 ms=read.table(f,header=T,colClasses=rep("numeric",21))
 
 plotit(fwdpp,ms)
