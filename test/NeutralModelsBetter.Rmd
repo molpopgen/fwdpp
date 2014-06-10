@@ -38,7 +38,7 @@ f=pipe(paste("../examples/diploid 100 10 10 1000 10 ",NSIMS,seed,"|msstats"))
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
-f=pipe("ms 10 100 -t 10 -r 10 1000 |msstats")
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
 ms=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
 
@@ -60,6 +60,31 @@ print(paste("../examples/diploid 1000 10 10 10000 10 ",NSIMS,seed,"|msstats"))
 f=pipe(paste("../examples/diploid 1000 10 10 10000 10 ",NSIMS,seed,"|msstats"))
 fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
 #close(f)
+
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
+ms=read.table(f,header=T,colClasses=rep("numeric",21))
+
+plotit(fwdpp,ms)
+m1000=matrix(data=NA,ncol=2,nrow=ncol(ms),dimnames=list(NULL,c("stat","pv")))
+for( i in 1:ncol(ms) )
+  {
+    m1000[i,1]=dimnames(ms)[[2]][i]
+    m1000[i,2]=ks.test(ms[,i],fwdpp[,i])$p.value
+    }
+print(m1000)
+```
+
+N=10000
+====
+```{r}
+seed=as.integer(runif(1,0,4.2e8))
+print(paste("../examples/diploid 10000 10 10 100000 10 ",NSIMS,seed,"|msstats"))
+f=pipe(paste("../examples/diploid 10000 10 10 100000 10 ",NSIMS,seed,"|msstats"))
+fwdpp=read.table(f,header=T,colClasses=rep("numeric",21))
+#close(f)
+
+f=pipe(paste("ms 10",NSIMS," -t 10 -r 10 1000 |msstats")
+ms=read.table(f,header=T,colClasses=rep("numeric",21))
 
 plotit(fwdpp,ms)
 m1000=matrix(data=NA,ncol=2,nrow=ncol(ms),dimnames=list(NULL,c("stat","pv")))
