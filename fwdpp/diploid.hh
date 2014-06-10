@@ -54,6 +54,7 @@
   1.  libsequence, available from www.molpopgen.org \n
   2.  The GNU Scientific library, available from www.gnu.org/software/gsl \n
   3.  The Boost C++ libraries, available from www.boost.org. \n
+  4.  The zlib compression library (zlib.net).  
 
   \subsection examples How to use the library
   The best way to start will be to study the examples provided with the library and the \ref page1.  Regarding the examples, I would suggest doing so in the following order: \n
