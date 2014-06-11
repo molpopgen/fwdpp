@@ -18,6 +18,8 @@
 #include <functional>
 #include <cassert>
 
+#include <fcntl.h>
+
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/unordered_set.hpp>
@@ -188,12 +190,72 @@ int main(int argc, char ** argv)
     for why not.
    */
 
+  //establish POSIX file locks for output
+  struct flock index_flock;
+  index_flock.l_type = F_WRLCK;/*Write lock*/
+  index_flock.l_whence = SEEK_SET;
+  index_flock.l_start = 0;
+  index_flock.l_len = 0;/*Lock whole file*/
+
+  FILE * index_fh = fopen(indexfile,"a");
+  int index_fd = fileno(index_fh);
+  if ( index_fd == -1 ) 
+    { 
+      std::cerr << "ERROR: could not open " << indexfile << '\n';
+      exit(10);
+    }
+  if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
+    {
+      std::cerr << "ERROR: could not obtain lock on " << indexfile << '\n';
+      exit(10);
+    }
+
+  //OK, we no have an exclusive lock on the index file.  In principle, that is sufficient for us to move on.
+
   //Now, write output to a gzipped file
-  gzFile gzout = gzopen( hapfile, "wb" ); //open in write mode.  The b = binary mode.  Not required on all systems, but never hurts.
+  gzFile gzout = gzopen( hapfile, "ab" ); //open in append mode.  The b = binary mode.  Not required on all systems, but never hurts.
   gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
+  //write info to index file
+  fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzout ) );
   gzclose(gzout);
 
-  //Read back in
+  //We can now release close the index file, release the lock, etc.
+  index_flock.l_type = F_UNLCK;
+  if (fcntl(index_fd, F_UNLCK,&index_flock) == -1) 
+    {
+      std::cerr << "ERROR: could not release lock on " << indexfile << '\n';
+      exit(10);
+    }
+  fflush( index_fh );
+  fclose(index_fh);
+
+   /*
+    Read the data back in.
+    Unlike our other examples, we must keep track of the cumulative offsets in the index file
+    up until we find our record_number
+  */
+  std::ifstream index_in(indexfile);
+  unsigned long long rec_offset = 0,offset_i;
+  unsigned rid;
+  while(! index_in.eof() )
+    {
+      index_in >> rid >> offset_i >> std::ws;
+      if ( rid != replicate_no )
+	{
+	  rec_offset += offset_i;
+	}
+      else
+	{
+	  break;
+	}
+    }
+  index_in.close();
+  if(rid != replicate_no)
+    {
+      std::cerr << "Error: replicate id not found in index file, " << replicate_no << ' ' << rid << '\n';
+      exit(10);
+    }
+
   mlist mutations2;
   glist gametes2;
   std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;

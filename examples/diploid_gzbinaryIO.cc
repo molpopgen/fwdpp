@@ -9,6 +9,8 @@
 
   Also illustrates POSIX file locking via <fcntl.h>, which is super-useful on clusters.
 
+  Note that locking with gzfiles and creating an on-the-fly index works differently b/c of how gztell works vs ftell!
+
   Example use that runs quickly: ./diploid_gzbinaryIO 1000 10 10 10000 1 index haps.bin.gz $RANDOM
 */
 
@@ -17,6 +19,8 @@
 #include <numeric>
 #include <functional>
 #include <cassert>
+
+#include <fcntl.h>
 
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>
@@ -180,17 +184,79 @@ int main(int argc, char ** argv)
   std::ostringstream buffer;
   KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
 
+  //lock index file ASAP
+  //establish POSIX file locks for output
+  struct flock index_flock;
+  index_flock.l_type = F_WRLCK;/*Write lock*/
+  index_flock.l_whence = SEEK_SET;
+  index_flock.l_start = 0;
+  index_flock.l_len = 0;/*Lock whole file*/
+
+  FILE * index_fh = fopen(indexfile,"a");
+  int index_fd = fileno(index_fh);
+  if ( index_fd == -1 ) 
+    { 
+      std::cerr << "ERROR: could not open " << indexfile << '\n';
+      exit(10);
+    }
+  if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
+    {
+      std::cerr << "ERROR: could not obtain lock on " << indexfile << '\n';
+      exit(10);
+    }
+
+  //OK, we no have an exclusive lock on the index file.  In principle, that is sufficient for us to move on.
+
   //Write buffer to gzfile
   gzFile gzf = gzopen( hapfile, "ab" ); //write mode, binary
   gzwrite( gzf, buffer.str().c_str(), buffer.str().size() );
+  //Now, write how much we wrote to the output file.
+  fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzf ) );
+  //close the file
   gzclose( gzf );
 
+  //We can now release close the index file, release the lock, etc.
+  index_flock.l_type = F_UNLCK;
+  if (fcntl(index_fd, F_UNLCK,&index_flock) == -1) 
+    {
+      std::cerr << "ERROR: could not release lock on " << indexfile << '\n';
+      exit(10);
+    }
+  fflush( index_fh );
+  fclose(index_fh);
 
-  //now, read the data back in...
+  /*
+    Read the data back in.
+    Unlike our other examples, we must keep track of the cumulative offsets in the index file
+    up until we find our record_number
+  */
+  std::ifstream index_in(indexfile);
+  unsigned long long rec_offset = 0,offset_i;
+  unsigned rid;
+  while(! index_in.eof() )
+    {
+      index_in >> rid >> offset_i >> std::ws;
+      if ( rid != replicate_no )
+	{
+	  rec_offset += offset_i;
+	}
+      else
+	{
+	  break;
+	}
+    }
+  index_in.close();
+  if(rid != replicate_no)
+    {
+      std::cerr << "Error: replicate id not found in index file, " << replicate_no << ' ' << rid << '\n';
+      exit(10);
+    }
   std::vector< gtype > gametes2;
   mlist mutations2;
 
   gzf = gzopen( hapfile, "rb" ); //read mode, binary
+  //seek to position
+  gzseek(gzf,rec_offset,SEEK_CUR);
   read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),gzf);
   gzclose(gzf);
 
