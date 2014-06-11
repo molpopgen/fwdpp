@@ -210,6 +210,7 @@ unsigned recombine(gsl_rng * r,
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
      \example diploid_ind.cc
+     \example pfix.cc
    */
 template< typename gamete_type,
 	  typename gamete_list_type_allocator,
