@@ -189,15 +189,14 @@ int main(int argc, char ** argv)
    */
 
   //Now, write output to a gzipped file
+  gzFile gzout = gzopen( hapfile, "wb" ); //open in write mode.  The b = binary mode.  Not required on all systems, but never hurts.
+  gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
+  gzclose(gzout);
 
   //Read back in
   mlist mutations2;
   glist gametes2;
   std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
-
-  gzFile gzout = gzopen( hapfile, "wb" ); //open in write mode.  The b = binary mode.  Not required on all systems, but never hurts.
-  gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
-  gzclose(gzout);
 
   gzFile gzin = gzopen( hapfile, "rb" ); //open it for reading.  Again, binary mode.
   KTfwd::read_binary_pop(&gametes2,
