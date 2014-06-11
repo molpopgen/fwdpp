@@ -261,6 +261,7 @@ int main(int argc, char ** argv)
   std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
 
   gzFile gzin = gzopen( hapfile, "rb" ); //open it for reading.  Again, binary mode.
+  gzseek( gzin, rec_offset, SEEK_CUR ); //seek to position
   KTfwd::read_binary_pop(&gametes2,
 			 &mutations2,
 			 &diploids2,
