@@ -1,4 +1,6 @@
 /*
+  \include pfix.cc
+
   Estimate fixation probability under single-site model with additivity.  P(fix) should be \approx 2s for small s.
 
   This simulation is equvalent to the following R code:
