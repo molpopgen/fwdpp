@@ -47,7 +47,12 @@ Typically, you will see more differences between fwdpp and ms for smaller N.  Th
 
 It is very important to understand that the 21 p-values reported for each value of N are __not__ the outcomes of indepdent statistical tests.   For example, statisics 1,3, and 4 in the list in the preceeding section are highly correlated with one another, and correlations exists between any pair of statistics summarizing variation data.  Thus, the rate at which the K-S test will reject the null model cannot be assumed to be the usual alpha.
 
-The output that I got on my iMac (and the seeds used) are found in [NeutralModelsBetterKRT.md](NeutralModelsBetterKRT.md).
+The output that I got on my iMac (and the seeds used) are found in [NeutralModelsBetterKRT.md](NeutralModelsBetterKRT.md).  It took about 24 hours to run on my late-2013/early-2014 model iMac running OS X Mavericks.  (PRO tip: on an OS X machine, go to System Preferences -> Energy Saver and set sleep time to "never", o/w your task will pause when you leave for the day.  Or, use a cluster...)
+
+While I encourage that you run the test for yourself, you'll note the following from my [results](NeutralModelsBetterKRT.md):
+
+1.  The best agreement with ms appears to be for N=100 and N=1,000.  This is due to that fact that 10X as many replicates were run for those cases compared to N=10,000./
+2.  Even acknowledging point 1, the agreement with ms looks very good overall.
 
 ###Running this test on a cluster
 
