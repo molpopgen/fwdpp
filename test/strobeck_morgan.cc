@@ -72,15 +72,14 @@ double mslike_map( gsl_rng * r, const double & beg, const double & L )
 int main(int argc, char ** argv)
 {
   int argument=1;
-  if ( argc != 5 )
+  if ( argc != 4 )
     {
-      cerr << "usage: strobeck_morgan nreps seed outfile\n";
+      cerr << "usage: strobeck_morgan nreps seed\n";
       exit(10);
     }
   const unsigned N = atoi(argv[argument++]); //Population size
   unsigned nreps = atoi(argv[argument++]);
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
-  const char * outfile = argv[argument++];
   if (!nreps)
     {
       cerr << "Error: nreps = " << nreps << '\n';
@@ -169,8 +168,6 @@ int main(int argc, char ** argv)
 
       buffer << l0 << '\n' << l1 << '\n' << l2 << '\n';
     }
-  ofstream o(outfile);
-  o << buffer.str() << '\n';
-  o.close();
+  cout << buffer.str() << '\n';
   exit(0);
 }
