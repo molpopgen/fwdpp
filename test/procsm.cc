@@ -36,11 +36,12 @@ pair<bool,bool> mono(const SimData & d,
        p != d.pend() ; 
        ++p )
     {
-      if ( *p*L >= lo - 1. && *p*L < lo )
+      double pos = *p*L;
+      if ( pos >= lo - 1. && pos < lo )
 	{
 	  ++nm1;
 	}
-      else if ( *p*L >= hi - 1. && *p*L < hi )
+      else if ( pos >= hi - 1. && pos < hi )
 	{
 	  ++nm2;
 	}
@@ -63,9 +64,9 @@ int main( int argc, char ** argv )
 	{
 	  l1=resize(l1);
 	}
-      if(l1.size()>2)
+      if(l2.size()>2)
 	{
-	  l1=resize(l1);
+	  l2=resize(l2);
 	}
       tpos(l1,1.);
       tpos(l2,2.);
