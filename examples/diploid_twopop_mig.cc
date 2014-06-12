@@ -55,6 +55,12 @@ Sequence::SimData merge( const std::vector<std::pair<double,std::string> > & sam
 
 int main(int argc, char ** argv)
 {
+  if (argc != 10)
+    {
+      std::cerr << "Too few arguments.\n"
+		<< "Usage: diploid_twopop_mig N theta rho ngens_b4_split ngens_after_split M samplesize nreps seed\n";
+      exit(10);
+    }
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
   const double theta = atof(argv[argument++]);

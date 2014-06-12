@@ -100,6 +100,12 @@ double recurrent_sweep_genetic_map(gsl_rng * r, const double & littler_neut,
  
 int main(int argc, char ** argv)
 {
+  if ( argc != 12 )
+    {
+      std::cerr << "Too few arguments.\n"
+		<< "Usage: RHH N theta rho nsites s Lambda burnin ngens samplesize nreps seed\n";
+      exit(10);
+    }
   int argument=1;
   const unsigned N = atoi(argv[argument++]);           //Number of diploids
   const double theta = atof(argv[argument++]);         //4*n*mutation rate for neutral region.  Note: mutation rate is per REGION, not SITE!!

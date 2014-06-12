@@ -148,6 +148,12 @@ struct multiplicative_diploid_minus
 
 int main( int argc, char ** argv )
 {
+  if (argc != 14)
+    {
+      std::cerr << "Too few arguments.\n"
+		<< "Usage: migsel_ind N theta_neutral theta_deleterious rho M s h f1 f2 ngens n outfilename seed\n";
+      exit(10);
+    }
   int argn=1;
   const unsigned N = atoi(argv[argn++]);
   const double theta_neut = atof(argv[argn++]);

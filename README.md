@@ -40,6 +40,10 @@ The library user will also need some familiarity with the [boost](http://www.boo
 
 This code is distributed via my gitub [account](http://www.github.com/molpopgen).  The "master" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that, while the version number in the configure script on master/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in master/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at master.  Also note that master may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
 
+###Revision history
+
+Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](RELEASE_NOTES.md), beginning with release 0.2.4.
+
 ##Which C++?
 
 fwdpp does not use any features from then newly-released C++11 standard.  The new standard extends/simplifies the language, and therefore I expect the current code base to be C++11-compliant. As compiler support for C++11 becomes more widespread, the library will likely start to use some of those features, which will drastically improve readability of some of the nastier bits of template wizardry.
@@ -47,6 +51,31 @@ fwdpp does not use any features from then newly-released C++11 standard.  The ne
 ##Citation
 
 The manuscript describing fwdpp is currently on [arxiv](http://arxiv.org/abs/1401.3786).
+
+#Documentation
+
+##Online
+The library's reference manual can be found at [molpopgen.org](http://www.molpopgen.org/software/fwdpp/doc/html/index.html).
+
+A pdf file describing the implementation of policies is [here](http://molpopgen.org/resources/policies.pdf).
+
+__Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
+
+We are also looking into moving the docs to a github page, which will change the above links.
+
+##Built from source
+The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
+
+The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
+
+cd doc<br>
+pdflatex policies<br>
+pdflatex policies<br>
+
+One runs pdflatex twice to ensure that cross-references within the document are processed properly.
+
+##Example documentation
+The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
 
 #Dependencies
 
@@ -60,10 +89,10 @@ You must have the following on your system:
 ##Library dependencies
 fwdpp depends upon the following libraries:
 
-[boost](http://www.boost.org)<br>
-[GSL](http://gnu.org/software/gsl)<br>
-[zlib](http://zlib.net)<br>
-[libsequence](http://github.com/molpopgen/libsequence)<br>
+1.  [boost](http://www.boost.org).
+2.  [GSL](http://gnu.org/software/gsl)
+3.  [zlib](http://zlib.net)
+4.  [libsequence](http://github.com/molpopgen/libsequence).
 
 The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
 
@@ -71,10 +100,10 @@ The first three are  available as pre-built packages on most Linux distributions
 
 ###Obtaining the master branch
 You have a few options:
-<ol>
-<li> Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
-<li> Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
-</ol>
+
+1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
+2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
+
 
 ###Obtaining a specific release
 Again, a few options:
@@ -375,14 +404,3 @@ Example from the PLoS Genetics paper:
 
 will simulate a mean effect size of 0.5 (exponentially-distributed).  The above will take probably many hours to run.
 
-#Documentation
-
-The documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
-
-The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
-
-cd doc<br>
-pdflatex policies<br>
-pdflatex policies<br>
-
-One runs pdflatex twice to ensure that cross-references within the document are processed properly.

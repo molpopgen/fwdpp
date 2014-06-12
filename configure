@@ -2751,7 +2751,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=fwdpp
- VERSION=0.2.3
+ VERSION=0.2.4
 
 
 cat >>confdefs.h <<_ACEOF
@@ -4798,6 +4798,22 @@ else
 fi
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost/container/vector.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost/container/list.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+fi
+
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
   HAVE_LIBSEQ=1
@@ -4819,6 +4835,14 @@ if test "x$ac_cv_header_gsl_gsl_randist_h" = xyes; then :
   HAVE_GSL=1
 else
   as_fn_error $? "gsl/gsl_rng.h not found.  Please install the GNU Scientific Library" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "zlib.h" "ac_cv_header_zlib_h" "$ac_includes_default"
+if test "x$ac_cv_header_zlib_h" = xyes; then :
+
+else
+  as_fn_error $? "zlib.h not found.  zlib >= 1.2.5" "$LINENO" 5
 fi
 
 

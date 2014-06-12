@@ -1,7 +1,7 @@
 /*
-  \include diploid_binaryIO_ind.cc
+  \include diploid_gzbinaryIO_ind.cc
 
-  Same as diploid_binaryIO.cc, but used individual-based routines
+  Same as diploid_binaryIO_ind.cc, but input/output are gzip compressed
   
   The population is then read back in and compared to what was written out.
 
@@ -9,7 +9,7 @@
 
   Also illustrates POSIX file locking via <fcntl.h>, which is super-useful on clusters.
 
-  Example use that runs quickly: ./diploid_binaryIO 1000 10 10 10000 1 index haps.bin $RANDOM
+  Example use that runs quickly: ./diploid_hzbinaryIO 1000 10 10 10000 1 index haps.bin.gz $RANDOM
 */
 
 #include <fwdpp/diploid.hh>
@@ -60,24 +60,32 @@ struct mwriter
   }
 };
 
-//function object to read mutation data in binary format
+/*
+  Function object to read mutation data in binary format.
+  This is the difference from diploid_binaryIO_ind.cc,
+  as it is based on gzread from a gzFile rather than
+  an istream.
+
+  Note: zlib.h is already included via fwdpp,
+  but there would be no harm in doing so again above.
+*/
 struct mreader
 {
   typedef mutation_with_age result_type;
-  result_type operator()( std::istream & in ) const
+  result_type operator()( gzFile gzin ) const
   {
     unsigned n;
-    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
+    gzread( gzin,&n,sizeof(unsigned) );
     unsigned g;
-    in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
+    gzread( gzin,&g,sizeof(unsigned) );
     bool neut;
-    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
+    gzread( gzin,&neut,sizeof(bool) );
     double pos;
-    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
+    gzread( gzin,&pos,sizeof(double) );
     double s;
-    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
+    gzread( gzin,&s,sizeof(double) );
     double h;
-    in.read( reinterpret_cast< char * >(&h),sizeof(double) );
+    gzread( gzin,&h,sizeof(double) );
     return result_type(g,pos,n,s,h,neut);
   }
 };
@@ -109,7 +117,7 @@ int main(int argc, char ** argv)
   if (argc != 9)
     {
       std::cerr << "Too few arguments\n"
-		<< "Usage: diploid_binaryIO_ind N theta rho ngens replicate_no indexfile hapfile seed\n";
+		<< "Usage: diploid_gzbinaryIO_ind N theta rho ngens replicate_no indexfile hapfile seed\n";
       exit(10);
     } 
   int argument=1;
@@ -176,14 +184,19 @@ int main(int argc, char ** argv)
       
   KTfwd::write_binary_pop(&gametes,&mutations,&diploids,boost::bind(mwriter(),_1,_2),buffer);
 
+  /*
+    Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
+    as done in diploid_binaryIO.cc.  See https://github.com/molpopgen/BigDataFormats
+    for why not.
+   */
+
   //establish POSIX file locks for output
-  struct flock index_flock, hapfile_flock;
+  struct flock index_flock;
   index_flock.l_type = F_WRLCK;/*Write lock*/
   index_flock.l_whence = SEEK_SET;
   index_flock.l_start = 0;
   index_flock.l_len = 0;/*Lock whole file*/
-      
-  //lock index file ASAP
+
   FILE * index_fh = fopen(indexfile,"a");
   int index_fd = fileno(index_fh);
   if ( index_fd == -1 ) 
@@ -196,45 +209,18 @@ int main(int argc, char ** argv)
       std::cerr << "ERROR: could not obtain lock on " << indexfile << '\n';
       exit(10);
     }
-      
-  hapfile_flock.l_type = F_WRLCK;/*Write lock*/
-  hapfile_flock.l_whence = SEEK_SET;
-  hapfile_flock.l_start = 0;
-  hapfile_flock.l_len = 0;/*Lock whole file*/
 
-  FILE * haps_fh = fopen(hapfile,"a");
-  int hapfile_fd = fileno(haps_fh);
-      
-  if ( hapfile_fd == -1 ) 
-    { 
-      std::cerr << "ERROR: could not open " << hapfile << '\n';
-      exit(10);
-    }
-  if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
-    {
-      std::cerr << "ERROR: could not obtain lock on " << hapfile << '\n';
-      exit(10);
-    }
+  //OK, we no have an exclusive lock on the index file.  In principle, that is sufficient for us to move on.
 
-  long int offset = ftell(haps_fh);
-  //write the index
-  fprintf( index_fh,"%u\t%ld\n",replicate_no,offset );
+  //Now, write output to a gzipped file
+  gzFile gzout = gzopen( hapfile, "ab" ); //open in append mode.  The b = binary mode.  Not required on all systems, but never hurts.
+  gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
+  //write info to index file
+  fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzout ) );
+  gzclose(gzout);
 
-  //write the buffered haplotype data
-  write( hapfile_fd, buffer.str().c_str(), buffer.str().size() );
-
-  //release locks and close files
+  //We can now release close the index file, release the lock, etc.
   index_flock.l_type = F_UNLCK;
-  hapfile_flock.l_type = F_UNLCK;
-
-  if (fcntl(hapfile_fd, F_UNLCK,&hapfile_flock) == -1) 
-    {
-      std::cerr << "ERROR: could not releaselock on " <<  hapfile << '\n';
-      exit(10);
-    }
-  fflush( haps_fh );
-  fclose(haps_fh);
-      
   if (fcntl(index_fd, F_UNLCK,&index_flock) == -1) 
     {
       std::cerr << "ERROR: could not release lock on " << indexfile << '\n';
@@ -243,18 +229,44 @@ int main(int argc, char ** argv)
   fflush( index_fh );
   fclose(index_fh);
 
-  //now, read the data back in...
-  glist gametes2;
+   /*
+    Read the data back in.
+    Unlike our other examples, we must keep track of the cumulative offsets in the index file
+    up until we find our record_number
+  */
+  std::ifstream index_in(indexfile);
+  unsigned long long rec_offset = 0,offset_i;
+  unsigned rid;
+  while(! index_in.eof() )
+    {
+      index_in >> rid >> offset_i >> std::ws;
+      if ( rid != replicate_no )
+	{
+	  rec_offset += offset_i;
+	}
+      else
+	{
+	  break;
+	}
+    }
+  index_in.close();
+  if(rid != replicate_no)
+    {
+      std::cerr << "Error: replicate id not found in index file, " << replicate_no << ' ' << rid << '\n';
+      exit(10);
+    }
+
   mlist mutations2;
+  glist gametes2;
   std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
 
-  std::ifstream in(hapfile,std::ios_base::in|std::ios_base::binary);
-  in.seekg(offset);
+  gzFile gzin = gzopen( hapfile, "rb" ); //open it for reading.  Again, binary mode.
+  gzseek( gzin, rec_offset, SEEK_CUR ); //seek to position
   KTfwd::read_binary_pop(&gametes2,
 			 &mutations2,
 			 &diploids2,
 			 boost::bind(mreader(),_1),
-			 in);
+			 gzin);
 
   //Now, compare what we wrote to what we read
   std::cout << gametes.size() << ' ' << gametes2.size() << ' ' << mutations.size() << ' ' << mutations2.size() 

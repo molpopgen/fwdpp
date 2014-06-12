@@ -1,7 +1,7 @@
 /*
-  \include diploid_binaryIO_ind.cc
+  \include diploid_gzbinaryIO.cc
 
-  Same as diploid_binaryIO.cc, but used individual-based routines
+  Same as diploid.cc, but this version uses fwdpp/IO.hpp to write the population to a gzipped binary file.
   
   The population is then read back in and compared to what was written out.
 
@@ -9,7 +9,9 @@
 
   Also illustrates POSIX file locking via <fcntl.h>, which is super-useful on clusters.
 
-  Example use that runs quickly: ./diploid_binaryIO 1000 10 10 10000 1 index haps.bin $RANDOM
+  Note that locking with gzfiles and creating an on-the-fly index works differently b/c of how gztell works vs ftell!
+
+  Example use that runs quickly: ./diploid_gzbinaryIO 1000 10 10 10000 1 index haps.bin.gz $RANDOM
 */
 
 #include <fwdpp/diploid.hh>
@@ -20,8 +22,6 @@
 
 #include <fcntl.h>
 
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
@@ -60,34 +60,44 @@ struct mwriter
   }
 };
 
-//function object to read mutation data in binary format
+
+/*
+  Function object to read mutation data in binary format.
+  This is the difference from diploid_binaryIO.cc,
+  as it is based on gzread from a gzFile rather than
+  an istream.
+
+  Note: zlib.h is already included via fwdpp,
+  but there would be no harm in doing so again above.
+*/
 struct mreader
 {
   typedef mutation_with_age result_type;
-  result_type operator()( std::istream & in ) const
+  result_type operator()( gzFile gzin ) const
   {
     unsigned n;
-    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
+    gzread( gzin,&n,sizeof(unsigned) );
     unsigned g;
-    in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
+    gzread( gzin,&g,sizeof(unsigned) );
     bool neut;
-    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
+    gzread( gzin,&neut,sizeof(bool) );
     double pos;
-    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
+    gzread( gzin,&pos,sizeof(double) );
     double s;
-    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
+    gzread( gzin,&s,sizeof(double) );
     double h;
-    in.read( reinterpret_cast< char * >(&h),sizeof(double) );
+    gzread( gzin,&h,sizeof(double) );
     return result_type(g,pos,n,s,h,neut);
   }
 };
+
 
 typedef mutation_with_age mtype;
 typedef boost::pool_allocator<mtype> mut_allocator;
 typedef boost::container::list<mtype,mut_allocator > mlist;
 typedef KTfwd::gamete_base<mtype,mlist> gtype;
 typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::list<gtype,gam_allocator > glist;
+typedef boost::container::vector<gtype,gam_allocator > gvector;
 
 typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
 
@@ -109,7 +119,7 @@ int main(int argc, char ** argv)
   if (argc != 9)
     {
       std::cerr << "Too few arguments\n"
-		<< "Usage: diploid_binaryIO_ind N theta rho ngens replicate_no indexfile hapfile seed\n";
+		<< "Usage: diploid_gzbinaryIO N theta rho ngens replicate_no indexfile hapfile seed\n";
       exit(10);
     } 
   int argument=1;
@@ -123,7 +133,7 @@ int main(int argc, char ** argv)
   const unsigned seed = atoi(argv[argument++]);
 
   const double mu = theta/double(4*N);
-  const double littler = rho/double(4*N);
+  const double littler = rho/double(8*N);
   
   std::copy(argv,argv+argc,std::ostream_iterator<char*>(std::cerr," "));
   std::cerr << '\n';
@@ -135,10 +145,8 @@ int main(int argc, char ** argv)
 
   unsigned twoN = 2*N;
 
-  glist gametes(1,gtype(twoN));
+  gvector gametes(1,gtype(twoN));
   mlist mutations;
-  std::vector< std::pair< glist::iterator,glist::iterator > > diploids(N,std::make_pair(gametes.begin(),
-											gametes.begin()));
   std::vector<mtype> fixations;
   std::vector<unsigned> fixation_times;
   unsigned generation;
@@ -147,43 +155,43 @@ int main(int argc, char ** argv)
   fixation_times.clear();
   double wbar;
 
-  lookup_table_type lookup;  
-
-  //recombination map is uniform[0,1)  
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
-
+  lookup_table_type lookup;
   for( generation = 0; generation < ngens; ++generation )
     {
-      wbar = KTfwd::sample_diploid(r,
-				   &gametes, 
-				   &diploids,
-				   &mutations,
-				   N,     
-				   mu,   
-				   boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				   boost::bind(KTfwd::genetics101(),_1,_2,
-					       &gametes,
-					       littler,
-					       r,
-					       recmap),
-				   boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				   boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
+      wbar = KTfwd::sample_diploid(r,&gametes,twoN,
 				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+				   boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
-    }
-  std::ostringstream buffer;
-      
-  KTfwd::write_binary_pop(&gametes,&mutations,&diploids,boost::bind(mwriter(),_1,_2),buffer);
+      assert(KTfwd::check_sum(gametes,twoN));
+      assert( lookup.size() == mutations.size() );
+      unsigned nmuts = KTfwd::mutate(r,&gametes,&mutations,mu,
+				     boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
+				     boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
+				     boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
 
+      assert(KTfwd::check_sum(gametes,twoN));
+      unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, boost::bind(gsl_rng_uniform,r));
+      assert(KTfwd::check_sum(gametes,twoN));
+    }
+
+  /*
+    Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
+    as done in diploid_binaryIO.cc.  See https://github.com/molpopgen/BigDataFormats
+    for why not.
+   */
+    
+  //Write pop to buffer in binary format
+  std::ostringstream buffer;
+  KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
+
+  //lock index file ASAP
   //establish POSIX file locks for output
-  struct flock index_flock, hapfile_flock;
+  struct flock index_flock;
   index_flock.l_type = F_WRLCK;/*Write lock*/
   index_flock.l_whence = SEEK_SET;
   index_flock.l_start = 0;
   index_flock.l_len = 0;/*Lock whole file*/
-      
-  //lock index file ASAP
+
   FILE * index_fh = fopen(indexfile,"a");
   int index_fd = fileno(index_fh);
   if ( index_fd == -1 ) 
@@ -196,45 +204,19 @@ int main(int argc, char ** argv)
       std::cerr << "ERROR: could not obtain lock on " << indexfile << '\n';
       exit(10);
     }
-      
-  hapfile_flock.l_type = F_WRLCK;/*Write lock*/
-  hapfile_flock.l_whence = SEEK_SET;
-  hapfile_flock.l_start = 0;
-  hapfile_flock.l_len = 0;/*Lock whole file*/
 
-  FILE * haps_fh = fopen(hapfile,"a");
-  int hapfile_fd = fileno(haps_fh);
-      
-  if ( hapfile_fd == -1 ) 
-    { 
-      std::cerr << "ERROR: could not open " << hapfile << '\n';
-      exit(10);
-    }
-  if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
-    {
-      std::cerr << "ERROR: could not obtain lock on " << hapfile << '\n';
-      exit(10);
-    }
+  //OK, we no have an exclusive lock on the index file.  In principle, that is sufficient for us to move on.
 
-  long int offset = ftell(haps_fh);
-  //write the index
-  fprintf( index_fh,"%u\t%ld\n",replicate_no,offset );
+  //Write buffer to gzfile
+  gzFile gzf = gzopen( hapfile, "ab" ); //write mode, binary
+  gzwrite( gzf, buffer.str().c_str(), buffer.str().size() );
+  //Now, write how much we wrote to the output file.
+  fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzf ) );
+  //close the file
+  gzclose( gzf );
 
-  //write the buffered haplotype data
-  write( hapfile_fd, buffer.str().c_str(), buffer.str().size() );
-
-  //release locks and close files
+  //We can now release close the index file, release the lock, etc.
   index_flock.l_type = F_UNLCK;
-  hapfile_flock.l_type = F_UNLCK;
-
-  if (fcntl(hapfile_fd, F_UNLCK,&hapfile_flock) == -1) 
-    {
-      std::cerr << "ERROR: could not releaselock on " <<  hapfile << '\n';
-      exit(10);
-    }
-  fflush( haps_fh );
-  fclose(haps_fh);
-      
   if (fcntl(index_fd, F_UNLCK,&index_flock) == -1) 
     {
       std::cerr << "ERROR: could not release lock on " << indexfile << '\n';
@@ -243,50 +225,71 @@ int main(int argc, char ** argv)
   fflush( index_fh );
   fclose(index_fh);
 
-  //now, read the data back in...
-  glist gametes2;
+  /*
+    Read the data back in.
+    Unlike our other examples, we must keep track of the cumulative offsets in the index file
+    up until we find our record_number
+  */
+  std::ifstream index_in(indexfile);
+  unsigned long long rec_offset = 0,offset_i;
+  unsigned rid;
+  while(! index_in.eof() )
+    {
+      index_in >> rid >> offset_i >> std::ws;
+      if ( rid != replicate_no )
+	{
+	  rec_offset += offset_i;
+	}
+      else
+	{
+	  break;
+	}
+    }
+  index_in.close();
+  if(rid != replicate_no)
+    {
+      std::cerr << "Error: replicate id not found in index file, " << replicate_no << ' ' << rid << '\n';
+      exit(10);
+    }
+  std::vector< gtype > gametes2;
   mlist mutations2;
-  std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
 
-  std::ifstream in(hapfile,std::ios_base::in|std::ios_base::binary);
-  in.seekg(offset);
-  KTfwd::read_binary_pop(&gametes2,
-			 &mutations2,
-			 &diploids2,
-			 boost::bind(mreader(),_1),
-			 in);
+  gzf = gzopen( hapfile, "rb" ); //read mode, binary
+  //seek to position
+  gzseek(gzf,rec_offset,SEEK_CUR);
+  read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),gzf);
+  gzclose(gzf);
 
   //Now, compare what we wrote to what we read
-  std::cout << gametes.size() << ' ' << gametes2.size() << ' ' << mutations.size() << ' ' << mutations2.size() 
-	    << ' ' << diploids.size() << ' ' << diploids2.size() << '\n';
-
-  for( unsigned i = 0 ; i < diploids.size() ; ++i )
+  std::cout << "Mutations:\n";
+  mlist::iterator mitr1 = mutations.begin(),mitr2=mutations2.begin();
+  for( ; mitr1 != mutations.end() ; ++mitr1,++mitr2 )
     {
-      std::cout << "Diploid " << i << ":\nWritten:\n";
-      for( unsigned j = 0 ; j < diploids[i].first->mutations.size() ; ++j )
+      std::cout << mitr1->pos << '\t' << mitr2->pos << '\t'
+		<< mitr1->n << '\t' << mitr2->n << '\n';
+    }
+  std::cout << "Gametes:\n";
+  for( unsigned i = 0 ; i < gametes.size() ; ++i )
+    {
+      std::cout << i << ':' << gametes[i].n << ' ' << gametes[i].mutations.size() << ' ';
+      for(unsigned j = 0 ; j < gametes[i].mutations.size() ; ++j)
 	{
-	  std::cout << '(' << diploids[i].first->mutations[j]->pos << ','
-		    << diploids[i].first->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
-      for( unsigned j = 0 ; j < diploids[i].second->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << diploids[i].second->mutations[j]->pos << ','
-		    << diploids[i].second->mutations[j]->n << ')';
+	  std::cout << '(' 
+		    << gametes[i].mutations[j]->pos << ','
+		    << gametes[i].mutations[j]->n << ','
+		    << gametes[i].mutations[j]->neutral 
+		    << ')';
 	}
       std::cout << '\n';
 
-      std::cout << "Read:\n";
-      for( unsigned j = 0 ; j < diploids2[i].first->mutations.size() ; ++j )
+      std::cout << i << ':' << gametes2[i].n << ' ' << gametes2[i].mutations.size() << ' ';
+      for(unsigned j = 0 ; j < gametes2[i].mutations.size() ; ++j)
 	{
-	  std::cout << '(' << diploids2[i].first->mutations[j]->pos << ','
-		    << diploids2[i].first->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
-      for( unsigned j = 0 ; j < diploids2[i].second->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << diploids2[i].second->mutations[j]->pos << ','
-		    << diploids2[i].second->mutations[j]->n << ')';
+	  std::cout << '(' 
+		    << gametes2[i].mutations[j]->pos << ','
+		    << gametes2[i].mutations[j]->n << ','
+		    << gametes2[i].mutations[j]->neutral 
+		    << ')';
 	}
       std::cout << '\n';
     }

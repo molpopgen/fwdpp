@@ -139,6 +139,12 @@ struct mutation_model
 
 int main(int argc, char ** argv)
 {
+  if ( argc != 16)
+    {
+      cerr << "Too few arguments.\n"
+	   << "Usage: TFL2013 N mu_disease mu_neutral r s dist_effects sd sd_s gens_burnin gens_evolve popfile.gz phenotypes.gz effects.gz nreps seed\n";
+      exit(10);
+    }
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
   const double mu_disease = atof(argv[argument++]);
@@ -255,9 +261,9 @@ int main(int argc, char ** argv)
 	      ++i;
 	    }
 	}
-      ofstream effectfile(ofn2);
-      effectfile << buffer.str();
-      effectfile.close();
+      ofstream phenofile(ofn2);
+      phenofile << buffer.str();
+      phenofile.close();
       buffer.str(string());
       assert( gamsum == 0 );
 
