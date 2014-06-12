@@ -27,8 +27,6 @@
   }
 
   However, this simulation will be SLOWER than the R code because it is doing a lot more each generation.
-
-  In essence, using fwdpp like this is like diggin a fence post hole with dynamite.
 */
 
 #include <fwdpp/diploid.hh>
