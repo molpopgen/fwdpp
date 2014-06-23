@@ -327,7 +327,7 @@ sample_diploid(gsl_rng * r,
 						       locus_vector_type_allocator>,
 				     diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const unsigned & N
+		 const unsigned & N,
 		 const double * mu,
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
@@ -338,7 +338,7 @@ sample_diploid(gsl_rng * r,
 		 const mutation_removal_policy & mp,
 		 const double & f)
 	    {
-	      return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,mpolicy,gpolicy_mit,ff,mp,f)
+	      return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,mpolicy,gpolicy_mut,ff,mp,f);
 	    }
 } //ns KTfwd
 #endif
