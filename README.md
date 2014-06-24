@@ -50,7 +50,24 @@ fwdpp does not use any features from then newly-released C++11 standard.  The ne
 
 ##Citation
 
-The manuscript describing fwdpp is currently on [arxiv](http://arxiv.org/abs/1401.3786).
+The fwdpp manuscript has been accepted for publication in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
+
+```
+@Article{,
+  author = 	 {K. R. Thornton},
+  title = 	 {A C++ Template Library for Efficient Forward-Time Population Genetic Simulation of Large Populations},
+  journal = 	 {Genetics},
+  year = 	 {2014},
+  OPTkey = 	 {},
+  OPTvolume = 	 {},
+  OPTnumber = 	 {},
+  OPTpages = 	 {},
+  OPTmonth = 	 {},
+  OPTnote = 	 {},
+  annote = 	 {doi:/10.1534/genetics.114.165019}
+}
+```
+
 
 #Documentation
 
