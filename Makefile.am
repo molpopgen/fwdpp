@@ -1,9 +1,7 @@
 AUTOMAKE_OPTIONS = foreign
 bin_PROGRAMS=fwdpp
 SUBDIRS=fwdpp
-#  uncomment the following if fwdpp requires the math library
-#fwdpp_LDADD=-lm
-
+ACLOCAL_AMFLAGS = -I m4
 #  if you write a self-test script named `chk', uncomment the
 #  following and add `chk' to the EXTRA_DIST list
 #TESTS=chk

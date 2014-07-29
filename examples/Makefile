@@ -5,7 +5,7 @@ DEBUG=-DNDEBUG
 OPT=-O2  -funroll-all-loops
 #OPT=-O2 -pg
 #OPT=
-CXXFLAGS=$(OPT) -Wall -W -I..  $(DEBUG)
+CXXFLAGS=$(OPT) -Wall -W -I..  $(DEBUG) -std=c++11
 
 TARGETS=diploid diploid_ind diploid_fixed_sh diploid_twopop_mig diploid_binaryIO RHH bneck_selection migsel_ind diploid_binaryIO_ind diploid_fixed_sh_ind TFL2013 diploid_ind_2locus
 all: diploid.o diploid_ind.o diploid_binaryIO.o diploid_binaryIO_ind.o diploid_fixed_sh.o diploid_twopop_mig.o RHH.o diploid_fixed_sh_ind.o bneck_selection.o migsel_ind.o TFL2013.o diploid_ind_2locus.o
