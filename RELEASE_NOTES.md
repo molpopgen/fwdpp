@@ -6,6 +6,7 @@ The following changes:
 
 1. fwdpp/diploid_functions_ind_multilocis.tcc was added.  This contains a more natural method of simulating mutiple partially-linked regions.  The header fwdpp/diploid_functions.hpp contains the relevant prototypes.
 2. Header files have been reorganized.  fwdpp/diploid.hh is still the header to use.  The reorg has been for the developer's sanity.
+3. C++11 support can be enabled by saying --enable-cpp11=yes during the ./configure step.  Using this flag is required when using libsequence >= 1.8.3.
 
 #0.2.4
 
