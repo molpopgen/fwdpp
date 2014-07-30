@@ -63,7 +63,7 @@ typedef boost::container::list<gtype,gam_allocator > glist;
 #else
 typedef std::list<mtype> mlist;
 typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef std::list<gtype > list;
+typedef std::list<gtype > glist;
 #endif
 
 
