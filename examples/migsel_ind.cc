@@ -7,7 +7,6 @@
  */
 #include <fwdpp/diploid.hh>
 
-#include <boost/unordered_set.hpp>
 #include <Sequence/SimData.hpp>
 #include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
 #include <Sequence/FST.hpp>
@@ -17,22 +16,9 @@
 #include <cassert>
 #include <iomanip>
 
-#include <boost/function.hpp>
-#include <boost/functional.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
-
 //the type of mutation
 typedef KTfwd::mutation mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-typedef boost::container::list<gtype,gam_allocator > glist;
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#include <common_ind.hpp>
 
 using namespace std;
 using namespace KTfwd;
@@ -181,22 +167,29 @@ int main( int argc, char ** argv )
   std::vector<mtype> fixations;
   std::vector<unsigned> fixation_times;
 
-  boost::container::vector< glist > metapop(2, glist(1,gtype(2*N)));
-
   lookup_table_type lookup;
 
+#ifdef USE_STANDARD_CONTAINERS
+  std::vector< glist > metapop(2, glist(1,gtype(2*N)));
+  typedef std::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
+  std::vector< diploid_bucket > diploids;
+  std::vector<unsigned> Ns(2,N);
+  std::vector<double> fs;
+#else
+  boost::container::vector< glist > metapop(2, glist(1,gtype(2*N)));
   typedef boost::container::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
-
   boost::container::vector< diploid_bucket > diploids;
+  boost::container::vector<unsigned> Ns(2,N);
+  boost::container::vector<double> fs;
+#endif
 
-  for ( boost::container::vector< glist >::iterator i = metapop.begin() ;
+
+  for ( auto i = metapop.begin() ;
 	i != metapop.end() ; ++i )
     {
       diploids.push_back ( diploid_bucket(N,std::make_pair(i->begin(),i->begin())) );
     }
 
-  boost::container::vector<unsigned> Ns(2,N);
-  boost::container::vector<double> fs;
   fs.push_back(f1);
   fs.push_back(f2);
 
@@ -256,9 +249,14 @@ int main( int argc, char ** argv )
   outstream.close();
 
   //Now, read it all back in, for fun.
+#ifdef USE_STANDARD_CONTAINERS
+  std::vector< glist > metapop2;
+  std::vector< diploid_bucket > diploids2;
+#else
   boost::container::vector< glist > metapop2;
-  mlist mutations2;
   boost::container::vector< diploid_bucket > diploids2;
+#endif
+  mlist mutations2;
   Sequence::SimData neutral2,selected2;
 
   ifstream in(outfilename);

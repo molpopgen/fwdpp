@@ -10,11 +10,6 @@
 
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
-#include <boost/unordered_set.hpp>
-
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 /*
   We define a new mutation type, derived from the base class KTfwd::mutation_base.
@@ -50,29 +45,7 @@ struct mutation_with_age : public KTfwd::mutation_base
 
 //compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
 typedef mutation_with_age mtype;
-#ifndef USE_STANDARD_CONTAINERS
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-#else
-typedef std::list<mtype> mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef std::vector<gtype > gvector;
-#endif
-
-
-/*
-  We wish to do mutations under the infinitely-many sites assumption.  That means that
-  a new mutation cannot appear at any previously-mutated site.  Here, we cheat a little
-  and do not allow mutations at any sites that are currently polymorphic.
-
-  We accomplish this via a lookup table of the current mutation positions.  The function object
-  KTfwd::equal_eps is used as a replacement for std::operator==(double,double) in order to ensure
-  that values differing by <= DBL_EPSILON (~10^-17 on most systems) are not allowed, as they cause problems.
- */
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#include <common_gamete.hpp>
 
 /*
   This function generates neutral mutations under the infinitely-many sites assumption

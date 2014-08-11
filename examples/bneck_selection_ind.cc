@@ -5,28 +5,16 @@
  */
 
 #include <fwdpp/diploid.hh>
-#include <boost/unordered_set.hpp>
 #include <Sequence/SimData.hpp>
 #include <numeric>
 #include <cmath>
 #include <functional>
 #include <cassert>
 #include <iomanip>
-#include <boost/function.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 //the type of mutation
 typedef KTfwd::mutation mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-typedef boost::container::list<gtype,gam_allocator > glist;
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#include <common_ind.hpp>
 
 using namespace KTfwd;
 

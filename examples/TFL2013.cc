@@ -17,11 +17,6 @@
 #include <boost/iostreams/filtering_stream.hpp>
 #include <boost/iostreams/device/file.hpp>
 
-#include <boost/unordered_set.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
-
 using namespace std;
 using namespace boost::iostreams;
 using Sequence::SimData;
@@ -46,24 +41,14 @@ struct mutation_with_age : public mutation_base
 };
 
 typedef mutation_with_age mtype;
-//boost containers
-#ifndef USE_STANDARD_CONTAINERS
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
+#include <common_gamete.hpp>
+#ifdef USE_STANDARD_CONTAINERS
+typedef std::vector<mtype> mvector;
+typedef std::vector<unsigned> ftvector;
+#else
 typedef boost::container::vector<mtype> mvector;
 typedef boost::container::vector<unsigned> ftvector;
-#else
-typedef std::list<mtype > mlist;
-typedef gamete_base<mtype, mlist> gtype;
-typedef vector<gtype> gvector;
-typedef vector<mtype> mvector;
-typedef vector<unsigned> ftvector;
-#endif
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#endif 
 
 //Calculates the genetic contribution to a diploid's phenotype
 struct disease_effect

@@ -22,10 +22,6 @@
 
 #include <fcntl.h>
 
-#include <boost/unordered_set.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 struct mutation_with_age : public KTfwd::mutation_base
 {
@@ -38,6 +34,9 @@ struct mutation_with_age : public KTfwd::mutation_base
   {	
   }
 };
+
+typedef mutation_with_age mtype;
+#include <common_gamete.hpp>
 
 //function object to write mutation data in binary format
 struct mwriter
@@ -90,16 +89,6 @@ struct mreader
     return result_type(g,pos,n,s,h,neut);
   }
 };
-
-
-typedef mutation_with_age mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
 
 mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
 					      lookup_table_type * lookup)

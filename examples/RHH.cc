@@ -4,11 +4,6 @@
 
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
-#include <boost/unordered_set.hpp>
-
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 struct mutation_with_origin : public KTfwd::mutation
 //records the generation when the mutation entered the population
@@ -22,13 +17,7 @@ struct mutation_with_origin : public KTfwd::mutation
 };
 
 typedef mutation_with_origin mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
-
+#include <common_gamete.hpp>
 
 mtype RHH_mutation_model( gsl_rng * r, const unsigned & generation, const double mu_neutral, const double & mu_selected,
 			  const double & p_selected_within,
