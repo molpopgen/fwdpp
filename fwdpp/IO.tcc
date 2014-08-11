@@ -4,10 +4,6 @@
 
 #include <fwdpp/forward_types.hpp>
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-
 #include <map>
 #include <vector>
 #include <algorithm>
@@ -227,13 +223,13 @@ namespace KTfwd
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
   {	      
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must inherit from KTfwd::mutation_base" );
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						     gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-    
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type>::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef typename list_type< mutation_type, list_type_allocator >::iterator mlist_iterator;
-    
     //initiate a list with the mutation information by iterator
     typedef std::vector< mlist_iterator > maptype;
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer );
@@ -255,11 +251,12 @@ namespace KTfwd
 			      const mutation_writer_type & mw,
 			      ostreamtype & buffer)
   {	      
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must inherit from KTfwd::mutation_base" );
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						     gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-    
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type>::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef typename list_type< mutation_type, list_type_allocator >::iterator mlist_iterator;
     
     //initiate a list with the mutation information by iterator
@@ -291,11 +288,12 @@ namespace KTfwd
     gametes->clear();
     mutations->clear();
     
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must inherit from KTfwd::mutation_base" );
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						     gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-    
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type>::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef list_type< mutation_type, list_type_allocator > mlist;
     typedef std::map<unsigned,typename mlist::iterator> mut_info;
     
@@ -321,11 +319,12 @@ namespace KTfwd
     gametes->clear();
     mutations->clear();
     
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must inherit from KTfwd::mutation_base" );
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						     gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-    
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type>::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef list_type< mutation_type, list_type_allocator > mlist;
     typedef std::map<unsigned,typename mlist::iterator> mut_info;
     
@@ -358,12 +357,12 @@ namespace KTfwd
   {
     gametes->clear();
     mutations->clear();
-    
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must inherit from KTfwd::mutation_base" );    
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						     gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-    
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type>::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef list_type< mutation_type, list_type_allocator > mlist;
     typedef std::map<unsigned,typename mlist::iterator> mut_info;
     

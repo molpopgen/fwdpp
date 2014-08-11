@@ -2,13 +2,18 @@
 #ifndef _MUTATION_TCC_
 #define _MUTATION_TCC_
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <gsl/gsl_randist.h>
+#include <type_traits>
 #include <algorithm>
 #include <numeric>
 #include <iostream>
+
+#include <gsl/gsl_randist.h>
+
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
+#include <boost/container/vector.hpp>
+#endif
 
 namespace KTfwd
 {
@@ -28,14 +33,16 @@ namespace KTfwd
 		  const gamete_insertion_policy & gpolicy, 
 		  const mutation_insertion_policy & mpolicy)
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_type must be derived from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, 
 				   typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-	      BOOST_STATIC_ASSERT( (boost::is_same< list_type<typename gamete_type::mutation_type,list_type_allocator >,
-						    typename gamete_type::mutation_list_type >::value) );
-
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
+              static_assert( std::is_same<list_type<typename gamete_type::mutation_type,list_type_allocator >,
+                                          typename gamete_type::mutation_list_type >::value,
+                             "list_type<typename gamete_type::mutation_type,list_type_allocator > and gamete_type::mutation_list_type must be the same" );
 	      unsigned ncurrent_classes = gametes->size();
 	      typename vector_type<gamete_type,vector_type_allocator>::iterator ibeg;
 	      unsigned NM=0;

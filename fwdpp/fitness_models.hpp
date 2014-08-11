@@ -5,10 +5,8 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/fitness_policies.hpp>
 #include <cassert>
+#include <type_traits>
 
-#include <boost/bind.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
 
 namespace KTfwd
 {
@@ -25,7 +23,9 @@ namespace KTfwd
     template<typename iterator_type >
     inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       return 1.;
     }
   };
@@ -57,7 +57,9 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double starting_fitness = 1. ) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       result_type fitness=starting_fitness;
       if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
       typename iterator_type::value_type::mutation_list_type_iterator ib1,ib2;
@@ -125,7 +127,9 @@ namespace KTfwd
 				  const haplotype_policy & hpol,
 				  const diploid_policy & dpol) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       return dpol( hpol(g1), hpol(g2) );
     }
   };

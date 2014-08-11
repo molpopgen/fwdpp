@@ -3,10 +3,7 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/util.hpp>
-
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
+#include <type_traits>
 
 namespace KTfwd
 {
@@ -35,8 +32,9 @@ namespace KTfwd
 			const unsigned & nmigrants)
   {
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-			  gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type >::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef typename vector_type<gamete_type,vector_type_allocator>::iterator vgitr;
     for(unsigned i = 0 ; i < nmigrants ; ++i)
       {
@@ -79,9 +77,9 @@ namespace KTfwd
 		const double & m)
   {
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-			  gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-
+    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                   std::is_same<gamete_base_type,gamete_type >::value,
+                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     unsigned m12 = gsl_ran_poisson(r,double(twoN_1)*m);
     unsigned m21 = gsl_ran_poisson(r,double(twoN_2)*m);
 

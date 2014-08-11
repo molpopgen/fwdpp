@@ -6,16 +6,16 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <set>
 #include <map>
+#include <type_traits>
 #include <algorithm>
 #include <cassert>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/type_traits/is_convertible.hpp>
 #include <iostream>
 
-#ifndef USE_STANDARD_CONTAINERS
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
 #include <boost/container/vector.hpp>
 #endif
 
@@ -44,8 +44,8 @@ namespace KTfwd
     \note Only works for the case of unique mutation positions!!!
   */
   {
-    BOOST_STATIC_ASSERT( (boost::is_same<typename gamete_type::mutation_type,mutation_type>::value) );
-
+    static_assert( std::is_same<typename gamete_type::mutation_type,mutation_type>::value,
+                   "gamete_type::mutation type and mutation_type must be the same" );
     typedef typename source_gamete_container<gamete_type,gamete_allocator_type>::const_iterator giterator;
     typedef typename source_mut_container<mutation_type,mutation_allocator_type>::iterator literator;  
     typedef typename source_mut_container<mutation_type,mutation_allocator_type>::const_iterator cliterator;
@@ -89,7 +89,8 @@ namespace KTfwd
   /*! \brief Used internally
    */
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutation_type>::value) );
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
     typedef typename list_type<mutation_type,list_type_allocator>::iterator mlitr;
     for(mlitr i = mutations->begin();i!=mutations->end();++i)
       {
@@ -101,13 +102,14 @@ namespace KTfwd
     Removes mutations that are lost.
     \example diploid.cc
   */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename list_type_allocator,
 	   template <typename,typename> class list_type >
-  void remove_lost( list_type<mutationtype,list_type_allocator> * mutations )
+  void remove_lost( list_type<mutation_type,list_type_allocator> * mutations )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
     
     while(i != mutations->end())
       {
@@ -129,14 +131,15 @@ namespace KTfwd
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
     \example diploid.cc
    */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename list_type_allocator,
 	   template <typename,typename> class list_type,
 	   typename mutation_lookup_table>
-  void remove_lost( list_type<mutationtype,list_type_allocator> * mutations, mutation_lookup_table * lookup )
+  void remove_lost( list_type<mutation_type,list_type_allocator> * mutations, mutation_lookup_table * lookup )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
     
     while(i != mutations->end())
       {
@@ -158,19 +161,20 @@ namespace KTfwd
     Removes mutations that are fixed or lost.
     \example diploid.cc
    */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename vector_type_allocator1,
 	   typename vector_type_allocator2,
 	   typename list_type_allocator,
 	   template <typename,typename> class vector_type,
 	   template <typename,typename> class list_type >
-  void remove_fixed_lost( list_type<mutationtype,list_type_allocator> * mutations, 
-			  vector_type<mutationtype,vector_type_allocator1> * fixations, 
+  void remove_fixed_lost( list_type<mutation_type,list_type_allocator> * mutations, 
+			  vector_type<mutation_type,vector_type_allocator1> * fixations, 
 			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
 			  const unsigned & generation,const unsigned & twoN)
 	   {
-	     BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-	     typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+	     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                            "mutation_type must be derived from KTfwd::mutation_base" );
+	     typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
 	     
 	     while(i != mutations->end())
 	       {
@@ -198,22 +202,22 @@ namespace KTfwd
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
     \example diploid.cc
    */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename vector_type_allocator1,
 	   typename vector_type_allocator2,
 	   typename list_type_allocator,
 	   template <typename,typename> class vector_type,
 	   template <typename,typename> class list_type,
 	   typename mutation_lookup_table>
-  void remove_fixed_lost( list_type<mutationtype,list_type_allocator> * mutations, 
-			  vector_type<mutationtype,vector_type_allocator1> * fixations, 
+  void remove_fixed_lost( list_type<mutation_type,list_type_allocator> * mutations, 
+			  vector_type<mutation_type,vector_type_allocator1> * fixations, 
 			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
 			  mutation_lookup_table * lookup,
 			  const unsigned & generation,const unsigned & twoN )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
-    
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
     while(i != mutations->end())
       {
 	assert(i->n <= twoN);			

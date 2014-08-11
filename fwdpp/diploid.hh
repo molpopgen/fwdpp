@@ -24,9 +24,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-//boost
-#include <boost/bind.hpp>
-
 //headers from this project
 #include <fwdpp/debug.hpp>
 #include <fwdpp/migration.hpp>

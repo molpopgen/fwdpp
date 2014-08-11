@@ -2,6 +2,12 @@
 #ifndef __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 #define __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
+#include <boost/container/vector.hpp>
+#endif
+
 namespace KTfwd
 {
   template< typename gamete_type,
@@ -65,10 +71,12 @@ namespace KTfwd
 			const mutation_removal_policy & mp,
 			const double & f)
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+              static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      double wbar = 0.;
 	      std::vector<double> expected_gamete_frequencies(gametes->size(),0.);
 	      calc_mean_fitness(&wbar,&expected_gamete_frequencies[0],gametes,twoN,ff,f);
@@ -94,10 +102,12 @@ double sample_diploid(gsl_rng * r, vector_type<gamete_type,vector_type_allocator
 		      const double & f)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   double wbar = 0.;
   std::vector<double> expected_gamete_frequencies(gametes->size(),0.);
 
@@ -127,10 +137,12 @@ double sample_diploid(gsl_rng * r, vector_type<gamete_type,vector_type_allocator
 				     const mutation_removal_policy & mp)
   //hermaphroditic diploids
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+              static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      assert( metapop->size() == ffs.size() );
 	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
 	      std::vector<double> wbars;
@@ -174,10 +186,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				   const mutation_removal_policy & mp)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+		std::is_same<gamete_base_type,gamete_type>::value,
+		"gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   assert( metapop->size() == ffs.size() );
   assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
   std::vector<double> wbars;
@@ -221,10 +235,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				     const double * fs)
   //hermaphroditic diploids
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			     "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      assert( metapop->size() == ffs.size() );
 	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
 	      std::vector<double> wbars;
@@ -269,10 +285,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				   const double * fs)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   assert( metapop->size() == ffs.size() );
   assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
   std::vector<double> wbars;
@@ -308,11 +326,12 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		   const unsigned & twoN, const double & littler,const map_function & mf,
 		   const double & f)
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-	      
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   typedef typename gamete_type::mutation_container mcont;
   typedef typename mcont::iterator mcont_iterator;
   typedef typename vector_type<gamete_type, vector_type_allocator>::iterator vtype_iterator;

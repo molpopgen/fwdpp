@@ -7,13 +7,8 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-
 #include <cmath>
 #include <numeric>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/container/vector.hpp>
 
 #include <fwdpp/util.hpp>
 #include <fwdpp/insertion_policies.hpp>

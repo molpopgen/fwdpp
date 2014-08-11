@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <limits>
 #include <cmath>
-#include <boost/bind.hpp>
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>

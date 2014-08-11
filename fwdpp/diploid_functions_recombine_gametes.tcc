@@ -2,6 +2,12 @@
 #ifndef __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
+#include <boost/container/vector.hpp>
+#endif
+
 namespace KTfwd
 {
  //recombination for individual-based simulation
