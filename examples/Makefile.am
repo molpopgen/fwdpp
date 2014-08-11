@@ -51,5 +51,3 @@ else
 #Boost is missing, so we gotta use the standard headers
 AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
 endif
-
-TFL2013_LDADD=$(LDADD) -lboost_iostreams

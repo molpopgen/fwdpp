@@ -65,8 +65,8 @@ am__DEPENDENCIES_1 =
 RHH_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_TFL2013_OBJECTS = TFL2013.$(OBJEXT)
 TFL2013_OBJECTS = $(am_TFL2013_OBJECTS)
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
-TFL2013_DEPENDENCIES = $(am__DEPENDENCIES_2)
+TFL2013_LDADD = $(LDADD)
+TFL2013_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_bneck_selection_ind_OBJECTS = bneck_selection_ind.$(OBJEXT)
 bneck_selection_ind_OBJECTS = $(am_bneck_selection_ind_OBJECTS)
 bneck_selection_ind_LDADD = $(LDADD)
@@ -260,7 +260,6 @@ RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
 LDADD = $(am__append_3)
-TFL2013_LDADD = $(LDADD) -lboost_iostreams
 all: all-am
 
 .SUFFIXES:

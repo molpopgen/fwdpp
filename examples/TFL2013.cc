@@ -13,12 +13,9 @@
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <utility>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/device/file.hpp>
+#include <zlib.h>
 
 using namespace std;
-using namespace boost::iostreams;
 using Sequence::SimData;
 using namespace KTfwd;
 
@@ -318,10 +315,12 @@ int main(int argc, char ** argv)
       msneut.assign(neutral.begin(),neutral.end());
       mssel.assign(selected.begin(),selected.end());
 
-      filtering_ostream msfile;
-      msfile.push(gzip_compressor());
-      msfile.push(file_sink(ofn,ios_base::out|ios_base::binary));
-      msfile << msneut << '\n'<<mssel<<'\n';
+      //filtering_ostream msfile;
+      gzFile gzout = gzopen(ofn,"w");
+      buffer << msneut << '\n'<<mssel<<'\n';
+      gzwrite(gzout,buffer.str().c_str(),buffer.str().size());
+      gzclose(gzout);
+      buffer.str(string());
 
       buffer << "//\n";
       for(mlist::iterator i = mutations.begin() ; i != mutations.end() ; ++i )
@@ -331,9 +330,8 @@ int main(int argc, char ** argv)
 	      buffer << i->pos << '\t' << i->s << '\n';
 	    }
 	}
-      filtering_ostream mutationfile;
-      mutationfile.push(gzip_compressor());
-      mutationfile.push(file_sink(ofn3,ios_base::out|ios_base::binary));
-      mutationfile << buffer.str();
+      gzout = gzopen(ofn3,"w");
+      gzwrite(gzout,buffer.str().c_str(),buffer.str().size());
+      gzclose(gzout);
     }
 }
