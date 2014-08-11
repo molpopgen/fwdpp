@@ -201,13 +201,13 @@ int main( int argc, char ** argv )
   fs.push_back(f2);
 
   //create a vector of fitness functions for each population
-  std::vector<boost::function<double (glist::const_iterator,
+  std::vector<std::function<double (glist::const_iterator,
 				      glist::const_iterator)> > vbf;
   vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
   vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,2.));
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {

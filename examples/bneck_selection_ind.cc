@@ -93,7 +93,7 @@ int main(int argc, char ** argv)
   gsl_rng_set(r,seed);
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   unsigned twoN = 2*N;
   while(nreps--)

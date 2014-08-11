@@ -174,12 +174,12 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
     recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
 
   //need vectors of recombination maps, mutation policies, and fitness models
-  std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(2);
-  std::vector< boost::function<mtype(mlist *)> > mmodels(2);
+  std::vector< std::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(2);
+  std::vector< std::function<mtype(mlist *)> > mmodels(2);
 
   const double rbw = 0.;//0.1;
   while(nreps--)

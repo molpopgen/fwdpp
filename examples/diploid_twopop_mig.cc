@@ -82,7 +82,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //create a vector of fitness functions for each population
-  std::vector<boost::function<double (gvector::const_iterator,
+  std::vector<std::function<double (gvector::const_iterator,
 				      gvector::const_iterator)> > vbf;
   vbf.push_back(std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
   vbf.push_back(std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));

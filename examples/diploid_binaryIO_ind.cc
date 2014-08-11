@@ -149,7 +149,7 @@ int main(int argc, char ** argv)
   lookup_table_type lookup;  
 
   //recombination map is uniform[0,1)  
-  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   for( generation = 0; generation < ngens; ++generation )
     {
