@@ -4688,14 +4688,6 @@ else
 fi
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/map.hpp" "ac_cv_header_boost_container_map_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_container_map_hpp" = xyes; then :
-  BMAP=1
-else
-  echo "boost/container/map.hpp not found. Will use std::map for examples."
-fi
-
-
 ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
   HAVE_LIBSEQ=1

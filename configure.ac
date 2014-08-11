@@ -27,7 +27,6 @@ AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 dnl check for things that we might need
 AC_CHECK_HEADER(boost/container/vector.hpp, BVECTOR=1, [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
 AC_CHECK_HEADER(boost/container/list.hpp, BLIST=1, [echo "boost/container/list.hpp not found.  Will use std::list for examples."])
-AC_CHECK_HEADER(boost/container/map.hpp, BMAP=1, [echo "boost/container/map.hpp not found. Will use std::map for examples."])
 AC_CHECK_HEADER(Sequence/SimDataIO.hpp,HAVE_LIBSEQ=1 , [AC_MSG_ERROR([Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required.])])
 AC_CHECK_HEADER(gsl/gsl_rng.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(gsl/gsl_randist.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
