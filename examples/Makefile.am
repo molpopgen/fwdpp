@@ -43,10 +43,8 @@ AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
 else
 if BVEC_PRESENT
 if BLIST_PRESENT
-if BMAP_PRESENT
 #On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
 LDADD+=-lboost_system
-endif
 endif
 endif
 else

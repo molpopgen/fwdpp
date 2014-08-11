@@ -44,7 +44,7 @@ bin_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 @USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS \
 @USE_STANDARD_TRUE@	-DUSE_STANDARD_CONTAINERS
 #On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
-@BLIST_PRESENT_TRUE@@BMAP_PRESENT_TRUE@@BVEC_PRESENT_TRUE@@USE_STANDARD_FALSE@am__append_3 = -lboost_system
+@BLIST_PRESENT_TRUE@@BVEC_PRESENT_TRUE@@USE_STANDARD_FALSE@am__append_3 = -lboost_system
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
