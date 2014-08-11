@@ -1,6 +1,6 @@
 AUTOMAKE_OPTIONS = foreign
 bin_PROGRAMS=fwdpp
-SUBDIRS=fwdpp
+SUBDIRS=fwdpp examples
 ACLOCAL_AMFLAGS = -I m4
 #  if you write a self-test script named `chk', uncomment the
 #  following and add `chk' to the EXTRA_DIST list
