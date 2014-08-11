@@ -11,51 +11,31 @@ AC_PROG_CC
 AC_C_CONST
 AC_PROG_CXX
 
-dnl enable c++11 support
-AC_ARG_ENABLE(cpp11,
-[   --enable-cpp11    Turn on debugging],
-[case "${enableval}" in
-   yes) AX_CXX_COMPILE_STDCXX_11([noext],[mandatory]) ;;
-   no)  ;;
-   *) AC_MSG_ERROR(bad value ${enableval} for --enable-cpp11) ;;
-esac],[])
-
-
-dnl AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
-
 AM_MAINTAINER_MODE([enable])
 
-dnl AC_PROG_LIBTOOL
+AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/Makefile examples/Makefile])
 
-dnl AC_ARG_ENABLE(debug,
-dnl [  --enable-debug    Turn on debugging],
-dnl [case "${enableval}" in
-dnl   yes) debug=true ;;
-dnl   no)  debug=false ;;
-dnl   *) AC_MSG_ERROR(bad value ${enableval} for --enable-debug) ;;
-dnl esac],[debug=false])
-dnl AM_CONDITIONAL(DEBUG, test x$debug = xtrue)
+AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]))
+AM_CONDITIONAL([USE_STANDARD],test x$enable_standard = xyes)
 
-dnl AC_ARG_ENABLE(profiling,
-dnl [  --enable-profiling    Turn on profiling],
-dnl [case "${enableval}" in
-dnl   yes) profiling=true ;;
-dnl   no)  profiling=false ;;
-dnl   *) AC_MSG_ERROR(bad value ${enableval} for --enable-profiling) ;;
-dnl esac],[profiling=false])
-dnl AM_CONDITIONAL(PROFILING, test x$profiling = xtrue)
+AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
+AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 
-dnl check for things that we need
-
-AC_CHECK_HEADER(boost/bind.hpp,HAVE_BOOST=1 , [AC_MSG_ERROR([boost/bind.hpp not found.  boost libraries required.  Install boost (www.boost.org) ])])
-AC_CHECK_HEADER(boost/container/vector.hpp, , [AC_MSG_ERROR([boost/container/vector.hpp not found.  Please install boost or upgrade your installation to a newer version])])
-AC_CHECK_HEADER(boost/container/list.hpp, , [AC_MSG_ERROR([boost/container/list.hpp not found.  Please install boost or upgrade your installation to a newer version])])
+dnl check for things that we might need
+AC_CHECK_HEADER(boost/container/vector.hpp, BVECTOR=1, [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
+AC_CHECK_HEADER(boost/container/list.hpp, BLIST=1, [echo "boost/container/list.hpp not found.  Will use std::list for examples."])
+AC_CHECK_HEADER(boost/container/map.hpp, BMAP=1, [echo "boost/container/map.hpp not found. Will use std::map for examples."])
 AC_CHECK_HEADER(Sequence/SimDataIO.hpp,HAVE_LIBSEQ=1 , [AC_MSG_ERROR([Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required.])])
 AC_CHECK_HEADER(gsl/gsl_rng.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(gsl/gsl_randist.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
-AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5])])
+AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requred])])
+AM_CONDITIONAL([BVEC_PRESENT],test x$BVECTOR$enable_boost = x1)
+AM_CONDITIONAL([BLIST_PRESENT],test x$BLIST = x1)
+AM_CONDITIONAL([BMAP_PRESENT],test x$BMAP = x1)
+dnl AM_CONDITIONAL([BVEC_PRESENT],test x$NOBOOST != x1)
 
 dnl check for C run-time libraries
 AC_CHECK_LIB([z],gzungetc,,[echo "zlib run time library not found";exit 1])
@@ -68,5 +48,7 @@ AC_LANG_SAVE
           AC_REQUIRE_CPP
           AC_CHECK_LIB(sequence, main,,[echo "libsequence runtime library does not seem to be here";exit 1])
 AC_LANG_RESTORE
+
+dnl AM_CONFIG_HEADER(config.h)
 
 AC_OUTPUT

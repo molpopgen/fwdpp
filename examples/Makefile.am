@@ -31,7 +31,27 @@ RHH_SOURCES=RHH.cc
 TFL2013_SOURCES=TFL2013.cc
 
 AM_CPPFLAGS=-Wall -W
+
+if DEBUG
+else !DEBUG
+AM_CPPFLAGS+=-DNDEBUG
+endif
 LDADD=
-#needed on many systems using boost::container
+
+if USE_STANDARD
+AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
+else
+if BVEC_PRESENT
+if BLIST_PRESENT
+if BMAP_PRESENT
+#On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
 LDADD+=-lboost_system
+endif
+endif
+endif
+else
+#Boost is missing, so we gotta use the standard headers
+AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
+endif
+
 TFL2013_LDADD=-lboost_iostreams

@@ -606,13 +606,23 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+BMAP_PRESENT_FALSE
+BMAP_PRESENT_TRUE
+BLIST_PRESENT_FALSE
+BLIST_PRESENT_TRUE
+BVEC_PRESENT_FALSE
+BVEC_PRESENT_TRUE
 EGREP
 GREP
 CXXCPP
+DEBUG_FALSE
+DEBUG_TRUE
+USE_STANDARD_FALSE
+USE_STANDARD_TRUE
+HAVE_CXX11
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
-HAVE_CXX11
 am__fastdepCXX_FALSE
 am__fastdepCXX_TRUE
 CXXDEPMODE
@@ -701,8 +711,9 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_dependency_tracking
-enable_cpp11
 enable_maintainer_mode
+enable_standard
+enable_debug
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1334,9 +1345,11 @@ Optional Features:
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
-   --enable-cpp11    Turn on debugging
   --disable-maintainer-mode  disable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
+  --enable-standard       Disable use of boost containers when compiling
+                          examples
+  --enable-debug          Compile examples with run-time assert macro enabled.
 
 Some influential environment variables:
   CC          C compiler command
@@ -4066,10 +4079,31 @@ fi
 
 
 
-# Check whether --enable-cpp11 was given.
-if test "${enable_cpp11+set}" = set; then :
-  enableval=$enable_cpp11; case "${enableval}" in
-   yes)     ax_cxx_compile_cxx11_required=true
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
+$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
+    # Check whether --enable-maintainer-mode was given.
+if test "${enable_maintainer_mode+set}" = set; then :
+  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
+else
+  USE_MAINTAINER_MODE=yes
+fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
+$as_echo "$USE_MAINTAINER_MODE" >&6; }
+   if test $USE_MAINTAINER_MODE = yes; then
+  MAINTAINER_MODE_TRUE=
+  MAINTAINER_MODE_FALSE='#'
+else
+  MAINTAINER_MODE_TRUE='#'
+  MAINTAINER_MODE_FALSE=
+fi
+
+  MAINT=$MAINTAINER_MODE_TRUE
+
+
+
+
+    ax_cxx_compile_cxx11_required=true
   ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4206,37 +4240,6 @@ $as_echo "#define HAVE_CXX11 1" >>confdefs.h
 
 
   fi
- ;;
-   no)  ;;
-   *) as_fn_error $? "bad value ${enableval} for --enable-cpp11" "$LINENO" 5 ;;
-esac
-fi
-
-
-
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
-$as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
-    # Check whether --enable-maintainer-mode was given.
-if test "${enable_maintainer_mode+set}" = set; then :
-  enableval=$enable_maintainer_mode; USE_MAINTAINER_MODE=$enableval
-else
-  USE_MAINTAINER_MODE=yes
-fi
-
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $USE_MAINTAINER_MODE" >&5
-$as_echo "$USE_MAINTAINER_MODE" >&6; }
-   if test $USE_MAINTAINER_MODE = yes; then
-  MAINTAINER_MODE_TRUE=
-  MAINTAINER_MODE_FALSE='#'
-else
-  MAINTAINER_MODE_TRUE='#'
-  MAINTAINER_MODE_FALSE=
-fi
-
-  MAINT=$MAINTAINER_MODE_TRUE
-
 
 
 ac_ext=cpp
@@ -4248,7 +4251,32 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 ac_config_files="$ac_config_files Makefile fwdpp/Makefile examples/Makefile"
 
 
+# Check whether --enable-standard was given.
+if test "${enable_standard+set}" = set; then :
+  enableval=$enable_standard;
+fi
 
+ if test x$enable_standard = xyes; then
+  USE_STANDARD_TRUE=
+  USE_STANDARD_FALSE='#'
+else
+  USE_STANDARD_TRUE='#'
+  USE_STANDARD_FALSE=
+fi
+
+
+# Check whether --enable-debug was given.
+if test "${enable_debug+set}" = set; then :
+  enableval=$enable_debug;
+fi
+
+ if test x$enable_debug = xyes; then
+  DEBUG_TRUE=
+  DEBUG_FALSE='#'
+else
+  DEBUG_TRUE='#'
+  DEBUG_FALSE=
+fi
 
 
 ac_ext=cpp
@@ -4644,27 +4672,27 @@ fi
 done
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/bind.hpp" "ac_cv_header_boost_bind_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_bind_hpp" = xyes; then :
-  HAVE_BOOST=1
-else
-  as_fn_error $? "boost/bind.hpp not found.  boost libraries required.  Install boost (www.boost.org) " "$LINENO" 5
-fi
-
-
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
-
+  BVECTOR=1
 else
-  as_fn_error $? "boost/container/vector.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+  echo "boost/container/vector.hpp not found.  Will use std::vector for examples."
 fi
 
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
-
+  BLIST=1
 else
-  as_fn_error $? "boost/container/list.hpp not found.  Please install boost or upgrade your installation to a newer version" "$LINENO" 5
+  echo "boost/container/list.hpp not found.  Will use std::list for examples."
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/map.hpp" "ac_cv_header_boost_container_map_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_map_hpp" = xyes; then :
+  BMAP=1
+else
+  echo "boost/container/map.hpp not found. Will use std::map for examples."
 fi
 
 
@@ -4696,9 +4724,33 @@ ac_fn_cxx_check_header_mongrel "$LINENO" "zlib.h" "ac_cv_header_zlib_h" "$ac_inc
 if test "x$ac_cv_header_zlib_h" = xyes; then :
 
 else
-  as_fn_error $? "zlib.h not found.  zlib >= 1.2.5" "$LINENO" 5
+  as_fn_error $? "zlib.h not found.  zlib >= 1.2.5 is requred" "$LINENO" 5
 fi
 
+
+ if test x$BVECTOR$enable_boost = x1; then
+  BVEC_PRESENT_TRUE=
+  BVEC_PRESENT_FALSE='#'
+else
+  BVEC_PRESENT_TRUE='#'
+  BVEC_PRESENT_FALSE=
+fi
+
+ if test x$BLIST = x1; then
+  BLIST_PRESENT_TRUE=
+  BLIST_PRESENT_FALSE='#'
+else
+  BLIST_PRESENT_TRUE='#'
+  BLIST_PRESENT_FALSE=
+fi
+
+ if test x$BMAP = x1; then
+  BMAP_PRESENT_TRUE=
+  BMAP_PRESENT_FALSE='#'
+else
+  BMAP_PRESENT_TRUE='#'
+  BMAP_PRESENT_FALSE=
+fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gzungetc in -lz" >&5
@@ -4895,6 +4947,7 @@ ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ex
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
 
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -5026,6 +5079,26 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${USE_STANDARD_TRUE}" && test -z "${USE_STANDARD_FALSE}"; then
+  as_fn_error $? "conditional \"USE_STANDARD\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${DEBUG_TRUE}" && test -z "${DEBUG_FALSE}"; then
+  as_fn_error $? "conditional \"DEBUG\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BVEC_PRESENT_TRUE}" && test -z "${BVEC_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BVEC_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BLIST_PRESENT_TRUE}" && test -z "${BLIST_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BLIST_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BMAP_PRESENT_TRUE}" && test -z "${BMAP_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BMAP_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
