@@ -258,7 +258,7 @@ diploid_twopop_mig_SOURCES = diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
-AM_CPPFLAGS = -Wall -W $(am__append_1) $(am__append_2)
+AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
 LDADD = $(am__append_3)
 TFL2013_LDADD = $(LDADD) -lboost_iostreams
 all: all-am
