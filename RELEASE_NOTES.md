@@ -7,7 +7,7 @@ The following changes:
 1. fwdpp/diploid_functions_ind_multilocis.tcc was added.  This contains a more natural method of simulating mutiple partially-linked regions.  The header fwdpp/diploid_functions.hpp contains the relevant prototypes.
 2. Header files have been reorganized.  fwdpp/diploid.hh is still the header to use.  The reorg has been for the developer's sanity.
 3. C++11 support is now required
-4. Many functions from namespace boost have been replaced with the namespace std equivalents provided by the C++11 standard.
+4. Internally, functions from namespace boost have been replaced with the namespace std equivalents provided by the C++11 standard.  
 
 #0.2.4
 
