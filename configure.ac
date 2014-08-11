@@ -37,15 +37,15 @@ AM_CONDITIONAL([BMAP_PRESENT],test x$BMAP = x1)
 dnl AM_CONDITIONAL([BVEC_PRESENT],test x$NOBOOST != x1)
 
 dnl check for C run-time libraries
-AC_CHECK_LIB([z],gzungetc,,[echo "zlib run time library not found";exit 1])
-AC_CHECK_LIB([gslcblas],[cblas_dgemm])
-AC_CHECK_LIB([gsl],[gsl_blas_dgemm])
+AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR(["zlib run time library not found";exit 1])])
+AC_CHECK_LIB([gslcblas],[cblas_dgemm],,[AC_MSG_ERROR(["gslcblas run-time library not found"])])
+AC_CHECK_LIB([gsl],[gsl_blas_dgemm],,[AC_MSG_ERROR(["gsl run-time library not found"])])
 
 dnl check for C++ run-time libraries
 AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
-          AC_CHECK_LIB(sequence, main,,[echo "libsequence runtime library does not seem to be here";exit 1])
+          AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([eecho "libsequence runtime library does not seem to be here";exit 1])])
 AC_LANG_RESTORE
 
 dnl AM_CONFIG_HEADER(config.h)
