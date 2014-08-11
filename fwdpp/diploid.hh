@@ -50,8 +50,9 @@
   fwdpp depends on the following: \n
   1.  libsequence, available from www.molpopgen.org \n
   2.  The GNU Scientific library, available from www.gnu.org/software/gsl \n
-  3.  The Boost C++ libraries, available from www.boost.org. \n
-  4.  The zlib compression library (zlib.net).  
+  3.  The zlib compression library (zlib.net).  
+  4.  By default, fwdpp depends on the boost C++ libraries from www.boost.org.  However, the use of boost in programs using fwdpp may be disabled by passing -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.
+
 
   \subsection examples How to use the library
   The best way to start will be to study the examples provided with the library and the \ref page1.  Regarding the examples, I would suggest doing so in the following order: \n
@@ -102,11 +103,11 @@
   haplotypes are the unit of evolution, so we can ignore the h (dominance) that is part of KTfwd::mutation, and we'll just leave it at the default value of 0.5.
   \n
   We will use a lookup table of current mutation positions in order to make sure that we assign novel positions to new mutations.  The most effective way to do that
-  is to use a hash table.  I recommend boost::unordered_set.  It is used as follows:
+  is to use a hash table.  I recommend std::unordered_set.  It is used as follows:
   \code
-  #include <boost/unordered_set.hpp>
+  #include <unordered_set>
 
-  typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+  typedef std::unordered_set<double,std::hash<double>,KTfwd::equal_eps > lookup_table_type;
   \endcode
 
   In the above code block, we have replace the default std::operator== with KTfwd::equal_eps.  This will result in two doubles being considered equal if the
@@ -245,7 +246,7 @@
   \endcode
   We can now write our mutation model:
   \code
-  typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+  typedef std::unordered_set<double,std::hash<double>,KTfwd::equal_eps > lookup_table_type;
   mtype RHH_mutation_model( gsl_rng * r, const unsigned & generation, const double mu_neutral, const double & mu_selected,
 			  const double & p_selected_within,
 			  const double & s, const double & h, const double & maxd, lookup_table_type * lookup ) //keep h (dominance) to 1 to match theory
