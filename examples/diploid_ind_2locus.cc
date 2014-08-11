@@ -89,7 +89,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * gener
   double pos = gsl_ran_flat(r,beg,beg+1.);
   /*
     An alternative implementation of the while loop below would be:
-    while( std::find_if( mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos) != mutations->end()) )
+    while( std::find_if( mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos) != mutations->end()) )
     {
     pos = gsl_rng_uniform(r);
     }
@@ -129,7 +129,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * gener
 
     An example of such a debugging routine is KTfwd::check_sum
   */
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
 
   //return constructor call to mutation type
   return mutation_with_age(*generation,pos,1,true);
@@ -174,8 +174,8 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r),
-    recmap2 = boost::bind(gsl_ran_flat,r,1.,2.);
+  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
+    recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
 
   //need vectors of recombination maps, mutation policies, and fitness models
   std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(2);
@@ -200,10 +200,10 @@ int main(int argc, char ** argv)
       double wbar;
       lookup_table_type lookup;  //this is our lookup table for the mutation model
       //rec policies
-      recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
-      recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
-      mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,0.);
-      mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,1.);
+      recpols[0] = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
+      recpols[1] = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
+      mmodels[0] = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,0.);
+      mmodels[1] = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,1.);
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
@@ -218,10 +218,10 @@ int main(int argc, char ** argv)
 	  			 mmodels,
 	  			 recpols,
 	  			 &rbw,
-	  			 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-	  			 boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-	  			 boost::bind(no_selection_multi(),_1),
-	  			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N),
+	  			 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+	  			 std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+	  			 std::bind(no_selection_multi(),std::placeholders::_1),
+	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N),
 	  			 0.);
 	  assert( check_sum(gametes[0],twoN) );
 	  assert( check_sum(gametes[1],twoN) );

@@ -592,7 +592,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   if(NEXTINCT)
     {
       vtype_iterator newend = std::remove_if(gametes->begin(),gametes->end(),
-					     boost::bind(n_is_zero(),_1));
+					     std::bind(n_is_zero(),std::placeholders::_1));
       gametes->erase(newend,gametes->end());
     }
   return NRECS;

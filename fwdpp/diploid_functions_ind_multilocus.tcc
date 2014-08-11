@@ -266,7 +266,7 @@ sample_diploid(gsl_rng * r,
    }
     for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
       {
-       	i->remove_if(boost::bind(n_is_zero(),_1));
+       	i->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
 	for (typename gamete_cont::iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
 	  {
 	    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );

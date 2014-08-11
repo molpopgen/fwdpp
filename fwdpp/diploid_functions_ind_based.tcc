@@ -160,7 +160,7 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    gametes->remove_if(boost::bind(n_is_zero(),_1));
+    gametes->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
     for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
 	 itr != gametes->end() ; ++itr )
       {
@@ -414,7 +414,7 @@ namespace KTfwd
 	      //get rid of extinct stuff, etc.
 	      for(typename pop_ctr::iterator ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
 		{
-		  ptr->remove_if(boost::bind(n_is_zero(),_1));
+		  ptr->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
 		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
 		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );

@@ -140,8 +140,8 @@ namespace KTfwd
 
     Typical usage is to pass to KTfwd::sample_diploid as follows:
     \code
-    boost::bind( KTfwd::mutation_remover(), 0 ); //If a mutation is at frequency zero after sampling, remove pointers to it from all gametes
-    boost::bind( KWfwd::mutation_remover(), 0 ,twoN); //If a mutation is at frequency zero or 2N after sampling, remove pointers to it from all gametes
+    std::bind( KTfwd::mutation_remover(), 0 ); //If a mutation is at frequency zero after sampling, remove pointers to it from all gametes
+    std::bind( KWfwd::mutation_remover(), 0 ,twoN); //If a mutation is at frequency zero or 2N after sampling, remove pointers to it from all gametes
     \endcode
    */
   struct mutation_remover

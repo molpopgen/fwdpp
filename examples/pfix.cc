@@ -201,16 +201,16 @@ int main( int argc, char ** argv )
 			 &mutations,
 			 N,                                                         //If we wished pop. size to change, we'd pass N,N2 here.  For models where N in next generation changes over time, N2 would be updated accordingly each generation at the end of this block.
 			 0.,                                                        //mutation rate = 0.
-			 boost::bind( no_mutation(),_1 ),                           //Our mutation model.  The _1 is a placeholder for a pointer to the list of mutations.
-			 boost::bind(KTfwd::genetics101(),_1,_2,                    //genetics101 is the basic model of crossing over in fwdpp.  If you want different models, write a replacement policy.  _1 and _2 are place holders for the two gametes that will recombine.
+			 std::bind( no_mutation(),std::placeholders::_1 ),                           //Our mutation model.  The _1 is a placeholder for a pointer to the list of mutations.
+			 std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,                    //genetics101 is the basic model of crossing over in fwdpp.  If you want different models, write a replacement policy.  _1 and _2 are place holders for the two gametes that will recombine.
 				     &gametes,
 				     0.,                                            //The rec. rate is 0
 				     r,
 				     no_recombination()),                           //This is our genetic map
-			 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),      //This policy defines how new mutations are added to the mlist.  They are inserted at the end.  This will never be called (as mut. rate = 0), but it is required.
-			 boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),      //This policy defines how new gametes are added to the glist.  They are inserted at the end.  This will never be called (no mutation nor recombination), but it is required.
-			 boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),     //The fitness model.  Fitnesses are 1, 1+hs, 1+scaling*s per site, and multiplicative over sites.  Scaling = 2 and h = 1 (as used here) gives 1, 1+s, 1+2s, which is genic selection.
-			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N));          //A mutation that hits a count of either 0 or 2N is removed from a gamete.
+			 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),      //This policy defines how new mutations are added to the mlist.  They are inserted at the end.  This will never be called (as mut. rate = 0), but it is required.
+			 std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),      //This policy defines how new gametes are added to the glist.  They are inserted at the end.  This will never be called (no mutation nor recombination), but it is required.
+			 std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),     //The fitness model.  Fitnesses are 1, 1+hs, 1+scaling*s per site, and multiplicative over sites.  Scaling = 2 and h = 1 (as used here) gives 1, 1+s, 1+2s, which is genic selection.
+			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));          //A mutation that hits a count of either 0 or 2N is removed from a gamete.
 
 	  /*
 	    Typically, for a "pop-gen" simulation where relative fitness is all that matters,

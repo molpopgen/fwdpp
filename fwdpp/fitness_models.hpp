@@ -40,7 +40,7 @@ namespace KTfwd
     \param starting_fitness The value to which the function will initialize the return value
     \return The fitness of a diploid with genotype g1 and g2
     \note The updating policies must take a non-const reference to a double as the first argument and
-    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as boost::bind.  See KTfwd::multiplicative_fitness_updater_hom and KTfwd::multiplicative_fitness_updater_het for examples.  The iterators g1 and g2 must point to objects in the class hierarchy of KTfwd::gamete_base.
+    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind.  See KTfwd::multiplicative_fitness_updater_hom and KTfwd::multiplicative_fitness_updater_het for examples.  The iterators g1 and g2 must point to objects in the class hierarchy of KTfwd::gamete_base.
 
     \note This function is unwieldy to call directly.  It is best to define your two policies and write a wrapper function calling this function. See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.  
     \example diploid_fixed_sh_ind.cc
@@ -109,8 +109,8 @@ namespace KTfwd
 
     \param g1 An iterator to a gamete
     \param g2 An iterator to a gamete
-    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via boost::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
-    \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via boost::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
+    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
+    \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
     \return dpol( hpol(g1), hpol(g2) )
     \note This really is just a convenience function. Depending on the specifics of the model, this function may be totally unnecessary.
   */
@@ -136,8 +136,8 @@ namespace KTfwd
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
     \return Multiplicative fitness across sites = site_dependent_fitness()(g1,g2,
-    boost::bind(multiplicative_fitness_updater_hom(),_1,_2,scaling),
-    boost::bind(multiplicative_fitness_updater_het(),_1,_2),
+    std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+    std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
     1.);
   */
   struct multiplicative_diploid
@@ -148,8 +148,8 @@ namespace KTfwd
 			     const double scaling = 1.) const
     {
       return site_dependent_fitness()(g1,g2,
-				      boost::bind(multiplicative_fitness_updater_hom(),_1,_2,scaling),
-				      boost::bind(multiplicative_fitness_updater_het(),_1,_2),
+				      std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+				      std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
 				      1.);
     }
   };
@@ -160,8 +160,8 @@ namespace KTfwd
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
     \return Additive fitness across sites: 1. + KTfwd::site_dependent_fitness()(g1,g2,
-    boost::bind(KTfwd::additive_fitness_updater_hom(),_1,_2,scaling),
-    boost::bind(KTfwd::additive_fitness_updater_het(),_1,_2),
+    std::bind(KTfwd::additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+    std::bind(KTfwd::additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
     0.);
     \note g1 and g2 must be part of the gamete_base hierarchy
   */
@@ -173,8 +173,8 @@ namespace KTfwd
 			     const double scaling = 1.) const
     {
       return 1. + site_dependent_fitness()(g1,g2,
-					   boost::bind(additive_fitness_updater_hom(),_1,_2,scaling),
-					   boost::bind(additive_fitness_updater_het(),_1,_2),
+					   std::bind(additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+					   std::bind(additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
 					   0.);
     }
   };

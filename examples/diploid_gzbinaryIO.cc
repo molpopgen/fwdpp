@@ -110,7 +110,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   return mutation_with_age(generation,pos,1,0.,0.,true);
 }
 
@@ -159,18 +159,18 @@ int main(int argc, char ** argv)
   for( generation = 0; generation < ngens; ++generation )
     {
       wbar = KTfwd::sample_diploid(r,&gametes,twoN,
-				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
+				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
       assert(KTfwd::check_sum(gametes,twoN));
       assert( lookup.size() == mutations.size() );
       unsigned nmuts = KTfwd::mutate(r,&gametes,&mutations,mu,
-				     boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				     boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-				     boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+				     std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+				     std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+				     std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 
       assert(KTfwd::check_sum(gametes,twoN));
-      unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, boost::bind(gsl_rng_uniform,r));
+      unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, std::bind(gsl_rng_uniform,r));
       assert(KTfwd::check_sum(gametes,twoN));
     }
 
@@ -182,7 +182,7 @@ int main(int argc, char ** argv)
     
   //Write pop to buffer in binary format
   std::ostringstream buffer;
-  KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
+  KTfwd::write_binary_pop(&gametes,&mutations,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   //lock index file ASAP
   //establish POSIX file locks for output
@@ -257,7 +257,7 @@ int main(int argc, char ** argv)
   gzf = gzopen( hapfile, "rb" ); //read mode, binary
   //seek to position
   gzseek(gzf,rec_offset,SEEK_CUR);
-  read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),gzf);
+  read_binary_pop(&gametes2,&mutations2,std::bind(mreader(),std::placeholders::_1),gzf);
   gzclose(gzf);
 
   //Now, compare what we wrote to what we read

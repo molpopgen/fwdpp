@@ -79,7 +79,7 @@ namespace KTfwd
 			    {
 			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.mutations.begin(),
 												     new_gamete.mutations.end(),
-												     boost::bind(greater_pos(),_1,mitr->pos));
+												     std::bind(greater_pos(),std::placeholders::_1,mitr->pos));
 			      new_gamete.mutations.insert(itr2,mitr);
 			      //new_gamete.mutations.push_back(mitr);
 			    }
@@ -87,7 +87,7 @@ namespace KTfwd
 			    {
 			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.smutations.begin(),
 												     new_gamete.smutations.end(),
-												     boost::bind(greater_pos(),_1,mitr->pos));
+												     std::bind(greater_pos(),std::placeholders::_1,mitr->pos));
 			      new_gamete.smutations.insert(itr2,mitr);
 			      //new_gamete.smutations.push_back(mitr);
 			    }
@@ -134,14 +134,14 @@ namespace KTfwd
 	      {
 		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.mutations.begin(),
 												     ng.mutations.end(),
-												     boost::bind(KTfwd::greater_pos(),_1,mitr->pos));
+												     std::bind(KTfwd::greater_pos(),std::placeholders::_1,mitr->pos));
 		ng.mutations.insert(itr2,mitr);
 	      }
 	    else
 	      {
 		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.smutations.begin(),
 												     ng.smutations.end(),
-												     boost::bind(KTfwd::greater_pos(),_1,mitr->pos));
+												     std::bind(KTfwd::greater_pos(),std::placeholders::_1,mitr->pos));
 		ng.smutations.insert(itr2,mitr);
 	      }
 	  }

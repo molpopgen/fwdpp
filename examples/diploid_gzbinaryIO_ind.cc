@@ -108,7 +108,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   return mutation_with_age(generation,pos,1,0.,0.,true);
 }
 
@@ -158,7 +158,7 @@ int main(int argc, char ** argv)
   lookup_table_type lookup;  
 
   //recombination map is uniform[0,1)  
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
+  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   for( generation = 0; generation < ngens; ++generation )
     {
@@ -168,21 +168,21 @@ int main(int argc, char ** argv)
 				   &mutations,
 				   N,     
 				   mu,   
-				   boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				   boost::bind(KTfwd::genetics101(),_1,_2,
+				   std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 					       &gametes,
 					       littler,
 					       r,
 					       recmap),
-				   boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				   boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+				   std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+				   std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
     }
   std::ostringstream buffer;
       
-  KTfwd::write_binary_pop(&gametes,&mutations,&diploids,boost::bind(mwriter(),_1,_2),buffer);
+  KTfwd::write_binary_pop(&gametes,&mutations,&diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   /*
     Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
@@ -265,7 +265,7 @@ int main(int argc, char ** argv)
   KTfwd::read_binary_pop(&gametes2,
 			 &mutations2,
 			 &diploids2,
-			 boost::bind(mreader(),_1),
+			 std::bind(mreader(),std::placeholders::_1),
 			 gzin);
 
   //Now, compare what we wrote to what we read

@@ -191,28 +191,28 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < ngens_burnin; ++generation,++ttl_gen )
 	{
 	  //a generation is drift, then mutation, recombination
-	  wbar = sample_diploid(r,&gametes,2*N,boost::bind(disease_effect_to_fitness(),_1,_2,sd,sd_s,r),
-				boost::bind(KTfwd::mutation_remover(),_1,0,2*N));       
+	  wbar = sample_diploid(r,&gametes,2*N,std::bind(disease_effect_to_fitness(),std::placeholders::_1,std::placeholders::_2,sd,sd_s,r),
+				std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));       
 	  remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(check_sum(gametes,2*N));
-	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,boost::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
-				 push_back_gamete(),boost::bind(insert_mutation_at_end<mtype,mlist >,_1,_2));
+	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,std::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
+				 push_back_gamete(),std::bind(insert_mutation_at_end<mtype,mlist >,std::placeholders::_1,std::placeholders::_2));
 	  assert(check_sum(gametes,2*N));
-	  unsigned nrec = recombine(r, &gametes, 2*N, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = recombine(r, &gametes, 2*N, littler, std::bind(gsl_rng_uniform,r));
 	  assert(check_sum(gametes,2*N));
 	}
       unsigned nfix = fixations.size();
       for( generation = 0; generation < ngens_evolve; ++generation,++ttl_gen )
 	{
 	  //a generation is drift, then mutation, recombination
-	  double wbar = sample_diploid(r,&gametes,2*N,boost::bind(disease_effect_to_fitness(),_1,_2,sd,sd_s,r),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));       
+	  double wbar = sample_diploid(r,&gametes,2*N,std::bind(disease_effect_to_fitness(),std::placeholders::_1,std::placeholders::_2,sd,sd_s,r),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));       
 	  remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(check_sum(gametes,2*N));
-	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,boost::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
-				 push_back_gamete(),boost::bind(insert_mutation_at_end<mtype,mlist >,_1,_2));
+	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,std::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
+				 push_back_gamete(),std::bind(insert_mutation_at_end<mtype,mlist >,std::placeholders::_1,std::placeholders::_2));
 	  assert(check_sum(gametes,2*N));
-	  unsigned nrec = recombine(r, &gametes, 2*N, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = recombine(r, &gametes, 2*N, littler, std::bind(gsl_rng_uniform,r));
 	  assert(check_sum(gametes,2*N));
 	}
       remove_fixed_lost(&mutations,&fixations,&fixation_times,generation,2*N);

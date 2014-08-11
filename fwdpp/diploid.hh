@@ -137,9 +137,9 @@
   }
   \endcode
   In order to pass this mutation policy to KTfwd::mutate, we must construct a function call that KTfwd::mutate may access.  This is most easily accomplished via
-  boost::bind:
+  std::bind:
   \code
-  boost::bind( custom_mutation_model(r,u,us,sigma_s,&lookup) );
+  std::bind( custom_mutation_model(r,u,us,sigma_s,&lookup) );
   \endcode
   \n
   As an aside, I typically pass a non-const pointer to the mutation list.  This allows me to do some extra checking to make sure that the lookup
@@ -147,7 +147,7 @@
 
   \section fitnessmodel Defining the fitness model
   A fitness model will be passed iterators two gametes by one of the KTfwd::sample_diploid functions.  The programmer may define the fitness function to take
-  other arguments and pass placeholders to the two gametes using boost::bind.  I typically defined fitness models as function objects rather than functions, which
+  other arguments and pass placeholders to the two gametes using std::bind.  I typically defined fitness models as function objects rather than functions, which
   is convienient if they will be templates (because operator() can deduce template types during instantiation more readily than regular functions):
 
   \code
@@ -174,10 +174,10 @@
   }
   };
   \endcode 
-  To pass the fitness function to KTfwd::sample_diploid, use boost::bind:
+  To pass the fitness function to KTfwd::sample_diploid, use std::bind:
   \code
   //_1 and _2 are placeholders for the iterators to gametes.  They will be passed in via sample_diploid.
-  boost::bind( custom_fitness_model(_1,_2,r,sigma_e,X) );
+  std::bind( custom_fitness_model(_1,_2,r,sigma_e,X) );
   \endcode
 
   Please note that some C++ compilers may give errors with std::exp and std::pow even when <cmath> is included
@@ -302,9 +302,9 @@
 }
   \endcode
 
-  And we can pass that to KTfwd::mutate using boost::bind:
+  And we can pass that to KTfwd::mutate using std::bind:
   \code
-  boost::bind(RHH_mutation_model,r,mu_neutral,mu_selected_ttl,pwithin,s,h,maxd,&lookup);
+  std::bind(RHH_mutation_model,r,mu_neutral,mu_selected_ttl,pwithin,s,h,maxd,&lookup);
   \endcode
 
   Note that the above mutation model specifies a region from position from -maxd to maxd+1.
@@ -336,7 +336,7 @@
 					       twoN, 
 					       littler,
 					       //genetic map uniform over total region, neutral + selected
-					       boost::bind( recurrent_sweep_genetic_map,r,littler_neut,
+					       std::bind( recurrent_sweep_genetic_map,r,littler_neut,
 							    littler,maxd ) );
 \endcode
   in order to get uniform recombination over the interval.

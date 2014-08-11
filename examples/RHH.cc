@@ -165,37 +165,37 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < burnin; ++generation )
 	{
 	  wbar = KTfwd::sample_diploid(r,&gametes,twoN,
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,twoN));       
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));       
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
 	  assert( lookup.size() == mutations.size() );
 	  assert(KTfwd::check_sum(gametes,twoN));
 	  unsigned nmuts = KTfwd::mutate(r,&gametes,&mutations,mu_neutral,
-					 boost::bind(RHH_mutation_model,r,generation,mu_neutral,0.,0.,0.,h,maxd,&lookup),
-					 boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-					 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+					 std::bind(RHH_mutation_model,r,generation,mu_neutral,0.,0.,0.,h,maxd,&lookup),
+					 std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+					 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  assert( lookup.size() == mutations.size() );
 	  assert(KTfwd::check_sum(gametes,twoN));
 	  unsigned nrec = KTfwd::recombine(r, 
 					   &gametes,
 					   twoN, 
 					   littler_neut, 
-					   boost::bind(gsl_rng_uniform,r));
+					   std::bind(gsl_rng_uniform,r));
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}
       for(  ;generation < ngens+burnin; ++generation )
 	{
 	  wbar = KTfwd::sample_diploid(r,&gametes,twoN,
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,twoN));       
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));       
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
 	  assert( lookup.size() == mutations.size() );
 	  assert(KTfwd::check_sum(gametes,twoN));
 	  unsigned nmuts = KTfwd::mutate(r,&gametes,&mutations,mu_neutral+mu_selected_ttl,
-					 boost::bind(RHH_mutation_model,r,generation,mu_neutral,mu_selected_ttl,
+					 std::bind(RHH_mutation_model,r,generation,mu_neutral,mu_selected_ttl,
 						     mu_pos_in/mu_selected_ttl,s,h,maxd,&lookup),
-					 boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-					 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+					 std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+					 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  assert( lookup.size() == mutations.size() );
 	  assert(KTfwd::check_sum(gametes,twoN));
 	  //only recombine in neutral region unless selected mutations are present...
@@ -211,7 +211,7 @@ int main(int argc, char ** argv)
 					       twoN, 
 					       littler,
 					       //genetic map uniform over total region, neutral + selected
-					       boost::bind( recurrent_sweep_genetic_map,r,littler_neut,
+					       std::bind( recurrent_sweep_genetic_map,r,littler_neut,
 							    littler,maxd ) );
 	    }
 	  else
@@ -221,7 +221,7 @@ int main(int argc, char ** argv)
 					       twoN, 
 					       littler_neut, 
 					       //genetic map uniform over sampled region
-					       boost::bind(gsl_rng_uniform,r));
+					       std::bind(gsl_rng_uniform,r));
 	    }
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}

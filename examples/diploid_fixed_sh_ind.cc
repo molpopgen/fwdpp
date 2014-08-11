@@ -44,7 +44,7 @@ KTfwd::mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   //Choose mutation class (neutral or selected) proportional to underlying mutation rates
   bool neutral_mut = ( gsl_rng_uniform(r) <= mu_neutral/(mu_neutral+mu_selected) ) ? true : false;
   //Return a mutation of the correct type.  Neutral means s = h = 0, selected means s=s and h=h.
@@ -84,7 +84,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
+  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   while(nreps--)
     {
@@ -116,16 +116,16 @@ int main(int argc, char ** argv)
 				       &mutations,
 				       N,
 				       mu_neutral+mu_del,
-				       boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-				       boost::bind(KTfwd::genetics101(),_1,_2,
+				       std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						   &gametes,
       						   littler,
       						   r,
       						   recmap),
-				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(KTfwd::check_sum(gametes,2*N));
 	}

@@ -91,7 +91,7 @@ mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   //Choose mutation class (neutral or selected) proportional to underlying mutation rates
   bool neutral_mut = ( gsl_rng_uniform(r) <= mu_neutral/(mu_neutral+mu_selected) ) ? true : false;
   //Return a mutation of the correct type.  Neutral means s = h = 0, selected means s=s and h=h.
@@ -140,8 +140,8 @@ struct multiplicative_diploid_minus
 			   const double scaling = 1.) const
   {
     return site_dependent_fitness()(g1,g2,
-				    boost::bind(multiplicative_fitness_updater_hom_minus(),_1,_2,scaling),
-				    boost::bind(multiplicative_fitness_updater_het_minus(),_1,_2),
+				    std::bind(multiplicative_fitness_updater_hom_minus(),std::placeholders::_1,std::placeholders::_2,scaling),
+				    std::bind(multiplicative_fitness_updater_het_minus(),std::placeholders::_1,std::placeholders::_2),
 				    1.);
   }
 };
@@ -203,11 +203,11 @@ int main( int argc, char ** argv )
   //create a vector of fitness functions for each population
   std::vector<boost::function<double (glist::const_iterator,
 				      glist::const_iterator)> > vbf;
-  vbf.push_back(boost::bind(multiplicative_diploid(),_1,_2,2.));
-  vbf.push_back(boost::bind(multiplicative_diploid_minus(),_1,_2,2.));
+  vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
+  vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,2.));
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
+  boost::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {
@@ -217,17 +217,17 @@ int main( int argc, char ** argv )
 						 &mutations,
 						 &Ns[0],
 						 mu_neutral + mu_del,
-						 boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-						 boost::bind(KTfwd::genetics101(),_1,_2,_3,
+						 std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+						 std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
 							     littler,
 							     r,
 							     recmap),
-						 boost::bind(insert_at_end<mtype,mlist>,_1,_2),
-						 boost::bind(insert_at_end<gtype,glist>,_1,_2),
+						 std::bind(insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation
-						 boost::bind(mutation_remover(),_1,0,4*N),
-						 boost::bind(migpop,_1,r,m),
+						 std::bind(mutation_remover(),std::placeholders::_1,0,4*N),
+						 std::bind(migpop,std::placeholders::_1,r,m),
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation
       remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,4*N);
@@ -246,7 +246,7 @@ int main( int argc, char ** argv )
 
   //Write the metapop in binary format to outstream
   KTfwd::write_binary_metapop(&metapop,&mutations,&diploids,
-   			      boost::bind(mwriter(),_1,_2),
+   			      std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),
 			      outstream);
 
   //Write the "ms" blocks
@@ -264,7 +264,7 @@ int main( int argc, char ** argv )
   ifstream in(outfilename);
   
   KTfwd::read_binary_metapop(&metapop2,&mutations2,&diploids2,
-			     boost::bind(mreader(),_1),
+			     std::bind(mreader(),std::placeholders::_1),
 			     in);
   
   assert( metapop2.size() == metapop.size() );

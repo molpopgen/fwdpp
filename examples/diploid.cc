@@ -84,7 +84,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
   double pos = gsl_rng_uniform(r);
   /*
     An alternative implementation of the while loop below would be:
-    while( std::find_if( mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos) != mutations->end()) )
+    while( std::find_if( mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos) != mutations->end()) )
     {
       pos = gsl_rng_uniform(r);
     }
@@ -123,7 +123,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
 
     An example of such a debugging routine is KTfwd::check_sum
    */
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
 
   //return constructor call to mutation type
   return mutation_with_age(generation,pos,1,true);
@@ -202,7 +202,7 @@ int main(int argc, char ** argv)
 					 function is called anyways to illustrate it as multiplicative
 					 models are very common in population genetics
 				       */
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.), 
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.), 
 				       /*
 					 For each gamete still extant afte sampling,
 					 remove the pointers to any mutations that have 
@@ -212,14 +212,14 @@ int main(int argc, char ** argv)
 					 traits evolving towards an optimum, one may not
 					 with to remove fixations.  In that case,
 					 replace the line below with
-					 boost::bind(KTfwd::mutation_remover(),_1,twoN));
+					 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,twoN));
 
 					 Under multiplicative fitness and Wright-Fisher sampling
 					 proportional to relative fitness, fixed mutations
 					 are just a constant applied to everyone's fitness, so we 
 					 can remove them, making the simulation faster, etc.
 				       */
-				       boost::bind(KTfwd::mutation_remover(),_1,0,twoN));       
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));       
 
 	  /*
 	    Clean up the mutation list to remove any mutations fixed or lost.
@@ -244,7 +244,7 @@ int main(int argc, char ** argv)
 					   to be mutated to the mutation model function.  Again, _1
 					   is used as a placeholder for that gamete.
 					 */
-					 boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
+					 std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
 					 /*
 					   Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					   If mutation results in a new gamete, add that gamete to the 
@@ -253,11 +253,11 @@ int main(int argc, char ** argv)
 					   copy identical to an existing gamete.  If so,
 					   that gamete's frequency increases by 1.
 					  */
-					 boost::bind(KTfwd::push_at_end<gtype,gvector>,_1,_2),
+					 std::bind(KTfwd::push_at_end<gtype,gvector>,std::placeholders::_1,std::placeholders::_2),
 					 /*
 					   Policy to insert new mutations at the end of the mutations list
 					 */
-					 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+					 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  assert( lookup.size() == mutations.size() );
 	  assert(KTfwd::check_sum(gametes,twoN));
 
@@ -268,7 +268,7 @@ int main(int argc, char ** argv)
 					   twoN, 
 					   littler, 
 					   //This is the genetic map: uniform along [0,1)
-					   boost::bind( gsl_rng_uniform,r ) );
+					   std::bind( gsl_rng_uniform,r ) );
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}
       Sequence::SimData sdata;

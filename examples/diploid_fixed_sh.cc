@@ -41,7 +41,7 @@ KTfwd::mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   //Choose mutation class (neutral or selected) proportional to underlying mutation rates
   bool neutral_mut = ( gsl_rng_uniform(r) <= mu_neutral/(mu_neutral+mu_selected) ) ? true : false;
   //Return a mutation of the correct type.  Neutral means s = h = 0, selected means s=s and h=h.
@@ -94,18 +94,18 @@ int main(int argc, char ** argv)
       lookup_table_type lookup;
       for( generation = 0; generation < ngens; ++generation )
 	{
-	  double wbar = KTfwd::sample_diploid(r,&gametes,twoN,boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-					      boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
+	  double wbar = KTfwd::sample_diploid(r,&gametes,twoN,std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
 	  assert(KTfwd::check_sum(gametes,twoN));
 
 	  assert( lookup.size() == mutations.size() );
 	  unsigned nmuts= KTfwd::mutate(r,&gametes,&mutations,mu_neutral+mu_del,
-					boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-					boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-					boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+					std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+					std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+					std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  assert(KTfwd::check_sum(gametes,twoN));
-	  unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, std::bind(gsl_rng_uniform,r));
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}
       Sequence::SimData neutral_muts,selected_muts;

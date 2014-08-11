@@ -29,7 +29,7 @@ struct genetics101
       //then a non-parental type is inherited from p1 and p1 has two different gametes
       {
 	NREC += recombine_gametes(r,littler,gametes,g1,g2,rp,
-				  boost::bind(update_if_exists_insert<typename gamete_iterator_type::value_type,glist_t>,_1,gametes));	  
+				  std::bind(update_if_exists_insert<typename gamete_iterator_type::value_type,glist_t>,std::placeholders::_1,gametes));	  
       }
     return NREC;
   }	   

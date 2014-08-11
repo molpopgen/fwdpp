@@ -307,7 +307,7 @@ namespace KTfwd
   {
     gametes->erase(std::remove_if(gametes->begin(),
      				  gametes->end(),
-     				  boost::bind(n_is_zero(),_1)),
+     				  std::bind(n_is_zero(),std::placeholders::_1)),
      		   gametes->end()); 
     for(typename vector_type<gamete_type,vector_type_allocator >::iterator gbeg = gametes->begin() ; 
 	gbeg != gametes->end() ; ++gbeg )
