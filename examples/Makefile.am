@@ -52,4 +52,4 @@ else
 AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
 endif
 
-TFL2013_LDADD=-lboost_iostreams
+TFL2013_LDADD=$(LDADD) -lboost_iostreams
