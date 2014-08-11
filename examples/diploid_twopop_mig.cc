@@ -22,7 +22,7 @@ struct mutation_with_age : public KTfwd::mutation_base
 typedef mutation_with_age mtype;
 #include <common_gamete.hpp>
 #ifdef USE_STANDARD_CONTAINERS
-typedef st::vdector< gvector > mpop_container;
+typedef std::vector< gvector > mpop_container;
 #else
 typedef boost::container::vector< gvector > mpop_container;
 #endif
