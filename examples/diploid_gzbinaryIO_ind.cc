@@ -20,7 +20,6 @@
 
 #include <fcntl.h>
 
-#include <boost/bind.hpp>
 #include <boost/function.hpp>
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>

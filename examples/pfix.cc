@@ -32,7 +32,7 @@
 #include <fwdpp/diploid.hh>
 #include <iostream>
 #include <cstdlib>
-#include <boost/bind.hpp>
+#include <functional>
 
 /*
   typedefs simplify life.
