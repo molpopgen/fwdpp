@@ -23,13 +23,11 @@ struct genetics101
 		       gsl_rng * r,
 		       const rec_pos_generator & rp) const
   {
-    typedef gamete_list_type< typename gamete_iterator_type::value_type, gamete_list_type_allocator > glist_t;
     unsigned NREC = 0;
     if( g1 != g2 )
       //then a non-parental type is inherited from p1 and p1 has two different gametes
       {
-	NREC += recombine_gametes(r,littler,gametes,g1,g2,rp,
-				  std::bind(update_if_exists_insert<typename gamete_iterator_type::value_type,glist_t>,std::placeholders::_1,gametes));	  
+	NREC += recombine_gametes(r,littler,gametes,g1,g2,rp);
       }
     return NREC;
   }	   

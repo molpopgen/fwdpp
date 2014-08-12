@@ -35,7 +35,6 @@ namespace KTfwd
 
   //recombination for individual-based simulation
   template< typename iterator_type,
-	    typename gamete_insertion_policy,
 	    typename recombination_map,
 	    typename list_type_allocator,
 	    template<typename,typename> class list_type>
@@ -44,8 +43,7 @@ namespace KTfwd
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
-			      const recombination_map & mf,
-			      const gamete_insertion_policy & gpolicy)
+			      const recombination_map & mf)
   {
     assert( g1 != gametes->end() );
     assert( g2 != gametes->end() );
