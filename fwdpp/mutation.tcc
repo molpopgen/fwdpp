@@ -99,8 +99,6 @@ namespace KTfwd
 			      //new_gamete.smutations.push_back(mitr);
 			    }
 			}
-		      //std::sort(new_gamete.mutations.begin(),new_gamete.mutations.end(),fake_less());
-		      //std::sort(new_gamete.smutations.begin(),new_gamete.smutations.end(),fake_less());
 		      gpolicy(new_gamete,gametes);
 		      ibeg=(gametes->begin()+i);
 		    }
