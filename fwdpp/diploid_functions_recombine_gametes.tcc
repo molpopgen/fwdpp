@@ -30,7 +30,6 @@ namespace KTfwd
 	return false;
       }
     };
-    
   }
 
   //recombination for individual-based simulation
@@ -48,6 +47,11 @@ namespace KTfwd
     assert( g1 != gametes->end() );
     assert( g2 != gametes->end() );
     
+    typedef typename iterator_type::value_type gtype;
+    typedef typename gtype::mutation_container gtype_mcont;
+    typedef typename gtype::mcont_const_iterator mut_itr_c;
+    typedef typename gtype::mutation_list_type_iterator mlist_itr;
+
     //Identify cases where recombination cannot result in changed gametes, and get out quick
     if(g1 == g2 ) return 0;
     unsigned nm1=g1->mutations.size()+g1->smutations.size();
@@ -70,9 +74,7 @@ namespace KTfwd
 	  }
 	std::sort(pos.begin(),pos.end());
 	pos.emplace_back(std::numeric_limits<double>::max());
-	typename iterator_type::value_type new_gamete1(0u,
-						       typename iterator_type::value_type::mutation_container(),
-						       typename iterator_type::value_type::mutation_container()),
+	gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
 	  new_gamete2(new_gamete1);
 
 	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
@@ -80,7 +82,7 @@ namespace KTfwd
 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	
-	typename iterator_type::value_type::mcont_const_iterator itr = g1->mutations.cbegin(),
+	mut_itr_c itr = g1->mutations.cbegin(),
 	  jtr = g2->mutations.cbegin(),
 	  itr_s = g1->smutations.cbegin(),
 	  jtr_s = g2->smutations.cbegin(),
@@ -106,13 +108,18 @@ namespace KTfwd
 				   &new_gamete1.smutations,&new_gamete2.smutations,SWITCH,dummy));
  	    SWITCH=!SWITCH;
  	  }
-	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),fake_less());
-	std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),fake_less());
-	std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),fake_less());
-	std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),fake_less());
-	typename list_type< typename iterator_type::value_type,list_type_allocator >::iterator current_end = gametes->end();
+	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),
+		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
+	std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
+		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
+	std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),
+		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
+	std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),
+		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
+
+	typename list_type< gtype,list_type_allocator >::iterator current_end = gametes->end();
 	bool f1 = false, f2 = false;
-	for( typename list_type< typename iterator_type::value_type,list_type_allocator >::iterator itr = gametes->begin() ;
+	for( typename list_type< gtype,list_type_allocator >::iterator itr = gametes->begin() ;
 	     (!f1||!f2)&&itr != current_end ; ++itr )
 	  {
 	    if(!f1&&*itr == new_gamete1)
