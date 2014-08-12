@@ -93,8 +93,6 @@ namespace KTfwd
 	  jtr_s_e = g2->smutations.cend();
 	short SWITCH = 0;
 	rec_gamete_updater UPDATER;
-	typedef typename iterator_type::value_type::mcont_const_iterator::value_type mptr_t;
-	typedef typename iterator_type::value_type::mutation_container mctr_t;
 	for(const auto dummy : pos)
 	  {
 	    for_each_if( itr, itr_e,
