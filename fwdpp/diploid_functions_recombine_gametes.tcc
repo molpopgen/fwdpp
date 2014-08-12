@@ -82,7 +82,6 @@ namespace KTfwd
 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	
-	//auto itr = g1->mutations.cbegin(),
 	typename iterator_type::value_type::mcont_const_iterator itr = g1->mutations.cbegin(),
 	  jtr = g2->mutations.cbegin(),
 	  itr_s = g1->smutations.cbegin(),
