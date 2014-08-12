@@ -547,10 +547,18 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  assert(__nm1+__nm2 == nm1+nm2);
 #endif
 
-	  std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),fake_less());
-	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),fake_less());
-	  std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),fake_less());
-	  std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),fake_less());
+	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
 
 	  vtype_iterator newpos = update_if_exists_insert(new_gamete1,gametes);
 	  assert(newpos->n <= twoN);
