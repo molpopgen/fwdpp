@@ -135,8 +135,8 @@ namespace KTfwd
 	ng.n = 1;
 	for( unsigned i = 0 ; i < nm ; ++i )
 	  {
-	    typename iterator_type::value_type::mutation_type nm = mmodel(mutations);
-	    typename iterator_type::value_type::mutation_list_type_iterator mitr = mpolicy(nm,mutations);
+	    typename iterator_type::value_type::mutation_type nmut = mmodel(mutations);
+	    typename iterator_type::value_type::mutation_list_type_iterator mitr = mpolicy(nmut,mutations);
 	    if( mitr->neutral )
 	      {
 		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.mutations.begin(),
