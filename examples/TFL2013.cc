@@ -311,8 +311,12 @@ int main(int argc, char ** argv)
 		}
 	    }
 	}
-      std::sort(neutral.begin(),neutral.end(),sortpos());
-      std::sort(selected.begin(),selected.end(),sortpos());
+      std::sort(neutral.begin(),neutral.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+      std::sort(selected.begin(),selected.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
       msneut.assign(neutral.begin(),neutral.end());
       mssel.assign(selected.begin(),selected.end());
 

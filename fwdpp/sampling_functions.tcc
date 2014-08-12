@@ -2,6 +2,8 @@
 #ifndef __FWDPP_SAMPLING_FUNCTIONS_TCC__
 #define __FWDPP_SAMPLING_FUNCTIONS_TCC__
 
+#include <fwdpp/fwd_functional.hpp>
+
 namespace KTfwd
 {
 
@@ -22,28 +24,6 @@ namespace KTfwd
     gsl_ran_multinomial(r,gametes.size(),n,&freqs[0],&counts[0]);
     return counts;
   }
-
- /* \brief Used internally by KTfwd::sample_ms and KTfwd::sample_ms_separate
-   */
-  struct find_mut_pos : public std::binary_function< std::pair<double,std::string>, double, bool >
-  {
-    inline bool operator()(const std::pair<double,std::string> & pds, const double & d) const
-    {
-      return (std::fabs(pds.first-d) <= std::numeric_limits<double>::epsilon() );
-    }
-  };
-
-  /* \brief Used internally by KTfwd::sample_ms and KTfwd::sample_ms_separate
-   */
-  struct sortpos : public std::binary_function< std::pair<double,std::string>,
-						std::pair<double,std::string>, bool >
-  {
-    inline bool operator()( const std::pair<double,std::string> & lhs,
-			    const std::pair<double,std::string> & rhs ) const
-    {
-      return (lhs.first < rhs.first);
-    }
-  };
 
   template< typename gamete_type,
 	    typename vector_type_allocator,
@@ -165,7 +145,10 @@ ms_sample(gsl_rng * r,
     }
   if(!rv.empty())
     {
-      std::sort(rv.begin(),rv.end(),sortpos());
+      std::sort(rv.begin(),
+		rv.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   return rv;
 }
@@ -255,11 +238,15 @@ ms_sample_separate(gsl_rng * r,
     }
   if(!rvneut.empty())
     {
-      std::sort(rvneut.begin(),rvneut.end(),sortpos());
+      std::sort(rvneut.begin(),rvneut.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   if(!rvsel.empty())
     {
-      std::sort(rvsel.begin(),rvsel.end(),sortpos());
+      std::sort(rvsel.begin(),rvsel.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   return std::make_pair(rvneut,rvsel);
 }
@@ -362,7 +349,9 @@ ms_sample( gsl_rng * r,
     }
   if(!rv.empty())
     {
-      std::sort(rv.begin(),rv.end(),sortpos());
+      std::sort(rv.begin(),rv.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   return rv;
 }
@@ -466,7 +455,9 @@ ms_sample_separate( gsl_rng * r,
     }
   if(!rv.first.empty())
     {
-      std::sort(rv.first.begin(),rv.first.end(),sortpos());
+      std::sort(rv.first.begin(),rv.first.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   if(remove_fixed&&!rv.second.empty())
     {
@@ -484,7 +475,9 @@ ms_sample_separate( gsl_rng * r,
     }
   if(!rv.second.empty())
     {
-      std::sort(rv.second.begin(),rv.second.end(),sortpos());
+      std::sort(rv.second.begin(),rv.second.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   return rv;
 }
@@ -628,7 +621,9 @@ ms_sample( gsl_rng * r,
   //sort on position
   for( unsigned i = 0 ; i < rv.size() ; ++i )
     {
-      std::sort(rv[i].begin(),rv[i].end(),sortpos());
+      std::sort(rv[i].begin(),rv[i].end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
     }
   return rv;
 }

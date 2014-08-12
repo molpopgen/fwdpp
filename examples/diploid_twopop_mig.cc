@@ -176,6 +176,8 @@ Sequence::SimData merge( const std::vector<std::pair<double,std::string> > & sam
 	}
     }
   std::vector<std::pair<double,std::string> > rv( temp.begin(),temp.end() );
-  std::sort(rv.begin(),rv.end(),KTfwd::sortpos());
+  std::sort(rv.begin(),rv.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
   return Sequence::SimData(rv.begin(),rv.end());
 }

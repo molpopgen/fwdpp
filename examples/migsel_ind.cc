@@ -337,6 +337,8 @@ SimData merge( const std::vector<std::pair<double,std::string> > & sample1,
 	}
     }
   std::vector<std::pair<double,std::string> > rv( temp.begin(),temp.end() );
-  std::sort(rv.begin(),rv.end(),sortpos());
+  std::sort(rv.begin(),rv.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
   return SimData(rv.begin(),rv.end());
 }
