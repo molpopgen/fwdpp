@@ -502,8 +502,6 @@ ms_sample( gsl_rng * r,
 	   const bool & remove_fixed)
 {
   typedef std::vector< std::vector< std::pair<double,std::string> > > rvtype;
-  typedef rvtype::iterator rvtype_itr;
-  typedef rvtype::const_iterator rvtype_const_itr;
   typedef std::vector< std::pair<double,std::string> >::iterator rv_inner_itr;
   typedef vector_type< std::pair<iterator_type,iterator_type>, allocator > genotype;
   typedef outer_vector_type< genotype, outer_allocator > dip_ctr;
