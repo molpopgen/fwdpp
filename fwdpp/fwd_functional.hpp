@@ -49,29 +49,6 @@ namespace KTfwd
     }
   };
 
-  /*! \brief Returns true if i->pos < j->pos
-    Useful for sorting pointers to mutations within gametes
-    \code
-    std::sort( gamete.mutations.begin(), gamete.mutations.end(), KTfwd::fake_less() );
-    \endcode
-   */
-  struct fake_less
-  {
-    template<typename iterator_type>
-    inline bool operator()( iterator_type  i,iterator_type  j) const
-    {
-      return (i->pos < j->pos);
-    }
-  };
-  
-  template<typename iterator_type>
-  struct fake_less2
-  {
-    inline bool operator()(iterator_type  i,iterator_type  j) const
-    {
-      return i->pos < j->pos ;
-    }
-  };
   /*!
     \brief Returns true if i->pos > j->pos
   */
