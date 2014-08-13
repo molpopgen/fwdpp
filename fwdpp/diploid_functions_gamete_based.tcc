@@ -8,6 +8,9 @@
 #include <boost/container/vector.hpp>
 #endif
 
+#include <fwdpp/algorithm.hpp>
+#include <fwdpp/rec_gamete_updater.hpp>
+
 namespace KTfwd
 {
   template< typename gamete_type,
@@ -333,7 +336,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
                  std::is_same<gamete_base_type,gamete_type>::value,
                  "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   typedef typename gamete_type::mutation_container mcont;
-  typedef typename mcont::iterator mcont_iterator;
+  typedef typename mcont::const_iterator mcont_const_iterator;
   typedef typename vector_type<gamete_type, vector_type_allocator>::iterator vtype_iterator;
   //"individual-based recombination"
   //1. determine # recombinants in whole pop
@@ -367,6 +370,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   size_t ith,jth;
   while(NRECS > 0)
     {
+      fwdpp_internal::rec_gamete_updater UPDATER;
       ith = gsl_ran_discrete(r,lookup);
       while(gcounts[ith]==0)
 	{
@@ -428,117 +432,30 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  new_gamete2.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
 	  short SWITCH = 0;
 	  size_t dummy = 0;
-	  mcont_iterator itr = ibeg->mutations.begin(),
-	    jtr = jbeg->mutations.begin(),
-	    itr_s = ibeg->smutations.begin(),
-	    jtr_s = jbeg->smutations.begin();
+	  mcont_const_iterator itr = ibeg->mutations.cbegin(),
+	    jtr = jbeg->mutations.cbegin(),
+	    itr_s = ibeg->smutations.cbegin(),
+	    jtr_s = jbeg->smutations.cbegin(),
+	    itr_e = ibeg->mutations.cend(),
+	    itr_s_e = ibeg->smutations.cend(),
+	    jtr_e = jbeg->mutations.cend(),
+	    jtr_s_e = jbeg->smutations.cend();
 	  //pointer arithmetic over a range of pointers.  apologies...
 	  //typename gamete_type::mutation_container::iterator itr2;
 	  for( ; dummy < pos.size(); ++dummy)
 	    {
-	      //iterate over neutral mutations from parent i
-	      for( ; itr < ibeg->mutations.end() && (*itr)->pos < pos[dummy] ;++itr)
-		{
-		  switch(SWITCH)
-		    {
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.mutations[t],(*itr)->pos) );
-			}
-#endif
-		      new_gamete1.mutations.push_back(*itr);
-		      break;
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.mutations[t],(*itr)->pos) );
-			}
-#endif
-		      new_gamete2.mutations.push_back(*itr);
-		      break;
-		    }
-		}
-
-	      //iterate over selected mutations from parent i
-	      for( ; itr_s < ibeg->smutations.end() && (*itr_s)->pos < pos[dummy] ;++itr_s)
-		{
-		  switch(SWITCH)
-		    {
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.smutations[t],(*itr_s)->pos) );
-			}
-#endif
-		      new_gamete1.smutations.push_back(*itr_s);
-		      break;
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.smutations[t],(*itr_s)->pos) );
-			}
-#endif
-		      new_gamete2.smutations.push_back(*itr_s);
-		      break;
-		    }
-		}
-
-	      //iterate over neutral mutations from parent j
-	      for( ; jtr < jbeg->mutations.end() && (*jtr)->pos < pos[dummy] ;++jtr)
-		{
-		  switch(SWITCH)
-		    {
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.mutations[t],(*jtr)->pos) );
-			}
-#endif
-		      new_gamete1.mutations.push_back(*jtr);
-		      break;
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.mutations[t],(*jtr)->pos) );
-			}
-#endif
-		      new_gamete2.mutations.push_back(*jtr);
-		      break;
-		    }
-		}
-
-	      //iterate over selected mutations from parent j
-	      for( ; jtr_s < jbeg->smutations.end() && (*jtr_s)->pos < pos[dummy] ;++jtr_s)
-		{
-		  switch(SWITCH)
-		    {
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.smutations[t],(*jtr_s)->pos) );
-			}
-#endif
-		      new_gamete1.smutations.push_back(*jtr_s);
-		      break;
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.smutations[t],(*jtr_s)->pos) );
-			}
-#endif
-		      new_gamete2.smutations.push_back(*jtr_s);
-		      break;
-		    }
-		}
+	      for_each_if( itr, itr_e,
+			   std::bind(UPDATER,std::placeholders::_1,
+				     &new_gamete2.mutations,&new_gamete1.mutations,SWITCH,pos[dummy]));
+	      for_each_if( itr_s, itr_s_e,
+			   std::bind(UPDATER,std::placeholders::_1,
+				     &new_gamete2.smutations,&new_gamete1.smutations,SWITCH,pos[dummy]));
+	      for_each_if( jtr, jtr_e,
+			   std::bind(UPDATER,std::placeholders::_1,
+				     &new_gamete1.mutations,&new_gamete2.mutations,SWITCH,pos[dummy]));
+	      for_each_if( jtr_s, jtr_s_e,
+			   std::bind(UPDATER,std::placeholders::_1,
+				     &new_gamete1.smutations,&new_gamete2.smutations,SWITCH,pos[dummy]));
 	      SWITCH=!SWITCH;
 	    }
 #ifndef NDEBUG
