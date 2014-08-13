@@ -98,17 +98,6 @@ namespace KTfwd
     }
   };
 
-
-  /* \brief Used internally by KTfwd::sample_ms and KTfwd::sample_ms_separate
-   */
-  struct find_mut_pos : public std::binary_function< std::pair<double,std::string>, double, bool >
-  {
-    inline bool operator()(const std::pair<double,std::string> & pds, const double & d) const
-    {
-      return (std::fabs(pds.first-d) <= std::numeric_limits<double>::epsilon() );
-    }
-  };
-
   /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
   struct equal_eps
   {
