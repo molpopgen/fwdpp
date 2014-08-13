@@ -86,6 +86,12 @@ ms_sample(gsl_rng * r,
   std::vector< std::pair<double, std::string> > rv;
   std::vector< std::pair<double, std::string> >::iterator itr;
 
+  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											     const double & d ) 
+    {
+      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+    };
+
   unsigned individual = 0;
   for(unsigned i=0;i<counts.size();++i)
     {
@@ -96,7 +102,8 @@ ms_sample(gsl_rng * r,
 	      if(gametes[i].mutations[mut]->n)
 		{
 		  double mutpos = gametes[i].mutations[mut]->pos;
-		  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+		  itr = std::find_if(rv.begin(),rv.end(),
+				     std::bind(sitefinder,std::placeholders::_1,mutpos));
 		  if( itr == rv.end() )
 		    {
 		      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -113,7 +120,8 @@ ms_sample(gsl_rng * r,
 	      if(gametes[i].smutations[mut]->n)
 		{
 		  double mutpos = gametes[i].smutations[mut]->pos;
-		  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+		  itr = std::find_if(rv.begin(),rv.end(),
+				     std::bind(sitefinder,std::placeholders::_1,mutpos));
 		  if( itr == rv.end() )
 		    {
 		      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -167,6 +175,12 @@ ms_sample_separate(gsl_rng * r,
   std::vector< std::pair<double, std::string> > rvsel,rvneut;
   std::vector< std::pair<double, std::string> >::iterator itr;
 
+  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											     const double & d ) 
+    {
+      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+    };
+
   unsigned individual = 0;
   for(unsigned i=0;i<counts.size();++i)
     {
@@ -175,7 +189,8 @@ ms_sample_separate(gsl_rng * r,
 	  for(unsigned mut = 0 ; mut < gametes[i].mutations.size() ; ++mut)
 	    {
 	      double mutpos = gametes[i].mutations[mut]->pos;
-	      itr = std::find_if(rvneut.begin(),rvneut.end(),std::bind2nd(find_mut_pos(),mutpos));
+	      itr = std::find_if(rvneut.begin(),rvneut.end(),
+				 std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if( itr == rvneut.end() )
 		{
 		  rvneut.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -189,7 +204,8 @@ ms_sample_separate(gsl_rng * r,
 	  for(unsigned mut = 0 ; mut < gametes[i].smutations.size() ; ++mut)
 	    {
 	      double mutpos = gametes[i].smutations[mut]->pos;
-	      itr = std::find_if(rvsel.begin(),rvsel.end(),std::bind2nd(find_mut_pos(),mutpos));
+	      itr = std::find_if(rvsel.begin(),rvsel.end(),
+				     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if( itr == rvsel.end() )
 		{
 		  rvsel.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -264,6 +280,12 @@ ms_sample( gsl_rng * r,
   std::vector< std::pair<double,std::string> > rv;
   std::vector< std::pair<double, std::string> >::iterator itr;
   
+  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											     const double & d ) 
+    {
+      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+    };
+
   const typename vector_type< std::pair<iterator_type,iterator_type>, allocator >::const_iterator dptr = diploids->begin();
   for( unsigned i = 0 ; i < n/2 ; ++i )
     {
@@ -274,7 +296,8 @@ ms_sample( gsl_rng * r,
 	  mptr != (dptr+ind)->first->mutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.begin(),rv.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.end() )
 	    {
 	      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -289,7 +312,8 @@ ms_sample( gsl_rng * r,
 	  mptr != (dptr+ind)->first->smutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.begin(),rv.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.end() )
 	    {
 	      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -305,7 +329,8 @@ ms_sample( gsl_rng * r,
 	  mptr != (dptr+ind)->second->mutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.begin(),rv.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.end() )
 	    {
 	      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -320,7 +345,8 @@ ms_sample( gsl_rng * r,
 	  mptr != (dptr+ind)->second->smutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.begin(),rv.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.begin(),rv.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.end() )
 	    {
 	      rv.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -370,6 +396,12 @@ ms_sample_separate( gsl_rng * r,
 	    std::vector< std::pair<double,std::string> > > rv;
   std::vector< std::pair<double, std::string> >::iterator itr;
   
+  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											     const double & d ) 
+    {
+      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+    };
+
   const typename vector_type< std::pair<iterator_type,iterator_type>, allocator >::const_iterator dptr = diploids->begin();
   for( unsigned i = 0 ; i < n/2 ; ++i )
     {
@@ -380,7 +412,8 @@ ms_sample_separate( gsl_rng * r,
 	  mptr != (dptr+ind)->first->mutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.first.begin(),rv.first.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.first.begin(),rv.first.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.first.end() )
 	    {
 	      rv.first.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -395,7 +428,8 @@ ms_sample_separate( gsl_rng * r,
 	  mptr != (dptr+ind)->first->smutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.second.begin(),rv.second.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.second.begin(),rv.second.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.second.end() )
 	    {
 	      rv.second.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -411,7 +445,8 @@ ms_sample_separate( gsl_rng * r,
 	  mptr != (dptr+ind)->second->mutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.first.begin(),rv.first.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.first.begin(),rv.first.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.first.end() )
 	    {
 	      rv.first.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -426,7 +461,8 @@ ms_sample_separate( gsl_rng * r,
 	  mptr != (dptr+ind)->second->smutations.end() ; ++mptr )
 	{
 	  double mutpos = (*mptr)->pos;
-	  itr = std::find_if(rv.second.begin(),rv.second.end(),std::bind2nd(find_mut_pos(),mutpos));
+	  itr = std::find_if(rv.second.begin(),rv.second.end(),
+			     std::bind(sitefinder,std::placeholders::_1,mutpos));
 	  if( itr == rv.second.end() )
 	    {
 	      rv.second.push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -508,6 +544,12 @@ ms_sample( gsl_rng * r,
       individuals.push_back( typename dip_ctr::size_type( gsl_ran_flat(r,0,diploids->size()) ) );
     }
 
+  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											     const double & d ) 
+    {
+      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+    };
+
   //Go over each indidivual's mutations and update the return value
   typename dip_ctr::const_iterator dbegin = diploids->begin();
   for( unsigned ind = 0 ; ind < individuals.size() ; ++ind )
@@ -525,8 +567,7 @@ ms_sample( gsl_rng * r,
 	      double mutpos = (*mut)->pos;
 	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
 						rv[rv_count].end(),
-						std::bind2nd(find_mut_pos(),mutpos));
-
+						std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if ( mitr == rv[rv_count].end() )
 		{
 		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -544,8 +585,7 @@ ms_sample( gsl_rng * r,
 	      double mutpos = (*mut)->pos;
 	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
 						rv[rv_count].end(),
-						std::bind2nd(find_mut_pos(),mutpos));
-
+						std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if ( mitr == rv[rv_count].end() )
 		{
 		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -563,8 +603,7 @@ ms_sample( gsl_rng * r,
 	      double mutpos = (*mut)->pos;
 	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
 						rv[rv_count].end(),
-						std::bind2nd(find_mut_pos(),mutpos));
-
+						std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if ( mitr == rv[rv_count].end() )
 		{
 		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
@@ -582,8 +621,7 @@ ms_sample( gsl_rng * r,
 	      double mutpos = (*mut)->pos;
 	      rv_inner_itr mitr = std::find_if( rv[rv_count].begin(),
 						rv[rv_count].end(),
-						std::bind2nd(find_mut_pos(),mutpos));
-
+						std::bind(sitefinder,std::placeholders::_1,mutpos));
 	      if ( mitr == rv[rv_count].end() )
 		{
 		  rv[rv_count].push_back( std::make_pair(mutpos,std::string(n,'0')) );
