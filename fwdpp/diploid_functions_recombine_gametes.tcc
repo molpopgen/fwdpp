@@ -4,34 +4,9 @@
 
 #include <iostream>
 #include <fwdpp/algorithm.hpp>
+#include <fwdpp/rec_gamete_updater.hpp>
 namespace KTfwd
 {
-  namespace
-  {
-    struct rec_gamete_updater
-    {
-      template<typename itr_type,
-	       typename cont_type>
-      inline bool operator()( itr_type & i, cont_type * m1, cont_type * m2,
-			      const unsigned & SWITCH, const double & val ) const
-      {
-	if( i->pos < val )
-	  {
-	    if( SWITCH )
-	      {
-		m1->emplace_back(i);
-	      }
-	    else
-	      {
-		m2->emplace_back(i);
-	      }
-	    return true;
-	  }
-	return false;
-      }
-    };
-  }
-
   //recombination for individual-based simulation
   template< typename iterator_type,
 	    typename recombination_map,
@@ -91,7 +66,7 @@ namespace KTfwd
 	  jtr_e = g2->mutations.cend(),
 	  jtr_s_e = g2->smutations.cend();
 	short SWITCH = 0;
-	rec_gamete_updater UPDATER;
+	fwdpp_internal::rec_gamete_updater UPDATER;
 	for(const auto dummy : pos)
 	  {
 	    for_each_if( itr, itr_e,
