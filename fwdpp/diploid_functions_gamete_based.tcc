@@ -440,8 +440,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    itr_s_e = ibeg->smutations.cend(),
 	    jtr_e = jbeg->mutations.cend(),
 	    jtr_s_e = jbeg->smutations.cend();
-	  //pointer arithmetic over a range of pointers.  apologies...
-	  //typename gamete_type::mutation_container::iterator itr2;
+
 	  for( ; dummy < pos.size(); ++dummy)
 	    {
 	      for_each_if( itr, itr_e,
