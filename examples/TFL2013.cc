@@ -253,12 +253,21 @@ int main(int argc, char ** argv)
       //print out num deleterious mutations vs effect
       vector< pair<double,string> > neutral,selected;
       SimData msneut,mssel;
+
+      std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+												 const double & d ) 
+	{
+	  return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+	};
+
       for(unsigned i=0;i<diploids.size();++i)
 	{
 	  //neutral mutations
 	  for( unsigned mut = 0 ; mut < diploids[i].first->mutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),std::bind2nd(find_mut_pos(), diploids[i].first->mutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].first->mutations[mut]->pos));
+
 	      if( itr == neutral.end() )
 		{
 		  neutral.push_back( std::make_pair(diploids[i].first->mutations[mut]->pos,std::string(2*N,'0')) );
@@ -271,7 +280,8 @@ int main(int argc, char ** argv)
 	    }
 	  for( unsigned mut = 0 ; mut < diploids[i].second->mutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),std::bind2nd(find_mut_pos(), diploids[i].second->mutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].second->mutations[mut]->pos));
 	      if( itr == neutral.end() )
 		{
 		  neutral.push_back( std::make_pair(diploids[i].second->mutations[mut]->pos,std::string(2*N,'0')) );
@@ -286,7 +296,8 @@ int main(int argc, char ** argv)
 	  //selected
 	  for( unsigned mut = 0 ; mut < diploids[i].first->smutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),std::bind2nd(find_mut_pos(), diploids[i].first->smutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].first->mutations[mut]->pos));
 	      if( itr == selected.end() )
 		{
 		  selected.push_back( std::make_pair(diploids[i].first->smutations[mut]->pos,std::string(2*N,'0')) );
@@ -299,7 +310,8 @@ int main(int argc, char ** argv)
 	    }
 	  for( unsigned mut = 0 ; mut < diploids[i].second->smutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),std::bind2nd(find_mut_pos(), diploids[i].second->smutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].second->mutations[mut]->pos));
 	      if( itr == selected.end() )
 		{
 		  selected.push_back( make_pair(diploids[i].second->smutations[mut]->pos,std::string(2*N,'0')) );
