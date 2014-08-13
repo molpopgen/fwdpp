@@ -7,4 +7,4 @@ The command line was the following, and I varied run times from 10k to 30k gener
 
 The R script in this folder results in this plot, which shows that run time per generation doesn't really hit an equilibrium until about 10N generations:
 
-[gentimes.pdf]
+![Generation times](gentimes.pdf?raw=true "Time per generation")
