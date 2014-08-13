@@ -144,12 +144,16 @@ namespace KTfwd
 	assert( (dptr+i)->second->n > 0 );
 	assert( (dptr+i)->second->n <= 2*N_next );
 	
-	adjust_mutation_counts((dptr+i)->first,1);
-	adjust_mutation_counts((dptr+i)->second,1);
+	//adjust_mutation_counts((dptr+i)->first,1);
+	//adjust_mutation_counts((dptr+i)->second,1);
 	
 	//now, add new mutations
 	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+      }
+    for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
+      {
+	adjust_mutation_counts(__g,__g->n);
       }
 #ifndef NDEBUG
     for( unsigned i = 0 ; i < diploids->size() ; ++i )
@@ -402,8 +406,9 @@ namespace KTfwd
 		      (dptr+i)->second->n++;
 		      assert((dptr+i)->second->n <= 2*demesize);
 		      
-		      adjust_mutation_counts((dptr+i)->first,1);
-		      adjust_mutation_counts((dptr+i)->second,1);
+		      //This was done here in fwdpp <= 0.2.4
+		      //adjust_mutation_counts((dptr+i)->first,1);
+		      //adjust_mutation_counts((dptr+i)->second,1);
 		      
 		      //now, add new mutations
 		      (dptr+i)->first = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
@@ -415,6 +420,11 @@ namespace KTfwd
 	      for(typename pop_ctr::iterator ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
 		{
 		  ptr->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
+		  //Adjust mutation counts
+		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
+		    {
+		      adjust_mutation_counts(gptr,gptr->n);
+		    }
 		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
 		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
