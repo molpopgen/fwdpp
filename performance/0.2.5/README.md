@@ -8,7 +8,7 @@ This directory represents a set of tests that I performed on the UCI cluster to 
 
 This test is of the following conditions:
 
-1. The dev branch of fwdpp (which is the same as the published version 0.2.4 as far as this is concerned) was compiled with -std=c++11 using GCC 4.7.3 on the UCI HPC, which is a cluster of AMD0-based 64-core nodes.  The example programs were compiled against libsequence 1.8.0 and boost 1.54.0
+1. The dev branch of fwdpp (which is the same as the published version 0.2.4 as far as this is concerned) was compiled using GCC 4.7.3 (using -std=c++11 -O2 -g for CXXFLAGS) on the UCI HPC, which is a cluster of AMD0-based 64-core nodes.  The example programs were compiled against libsequence 1.8.0 and boost 1.54.0.  In all cases, boost containers are used by the example program (see below) to store mutations and gametes, because it is faster.
 2. The cpp11 branch of fwdpp where the only difference from the above is that boost::bind was replace with std::bind
 3. The example program diploid_fixed_sh_ind was used to simulate a population of N=10,000 diploids for 8N generations with 4Nu = 4Nr and 4Nd = 5, which is twice the number of deleterious mutations entering the population per generation).  The script to run the simulation is:
 
@@ -34,4 +34,20 @@ Run times:
 Memory (you only see one line because there is no difference between the two versions, so they overlap completely):
 ![test1mem](t1_mem.png?raw=true "Memory and bind")
 
-##TEST 2: flly-cpp11 + fewer recombination searches + GCC 4.8
+##A fuller C++ implementation of fwdpp
+
+For this test, the cpp11 branch looks like:
+
+1.  boost::bind was swapped for std::bind, and boost::function for std::function.  These two changes represent getting rid of all boost features in fwdpp's internal code except the use of boost containers in strategic places.
+2.  The recombination routine for individual-based simulations was modified to only search the gamete list once.  This gives a noticeable performance boost, with some caveats.  The caveats are that I only see the performance difference on our AMD chips when compiling with GCC 4.8 or newer, and did not see it with 4.7.3.  However, on my development machine (Intel Xeon), I get a big boost with GCC 4.7 and with clang++ 3.4.  There appears to be a compiler by platform interaction, but I cannot rule out that it has more to do with how GCC 4.7.3 was configured on the cluster.
+
+In addition:
+
+1.  All programs were compiled with GCC 4.8.2, using -std=c++11 -O2 -g for CXXFLAGS.
+
+We see a clear speedup due to the modified recombination routine:
+![test2time](t2_time.png?raw=true "Run times for test2")
+
+Again, memory use is unaffected:
+
+![test2mem](t2_mem.png?raw=true "Memory for test2")
