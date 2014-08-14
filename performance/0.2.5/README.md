@@ -4,6 +4,10 @@ Veresion 0.2.5 of fwdpp is the beginning of a migration from "classic" C++ to th
 
 This directory represents a set of tests that I performed on the UCI cluster to check that "de-boosting" fwdpp won't adversely affect performance.
 
+##What I am not showing you
+
+I only show mean run time and mean peak memory usage below.  For all tests, the 0.2.5 and the 0.2.4 versions of the code give identical results for the same random number seed/parameter combox.  All tests were based on 128 replicates of each theta/rho combo, and the seeds used were 1 through 128 for all parameter sets.
+
 ##Test1: std::bind vs. boost::bind
 
 This test is of the following conditions:
@@ -51,3 +55,7 @@ We see a clear speedup due to the modified recombination routine:
 Again, memory use is unaffected:
 
 ![test2mem](t2_mem.png?raw=true "Memory for test2")
+
+##Test 3: changing some book-keeping
+
+I profiled the example program diploid_fixed_sh_ind for large theta/rho and discovered that adjust_mutation_counts was being called a lot, and I became suspicious that I was calling it too often.  This function is a book-keeper that makes sure that the mutation frequencies are properly updated after gamets are sampled.  In fwdpp 0.2.4 (and all of the above tests) it was being called 2N*(8N) times, e.g. twice for every diploid for every generation.  I moved it so that it is only called E(G)*(8N) times on average, where E(G) is the expected number of gametes in the population during the simulation.  This does not affect the output at all, but it does affect the speed.  For this test, this change is only applied to the cpp11 branch.
