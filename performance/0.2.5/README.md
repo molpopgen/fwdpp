@@ -8,10 +8,11 @@ This directory represents a set of tests that I performed on the UCI cluster to 
 
 I only show mean run time and mean peak memory usage below.  For all tests, the 0.2.5 and the 0.2.4 versions of the code give identical results for the same random number seed/parameter combox.  All tests were based on 128 replicates of each theta/rho combo, and the seeds used were 1 through 128 for all parameter sets.
 
-##Some caveats
+##Some notes
 
 1. Relative performance differences between 0.2.4 and 0.2.5 are likely highly parameter-dependent.  The fwdpp paper shows that the performance various simulation engines depends a lot on how much selection, etc., is going on. 
 2. These results also apply to the author's system(s).
+3. The tests from the 0.2.4/published/dev branch are re-run for each test, in order that each test be comparable.  I attempt to have 32 processes from version 0.2.4 and 32 from 0.2.5 running with the same parameters on the same node at the same time.  That doesn't work out perfectly in practice, but it is helpful when there is the possibility of the node itself affecting mean performance.
 
 ##Test1: std::bind vs. boost::bind
 
