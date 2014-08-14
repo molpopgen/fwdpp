@@ -171,31 +171,31 @@ namespace KTfwd
 			  vector_type<mutation_type,vector_type_allocator1> * fixations, 
 			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
 			  const unsigned & generation,const unsigned & twoN)
-	   {
-	     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
-                            "mutation_type must be derived from KTfwd::mutation_base" );
-	     typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
-	     
-	     while(i != mutations->end())
-	       {
-		 assert(i->n <= twoN);			
-		 i->checked = false;
-		 if(i->n==twoN )
-		   {
-		     fixations->push_back(*i);
-		     fixation_times->push_back(generation);
-		   }
-		 if( i->n == 0 || i->n == twoN )
-		   {
-		     mutations->erase(i);
-		     i=mutations->begin();
-		   }
-		 else
-		   {
-		     ++i;
-		   }
-	       }
-	   }
+  {
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+		   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
+    
+    while(i != mutations->end())
+      {
+	assert(i->n <= twoN);			
+	i->checked = false;
+	if(i->n==twoN )
+	  {
+	    fixations->push_back(*i);
+	    fixation_times->push_back(generation);
+	  }
+	if( i->n == 0 || i->n == twoN )
+	  {
+	    mutations->erase(i);
+	    i=mutations->begin();
+	  }
+	else
+	  {
+	    ++i;
+	  }
+      }
+  }
 
   /*! \brief Remove mutations from population
     Removes mutations that are fixed or lost.
@@ -217,7 +217,7 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
     while(i != mutations->end())
       {
 	assert(i->n <= twoN);			
@@ -230,8 +230,10 @@ namespace KTfwd
 	if( i->n == 0 || i->n == twoN )
 	  {
 	    lookup->erase(lookup->find(i->pos));
-	    mutations->erase(i);
-	    i=mutations->begin();
+	    temp=i;
+	    ++i;
+	    mutations->erase(temp);
+	    //i=mutations->begin();
 	  }
 	else
 	  {
