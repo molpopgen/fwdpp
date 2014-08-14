@@ -151,10 +151,10 @@ namespace KTfwd
 	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
-    for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
-      {
-	adjust_mutation_counts(__g,__g->n);
-      }
+    // for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
+    //   {
+    // 	adjust_mutation_counts(__g,__g->n);
+    //   }
 #ifndef NDEBUG
     for( unsigned i = 0 ; i < diploids->size() ; ++i )
       {
@@ -165,6 +165,10 @@ namespace KTfwd
       }
 #endif
     gametes->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
+    for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
+      {
+     	adjust_mutation_counts(__g,__g->n);
+      }
     for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
 	 itr != gametes->end() ; ++itr )
       {
