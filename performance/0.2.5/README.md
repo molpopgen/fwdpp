@@ -44,7 +44,7 @@ Run times:
 Memory (you only see one line because there is no difference between the two versions, so they overlap completely):
 ![test1mem](t1_mem.png?raw=true "Memory and bind")
 
-##A fuller C++ implementation of fwdpp
+##A fuller C++11 implementation of fwdpp
 
 For this test, the cpp11 branch looks like:
 
