@@ -437,11 +437,29 @@ namespace KTfwd
 	      //get rid of extinct stuff, etc.
 	      for(typename pop_ctr::iterator ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
 		{
+		  //Old method goes over data 2x
+		  /*
 		  ptr->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
 		  //Adjust mutation counts
 		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
 		      adjust_mutation_counts(gptr,gptr->n);
+		    }
+		  */
+		  typename gamete_ctr::iterator temp;
+		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ;  )
+		    {
+		      if( gptr->n == 0 )//extinct gamete, remove it
+			{
+			  temp = gptr;
+			  ++gptr;
+			  ptr->erase(temp);
+			}
+		      else
+			{
+			  adjust_mutation_counts(gptr,gptr->n);
+			  ++gptr;
+			}
 		    }
 		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
