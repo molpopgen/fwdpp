@@ -174,7 +174,7 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
 		   "mutation_type must be derived from KTfwd::mutation_base" );
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin();
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
     
     while(i != mutations->end())
       {
@@ -187,8 +187,10 @@ namespace KTfwd
 	  }
 	if( i->n == 0 || i->n == twoN )
 	  {
-	    mutations->erase(i);
-	    i=mutations->begin();
+	    temp=i;
+	    ++temp;
+	    mutations->erase(temp);
+	    //i=mutations->begin();
 	  }
 	else
 	  {
