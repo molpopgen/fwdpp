@@ -1,3 +1,2 @@
 1. Check if moving adjust_mutation_counts call is a good idea in the
    multilocus sampler
-2. Update other versions of remove_fixed_lost
