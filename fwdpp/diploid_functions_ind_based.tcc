@@ -151,10 +151,6 @@ namespace KTfwd
 	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
-    // for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
-    //   {
-    // 	adjust_mutation_counts(__g,__g->n);
-    //   }
 #ifndef NDEBUG
     for( unsigned i = 0 ; i < diploids->size() ; ++i )
       {
@@ -164,10 +160,28 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    gametes->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
-    for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
+    //OLD METHOD: goes over gametes list 3x
+    // gametes->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
+    // for( auto __g = gametes->begin() ; __g != gametes->end() ; ++__g )
+    //   {
+    //  	adjust_mutation_counts(__g,__g->n);
+    //   }
+    //NEW METHOD: goes over it 2x
+    typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator temp;
+    for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
+	 itr != gametes->end() ;  )
       {
-     	adjust_mutation_counts(__g,__g->n);
+	if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
+	  {
+	    temp = itr;
+	    ++itr;
+	    gametes->erase(temp);
+	  }
+	else //gamete remains extant and we adjust mut counts
+	  {
+	    adjust_mutation_counts(itr,itr->n);
+	    ++itr;
+	  }
       }
     for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
 	 itr != gametes->end() ; ++itr )
