@@ -76,8 +76,6 @@ Relative performance of v. 0.2.5 vs 0.2.4:
 
 I profiled the 0.2.5 code base resulting from the previous test and found that a lot of time was being spent in the function remove_fixed_lost.  It turns out that that function was going over the mutation vector many times per generation out of a combination of fear of iterator invalidation and an apparent unwillingness to code it up more efficiently.  Anhow, that is fixed now, and the various sample_diploid functions also have one less pass through the gamete list per generation.  The former change (improving remove_fixed_lost) has a huge effect on speed.
 
-__FULL DISCLOSURE:__ this test should currently under-estimate the speed improvement of 0.2.5 as I used a node with a missing DIMM chip, and it noticeably slowed things down.  Also, I didn't rerun the 0.2.4 simulations, as I'm getting bored of waiting for them.
-
 Run times:
 
 ![test4time](t4_time.png?raw-true "Run-times for test4")
