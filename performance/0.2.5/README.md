@@ -65,3 +65,23 @@ Again, memory use is unaffected:
 ##Test 3: changing some book-keeping
 
 I profiled the example program diploid_fixed_sh_ind for large theta/rho and discovered that adjust_mutation_counts was being called a lot, and I became suspicious that I was calling it too often.  This function is a book-keeper that makes sure that the mutation frequencies are properly updated after gamets are sampled.  In fwdpp 0.2.4 (and all of the above tests), it was being called twice per diploid per generation.  I moved it so that it is only called E(G) times per generation on average, where E(G) is the expected number of gametes in the population during the simulation.  This does not affect the output at all, but it does affect the speed.  For this test, this change is only applied to the cpp11 branch.
+
+![test3time](t3_time.png?raw-true "Run-times for test3")
+
+Relative performance of v. 0.2.5 vs 0.2.4:
+
+![test3perf](t3_perf.png?raw-true "Relative performance increase for test3")
+
+##Test 4: more profiling
+
+I profiled the 0.2.5 code base resulting from the previous test and found that a lot of time was being spent in the function remove_fixed_lost.  It turns out that that function was going over the mutation vector many times per generation out of a combination of fear of iterator invalidation and an apparent unwillingness to code it up more efficiently.  Anhow, that is fixed now, and the various sample_diploid functions also have one less pass through the gamete list per generation.  The former change (improving remove_fixed_lost) has a huge effect on speed.
+
+__FULL DISCLOSURE:__ this test should currently under-estimate the speed improvement of 0.2.5 as I used a node with a missing DIMM chip, and it noticeably slowed things down.  Also, I didn't rerun the 0.2.4 simulations, as I'm getting bored of waiting for them.
+
+Run times:
+
+![test4time](t4_time.png?raw-true "Run-times for test4")
+
+Relative performance of v. 0.2.5 vs 0.2.4:
+
+![test4perf](t4_perf.png?raw-true "Relative performance increase for test4")
