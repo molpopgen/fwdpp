@@ -62,11 +62,25 @@ namespace KTfwd
                      "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       result_type fitness=starting_fitness;
       if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
+      if( g1->smutations.empty() && g2->smutations.empty() ) 
+	{
+	  std::for_each( g1->smutations.begin(),
+			 g1->smutations.end(),
+			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+	  return fitness;
+	}
+      if( g1->smutations.empty() && !g2->smutations.empty() ) 
+	{
+	  std::for_each( g2->smutations.begin(),
+			 g2->smutations.end(),
+			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+	  return fitness;
+	}
       typename iterator_type::value_type::mutation_list_type_iterator ib1,ib2;
-      typename iterator_type::value_type::mutation_container::const_iterator b1=g1->smutations.begin(),
-	e1=g1->smutations.end(),
-	b2=g2->smutations.begin(),
-	e2=g2->smutations.end();
+      typename iterator_type::value_type::mutation_container::const_iterator b1=g1->smutations.cbegin(),
+	e1=g1->smutations.cend(),
+	b2=g2->smutations.cbegin(),
+	e2=g2->smutations.cend();
       //This is a fast way to calculate fitnesses,
       //as it just compares addresses in memory, and 
       //does little in the way of dereferencing and storing
@@ -98,14 +112,95 @@ namespace KTfwd
 	      fpol_het(fitness,ib1);
 	    }
 	}
+      std::for_each( b2,e2,
+		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+      /*
       for( ; b2 < e2 ; ++b2)
 	{	
 	  ib2=*b2;
 	  fpol_het(fitness,ib2);
 	}
+      */
       return fitness;
     }
   };
+
+  template<typename iterator_type,
+	   typename fitness_updating_policy_hom,
+	   typename fitness_updating_policy_het>
+    inline double site_dependent_fitness2( iterator_type __first1, iterator_type __last1,
+					   iterator_type __first2, iterator_type __last2,
+					   const fitness_updating_policy_hom &fpol_hom,
+					   const fitness_updating_policy_het &fpol_het,
+					   const double & starting_fitness = 1.)
+  {
+    double fitness = starting_fitness;
+    auto __x = [&](const typename iterator_type::value_type & mut_i)
+      {
+	bool found = false;
+	while(! found && __first2 < __last2 )
+	  {
+	    if(mut_i == *__first2)
+	      {
+		found = true;
+		fpol_hom(fitness,mut_i);
+	      }
+	    else if( (*__first2)->pos < mut_i->pos )
+	      {
+		fpol_het(fitness,*__first2);
+	      }
+	    else
+	      {
+		break;
+	      }
+	    ++__first2;
+	  }
+	if(!found)
+	  {
+	    fpol_het(fitness,mut_i);
+	  }
+      };
+    std::for_each( __first1, __last1,__x );
+    /*
+    while( __first1 < __last1 )
+      {
+    	bool found = false;
+    	const double cpos = (*__first1)->pos;
+    	while( !found && __first2 < __last2 ) 
+    	  {
+    	    if (*__first1 == *__first2) //homozygote
+    	      {
+    		found = true;
+    		fpol_hom(fitness,*__first1);
+    		//++__first2;
+    		//break;
+    	      }
+    	    else if( (*__first2)->pos < cpos ) //then first2 points to a het
+    	      {
+    		fpol_het(fitness,*__first2);
+    	      }
+    	    else //first 1 is a het
+    	      {
+    		//fpol_het(fitness,*__first1);
+    		//++__first2;
+    		break;
+    	      }
+    	    ++__first2;
+    	  }
+    	if(!found) fpol_het(fitness,*__first1);
+    	++__first1;
+      }
+*/
+    //std::cerr << std::distance(__first2,__last2) << '\n';
+    // while(__first2<__last2) 
+    //   {
+    // 	fpol_het(fitness,*__first2);
+    // 	++__first2;
+    //   }
+     std::for_each( __first2,__last2, 
+		   std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+     return fitness;
+  }
 
   /*! \brief Function object for fitness as a function of the two haplotypes in a diploid
 
@@ -151,10 +246,19 @@ namespace KTfwd
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const
     {
-      return site_dependent_fitness()(g1,g2,
-				      std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-				      std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
-				      1.);
+      //return site_dependent_fitness()(g1,g2,
+      return site_dependent_fitness2(g1->smutations.cbegin(),g1->smutations.cend(),g2->smutations.cbegin(),g2->smutations.cend(),
+				     [=](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+				     {
+				       fitness *= (1. + scaling*mut->s);
+				     },
+				     [](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+				     {
+				       fitness *= (1. + mut->h*mut->s);
+				     },
+				     //std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+				     //std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
+				     1.);
     }
   };
 
@@ -177,8 +281,16 @@ namespace KTfwd
 			     const double scaling = 1.) const
     {
       return 1. + site_dependent_fitness()(g1,g2,
-					   std::bind(additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-					   std::bind(additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
+					   [=](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+					   {
+					     fitness += (scaling*mut->s);
+					   },
+					   [](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+					   {
+					     fitness += (mut->h*mut->s);
+					   },
+					   //std::bind(additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
+					   //std::bind(additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
 					   0.);
     }
   };

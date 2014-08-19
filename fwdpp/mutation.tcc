@@ -125,6 +125,8 @@ namespace KTfwd
   {
     assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
+    typedef typename iterator_type::value_type::mutation_type mut_type;
+    typedef typename iterator_type::value_type::mutation_list_type_iterator mut_itr;
     if ( nm )
       {
 	assert( g->n > 0 );
@@ -133,21 +135,39 @@ namespace KTfwd
 	ng.n = 1;
 	for( unsigned i = 0 ; i < nm ; ++i )
 	  {
-	    typename iterator_type::value_type::mutation_type nmut = mmodel(mutations);
-	    typename iterator_type::value_type::mutation_list_type_iterator mitr = mpolicy(nmut,mutations);
+	    mut_type nmut = mmodel(mutations);
+	    mut_itr mitr = mpolicy(nmut,mutations);
 	    if( mitr->neutral )
 	      {
+		/*
 		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.mutations.begin(),
 												     ng.mutations.end(),
 												     std::bind(KTfwd::greater_pos(),std::placeholders::_1,mitr->pos));
-		ng.mutations.insert(itr2,mitr);
+		*/
+		//typename iterator_type::value_type::mutation_container::iterator itr2 = 
+		ng.mutations.insert(std::upper_bound(ng.mutations.begin(),
+						     ng.mutations.end(),
+						     std::cref(mitr->pos),
+						     [](const double & __x,
+							const mut_itr & val) { return __x < val->pos; }),
+				    mitr);
+		  //	ng.mutations.insert(itr2,mitr);
 	      }
 	    else
 	      {
+		//typename iterator_type::value_type::mutation_container::iterator itr2 = 
+		ng.smutations.insert(std::upper_bound(ng.smutations.begin(),
+						      ng.smutations.end(),
+						      std::cref(mitr->pos),
+						      [](const double & __x,
+							 const mut_itr & val) { return __x < val->pos; }),
+				     mitr);
+		/*
 		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.smutations.begin(),
 												     ng.smutations.end(),
 												     std::bind(KTfwd::greater_pos(),std::placeholders::_1,mitr->pos));
-		ng.smutations.insert(itr2,mitr);
+		*/
+		//ng.smutations.insert(itr2,mitr);
 	      }
 	  }
 	iterator_type rv = gpolicy(ng,gametes);

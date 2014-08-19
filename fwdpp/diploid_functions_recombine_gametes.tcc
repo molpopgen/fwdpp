@@ -65,6 +65,7 @@ namespace KTfwd
 	  itr_s_e = g1->smutations.cend(),
 	  jtr_e = g2->mutations.cend(),
 	  jtr_s_e = g2->smutations.cend();
+	  //tmp;
 	short SWITCH = 0;
 	fwdpp_internal::rec_gamete_updater UPDATER;
 	for(const auto dummy : pos)
@@ -81,6 +82,60 @@ namespace KTfwd
 	    for_each_if( jtr_s, jtr_s_e,
 			 std::bind(UPDATER,std::placeholders::_1,
 				   &new_gamete1.smutations,&new_gamete2.smutations,SWITCH,dummy));
+	    /*
+	    tmp = std::upper_bound(itr,itr_e,std::cref(dummy),
+				   [](const double & val,const typename mut_itr_c::value_type & __x)
+				   { return val < __x->pos; });
+	    if(SWITCH)
+	      {
+	    	std::copy(itr,tmp,std::back_inserter(new_gamete2.mutations));
+	      }
+	    else
+	      {
+	    	std::copy(itr,tmp,std::back_inserter(new_gamete1.mutations));
+	      }
+	    itr = tmp;
+
+	    tmp = std::upper_bound(itr_s,itr_s_e,std::cref(dummy),
+				   [](const double & val,const typename mut_itr_c::value_type & __x)
+				   { return val < __x->pos; });
+	    if(SWITCH)
+	      {
+	    	std::copy(itr_s,tmp,std::back_inserter(new_gamete2.smutations));
+	      }
+	    else
+	      {
+	    	std::copy(itr_s,tmp,std::back_inserter(new_gamete1.smutations));
+	      }
+	    itr_s = tmp;
+
+	    //gamete 2
+	    tmp = std::upper_bound(jtr,jtr_e,std::cref(dummy),
+				   [](const double & val,const typename mut_itr_c::value_type & __x)
+				   { return val < __x->pos; });
+	    if(SWITCH)
+	      {
+	    	std::copy(jtr,tmp,std::back_inserter(new_gamete1.mutations));
+	      }
+	    else
+	      {
+	    	std::copy(jtr,tmp,std::back_inserter(new_gamete2.mutations));
+	      }
+	    jtr = tmp;
+
+	    tmp = std::upper_bound(jtr_s,jtr_s_e,std::cref(dummy),
+				   [](const double & val,const typename mut_itr_c::value_type & __x)
+				   { return val < __x->pos; });
+	    if(SWITCH)
+	      {
+	    	std::copy(jtr_s,tmp,std::back_inserter(new_gamete1.smutations));
+	      }
+	    else
+	      {
+	    	std::copy(jtr_s,tmp,std::back_inserter(new_gamete2.smutations));
+	      }
+	    jtr_s = tmp;
+	    */
  	    SWITCH=!SWITCH;
  	  }
 	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),
