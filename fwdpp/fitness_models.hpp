@@ -241,17 +241,17 @@ namespace KTfwd
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const
     {
-      //return site_dependent_fitness()(g1,g2,
-      return site_dependent_fitness2(g1->smutations.cbegin(),g1->smutations.cend(),g2->smutations.cbegin(),g2->smutations.cend(),
-				     [=](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
-				     {
-				       fitness *= (1. + scaling*mut->s);
-				     },
-				     [](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
-				     {
-				       fitness *= (1. + mut->h*mut->s);
-				     },
-				     1.);
+      return site_dependent_fitness()(g1,g2,
+      //return site_dependent_fitness2(g1->smutations.cbegin(),g1->smutations.cend(),g2->smutations.cbegin(),g2->smutations.cend(),
+				      [=](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+				      {
+					fitness *= (1. + scaling*mut->s);
+				      },
+				      [](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+				      {
+					fitness *= (1. + mut->h*mut->s);
+				      },
+				      1.);
     }
   };
 
