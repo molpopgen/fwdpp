@@ -3,7 +3,6 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/fitness_policies.hpp>
 #include <cassert>
 #include <type_traits>
 
@@ -234,9 +233,7 @@ namespace KTfwd
     \param g2 An iterator pointing to a gamete
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
-    \return Multiplicative fitness across sites = site_dependent_fitness()(g1,g2,
-    std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-    std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
+    \return Multiplicative fitness across sites.
     1.);
   */
   struct multiplicative_diploid
@@ -256,8 +253,6 @@ namespace KTfwd
 				     {
 				       fitness *= (1. + mut->h*mut->s);
 				     },
-				     //std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-				     //std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
 				     1.);
     }
   };
@@ -267,10 +262,7 @@ namespace KTfwd
     \param g2 An iterator pointing to a gamete
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
-    \return Additive fitness across sites: 1. + KTfwd::site_dependent_fitness()(g1,g2,
-    std::bind(KTfwd::additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-    std::bind(KTfwd::additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
-    0.);
+    \return Additive fitness across sites.
     \note g1 and g2 must be part of the gamete_base hierarchy
   */
   struct additive_diploid
@@ -289,8 +281,6 @@ namespace KTfwd
 					   {
 					     fitness += (mut->h*mut->s);
 					   },
-					   //std::bind(additive_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-					   //std::bind(additive_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
 					   0.);
     }
   };

@@ -8,7 +8,6 @@ pkginclude_HEADERS=debug.hpp \
 	diploid_functions_ind_multilocus.tcc \
 	diploid_functions_recombine_gametes.tcc \
 	diploid.hh \
-	fitness_policies.hpp \
 	fitness_models.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
