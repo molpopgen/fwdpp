@@ -36,9 +36,10 @@ bin_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	diploid_binaryIO$(EXEEXT) diploid_binaryIO_ind$(EXEEXT) \
 	diploid_gzbinaryIO$(EXEEXT) diploid_gzbinaryIO_ind$(EXEEXT) \
 	diploid_fixed_sh$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
-	migsel_ind$(EXEEXT) bneck_selection_ind$(EXEEXT) \
-	diploid_ind_2locus$(EXEEXT) diploid_twopop_mig$(EXEEXT) \
-	pfix$(EXEEXT) RHH$(EXEEXT) TFL2013$(EXEEXT)
+	diploid_fixed_sh_ind_lambda$(EXEEXT) migsel_ind$(EXEEXT) \
+	bneck_selection_ind$(EXEEXT) diploid_ind_2locus$(EXEEXT) \
+	diploid_twopop_mig$(EXEEXT) pfix$(EXEEXT) RHH$(EXEEXT) \
+	TFL2013$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
 #Boost is missing, so we gotta use the standard headers
 @USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS \
@@ -91,6 +92,12 @@ am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
 diploid_fixed_sh_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am_diploid_fixed_sh_ind_lambda_OBJECTS =  \
+	diploid_fixed_sh_ind_lambda.$(OBJEXT)
+diploid_fixed_sh_ind_lambda_OBJECTS =  \
+	$(am_diploid_fixed_sh_ind_lambda_OBJECTS)
+diploid_fixed_sh_ind_lambda_LDADD = $(LDADD)
+diploid_fixed_sh_ind_lambda_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_diploid_gzbinaryIO_OBJECTS = diploid_gzbinaryIO.$(OBJEXT)
 diploid_gzbinaryIO_OBJECTS = $(am_diploid_gzbinaryIO_OBJECTS)
 diploid_gzbinaryIO_LDADD = $(LDADD)
@@ -136,6 +143,7 @@ SOURCES = $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_SOURCES) \
 	$(diploid_binaryIO_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
+	$(diploid_fixed_sh_ind_lambda_SOURCES) \
 	$(diploid_gzbinaryIO_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(diploid_twopop_mig_SOURCES) \
@@ -144,6 +152,7 @@ DIST_SOURCES = $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_SOURCES) \
 	$(diploid_binaryIO_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
+	$(diploid_fixed_sh_ind_lambda_SOURCES) \
 	$(diploid_gzbinaryIO_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(diploid_twopop_mig_SOURCES) \
@@ -251,6 +260,7 @@ diploid_gzbinaryIO_SOURCES = diploid_gzbinaryIO.cc common_gamete.hpp
 diploid_gzbinaryIO_ind_SOURCES = diploid_binaryIO_ind.cc common_ind.hpp
 diploid_fixed_sh_SOURCES = diploid_fixed_sh.cc common_gamete.hpp
 diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
+diploid_fixed_sh_ind_lambda_SOURCES = diploid_fixed_sh_ind_lambda.cc common_ind.hpp
 migsel_ind_SOURCES = migsel_ind.cc common_gamete.hpp
 bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
@@ -355,6 +365,9 @@ diploid_fixed_sh$(EXEEXT): $(diploid_fixed_sh_OBJECTS) $(diploid_fixed_sh_DEPEND
 diploid_fixed_sh_ind$(EXEEXT): $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_DEPENDENCIES) $(EXTRA_diploid_fixed_sh_ind_DEPENDENCIES) 
 	@rm -f diploid_fixed_sh_ind$(EXEEXT)
 	$(CXXLINK) $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_LDADD) $(LIBS)
+diploid_fixed_sh_ind_lambda$(EXEEXT): $(diploid_fixed_sh_ind_lambda_OBJECTS) $(diploid_fixed_sh_ind_lambda_DEPENDENCIES) $(EXTRA_diploid_fixed_sh_ind_lambda_DEPENDENCIES) 
+	@rm -f diploid_fixed_sh_ind_lambda$(EXEEXT)
+	$(CXXLINK) $(diploid_fixed_sh_ind_lambda_OBJECTS) $(diploid_fixed_sh_ind_lambda_LDADD) $(LIBS)
 diploid_gzbinaryIO$(EXEEXT): $(diploid_gzbinaryIO_OBJECTS) $(diploid_gzbinaryIO_DEPENDENCIES) $(EXTRA_diploid_gzbinaryIO_DEPENDENCIES) 
 	@rm -f diploid_gzbinaryIO$(EXEEXT)
 	$(CXXLINK) $(diploid_gzbinaryIO_OBJECTS) $(diploid_gzbinaryIO_LDADD) $(LIBS)
@@ -391,6 +404,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_binaryIO_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind_lambda.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_gzbinaryIO.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind_2locus.Po@am__quote@

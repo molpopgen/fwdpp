@@ -6,6 +6,7 @@ bin_PROGRAMS=diploid \
 	diploid_gzbinaryIO_ind \
 	diploid_fixed_sh \
 	diploid_fixed_sh_ind \
+	diploid_fixed_sh_ind_lambda \
 	migsel_ind \
 	bneck_selection_ind \
 	diploid_ind_2locus \
@@ -22,6 +23,7 @@ diploid_gzbinaryIO_SOURCES=diploid_gzbinaryIO.cc common_gamete.hpp
 diploid_gzbinaryIO_ind_SOURCES=diploid_binaryIO_ind.cc common_ind.hpp
 diploid_fixed_sh_SOURCES=diploid_fixed_sh.cc common_gamete.hpp
 diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc common_ind.hpp
+diploid_fixed_sh_ind_lambda_SOURCES=diploid_fixed_sh_ind_lambda.cc common_ind.hpp
 migsel_ind_SOURCES=migsel_ind.cc common_gamete.hpp
 bneck_selection_ind_SOURCES=bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES=diploid_ind_2locus.cc common_ind.hpp

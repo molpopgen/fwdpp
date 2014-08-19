@@ -243,7 +243,7 @@ namespace KTfwd
     {
       return site_dependent_fitness()(g1,g2,
       //return site_dependent_fitness2(g1->smutations.cbegin(),g1->smutations.cend(),g2->smutations.cbegin(),g2->smutations.cend(),
-				      [=](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
+				      [&](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
 				      {
 					fitness *= (1. + scaling*mut->s);
 				      },
