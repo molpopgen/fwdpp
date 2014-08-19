@@ -39,9 +39,7 @@ namespace KTfwd
     \param starting_fitness The value to which the function will initialize the return value
     \return The fitness of a diploid with genotype g1 and g2
     \note The updating policies must take a non-const reference to a double as the first argument and
-    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind.  See KTfwd::multiplicative_fitness_updater_hom and KTfwd::multiplicative_fitness_updater_het for examples.  The iterators g1 and g2 must point to objects in the class hierarchy of KTfwd::gamete_base.
-
-    \note This function is unwieldy to call directly.  It is best to define your two policies and write a wrapper function calling this function. See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.  
+    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
     \example diploid_fixed_sh_ind.cc
    */
   struct site_dependent_fitness
