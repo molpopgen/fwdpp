@@ -10,7 +10,7 @@ namespace KTfwd
       template<typename itr_type,
 	       typename cont_type>
       inline bool operator()( itr_type & i, cont_type * m1, cont_type * m2,
-			      const unsigned & SWITCH, const double & val ) const
+			      const short & SWITCH, const double & val ) const
       {
 	if( i->pos < val )
 	  {
