@@ -45,6 +45,8 @@ namespace KTfwd
                              "list_type<typename gamete_type::mutation_type,list_type_allocator > and gamete_type::mutation_list_type must be the same" );
 	      unsigned ncurrent_classes = gametes->size();
 	      typename vector_type<gamete_type,vector_type_allocator>::iterator ibeg;
+	      typedef typename gamete_type::mutation_type mut_type;
+	      typedef typename list_type<typename gamete_type::mutation_type,list_type_allocator >::iterator mut_itr;
 	      unsigned NM=0;
 	      unsigned NEXTINCT=0;
 	      for(unsigned i=0;i<ncurrent_classes;++i)
@@ -77,26 +79,38 @@ namespace KTfwd
 			  nmuts--;
 			  
 			  //create a new mutant type to enter the population
-			  typename gamete_type::mutation_type new_mutant = mmodel(mutations);
+			  mut_type new_mutant = mmodel(mutations);
 			  
 			  //insert the new mutant type into the list of mutations, and record the position of insertion
-			  typename gamete_type::mutation_list_type_iterator mitr = mpolicy(new_mutant,mutations);
+			  mut_itr mitr = mpolicy(new_mutant,mutations);
 			  
 			  if(mitr->neutral)
 			    {
-			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.mutations.begin(),
-												     new_gamete.mutations.end(),
-												     std::bind(greater_pos(),std::placeholders::_1,mitr->pos));
-			      new_gamete.mutations.insert(itr2,mitr);
-			      //new_gamete.mutations.push_back(mitr);
+			      new_gamete.mutations.insert( (new_gamete.mutations.size()<=250) ? 
+							   std::find_if(new_gamete.mutations.begin(),
+									new_gamete.mutations.end(),
+									[&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
+									{
+									  return mut_itr->pos > mitr->pos;
+									}) :
+							   std::upper_bound(new_gamete.mutations.begin(),
+									    new_gamete.mutations.end(),mitr->pos,
+									    [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+							   mitr );
 			    }
 			  else
 			    {
-			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.smutations.begin(),
-												     new_gamete.smutations.end(),
-												     std::bind(greater_pos(),std::placeholders::_1,mitr->pos));
-			      new_gamete.smutations.insert(itr2,mitr);
-			      //new_gamete.smutations.push_back(mitr);
+			      new_gamete.smutations.insert( (new_gamete.smutations.size() <= 250) ? 
+							    std::find_if(new_gamete.smutations.begin(),
+									 new_gamete.smutations.end(),
+									 [&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
+									 {
+									   return mut_itr->pos > mitr->pos;
+									 }) :
+							    std::upper_bound(new_gamete.smutations.begin(),
+									     new_gamete.smutations.end(),mitr->pos,
+									     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+							    mitr );
 			    }
 			}
 		      gpolicy(new_gamete,gametes);
@@ -135,32 +149,29 @@ namespace KTfwd
 	ng.n = 1;
 	for( unsigned i = 0 ; i < nm ; ++i )
 	  {
-	    mut_type nmut = mmodel(mutations);
-	    mut_itr mitr = mpolicy(nmut,mutations);
+	    mut_itr mitr = mpolicy(mmodel(mutations),mutations);
 	    if( mitr->neutral )
 	      {
-		ng.mutations.insert(std::upper_bound(ng.mutations.begin(),
-						     ng.mutations.end(),
-						     std::cref(mitr->pos),
-						     [](const double & __x,
-							const mut_itr & __mut) { return __x < __mut->pos; }),
+		ng.mutations.insert((ng.mutations.size() <= 250) ? std::find_if(ng.mutations.begin(),
+										ng.mutations.end(),
+										[&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
+				    std::upper_bound(ng.mutations.begin(),
+						     ng.mutations.end(),mitr->pos,
+						     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
 				    mitr);
 	      }
 	    else
 	      {
-		ng.smutations.insert(std::upper_bound(ng.smutations.begin(),
-						      ng.smutations.end(),
-						      std::cref(mitr->pos),
-						      [](const double & __x,
-							 const mut_itr & __mut) { return __x < __mut->pos; }),
+		ng.smutations.insert((ng.smutations.size() <= 250) ? std::find_if(ng.smutations.begin(),
+										  ng.smutations.end(),
+										  [&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
+				     std::upper_bound(ng.smutations.begin(),
+						      ng.smutations.end(),mitr->pos,
+						      [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
 				     mitr);
 	      }
 	  }
-	iterator_type rv = gpolicy(std::move(ng),gametes);
-	assert( rv != gametes->end() );
-	assert(!rv->mutations.empty() || !rv->smutations.empty());
-	assert(rv->n == 1);
-	return rv;
+	return gpolicy(ng,gametes);
       }
     return g;
   }
