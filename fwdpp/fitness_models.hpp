@@ -111,13 +111,6 @@ namespace KTfwd
 	}
       std::for_each( b2,e2,
 		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
-      /*
-      for( ; b2 < e2 ; ++b2)
-	{	
-	  ib2=*b2;
-	  fpol_het(fitness,ib2);
-	}
-      */
       return fitness;
     }
   };
@@ -132,33 +125,33 @@ namespace KTfwd
 					   const double & starting_fitness = 1.)
   {
     double fitness = starting_fitness;
-    auto __x = [&](const typename iterator_type::value_type & mut_i)
-      {
-	bool found = false;
-	while(! found && __first2 < __last2 )
-	  {
-	    if(mut_i == *__first2)
-	      {
-		found = true;
-		fpol_hom(fitness,mut_i);
-	      }
-	    else if( (*__first2)->pos < mut_i->pos )
-	      {
-		fpol_het(fitness,*__first2);
-	      }
-	    else
-	      {
-		break;
-	      }
-	    ++__first2;
-	  }
-	if(!found)
-	  {
-	    fpol_het(fitness,mut_i);
-	  }
-      };
-    std::for_each( __first1, __last1,__x );
-    /*
+    // auto __x = [&](const typename iterator_type::value_type & mut_i)
+    //   {
+    // 	bool found = false;
+    // 	while(! found && __first2 < __last2 )
+    // 	  {
+    // 	    if(mut_i == *__first2)
+    // 	      {
+    // 		found = true;
+    // 		fpol_hom(fitness,mut_i);
+    // 	      }
+    // 	    else if( (*__first2)->pos < mut_i->pos )
+    // 	      {
+    // 		fpol_het(fitness,*__first2);
+    // 	      }
+    // 	    else
+    // 	      {
+    // 		break;
+    // 	      }
+    // 	    ++__first2;
+    // 	  }
+    // 	if(!found)
+    // 	  {
+    // 	    fpol_het(fitness,mut_i);
+    // 	  }
+    //   };
+    // std::for_each( __first1, __last1,__x );
+    
     while( __first1 < __last1 )
       {
     	bool found = false;
@@ -187,7 +180,6 @@ namespace KTfwd
     	if(!found) fpol_het(fitness,*__first1);
     	++__first1;
       }
-*/
     //std::cerr << std::distance(__first2,__last2) << '\n';
     // while(__first2<__last2) 
     //   {
@@ -242,7 +234,6 @@ namespace KTfwd
 			     const double scaling = 1.) const
     {
       return site_dependent_fitness()(g1,g2,
-      //return site_dependent_fitness2(g1->smutations.cbegin(),g1->smutations.cend(),g2->smutations.cbegin(),g2->smutations.cend(),
 				      [&](double & fitness,const typename iterator_type::value_type::mutation_list_type_iterator & mut)
 				      {
 					fitness *= (1. + scaling*mut->s);
