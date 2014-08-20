@@ -121,7 +121,7 @@ int main(int argc, char ** argv)
 
       //Take a sample of size samplesize1.  Two data blocks are returned, one for neutral mutations, and one for selected
       std::pair< std::vector< std::pair<double,std::string> >,
-	std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r,&diploids,samplesize1);
+		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r,&diploids,samplesize1);
 
       neutral_muts.assign( sample.first.begin(), sample.first.end() );
       selected_muts.assign( sample.second.begin(), sample.second.end() );
