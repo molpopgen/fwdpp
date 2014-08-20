@@ -120,20 +120,6 @@ namespace KTfwd
     return ct->end();
   }
 
-  template<typename T, typename cT>
-  inline typename cT::iterator insert_before_pos(const T & t, cT  * ct)
-  {
-    typename cT::iterator p = std::find_if(ct->begin(),ct->end(),std::bind(greater_pos_object(),std::placeholders::_1,t.pos));
-    return ct->insert(p,t);
-  }
-
-  template<typename T, typename cT>
-  inline typename cT::iterator insert_before_pos(const T & t, const double & pos, cT  * ct)
-  {
-    typename cT::iterator p = std::find_if(ct->begin(),ct->end(),std::bind(greater_pos_object(),std::placeholders::_1,pos));
-    return ct->insert(p,t);
-  }
-
   struct push_back_gamete
   /*! 
     \brief An insertion policy for gametes.  
