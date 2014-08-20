@@ -361,7 +361,6 @@ namespace KTfwd
     	    (gbegin+i)->n = 0;
     	  }
     	n -= (gbegin+i)->n;
-    	//adjust_mutation_counts( &*(gbegin+i), (gbegin+i)->n );
 	adjust_mutation_counts( (gbegin+i), (gbegin+i)->n );
       }
   }
