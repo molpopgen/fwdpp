@@ -139,7 +139,6 @@ namespace KTfwd
   {
     assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
-    typedef typename iterator_type::value_type::mutation_type mut_type;
     typedef typename iterator_type::value_type::mutation_list_type_iterator mut_itr;
     if ( nm )
       {
