@@ -44,7 +44,7 @@ int main(int argc, char ** argv)
   if (argc != 11)
     {
       std::cerr << "Too few arguments.\n"
-		<< "Usage: diploid_fixed_sh_ind N theta_neutral theta_deleterious rho s h ngens samplesize nreps seed\n";
+		<< "Usage: diploid_fixed_sh_ind_lambda N theta_neutral theta_deleterious rho s h ngens samplesize nreps seed\n";
       exit(10);
     }
   int argument=1;
