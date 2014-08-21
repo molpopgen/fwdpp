@@ -3,7 +3,6 @@
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
 #include <iostream>
-#include <fwdpp/algorithm.hpp>
 #include <fwdpp/rec_gamete_updater.hpp>
 namespace KTfwd
 {
@@ -65,79 +64,22 @@ namespace KTfwd
 	  itr_s_e = g1->smutations.cend(),
 	  jtr_e = g2->mutations.cend(),
 	  jtr_s_e = g2->smutations.cend();
-	  //tmp;
 	short SWITCH = 0;
-	fwdpp_internal::rec_gamete_updater UPDATER;
 	for(const auto dummy : pos)
 	  {
-	    for_each_if( itr, itr_e,
-			 std::bind(UPDATER,std::placeholders::_1,
-				   &new_gamete2.mutations,&new_gamete1.mutations,SWITCH,dummy));
-	    for_each_if( itr_s, itr_s_e,
-			 std::bind(UPDATER,std::placeholders::_1,
-				   &new_gamete2.smutations,&new_gamete1.smutations,SWITCH,dummy));
-	    for_each_if( jtr, jtr_e,
-			 std::bind(UPDATER,std::placeholders::_1,
-				   &new_gamete1.mutations,&new_gamete2.mutations,SWITCH,dummy));
-	    for_each_if( jtr_s, jtr_s_e,
-			 std::bind(UPDATER,std::placeholders::_1,
-				   &new_gamete1.smutations,&new_gamete2.smutations,SWITCH,dummy));
-	    /*
-	    tmp = std::upper_bound(itr,itr_e,std::cref(dummy),
-				   [](const double & val,const typename mut_itr_c::value_type & __x)
-				   { return val < __x->pos; });
-	    if(SWITCH)
-	      {
-	    	std::copy(itr,tmp,std::back_inserter(new_gamete2.mutations));
-	      }
-	    else
-	      {
-	    	std::copy(itr,tmp,std::back_inserter(new_gamete1.mutations));
-	      }
-	    itr = tmp;
-
-	    tmp = std::upper_bound(itr_s,itr_s_e,std::cref(dummy),
-				   [](const double & val,const typename mut_itr_c::value_type & __x)
-				   { return val < __x->pos; });
-	    if(SWITCH)
-	      {
-	    	std::copy(itr_s,tmp,std::back_inserter(new_gamete2.smutations));
-	      }
-	    else
-	      {
-	    	std::copy(itr_s,tmp,std::back_inserter(new_gamete1.smutations));
-	      }
-	    itr_s = tmp;
-
-	    //gamete 2
-	    tmp = std::upper_bound(jtr,jtr_e,std::cref(dummy),
-				   [](const double & val,const typename mut_itr_c::value_type & __x)
-				   { return val < __x->pos; });
-	    if(SWITCH)
-	      {
-	    	std::copy(jtr,tmp,std::back_inserter(new_gamete1.mutations));
-	      }
-	    else
-	      {
-	    	std::copy(jtr,tmp,std::back_inserter(new_gamete2.mutations));
-	      }
-	    jtr = tmp;
-
-	    tmp = std::upper_bound(jtr_s,jtr_s_e,std::cref(dummy),
-				   [](const double & val,const typename mut_itr_c::value_type & __x)
-				   { return val < __x->pos; });
-	    if(SWITCH)
-	      {
-	    	std::copy(jtr_s,tmp,std::back_inserter(new_gamete1.smutations));
-	      }
-	    else
-	      {
-	    	std::copy(jtr_s,tmp,std::back_inserter(new_gamete2.smutations));
-	      }
-	    jtr_s = tmp;
-	    */
+	    itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
+						  new_gamete2.mutations,new_gamete1.mutations,SWITCH,dummy);
+	    itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,
+						    new_gamete2.smutations,new_gamete1.smutations,SWITCH,dummy);
+	    jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,
+						  new_gamete1.mutations,new_gamete2.mutations,SWITCH,dummy);
+	    jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,
+						    new_gamete1.smutations,new_gamete2.smutations,SWITCH,dummy);
  	    SWITCH=!SWITCH;
  	  }
+	//Until 0.2.4, we had this sort step here out of paranoia.  However, it "should"
+	//not be necessary
+	/*
 	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),
 		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
 	std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
@@ -146,6 +88,14 @@ namespace KTfwd
 		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
 	std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),
 		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
+	*/
+#ifndef NDEBUG
+	auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
+	assert( std::is_sorted(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),std::cref(am_I_sorted)) );
+#endif
 
 	typename list_type< gtype,list_type_allocator >::iterator current_end = gametes->end();
 	bool f1 = false, f2 = false;
