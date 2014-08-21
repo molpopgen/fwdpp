@@ -277,20 +277,18 @@ namespace KTfwd
   pgam( gsl_rng * r,
 	vector_type<gamete_type,vector_type_allocator > * gametes )
   {
-    typedef typename vector_type<gamete_type,vector_type_allocator>::iterator vcitr;
-    vcitr rv = gametes->begin();
 #ifndef USE_STANDARD_CONTAINERS
     boost::container::vector<double>freqs(gametes->size(),0);
 #else
     std::vector<double>freqs(gametes->size(),0);
 #endif
     size_t i = 0;
-    for( ; rv != gametes->end() ; ++rv,++i )
-      {
-	freqs[i]=rv->n;
-      }
+    std::for_each(gametes->cbegin(),gametes->cend(),
+		  [&i,&freqs](const gamete_type & __g) {
+		    freqs[i++]=__g.n;
+		  });
     gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(gametes->size(),&freqs[0]);
-    rv = gametes->begin()+gsl_ran_discrete(r,lookup);
+    auto rv = gametes->begin()+gsl_ran_discrete(r,lookup);
     gsl_ran_discrete_free(lookup);
     return rv;
   }
