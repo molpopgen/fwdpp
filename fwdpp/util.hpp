@@ -243,7 +243,6 @@ namespace KTfwd
       }
   }
   
-  //template<typename gamete_type>
   template<typename iterator_type>
   void adjust_mutation_counts( iterator_type g , const unsigned & n)
   /*! \brief used internally
