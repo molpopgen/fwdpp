@@ -40,10 +40,6 @@ namespace KTfwd
 	   template<typename,typename> class vector_type>
   bool check_sum(const vector_type<gamete_type,vector_type_allocator> * gametes, const unsigned & twoN)
   {
-    typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
-                   std::is_same<gamete_base_type,gamete_type>::value,
-                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     return check_sum(*gametes,twoN);
   }
 
