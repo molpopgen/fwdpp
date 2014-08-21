@@ -195,12 +195,12 @@ sample_diploid(gsl_rng * r,
 	   }
 	 (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
 	 LO2 = (temp % 2 != 0.) ? true : false;
-
+	 
 	 (ptr2cdip+i)->first->n++;
 	 (ptr2cdip+i)->second->n++;
 
-	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
-	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
+	 //adjust_mutation_counts( (ptr2cdip+i)->first,1 );
+	 //adjust_mutation_counts( (ptr2cdip+i)->second,1 );
 
 	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
 	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
@@ -234,7 +234,7 @@ sample_diploid(gsl_rng * r,
 	   {
 	     (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
 	     LW1 = int(!p1g1);
-	   }
+	     }
 	 NR1 = temp;
 
 	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
@@ -264,15 +264,33 @@ sample_diploid(gsl_rng * r,
        }
      */
    }
-    for ( typename multiloc_gcont::iterator i = gametes->begin() ; i != gametes->end() ; ++i )
-      {
-       	i->remove_if(std::bind(n_is_zero(),std::placeholders::_1));
-	for (typename gamete_cont::iterator gptr = i->begin() ; gptr != i->end() ; ++gptr )
-	  {
-	    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
-	    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
-	  }
-      }
+
+ auto glist_updater = [](gamete_cont & __g) {
+   glist_itr __temp,__first=__g.begin(),__last=__g.end();
+   while(__first!=__last)
+     {
+       if(! __first->n)
+	 {
+	   __temp=__first;
+	   ++__first;
+	   __g.erase(__temp);
+	 }
+       else
+	 {
+	   adjust_mutation_counts(__first,__first->n);
+	   ++__first;
+	 }
+     }
+ };
+ std::for_each( gametes->begin(), gametes->end(), std::cref(glist_updater) );
+ std::for_each(gametes->begin(),gametes->end(),
+	       [&mp](typename multiloc_gcont::iterator::value_type & g) {
+		 std::for_each(g.begin(),g.end(),
+			       [&mp](typename  multiloc_gcont::iterator::value_type::iterator::value_type & __g) {
+				 __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
+				 __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
+			       });
+	       });
 #ifndef NDEBUG
     for ( typename multiloc_gcont::const_iterator i = gametes->begin() ; i != gametes->end() ; ++i )
       {
