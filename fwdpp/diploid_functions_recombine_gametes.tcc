@@ -24,7 +24,6 @@ namespace KTfwd
     typedef typename iterator_type::value_type gtype;
     typedef typename gtype::mutation_container gtype_mcont;
     typedef typename gtype::mcont_const_iterator mut_itr_c;
-    typedef typename gtype::mutation_list_type_iterator mlist_itr;
 
     //Identify cases where recombination cannot result in changed gametes, and get out quick
     if(g1 == g2 ) return 0;

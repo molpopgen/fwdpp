@@ -363,9 +363,10 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 #ifndef NDEBUG
   unsigned doublecheck=NRECS;
   unsigned NRECS_DONE = 0;
+  unsigned ncurrent_classes = gametes->size();
 #endif
   vtype_iterator ibeg,jbeg;
-  unsigned ncurrent_classes = gametes->size(),NEXTINCT=0,NRECS_i;
+  unsigned NEXTINCT=0,NRECS_i;
   size_t ith,jth;
   while(NRECS > 0)
     {
@@ -429,7 +430,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  new_gamete2.mutations.reserve(ibeg->mutations.size()+jbeg->mutations.size());
 	  new_gamete2.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
 	  short SWITCH = 0;
-	  size_t dummy = 0;
+
 	  mcont_const_iterator itr = ibeg->mutations.cbegin(),
 	    jtr = jbeg->mutations.cbegin(),
 	    itr_s = ibeg->smutations.cbegin(),
