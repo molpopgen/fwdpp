@@ -172,7 +172,7 @@ namespace KTfwd
 		    gametes->end(),
 		    [&mp]( typename glist_t_iterator::value_type & __g ) {
 		      __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
-     		     __g.mutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
+		      __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
 		    });
     assert(check_sum(gametes,2*N_next));
     gsl_ran_discrete_free(lookup);
