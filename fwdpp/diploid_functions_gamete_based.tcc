@@ -474,6 +474,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
 	  */
 #ifndef NDEBUG
+	using mlist_itr = typename gamete_type::mutation_list_type_iterator;
 	auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
 	assert( std::is_sorted(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),std::cref(am_I_sorted)) );
 	assert( std::is_sorted(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),std::cref(am_I_sorted)) );
@@ -498,7 +499,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      assert( gcounts[dist] <= twoN );
 	    }
 #ifndef NDEBUG
-	  dummy=0;
+	  unsigned dummy=0;
 	  for( vtype_iterator test = gametes->begin();test!=gametes->begin()+ncurrent_classes ;++test,++dummy )
 	    {
 	      assert(test->n == gcounts[dummy]);
