@@ -310,9 +310,11 @@ Usage:
 
 For this program, s can be positive or negative, as can h.
 
-####diploid\_fixed\_sh\_ind
+####diploid\_fixed\_sh\_ind and diploid\_fixe\_sh\_lambda
 
 Identical to diploid\_fixed\_sh, but based on the individual-based sampler.
+
+These two programs are identical in function, but differ in that the former is implemented using std::bind and the latter using lambda expressions.
 
 ####diploid\_twopop\_mig
 
@@ -384,13 +386,13 @@ Usage:
 
 Note: many of the well-known formulas for the effect of RHH on linked, neutral variation make very strong assumptions about the parameter values. For example, N needs to be large and s needs to be small, but Ns needs to be large. Further, Lambda needs to be sufficiently small such that sweeps are independent in time. This means that plugging in values to this program and comparing to theoretical predictions may lead to apparent discrepancies. This is also the case with various coalescent simulations of RHH.
 
-####bneck\_selection
+####bneck\_selection\_ind
 
 This program simulates a population for g generations at size N. In generation g+1, N changes to N2 <= N. The population then grows exponentially to size N3 >= N2 in g2 generations. Selected and neutral mutations are allowed each generation. The output is in “ms” format--one block for neutral mutations followed by one block for selected mutations.
 
 Usage:
 
-./bneck\_selection N theta\_neutral theta\_sel rho s h g1 N2 N3 g2 n nreps seed
+./bneck\_selection\_ind N theta\_neutral theta\_sel rho s h g1 N2 N3 g2 n nreps seed
 
 Where:<br>
 N = starting population size<br>
