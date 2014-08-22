@@ -78,8 +78,25 @@ I profiled the 0.2.5 code base resulting from the previous test and found that a
 
 Run times:
 
-![test4time](t4_time.png?raw-true "Run-times for test4")
+![test4time](t4_time.png?raw=true "Run-times for test4")
 
 Relative performance of v. 0.2.5 vs 0.2.4:
 
 ![test4perf](t4_perf.png?raw-true "Relative performance increase for test4")
+
+##Test 5: lots of changes.
+
+In this test, I compare the same 0.2.5 code as in Test 4 to what I will call "0.2.5_test", which is a version of the code with loads of changes:
+
+1.  Lots of use of lambda expressions.
+2.  Replacing for loops with std::for_each plus lambda expressions
+3.  Using a mix of std::find_if and std::upper_bound during mutation and recombination
+4.  Removing the sort step during the recombination.  (This was in 0.2.4 out of paranoia, but it is not necessary).
+
+These changes give some performance improvements for larger regions:
+
+![test5time](t5_time.png?raw=true "Run times for test5")
+
+And we see the relative perfomance vs 0.2.4 improve (0.2.5_test is the red line):
+
+![test5perf](t5_perf.png?raw=true "Relative performance for test5")
