@@ -161,6 +161,72 @@ Caveat emptor:
 \item The code blocks below are really pseudocode.  The include directives are put in there are guides.   Obviously, none of what is below constitutes the complete implementation of a simulation.  For that, see the examples that come with the library.
 \end{enumerate}
 
+\subsection{Short version for the impatient}
+
+In this section, I define the \textit{minimal} requirements that a policy must conform to.  I also provide pseudocode in the form of lambda expressions in order to illustrate these requirements.  By ``requirements'', I mean ``things that must be true, otherwise a program using \texttt{fwdpp} will fail to compile.''  Because \texttt{fwdpp} is a template library, policy errors are caught at compile-time.  (Biological errors in your policies, however, will result in run-time issues.  For example, doing your fitness calculations incorrectly, etc.)  When policies require more than the minimal requirements described here, the programmer sends them along via either the usual ``bind'' mechanisms or via capature in lambda expressions.
+
+The example program \texttt{diploid\_fixed\_sh\_lambda} is an example of writing all policies using lambda expressions--take a look there for a concrete example of these concepts.  The lambda expressions are very nice in that they document the policy requirements completely, as one is required to write them in the lambda arguments.
+
+For the sake of this example, let's assume that we are using the following types in an individual-based simulation (in C++11, ``using'' statements replace typedefs.):
+
+\begin{lstlisting}
+using mtype = KTfwd::mutation;
+using mlist = std::list<mtype>;
+using gtype = KTfwd::gamete_base<mtype>;
+using glist = std::list<gtype>;
+\end{lstlisting}
+
+A minimal mutation policy takes a non-const pointer to an \texttt{mlist} as an argument, and returns an \texttt{mtype}:
+
+\begin{lstlisting}
+//the [&] is used to capture any things that may be needed
+auto mut_policy = [&](mlist * __mutations){ return function_generating_new_type( arguments ); };
+\end{lstlisting}
+
+We then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This ``mutation insertion policy'' takes a const reference to an \texttt{mtype} and a non-const pointer to an \texttt{mlist} as arguments, and returns an \texttt{mlist::iterator}.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
+
+\begin{lstlisting}
+auto mut_insertion_policy = [](const mtype & m,mlist * __mutations) { 
+return __mutations->insert(__mutations->end(),m); 
+};
+\end{lstlisting}
+
+When a gamete is mutated, we need to decide how to insert it into the \texttt{glist}.  This ``gamete insertion policy'' takes a const reference to an \texttt{gtype} and a non-const pointer to an \texttt{glist} as arguments, and returns an \texttt{glist::iterator}.  Again, under the infinitely-many sites model, a gamete with a new mutation is guaranteed to be unique, so we can simply insert it:
+
+\begin{lstlisting}
+auto gamete_insertion_policy = [](const gtype & g,glist * __gametes) { 
+return __gametes->insert(__gametes->end(),g); 
+};
+\end{lstlisting}
+
+A fitness policy takes two const references to \texttt{glist::const\_iterator} as arguments and returns a double:
+
+\begin{lstlisting}
+auto fitness_policy = [&](const glist::const_iterator & __gamete1,
+const glist::const_iterator & __gamete2) {
+  //No selection!
+  return 1.;
+}
+\end{lstlisting}
+
+See texttt{fwdpp/fitness\_models.hpp} for examples of fitness policies that I provide for ``standard'' cases.
+
+A recombination policy takes two non-const references to \texttt{glist::iterator}, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  Typically, this would work via a call to \texttt{KTfwd::recombine\_gametes}, or the convenience wrapper \texttt{KTfwd::genetics101}.  Here is an example of the former, where the genetic map is uniform on the interval $(0,1]$:
+
+\begin{lstlisting}
+//These parameters will be captuered by reference ([&] in the lambda 
+//expression below), because their state will be modified
+gsl_rng * r;
+glist gametes;
+//littler is the recombination rate per diploid per generation
+auto rec_policy =  [&](glist::iterator & g1,
+glist::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&gametes,g1,g2,
+  //This nested lambda is our genetic map: uniform on interval (0,1]
+  [&](){return gsl_rng_uniform(r);}); },
+\end{lstlisting}
+
+I'll document migration policy functions at a later date, sorry.
+
 \subsection{Mutation policies}
 This is the mutation base class  provided by \texttt{fwdpp}
 \begin{lstlisting}
@@ -316,6 +382,11 @@ The mutation policy is passed to any of the various sample\_diploid functions in
   mean_s, &lookup);
 \end{lstlisting}
 
+Or, using C++11 lambda expressions:
+\begin{lstlisting}
+  [&](mlist * __mutations){ return mutmodel(r,__mutations,mu_neutral,
+    mu_selected,mean_s,&lookup); }
+\end{lstlisting}
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
 \subsubsection{A model for quantitative trait simulations}
@@ -449,8 +520,9 @@ The main thing a library user needs to focus on is the argument list for \texttt
 We pass this recombination model in an individual-based simulation to sample\_diploid like this:
 
 \begin{lstlisting}
+  using std::placeholders; //_1,_2, etc.
   std::bind(KTfwd::genetics101(),  //the rec. model
-             std::placeholders::_1,std::placeholders::_2,                  //placeholder for iterators to gametes
+             _1,_2,                  //placeholder for iterators to gametes
              &gametes,               //pointer to gamete list
              littler,                //Avg. # of crossovers b/w two gametes per region per generation
              r,                      //a gsl_rng *
@@ -494,39 +566,8 @@ The ability to define custom fitness policies is perhaps the most useful feature
 
 \textbf{A fitness policy is a function or function object taking two iterators pointing to gametes are arguments are returning a double.  The pointers are the diploid's haplotypes, and the return value is the fitness.}
 \subsubsection{Site-dependent models of fitness}
-The library provides a fitness policy called site\_dependent\_fitness.  This function object requires two additional policies defining what to do with homozygous sites and heterozygous sites.  The library provides the necessary policies in order to define a composite policy called multiplicative\_diploid:
+The library provides a fitness policy called site\_dependent\_fitness.  This function object requires two additional policies defining what to do with homozygous sites and heterozygous sites.  These ``homozygote'' and ``heterozygote'' policies may be trivially defined as lambda expressions:
 \begin{lstlisting}
-  //homozygote policy
-  struct multiplicative_fitness_updater_hom
-  {
-    /*
-    Works on interator to mutation that has
-    a selection coefficient s
-    */
-    typedef void result_type;
-    template<typename iterator_type>
-    inline void operator()(double & fitness, const iterator_type & m1,const double & scaling = 2.) const
-    {
-      fitness *= ( 1. + scaling*m1->s );
-    }
-  };
-  //heterozygote policy
-  struct multiplicative_fitness_updater_het
-  {
-    /*
-    Works on interator to mutation that has
-    a selection coefficient s and 
-    domeinance h
-    */
-    typedef void result_type;
-    template<typename iterator_type>
-    inline void operator()(double & fitness, const iterator_type & m1) const
-    {
-      fitness *= ( 1. + m1->s*m1->h );
-    }
-  };
-
-  //now, the fitness policy itself
   struct multiplicative_diploid
   {
     typedef double result_type;
@@ -534,9 +575,18 @@ The library provides a fitness policy called site\_dependent\_fitness.  This fun
     inline double operator()(const iterator_type & g1, const iterator_type & g2,
                              const double scaling = 1.) const
     {
+      using __mtype = typename iterator_type::value_type::mutation_list_type_iterator;
       return site_dependent_fitness()(g1,g2,
-                                      std::bind(multiplicative_fitness_updater_hom(),std::placeholders::_1,std::placeholders::_2,scaling),
-                                      std::bind(multiplicative_fitness_updater_het(),std::placeholders::_1,std::placeholders::_2),
+      //Homozygote policy
+				      [&](double & fitness, const __mtype  & mut)
+				      {
+					fitness *= (1. + scaling*mut->s);
+				      },
+                                      //Heterozygote policy
+				      [](double & fitness,const __mtype & mut)
+				      {
+					fitness *= (1. + mut->h*mut->s);
+				      },
                                       1.);
     }
   };
@@ -544,7 +594,7 @@ The library provides a fitness policy called site\_dependent\_fitness.  This fun
 
 That last variable, scaling, means that fitness is the product of $1, 1+sh, 1+s \times scaling$ over sites.  This allows you to recreate results from the different parts of the literature that use $scaling = 1$ and 2.  Many classic results are based on a scaling of 2.
 
-To use the multiplicative fitness policy in your simulations, this goes to sample\_diploid
+To use the multiplicative fitness policy in your simulations, this goes to \texttt{KTfwd::sample\_diploid}:
 \begin{lstlisting}
   std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.)
 \end{lstlisting}
@@ -625,6 +675,7 @@ These types of policies are simple.  See \texttt{fwdpp/insertion\_policies.hpp} 
 \section{Putting it all togeter (kinda)}
 Ok, once we have defined our mutation types, our containers, and our policies, a single generation of a constant-sized population in an individual-based simulation is evolved a follows:
 \begin{lstlisting}
+  using std::placeholders; //_1,_2, etc.
   double wbar = KTfwd::sample_diploid(r,
                                       &gametes,  //non-const pointer to gametes
                                       &diploids, //non-const pointer to diploids
@@ -633,12 +684,12 @@ Ok, once we have defined our mutation types, our containers, and our policies, a
                                       mu,    //mutation rate per gamete
                                       /*
                                       The mutation model (defined above) will pass each gamete
-      					 to be mutated to the mutation model function.  Again, std::placeholders::_1
+      					 to be mutated to the mutation model function.  Again, _1
       					 is used as a placeholder for that gamete.
       				       */
-      				       std::bind(mutmodel_Qtrait,r,std::placeholders::_1,mu_neutral,mu_selected,sigma_e,&lookup),
+      				       std::bind(mutmodel_Qtrait,r,_1,mu_neutral,mu_selected,sigma_e,&lookup),
 				       //The recombination policy includes the recombination map policy
-      				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+      				       std::bind(KTfwd::genetics101(),_1,_2,
 						   &gametes,
       						   littler,
       						   r,
@@ -646,7 +697,7 @@ Ok, once we have defined our mutation types, our containers, and our policies, a
 				       /*
 					 Policy to insert new mutations at the end of the mutations list
 				       */
-      				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				       /*
 					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					 If mutation results in a new gamete, add that gamete to the 
@@ -655,14 +706,14 @@ Ok, once we have defined our mutation types, our containers, and our policies, a
 					 copy identical to an existing gamete.  If so,
 					 that gamete's frequency increases by 1.
 				       */
-      				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
       				       std::bind(  std::bind( hapfitness(),
-                                                   std::placeholders::_1,std::placeholders::_2,
+                                                   _1,_2,
                                                    r,sigmaE ),
       				       /*
                                          Only remove lost mutations
       				       */
-      				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0));
+      				       std::bind(KTfwd::mutation_remover(),_1,0));
           //Clean up the mutations list.  This also resets ``checked'' in each mutation to zero,
           //which is that ``internal detail'' referred to above
           //We don't removed fixed mutations b/c this is a quantitative trait simulation
