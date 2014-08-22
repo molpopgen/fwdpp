@@ -91,7 +91,7 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    std::for_each(mutations->begin(),mutations->end(),[](const mutation_type & __m){__m->checked=false;});
+    std::for_each(mutations->begin(),mutations->end(),[](mutation_type & __m){__m.checked=false;});
   }
   
   /*! \brief Remove mutations from population
