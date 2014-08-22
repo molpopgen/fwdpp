@@ -2,6 +2,9 @@ pkgincludedir=$(prefix)/include/fwdpp
 
 pkginclude_HEADERS=debug.hpp \
 	diploid_functions.hpp \
+	diploid_gamete_based.hpp \
+	diploid_individual_based.hpp \
+	diploid_individual_based_multilocus.hpp \
 	diploid_functions.tcc \
 	diploid_functions_gamete_based.tcc \
 	diploid_functions_ind_based.tcc \
