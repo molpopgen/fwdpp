@@ -22,6 +22,10 @@ Comments are welcome.
 
 	- Kevin Thornton <krthornt@uci.edu>
 
+#Preface
+
+This README corresponds to fwdpp 0.2.5.  Currently, there has been no offical release of 0.2.5, but the code base is considered tested/stable, and hence is available as the "master" branch via github.  See the revision history below for changes in this release.
+
 #Introduction
 
 fwdpp is a C++ template library that abstracts the basic operations required to implement forward-time simulations of population- and quantitative-genetic models.  The library allows the simulation of single populations or metapopulations evolving under the standard evolutionary forces of drift, recombination, migration, and natural selection.  Arbitrary population size changes are also allowed. Different populations in a metapopulation may evolve under different fitness schemes.
@@ -65,6 +69,8 @@ The fwdpp manuscript has been accepted for publication in Genetics.  The accepte
   annote = 	 {doi:/10.1534/genetics.114.165019}
 }
 ```
+
+The version of fwdpp used in that publication is 0.2.4.
 
 
 #Documentation
