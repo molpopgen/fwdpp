@@ -1,6 +1,8 @@
 #ifndef __FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP__
 #define __FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP__
 
+#include <algorithm>
+
 namespace KTfwd
 {
   namespace fwdpp_internal
