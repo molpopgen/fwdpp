@@ -42,6 +42,13 @@ KTfwd::mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
 
 int main(int argc, char ** argv)
 {
+  if( argc != 14 )
+    {
+      std::cerr << "Error, too few arguments.\n"
+		<< "Usage: " << argv[0] << ' '
+		<< "N theta_neutral theta_deleterious 4Nr s h ngens N2 N3 ngens2 n nreps seed\n";
+      exit(10);
+    }
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
   const double theta_neutral = atof(argv[argument++]);
