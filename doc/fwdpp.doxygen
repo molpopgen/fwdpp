@@ -5,7 +5,7 @@
 #---------------------------------------------------------------------------
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = fwdpp
-PROJECT_NUMBER         = 0.2.4
+PROJECT_NUMBER         = 0.2.5
 OUTPUT_DIRECTORY       = ./
 CREATE_SUBDIRS         = YES
 OUTPUT_LANGUAGE        = English
