@@ -11,7 +11,6 @@
 #include <cassert>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include <iostream>
 
 #ifdef USE_STANDARD_CONTAINERS
 #include <vector>

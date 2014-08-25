@@ -17,7 +17,7 @@
 #include <numeric>
 #include <functional>
 #include <cassert>
-
+#include <fstream>
 #include <fcntl.h>
 
 struct mutation_with_age : public KTfwd::mutation_base

@@ -1,6 +1,8 @@
 #ifndef __FWDPP_EXAMPLES_COMMON_IND_HPP__
 #define __FWDPP_EXAMPLES_COMMON_IND_HPP__
 
+#include <iostream>
+
 #ifndef USE_STANDARD_CONTAINERS
 #include <boost/container/vector.hpp>
 #include <boost/container/list.hpp>

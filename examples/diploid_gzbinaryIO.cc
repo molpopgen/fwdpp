@@ -20,6 +20,7 @@
 #include <functional>
 #include <cassert>
 #include <sstream>
+#include <fstream>
 #include <fcntl.h>
 
 

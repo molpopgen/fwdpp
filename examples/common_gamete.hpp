@@ -1,6 +1,8 @@
 #ifndef __FWDPP_EXAMPLES_COMMON_GAMETE_HPP__
 #define __FWDPP_EXAMPLES_COMMON_GAMETE_HPP__
 
+#include <iostream>
+
 #ifndef USE_STANDARD_CONTAINERS
 #include <boost/unordered_set.hpp>
 #include <boost/container/list.hpp>

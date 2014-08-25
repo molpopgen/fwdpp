@@ -5,7 +5,6 @@
 #include <type_traits>
 #include <algorithm>
 #include <numeric>
-#include <iostream>
 
 #include <gsl/gsl_randist.h>
 

@@ -10,13 +10,10 @@
 #define __DIPLOID_HH__
 
 //namespace std
-#include <iostream>
-#include <fstream>
 #include <vector>
 #include <list>
 #include <cassert>
 #include <iterator>
-#include <fstream>
 #include <ctime>
 #include <cmath>
 
