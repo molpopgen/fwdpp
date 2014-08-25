@@ -2,8 +2,8 @@
 #ifndef __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
-#include <iostream>
 #include <fwdpp/rec_gamete_updater.hpp>
+
 namespace KTfwd
 {
   //recombination for individual-based simulation

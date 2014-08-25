@@ -15,7 +15,7 @@
 #include <functional>
 #include <cassert>
 #include <iomanip>
-
+#include <fstream>
 //the type of mutation
 typedef KTfwd::mutation mtype;
 #include <common_ind.hpp>

@@ -13,6 +13,7 @@
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <utility>
+#include <fstream>
 #include <sstream>
 #include <zlib.h>
 
