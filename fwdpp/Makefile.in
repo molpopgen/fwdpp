@@ -31,18 +31,16 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-build_triplet = @build@
-host_triplet = @host@
 subdir = fwdpp
 DIST_COMMON = $(pkginclude_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config.h
+CONFIG_HEADER = $(top_builddir)/config-h.in
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 SOURCES =
@@ -81,7 +79,6 @@ CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 pkgincludedir = $(prefix)/include/fwdpp
 ACLOCAL = @ACLOCAL@
-ALLOCA = @ALLOCA@
 AMTAR = @AMTAR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
@@ -104,12 +101,12 @@ ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
 GREP = @GREP@
+HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
-ISODATE = @ISODATE@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
@@ -142,22 +139,14 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
-build = @build@
 build_alias = @build_alias@
-build_cpu = @build_cpu@
-build_os = @build_os@
-build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
-host = @host@
 host_alias = @host_alias@
-host_cpu = @host_cpu@
-host_os = @host_os@
-host_vendor = @host_vendor@
 htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
@@ -183,13 +172,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = debug.hpp \
 	diploid_functions.hpp \
+	diploid_gamete_based.hpp \
+	diploid_individual_based.hpp \
+	diploid_individual_based_multilocus.hpp \
 	diploid_functions.tcc \
 	diploid_functions_gamete_based.tcc \
 	diploid_functions_ind_based.tcc \
 	diploid_functions_ind_multilocus.tcc \
 	diploid_functions_recombine_gametes.tcc \
 	diploid.hh \
-	fitness_policies.hpp \
 	fitness_models.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
@@ -203,7 +194,8 @@ pkginclude_HEADERS = debug.hpp \
 	sampling_functions.hpp \
 	sampling_functions.tcc \
 	util.hpp \
-	recombination_methods_ind.hpp
+	recombination_methods_ind.hpp \
+	rec_gamete_updater.hpp 
 
 all: all-am
 
@@ -217,9 +209,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign fwdpp/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign fwdpp/Makefile
+	  $(AUTOMAKE) --gnu fwdpp/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

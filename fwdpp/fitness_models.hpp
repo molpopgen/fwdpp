@@ -3,12 +3,9 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/fitness_policies.hpp>
 #include <cassert>
+#include <type_traits>
 
-#include <boost/bind.hpp>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
 
 namespace KTfwd
 {
@@ -25,7 +22,9 @@ namespace KTfwd
     template<typename iterator_type >
     inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       return 1.;
     }
   };
@@ -40,9 +39,7 @@ namespace KTfwd
     \param starting_fitness The value to which the function will initialize the return value
     \return The fitness of a diploid with genotype g1 and g2
     \note The updating policies must take a non-const reference to a double as the first argument and
-    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as boost::bind.  See KTfwd::multiplicative_fitness_updater_hom and KTfwd::multiplicative_fitness_updater_het for examples.  The iterators g1 and g2 must point to objects in the class hierarchy of KTfwd::gamete_base.
-
-    \note This function is unwieldy to call directly.  It is best to define your two policies and write a wrapper function calling this function. See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.  
+    an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
     \example diploid_fixed_sh_ind.cc
    */
   struct site_dependent_fitness
@@ -57,14 +54,30 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double starting_fitness = 1. ) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       result_type fitness=starting_fitness;
       if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
+      if( g1->smutations.empty() && g2->smutations.empty() ) 
+	{
+	  std::for_each( g1->smutations.begin(),
+			 g1->smutations.end(),
+			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+	  return fitness;
+	}
+      if( g1->smutations.empty() && !g2->smutations.empty() ) 
+	{
+	  std::for_each( g2->smutations.begin(),
+			 g2->smutations.end(),
+			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+	  return fitness;
+	}
       typename iterator_type::value_type::mutation_list_type_iterator ib1,ib2;
-      typename iterator_type::value_type::mutation_container::const_iterator b1=g1->smutations.begin(),
-	e1=g1->smutations.end(),
-	b2=g2->smutations.begin(),
-	e2=g2->smutations.end();
+      typename iterator_type::value_type::mutation_container::const_iterator b1=g1->smutations.cbegin(),
+	e1=g1->smutations.cend(),
+	b2=g2->smutations.cbegin(),
+	e2=g2->smutations.cend();
       //This is a fast way to calculate fitnesses,
       //as it just compares addresses in memory, and 
       //does little in the way of dereferencing and storing
@@ -96,21 +109,94 @@ namespace KTfwd
 	      fpol_het(fitness,ib1);
 	    }
 	}
-      for( ; b2 < e2 ; ++b2)
-	{	
-	  ib2=*b2;
-	  fpol_het(fitness,ib2);
-	}
+      std::for_each( b2,e2,
+		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
       return fitness;
     }
   };
+
+  template<typename iterator_type,
+	   typename fitness_updating_policy_hom,
+	   typename fitness_updating_policy_het>
+    inline double site_dependent_fitness2( iterator_type __first1, iterator_type __last1,
+					   iterator_type __first2, iterator_type __last2,
+					   const fitness_updating_policy_hom &fpol_hom,
+					   const fitness_updating_policy_het &fpol_het,
+					   const double & starting_fitness = 1.)
+  {
+    double fitness = starting_fitness;
+    // auto __x = [&](const typename iterator_type::value_type & mut_i)
+    //   {
+    // 	bool found = false;
+    // 	while(! found && __first2 < __last2 )
+    // 	  {
+    // 	    if(mut_i == *__first2)
+    // 	      {
+    // 		found = true;
+    // 		fpol_hom(fitness,mut_i);
+    // 	      }
+    // 	    else if( (*__first2)->pos < mut_i->pos )
+    // 	      {
+    // 		fpol_het(fitness,*__first2);
+    // 	      }
+    // 	    else
+    // 	      {
+    // 		break;
+    // 	      }
+    // 	    ++__first2;
+    // 	  }
+    // 	if(!found)
+    // 	  {
+    // 	    fpol_het(fitness,mut_i);
+    // 	  }
+    //   };
+    // std::for_each( __first1, __last1,__x );
+    
+    while( __first1 < __last1 )
+      {
+    	bool found = false;
+    	const double cpos = (*__first1)->pos;
+    	while( !found && __first2 < __last2 ) 
+    	  {
+    	    if (*__first1 == *__first2) //homozygote
+    	      {
+    		found = true;
+    		fpol_hom(fitness,*__first1);
+    		//++__first2;
+    		//break;
+    	      }
+    	    else if( (*__first2)->pos < cpos ) //then first2 points to a het
+    	      {
+    		fpol_het(fitness,*__first2);
+    	      }
+    	    else //first 1 is a het
+    	      {
+    		//fpol_het(fitness,*__first1);
+    		//++__first2;
+    		break;
+    	      }
+    	    ++__first2;
+    	  }
+    	if(!found) fpol_het(fitness,*__first1);
+    	++__first1;
+      }
+    //std::cerr << std::distance(__first2,__last2) << '\n';
+    // while(__first2<__last2) 
+    //   {
+    // 	fpol_het(fitness,*__first2);
+    // 	++__first2;
+    //   }
+     std::for_each( __first2,__last2, 
+		   std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
+     return fitness;
+  }
 
   /*! \brief Function object for fitness as a function of the two haplotypes in a diploid
 
     \param g1 An iterator to a gamete
     \param g2 An iterator to a gamete
-    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via boost::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
-    \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via boost::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
+    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
+    \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
     \return dpol( hpol(g1), hpol(g2) )
     \note This really is just a convenience function. Depending on the specifics of the model, this function may be totally unnecessary.
   */
@@ -125,7 +211,9 @@ namespace KTfwd
 				  const haplotype_policy & hpol,
 				  const diploid_policy & dpol) const
     {
-      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename iterator_type::value_type::mutation_type>::value) );
+      static_assert( std::is_base_of<mutation_base,
+                                     typename iterator_type::value_type::mutation_type>::value,
+                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       return dpol( hpol(g1), hpol(g2) );
     }
   };
@@ -135,9 +223,7 @@ namespace KTfwd
     \param g2 An iterator pointing to a gamete
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
-    \return Multiplicative fitness across sites = site_dependent_fitness()(g1,g2,
-    boost::bind(multiplicative_fitness_updater_hom(),_1,_2,scaling),
-    boost::bind(multiplicative_fitness_updater_het(),_1,_2),
+    \return Multiplicative fitness across sites.
     1.);
   */
   struct multiplicative_diploid
@@ -147,9 +233,16 @@ namespace KTfwd
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const
     {
+      using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return site_dependent_fitness()(g1,g2,
-				      boost::bind(multiplicative_fitness_updater_hom(),_1,_2,scaling),
-				      boost::bind(multiplicative_fitness_updater_het(),_1,_2),
+				      [&](double & fitness,const __mtype & mut)
+				      {
+					fitness *= (1. + scaling*mut->s);
+				      },
+				      [](double & fitness,const __mtype & mut)
+				      {
+					fitness *= (1. + mut->h*mut->s);
+				      },
 				      1.);
     }
   };
@@ -159,10 +252,7 @@ namespace KTfwd
     \param g2 An iterator pointing to a gamete
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
-    \return Additive fitness across sites: 1. + KTfwd::site_dependent_fitness()(g1,g2,
-    boost::bind(KTfwd::additive_fitness_updater_hom(),_1,_2,scaling),
-    boost::bind(KTfwd::additive_fitness_updater_het(),_1,_2),
-    0.);
+    \return Additive fitness across sites.
     \note g1 and g2 must be part of the gamete_base hierarchy
   */
   struct additive_diploid
@@ -172,9 +262,16 @@ namespace KTfwd
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const
     {
+      using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return 1. + site_dependent_fitness()(g1,g2,
-					   boost::bind(additive_fitness_updater_hom(),_1,_2,scaling),
-					   boost::bind(additive_fitness_updater_het(),_1,_2),
+					   [=](double & fitness,const __mtype & mut)
+					   {
+					     fitness += (scaling*mut->s);
+					   },
+					   [](double & fitness,const __mtype & mut)
+					   {
+					     fitness += (mut->h*mut->s);
+					   },
 					   0.);
     }
   };

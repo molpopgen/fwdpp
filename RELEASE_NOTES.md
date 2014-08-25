@@ -1,3 +1,18 @@
+#0.2.5
+
+__Note:__ fwdpp 0.2.5 has not been officially released.  This list may be inaccurate.
+
+The following changes:
+
+1. fwdpp/diploid_functions_ind_multilocis.tcc was added.  This contains a more natural method of simulating mutiple partially-linked regions.  The header fwdpp/diploid_functions.hpp contains the relevant prototypes.  These routines are still in "beta" stage, and full support for simulations of partially-linked regions will be put off until a future version, likely 0.2.6 or later.
+2. Header files have been reorganized.  fwdpp/diploid.hh is still the header to use.  The reorg has been for the developer's sanity.
+3. C++11 support is now required.  A side-effect is that users may use what is currently the dev branch of libsequence, which requires c++11 and no longer requires boost.  However, simulations using fwdpp will still be a _lot_ faster with boost installed!
+4. Internally, functions from namespace boost have been replaced with the namespace std equivalents provided by the C++11 standard.  
+5. The internal library functions have been audited for performance.  This audit resulted in changing where some book-keeping functions were called, replacing linear-time search algorithms with logarithmic-time searches, and removing an unnecessary call to std::sort following crossover events.  The result of this audit was a big speedup of simulation run-times, but no change in simulation output (in other words, the same random number seed gives the same result for the same parameters for the same program in 0.2.4 and 0.2.5).
+6.  autoconf stuff rewritten (configure.ac, Makefile.am, etc.)
+7. Internally, the library has moved to a more "functional programming" style, emphasizing lambda expressions over function objects.  This change means that the library no longer needs to define function objects that are only used by the library "internals".  Such function objects have been removed, replaced with lambda expressions, and will no longer clutter the library documentation.
+8. The code for recombination has been streamlined quite a bit.  Same algorithm (although noting the changes in point 5 above), but way fewer lines of code.
+
 #0.2.4
 
 The following changes:

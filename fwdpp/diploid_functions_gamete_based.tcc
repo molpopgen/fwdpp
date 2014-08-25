@@ -2,6 +2,14 @@
 #ifndef __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 #define __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
+#include <boost/container/vector.hpp>
+#endif
+
+#include <fwdpp/rec_gamete_updater.hpp>
+
 namespace KTfwd
 {
   template< typename gamete_type,
@@ -65,10 +73,12 @@ namespace KTfwd
 			const mutation_removal_policy & mp,
 			const double & f)
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+              static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      double wbar = 0.;
 	      std::vector<double> expected_gamete_frequencies(gametes->size(),0.);
 	      calc_mean_fitness(&wbar,&expected_gamete_frequencies[0],gametes,twoN,ff,f);
@@ -94,10 +104,12 @@ double sample_diploid(gsl_rng * r, vector_type<gamete_type,vector_type_allocator
 		      const double & f)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   double wbar = 0.;
   std::vector<double> expected_gamete_frequencies(gametes->size(),0.);
 
@@ -127,10 +139,12 @@ double sample_diploid(gsl_rng * r, vector_type<gamete_type,vector_type_allocator
 				     const mutation_removal_policy & mp)
   //hermaphroditic diploids
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+              static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      assert( metapop->size() == ffs.size() );
 	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
 	      std::vector<double> wbars;
@@ -174,10 +188,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				   const mutation_removal_policy & mp)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+		std::is_same<gamete_base_type,gamete_type>::value,
+		"gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   assert( metapop->size() == ffs.size() );
   assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
   std::vector<double> wbars;
@@ -221,10 +237,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				     const double * fs)
   //hermaphroditic diploids
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			     "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      assert( metapop->size() == ffs.size() );
 	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
 	      std::vector<double> wbars;
@@ -269,10 +287,12 @@ std::vector<double> sample_diploid(gsl_rng * r,
 				   const double * fs)
 //hermaphroditic diploids
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   assert( metapop->size() == ffs.size() );
   assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
   std::vector<double> wbars;
@@ -308,13 +328,14 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 		   const unsigned & twoN, const double & littler,const map_function & mf,
 		   const double & f)
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+  static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                 "gamete_type::mutation_value must inherit from KTfwd::mutation_base" );
   typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-						   gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-	      
+  static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                 std::is_same<gamete_base_type,gamete_type>::value,
+                 "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   typedef typename gamete_type::mutation_container mcont;
-  typedef typename mcont::iterator mcont_iterator;
+  typedef typename mcont::const_iterator mcont_const_iterator;
   typedef typename vector_type<gamete_type, vector_type_allocator>::iterator vtype_iterator;
   //"individual-based recombination"
   //1. determine # recombinants in whole pop
@@ -342,9 +363,10 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 #ifndef NDEBUG
   unsigned doublecheck=NRECS;
   unsigned NRECS_DONE = 0;
+  unsigned ncurrent_classes = gametes->size();
 #endif
   vtype_iterator ibeg,jbeg;
-  unsigned ncurrent_classes = gametes->size(),NEXTINCT=0,NRECS_i;
+  unsigned NEXTINCT=0,NRECS_i;
   size_t ith,jth;
   while(NRECS > 0)
     {
@@ -408,118 +430,26 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  new_gamete2.mutations.reserve(ibeg->mutations.size()+jbeg->mutations.size());
 	  new_gamete2.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
 	  short SWITCH = 0;
-	  size_t dummy = 0;
-	  mcont_iterator itr = ibeg->mutations.begin(),
-	    jtr = jbeg->mutations.begin(),
-	    itr_s = ibeg->smutations.begin(),
-	    jtr_s = jbeg->smutations.begin();
-	  //pointer arithmetic over a range of pointers.  apologies...
-	  //typename gamete_type::mutation_container::iterator itr2;
-	  for( ; dummy < pos.size(); ++dummy)
+
+	  mcont_const_iterator itr = ibeg->mutations.cbegin(),
+	    jtr = jbeg->mutations.cbegin(),
+	    itr_s = ibeg->smutations.cbegin(),
+	    jtr_s = jbeg->smutations.cbegin(),
+	    itr_e = ibeg->mutations.cend(),
+	    itr_s_e = ibeg->smutations.cend(),
+	    jtr_e = jbeg->mutations.cend(),
+	    jtr_s_e = jbeg->smutations.cend();
+
+	  for( const auto dummy : pos )
 	    {
-	      //iterate over neutral mutations from parent i
-	      for( ; itr < ibeg->mutations.end() && (*itr)->pos < pos[dummy] ;++itr)
-		{
-		  switch(SWITCH)
-		    {
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.mutations[t],(*itr)->pos) );
-			}
-#endif
-		      new_gamete1.mutations.push_back(*itr);
-		      break;
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.mutations[t],(*itr)->pos) );
-			}
-#endif
-		      new_gamete2.mutations.push_back(*itr);
-		      break;
-		    }
-		}
-
-	      //iterate over selected mutations from parent i
-	      for( ; itr_s < ibeg->smutations.end() && (*itr_s)->pos < pos[dummy] ;++itr_s)
-		{
-		  switch(SWITCH)
-		    {
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.smutations[t],(*itr_s)->pos) );
-			}
-#endif
-		      new_gamete1.smutations.push_back(*itr_s);
-		      break;
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.smutations[t],(*itr_s)->pos) );
-			}
-#endif
-		      new_gamete2.smutations.push_back(*itr_s);
-		      break;
-		    }
-		}
-
-	      //iterate over neutral mutations from parent j
-	      for( ; jtr < jbeg->mutations.end() && (*jtr)->pos < pos[dummy] ;++jtr)
-		{
-		  switch(SWITCH)
-		    {
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.mutations[t],(*jtr)->pos) );
-			}
-#endif
-		      new_gamete1.mutations.push_back(*jtr);
-		      break;
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.mutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.mutations[t],(*jtr)->pos) );
-			}
-#endif
-		      new_gamete2.mutations.push_back(*jtr);
-		      break;
-		    }
-		}
-
-	      //iterate over selected mutations from parent j
-	      for( ; jtr_s < jbeg->smutations.end() && (*jtr_s)->pos < pos[dummy] ;++jtr_s)
-		{
-		  switch(SWITCH)
-		    {
-		    case 1:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete1.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete1.smutations[t],(*jtr_s)->pos) );
-			}
-#endif
-		      new_gamete1.smutations.push_back(*jtr_s);
-		      break;
-		    case 0:
-#ifndef NDEBUG
-		      for(unsigned t = 0 ; t < new_gamete2.smutations.size() ; ++t )
-			{
-			  assert(! mutation_at_pos()(*new_gamete2.smutations[t],(*jtr_s)->pos) );
-			}
-#endif
-		      new_gamete2.smutations.push_back(*jtr_s);
-		      break;
-		    }
-		}
+	      itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
+						    new_gamete2.mutations,new_gamete1.mutations,SWITCH,dummy);
+	      itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,
+						      new_gamete2.smutations,new_gamete1.smutations,SWITCH,dummy);
+	      jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,
+						    new_gamete1.mutations,new_gamete2.mutations,SWITCH,dummy);
+	      jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,
+						      new_gamete1.smutations,new_gamete2.smutations,SWITCH,dummy);
 	      SWITCH=!SWITCH;
 	    }
 #ifndef NDEBUG
@@ -528,10 +458,29 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  assert(__nm1+__nm2 == nm1+nm2);
 #endif
 
-	  std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),fake_less());
-	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),fake_less());
-	  std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),fake_less());
-	  std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),fake_less());
+	  //Through fwdpp 0.2.4, we did a sort here, but it is not necessary
+	  /*
+	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),
+		    [](typename gamete_type::mutation_list_type_iterator lhs,
+		       typename gamete_type::mutation_list_type_iterator rhs) { return lhs->pos < rhs->pos; });
+	  */
+#ifndef NDEBUG
+	using mlist_itr = typename gamete_type::mutation_list_type_iterator;
+	auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
+	assert( std::is_sorted(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),std::cref(am_I_sorted)) );
+	assert( std::is_sorted(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),std::cref(am_I_sorted)) );
+#endif
 
 	  vtype_iterator newpos = update_if_exists_insert(new_gamete1,gametes);
 	  assert(newpos->n <= twoN);
@@ -550,7 +499,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      assert( gcounts[dist] <= twoN );
 	    }
 #ifndef NDEBUG
-	  dummy=0;
+	  unsigned dummy=0;
 	  for( vtype_iterator test = gametes->begin();test!=gametes->begin()+ncurrent_classes ;++test,++dummy )
 	    {
 	      assert(test->n == gcounts[dummy]);
@@ -592,7 +541,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   if(NEXTINCT)
     {
       vtype_iterator newend = std::remove_if(gametes->begin(),gametes->end(),
-					     boost::bind(n_is_zero(),_1));
+					     std::bind(n_is_zero(),std::placeholders::_1));
       gametes->erase(newend,gametes->end());
     }
   return NRECS;

@@ -73,17 +73,14 @@ namespace KTfwd
 		 const double & f)
   {
     assert(N_curr == diploids->size());
-    
-    for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator>::iterator itr = mutations->begin() ; 
-	 itr != mutations->end() ; ++itr )
-      {
-	itr->n = 0;
-      }
-	      
-    typedef diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-					  typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-				diploid_vector_type_allocator> dipctr;
-    
+    using mutation_t = typename gamete_type::mutation_type;
+    using dipctr = diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
+						 typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
+				       diploid_vector_type_allocator>;
+    using glist_t_iterator = typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator;
+
+    std::for_each( mutations->begin(),mutations->end(),[](mutation_t & __m){__m.n=0;});
+
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
     
@@ -96,12 +93,10 @@ namespace KTfwd
 	wbar += fitnesses[i];
       }
     wbar /= double(diploids->size());
-    
+
 #ifndef NDEBUG
-    for(typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; itr != gametes->end() ;++itr)
-      {
-	assert(itr->n==0);
-      }
+    std::for_each(gametes->cbegin(),gametes->cend(),[](const typename glist_t_iterator::value_type & __g) {
+	assert( !__g.n ); } );
 #endif
     gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
     
@@ -116,7 +111,7 @@ namespace KTfwd
       }
     unsigned NREC=0;
     assert(diploids->size()==N_next);
-    typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator p1g1,p1g2,p2g1,p2g2;
+    glist_t_iterator p1g1,p1g2,p2g1,p2g2;
     for( unsigned i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -143,10 +138,7 @@ namespace KTfwd
 	(dptr+i)->second->n++;
 	assert( (dptr+i)->second->n > 0 );
 	assert( (dptr+i)->second->n <= 2*N_next );
-	
-	adjust_mutation_counts((dptr+i)->first,1);
-	adjust_mutation_counts((dptr+i)->second,1);
-	
+
 	//now, add new mutations
 	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
@@ -160,13 +152,28 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    gametes->remove_if(boost::bind(n_is_zero(),_1));
+    typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator temp;
     for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
-	 itr != gametes->end() ; ++itr )
+	 itr != gametes->end() ;  )
       {
-	itr->mutations.erase( std::remove_if(itr->mutations.begin(),itr->mutations.end(),mp),itr->mutations.end() );
-	itr->smutations.erase( std::remove_if(itr->smutations.begin(),itr->smutations.end(),mp),itr->smutations.end() );
+	if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
+	  {
+	    temp = itr;
+	    ++itr;
+	    gametes->erase(temp);
+	  }
+	else //gamete remains extant and we adjust mut counts
+	  {
+	    adjust_mutation_counts(itr,itr->n);
+	    ++itr;
+	  }
       }
+     std::for_each( gametes->begin(),
+		    gametes->end(),
+		    [&mp]( typename glist_t_iterator::value_type & __g ) {
+		      __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
+		      __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
+		    });
     assert(check_sum(gametes,2*N_next));
     gsl_ran_discrete_free(lookup);
     return wbar;
@@ -257,12 +264,8 @@ namespace KTfwd
 		 const double * f)
 	    {
 	      assert( metapop->size() == diploids->size() );
-	      
-	      for( typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator mptr = mutations->begin() ; 
-		   mptr != mutations->end() ; ++mptr )
-		{
-		  mptr->n = 0;
-		}
+
+	      std::for_each(mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){ __m.n=0; });
 	      
 	      typedef metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
 						   metapop_gamete_vector_type_allocator > pop_ctr;
@@ -357,8 +360,7 @@ namespace KTfwd
 			  p1g1 = insert_if_not_found( *((pptr+p1)->first),tpop );
 			  p1g2 = insert_if_not_found( *((pptr+p1)->second),tpop );
 			}
-		     
-		      
+		     		      
 		      /*
 			If the individual is not inbred, then we pick a 
 			deme from the migration policy for parent 2
@@ -402,9 +404,6 @@ namespace KTfwd
 		      (dptr+i)->second->n++;
 		      assert((dptr+i)->second->n <= 2*demesize);
 		      
-		      adjust_mutation_counts((dptr+i)->first,1);
-		      adjust_mutation_counts((dptr+i)->second,1);
-		      
 		      //now, add new mutations
 		      (dptr+i)->first = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 		      (dptr+i)->second = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
@@ -414,7 +413,21 @@ namespace KTfwd
 	      //get rid of extinct stuff, etc.
 	      for(typename pop_ctr::iterator ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
 		{
-		  ptr->remove_if(boost::bind(n_is_zero(),_1));
+		  typename gamete_ctr::iterator temp;
+		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ;  )
+		    {
+		      if( gptr->n == 0 )//extinct gamete, remove it
+			{
+			  temp = gptr;
+			  ++gptr;
+			  ptr->erase(temp);
+			}
+		      else
+			{
+			  adjust_mutation_counts(gptr,gptr->n);
+			  ++gptr;
+			}
+		    }
 		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
 		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );

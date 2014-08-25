@@ -22,6 +22,10 @@ Comments are welcome.
 
 	- Kevin Thornton <krthornt@uci.edu>
 
+#Preface
+
+This README corresponds to fwdpp 0.2.5.  Currently, there has been no offical release of 0.2.5, but the code base is considered tested/stable, and hence is available as the "master" branch via github.  See the revision history below for changes in this release.
+
 #Introduction
 
 fwdpp is a C++ template library that abstracts the basic operations required to implement forward-time simulations of population- and quantitative-genetic models.  The library allows the simulation of single populations or metapopulations evolving under the standard evolutionary forces of drift, recombination, migration, and natural selection.  Arbitrary population size changes are also allowed. Different populations in a metapopulation may evolve under different fitness schemes.
@@ -34,8 +38,6 @@ The library uses advanced C++ techniques to allow arbitrary models to be impleme
 
 The first two are excellent books for people already familiar with C++ syntax but want to know more about effective software design using the language. Meyer's books are particularly good, espectially the first two.  The C++ Templates book is a bible of how to get the most out of templates.  It is a very advanced and detailed book, but I've found it helpful over the years.
 
-The library user will also need some familiarity with the [boost](http://www.boost.org) libraries, especially "bind" and "function".  I refer the user to the boost website for the relevant documentation.
-
 ##A note about which version to use
 
 This code is distributed via my gitub [account](http://www.github.com/molpopgen).  The "master" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that, while the version number in the configure script on master/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in master/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at master.  Also note that master may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
@@ -46,7 +48,7 @@ Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when 
 
 ##Which C++?
 
-fwdpp does not use any features from then newly-released C++11 standard.  The new standard extends/simplifies the language, and therefore I expect the current code base to be C++11-compliant. As compiler support for C++11 becomes more widespread, the library will likely start to use some of those features, which will drastically improve readability of some of the nastier bits of template wizardry.
+As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC (4.7 or greater) and clang (3.4 or greater, but I've not checked earlier versions) both support this option, which covers most Linux and OS X users.
 
 ##Citation
 
@@ -67,6 +69,8 @@ The fwdpp manuscript has been accepted for publication in Genetics.  The accepte
   annote = 	 {doi:/10.1534/genetics.114.165019}
 }
 ```
+
+The version of fwdpp used in that publication is 0.2.4.
 
 
 #Documentation
@@ -106,10 +110,12 @@ You must have the following on your system:
 ##Library dependencies
 fwdpp depends upon the following libraries:
 
-1.  [boost](http://www.boost.org).
+1.  [boost](http://www.boost.org).  Note: use of boost is optional, but is the default.  See below for more info.
 2.  [GSL](http://gnu.org/software/gsl)
 3.  [zlib](http://zlib.net)
 4.  [libsequence](http://github.com/molpopgen/libsequence).
+
+
 
 The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
 
@@ -150,6 +156,20 @@ Then:
 > ./configure<br>
 > make<br>
 > make install<br>
+
+##To compile examples and install library without boost
+
+```
+./configure --enable-standard=yes
+make
+make install
+```
+
+The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  The effect of this is roughly a 10% performance loss (e.g., simulations will take about 10% longer to run).
+
+__NOTE:__ if you install fwdpp in this way, you need to remember that programs that you write will still try to use boost containers by default. Why?  The reason is that fwdpp is a template library, meaning that uncompiled header files are what gets installed.  In practice, if you do not want to install the boost libraries on your system, you will need to pass -DUSE_STANDARD_CONTAINERS to the preprocessor when compiling programs that you write using fwdpp.  
+
+Related to the above note, it is worth installing boost on your system.  Many of their libraries, especially program_options, will probably be worth using for simulations that you write.
 
 ##If dependent libraries are in non-stanard locations.
 
@@ -296,9 +316,11 @@ Usage:
 
 For this program, s can be positive or negative, as can h.
 
-####diploid\_fixed\_sh\_ind
+####diploid\_fixed\_sh\_ind and diploid\_fixe\_sh\_lambda
 
 Identical to diploid\_fixed\_sh, but based on the individual-based sampler.
+
+These two programs are identical in function, but differ in that the former is implemented using std::bind and the latter using lambda expressions.
 
 ####diploid\_twopop\_mig
 
@@ -370,13 +392,13 @@ Usage:
 
 Note: many of the well-known formulas for the effect of RHH on linked, neutral variation make very strong assumptions about the parameter values. For example, N needs to be large and s needs to be small, but Ns needs to be large. Further, Lambda needs to be sufficiently small such that sweeps are independent in time. This means that plugging in values to this program and comparing to theoretical predictions may lead to apparent discrepancies. This is also the case with various coalescent simulations of RHH.
 
-####bneck\_selection
+####bneck\_selection\_ind
 
 This program simulates a population for g generations at size N. In generation g+1, N changes to N2 <= N. The population then grows exponentially to size N3 >= N2 in g2 generations. Selected and neutral mutations are allowed each generation. The output is in “ms” format--one block for neutral mutations followed by one block for selected mutations.
 
 Usage:
 
-./bneck\_selection N theta\_neutral theta\_sel rho s h g1 N2 N3 g2 n nreps seed
+./bneck\_selection\_ind N theta\_neutral theta\_sel rho s h g1 N2 N3 g2 n nreps seed
 
 Where:<br>
 N = starting population size<br>

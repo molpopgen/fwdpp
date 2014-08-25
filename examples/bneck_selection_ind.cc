@@ -5,28 +5,16 @@
  */
 
 #include <fwdpp/diploid.hh>
-#include <boost/unordered_set.hpp>
 #include <Sequence/SimData.hpp>
 #include <numeric>
 #include <cmath>
 #include <functional>
 #include <cassert>
 #include <iomanip>
-#include <boost/function.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 //the type of mutation
 typedef KTfwd::mutation mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-typedef boost::container::list<gtype,gam_allocator > glist;
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#include <common_ind.hpp>
 
 using namespace KTfwd;
 
@@ -45,7 +33,7 @@ KTfwd::mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   //Choose mutation class (neutral or selected) proportional to underlying mutation rates
   bool neutral_mut = ( gsl_rng_uniform(r) <= mu_neutral/(mu_neutral+mu_selected) ) ? true : false;
   //Return a mutation of the correct type.  Neutral means s = h = 0, selected means s=s and h=h.
@@ -54,6 +42,13 @@ KTfwd::mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
 
 int main(int argc, char ** argv)
 {
+  if( argc != 14 )
+    {
+      std::cerr << "Error, too few arguments.\n"
+		<< "Usage: " << argv[0] << ' '
+		<< "N theta_neutral theta_deleterious 4Nr s h ngens N2 N3 ngens2 n nreps seed\n";
+      exit(10);
+    }
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
   const double theta_neutral = atof(argv[argument++]);
@@ -93,7 +88,7 @@ int main(int argc, char ** argv)
   gsl_rng_set(r,seed);
 
   //recombination map is uniform[0,1)
-  boost::function<double(void)> recmap = boost::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
 
   unsigned twoN = 2*N;
   while(nreps--)
@@ -126,16 +121,16 @@ int main(int argc, char ** argv)
 				       &mutations,
 				       N,
 				       mu_neutral+mu_del,
-				       boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-     				       boost::bind(KTfwd::genetics101(),_1,_2,
+				       std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+     				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						   &gametes,
       						   littler,
       						   r,
       						   recmap),
-				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));
+				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(KTfwd::check_sum(gametes,2*N));
 	}
@@ -148,16 +143,16 @@ int main(int argc, char ** argv)
 				   N,
 				   N2,
 				   mu_neutral+mu_del,
-				   boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-				   boost::bind(KTfwd::genetics101(),_1,_2,
+				   std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 					       &gametes,
 					       littler,
 					       r,
 					       recmap),
-				   boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				   boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,2*N2));
+				   std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+				   std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N2));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N2);
       generation++;
       
@@ -178,16 +173,16 @@ int main(int argc, char ** argv)
 				       currentN,
 				       nextN,
 				       mu_neutral+mu_del,
-				       boost::bind(neutral_mutations_selection,r,_1,mu_neutral,mu_del,s,h,&lookup),
-     				       boost::bind(KTfwd::genetics101(),_1,_2,
+				       std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+     				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						   &gametes,
       						   littler,
       						   r,
       						   recmap),
-				       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-				       boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-				       boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*nextN));
+				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*nextN));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*nextN);
 	  currentN=nextN;
 	}

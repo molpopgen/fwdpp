@@ -6,16 +6,16 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <set>
 #include <map>
+#include <type_traits>
 #include <algorithm>
 #include <cassert>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/type_traits/is_convertible.hpp>
 #include <iostream>
 
-#ifndef USE_STANDARD_CONTAINERS
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
 #include <boost/container/vector.hpp>
 #endif
 
@@ -44,8 +44,8 @@ namespace KTfwd
     \note Only works for the case of unique mutation positions!!!
   */
   {
-    BOOST_STATIC_ASSERT( (boost::is_same<typename gamete_type::mutation_type,mutation_type>::value) );
-
+    static_assert( std::is_same<typename gamete_type::mutation_type,mutation_type>::value,
+                   "gamete_type::mutation type and mutation_type must be the same" );
     typedef typename source_gamete_container<gamete_type,gamete_allocator_type>::const_iterator giterator;
     typedef typename source_mut_container<mutation_type,mutation_allocator_type>::iterator literator;  
     typedef typename source_mut_container<mutation_type,mutation_allocator_type>::const_iterator cliterator;
@@ -82,40 +82,41 @@ namespace KTfwd
       }
   }
 
+  /* \brief Sets mutation::checked to false
+   */
   template<typename mutation_type,
 	   typename list_type_allocator,
 	   template <typename,typename> class list_type>
   void uncheck( list_type<mutation_type,list_type_allocator> * mutations )
-  /*! \brief Used internally
-   */
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutation_type>::value) );
-    typedef typename list_type<mutation_type,list_type_allocator>::iterator mlitr;
-    for(mlitr i = mutations->begin();i!=mutations->end();++i)
-      {
-	i->checked=false;
-      }
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    std::for_each(mutations->begin(),mutations->end(),[](mutation_type & __m){__m.checked=false;});
   }
   
   /*! \brief Remove mutations from population
     Removes mutations that are lost.
     \example diploid.cc
   */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename list_type_allocator,
 	   template <typename,typename> class list_type >
-  void remove_lost( list_type<mutationtype,list_type_allocator> * mutations )
+  void remove_lost( list_type<mutation_type,list_type_allocator> * mutations )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
+      temp;
     
     while(i != mutations->end())
       {
 	i->checked = false;
 	if( i->n == 0 )
 	  {
-	    mutations->erase(i);
-	    i=mutations->begin();
+	    temp = i;
+	    ++i;
+	    mutations->erase(temp);
+	    //i=mutations->begin();
 	  }
 	else
 	  {
@@ -129,14 +130,16 @@ namespace KTfwd
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
     \example diploid.cc
    */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename list_type_allocator,
 	   template <typename,typename> class list_type,
 	   typename mutation_lookup_table>
-  void remove_lost( list_type<mutationtype,list_type_allocator> * mutations, mutation_lookup_table * lookup )
+  void remove_lost( list_type<mutation_type,list_type_allocator> * mutations, mutation_lookup_table * lookup )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
+      temp;
     
     while(i != mutations->end())
       {
@@ -144,8 +147,9 @@ namespace KTfwd
 	if( i->n == 0 )
 	  {
 	    lookup->erase(lookup->find(i->pos));
-	    mutations->erase(i);
-	    i=mutations->begin();
+	    temp=i;
+	    ++i;
+	    mutations->erase(temp);
 	  }
 	else
 	  {
@@ -158,61 +162,20 @@ namespace KTfwd
     Removes mutations that are fixed or lost.
     \example diploid.cc
    */
-  template<typename mutationtype,
+  template<typename mutation_type,
 	   typename vector_type_allocator1,
 	   typename vector_type_allocator2,
 	   typename list_type_allocator,
 	   template <typename,typename> class vector_type,
 	   template <typename,typename> class list_type >
-  void remove_fixed_lost( list_type<mutationtype,list_type_allocator> * mutations, 
-			  vector_type<mutationtype,vector_type_allocator1> * fixations, 
+  void remove_fixed_lost( list_type<mutation_type,list_type_allocator> * mutations, 
+			  vector_type<mutation_type,vector_type_allocator1> * fixations, 
 			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
 			  const unsigned & generation,const unsigned & twoN)
-	   {
-	     BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-	     typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
-	     
-	     while(i != mutations->end())
-	       {
-		 assert(i->n <= twoN);			
-		 i->checked = false;
-		 if(i->n==twoN )
-		   {
-		     fixations->push_back(*i);
-		     fixation_times->push_back(generation);
-		   }
-		 if( i->n == 0 || i->n == twoN )
-		   {
-		     mutations->erase(i);
-		     i=mutations->begin();
-		   }
-		 else
-		   {
-		     ++i;
-		   }
-	       }
-	   }
-
-  /*! \brief Remove mutations from population
-    Removes mutations that are fixed or lost.
-    \note: lookup must be compatible with lookup->erase(lookup->find(double))
-    \example diploid.cc
-   */
-  template<typename mutationtype,
-	   typename vector_type_allocator1,
-	   typename vector_type_allocator2,
-	   typename list_type_allocator,
-	   template <typename,typename> class vector_type,
-	   template <typename,typename> class list_type,
-	   typename mutation_lookup_table>
-  void remove_fixed_lost( list_type<mutationtype,list_type_allocator> * mutations, 
-			  vector_type<mutationtype,vector_type_allocator1> * fixations, 
-			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
-			  mutation_lookup_table * lookup,
-			  const unsigned & generation,const unsigned & twoN )
   {
-    BOOST_STATIC_ASSERT( ( boost::is_base_and_derived<mutation_base,mutationtype>::value) );
-    typename list_type<mutationtype,list_type_allocator>::iterator i = mutations->begin();
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+		   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
     
     while(i != mutations->end())
       {
@@ -225,9 +188,53 @@ namespace KTfwd
 	  }
 	if( i->n == 0 || i->n == twoN )
 	  {
+	    temp=i;
+	    ++i;
+	    mutations->erase(temp);
+	  }
+	else
+	  {
+	    ++i;
+	  }
+      }
+  }
+
+  /*! \brief Remove mutations from population
+    Removes mutations that are fixed or lost.
+    \note: lookup must be compatible with lookup->erase(lookup->find(double))
+    \example diploid.cc
+   */
+  template<typename mutation_type,
+	   typename vector_type_allocator1,
+	   typename vector_type_allocator2,
+	   typename list_type_allocator,
+	   template <typename,typename> class vector_type,
+	   template <typename,typename> class list_type,
+	   typename mutation_lookup_table>
+  void remove_fixed_lost( list_type<mutation_type,list_type_allocator> * mutations, 
+			  vector_type<mutation_type,vector_type_allocator1> * fixations, 
+			  vector_type<unsigned,vector_type_allocator2> * fixation_times,
+			  mutation_lookup_table * lookup,
+			  const unsigned & generation,const unsigned & twoN )
+  {
+    static_assert( std::is_base_of<mutation_base,mutation_type>::value,
+                   "mutation_type must be derived from KTfwd::mutation_base" );
+    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
+    while(i != mutations->end())
+      {
+	assert(i->n <= twoN);			
+	i->checked = false;
+	if(i->n==twoN )
+	  {
+	    fixations->push_back(*i);
+	    fixation_times->push_back(generation);
+	  }
+	if( i->n == 0 || i->n == twoN )
+	  {
 	    lookup->erase(lookup->find(i->pos));
-	    mutations->erase(i);
-	    i=mutations->begin();
+	    temp=i;
+	    ++i;
+	    mutations->erase(temp);
 	  }
 	else
 	  {
@@ -236,38 +243,28 @@ namespace KTfwd
       }
   }
   
-  //template<typename gamete_type>
   template<typename iterator_type>
   void adjust_mutation_counts( iterator_type g , const unsigned & n)
   /*! \brief used internally
     \note Will need a specialization if types have other data that need updating
   */
   {
-    for(unsigned j=0;j< g->mutations.size();++j)
-      {
-	if( g->mutations[j]->checked==false)
-	  {
-	    g->mutations[j]->n=n;
-	    g->mutations[j]->checked=true;
-	  }
-	else
-	  {
-	    g->mutations[j]->n += n;
-	  }
-      }
-    for(unsigned j=0;j< g->smutations.size();++j)
-      {
-	if( g->smutations[j]->checked==false)
-	  {
-	    g->smutations[j]->n=n;
-	    g->smutations[j]->checked=true;
-	  }
-	else
-	  {
-	    g->smutations[j]->n += n;
-	  }
-      }
-  }
+    auto adjuster = [&n](typename iterator_type::value_type::mutation_list_type_iterator & __m) {
+      if(!__m->checked)
+	{
+	  __m->n=n;
+	  __m->checked=true;
+	}
+      else
+	{
+	  __m->n += n;
+	}
+    };
+    std::for_each(g->mutations.begin(),g->mutations.end(),
+		  std::cref(adjuster));
+    std::for_each(g->smutations.begin(),g->smutations.end(),
+		  std::cref(adjuster));
+   }
 
   /*! \brief Pick a gamete proportional to its frequency
     Pick a gamete proportional to its frequency
@@ -279,20 +276,18 @@ namespace KTfwd
   pgam( gsl_rng * r,
 	vector_type<gamete_type,vector_type_allocator > * gametes )
   {
-    typedef typename vector_type<gamete_type,vector_type_allocator>::iterator vcitr;
-    vcitr rv = gametes->begin();
 #ifndef USE_STANDARD_CONTAINERS
     boost::container::vector<double>freqs(gametes->size(),0);
 #else
     std::vector<double>freqs(gametes->size(),0);
 #endif
     size_t i = 0;
-    for( ; rv != gametes->end() ; ++rv,++i )
-      {
-	freqs[i]=rv->n;
-      }
+    std::for_each(gametes->cbegin(),gametes->cend(),
+		  [&i,&freqs](const gamete_type & __g) {
+		    freqs[i++]=__g.n;
+		  });
     gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(gametes->size(),&freqs[0]);
-    rv = gametes->begin()+gsl_ran_discrete(r,lookup);
+    auto rv = gametes->begin()+gsl_ran_discrete(r,lookup);
     gsl_ran_discrete_free(lookup);
     return rv;
   }
@@ -307,22 +302,18 @@ namespace KTfwd
   {
     gametes->erase(std::remove_if(gametes->begin(),
      				  gametes->end(),
-     				  boost::bind(n_is_zero(),_1)),
+     				  std::bind(n_is_zero(),std::placeholders::_1)),
      		   gametes->end()); 
-    for(typename vector_type<gamete_type,vector_type_allocator >::iterator gbeg = gametes->begin() ; 
-	gbeg != gametes->end() ; ++gbeg )
-      {
-	assert(gbeg->n <= twoN);
-	gbeg->mutations.erase( std::remove_if( gbeg->mutations.begin(),
-					       gbeg->mutations.end(),
-					       mrp ),
-			       gbeg->mutations.end() );
-	gbeg->smutations.erase( std::remove_if( gbeg->smutations.begin(),
-						gbeg->smutations.end(),
-						mrp ),
-				gbeg->smutations.end() );
-      }
-
+#ifndef NDEBUG
+#endif
+    std::for_each( gametes->begin(),gametes->end(),[&mrp](gamete_type & __g) {
+	__g.mutations.erase(std::remove_if( __g.mutations.begin(),
+					    __g.mutations.end(),std::cref(mrp) ),
+			    __g.mutations.end());
+	__g.smutations.erase(std::remove_if( __g.smutations.begin(),
+					     __g.smutations.end(),std::cref(mrp) ),
+			     __g.smutations.end());
+      });
   }
 
   /*! \brief Multinomial sampling of gametes
@@ -353,7 +344,6 @@ namespace KTfwd
     	    (gbegin+i)->n = 0;
     	  }
     	n -= (gbegin+i)->n;
-    	//adjust_mutation_counts( &*(gbegin+i), (gbegin+i)->n );
 	adjust_mutation_counts( (gbegin+i), (gbegin+i)->n );
       }
   }

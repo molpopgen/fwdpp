@@ -9,14 +9,6 @@
 
 #include <Sequence/SimData.hpp>
 
-#include <boost/function.hpp>
-#include <boost/functional.hpp>
-#include <boost/unordered_set.hpp>
-
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
-
 struct mutation_with_age : public KTfwd::mutation_base
 {
   unsigned g;
@@ -28,14 +20,12 @@ struct mutation_with_age : public KTfwd::mutation_base
 };
 
 typedef mutation_with_age mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
+#include <common_gamete.hpp>
+#ifdef USE_STANDARD_CONTAINERS
+typedef std::vector< gvector > mpop_container;
+#else
 typedef boost::container::vector< gvector > mpop_container;
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
-
+#endif
 mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
 					      lookup_table_type * lookup)
 {
@@ -45,7 +35,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   return mutation_with_age(generation,pos,1,true);
 }
 
@@ -82,10 +72,10 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //create a vector of fitness functions for each population
-  std::vector<boost::function<double (gvector::const_iterator,
+  std::vector<std::function<double (gvector::const_iterator,
 				      gvector::const_iterator)> > vbf;
-  vbf.push_back(boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.));
-  vbf.push_back(boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.));
+  vbf.push_back(std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
+  vbf.push_back(std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
 
   while(nreps--)
     {
@@ -101,18 +91,18 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < ngens1; ++generation )
 	{
 
-	  wbar = KTfwd::sample_diploid(r,&metapop[0],twoN,boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
+	  wbar = KTfwd::sample_diploid(r,&metapop[0],twoN,std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
 	  assert(KTfwd::check_sum(metapop[0],twoN));
 
 	  unsigned nmuts= KTfwd::mutate(r,&metapop[0],&mutations,mu,
-	  				boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-					boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-					boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+	  				std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+					std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+					std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 
 	  assert(KTfwd::check_sum(metapop[0],twoN));
-	  unsigned nrec = KTfwd::recombine(r, &metapop[0], twoN, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = KTfwd::recombine(r, &metapop[0], twoN, littler, std::bind(gsl_rng_uniform,r));
 	  assert(KTfwd::check_sum(metapop[0],twoN));
 	}
 
@@ -129,27 +119,27 @@ int main(int argc, char ** argv)
 	  KTfwd::migrate(r,&metapop[0],&metapop[1],twoN,twoN,littlem);
 	  std::vector<double> wbars = KTfwd::sample_diploid(r,&metapop,&twoNs[0],ttlsize,
 							    vbf,   //vector of fitness functions
-							    boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
+							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));
 	  assert(KTfwd::check_sum(metapop[0],twoN));
 	  assert(KTfwd::check_sum(metapop[1],twoN));
 	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,generation,2*twoN);
 
 	  unsigned nmuts= KTfwd::mutate(r,&metapop[0],&mutations,mu,
-	  				boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-					boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-					boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+	  				std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+					std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+					std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  
 	  assert(KTfwd::check_sum(metapop[0],twoN));
-	  unsigned nrec = KTfwd::recombine(r, &metapop[0], twoN, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = KTfwd::recombine(r, &metapop[0], twoN, littler, std::bind(gsl_rng_uniform,r));
 	  assert(KTfwd::check_sum(metapop[0],twoN));
 	  
 	  nmuts= KTfwd::mutate(r,&metapop[1],&mutations,mu,
-			       boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-			       boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-			       boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+			       std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+			       std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+			       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 	  
 	  assert(KTfwd::check_sum(metapop[1],twoN));
-	  nrec = KTfwd::recombine(r, &metapop[1], twoN, littler, boost::bind(gsl_rng_uniform,r));
+	  nrec = KTfwd::recombine(r, &metapop[1], twoN, littler, std::bind(gsl_rng_uniform,r));
 	  assert(KTfwd::check_sum(metapop[1],twoN));
 
 	} 
@@ -186,6 +176,8 @@ Sequence::SimData merge( const std::vector<std::pair<double,std::string> > & sam
 	}
     }
   std::vector<std::pair<double,std::string> > rv( temp.begin(),temp.end() );
-  std::sort(rv.begin(),rv.end(),KTfwd::sortpos());
+  std::sort(rv.begin(),rv.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
   return Sequence::SimData(rv.begin(),rv.end());
 }

@@ -2,13 +2,18 @@
 #ifndef _MUTATION_TCC_
 #define _MUTATION_TCC_
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
-#include <boost/type_traits/is_same.hpp>
-#include <gsl/gsl_randist.h>
+#include <type_traits>
 #include <algorithm>
 #include <numeric>
 #include <iostream>
+
+#include <gsl/gsl_randist.h>
+
+#ifdef USE_STANDARD_CONTAINERS
+#include <vector>
+#else
+#include <boost/container/vector.hpp>
+#endif
 
 namespace KTfwd
 {
@@ -28,16 +33,20 @@ namespace KTfwd
 		  const gamete_insertion_policy & gpolicy, 
 		  const mutation_insertion_policy & mpolicy)
 	    {
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,typename gamete_type::mutation_type>::value) );
+	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+                             "gamete_type::mutation_type must be derived from KTfwd::mutation_base" );
 	      typedef gamete_base< typename gamete_type::mutation_type, 
 				   typename gamete_type::mutation_list_type > gamete_base_type;
-	      BOOST_STATIC_ASSERT( (boost::is_base_and_derived<gamete_base_type,
-							       gamete_type>::value) || (boost::is_same<gamete_base_type,gamete_type >::value) );
-	      BOOST_STATIC_ASSERT( (boost::is_same< list_type<typename gamete_type::mutation_type,list_type_allocator >,
-						    typename gamete_type::mutation_list_type >::value) );
-
+	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
+                             std::is_same<gamete_base_type,gamete_type>::value,
+                             "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
+              static_assert( std::is_same<list_type<typename gamete_type::mutation_type,list_type_allocator >,
+                                          typename gamete_type::mutation_list_type >::value,
+                             "list_type<typename gamete_type::mutation_type,list_type_allocator > and gamete_type::mutation_list_type must be the same" );
 	      unsigned ncurrent_classes = gametes->size();
 	      typename vector_type<gamete_type,vector_type_allocator>::iterator ibeg;
+	      typedef typename gamete_type::mutation_type mut_type;
+	      typedef typename list_type<typename gamete_type::mutation_type,list_type_allocator >::iterator mut_itr;
 	      unsigned NM=0;
 	      unsigned NEXTINCT=0;
 	      for(unsigned i=0;i<ncurrent_classes;++i)
@@ -70,30 +79,40 @@ namespace KTfwd
 			  nmuts--;
 			  
 			  //create a new mutant type to enter the population
-			  typename gamete_type::mutation_type new_mutant = mmodel(mutations);
+			  mut_type new_mutant = mmodel(mutations);
 			  
 			  //insert the new mutant type into the list of mutations, and record the position of insertion
-			  typename gamete_type::mutation_list_type_iterator mitr = mpolicy(new_mutant,mutations);
+			  mut_itr mitr = mpolicy(new_mutant,mutations);
 			  
 			  if(mitr->neutral)
 			    {
-			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.mutations.begin(),
-												     new_gamete.mutations.end(),
-												     boost::bind(greater_pos(),_1,mitr->pos));
-			      new_gamete.mutations.insert(itr2,mitr);
-			      //new_gamete.mutations.push_back(mitr);
+			      new_gamete.mutations.insert( (new_gamete.mutations.size()<=250) ? 
+							   std::find_if(new_gamete.mutations.begin(),
+									new_gamete.mutations.end(),
+									[&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
+									{
+									  return mut_itr->pos > mitr->pos;
+									}) :
+							   std::upper_bound(new_gamete.mutations.begin(),
+									    new_gamete.mutations.end(),mitr->pos,
+									    [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+							   mitr );
 			    }
 			  else
 			    {
-			      typename gamete_type::mutation_container::iterator itr2 = std::find_if(new_gamete.smutations.begin(),
-												     new_gamete.smutations.end(),
-												     boost::bind(greater_pos(),_1,mitr->pos));
-			      new_gamete.smutations.insert(itr2,mitr);
-			      //new_gamete.smutations.push_back(mitr);
+			      new_gamete.smutations.insert( (new_gamete.smutations.size() <= 250) ? 
+							    std::find_if(new_gamete.smutations.begin(),
+									 new_gamete.smutations.end(),
+									 [&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
+									 {
+									   return mut_itr->pos > mitr->pos;
+									 }) :
+							    std::upper_bound(new_gamete.smutations.begin(),
+									     new_gamete.smutations.end(),mitr->pos,
+									     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+							    mitr );
 			    }
 			}
-		      //std::sort(new_gamete.mutations.begin(),new_gamete.mutations.end(),fake_less());
-		      //std::sort(new_gamete.smutations.begin(),new_gamete.smutations.end(),fake_less());
 		      gpolicy(new_gamete,gametes);
 		      ibeg=(gametes->begin()+i);
 		    }
@@ -120,6 +139,7 @@ namespace KTfwd
   {
     assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
+    typedef typename iterator_type::value_type::mutation_list_type_iterator mut_itr;
     if ( nm )
       {
 	assert( g->n > 0 );
@@ -128,28 +148,29 @@ namespace KTfwd
 	ng.n = 1;
 	for( unsigned i = 0 ; i < nm ; ++i )
 	  {
-	    typename iterator_type::value_type::mutation_type nm = mmodel(mutations);
-	    typename iterator_type::value_type::mutation_list_type_iterator mitr = mpolicy(nm,mutations);
+	    mut_itr mitr = mpolicy(mmodel(mutations),mutations);
 	    if( mitr->neutral )
 	      {
-		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.mutations.begin(),
-												     ng.mutations.end(),
-												     boost::bind(KTfwd::greater_pos(),_1,mitr->pos));
-		ng.mutations.insert(itr2,mitr);
+		ng.mutations.insert((ng.mutations.size() <= 250) ? std::find_if(ng.mutations.begin(),
+										ng.mutations.end(),
+										[&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
+				    std::upper_bound(ng.mutations.begin(),
+						     ng.mutations.end(),mitr->pos,
+						     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+				    mitr);
 	      }
 	    else
 	      {
-		typename iterator_type::value_type::mutation_container::iterator itr2 = std::find_if(ng.smutations.begin(),
-												     ng.smutations.end(),
-												     boost::bind(KTfwd::greater_pos(),_1,mitr->pos));
-		ng.smutations.insert(itr2,mitr);
+		ng.smutations.insert((ng.smutations.size() <= 250) ? std::find_if(ng.smutations.begin(),
+										  ng.smutations.end(),
+										  [&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
+				     std::upper_bound(ng.smutations.begin(),
+						      ng.smutations.end(),mitr->pos,
+						      [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
+				     mitr);
 	      }
 	  }
-	iterator_type rv = gpolicy(ng,gametes);
-	assert( rv != gametes->end() );
-	assert(!rv->mutations.empty() || !rv->smutations.empty());
-	assert(rv->n == 1);
-	return rv;
+	return gpolicy(ng,gametes);
       }
     return g;
   }

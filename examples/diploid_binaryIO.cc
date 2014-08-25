@@ -17,13 +17,8 @@
 #include <numeric>
 #include <functional>
 #include <cassert>
-
+#include <sstream>
 #include <fcntl.h>
-
-#include <boost/unordered_set.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
 
 struct mutation_with_age : public KTfwd::mutation_base
 {
@@ -36,6 +31,10 @@ struct mutation_with_age : public KTfwd::mutation_base
   {	
   }
 };
+
+typedef mutation_with_age mtype;
+#include <common_gamete.hpp>
+
 
 //function object to write mutation data in binary format
 struct mwriter
@@ -80,14 +79,6 @@ struct mreader
   }
 };
 
-typedef mutation_with_age mtype;
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
 
 mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
 					      lookup_table_type * lookup)
@@ -98,7 +89,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & gener
       pos = gsl_rng_uniform(r);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   return mutation_with_age(generation,pos,1,0.,0.,true);
 }
 
@@ -147,23 +138,23 @@ int main(int argc, char ** argv)
   for( generation = 0; generation < ngens; ++generation )
     {
       wbar = KTfwd::sample_diploid(r,&gametes,twoN,
-				   boost::bind(KTfwd::multiplicative_diploid(),_1,_2,2.),
-				   boost::bind(KTfwd::mutation_remover(),_1,0,twoN));
+				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,twoN));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,twoN);
       assert(KTfwd::check_sum(gametes,twoN));
       assert( lookup.size() == mutations.size() );
       unsigned nmuts = KTfwd::mutate(r,&gametes,&mutations,mu,
-				     boost::bind(neutral_mutations_inf_sites,r,generation,_1,&lookup),
-				     boost::bind(KTfwd::push_at_end<gtype,gvector >,_1,_2),
-				     boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2));
+				     std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+				     std::bind(KTfwd::push_at_end<gtype,gvector >,std::placeholders::_1,std::placeholders::_2),
+				     std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2));
 
       assert(KTfwd::check_sum(gametes,twoN));
-      unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, boost::bind(gsl_rng_uniform,r));
+      unsigned nrec = KTfwd::recombine(r, &gametes, twoN, littler, std::bind(gsl_rng_uniform,r));
       assert(KTfwd::check_sum(gametes,twoN));
     }
   std::ostringstream buffer;
       
-  KTfwd::write_binary_pop(&gametes,&mutations,boost::bind(mwriter(),_1,_2),buffer);
+  KTfwd::write_binary_pop(&gametes,&mutations,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   //establish POSIX file locks for output
   struct flock index_flock, hapfile_flock;
@@ -238,7 +229,7 @@ int main(int argc, char ** argv)
 
   std::ifstream in(hapfile,std::ios_base::in|std::ios_base::binary);
   in.seekg(offset);
-  read_binary_pop(&gametes2,&mutations2,boost::bind(mreader(),_1),in);
+  read_binary_pop(&gametes2,&mutations2,std::bind(mreader(),std::placeholders::_1),in);
 
   //Now, compare what we wrote to what we read
   std::cout << "Mutations:\n";

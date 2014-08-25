@@ -13,17 +13,10 @@
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <utility>
-#include <boost/iostreams/filter/gzip.hpp>
-#include <boost/iostreams/filtering_stream.hpp>
-#include <boost/iostreams/device/file.hpp>
-
-#include <boost/unordered_set.hpp>
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
+#include <sstream>
+#include <zlib.h>
 
 using namespace std;
-using namespace boost::iostreams;
 using Sequence::SimData;
 using namespace KTfwd;
 
@@ -46,24 +39,14 @@ struct mutation_with_age : public mutation_base
 };
 
 typedef mutation_with_age mtype;
-//boost containers
-#ifndef USE_STANDARD_CONTAINERS
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::vector<gtype,gam_allocator > gvector;
+#include <common_gamete.hpp>
+#ifdef USE_STANDARD_CONTAINERS
+typedef std::vector<mtype> mvector;
+typedef std::vector<unsigned> ftvector;
+#else
 typedef boost::container::vector<mtype> mvector;
 typedef boost::container::vector<unsigned> ftvector;
-#else
-typedef std::list<mtype > mlist;
-typedef gamete_base<mtype, mlist> gtype;
-typedef vector<gtype> gvector;
-typedef vector<mtype> mvector;
-typedef vector<unsigned> ftvector;
-#endif
-
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#endif 
 
 //Calculates the genetic contribution to a diploid's phenotype
 struct disease_effect
@@ -191,28 +174,28 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < ngens_burnin; ++generation,++ttl_gen )
 	{
 	  //a generation is drift, then mutation, recombination
-	  wbar = sample_diploid(r,&gametes,2*N,boost::bind(disease_effect_to_fitness(),_1,_2,sd,sd_s,r),
-				boost::bind(KTfwd::mutation_remover(),_1,0,2*N));       
+	  wbar = sample_diploid(r,&gametes,2*N,std::bind(disease_effect_to_fitness(),std::placeholders::_1,std::placeholders::_2,sd,sd_s,r),
+				std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));       
 	  remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(check_sum(gametes,2*N));
-	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,boost::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
-				 push_back_gamete(),boost::bind(insert_mutation_at_end<mtype,mlist >,_1,_2));
+	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,std::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
+				 push_back_gamete(),std::bind(insert_mutation_at_end<mtype,mlist >,std::placeholders::_1,std::placeholders::_2));
 	  assert(check_sum(gametes,2*N));
-	  unsigned nrec = recombine(r, &gametes, 2*N, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = recombine(r, &gametes, 2*N, littler, std::bind(gsl_rng_uniform,r));
 	  assert(check_sum(gametes,2*N));
 	}
       unsigned nfix = fixations.size();
       for( generation = 0; generation < ngens_evolve; ++generation,++ttl_gen )
 	{
 	  //a generation is drift, then mutation, recombination
-	  double wbar = sample_diploid(r,&gametes,2*N,boost::bind(disease_effect_to_fitness(),_1,_2,sd,sd_s,r),
-				       boost::bind(KTfwd::mutation_remover(),_1,0,2*N));       
+	  double wbar = sample_diploid(r,&gametes,2*N,std::bind(disease_effect_to_fitness(),std::placeholders::_1,std::placeholders::_2,sd,sd_s,r),
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));       
 	  remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	  assert(check_sum(gametes,2*N));
-	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,boost::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
-				 push_back_gamete(),boost::bind(insert_mutation_at_end<mtype,mlist >,_1,_2));
+	  unsigned nmuts= mutate(r,&gametes,&mutations,mu_disease+mu_neutral,std::bind(mutation_model(),r,ttl_gen,s,mu_disease,mu_neutral,&mutations,&lookup,dist_effects),
+				 push_back_gamete(),std::bind(insert_mutation_at_end<mtype,mlist >,std::placeholders::_1,std::placeholders::_2));
 	  assert(check_sum(gametes,2*N));
-	  unsigned nrec = recombine(r, &gametes, 2*N, littler, boost::bind(gsl_rng_uniform,r));
+	  unsigned nrec = recombine(r, &gametes, 2*N, littler, std::bind(gsl_rng_uniform,r));
 	  assert(check_sum(gametes,2*N));
 	}
       remove_fixed_lost(&mutations,&fixations,&fixation_times,generation,2*N);
@@ -270,12 +253,21 @@ int main(int argc, char ** argv)
       //print out num deleterious mutations vs effect
       vector< pair<double,string> > neutral,selected;
       SimData msneut,mssel;
+
+      std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+												 const double & d ) 
+	{
+	  return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+	};
+
       for(unsigned i=0;i<diploids.size();++i)
 	{
 	  //neutral mutations
 	  for( unsigned mut = 0 ; mut < diploids[i].first->mutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),std::bind2nd(find_mut_pos(), diploids[i].first->mutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].first->mutations[mut]->pos));
+
 	      if( itr == neutral.end() )
 		{
 		  neutral.push_back( std::make_pair(diploids[i].first->mutations[mut]->pos,std::string(2*N,'0')) );
@@ -288,7 +280,8 @@ int main(int argc, char ** argv)
 	    }
 	  for( unsigned mut = 0 ; mut < diploids[i].second->mutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),std::bind2nd(find_mut_pos(), diploids[i].second->mutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(neutral.begin(),neutral.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].second->mutations[mut]->pos));
 	      if( itr == neutral.end() )
 		{
 		  neutral.push_back( std::make_pair(diploids[i].second->mutations[mut]->pos,std::string(2*N,'0')) );
@@ -303,7 +296,8 @@ int main(int argc, char ** argv)
 	  //selected
 	  for( unsigned mut = 0 ; mut < diploids[i].first->smutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),std::bind2nd(find_mut_pos(), diploids[i].first->smutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].first->mutations[mut]->pos));
 	      if( itr == selected.end() )
 		{
 		  selected.push_back( std::make_pair(diploids[i].first->smutations[mut]->pos,std::string(2*N,'0')) );
@@ -316,7 +310,8 @@ int main(int argc, char ** argv)
 	    }
 	  for( unsigned mut = 0 ; mut < diploids[i].second->smutations.size() ; ++mut )
 	    {
-	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),std::bind2nd(find_mut_pos(), diploids[i].second->smutations[mut]->pos));
+	      vector< pair<double,string> >::iterator itr = find_if(selected.begin(),selected.end(),
+								    std::bind(sitefinder,std::placeholders::_1, diploids[i].second->mutations[mut]->pos));
 	      if( itr == selected.end() )
 		{
 		  selected.push_back( make_pair(diploids[i].second->smutations[mut]->pos,std::string(2*N,'0')) );
@@ -328,15 +323,21 @@ int main(int argc, char ** argv)
 		}
 	    }
 	}
-      std::sort(neutral.begin(),neutral.end(),sortpos());
-      std::sort(selected.begin(),selected.end(),sortpos());
+      std::sort(neutral.begin(),neutral.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+      std::sort(selected.begin(),selected.end(),
+		[](std::pair<double,std::string> lhs,
+		   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
       msneut.assign(neutral.begin(),neutral.end());
       mssel.assign(selected.begin(),selected.end());
 
-      filtering_ostream msfile;
-      msfile.push(gzip_compressor());
-      msfile.push(file_sink(ofn,ios_base::out|ios_base::binary));
-      msfile << msneut << '\n'<<mssel<<'\n';
+      //filtering_ostream msfile;
+      gzFile gzout = gzopen(ofn,"w");
+      buffer << msneut << '\n'<<mssel<<'\n';
+      gzwrite(gzout,buffer.str().c_str(),buffer.str().size());
+      gzclose(gzout);
+      buffer.str(string());
 
       buffer << "//\n";
       for(mlist::iterator i = mutations.begin() ; i != mutations.end() ; ++i )
@@ -346,9 +347,8 @@ int main(int argc, char ** argv)
 	      buffer << i->pos << '\t' << i->s << '\n';
 	    }
 	}
-      filtering_ostream mutationfile;
-      mutationfile.push(gzip_compressor());
-      mutationfile.push(file_sink(ofn3,ios_base::out|ios_base::binary));
-      mutationfile << buffer.str();
+      gzout = gzopen(ofn3,"w");
+      gzwrite(gzout,buffer.str().c_str(),buffer.str().size());
+      gzclose(gzout);
     }
 }

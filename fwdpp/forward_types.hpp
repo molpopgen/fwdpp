@@ -8,8 +8,7 @@
 #include <vector>
 #include <list>
 #include <cmath>
-#include <boost/static_assert.hpp>
-#include <boost/type_traits/is_base_and_derived.hpp>
+#include <type_traits>
 
 namespace KTfwd
 {
@@ -62,7 +61,8 @@ struct gamete_base
   \note neutral and non-neutral mutations are stored in separate containers
  */
 {
-  BOOST_STATIC_ASSERT( (boost::is_base_and_derived<mutation_base,mut_type>::value) );
+  static_assert( std::is_base_of<mutation_base,mut_type>::value,
+		 "mut_type must be derived from KTfwd::mutation_base" );
   /// Count in population
   unsigned n;
   typedef mut_type mutation_type;
