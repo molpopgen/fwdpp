@@ -100,3 +100,18 @@ These changes give some performance improvements for larger regions:
 And we see the relative perfomance vs 0.2.4 improve (0.2.5_test is the red line):
 
 ![test5perf](t5_perf.png?raw=true "Relative performance for test5")
+
+###Test 6: Small-N, large theta/rho
+
+In the fwdpp paper, there was a clear scaling problem for large regions.  Let's revisit that with the following command, simulation N=1000 for 8N generations, and rho=theta = {1e3,2.5e3,5e3}, corresponding to 1MB,2.5MB, and 5MB regions the human genome.
+
+```{sh}
+/usr/bin/time -f "%e %M" -o time.$SGE_TASK_ID.txt $1/diploid_fixed_sh_ind 1000 $2 5 $3 -0.001 0.5 8000 50 1 $SGE_TASK_\
+ID > out.$SGE_TASK_ID.txt 
+```
+
+![test6time](t6_time.png?raw=true "Run times for test 5")
+
+The cpp11_test branch is close to 10x faster faster for the 5MB region:
+
+![test6perf](t6_perf.png?raw=true "Relative performance for test 6")
