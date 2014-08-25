@@ -12,6 +12,7 @@ The following changes:
 6.  autoconf stuff rewritten (configure.ac, Makefile.am, etc.)
 7. Internally, the library has moved to a more "functional programming" style, emphasizing lambda expressions over function objects.  This change means that the library no longer needs to define function objects that are only used by the library "internals".  Such function objects have been removed, replaced with lambda expressions, and will no longer clutter the library documentation.
 8. The code for recombination has been streamlined quite a bit.  Same algorithm (although noting the changes in point 5 above), but way fewer lines of code.
+9. The devtools directory has been added.  It contains a script to setup packages using fwdpp.
 
 #0.2.4
 
