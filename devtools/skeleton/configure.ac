@@ -18,6 +18,10 @@ AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile src/Makefile])
 
+AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers.]))
+AM_CONDITIONAL([USE_STANDARD],test x$enable_standard = xyes)
+
+AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 
 dnl check for things that we might need

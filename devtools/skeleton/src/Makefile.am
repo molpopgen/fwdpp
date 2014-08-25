@@ -24,3 +24,8 @@ else
 #Boost is missing, so we gotta use the standard headers                                                                   
 AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
 endif
+
+#This will over-ride the above
+if USE_STANDARD
+AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
+endif
