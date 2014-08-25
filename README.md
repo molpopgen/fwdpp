@@ -237,19 +237,7 @@ The best documentation of how to use the library are the example simulations in 
 
 ###Compiling the examples:
 
-To compile the example code, please make sure that all of the above dependencies are installed correctly. Correctly means that they are installed and any system variables such as LDFLAGS, LD\_LIBRARY\_PATH, CPPFLAGS, etc., are updated to reflect any non-standard installation locations on your system. A non-standard location means anywhere other than /usr or /usr/local, and includes your user's home directory. If you need help with this, please contact your local computer support people.
-
-To compile the examples:
-
-tar xzf fwdpp-version.tar.gz<br>
-cd fwdpp-version/examples<br>
-make<br>
-
-See the fwdpp documentation for the source code for these examples. 
-
-Note:
-
-These programs are meant to illustrate the programming features of fwdpp. They are NOT necessarily appropriate for research use!!!!!
+As of fwdpp 0.2.5, the examples are compiled by syaing "make" after the configure step.
 
 ###Running the examples:
 
