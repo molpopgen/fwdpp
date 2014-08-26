@@ -175,17 +175,23 @@ Related to the above note, it is worth installing boost on your system.  Many of
 
 For example, if libsequence is in /opt:
 
-CXXFLAGS=-I/opt/include LDFLAGS="$LDFLAGS -L/opt/lib" ./configure<br>
-make<br>
+```{sh}
+#Note, you need to add in the desired optimization (-OXX) level:
+CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib" ./configure
+make
 make install
+```
 
 ##Installing in a custom location
 
+```
 ./configure --prefix=/path/2/where/you/want it
-
+```
 For example:
 
+```
 ./configure --prefix=$HOME
+```
 
 ##"Fast" installation into a user's $HOME folder
 
@@ -205,15 +211,19 @@ Once installed, you should see the directory $HOME/include/fwdpp, and it should 
 
 To get the master branch from git:
 
-> git clone https://github.com/molpopgen/fwdpp<br>
-> cd fwdpp<br>
-> CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure --prefix=$HOME<br>
-> make install
+```
+git clone https://github.com/molpopgen/fwdpp<
+cd fwdpp
+CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib ./configure --prefix=$HOME
+make install
+````
 
 Then, you can compile the example programs:
 
-> cd examples<br>
-> LDFLAGS=-I$HOME/lib make
+```
+cd examples<br>
+LDFLAGS=-I$HOME/lib make
+```
 
 See below for how to run the examples.
 
@@ -223,10 +233,12 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 
 Then,
 
-> tar xzf fwdpp-version.tar.gz<br>
-> cd fwdpp-version<br>
-> CXXFLAGS=-I$HOME/include LDFLAGS=-L$HOME/lib ./configure<br>
-> make install<br>
+```
+tar xzf fwdpp-version.tar.gz
+cd fwdpp-version
+CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib ./configure
+make install
+```
 
 And now you can compile the examples as described above.
 
