@@ -4168,7 +4168,8 @@ if eval \${$cachevar+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   ac_save_CXXFLAGS="$CXXFLAGS"
-         CXXFLAGS="$CXXFLAGS $switch"
+    	 ac_save_CPPFLAGS="$CPPFLAGS"
+         CPPFLAGS="$CPPFLAGS $switch"
          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
 /* end confdefs.h.  */
 
@@ -4205,12 +4206,14 @@ else
 fi
 rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
          CXXFLAGS="$ac_save_CXXFLAGS"
+	 CPPFLAGS="$ac_save_CPPFLAGS"
 fi
 eval ac_res=\$$cachevar
 	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
 $as_echo "$ac_res" >&6; }
       if eval test x\$$cachevar = xyes; then
         CXXFLAGS="$CXXFLAGS $switch"
+        CPPFLAGS="$CPPFLAGS $switch"
         ac_success=yes
         break
       fi
