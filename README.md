@@ -89,9 +89,11 @@ The source code documentation is in the doc subdirectory that comes with the lib
 
 The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
 
-cd doc<br>
-pdflatex policies<br>
-pdflatex policies<br>
+```
+cd doc
+pdflatex policies
+pdflatex policies
+```
 
 One runs pdflatex twice to ensure that cross-references within the document are processed properly.
 
@@ -144,18 +146,23 @@ Again, a few options:
 ##The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
-> cd fwdpp
-
+```
+cd fwdpp
+```
 If you downloaded a release:
 
-> tar xzf fwdpp-version.tar.gz<br>
-> cd fwdpp-version<br>
+```
+tar xzf fwdpp-version.tar.gz
+cd fwdpp-version
+```
 
 Then:
 
-> ./configure<br>
-> make<br>
-> make install<br>
+```
+./configure
+make
+make install
+```
 
 ##To compile examples and install library without boost
 
@@ -214,7 +221,7 @@ Once installed, you should see the directory $HOME/include/fwdpp, and it should 
 To get the master branch from git:
 
 ```{sh}
-git clone https://github.com/molpopgen/fwdpp<
+git clone https://github.com/molpopgen/fwdpp
 cd fwdpp
 ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
@@ -223,7 +230,7 @@ make install
 Then, you can compile the example programs:
 
 ```
-cd examples<br>
+cd examples
 LDFLAGS=-I$HOME/lib make
 ```
 
@@ -235,10 +242,10 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 
 Then,
 
-```
+```{sh}
 tar xzf fwdpp-version.tar.gz
 cd fwdpp-version
-CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib ./configure
+./configure CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
 ```
 
