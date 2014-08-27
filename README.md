@@ -177,7 +177,7 @@ For example, if libsequence is in /opt:
 
 ```{sh}
 #Note, you need to add in the desired optimization (-OXX) level:
-CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib" ./configure
+./configure CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
 make
 make install
 ```
@@ -199,9 +199,11 @@ If you do not have permission for anything other than a local install, there is 
 
 First, get libsequence and its dependencies all installed:
 
-> git clone https://www.github.com/molpopgen/install_libseq.git<br>
-> cd install_libseq<br>
-> bash libseq _ local.sh<br>
+```{sh}
+git clone https://www.github.com/molpopgen/install_libseq.git
+cd install_libseq
+bash libseq _ local.sh
+```
 
 The above takes a while.
 
@@ -211,10 +213,10 @@ Once installed, you should see the directory $HOME/include/fwdpp, and it should 
 
 To get the master branch from git:
 
-```
+```{sh}
 git clone https://github.com/molpopgen/fwdpp<
 cd fwdpp
-CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib ./configure --prefix=$HOME
+./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
 ````
 
