@@ -76,13 +76,11 @@ The version of fwdpp used in that publication is 0.2.4.
 #Documentation
 
 ##Online
-The library's reference manual can be found at [molpopgen.org](http://www.molpopgen.org/software/fwdpp/doc/html/index.html).
 
-A pdf file describing the implementation of policies is [here](http://molpopgen.org/resources/policies.pdf).
+A tutorial on policies and the library's reference manual can be found at [molpopgen.github.io/fwdpp](http://molpopgen.github.io/fwdpp)
+
 
 __Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
-
-We are also looking into moving the docs to a github page, which will change the above links.
 
 ##Built from source
 The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
