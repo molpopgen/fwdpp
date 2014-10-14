@@ -4,6 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/util.hpp>
 #include <type_traits>
+#include <algorithm>
 
 namespace KTfwd
 {

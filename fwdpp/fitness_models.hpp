@@ -5,7 +5,8 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <cassert>
 #include <type_traits>
-
+#include <algorithm>
+#include <functional>
 
 namespace KTfwd
 {

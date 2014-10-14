@@ -1,6 +1,9 @@
 #ifndef __FWDPP_IND_BASED_HPP__
 #define __FWDPP_IND_BASED_HPP__
 
+#include <utility>
+#include <vector>
+
 namespace KTfwd
 {
   /*! \brief Sample the next generation of dipliods in an individual-based simulation.  Constant population size case.

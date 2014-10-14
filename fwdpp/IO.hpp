@@ -1,6 +1,7 @@
 #ifndef __FWDPP_IO_HPP__
 #define __FWDPP_IO_HPP__
 
+#include <utility>
 #include <zlib.h>
 
 namespace KTfwd

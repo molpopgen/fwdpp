@@ -8,6 +8,7 @@
 #include <map>
 #include <type_traits>
 #include <algorithm>
+#include <functional>
 #include <cassert>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>

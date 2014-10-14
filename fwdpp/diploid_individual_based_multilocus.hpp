@@ -1,6 +1,8 @@
 #ifndef __FWDPP_IND_BASED_MLOC_HPP__
 #define __FWDPP_IND_BASED_MLOC_HPP__
 
+#include <utility>
+
 namespace KTfwd
 {
 //single deme, N changing

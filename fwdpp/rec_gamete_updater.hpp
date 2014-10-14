@@ -2,6 +2,8 @@
 #define __FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP__
 
 #include <algorithm>
+#include <iterator>
+#include <functional>
 
 namespace KTfwd
 {

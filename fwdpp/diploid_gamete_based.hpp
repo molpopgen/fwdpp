@@ -1,6 +1,8 @@
 #ifndef __FWDPP_GAMETE_BASED_HPP__
 #define __FWDPP_GAMETE_BASED_HPP__
 
+#include <vector>
+
 namespace KTfwd
 {
   /*! \brief Wright-Fisher sampling of a single population of constant size

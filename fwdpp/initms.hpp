@@ -4,9 +4,11 @@
 #include <fwdpp/forward_types.hpp>
 #include <set>
 #include <map>
+#include <functional>
 #include <algorithm>
 #include <cassert>
 #include <limits>
+#include <string>
 #include <Sequence/SimData.hpp>
 
 namespace KTfwd
