@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <limits>
+#include <functional>
 
 /*! \file fwd_functional.hpp
   Defines several function objects used both internally and by library users
