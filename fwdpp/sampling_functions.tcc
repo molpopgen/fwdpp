@@ -3,6 +3,7 @@
 #define __FWDPP_SAMPLING_FUNCTIONS_TCC__
 
 #include <fwdpp/fwd_functional.hpp>
+#include <limits>
 
 namespace KTfwd
 {

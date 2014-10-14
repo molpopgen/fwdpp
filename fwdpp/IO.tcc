@@ -8,6 +8,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <type_traits>
 
 namespace KTfwd
 {
