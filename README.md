@@ -61,9 +61,9 @@ The fwdpp manuscript has been accepted for publication in Genetics.  The accepte
   journal = 	 {Genetics},
   year = 	 {2014},
   OPTkey = 	 {},
-  OPTvolume = 	 {},
+  volume = 	 {198},
   OPTnumber = 	 {},
-  OPTpages = 	 {},
+  pages = 	 {157-166},
   OPTmonth = 	 {},
   OPTnote = 	 {},
   annote = 	 {doi:/10.1534/genetics.114.165019}
