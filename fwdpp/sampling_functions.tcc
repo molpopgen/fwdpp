@@ -149,7 +149,7 @@ ms_sample(gsl_rng * r,
 	      rv.erase(itr);
 	      itr=rv.end();
 	    }
-	  itr--;
+	  --itr;
 	}
     }
   if(!rv.empty())
@@ -234,7 +234,7 @@ ms_sample_separate(gsl_rng * r,
 		  rvneut.erase(itr);
 		  itr=rvneut.end();
 		}
-	      itr--;
+	      --itr;
 	    }
 	}
       if(!rvsel.empty())
@@ -248,7 +248,7 @@ ms_sample_separate(gsl_rng * r,
 		  rvsel.erase(itr);
 		  itr=rvsel.end();
 		}
-	      itr--;
+	      --itr;
 	    }
 	}
 
@@ -371,7 +371,7 @@ ms_sample( gsl_rng * r,
 	      rv.erase(itr);
 	      itr=rv.end();
 	    }
-	  itr--;
+	  --itr;
 	}
     }
   if(!rv.empty())
@@ -487,7 +487,7 @@ ms_sample_separate( gsl_rng * r,
 	      rv.first.erase(itr);
 	      itr=rv.first.end();
 	    }
-	  itr--;
+	  --itr;
 	}
     }
   if(!rv.first.empty())
@@ -507,7 +507,7 @@ ms_sample_separate( gsl_rng * r,
 	      rv.second.erase(itr);
 	      itr=rv.second.end();
 	    }
-	  itr--;
+	  --itr;
 	}
     }
   if(!rv.second.empty())
@@ -652,7 +652,7 @@ ms_sample( gsl_rng * r,
 		      rv[i].erase(mitr);
 		      mitr = rv[i].end();
 		    }
-		  mitr--;
+		  --mitr;
 		}
 	    }
 	}

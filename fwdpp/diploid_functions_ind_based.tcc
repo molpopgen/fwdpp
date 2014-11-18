@@ -273,7 +273,7 @@ namespace KTfwd
 	      typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_ctr;
 	      
 	      //we need tpop b/c saying &*pop_ptr below will result in passing a const pointer on at least some compilers (e.g., like mine, which seems lame)
-	      gamete_ctr * tpop;
+	      //gamete_ctr * tpop;
 	      
 	      typedef metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_ctr::iterator,
 										  typename gamete_ctr::iterator>,
@@ -335,7 +335,7 @@ namespace KTfwd
 		      ptr->resize(demesize);
 		    }
 		  const typename demedips::iterator dptr = ptr->begin();
-		  tpop = &*pop_ptr;
+		  gamete_ctr * tpop = &*pop_ptr;
 		  for( unsigned i = 0 ; i < demesize ; ++i )
 		    {
 		      /* Figure out if parent 1 is migrant or not.

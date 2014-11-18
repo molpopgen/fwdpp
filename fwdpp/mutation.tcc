@@ -47,7 +47,7 @@ namespace KTfwd
 	      typedef typename gamete_type::mutation_type mut_type;
 	      typedef typename list_type<typename gamete_type::mutation_type,list_type_allocator >::iterator mut_itr;
 	      unsigned NM=0;
-	      unsigned NEXTINCT=0;
+
 	      for(unsigned i=0;i<ncurrent_classes;++i)
 		{
 		  ibeg=(gametes->begin()+i);
@@ -71,7 +71,6 @@ namespace KTfwd
 		      itr < nm.end() && *itr>0 ; ++itr )
 		    {
 		      ibeg->n--;
-		      NEXTINCT += (!ibeg->n)?1:0;
 		      gamete_type new_gamete( 1,ibeg->mutations,ibeg->smutations );
 		      for(unsigned j=0;j<*itr;++j)
 			{

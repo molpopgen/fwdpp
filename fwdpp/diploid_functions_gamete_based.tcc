@@ -367,15 +367,15 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 #endif
   vtype_iterator ibeg,jbeg;
   unsigned NEXTINCT=0,NRECS_i;
-  size_t ith,jth;
+
   while(NRECS > 0)
     {
-      ith = gsl_ran_discrete(r,lookup);
+      size_t ith = gsl_ran_discrete(r,lookup);
       while(gcounts[ith]==0)
 	{
 	  ith = gsl_ran_discrete(r,lookup);
 	}
-      jth = gsl_ran_discrete(r,lookup);
+      size_t jth = gsl_ran_discrete(r,lookup);
       while(ith==jth || gcounts[jth]==0)
 	{
 	  jth = gsl_ran_discrete(r,lookup);
