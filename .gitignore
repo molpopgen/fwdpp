@@ -29,3 +29,8 @@ examples/diploid
 examples/diploid_
 examples/diploid_gzbinaryIO
 examples/diploid_gzbinaryIO_ind
+doc/policies.aux
+doc/policies.log
+doc/policies.out
+doc/policies.pdf
+doc/policies.toc
