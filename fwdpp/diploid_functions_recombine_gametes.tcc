@@ -2,7 +2,7 @@
 #ifndef __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
-#include <fwdpp/rec_gamete_updater.hpp>
+#include <fwdpp/recombination_common.hpp>
 
 namespace KTfwd
 {
@@ -23,7 +23,6 @@ namespace KTfwd
     
     typedef typename iterator_type::value_type gtype;
     typedef typename gtype::mutation_container gtype_mcont;
-    typedef typename gtype::mcont_const_iterator mut_itr_c;
 
     //Identify cases where recombination cannot result in changed gametes, and get out quick
     if(g1 == g2 ) return 0;
@@ -50,52 +49,12 @@ namespace KTfwd
 	gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
 	  new_gamete2(new_gamete1);
 
-	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
-	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
-	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
-	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
+ 	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
+ 	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
+ 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
+ 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	
-	mut_itr_c itr = g1->mutations.cbegin(),
-	  jtr = g2->mutations.cbegin(),
-	  itr_s = g1->smutations.cbegin(),
-	  jtr_s = g2->smutations.cbegin(),
-	  itr_e = g1->mutations.cend(),
-	  itr_s_e = g1->smutations.cend(),
-	  jtr_e = g2->mutations.cend(),
-	  jtr_s_e = g2->smutations.cend();
-	short SWITCH = 0;
-	for(const auto dummy : pos)
-	  {
-	    itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
-						  new_gamete2.mutations,new_gamete1.mutations,SWITCH,dummy);
-	    itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,
-						    new_gamete2.smutations,new_gamete1.smutations,SWITCH,dummy);
-	    jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,
-						  new_gamete1.mutations,new_gamete2.mutations,SWITCH,dummy);
-	    jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,
-						    new_gamete1.smutations,new_gamete2.smutations,SWITCH,dummy);
- 	    SWITCH=!SWITCH;
- 	  }
-	//Until 0.2.4, we had this sort step here out of paranoia.  However, it "should"
-	//not be necessary
-	/*
-	std::sort(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),
-		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
-	std::sort(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),
-		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
-	std::sort(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),
-		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
-	std::sort(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),
-		  [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;});
-	*/
-#ifndef NDEBUG
-	using mlist_itr = typename gtype::mutation_list_type_iterator;
-	auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
-	assert( std::is_sorted(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),std::cref(am_I_sorted)) );
-	assert( std::is_sorted(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),std::cref(am_I_sorted)) );
-	assert( std::is_sorted(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),std::cref(am_I_sorted)) );
-	assert( std::is_sorted(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),std::cref(am_I_sorted)) );
-#endif
+	fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
 
 	auto current_end = gametes->end();
 	bool f1 = false, f2 = false;
