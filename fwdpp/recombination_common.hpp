@@ -72,7 +72,7 @@ namespace KTfwd {
       assert( std::is_sorted(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),std::cref(am_I_sorted)) );
 #endif
     }
-
-    }
-    }
+    
+  }
+}
 #endif
