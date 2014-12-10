@@ -119,8 +119,8 @@ namespace KTfwd
 
 	      for(decltype(ncurrent_classes) i=0;i<ncurrent_classes;++i)
 		{
-		  assert( i < std::numeric_limits<typename std::iterator_traits<decltype(gametes->begin())>::difference_type>::max() );
-		  ibeg=(gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(i));
+		  assert( i < std::numeric_limits<typename std::iterator_traits<decltype(ibeg)>::difference_type>::max() );
+		  ibeg=(gametes->begin()+typename std::iterator_traits<decltype(ibeg)>::difference_type(i));
 		  unsigned nmuts = gsl_ran_poisson(r,double(ibeg->n)*mu);
 		  NM += nmuts;
 		  
@@ -145,7 +145,7 @@ namespace KTfwd
 		      fwdpp_internal::add_N_mutations(mmodel,mpolicy,*itr,mutations,new_gamete);
 		      nmuts -= *itr;
 		      gpolicy(new_gamete,gametes);
-		      ibeg=(gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(i));
+		      ibeg=(gametes->begin()+typename std::iterator_traits<decltype(ibeg)>::difference_type(i));
 		    }
 		  assert(nmuts==0);
 		}
