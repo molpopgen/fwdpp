@@ -25,4 +25,5 @@ pkginclude_HEADERS=debug.hpp \
 	sampling_functions.tcc \
 	util.hpp \
 	recombination_methods_ind.hpp \
-	rec_gamete_updater.hpp 
+	rec_gamete_updater.hpp \
+	recombination_common.hpp
