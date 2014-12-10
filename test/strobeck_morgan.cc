@@ -7,6 +7,7 @@
 #include <boost/pool/pool_alloc.hpp>
 #include <boost/function.hpp>
 #include <vector>
+#include <functional>
 #include <list>
 #include <sstream>
 
@@ -49,7 +50,7 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * gener
       pos = gsl_ran_flat(r,beg,beg+1.);
     }
   lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),boost::bind(KTfwd::mutation_at_pos(),_1,pos)) == mutations->end());
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
   return mutation_with_age(*generation,pos,1,true);
 }
  
@@ -108,9 +109,9 @@ int main(int argc, char ** argv)
     yet mutations will fall within them, satisfying the assumptions of Strobeck 
     and Morgan.
    */
-  boost::function<double(void)> recmap = boost::bind(mslike_map,r,0.,L),
-    recmap2 = boost::bind(mslike_map,r,1.,L),
-    recmap3 = boost::bind(mslike_map,r,2.,L);
+  boost::function<double(void)> recmap = std::bind(mslike_map,r,0.,L),
+    recmap2 = std::bind(mslike_map,r,1.,L),
+    recmap3 = std::bind(mslike_map,r,2.,L);
 
   //need vectors of recombination maps, mutation policies, and fitness models
   std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &)> > recpols(3);
@@ -135,12 +136,12 @@ int main(int argc, char ** argv)
       double wbar;
       lookup_table_type lookup;
 
-      recpols[0] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[0],littler,r,recmap);
-      recpols[1] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[1],littler,r,recmap2);
-      recpols[2] = boost::bind(KTfwd::genetics101(),_1,_2,&gametes[2],littler,r,recmap3);
-      mmodels[0] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,0.);
-      mmodels[1] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,1.);
-      mmodels[2] = boost::bind(neutral_mutations_inf_sites,r,&generation,_1,&lookup,2.);
+      recpols[0] = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
+      recpols[1] = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
+      recpols[2] = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[2],littler,r,recmap3);
+      mmodels[0] = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,0.);
+      mmodels[1] = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,1.);
+      mmodels[2] = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,2.);
       for( generation = 0; generation < ngens; ++generation )
       	{
 	  KTfwd::sample_diploid( r,
@@ -153,10 +154,10 @@ int main(int argc, char ** argv)
 	  			 mmodels,
 	  			 recpols,
 	  			 rbw,
-	  			 boost::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
-	  			 boost::bind(KTfwd::insert_at_end<gtype,glist>,_1,_2),
-	  			 boost::bind(no_selection_multi(),_1),
-	  			 boost::bind(KTfwd::mutation_remover(),_1,0,2*N),
+	  			 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+	  			 std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+	  			 std::bind(no_selection_multi(),std::placeholders::_1),
+	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N),
 	  			 0.);
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
