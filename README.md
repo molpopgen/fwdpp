@@ -166,7 +166,7 @@ make install
 
 ```
 ./configure --enable-standard=yes
-make
+make check
 make install
 ```
 
@@ -183,7 +183,7 @@ For example, if libsequence is in /opt:
 ```{sh}
 #Note, you need to add in the desired optimization (-OXX) level:
 ./configure CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
-make
+make check
 make install
 ```
 
@@ -229,7 +229,7 @@ Then, you can compile the example programs:
 
 ```
 cd examples
-LDFLAGS=-I$HOME/lib make
+LDFLAGS=-I$HOME/lib make check
 ```
 
 See below for how to run the examples.
