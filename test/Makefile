@@ -5,7 +5,7 @@ CXX=c++
 OPT=-I.. -O2  -funroll-all-loops
 #OPT=-O2 -pg
 #OPT=
-CXXFLAGS=$(OPT) -Wall -W -I..  $(DEBUG)
+CXXFLAGS=$(OPT) -std=c++11 -Wall -W -I..  $(DEBUG)
 
 TARGETS=phiab strobeck_morgan pmono procsm
 all:  phiab.o strobeck_morgan.o pmono.o procsm.o
