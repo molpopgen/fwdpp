@@ -16,6 +16,7 @@ namespace KTfwd {
 			    gamete_type & new_gamete1,
 			    gamete_type & new_gamete2 )
     {
+      assert( std::is_sorted(pos.cbegin(),pos.cend()) );
       short SWITCH = 0;
 
       auto itr = ibeg->mutations.cbegin(),
