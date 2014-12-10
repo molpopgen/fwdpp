@@ -1,4 +1,4 @@
-bin_PROGRAMS=diploid \
+check_PROGRAMS=diploid \
 	diploid_ind \
 	diploid_binaryIO \
 	diploid_binaryIO_ind \
