@@ -18,7 +18,58 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
-    
+    template< typename gamete_type,
+	      typename mutation_iterator>
+    void add_new_mutation( mutation_iterator & mitr,
+			   gamete_type & new_gamete )
+    {
+      if(mitr->neutral)
+	{
+	  new_gamete.mutations.insert( (new_gamete.mutations.size()<=250) ? 
+				       std::find_if(new_gamete.mutations.begin(),
+						    new_gamete.mutations.end(),
+						    [&](const mutation_iterator & mut_itr)
+						    {
+						      return mut_itr->pos > mitr->pos;
+						    }) :
+				       std::upper_bound(new_gamete.mutations.begin(),
+							new_gamete.mutations.end(),mitr->pos,
+							[](const double & __value,const mutation_iterator & __mut){ return __value < __mut->pos;}),
+				       mitr );
+	}
+      else
+	{
+	  new_gamete.smutations.insert( (new_gamete.smutations.size() <= 250) ? 
+					std::find_if(new_gamete.smutations.begin(),
+						     new_gamete.smutations.end(),
+						     [&](const mutation_iterator & mut_itr)
+						     {
+						       return mut_itr->pos > mitr->pos;
+						     }) :
+					std::upper_bound(new_gamete.smutations.begin(),
+							 new_gamete.smutations.end(),mitr->pos,
+							 [](const double & __value,const mutation_iterator & __mut){ return __value < __mut->pos;}),
+					mitr );
+	}
+    }
+
+    template<typename mutation_model,
+	     typename mutation_insertion_policy,
+	     typename mlist_type,
+	     typename gamete_type>
+    void add_N_mutations( const mutation_model & mmodel,
+			  const mutation_insertion_policy & mpolicy,
+			  const unsigned & n,
+			  mlist_type * mutations,
+			  gamete_type & g )
+    {
+      for( unsigned i = 0 ; i < n ; ++i )
+	{
+	  auto m = mmodel(mutations);
+	  auto mitr = mpolicy(m,mutations);
+	  add_new_mutation(mitr,g);
+	}
+    }
   }
 
   template< typename gamete_type,
@@ -49,8 +100,6 @@ namespace KTfwd
                              "list_type<typename gamete_type::mutation_type,list_type_allocator > and gamete_type::mutation_list_type must be the same" );
 	      decltype(gametes->size()) ncurrent_classes = gametes->size();
 	      decltype(gametes->begin()) ibeg;
-	      using mut_type = typename gamete_type::mutation_type;
-	      using mut_itr = decltype(mutations->begin());
 	      unsigned NM=0;
 
 	      for(decltype(ncurrent_classes) i=0;i<ncurrent_classes;++i)
@@ -78,45 +127,8 @@ namespace KTfwd
 		    {
 		      ibeg->n--;
 		      gamete_type new_gamete( 1,ibeg->mutations,ibeg->smutations );
-		      for(unsigned j=0;j<*itr;++j)
-			{
-			  nmuts--;
-			  
-			  //create a new mutant type to enter the population
-			  mut_type new_mutant = mmodel(mutations);
-			  
-			  //insert the new mutant type into the list of mutations, and record the position of insertion
-			  mut_itr mitr = mpolicy(new_mutant,mutations);
-			  
-			  if(mitr->neutral)
-			    {
-			      new_gamete.mutations.insert( (new_gamete.mutations.size()<=250) ? 
-							   std::find_if(new_gamete.mutations.begin(),
-									new_gamete.mutations.end(),
-									[&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
-									{
-									  return mut_itr->pos > mitr->pos;
-									}) :
-							   std::upper_bound(new_gamete.mutations.begin(),
-									    new_gamete.mutations.end(),mitr->pos,
-									    [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
-							   mitr );
-			    }
-			  else
-			    {
-			      new_gamete.smutations.insert( (new_gamete.smutations.size() <= 250) ? 
-							    std::find_if(new_gamete.smutations.begin(),
-									 new_gamete.smutations.end(),
-									 [&](const typename gamete_type::mutation_list_type_iterator & mut_itr)
-									 {
-									   return mut_itr->pos > mitr->pos;
-									 }) :
-							    std::upper_bound(new_gamete.smutations.begin(),
-									     new_gamete.smutations.end(),mitr->pos,
-									     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
-							    mitr );
-			    }
-			}
+		      fwdpp_internal::add_N_mutations(mmodel,mpolicy,*itr,mutations,new_gamete);
+		      nmuts -= *itr;
 		      gpolicy(new_gamete,gametes);
 		      ibeg=(gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(i));
 		    }
@@ -143,37 +155,12 @@ namespace KTfwd
   {
     assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
-    using mut_itr = decltype(mutations->begin());
     if ( nm )
       {
 	assert( g->n > 0 );
 	g->n--;
-	typename iterator_type::value_type ng( *g );
-	ng.n = 1;
-	for( unsigned i = 0 ; i < nm ; ++i )
-	  {
-	    mut_itr mitr = mpolicy(mmodel(mutations),mutations);
-	    if( mitr->neutral )
-	      {
-		ng.mutations.insert((ng.mutations.size() <= 250) ? std::find_if(ng.mutations.begin(),
-										ng.mutations.end(),
-										[&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
-				    std::upper_bound(ng.mutations.begin(),
-						     ng.mutations.end(),mitr->pos,
-						     [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
-				    mitr);
-	      }
-	    else
-	      {
-		ng.smutations.insert((ng.smutations.size() <= 250) ? std::find_if(ng.smutations.begin(),
-										  ng.smutations.end(),
-										  [&](const mut_itr & __mut){return __mut->pos > mitr->pos;}) :
-				     std::upper_bound(ng.smutations.begin(),
-						      ng.smutations.end(),mitr->pos,
-						      [](const double & __value,const mut_itr & __mut){ return __value < __mut->pos;}),
-				     mitr);
-	      }
-	  }
+	typename iterator_type::value_type ng( 1, g->mutations,g->smutations);
+	fwdpp_internal::add_N_mutations(mmodel,mpolicy,nm,mutations,ng);
 	return gpolicy(ng,gametes);
       }
     return g;
