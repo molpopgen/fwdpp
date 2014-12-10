@@ -24,7 +24,7 @@ namespace KTfwd
     inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
     {
       static_assert( std::is_base_of<mutation_base,
-                                     typename iterator_type::value_type::mutation_type>::value,
+		     typename iterator_type::value_type::mutation_type>::value,
                      "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       return 1.;
     }

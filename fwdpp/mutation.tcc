@@ -16,6 +16,11 @@
 
 namespace KTfwd
 {
+  namespace fwdpp_internal
+  {
+    
+  }
+
   template< typename gamete_type,
 	    typename mutation_model,
 	    typename gamete_insertion_policy,
@@ -42,15 +47,16 @@ namespace KTfwd
               static_assert( std::is_same<list_type<typename gamete_type::mutation_type,list_type_allocator >,
                                           typename gamete_type::mutation_list_type >::value,
                              "list_type<typename gamete_type::mutation_type,list_type_allocator > and gamete_type::mutation_list_type must be the same" );
-	      unsigned ncurrent_classes = gametes->size();
-	      typename vector_type<gamete_type,vector_type_allocator>::iterator ibeg;
-	      typedef typename gamete_type::mutation_type mut_type;
-	      typedef typename list_type<typename gamete_type::mutation_type,list_type_allocator >::iterator mut_itr;
+	      decltype(gametes->size()) ncurrent_classes = gametes->size();
+	      decltype(gametes->begin()) ibeg;
+	      using mut_type = typename gamete_type::mutation_type;
+	      using mut_itr = decltype(mutations->begin());
 	      unsigned NM=0;
 
-	      for(unsigned i=0;i<ncurrent_classes;++i)
+	      for(decltype(ncurrent_classes) i=0;i<ncurrent_classes;++i)
 		{
-		  ibeg=(gametes->begin()+i);
+		  assert( i < std::numeric_limits<typename std::iterator_traits<decltype(gametes->begin())>::difference_type>::max() );
+		  ibeg=(gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(i));
 		  unsigned nmuts = gsl_ran_poisson(r,double(ibeg->n)*mu);
 		  NM += nmuts;
 		  
@@ -112,7 +118,7 @@ namespace KTfwd
 			    }
 			}
 		      gpolicy(new_gamete,gametes);
-		      ibeg=(gametes->begin()+i);
+		      ibeg=(gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(i));
 		    }
 		  assert(nmuts==0);
 		}
@@ -137,7 +143,7 @@ namespace KTfwd
   {
     assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
-    typedef typename iterator_type::value_type::mutation_list_type_iterator mut_itr;
+    using mut_itr = decltype(mutations->begin());
     if ( nm )
       {
 	assert( g->n > 0 );

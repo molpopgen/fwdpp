@@ -287,7 +287,7 @@ namespace KTfwd
 		    freqs[i++]=__g.n;
 		  });
     gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(gametes->size(),&freqs[0]);
-    auto rv = gametes->begin()+gsl_ran_discrete(r,lookup);
+    auto rv = gametes->begin()+typename decltype(gametes->begin())::difference_type(gsl_ran_discrete(r,lookup));
     gsl_ran_discrete_free(lookup);
     return rv;
   }

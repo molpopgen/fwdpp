@@ -73,18 +73,13 @@ namespace KTfwd
 		 const double & f)
   {
     assert(N_curr == diploids->size());
-    using mutation_t = typename gamete_type::mutation_type;
-    using dipctr = diploid_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-						 typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-				       diploid_vector_type_allocator>;
-    using glist_t_iterator = typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator;
 
-    std::for_each( mutations->begin(),mutations->end(),[](mutation_t & __m){__m.n=0;});
+    std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
 
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
     
-    typename dipctr::iterator dptr = diploids->begin();
+    auto dptr = diploids->begin();
     for( unsigned i = 0 ; i < N_curr ; ++i )
       {
 	(dptr+i)->first->n = 0;
@@ -95,13 +90,13 @@ namespace KTfwd
     wbar /= double(diploids->size());
 
 #ifndef NDEBUG
-    std::for_each(gametes->cbegin(),gametes->cend(),[](const typename glist_t_iterator::value_type & __g) {
+    std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	assert( !__g.n ); } );
 #endif
     gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
     
-    dipctr parents(*diploids); //copy the parents
-    const typename dipctr::iterator pptr = parents.begin();
+    auto parents(*diploids); //copy the parents
+    auto pptr = parents.begin();
     
     //Change the population size
     if( diploids->size() != N_next)
@@ -111,7 +106,7 @@ namespace KTfwd
       }
     unsigned NREC=0;
     assert(diploids->size()==N_next);
-    glist_t_iterator p1g1,p1g2,p2g1,p2g2;
+    decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
     for( unsigned i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -121,10 +116,10 @@ namespace KTfwd
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 	
-	p1g1 = (pptr+p1)->first;
-	p1g2 = (pptr+p1)->second;
-	p2g1 = (pptr+p2)->first;
-	p2g2 = (pptr+p2)->second;
+	p1g1 = (pptr+typename decltype(pptr)::difference_type(p1))->first;
+	p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
+	p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
+	p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
 	
 	NREC += rec_pol(p1g1,p1g2);
 	NREC += rec_pol(p2g1,p2g2);
@@ -152,9 +147,8 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator temp;
-    for( typename gamete_list_type<gamete_type,gamete_list_type_allocator >::iterator itr = gametes->begin() ; 
-	 itr != gametes->end() ;  )
+    decltype(gametes->begin()) temp;
+    for( auto itr = gametes->begin() ; itr != gametes->end() ;  )
       {
 	if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
 	  {
@@ -170,7 +164,7 @@ namespace KTfwd
       }
      std::for_each( gametes->begin(),
 		    gametes->end(),
-		    [&mp]( typename glist_t_iterator::value_type & __g ) {
+		    [&mp](decltype( *(gametes->begin()) ) & __g ) {
 		      __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
 		      __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
 		    });
@@ -266,28 +260,11 @@ namespace KTfwd
 	      assert( metapop->size() == diploids->size() );
 
 	      std::for_each(mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){ __m.n=0; });
-	      
-	      typedef metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-						   metapop_gamete_vector_type_allocator > pop_ctr;
 
-	      typedef gamete_list_type<gamete_type,gamete_list_type_allocator > gamete_ctr;
-	      
-	      //we need tpop b/c saying &*pop_ptr below will result in passing a const pointer on at least some compilers (e.g., like mine, which seems lame)
-	      //gamete_ctr * tpop;
-	      
-	      typedef metapop_diploid_vector_type < diploid_vector_type<std::pair<typename gamete_ctr::iterator,
-										  typename gamete_ctr::iterator>,
-									diploid_vector_type_allocator>,
-						    metapop_diploid_vector_type_allocator > diploid_ctr;
-	      
-	      typedef diploid_vector_type<std::pair<typename gamete_ctr::iterator,
-						    typename gamete_ctr::iterator>,
-					  diploid_vector_type_allocator> demedips;
-  
 	      //get the fitnesses for each diploid in each deme and make the lookup table of parental fitnesses
 	      std::vector<gsl_ran_discrete_t *> lookups(metapop->size());
 	      std::vector<double> wbars(metapop->size(),0);
-	      size_t popindex = 0;
+	      typename decltype(diploids->begin())::difference_type popindex = 0;
 
 	      //get max N
 	      unsigned mN=0;
@@ -300,42 +277,47 @@ namespace KTfwd
 		}
 	      double * fitnesses = new double[mN];
 	      
-	      for( typename diploid_ctr::iterator dptr = diploids->begin() ; dptr != diploids->end() ; ++dptr, ++popindex )
+	      for( auto dptr = diploids->begin() ; dptr != diploids->end() ; ++dptr, ++popindex )
 		{
 		  unsigned demesize = *(N_curr+popindex);
 		  assert( demesize == dptr->size() );
 		  size_t ith_dip = 0;
-		  for( typename demedips::iterator gptr = dptr->begin() ; 
+		  for( auto gptr = dptr->begin() ; 
 		       gptr != dptr->end() ; ++gptr,++ith_dip )
 		    {
-		      fitnesses[ith_dip] = ffs[popindex](gptr->first,gptr->second);
-		      wbars[popindex]+=fitnesses[ith_dip];
+		      fitnesses[ith_dip] = ffs[typename diploid_fitness_function_container::size_type(popindex)](gptr->first,gptr->second);
+		      wbars[std::vector<double>::size_type(popindex)]+=fitnesses[ith_dip];
 		      gptr->first->n = 0;
 		      gptr->second->n = 0;
 		    }
-		  wbars[popindex] /= double( demesize );
-		  lookups[popindex]=gsl_ran_discrete_preproc(demesize,fitnesses);
+		  wbars[std::vector<double>::size_type(popindex)] /= double( demesize );
+		  lookups[std::vector<gsl_ran_discrete_t *>::size_type(popindex)]=gsl_ran_discrete_preproc(demesize,fitnesses);
 		}
 	      delete [] fitnesses;
 	      
 	      assert(lookups.size() == diploids->size());
 	      //copy diploids into temporary parents
-	      diploid_ctr parents(*diploids);
+	      decltype(*diploids) parents(*diploids);
 	      
 	      //Update the diploids
 	      popindex = 0;
 	      unsigned NREC=0;
-	      typename pop_ctr::iterator pop_ptr = metapop->begin();
-	      typename gamete_ctr::iterator p1g1,p1g2,p2g1,p2g2;
-	      for( typename diploid_ctr::iterator ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr, ++pop_ptr,++popindex )
+	      decltype(metapop->begin()) pop_ptr = metapop->begin();
+
+	      decltype(metapop->begin()->begin()) p1g1,p1g2,p2g1,p2g2;
+	      for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr, ++pop_ptr,++popindex )
 		{
 		  unsigned demesize =*(N_next+popindex);
 		  if( demesize != *(N_curr+popindex) )
 		    {
 		      ptr->resize(demesize);
 		    }
-		  const typename demedips::iterator dptr = ptr->begin();
-		  gamete_ctr * tpop = &*pop_ptr;
+		  auto dptr = ptr->begin();
+		  /*
+		    tpop is a non-const pointer to a 
+		    gamete_list_type<gamete_type,gamete_list_type_allocator >
+		  */
+		  auto tpop = &*pop_ptr;
 		  for( unsigned i = 0 ; i < demesize ; ++i )
 		    {
 		      /* Figure out if parent 1 is migrant or not.
@@ -344,9 +326,10 @@ namespace KTfwd
 			an argument.  It returns popindex if there is no migration,
 			else it returns the index of the deme of a migrant parent
 		      */
-		      size_t deme_first_parent = mig(popindex),deme_other_parent=popindex;
-		      typename demedips::iterator pptr=(parents.begin()+deme_first_parent)->begin();
-		      size_t p1 = gsl_ran_discrete(r,lookups[deme_first_parent]),p2;
+		      decltype(popindex) deme_first_parent = decltype(popindex)(mig(size_t(popindex))),deme_other_parent=popindex;
+		      auto pptr=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_first_parent))->begin();
+		      typename decltype(pptr)::difference_type p1 = 
+			typename decltype(pptr)::difference_type(gsl_ran_discrete(r,lookups[std::vector<gsl_ran_discrete_t *>::size_type(deme_first_parent)])),p2;
 
 		      if( popindex == deme_first_parent )
 			//not migrant
@@ -355,31 +338,32 @@ namespace KTfwd
 			  p1g2 = (pptr+p1)->second;
 			}
 		      else
-			//migrant                                                                                                    
+			//migrant                                                                                    
 			{
 			  p1g1 = insert_if_not_found( *((pptr+p1)->first),tpop );
 			  p1g2 = insert_if_not_found( *((pptr+p1)->second),tpop );
 			}
-		     		      
+
 		      /*
 			If the individual is not inbred, then we pick a 
 			deme from the migration policy for parent 2
 		      */
-		      typename demedips::iterator pptr2=(parents.begin()+deme_other_parent)->end();
+		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
 		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
 			{
-			  pptr2=(parents.begin()+popindex)->begin();
+			  pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(popindex))->begin();
 			  p2=p1;
 			}
 		      else
 			{
-			  deme_other_parent = mig(popindex);
-			  assert( deme_other_parent < diploids->size() );
+			  deme_other_parent = decltype(deme_other_parent)(mig(size_t(popindex)));
+			  assert(deme_other_parent>=0);
+			  assert( decltype(diploids->size())(deme_other_parent) < diploids->size() );
 			  pptr2 = (parents.begin() + deme_other_parent)->begin();
-			  p2 = gsl_ran_discrete(r,lookups[deme_other_parent]);
-			  assert( (pptr2+p2) < (parents.begin() + deme_other_parent)->end() );
+			  p2 = decltype(p2)(gsl_ran_discrete(r,lookups[std::vector<gsl_ran_discrete_t *>::size_type(deme_other_parent)]));
+			  assert( (pptr2+p2) < (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
 			}
-		      assert( pptr2 != (parents.begin() + deme_other_parent)->end() );
+		      assert( pptr2 != (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
 		      if(deme_other_parent == popindex)
 			{
 			  p2g1 = (pptr2+p2)->first;
@@ -411,10 +395,10 @@ namespace KTfwd
 		}
 	      
 	      //get rid of extinct stuff, etc.
-	      for(typename pop_ctr::iterator ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
+	      for(auto ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
 		{
-		  typename gamete_ctr::iterator temp;
-		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ;  )
+		  decltype(ptr->begin()) temp;
+		  for (auto gptr = ptr->begin() ; gptr != ptr->end() ;  )
 		    {
 		      if( gptr->n == 0 )//extinct gamete, remove it
 			{
@@ -428,7 +412,7 @@ namespace KTfwd
 			  ++gptr;
 			}
 		    }
-		  for (typename gamete_ctr::iterator gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
+		  for (auto gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		    {
 		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
 		      gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );

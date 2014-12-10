@@ -44,7 +44,7 @@ namespace KTfwd
 		for( typename maptype::const_iterator itr = mut_info.begin() ;
 		     itr != mut_info.end() ; ++itr )
 		  {
-		    unsigned ID = indexes[itr-mut_info.begin()];
+		    unsigned ID = indexes[std::vector<unsigned>::size_type(itr-mut_info.begin())];
 		    buffer.write( reinterpret_cast< char * >(&ID), sizeof(unsigned) );
 		    mw( **itr,buffer );
 		  }
@@ -65,26 +65,26 @@ namespace KTfwd
 		     ostreamtype & buffer) const
       {
 	typedef typename vector_type< gamete_type, vector_type_allocator>::const_iterator glist_iterator;
-	unsigned NHAPS = gametes->size();
+	unsigned NHAPS = unsigned(gametes->size());
 	buffer.write( reinterpret_cast< char * >(&NHAPS), sizeof(unsigned) );
 	for( glist_iterator gtr = gametes->begin() ; gtr != gametes->end() ; ++gtr )
 	  {
 	    unsigned N = gtr->n;
 	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	    N = gtr->mutations.size();
+	    N = unsigned(gtr->mutations.size());
 	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
 	    for( unsigned i = 0 ; i < N ; ++i )
 	      {
 		assert( std::find(mut_info.begin(),mut_info.end(),(gtr->mutations[i])) != mut_info.end() );
-		unsigned INDEX = indexes[ std::find(mut_info.begin(),mut_info.end(),(gtr->mutations[i])) - mut_info.begin() ];
+		unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gtr->mutations[i])) - mut_info.begin()) ];
 		buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
 	      }
-	    N = gtr->smutations.size();
+	    N = unsigned(gtr->smutations.size());
 	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
 	    for( unsigned i = 0 ; i < N ; ++i )
 	      {
 		assert( std::find(mut_info.begin(),mut_info.end(),(gtr->smutations[i])) != mut_info.end() );
-		unsigned INDEX = indexes[ std::find(mut_info.begin(),mut_info.end(),(gtr->smutations[i])) - mut_info.begin() ];
+		unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gtr->smutations[i])) - mut_info.begin()) ];
 		buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
 	      }
 	  }
@@ -397,7 +397,7 @@ namespace KTfwd
 		ostreamtype & buffer) const
     {
       typedef typename list_type< gamete_type, list_type_allocator>::const_iterator glist_iterator;
-      unsigned N = gametes->size();
+      unsigned N = unsigned(gametes->size());
       buffer.write( reinterpret_cast< char * >(&N), sizeof(unsigned) );
       std::vector< glist_iterator > gam_info;
       std::vector<unsigned> gam_indexes;
@@ -409,20 +409,20 @@ namespace KTfwd
 	  buffer.write( reinterpret_cast< char * >(&index),sizeof(unsigned) );
 	  N = gptr->n;
 	  buffer.write( reinterpret_cast< char * >(&N),sizeof(unsigned) );
-	  N = gptr->mutations.size();
+	  N = unsigned(gptr->mutations.size());
 	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
 	  for( unsigned i = 0 ; i < N ; ++i )
 	    {
 	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) != mut_info.end() );
-	      unsigned INDEX = indexes[ std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin() ];
+	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin()) ];
 	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
 	    }
-	  N = gptr->smutations.size();
+	  N = unsigned(gptr->smutations.size());
 	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
 	  for( unsigned i = 0 ; i < N ; ++i )
 	    {
 	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) != mut_info.end() );
-	      unsigned INDEX = indexes[ std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) - mut_info.begin() ];
+	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) - mut_info.begin()) ];
 	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
 	    }	  
 	}
@@ -463,13 +463,13 @@ namespace KTfwd
 						      typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
 					   vector_type_allocator >::const_iterator dptr;
 
-    unsigned NDIPS = diploids->size();
+    unsigned NDIPS = unsigned(diploids->size());
     buffer.write( reinterpret_cast<char *>(&NDIPS), sizeof(unsigned) );
     for( dptr dip = diploids->begin() ; dip != diploids->end() ; ++dip )
       {
-	unsigned c = gamdata.second[ std::find( gamdata.first.begin(),gamdata.first.end(),dip->first ) - gamdata.first.begin() ];
+	unsigned c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),dip->first ) - gamdata.first.begin()) ];
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
-	c = gamdata.second[ std::find( gamdata.first.begin(),gamdata.first.end(),dip->second ) - gamdata.first.begin() ];
+	c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),dip->second ) - gamdata.first.begin()) ];
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
       }
   }
@@ -678,7 +678,7 @@ namespace KTfwd
 			      const mutation_writer_type & mw,
 			      ostreamtype & buffer)
   {
-    unsigned NPOP = metapop->size();
+    unsigned NPOP = unsigned(metapop->size());
     
     buffer.write( reinterpret_cast<char *>(&NPOP), sizeof(unsigned) );
     
@@ -707,15 +707,15 @@ namespace KTfwd
     {
       std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
       
-      NDIPS = dip_ptr->size();
+      NDIPS = unsigned(dip_ptr->size());
       
       buffer.write( reinterpret_cast<char *>(&NDIPS),sizeof(unsigned) );
       
       for( dptr dip = dip_ptr->begin() ; dip != dip_ptr->end() ; ++dip )
 	{
-	  c = gamdata.second[ std::find( gamdata.first.begin(), gamdata.first.end(), dip->first ) - gamdata.first.begin() ];
+	  c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(), gamdata.first.end(), dip->first ) - gamdata.first.begin()) ];
 	  buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
-	  c = gamdata.second[ std::find( gamdata.first.begin(), gamdata.first.end(), dip->second ) - gamdata.first.begin() ];
+	  c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(), gamdata.first.end(), dip->second ) - gamdata.first.begin()) ];
 	  buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
 	}
     }

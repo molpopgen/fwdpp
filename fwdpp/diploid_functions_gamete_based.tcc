@@ -146,7 +146,7 @@ double sample_diploid(gsl_rng * r, vector_type<gamete_type,vector_type_allocator
                              std::is_same<gamete_base_type,gamete_type>::value,
                              "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
 	      assert( metapop->size() == ffs.size() );
-	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0) == metapopsize);
+	      assert(std::accumulate(twoNs,twoNs + metapop->size(),0u) == metapopsize);
 	      std::vector<double> wbars;
 
 	      typedef typename vector_type2< vector_type1<gamete_type, vector_type_allocator1 >, vector_type_allocator2 >::iterator mpop_itr;
@@ -354,7 +354,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   for(vtype_iterator i=gametes->begin() ;i<gametes->end();++i)
     {
       //gcounts.push_back(i->n);
-      gcounts[i - gametes->begin()] = i->n;
+      gcounts[decltype(gcounts)::size_type(i - gametes->begin())] = i->n;
       fAA += ( (double(i->n)*double(i->n)*(1.-f))/twoNsq + (double(i->n)/twoN)*f );
     }
   assert(gcounts.size()==gametes->size());
@@ -363,10 +363,11 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 #ifndef NDEBUG
   unsigned doublecheck=NRECS;
   unsigned NRECS_DONE = 0;
-  unsigned ncurrent_classes = gametes->size();
+  decltype(gametes->size()) ncurrent_classes = gametes->size();
 #endif
   vtype_iterator ibeg,jbeg;
-  unsigned NEXTINCT=0,NRECS_i;
+  unsigned NEXTINCT=0;
+  size_t NRECS_i;
 
   while(NRECS > 0)
     {
@@ -380,13 +381,13 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	{
 	  jth = gsl_ran_discrete(r,lookup);
 	}
-      ibeg = (gametes->begin()+ith);
-      jbeg = (gametes->begin()+jth);
+      ibeg = (gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(ith));
+      jbeg = (gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(jth));
       assert( ibeg != gametes->end() &&
 	      jbeg != gametes->end() );
       assert(ibeg->n >= 1);
       assert(jbeg->n >= 1);
-      unsigned nm1=ibeg->mutations.size()+ibeg->smutations.size(),
+      decltype(ibeg->mutations.size()) nm1=ibeg->mutations.size()+ibeg->smutations.size(),
 	nm2=jbeg->mutations.size()+jbeg->smutations.size();
       //if one gametes carries 0 mutations, and the other carries 1,
       //it is impossible for recombination to generate any new types,
@@ -403,7 +404,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    {
 	      breakpoint_dist.push_back( gsl_ran_poisson_pdf(i,2.*littler) );
 	    }
-	  gsl_ran_discrete_t * BPLOOKUP = gsl_ran_discrete_preproc (NRECS, &breakpoint_dist[0]);
+	  gsl_ran_discrete_t * BPLOOKUP = gsl_ran_discrete_preproc (size_t(NRECS), &breakpoint_dist[0]);
 	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP)+1;
 	  gsl_ran_discrete_free(BPLOOKUP);
 	  //assign breakpoints
@@ -422,8 +423,8 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  jbeg->n--;
 	  gcounts[ith]--;
 	  gcounts[jth]--;
-	  NEXTINCT += (ibeg->n==0) ? 1 : 0;
-	  NEXTINCT += (jbeg->n==0) ? 1 : 0;
+	  NEXTINCT += (ibeg->n==0) ? 1u : 0u;
+	  NEXTINCT += (jbeg->n==0) ? 1u : 0u;
 	  gamete_type new_gamete1(1, mcont(),mcont()),new_gamete2(new_gamete1);
 	  new_gamete1.mutations.reserve(ibeg->mutations.size()+jbeg->mutations.size());
 	  new_gamete1.smutations.reserve(ibeg->smutations.size()+jbeg->smutations.size());
@@ -453,7 +454,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      SWITCH=!SWITCH;
 	    }
 #ifndef NDEBUG
-	  unsigned __nm1 = new_gamete1.mutations.size()+new_gamete1.smutations.size(),
+	  decltype(new_gamete1.mutations.size()) __nm1 = new_gamete1.mutations.size()+new_gamete1.smutations.size(),
 	    __nm2 = new_gamete2.mutations.size()+new_gamete2.smutations.size();
 	  assert(__nm1+__nm2 == nm1+nm2);
 #endif
@@ -484,7 +485,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 
 	  vtype_iterator newpos = update_if_exists_insert(new_gamete1,gametes);
 	  assert(newpos->n <= twoN);
-	  size_t dist = newpos - gametes->begin();
+	  auto dist = decltype(gcounts.size())(newpos - gametes->begin());
 	  if( dist < gcounts.size() )
 	    {
 	      gcounts[dist]++;
@@ -492,7 +493,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    }
 	  newpos = update_if_exists_insert(new_gamete2,gametes);
 	  assert(newpos->n <= twoN);
-	  dist = newpos - gametes->begin();
+	  dist = decltype(dist)(newpos - gametes->begin());
 	  if( dist < gcounts.size() )
 	    {
 	      gcounts[dist]++;
@@ -500,7 +501,9 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    }
 #ifndef NDEBUG
 	  unsigned dummy=0;
-	  for( vtype_iterator test = gametes->begin();test!=gametes->begin()+ncurrent_classes ;++test,++dummy )
+	  for( vtype_iterator test = gametes->begin();
+	       test!=gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(ncurrent_classes) ;
+	       ++test,++dummy )
 	    {
 	      assert(test->n == gcounts[dummy]);
 	    }
@@ -522,9 +525,9 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP)+1;
 	  gsl_ran_discrete_free(BPLOOKUP);
 	}
-      NRECS-=NRECS_i;
+      NRECS-=unsigned(NRECS_i);
 #ifndef NDEBUG
-      NRECS_DONE+=NRECS_i;
+      NRECS_DONE+=unsigned(NRECS_i);
 #endif
     }
   gsl_ran_discrete_free(lookup);
