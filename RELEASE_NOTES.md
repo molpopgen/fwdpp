@@ -14,6 +14,7 @@ The following changes:
 8. The code for recombination has been streamlined quite a bit.  Same algorithm (although noting the changes in point 5 above), but way fewer lines of code.
 9. The devtools directory has been added.  It contains a script to setup packages using fwdpp.
 10. Examples are now built via "make check" and not by default
+11. Refactoring so that gamete- and individual- based methods share common code
 
 #0.2.4
 
