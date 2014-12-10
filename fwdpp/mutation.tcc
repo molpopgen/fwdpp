@@ -18,6 +18,17 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
+    /*!
+      Mechanics of adding a new mutation.
+      We do this odd choosing between
+      find_if and upper_bound 
+      b/c of the way the GCC STL is implemented.
+      
+      Objectively, upper_bound should always  be preferred,
+      but that is not the case in practice because the GNU STL
+      implements find_if in a very clever way for
+      small containers.
+    */
     template< typename gamete_type,
 	      typename mutation_iterator>
     void add_new_mutation( mutation_iterator & mitr,
@@ -53,6 +64,10 @@ namespace KTfwd
 	}
     }
 
+    /*!
+      Apply mutation model N times to a new gamete.
+      Updates mutation list
+    */
     template<typename mutation_model,
 	     typename mutation_insertion_policy,
 	     typename mlist_type,
