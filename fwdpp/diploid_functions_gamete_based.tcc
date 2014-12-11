@@ -9,6 +9,7 @@
 #endif
 
 #include <fwdpp/internal/recombination_common.hpp>
+#include <fwdpp/internal/gsl_discrete.hpp>
 
 namespace KTfwd
 {
@@ -335,7 +336,6 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
                  std::is_same<gamete_base_type,gamete_type>::value,
                  "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
   typedef typename gamete_type::mutation_container mcont;
-  //typedef typename mcont::const_iterator mcont_const_iterator;
   typedef typename vector_type<gamete_type, vector_type_allocator>::iterator vtype_iterator;
   //"individual-based recombination"
   //1. determine # recombinants in whole pop
@@ -353,12 +353,12 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   const double twoNsq = double(twoN)*double(twoN);
   for(vtype_iterator i=gametes->begin() ;i<gametes->end();++i)
     {
-      //gcounts.push_back(i->n);
       gcounts[decltype(gcounts)::size_type(i - gametes->begin())] = i->n;
       fAA += ( (double(i->n)*double(i->n)*(1.-f))/twoNsq + (double(i->n)/twoN)*f );
     }
   assert(gcounts.size()==gametes->size());
-  gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(gcounts.size(),&gcounts[0]);
+  using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
+  lookup_t lookup(gsl_ran_discrete_preproc(gcounts.size(),&gcounts[0]));
   unsigned NRECS = unsigned(gsl_ran_poisson(r,(1.-fAA)*double(twoN)*littler));
 #ifndef NDEBUG
   unsigned doublecheck=NRECS;
@@ -371,15 +371,15 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 
   while(NRECS > 0)
     {
-      size_t ith = gsl_ran_discrete(r,lookup);
+      size_t ith = gsl_ran_discrete(r,lookup.get());
       while(gcounts[ith]==0)
 	{
-	  ith = gsl_ran_discrete(r,lookup);
+	  ith = gsl_ran_discrete(r,lookup.get());
 	}
-      size_t jth = gsl_ran_discrete(r,lookup);
+      size_t jth = gsl_ran_discrete(r,lookup.get());
       while(ith==jth || gcounts[jth]==0)
 	{
-	  jth = gsl_ran_discrete(r,lookup);
+	  jth = gsl_ran_discrete(r,lookup.get());
 	}
       ibeg = (gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(ith));
       jbeg = (gametes->begin()+typename std::iterator_traits<decltype(gametes->begin())>::difference_type(jth));
@@ -404,9 +404,8 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    {
 	      breakpoint_dist.push_back( gsl_ran_poisson_pdf(i,2.*littler) );
 	    }
-	  gsl_ran_discrete_t * BPLOOKUP = gsl_ran_discrete_preproc (size_t(NRECS), &breakpoint_dist[0]);
-	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP)+1;
-	  gsl_ran_discrete_free(BPLOOKUP);
+	  lookup_t BPLOOKUP( gsl_ran_discrete_preproc (size_t(NRECS), &breakpoint_dist[0]));
+	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP.get())+1;
 	  //assign breakpoints
 #ifndef USE_STANDARD_CONTAINERS
 	  boost::container::vector<double> pos;
@@ -471,16 +470,15 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	    {
 	      breakpoint_dist.push_back( gsl_ran_binomial_pdf(i,2.*littler,NRECS) );
 	    }
-	  gsl_ran_discrete_t * BPLOOKUP = gsl_ran_discrete_preproc (NRECS, &breakpoint_dist[0]);
-	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP)+1;
-	  gsl_ran_discrete_free(BPLOOKUP);
+	  lookup_t BPLOOKUP(gsl_ran_discrete_preproc (NRECS, &breakpoint_dist[0]));
+	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP.get())+1;
+	  //gsl_ran_discrete_free(BPLOOKUP);
 	}
       NRECS-=unsigned(NRECS_i);
 #ifndef NDEBUG
       NRECS_DONE+=unsigned(NRECS_i);
 #endif
     }
-  gsl_ran_discrete_free(lookup);
   assert(NRECS_DONE==doublecheck);
 #ifndef NDEBUG
   unsigned sum=0;

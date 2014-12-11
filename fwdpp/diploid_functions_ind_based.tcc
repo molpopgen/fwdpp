@@ -2,6 +2,8 @@
 #ifndef __DIPLOID_FUNCTIONS_IND_BASED_TCC__
 #define __DIPLOID_FUNCTIONS_IND_BASED_TCC__
 
+#include <fwdpp/internal/gsl_discrete.hpp>
+
 namespace KTfwd
 {
   //single deme, constant N
@@ -93,8 +95,7 @@ namespace KTfwd
     std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	assert( !__g.n ); } );
 #endif
-    gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
-    
+    fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
     auto parents(*diploids); //copy the parents
     auto pptr = parents.begin();
     
@@ -111,8 +112,8 @@ namespace KTfwd
       {
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
-	size_t p1 = gsl_ran_discrete(r,lookup);
-	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup);
+	size_t p1 = gsl_ran_discrete(r,lookup.get());
+	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 	
@@ -169,7 +170,6 @@ namespace KTfwd
 		      __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
 		    });
     assert(check_sum(gametes,2*N_next));
-    gsl_ran_discrete_free(lookup);
     return wbar;
   }
   
@@ -262,7 +262,8 @@ namespace KTfwd
 	      std::for_each(mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){ __m.n=0; });
 
 	      //get the fitnesses for each diploid in each deme and make the lookup table of parental fitnesses
-	      std::vector<gsl_ran_discrete_t *> lookups(metapop->size());
+	      using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
+	      std::vector<lookup_t> lookups;
 	      std::vector<double> wbars(metapop->size(),0);
 	      typename decltype(diploids->begin())::difference_type popindex = 0;
 
@@ -291,7 +292,7 @@ namespace KTfwd
 		      gptr->second->n = 0;
 		    }
 		  wbars[std::vector<double>::size_type(popindex)] /= double( demesize );
-		  lookups[std::vector<gsl_ran_discrete_t *>::size_type(popindex)]=gsl_ran_discrete_preproc(demesize,fitnesses);
+		  lookups.emplace_back( lookup_t(gsl_ran_discrete_preproc(demesize,fitnesses)) );
 		}
 	      delete [] fitnesses;
 	      
@@ -329,7 +330,7 @@ namespace KTfwd
 		      decltype(popindex) deme_first_parent = decltype(popindex)(mig(size_t(popindex))),deme_other_parent=popindex;
 		      auto pptr=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_first_parent))->begin();
 		      typename decltype(pptr)::difference_type p1 = 
-			typename decltype(pptr)::difference_type(gsl_ran_discrete(r,lookups[std::vector<gsl_ran_discrete_t *>::size_type(deme_first_parent)])),p2;
+			typename decltype(pptr)::difference_type(gsl_ran_discrete(r,lookups[std::vector<lookup_t>::size_type(deme_first_parent)].get())),p2;
 
 		      if( popindex == deme_first_parent )
 			//not migrant
@@ -360,7 +361,7 @@ namespace KTfwd
 			  assert(deme_other_parent>=0);
 			  assert( decltype(diploids->size())(deme_other_parent) < diploids->size() );
 			  pptr2 = (parents.begin() + deme_other_parent)->begin();
-			  p2 = decltype(p2)(gsl_ran_discrete(r,lookups[std::vector<gsl_ran_discrete_t *>::size_type(deme_other_parent)]));
+			  p2 = decltype(p2)(gsl_ran_discrete(r,lookups[std::vector<lookup_t>::size_type(deme_other_parent)].get()));
 			  assert( (pptr2+p2) < (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
 			}
 		      assert( pptr2 != (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
@@ -417,11 +418,6 @@ namespace KTfwd
 		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
 		      gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
 		    }
-		}
-	      
-	      for(unsigned i = 0 ; i < lookups.size() ; ++i )
-		{
-		  gsl_ran_discrete_free( lookups[i] );
 		}
 	      return wbars;
 	    }

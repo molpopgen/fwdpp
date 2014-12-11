@@ -4,6 +4,7 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
+#include <fwdpp/internal/gsl_discrete.hpp>
 #include <set>
 #include <map>
 #include <type_traits>
@@ -286,9 +287,8 @@ namespace KTfwd
 		  [&i,&freqs](const gamete_type & __g) {
 		    freqs[i++]=__g.n;
 		  });
-    gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(gametes->size(),&freqs[0]);
-    auto rv = gametes->begin()+typename decltype(gametes->begin())::difference_type(gsl_ran_discrete(r,lookup));
-    gsl_ran_discrete_free(lookup);
+    fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(gametes->size(),&freqs[0]));
+    auto rv = gametes->begin()+typename decltype(gametes->begin())::difference_type(gsl_ran_discrete(r,lookup.get()));
     return rv;
   }
 										  

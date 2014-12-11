@@ -3,6 +3,7 @@
 #define __DIPLOID_FUNCTIONS_IND_MULTILOC_TCC__
 
 #include <fwdpp/mutation.hpp>
+#include <fwdpp/internal/gsl_discrete.hpp>
 
 namespace KTfwd
 {
@@ -96,7 +97,7 @@ sample_diploid(gsl_rng * r,
   wbar /= double(diploids->size());
   dptr = diploids->begin();  //reset to beginning of diploids
   
-  gsl_ran_discrete_t * lookup = gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]);
+  fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
  
   auto parents(*diploids); //Copy the parents.  Exact copy of diploids--same fitnesses, etc.
   const auto pptr = parents.cbegin();
@@ -122,8 +123,8 @@ sample_diploid(gsl_rng * r,
    {
      assert(dptr==diploids->begin());
      assert( (dptr+curr_dip) < diploids->end() );
-     typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup));
-     decltype(p1) p2  = (gsl_rng_uniform(r) <= f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup));
+     typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+     decltype(p1) p2  = (gsl_rng_uniform(r) <= f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
      assert(p1<N_curr);
      assert(p2<N_curr);
      
@@ -300,7 +301,6 @@ sample_diploid(gsl_rng * r,
 	assert(sum == 2*N_next);
       }
 #endif
-    gsl_ran_discrete_free(lookup);
     return wbar;
   }
 
