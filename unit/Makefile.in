@@ -75,7 +75,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = mutateTest$(EXEEXT) crossoverTest$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@check_PROGRAMS = mutateTest$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -88,10 +90,13 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config-h.in
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_crossoverTest_OBJECTS = crossoverTest.$(OBJEXT)
+am__crossoverTest_SOURCES_DIST = crossoverTest.cc
+@BUNIT_TEST_PRESENT_TRUE@am_crossoverTest_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
 crossoverTest_OBJECTS = $(am_crossoverTest_OBJECTS)
 crossoverTest_LDADD = $(LDADD)
-am_mutateTest_OBJECTS = mutateTest.$(OBJEXT)
+am__mutateTest_SOURCES_DIST = mutateTest.cc
+@BUNIT_TEST_PRESENT_TRUE@am_mutateTest_OBJECTS = mutateTest.$(OBJEXT)
 mutateTest_OBJECTS = $(am_mutateTest_OBJECTS)
 mutateTest_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -124,7 +129,8 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(crossoverTest_SOURCES) $(mutateTest_SOURCES)
-DIST_SOURCES = $(crossoverTest_SOURCES) $(mutateTest_SOURCES)
+DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
+	$(am__mutateTest_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -182,7 +188,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ $(AM_LIBS)
+LIBS = @LIBS@ $(am__append_1)
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -243,10 +249,10 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-mutateTest_SOURCES = mutateTest.cc 
-crossoverTest_SOURCES = crossoverTest.cc
-AM_CXXFLAGS = 
-AM_LIBS = -lboost_unit_test_framework
+@BUNIT_TEST_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc 
+@BUNIT_TEST_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
+@BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
+@BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
 
 .SUFFIXES:

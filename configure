@@ -628,8 +628,14 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-BMAP_PRESENT_FALSE
-BMAP_PRESENT_TRUE
+BHASH_PRESENT_FALSE
+BHASH_PRESENT_TRUE
+BUO_SET_PRESENT_FALSE
+BUO_SET_PRESENT_TRUE
+BPOOL_ALLOC_PRESENT_FALSE
+BPOOL_ALLOC_PRESENT_TRUE
+BUNIT_TEST_PRESENT_FALSE
+BUNIT_TEST_PRESENT_TRUE
 BLIST_PRESENT_FALSE
 BLIST_PRESENT_TRUE
 BVEC_PRESENT_FALSE
@@ -4882,9 +4888,35 @@ else
 fi
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/test/unit_test.hpp" "ac_cv_header_boost_test_unit_test_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_test_unit_test_hpp" = xyes; then :
+  BUNITTEST=1
+else
+  echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
+  BPOOLALLOC=1
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
+  BUNORDEREDSET=1
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
+  BHASH=1
+fi
+
+
 ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
-  HAVE_LIBSEQ=1
+
 else
   as_fn_error $? "Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required." "$LINENO" 5
 fi
@@ -4914,7 +4946,7 @@ else
 fi
 
 
- if test x$BVECTOR$enable_boost = x1; then
+ if test x$BVECTOR = x1; then
   BVEC_PRESENT_TRUE=
   BVEC_PRESENT_FALSE='#'
 else
@@ -4930,12 +4962,36 @@ else
   BLIST_PRESENT_FALSE=
 fi
 
- if test x$BMAP = x1; then
-  BMAP_PRESENT_TRUE=
-  BMAP_PRESENT_FALSE='#'
+ if test x$BUNITTEST = x1; then
+  BUNIT_TEST_PRESENT_TRUE=
+  BUNIT_TEST_PRESENT_FALSE='#'
 else
-  BMAP_PRESENT_TRUE='#'
-  BMAP_PRESENT_FALSE=
+  BUNIT_TEST_PRESENT_TRUE='#'
+  BUNIT_TEST_PRESENT_FALSE=
+fi
+
+ if test x$BPOOLALLOC = x1; then
+  BPOOL_ALLOC_PRESENT_TRUE=
+  BPOOL_ALLOC_PRESENT_FALSE='#'
+else
+  BPOOL_ALLOC_PRESENT_TRUE='#'
+  BPOOL_ALLOC_PRESENT_FALSE=
+fi
+
+ if test x$BUNORDEREDSET = x1; then
+  BUO_SET_PRESENT_TRUE=
+  BUO_SET_PRESENT_FALSE='#'
+else
+  BUO_SET_PRESENT_TRUE='#'
+  BUO_SET_PRESENT_FALSE=
+fi
+
+ if test x$BHASH = x1; then
+  BHASH_PRESENT_TRUE=
+  BHASH_PRESENT_FALSE='#'
+else
+  BHASH_PRESENT_TRUE='#'
+  BHASH_PRESENT_FALSE=
 fi
 
 
@@ -5081,7 +5137,6 @@ else
 fi
 
 
-
           ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5128,6 +5183,45 @@ _ACEOF
 
 else
   as_fn_error $? "eecho \"libsequence runtime library does not seem to be here\";exit 1" "$LINENO" 5
+fi
+
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
+$as_echo_n "checking for main in -lboost_system... " >&6; }
+if ${ac_cv_lib_boost_system_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_system  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_boost_system_main=yes
+else
+  ac_cv_lib_boost_system_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_system_main" >&5
+$as_echo "$ac_cv_lib_boost_system_main" >&6; }
+if test "x$ac_cv_lib_boost_system_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_SYSTEM 1
+_ACEOF
+
+  LIBS="-lboost_system $LIBS"
+
 fi
 
 ac_ext=cpp
@@ -5295,8 +5389,20 @@ if test -z "${BLIST_PRESENT_TRUE}" && test -z "${BLIST_PRESENT_FALSE}"; then
   as_fn_error $? "conditional \"BLIST_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${BMAP_PRESENT_TRUE}" && test -z "${BMAP_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BMAP_PRESENT\" was never defined.
+if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BPOOL_ALLOC_PRESENT_TRUE}" && test -z "${BPOOL_ALLOC_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BPOOL_ALLOC_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUO_SET_PRESENT_TRUE}" && test -z "${BUO_SET_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BUO_SET_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BHASH_PRESENT_TRUE}" && test -z "${BHASH_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BHASH_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

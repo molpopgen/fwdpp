@@ -21,11 +21,13 @@ struct mutation_with_age : public KTfwd::mutation_base
 
 typedef mutation_with_age mtype;
 #include <common_gamete.hpp>
-#ifdef USE_STANDARD_CONTAINERS
-typedef std::vector< gvector > mpop_container;
-#else
+
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
 typedef boost::container::vector< gvector > mpop_container;
+#else
+typedef std::vector< gvector > mpop_container;
 #endif
+
 mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
 					      lookup_table_type * lookup)
 {

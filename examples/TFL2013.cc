@@ -41,12 +41,12 @@ struct mutation_with_age : public mutation_base
 
 typedef mutation_with_age mtype;
 #include <common_gamete.hpp>
-#ifdef USE_STANDARD_CONTAINERS
-typedef std::vector<mtype> mvector;
-typedef std::vector<unsigned> ftvector;
-#else
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
 typedef boost::container::vector<mtype> mvector;
 typedef boost::container::vector<unsigned> ftvector;
+#else
+typedef std::vector<mtype> mvector;
+typedef std::vector<unsigned> ftvector;
 #endif 
 
 //Calculates the genetic contribution to a diploid's phenotype

@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
 #include <boost/container/vector.hpp>
 #include <boost/container/list.hpp>
 #include <boost/pool/pool_alloc.hpp>

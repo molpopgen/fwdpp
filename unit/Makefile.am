@@ -1,3 +1,5 @@
+if BUNIT_TEST_PRESENT
+
 check_PROGRAMS=mutateTest \
 	crossoverTest
 
@@ -9,3 +11,5 @@ AM_CXXFLAGS=
 AM_LIBS=-lboost_unit_test_framework
 
 LIBS+=$(AM_LIBS)
+
+endif

@@ -14,7 +14,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 #include <boost/container/vector.hpp>
 #else
 #include <vector>
@@ -277,7 +277,7 @@ namespace KTfwd
   pgam( gsl_rng * r,
 	vector_type<gamete_type,vector_type_allocator > * gametes )
   {
-#ifndef USE_STANDARD_CONTAINERS
+#if  defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
     boost::container::vector<double>freqs(gametes->size(),0);
 #else
     std::vector<double>freqs(gametes->size(),0);

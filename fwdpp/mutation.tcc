@@ -8,7 +8,7 @@
 
 #include <gsl/gsl_randist.h>
 
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 #include <boost/container/vector.hpp>
 #endif
 
@@ -54,7 +54,7 @@ namespace KTfwd
 		  unsigned nmuts = gsl_ran_poisson(r,double(ibeg->n)*mu);
 		  NM += nmuts;
 		  
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 		  typedef boost::container::vector<unsigned> vu;
 		  boost::container::vector<double> pm(ibeg->n,1./double(ibeg->n));
 #else

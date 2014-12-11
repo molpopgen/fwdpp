@@ -84,11 +84,12 @@ check_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	diploid_twopop_mig$(EXEEXT) pfix$(EXEEXT) RHH$(EXEEXT) \
 	TFL2013$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
-#Boost is missing, so we gotta use the standard headers
-@USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS \
-@USE_STANDARD_TRUE@	-DUSE_STANDARD_CONTAINERS
-#On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
-@BLIST_PRESENT_TRUE@@BVEC_PRESENT_TRUE@@USE_STANDARD_FALSE@am__append_3 = -lboost_system
+@USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS
+@BHASH_PRESENT_TRUE@am__append_3 = -DHAVE_BOOST_HASH
+@BVEC_PRESENT_TRUE@am__append_4 = -DHAVE_BOOST_VECTOR
+@BLIST_PRESENT_TRUE@am__append_5 = -DHAVE_BOOST_LIST
+@BPOOL_ALLOC_PRESENT_TRUE@am__append_6 = -DHAVE_BOOST_POOL_ALLOC
+@BUO_SET_PRESENT_TRUE@am__append_7 = -DHAVE_BOOST_UNORDERED_SET
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -104,70 +105,69 @@ CONFIG_CLEAN_VPATH_FILES =
 am_RHH_OBJECTS = RHH.$(OBJEXT)
 RHH_OBJECTS = $(am_RHH_OBJECTS)
 RHH_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-RHH_DEPENDENCIES = $(am__DEPENDENCIES_1)
+RHH_DEPENDENCIES =
 am_TFL2013_OBJECTS = TFL2013.$(OBJEXT)
 TFL2013_OBJECTS = $(am_TFL2013_OBJECTS)
 TFL2013_LDADD = $(LDADD)
-TFL2013_DEPENDENCIES = $(am__DEPENDENCIES_1)
+TFL2013_DEPENDENCIES =
 am_bneck_selection_ind_OBJECTS = bneck_selection_ind.$(OBJEXT)
 bneck_selection_ind_OBJECTS = $(am_bneck_selection_ind_OBJECTS)
 bneck_selection_ind_LDADD = $(LDADD)
-bneck_selection_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+bneck_selection_ind_DEPENDENCIES =
 am_diploid_OBJECTS = diploid.$(OBJEXT)
 diploid_OBJECTS = $(am_diploid_OBJECTS)
 diploid_LDADD = $(LDADD)
-diploid_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_DEPENDENCIES =
 am_diploid_binaryIO_OBJECTS = diploid_binaryIO.$(OBJEXT)
 diploid_binaryIO_OBJECTS = $(am_diploid_binaryIO_OBJECTS)
 diploid_binaryIO_LDADD = $(LDADD)
-diploid_binaryIO_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_binaryIO_DEPENDENCIES =
 am_diploid_binaryIO_ind_OBJECTS = diploid_binaryIO_ind.$(OBJEXT)
 diploid_binaryIO_ind_OBJECTS = $(am_diploid_binaryIO_ind_OBJECTS)
 diploid_binaryIO_ind_LDADD = $(LDADD)
-diploid_binaryIO_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_binaryIO_ind_DEPENDENCIES =
 am_diploid_fixed_sh_OBJECTS = diploid_fixed_sh.$(OBJEXT)
 diploid_fixed_sh_OBJECTS = $(am_diploid_fixed_sh_OBJECTS)
 diploid_fixed_sh_LDADD = $(LDADD)
-diploid_fixed_sh_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_fixed_sh_DEPENDENCIES =
 am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
-diploid_fixed_sh_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_fixed_sh_ind_DEPENDENCIES =
 am_diploid_fixed_sh_ind_lambda_OBJECTS =  \
 	diploid_fixed_sh_ind_lambda.$(OBJEXT)
 diploid_fixed_sh_ind_lambda_OBJECTS =  \
 	$(am_diploid_fixed_sh_ind_lambda_OBJECTS)
 diploid_fixed_sh_ind_lambda_LDADD = $(LDADD)
-diploid_fixed_sh_ind_lambda_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_fixed_sh_ind_lambda_DEPENDENCIES =
 am_diploid_gzbinaryIO_OBJECTS = diploid_gzbinaryIO.$(OBJEXT)
 diploid_gzbinaryIO_OBJECTS = $(am_diploid_gzbinaryIO_OBJECTS)
 diploid_gzbinaryIO_LDADD = $(LDADD)
-diploid_gzbinaryIO_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_gzbinaryIO_DEPENDENCIES =
 am_diploid_gzbinaryIO_ind_OBJECTS = diploid_binaryIO_ind.$(OBJEXT)
 diploid_gzbinaryIO_ind_OBJECTS = $(am_diploid_gzbinaryIO_ind_OBJECTS)
 diploid_gzbinaryIO_ind_LDADD = $(LDADD)
-diploid_gzbinaryIO_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_gzbinaryIO_ind_DEPENDENCIES =
 am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
 diploid_ind_OBJECTS = $(am_diploid_ind_OBJECTS)
 diploid_ind_LDADD = $(LDADD)
-diploid_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_ind_DEPENDENCIES =
 am_diploid_ind_2locus_OBJECTS = diploid_ind_2locus.$(OBJEXT)
 diploid_ind_2locus_OBJECTS = $(am_diploid_ind_2locus_OBJECTS)
 diploid_ind_2locus_LDADD = $(LDADD)
-diploid_ind_2locus_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_ind_2locus_DEPENDENCIES =
 am_diploid_twopop_mig_OBJECTS = diploid_twopop_mig.$(OBJEXT)
 diploid_twopop_mig_OBJECTS = $(am_diploid_twopop_mig_OBJECTS)
 diploid_twopop_mig_LDADD = $(LDADD)
-diploid_twopop_mig_DEPENDENCIES = $(am__DEPENDENCIES_1)
+diploid_twopop_mig_DEPENDENCIES =
 am_migsel_ind_OBJECTS = migsel_ind.$(OBJEXT)
 migsel_ind_OBJECTS = $(am_migsel_ind_OBJECTS)
 migsel_ind_LDADD = $(LDADD)
-migsel_ind_DEPENDENCIES = $(am__DEPENDENCIES_1)
+migsel_ind_DEPENDENCIES =
 am_pfix_OBJECTS = pfix.$(OBJEXT)
 pfix_OBJECTS = $(am_pfix_OBJECTS)
 pfix_LDADD = $(LDADD)
-pfix_DEPENDENCIES = $(am__DEPENDENCIES_1)
+pfix_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -361,8 +361,10 @@ diploid_twopop_mig_SOURCES = diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
-AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
-LDADD = $(am__append_3)
+AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2) \
+	$(am__append_3) $(am__append_4) $(am__append_5) \
+	$(am__append_6) $(am__append_7)
+LDADD = 
 all: all-am
 
 .SUFFIXES:
@@ -702,6 +704,17 @@ uninstall-am:
 	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
 
+# else
+# if BVEC_PRESENT
+# if BLIST_PRESENT
+# #On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
+# LDADD+=-lboost_system
+# endif
+# endif
+# else
+# #Boost is missing, so we gotta use the standard headers
+# AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
+# endif
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

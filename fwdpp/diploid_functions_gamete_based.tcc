@@ -2,7 +2,7 @@
 #ifndef __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 #define __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 #include <boost/container/vector.hpp>
 #endif
 
@@ -344,7 +344,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
   //calc freq of homozygotes
   
   double fAA=0.;
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
   boost::container::vector<double> gcounts(gametes->size(),0);
 #else
   std::vector<double> gcounts(gametes->size(),0);
@@ -394,7 +394,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
       if(!(std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1))
 	{
 	  //initialize a discrete distribution from 1 to nrecs that is a truncated Poisson
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 	  boost::container::vector<double> breakpoint_dist;
 #else
 	  std::vector<double> breakpoint_dist;
@@ -406,7 +406,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	  lookup_t BPLOOKUP( gsl_ran_discrete_preproc (size_t(NRECS), &breakpoint_dist[0]));
 	  NRECS_i = gsl_ran_discrete(r,BPLOOKUP.get())+1;
 	  //assign breakpoints
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
 	  boost::container::vector<double> pos;
 #else
 	  std::vector<double> pos;

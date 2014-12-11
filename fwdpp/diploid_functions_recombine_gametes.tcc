@@ -34,7 +34,7 @@ namespace KTfwd
     
     if( nbreaks )
       {
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
         boost::container::vector<double> pos;
 #else
         std::vector<double> pos;
@@ -48,14 +48,14 @@ namespace KTfwd
 	pos.emplace_back(std::numeric_limits<double>::max());
 	gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
 	  new_gamete2(new_gamete1);
-
+	
  	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
  	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
  	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
  	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	
 	fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
-
+	
 	auto current_end = gametes->end();
 	bool f1 = false, f2 = false;
 	for( auto itr = gametes->begin() ;

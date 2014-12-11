@@ -3,12 +3,11 @@
 
 #include <iostream>
 
-#ifndef USE_STANDARD_CONTAINERS
-#include <boost/unordered_set.hpp>
-#include <boost/container/list.hpp>
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
+#include <boost/unordered_set.hpp> 
+#include <boost/container/list.hpp> 
 #include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
-#include <boost/unordered_set.hpp>
 #include <boost/functional/hash.hpp>
 typedef boost::pool_allocator<mtype> mut_allocator;
 typedef boost::container::list<mtype,mut_allocator > mlist;

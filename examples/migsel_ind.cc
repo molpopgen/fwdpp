@@ -168,19 +168,18 @@ int main( int argc, char ** argv )
   std::vector<unsigned> fixation_times;
 
   lookup_table_type lookup;
-
-#ifdef USE_STANDARD_CONTAINERS
-  std::vector< glist > metapop(2, glist(1,gtype(2*N)));
-  typedef std::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
-  std::vector< diploid_bucket > diploids;
-  std::vector<unsigned> Ns(2,N);
-  std::vector<double> fs;
-#else
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
   boost::container::vector< glist > metapop(2, glist(1,gtype(2*N)));
   typedef boost::container::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
   boost::container::vector< diploid_bucket > diploids;
   boost::container::vector<unsigned> Ns(2,N);
   boost::container::vector<double> fs;
+#else
+  std::vector< glist > metapop(2, glist(1,gtype(2*N)));
+  typedef std::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
+  std::vector< diploid_bucket > diploids;
+  std::vector<unsigned> Ns(2,N);
+  std::vector<double> fs;
 #endif
 
 
@@ -249,12 +248,12 @@ int main( int argc, char ** argv )
   outstream.close();
 
   //Now, read it all back in, for fun.
-#ifdef USE_STANDARD_CONTAINERS
-  std::vector< glist > metapop2;
-  std::vector< diploid_bucket > diploids2;
-#else
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
   boost::container::vector< glist > metapop2;
   boost::container::vector< diploid_bucket > diploids2;
+#else
+  std::vector< glist > metapop2;
+  std::vector< diploid_bucket > diploids2;
 #endif
   mlist mutations2;
   Sequence::SimData neutral2,selected2;
