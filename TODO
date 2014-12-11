@@ -1,5 +1,8 @@
 Handle the gsl_ran_discrete types with smart pointers:
 
+Reference:
+   http://stackoverflow.com/questions/3477525/is-it-possible-to-use-a-c-smart-pointers-together-with-cs-malloc
+
 #include <memory>
     struct deleter
     {
