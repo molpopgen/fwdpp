@@ -14,7 +14,9 @@ The following changes:
 8. The code for recombination has been streamlined quite a bit.  Same algorithm (although noting the changes in point 5 above), but way fewer lines of code.
 9. The devtools directory has been added.  It contains a script to setup packages using fwdpp.
 10. Examples are now built via "make check" and not by default
-11. Refactoring so that gamete- and individual- based methods share common code
+11. Refactoring so that gamete- and individual- based methods share common code.
+12. A new namespace (KTfwd::fwdpp_internal) now resides in fwdpp/internal.  This sub-namespace contains some of the more important inner-workings of the library that are used in several places.  Part of the goal of this sub-namespace is to separate the deterministic stuff from the stochastic stuff, in order for the latter to be unit-testable.
+13. Boost's unit testing library is now used for unit testing.  To goal is to make sure that the stuff in fwdpp/internal all works.  The tests are compiled via "make check".
 
 #0.2.4
 
