@@ -8,7 +8,7 @@
 #include <boost/container/vector.hpp>
 #endif
 
-#include <fwdpp/recombination_common.hpp>
+#include <fwdpp/internal/recombination_common.hpp>
 
 namespace KTfwd
 {

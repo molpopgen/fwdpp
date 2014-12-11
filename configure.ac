@@ -18,7 +18,7 @@ AM_MAINTAINER_MODE([disable])
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
-AC_CONFIG_FILES([Makefile fwdpp/Makefile examples/Makefile unit/Makefile])
+AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile examples/Makefile unit/Makefile])
 
 AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]))
 AM_CONDITIONAL([USE_STANDARD],test x$enable_standard = xyes)

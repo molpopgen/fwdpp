@@ -2,7 +2,7 @@
 #ifndef __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
-#include <fwdpp/recombination_common.hpp>
+#include <fwdpp/internal/recombination_common.hpp>
 
 namespace KTfwd
 {

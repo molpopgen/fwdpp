@@ -1,5 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp
 
+SUBDIRS=internal
 pkginclude_HEADERS=debug.hpp \
 	diploid_functions.hpp \
 	diploid_gamete_based.hpp \
@@ -24,6 +25,6 @@ pkginclude_HEADERS=debug.hpp \
 	sampling_functions.hpp \
 	sampling_functions.tcc \
 	util.hpp \
-	recombination_methods_ind.hpp \
-	rec_gamete_updater.hpp \
-	recombination_common.hpp
+	recombination_methods_ind.hpp
+
+
