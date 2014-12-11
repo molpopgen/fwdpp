@@ -1,49 +1,12 @@
+Handle the gsl_ran_discrete types with smart pointers:
+
+#include <memory>
+    struct deleter
+    {
+      void operator()(gsl_ran_discrete_t * l) noexcept { gsl_ran_discrete_free(l); }
+    };
+    std::unique_ptr<gsl_ran_discrete_t,deleter>
+      lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
+
 1. Check if moving adjust_mutation_counts call is a good idea in the
    multilocus sampler
-2. Rewrite for_each_if as while loop
-3. Add calls to for_each in site_dependent_fitness, e.g. at the end
-3. Replace some fitness policies with lambda expressions
-4. Finishing #3 will allow removal of fwdpp/fitness_policies.hpp
-5. Consider Search in sorted sequences[edit]
-To search a sorted sequence, use the std::lower_bound,
-   std::upper_bound, std::equal_range, or std::binary_search generic
-   algorithms.
-
-   See devnotes:  upper_bound probably wins.
-
-Given that all the cited algorithms use a logarithmic complexity
-   (O(log(n))) binary search, they are faster than the std::find
-   algorithm, which uses a linear complexity (O(n)) sequential scan.
-
-Source:
-   http://en.wikibooks.org/wiki/Optimizing_C%2B%2B/Writing_efficient_code/Performance_improving_features
-
-Example:
-#include <vector>
-#include <algorithm>
-#include <iostream>
-
-using namespace std;
-
-int main()
-{
-  vector<int> x = {1,2,3,4,5,6,7,8,9,10};
-
-  vector<int>::iterator xi1 = find_if(x.begin(),x.end(),[](const int &
-   __x) { return __x > 7; });
-
-  vector<int>::iterator xi2 = lower_bound(x.begin(),x.end(),7,[](const
-   int & __x,const int & val) { return __x <= val; });
-
-  std::cout << *xi1 << ' ' << *xi2 << '\n';
-}
-
-
-6. Would set_intersction/set_symmetric_difference make
-   site_dependent_fitness faster?  They may be useful in making sure
-   that no mutation positions need to be dereferenced.  Maybe, but it
-   looks like it isn't 100% straightforward for me at the moment.  I
-   think that an implementation merging the two (using a comparison
-   operator) would kick ass, as we'd never need to look at a mutation
-   position
-
