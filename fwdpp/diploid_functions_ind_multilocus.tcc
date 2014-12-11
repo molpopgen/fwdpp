@@ -151,6 +151,7 @@ sample_diploid(gsl_rng * r,
 	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	 if ( i > 0 )
 	   {
+	     //This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se
 	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
 	     bool obw = (nrbw%2!=0) ? true : false;
 	     //bool dummy = p1g1;
