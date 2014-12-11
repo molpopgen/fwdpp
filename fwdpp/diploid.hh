@@ -48,7 +48,7 @@
   1.  libsequence, available from www.molpopgen.org \n
   2.  The GNU Scientific library, available from www.gnu.org/software/gsl \n
   3.  The zlib compression library (zlib.net).  
-  4.  By default, fwdpp depends on the boost C++ libraries from www.boost.org.  However, the use of boost in programs using fwdpp may be disabled by passing -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.
+  4.  By default, fwdpp depends on the boost C++ libraries from www.boost.org.  However, the use of boost in programs using fwdpp may be disabled by passing -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  Further, a program wishing to use boost containers internally within the libray must also define -DHAVE_BOOST_VECTOR, which is taken to mean that boost/container/vector.hpp exists on the system and is usable by the compiler.
 
 
   \subsection examples How to use the library
