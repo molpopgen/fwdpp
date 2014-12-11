@@ -6,7 +6,7 @@
 #include <boost/test/unit_test.hpp>
 #include <unistd.h>
 #include <iterator>
-
+#include <functional>
 
 //trivial ways to play with the KTfwd::mutation type
 using mut = KTfwd::mutation;
