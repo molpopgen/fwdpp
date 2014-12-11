@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE( three_point_cross_1 )
 
   auto mitr = mlist.insert(mlist.end(),mut(0.1,0.,1));
   KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
-mitr = mlist.insert(mlist.end(),mut(0.5,0.,1));
+  mitr = mlist.insert(mlist.end(),mut(0.5,0.,1));
   KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
   mitr = mlist.insert(mlist.end(),mut(0.9,0.,1));
   KTfwd::fwdpp_internal::add_new_mutation(mitr,g2);
