@@ -1,15 +1,2 @@
-Handle the gsl_ran_discrete types with smart pointers:
-
-Reference:
-   http://stackoverflow.com/questions/3477525/is-it-possible-to-use-a-c-smart-pointers-together-with-cs-malloc
-
-#include <memory>
-    struct deleter
-    {
-      void operator()(gsl_ran_discrete_t * l) noexcept { gsl_ran_discrete_free(l); }
-    };
-    std::unique_ptr<gsl_ran_discrete_t,deleter>
-      lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
-
 1. Check if moving adjust_mutation_counts call is a good idea in the
    multilocus sampler
