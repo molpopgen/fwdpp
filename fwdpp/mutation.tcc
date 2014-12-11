@@ -8,13 +8,12 @@
 
 #include <gsl/gsl_randist.h>
 
-#ifdef USE_STANDARD_CONTAINERS
-#include <vector>
-#else
+#ifndef USE_STANDARD_CONTAINERS
 #include <boost/container/vector.hpp>
 #endif
 
 #include <fwdpp/internal/mutation_internal.hpp>
+#include <vector>
 
 namespace KTfwd
 {
@@ -55,12 +54,12 @@ namespace KTfwd
 		  unsigned nmuts = gsl_ran_poisson(r,double(ibeg->n)*mu);
 		  NM += nmuts;
 		  
-#ifdef USE_STANDARD_CONTAINERS
-		  typedef std::vector<unsigned> vu;
-		  std::vector<double> pm(ibeg->n,1./double(ibeg->n));
-#else
+#ifndef USE_STANDARD_CONTAINERS
 		  typedef boost::container::vector<unsigned> vu;
 		  boost::container::vector<double> pm(ibeg->n,1./double(ibeg->n));
+#else
+		  typedef std::vector<unsigned> vu;
+		  std::vector<double> pm(ibeg->n,1./double(ibeg->n));
 #endif
 		  vu nm(ibeg->n,0u);
 		  gsl_ran_multinomial(r,ibeg->n,nmuts,&pm[0],&nm[0]);

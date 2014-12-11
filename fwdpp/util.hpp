@@ -14,10 +14,10 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#ifdef USE_STANDARD_CONTAINERS
-#include <vector>
-#else
+#ifndef USE_STANDARD_CONTAINERS
 #include <boost/container/vector.hpp>
+#else
+#include <vector>
 #endif
 
 

@@ -2,14 +2,13 @@
 #ifndef __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 #define __DIPLOID_FUNCTIONS_GAMETE_BASED_HPP__
 
-#ifdef USE_STANDARD_CONTAINERS
-#include <vector>
-#else
+#ifndef USE_STANDARD_CONTAINERS
 #include <boost/container/vector.hpp>
 #endif
 
 #include <fwdpp/internal/recombination_common.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
+#include <vector>
 
 namespace KTfwd
 {
