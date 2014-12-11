@@ -1,6 +1,8 @@
-check_PROGRAMS=mutateTest
+check_PROGRAMS=mutateTest \
+	crossoverTest
 
-mutateTest_SOURCES=mutateTest.cc
+mutateTest_SOURCES=mutateTest.cc 
+crossoverTest_SOURCES=crossoverTest.cc
 
 AM_CXXFLAGS=
 
