@@ -586,6 +586,8 @@ PACKAGE_BUGREPORT='https://github.com/molpopgen/fwdpp'
 PACKAGE_URL=''
 
 ac_unique_file="fwdpp/diploid.hh"
+ac_unique_file="examples/diploid_ind.cc"
+ac_unique_file="unit/mutateTest.cc"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
@@ -2143,6 +2145,8 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
 
 
 
@@ -4438,7 +4442,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile examples/Makefile"
+ac_config_files="$ac_config_files Makefile fwdpp/Makefile examples/Makefile unit/Makefile"
 
 
 # Check whether --enable-standard was given.
@@ -5892,6 +5896,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "fwdpp/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
+    "unit/Makefile") CONFIG_FILES="$CONFIG_FILES unit/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

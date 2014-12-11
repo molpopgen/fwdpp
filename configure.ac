@@ -2,6 +2,8 @@ AC_PREREQ(2.59)
 
 AC_INIT([fwdpp], [0.2.5], [https://github.com/molpopgen/fwdpp])
 AC_CONFIG_SRCDIR([fwdpp/diploid.hh])
+AC_CONFIG_SRCDIR([examples/diploid_ind.cc])
+AC_CONFIG_SRCDIR([unit/mutateTest.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config-h.in])
 
@@ -16,7 +18,7 @@ AM_MAINTAINER_MODE([disable])
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
-AC_CONFIG_FILES([Makefile fwdpp/Makefile examples/Makefile])
+AC_CONFIG_FILES([Makefile fwdpp/Makefile examples/Makefile unit/Makefile])
 
 AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]))
 AM_CONDITIONAL([USE_STANDARD],test x$enable_standard = xyes)
