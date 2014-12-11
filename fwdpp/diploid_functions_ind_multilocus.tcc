@@ -135,8 +135,7 @@ sample_diploid(gsl_rng * r,
      assert( p1c == *(pptr+p1) );
      assert( p2c == *(pptr+p2) );
 
-     //Using just the routines below give correct E[S] for n = 20.  It must be the bitset nonsense that is incorrect.
-     //Temporary debug mode: drift and mutation only!!!!  OK--this seems good based on some limited testing
+     //Using just the routines below give correct E[S] for n = 20.
      //recombination, too! OK--this seems good based on some limited testing.
      //All testing so far based on n=2 using strobeck_morgan.cc
 
@@ -151,7 +150,7 @@ sample_diploid(gsl_rng * r,
 	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	 if ( i > 0 )
 	   {
-	     //This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se
+	     //TODO: This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se
 	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
 	     bool obw = (nrbw%2!=0) ? true : false;
 	     //bool dummy = p1g1;
@@ -176,6 +175,7 @@ sample_diploid(gsl_rng * r,
 	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
 	 if ( i > 0 )
 	   {
+	     //TODO: This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se
 	     unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
 	     bool obw = (nrbw%2!=0) ? true : false;
 	     p2g1 = (LO2) ? !p2g1 : p2g1;
@@ -193,64 +193,6 @@ sample_diploid(gsl_rng * r,
 	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
 	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
        }
-     /*
-       Recombine -- updating via a bit field of 3 values.  
-       The fields are:
-       1.  Was last gamete pulled from p1c or p2c?  This is LW1/2, which takes on value 0 or 1 (false/true)
-       2.  Was last # crossovers even or odd?  This is NR1/2, which takes on value 0 or 2 (false/true)
-       3.  Do we crossover b/w locus i and i-1?   This is determined by sampling from r_between_loci and takes on value 0 or 4 (false/true)
-
-       The above establises a bitset that may take on values 0 thru 7.
-     */
-     /*
-     int LW1=0,LW2=0;
-     unsigned NR1=0,NR2=0;
-     //Mendel:
-     bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
-       p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
-     locus_itr ptr2cdip = (dptr+curr_dip)->begin();
-     for( unsigned i = 0 ; i < p1c.size() ; ++i )
-       {
-	 unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
-	 if ( i > 0 )
-	   {
-	     int val = ( LW1 |= ( (NR1%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
-	     LW1 = (val != 2 && val != 4 && val != 7) ? 1 : 0;
-	     (ptr2cdip+i)->first = (LW1) ? ( (p1g1) ? p1c[i].second : p1c[i].first ) : ((p1g1) ? p1c[i].first : p1c[i].second);
-	   }
-	 else
-	   {
-	     (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
-	     LW1 = int(!p1g1);
-	     }
-	 NR1 = temp;
-
-	 temp = rec_policies[i]( p2c[i].first, p2c[i].second );
-	 if ( i > 0 )
-	   {
-	     int val = ( LW2 |= ( (NR2%2==0.) ? 2 : 0) ) |= ( (gsl_rng_uniform(r) <= *(r_between_loci+i-1)) ? 4 : 0 );
-	     LW2 = (val != 2 && val != 4 && val != 7) ? 1 : 0;
-	     (ptr2cdip+i)->second = (LW2) ? ((p2g1) ? p2c[i].second : p2c[i].first) : ((p2g1) ? p2c[i].first : p2c[i].second);
-	   }
-	 else
-	   {
-	     (ptr2cdip+i)->second = ( p2g1 ) ? p2c[i].first : p2c[i].second;
-	     LW2 = int(!p2g1);
-	   }
-	 NR2 = temp;
-	 
-	 (ptr2cdip+i)->first->n++;
-	 (ptr2cdip+i)->second->n++;
-
-	 adjust_mutation_counts( (ptr2cdip+i)->first,1 );
-	 adjust_mutation_counts( (ptr2cdip+i)->second,1 );
-
-	 //(ptr2cdip+i)->first = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 //(ptr2cdip+i)->second = mutate_gamete( r,mu[i],ptr_to_gametes[i],mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	 (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);
-       }
-     */
    }
 
  auto glist_updater = []( decltype( *(gametes->begin()) ) & __g) {
