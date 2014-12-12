@@ -10,7 +10,7 @@ cd directory/projectname
 #do the same for src/Makefile.am and rename the .cc file in src to match.
 autoreconf -fi
 autoheader
-automake
+automake --add-missing -c
 ```
 
 
