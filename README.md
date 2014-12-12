@@ -172,8 +172,6 @@ make install
 
 The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  The effect of this is roughly a 10% performance loss (e.g., simulations will take about 10% longer to run).
 
-__NOTE:__ if you install fwdpp in this way, you need to remember that programs that you write will still try to use boost containers by default. Why?  The reason is that fwdpp is a template library, meaning that uncompiled header files are what gets installed.  In practice, if you do not want to install the boost libraries on your system, you will need to pass -DUSE_STANDARD_CONTAINERS to the preprocessor when compiling programs that you write using fwdpp.  
-
 Related to the above note, it is worth installing boost on your system.  Many of their libraries, especially program_options, will probably be worth using for simulations that you write.
 
 ##If dependent libraries are in non-stanard locations.
