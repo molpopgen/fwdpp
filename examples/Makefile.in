@@ -85,11 +85,6 @@ check_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	TFL2013$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
 @USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS
-@BHASH_PRESENT_TRUE@am__append_3 = -DHAVE_BOOST_HASH
-@BVEC_PRESENT_TRUE@am__append_4 = -DHAVE_BOOST_VECTOR
-@BLIST_PRESENT_TRUE@am__append_5 = -DHAVE_BOOST_LIST
-@BPOOL_ALLOC_PRESENT_TRUE@am__append_6 = -DHAVE_BOOST_POOL_ALLOC
-@BUO_SET_PRESENT_TRUE@am__append_7 = -DHAVE_BOOST_UNORDERED_SET
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -99,7 +94,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
-CONFIG_HEADER = $(top_builddir)/config-h.in
+CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am_RHH_OBJECTS = RHH.$(OBJEXT)
@@ -361,9 +356,7 @@ diploid_twopop_mig_SOURCES = diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
-AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2) \
-	$(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6) $(am__append_7)
+AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
 LDADD = 
 all: all-am
 
@@ -704,17 +697,6 @@ uninstall-am:
 	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am
 
-# else
-# if BVEC_PRESENT
-# if BLIST_PRESENT
-# #On some systems (or at least recent boost versions, the boost_system is needed to use the boost containers
-# LDADD+=-lboost_system
-# endif
-# endif
-# else
-# #Boost is missing, so we gotta use the standard headers
-# AM_CPPFLAGS+=-DUSE_STANDARD_CONTAINERS
-# endif
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

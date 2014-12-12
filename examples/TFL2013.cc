@@ -10,6 +10,7 @@
   2. The phenotypes of the population
   3. 
 */
+#include <config.h>
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <utility>

@@ -1,6 +1,7 @@
 #ifndef __FWDPP_EXAMPLES_COMMON_IND_HPP__
 #define __FWDPP_EXAMPLES_COMMON_IND_HPP__
 
+#include <config.h>
 #include <iostream>
 
 #if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)

@@ -628,25 +628,13 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
-BHASH_PRESENT_FALSE
-BHASH_PRESENT_TRUE
-BUO_SET_PRESENT_FALSE
-BUO_SET_PRESENT_TRUE
-BPOOL_ALLOC_PRESENT_FALSE
-BPOOL_ALLOC_PRESENT_TRUE
 BUNIT_TEST_PRESENT_FALSE
 BUNIT_TEST_PRESENT_TRUE
-BLIST_PRESENT_FALSE
-BLIST_PRESENT_TRUE
-BVEC_PRESENT_FALSE
-BVEC_PRESENT_TRUE
 EGREP
 GREP
 CXXCPP
 DEBUG_FALSE
 DEBUG_TRUE
-USE_STANDARD_FALSE
-USE_STANDARD_TRUE
 HAVE_CXX11
 MAINT
 MAINTAINER_MODE_FALSE
@@ -2763,7 +2751,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
-ac_config_headers="$ac_config_headers config-h.in"
+ac_config_headers="$ac_config_headers config.h"
 
 
 
@@ -4454,15 +4442,10 @@ ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefil
 # Check whether --enable-standard was given.
 if test "${enable_standard+set}" = set; then :
   enableval=$enable_standard;
+$as_echo "#define USE_STANDARD_CONTAINERS 1" >>confdefs.h
+
 fi
 
- if test x$enable_standard = xyes; then
-  USE_STANDARD_TRUE=
-  USE_STANDARD_FALSE='#'
-else
-  USE_STANDARD_TRUE='#'
-  USE_STANDARD_FALSE=
-fi
 
 
 # Check whether --enable-debug was given.
@@ -4479,6 +4462,7 @@ else
 fi
 
 
+#AC_CHECK_HEADER(boost/container/vector.hpp, BVECTOR=1, [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4874,7 +4858,9 @@ done
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
-  BVECTOR=1
+
+$as_echo "#define HAVE_BOOST_VECTOR 1" >>confdefs.h
+
 else
   echo "boost/container/vector.hpp not found.  Will use std::vector for examples."
 fi
@@ -4882,7 +4868,9 @@ fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
-  BLIST=1
+
+$as_echo "#define HAVE_BOOST_LIST 1" >>confdefs.h
+
 else
   echo "boost/container/list.hpp not found.  Will use std::list for examples."
 fi
@@ -4898,19 +4886,25 @@ fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
-  BPOOLALLOC=1
+
+$as_echo "#define HAVE_BOOST_POOL_ALLOC 1" >>confdefs.h
+
 fi
 
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
-  BUNORDEREDSET=1
+
+$as_echo "#define HAVE_BOOST_UNORDERED_SET 1" >>confdefs.h
+
 fi
 
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
-  BHASH=1
+
+$as_echo "#define HAVE_BOOST_HASH 1" >>confdefs.h
+
 fi
 
 
@@ -4946,21 +4940,6 @@ else
 fi
 
 
- if test x$BVECTOR = x1; then
-  BVEC_PRESENT_TRUE=
-  BVEC_PRESENT_FALSE='#'
-else
-  BVEC_PRESENT_TRUE='#'
-  BVEC_PRESENT_FALSE=
-fi
-
- if test x$BLIST = x1; then
-  BLIST_PRESENT_TRUE=
-  BLIST_PRESENT_FALSE='#'
-else
-  BLIST_PRESENT_TRUE='#'
-  BLIST_PRESENT_FALSE=
-fi
 
  if test x$BUNITTEST = x1; then
   BUNIT_TEST_PRESENT_TRUE=
@@ -4970,29 +4949,6 @@ else
   BUNIT_TEST_PRESENT_FALSE=
 fi
 
- if test x$BPOOLALLOC = x1; then
-  BPOOL_ALLOC_PRESENT_TRUE=
-  BPOOL_ALLOC_PRESENT_FALSE='#'
-else
-  BPOOL_ALLOC_PRESENT_TRUE='#'
-  BPOOL_ALLOC_PRESENT_FALSE=
-fi
-
- if test x$BUNORDEREDSET = x1; then
-  BUO_SET_PRESENT_TRUE=
-  BUO_SET_PRESENT_FALSE='#'
-else
-  BUO_SET_PRESENT_TRUE='#'
-  BUO_SET_PRESENT_FALSE=
-fi
-
- if test x$BHASH = x1; then
-  BHASH_PRESENT_TRUE=
-  BHASH_PRESENT_FALSE='#'
-else
-  BHASH_PRESENT_TRUE='#'
-  BHASH_PRESENT_FALSE=
-fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gzungetc in -lz" >&5
@@ -5182,7 +5138,7 @@ _ACEOF
   LIBS="-lsequence $LIBS"
 
 else
-  as_fn_error $? "eecho \"libsequence runtime library does not seem to be here\";exit 1" "$LINENO" 5
+  as_fn_error $? "echo \"libsequence runtime library does not seem to be here\";exit 1" "$LINENO" 5
 fi
 
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
@@ -5373,36 +5329,12 @@ if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   as_fn_error $? "conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${USE_STANDARD_TRUE}" && test -z "${USE_STANDARD_FALSE}"; then
-  as_fn_error $? "conditional \"USE_STANDARD\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${DEBUG_TRUE}" && test -z "${DEBUG_FALSE}"; then
   as_fn_error $? "conditional \"DEBUG\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${BVEC_PRESENT_TRUE}" && test -z "${BVEC_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BVEC_PRESENT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${BLIST_PRESENT_TRUE}" && test -z "${BLIST_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BLIST_PRESENT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"; then
   as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${BPOOL_ALLOC_PRESENT_TRUE}" && test -z "${BPOOL_ALLOC_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BPOOL_ALLOC_PRESENT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${BUO_SET_PRESENT_TRUE}" && test -z "${BUO_SET_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BUO_SET_PRESENT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${BHASH_PRESENT_TRUE}" && test -z "${BHASH_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BHASH_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -5997,7 +5929,7 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
-    "config-h.in") CONFIG_HEADERS="$CONFIG_HEADERS config-h.in" ;;
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "fwdpp/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/Makefile" ;;

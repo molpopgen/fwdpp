@@ -1,6 +1,7 @@
 #define BOOST_TEST_MODULE crossoverTest
 #define BOOST_TEST_DYN_LINK 
 
+#include <config.h>
 #include <fwdpp/diploid.hh>
 #include <boost/test/unit_test.hpp>
 #include <unistd.h>

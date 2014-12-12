@@ -1,6 +1,7 @@
 /*! \include diploid_twopop_mig.cc
   Population split followed by migration.
  */
+#include <config.h>
 #include <fwdpp/diploid.hh>
 
 #include <numeric>

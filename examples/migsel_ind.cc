@@ -5,6 +5,7 @@
 
   Writes the metapop + an "ms"-type sample in binary format to an output file.
  */
+#include <config.h>
 #include <fwdpp/diploid.hh>
 
 #include <Sequence/SimData.hpp>
