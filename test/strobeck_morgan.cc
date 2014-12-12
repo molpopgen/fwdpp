@@ -1,3 +1,4 @@
+#include <config.h>
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <boost/unordered_set.hpp>
@@ -27,7 +28,7 @@ struct mutation_with_age : public KTfwd::mutation_base
 
 //compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
 typedef mutation_with_age mtype;
-#ifndef USE_STANDARD_CONTAINERS
+#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
 typedef boost::pool_allocator<mtype> mut_allocator;
 typedef boost::container::list<mtype,mut_allocator > mlist;
 typedef KTfwd::gamete_base<mtype,mlist> gtype;
