@@ -45,7 +45,7 @@ dnl check for C++ run-time libraries
 AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
-          AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([eecho "libsequence runtime library does not seem to be here";exit 1])])
+          AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([echo "libsequence runtime library does not seem to be here";exit 1])])
 AC_LANG_RESTORE
 
 dnl AM_CONFIG_HEADER(config.h)
