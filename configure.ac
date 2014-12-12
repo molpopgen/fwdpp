@@ -26,7 +26,6 @@ AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 
 dnl check for things that we might need
-#AC_CHECK_HEADER(boost/container/vector.hpp, BVECTOR=1, [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
 AC_CHECK_HEADER(boost/container/vector.hpp, [AC_DEFINE([HAVE_BOOST_VECTOR],[1],[Define if boost/container/vector.hpp exists])], [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
 AC_CHECK_HEADER(boost/container/list.hpp, [AC_DEFINE([HAVE_BOOST_LIST],[1],[Define if boost/container/list.hpp exists])], [echo "boost/container/list.hpp not found.  Will use std::list for examples."])
 AC_CHECK_HEADER(boost/test/unit_test.hpp, BUNITTEST=1,[echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."])
