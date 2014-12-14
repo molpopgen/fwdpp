@@ -56,7 +56,7 @@ int main ( int argc, char ** argv )
 }
 \end{lstlisting}
 
-The above example is 100\% standard C++.  But what is going on under the hood of the sort function is quite interesting.  A bubble sort algorithm is being executed, and the values are being compared via a call to this function:
+The above example is 100\% standard C++.  But what is going on under the hood of the sort function is quite interesting.  A quicksort algorithm is being executed, and the values are being compared via a call to this function:
 \begin{lstlisting}
   template <class T> struct less : binary_function <T,T,bool> {
     //algorithms can't guess return types,
@@ -67,7 +67,7 @@ The above example is 100\% standard C++.  But what is going on under the hood of
 \end{lstlisting}
 
 \subsection{Policies are often function objects}
-The structure called less is a ``function object'', and is the policy being employed in the bubble sort.  Further, is a template, meaning it works on any data type for which operator$<$ is defined.  The detail that less inherits from binary\_function is important for how it plugs into the sort algorithm, but we'll deal with those issues later.
+The structure called less is a ``function object'', and is the policy being employed in the quicksort.  Further, is a template, meaning it works on any data type for which operator$<$ is defined.  The detail that less inherits from binary\_function is important for how it plugs into the sort algorithm, but we'll deal with those issues later.
 
 The way such a function object is used looks like:
 \begin{lstlisting}
@@ -89,7 +89,7 @@ OK, so now we hopefully have a basic understanding of what a policy is and that 
   //Sort in descending order (biggest values @ front of vu after sort)
   sort( vu.begin(), vu.end(), greater<int>() );
 \end{lstlisting}
-Same bubble sort, different outcome because of different policy.
+Same quicksort, different outcome because of different policy.
 
 \subsection{Binding extends what policies can do}
 We can further modify the behavior of policies by sending additional arguments along with the policy as it goes to the algorithm.  This is called binding an argument to a function call. For example, let's find the first value in our vector that is $\geq 5$:

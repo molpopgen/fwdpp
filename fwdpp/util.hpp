@@ -297,7 +297,7 @@ namespace KTfwd
 	    typename mutation_removal_policy,
 	    template <typename,typename> class vector_type >
   void update_gamete_list( vector_type<gamete_type,vector_type_allocator > * gametes, 
-			   const unsigned & twoN,
+         const unsigned & /* twoN */,
 			   const mutation_removal_policy & mrp)
   {
     gametes->erase(std::remove_if(gametes->begin(),
