@@ -178,7 +178,7 @@ Related to the above note, it is worth installing boost on your system.  Many of
 
 For example, if libsequence is in /opt:
 
-~~~{sh}
+~~~{.sh}
 #Note, you need to add in the desired optimization (-OXX) level:
 ./configure CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
 make check
@@ -221,7 +221,7 @@ git clone https://github.com/molpopgen/fwdpp
 cd fwdpp
 ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
-~~~~
+~~~
 
 Then, you can compile the example programs:
 
