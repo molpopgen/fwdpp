@@ -54,7 +54,7 @@ As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of
 
 The fwdpp manuscript has been accepted for publication in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
 
-```
+~~~
 @Article{,
   author = 	 {K. R. Thornton},
   title = 	 {A C++ Template Library for Efficient Forward-Time Population Genetic Simulation of Large Populations},
@@ -68,7 +68,7 @@ The fwdpp manuscript has been accepted for publication in Genetics.  The accepte
   OPTnote = 	 {},
   annote = 	 {doi:/10.1534/genetics.114.165019}
 }
-```
+~~~
 
 The version of fwdpp used in that publication is 0.2.4.
 
@@ -87,11 +87,11 @@ The source code documentation is in the doc subdirectory that comes with the lib
 
 The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
 
-```
+~~~
 cd doc
 pdflatex policies
 pdflatex policies
-```
+~~~
 
 One runs pdflatex twice to ensure that cross-references within the document are processed properly.
 
@@ -144,31 +144,31 @@ Again, a few options:
 ##The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
-```
+~~~
 cd fwdpp
-```
+~~~
 If you downloaded a release:
 
-```
+~~~
 tar xzf fwdpp-version.tar.gz
 cd fwdpp-version
-```
+~~~
 
 Then:
 
-```
+~~~
 ./configure
 make
 make install
-```
+~~~
 
 ##To compile examples and install library without boost
 
-```
+~~~
 ./configure --enable-standard=yes
 make check
 make install
-```
+~~~
 
 The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  The effect of this is roughly a 10% performance loss (e.g., simulations will take about 10% longer to run).
 
@@ -178,23 +178,23 @@ Related to the above note, it is worth installing boost on your system.  Many of
 
 For example, if libsequence is in /opt:
 
-```{sh}
+~~~{sh}
 #Note, you need to add in the desired optimization (-OXX) level:
 ./configure CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
 make check
 make install
-```
+~~~
 
 ##Installing in a custom location
 
-```
+~~~
 ./configure --prefix=/path/2/where/you/want it
-```
+~~~
 For example:
 
-```
+~~~
 ./configure --prefix=$HOME
-```
+~~~
 
 ##"Fast" installation into a user's $HOME folder
 
@@ -202,11 +202,11 @@ If you do not have permission for anything other than a local install, there is 
 
 First, get libsequence and its dependencies all installed:
 
-```{sh}
+~~~{sh}
 git clone https://www.github.com/molpopgen/install_libseq.git
 cd install_libseq
 bash libseq _ local.sh
-```
+~~~
 
 The above takes a while.
 
@@ -216,19 +216,19 @@ Once installed, you should see the directory $HOME/include/fwdpp, and it should 
 
 To get the master branch from git:
 
-```{sh}
+~~~{sh}
 git clone https://github.com/molpopgen/fwdpp
 cd fwdpp
 ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
-````
+~~~~
 
 Then, you can compile the example programs:
 
-```
+~~~
 cd examples
 LDFLAGS=-I$HOME/lib make check
-```
+~~~
 
 See below for how to run the examples.
 
@@ -238,12 +238,12 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 
 Then,
 
-```{sh}
+~~~{sh}
 tar xzf fwdpp-version.tar.gz
 cd fwdpp-version
 ./configure CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
 make install
-```
+~~~
 
 And now you can compile the examples as described above.
 
@@ -295,11 +295,13 @@ Usage:
 
 Example for Open Grid Engine compute clusters:
 
-\#!sh<br>
-\#$ -t 1-100<br>
-\#$ -N DIPBIN<br>
+~~~{.sh}
+#!sh
+#$ -t 1-100
+#$ -N DIPBIN
 
-seed=`` `echo "$SGE_TASK_ID*$RANDOM"|bc -l` ``
+seed=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
+~~~
 
 \#note: the below assumes that the binary is in the users's $PATH and that the GE system knows how to link it to the relevant dynamic libraries
 
