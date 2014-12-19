@@ -1,7 +1,5 @@
 #0.2.5
 
-__Note:__ fwdpp 0.2.5 has not been officially released.  This list may be inaccurate.
-
 The following changes:
 
 1. fwdpp/diploid_functions_ind_multilocis.tcc was added.  This contains a more natural method of simulating mutiple partially-linked regions.  The header fwdpp/diploid_functions.hpp contains the relevant prototypes.  These routines are still in "beta" stage, and full support for simulations of partially-linked regions will be put off until a future version, likely 0.2.6 or later.
