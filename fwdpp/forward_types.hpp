@@ -70,7 +70,7 @@ namespace KTfwd
     using mutation_list_type_iterator = typename list_type::iterator;
     using mutation_container = std::vector< mutation_list_type_iterator >;
     using mcont_iterator = typename mutation_container::iterator;
-    using mconst_const_iterator = typename mutation_container::const_iterator;
+    using mcont_const_iterator = typename mutation_container::const_iterator;
     /// mutations is for neutral mutations, smutations for selected...
     mutation_container mutations,smutations;
     gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
