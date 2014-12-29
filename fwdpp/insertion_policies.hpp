@@ -14,13 +14,11 @@ namespace KTfwd
     the new gamete to the existing vector.
 
     Note: it is silly to pass ng to this function with ng.n = 0.
-
-    \deprecated
    */
   template<typename T, typename cT>
-  inline typename cT::iterator insert_at_end( const T & t,  cT * ct )
+  inline typename cT::iterator insert_at_end(  T && t,  cT * ct )
   {
-    return ct->insert(ct->end(),t);
+    return ct->insert(ct->end(),std::move(t));
   }
 
   /*! \brief     An insertion policy
@@ -37,9 +35,9 @@ namespace KTfwd
     \deprecated
    */
   template<typename T, typename cT>
-  inline void push_at_end( const T & t,  cT * ct )
+  inline void push_at_end(  T && t,  cT * ct )
   {
-    ct->push_back(t);
+    ct->emplace_back(std::move(t));
   }
 
   /*! \brief     An insertion policy 
@@ -53,12 +51,12 @@ namespace KTfwd
     
   */
   template<typename T, typename cT>
-  inline typename cT::iterator update_if_exists_insert( const T & t,  cT * ct )
+  inline typename cT::iterator update_if_exists_insert( T && t,  cT * ct )
   {
     typename cT::iterator itr = std::find(ct->begin(),ct->end(),t);
     if(itr == ct->end())
       {
-	return insert_at_end(t,ct);
+	return insert_at_end(std::forward<T>(t),ct);
       }
     else
       {
@@ -68,12 +66,12 @@ namespace KTfwd
   }
 
   template<typename T, typename cT>
-  inline typename cT::iterator insert_if_not_found( const T & t,  cT * ct )
+  inline typename cT::iterator insert_if_not_found( T && t,  cT * ct )
   {
     typename cT::iterator itr = std::find(ct->begin(),ct->end(),t);
     if(itr == ct->end())
       {
-	return insert_at_end(t,ct);
+	return insert_at_end(std::forward<T>(t),ct);
       }
     return itr;
   }
@@ -90,12 +88,12 @@ namespace KTfwd
     Note: it is silly to pass ng to this function with ng.n = 0.
   */
   template<typename T, typename cT>
-  inline void update_if_exists_push( const T & t,  cT * ct )
+  inline void update_if_exists_push(  T && t,  cT * ct )
   {
     typename cT::iterator itr = std::find(ct->begin(),ct->end(),t);
     if(itr == ct->end())
       {
-	push_at_end(t,ct);
+	push_at_end(std::forward<T>(t),ct);
       }
     else
       {
@@ -109,12 +107,12 @@ namespace KTfwd
     return ct->end()
   */
   template<typename T, typename cT>
-  inline typename cT::iterator insert_new_or_fail( const T & t,  cT * ct )
+  inline typename cT::iterator insert_new_or_fail( T && t,  cT * ct )
   {
     typename cT::iterator itr = std::find(ct->begin(),ct->end(),t);
     if(itr == ct->end())
       {
-	return insert_at_end(t,ct);
+	return insert_at_end(std::forward<T>(t),ct);
       }
     //else, return end() to indicate no insertion
     return ct->end();
@@ -138,10 +136,11 @@ namespace KTfwd
     template< typename gamete_type,
 	      typename vector_type_allocator,
 	      template<typename,typename> class vector_type>//,
-    inline void operator()( const gamete_type & ng, 
+    inline void operator()(  gamete_type && ng, 
 			    vector_type<gamete_type,vector_type_allocator > * gametes)const 
     {
-      gametes->push_back(ng);
+      //gametes->push_back(ng);
+      gametes->emplace_back(std::move(ng));
     }
   };
 
@@ -164,14 +163,15 @@ namespace KTfwd
     template<typename gamete_type,
 	     typename vector_type_allocator,
 	     template<typename,typename> class vector_type>
-    inline void operator()(const gamete_type & ng, 
+    inline void operator()( gamete_type && ng, 
 			   vector_type<gamete_type,vector_type_allocator > * gametes) const
     {
       typedef typename  vector_type<gamete_type,vector_type_allocator >::iterator vtype_iterator;
       vtype_iterator itr=std::find(gametes->begin(),gametes->end(),ng);
       if(itr == gametes->end())
 	{
-	  gametes->push_back(ng);
+	  //gametes->push_back(ng);
+	  gametes->emplace_back(std::move(ng));
 	}
       else
 	{
@@ -188,9 +188,9 @@ namespace KTfwd
     \deprecated
    */
   template<typename mutation_type,typename list_type>
-  inline typename list_type::iterator insert_mutation_at_end(const mutation_type & m,list_type * mutations)
+  inline typename list_type::iterator insert_mutation_at_end( mutation_type && m,list_type * mutations)
   {
-    return (mutations->insert(mutations->end(),m));
+    return (mutations->insert(mutations->end(),std::move(m)));
   }
   
   /*!
@@ -199,11 +199,11 @@ namespace KTfwd
   template<typename mutation_type,
 	 typename list_type>
   inline typename list_type::iterator
-  insert_unique_or_fail(const mutation_type & m,list_type * mutations)
+  insert_unique_or_fail( mutation_type && m,list_type * mutations)
   {
     typename list_type::iterator itr = std::find(mutations->begin(),mutations->end(),m);
     if( itr != mutations->end() ) return (itr);
-    return (mutations->insert(mutations->end(),m));
+    return (mutations->insert(mutations->end(),std::move(m)));
   }
 }
 #endif /* _INSERTION_POLICIES_HPP_ */
