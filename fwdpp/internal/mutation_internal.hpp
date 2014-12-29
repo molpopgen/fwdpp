@@ -69,7 +69,7 @@ namespace KTfwd {
       for( unsigned i = 0 ; i < n ; ++i )
 	{
 	  auto m = mmodel(mutations);
-	  auto mitr = mpolicy(m,mutations);
+	  auto mitr = mpolicy(std::move(m),mutations);
 	  add_new_mutation(mitr,g);
 	}
     }
