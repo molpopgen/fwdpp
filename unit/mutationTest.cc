@@ -110,9 +110,9 @@ BOOST_AUTO_TEST_CASE( policy_test_3 )
 
 //A "fake" mutation function that passes std::move to
 //the policy
-template<typename policy>
+template<typename list_type,typename policy>
 std::pair< std::list<mut>::iterator, bool >
-faux_mutate( std::list<mut> * mlist,
+faux_mutate( list_type * mlist,
 	     const policy & mpolicy )
 {
   mut m1(0.123,1,1);
