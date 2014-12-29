@@ -84,7 +84,6 @@ check_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	diploid_twopop_mig$(EXEEXT) pfix$(EXEEXT) RHH$(EXEEXT) \
 	TFL2013$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
-@USE_STANDARD_TRUE@am__append_2 = -DUSE_STANDARD_CONTAINERS
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -356,7 +355,7 @@ diploid_twopop_mig_SOURCES = diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
-AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
+AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
 LDADD = 
 all: all-am
 

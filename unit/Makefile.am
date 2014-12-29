@@ -1,10 +1,12 @@
 if BUNIT_TEST_PRESENT
 
 check_PROGRAMS=mutateTest \
-	crossoverTest
+	crossoverTest \
+	gameteTest
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
+gameteTest_SOURCES=gameteTest.cc
 
 AM_CXXFLAGS=
 

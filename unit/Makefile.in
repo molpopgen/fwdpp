@@ -76,7 +76,8 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@check_PROGRAMS = mutateTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	gameteTest$(EXEEXT)
 @BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -95,6 +96,10 @@ am__crossoverTest_SOURCES_DIST = crossoverTest.cc
 @BUNIT_TEST_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
 crossoverTest_OBJECTS = $(am_crossoverTest_OBJECTS)
 crossoverTest_LDADD = $(LDADD)
+am__gameteTest_SOURCES_DIST = gameteTest.cc
+@BUNIT_TEST_PRESENT_TRUE@am_gameteTest_OBJECTS = gameteTest.$(OBJEXT)
+gameteTest_OBJECTS = $(am_gameteTest_OBJECTS)
+gameteTest_LDADD = $(LDADD)
 am__mutateTest_SOURCES_DIST = mutateTest.cc
 @BUNIT_TEST_PRESENT_TRUE@am_mutateTest_OBJECTS = mutateTest.$(OBJEXT)
 mutateTest_OBJECTS = $(am_mutateTest_OBJECTS)
@@ -128,9 +133,10 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(crossoverTest_SOURCES) $(mutateTest_SOURCES)
+SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
+	$(mutateTest_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
-	$(am__mutateTest_SOURCES_DIST)
+	$(am__gameteTest_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -251,6 +257,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc 
 @BUNIT_TEST_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
+@BUNIT_TEST_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -295,6 +302,10 @@ crossoverTest$(EXEEXT): $(crossoverTest_OBJECTS) $(crossoverTest_DEPENDENCIES) $
 	@rm -f crossoverTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(crossoverTest_OBJECTS) $(crossoverTest_LDADD) $(LIBS)
 
+gameteTest$(EXEEXT): $(gameteTest_OBJECTS) $(gameteTest_DEPENDENCIES) $(EXTRA_gameteTest_DEPENDENCIES) 
+	@rm -f gameteTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(gameteTest_OBJECTS) $(gameteTest_LDADD) $(LIBS)
+
 mutateTest$(EXEEXT): $(mutateTest_OBJECTS) $(mutateTest_DEPENDENCIES) $(EXTRA_mutateTest_DEPENDENCIES) 
 	@rm -f mutateTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutateTest_OBJECTS) $(mutateTest_LDADD) $(LIBS)
@@ -306,6 +317,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 
 .cc.o:
