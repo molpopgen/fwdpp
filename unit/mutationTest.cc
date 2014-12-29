@@ -9,7 +9,15 @@
 #include <functional>
 #include <iostream>
 #include <list>
+/*
+  Testing move semantics with mutations is tricky.
+  The typical data elements are trivial types (double, int, etc.),
+  and thus a move may perform a copy if doing so is faster.
 
+  Here, we put a vector into our mutation class and check that it actually moves.
+  A real-world application of this would be if mutations keep track of their
+  frequency trajectories over time.
+ */
 struct mut : public KTfwd::mutation_base
 {
   std::vector<int> stuff;
