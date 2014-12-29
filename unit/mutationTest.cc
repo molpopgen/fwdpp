@@ -10,6 +10,10 @@
 #include <iostream>
 #include <utility>
 #include <list>
+#if defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC)
+#include <boost/container/list.hpp>
+#include <boost/pool/pool_alloc.hpp>
+#endif
 /*
   Testing move semantics with mutations is tricky.
   The typical data elements are trivial types (double, int, etc.),
@@ -111,7 +115,7 @@ BOOST_AUTO_TEST_CASE( policy_test_3 )
 //A "fake" mutation function that passes std::move to
 //the policy
 template<typename list_type,typename policy>
-std::pair< std::list<mut>::iterator, bool >
+std::pair< typename list_type::iterator, bool >
 faux_mutate( list_type * mlist,
 	     const policy & mpolicy )
 {
@@ -123,9 +127,10 @@ faux_mutate( list_type * mlist,
 
 //A "fake" mutation function that passes const reference
 //the policy
-template<typename policy>
-std::pair< std::list<mut>::iterator, bool >
-faux_mutate2( std::list<mut> * mlist,
+template<typename list_type,
+	 typename policy>
+std::pair< typename list_type::iterator, bool >
+faux_mutate2( list_type * mlist,
 	      const policy & mpolicy )
 {
   mut m1(0.123,1,1);
@@ -225,3 +230,35 @@ BOOST_AUTO_TEST_CASE( fwdpp_policy_test_2 )
   BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
   BOOST_CHECK_EQUAL(rv.second,false);
 }
+
+//What about using boost containers?
+#if defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC)
+#include <boost/container/list.hpp>
+#include <boost/pool/pool_alloc.hpp>
+typedef boost::pool_allocator<mut> mut_allocator;
+typedef boost::container::list<mut,mut_allocator > mlist_t;
+
+//the function object version
+BOOST_AUTO_TEST_CASE( boost_policy_test_1 )
+{
+  mlist_t mlist;
+  auto rv = faux_mutate( &mlist,
+			 std::bind( local_insert_at_end2(),std::placeholders::_1,std::placeholders::_2));
+  BOOST_CHECK_EQUAL(mlist.empty(),false);
+  BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
+  BOOST_CHECK_EQUAL(rv.second,true);
+}
+
+//The function version.
+BOOST_AUTO_TEST_CASE( boost_policy_test_2 )
+{
+  mlist_t mlist;
+  auto rv = faux_mutate( &mlist,
+			 std::bind( local_insert_at_end<mut,mlist_t>,std::placeholders::_1,std::placeholders::_2));
+  BOOST_CHECK_EQUAL(mlist.empty(),false);
+  BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
+  BOOST_CHECK_EQUAL(rv.second,true);
+}
+
+
+#endif
