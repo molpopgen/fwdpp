@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE( policy_test_9 )
 
 //Great, so what does the built-in policy do?
 
-//When confronted with a move, it should copy but not move, as it takes const mtype &
+//When confronted with a move, it should move
 BOOST_AUTO_TEST_CASE( fwdpp_policy_test_1 )
 {
   mut m1(0.123,1,1);
@@ -214,21 +214,19 @@ BOOST_AUTO_TEST_CASE( fwdpp_policy_test_1 )
 
   KTfwd::insert_at_end( std::move(m1), &mlist );
 
-  BOOST_CHECK_EQUAL( m1.stuff.size(), 4 );
+  BOOST_CHECK_EQUAL( m1.stuff.size(), 0 );
   BOOST_CHECK_EQUAL( mlist.empty(), false );
 }
 
 BOOST_AUTO_TEST_CASE( fwdpp_policy_test_2 )
 {
-  mut m1(0.123,1,1);
-  m1.stuff = std::vector<int>( {2,3,4,5} );
   std::list<mut> mlist;
 
   auto rv = faux_mutate( &mlist,
 			 std::bind( KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2));
   BOOST_CHECK_EQUAL(mlist.empty(),false);
   BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
-  BOOST_CHECK_EQUAL(rv.second,false);
+  BOOST_CHECK_EQUAL(rv.second,true);
 }
 
 //What about using boost containers?
