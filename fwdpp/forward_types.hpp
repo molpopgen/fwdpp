@@ -1,6 +1,6 @@
 /*!
   \file forward_types.hpp
- */
+*/
 #ifndef _FORWARD_TYPES_HPP_
 #define _FORWARD_TYPES_HPP_
 
@@ -32,7 +32,7 @@ namespace KTfwd
     {	
     }
     virtual ~mutation_base(){}
-};
+  };
 
   struct mutation : public mutation_base
   //!The simplest mutation type, adding just a selection coefficient and dominance to the interface
@@ -51,49 +51,54 @@ namespace KTfwd
       return( std::fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
 	      this->s == rhs.s );
     }
-};
+  };
 
-template<typename mut_type,
-	 typename list_type = std::list<mut_type> >
-struct gamete_base
-/*! \brief Base class for gametes.
-  A gamete is a container of pointers (iterators) to mutations + a count in the population
-  \note neutral and non-neutral mutations are stored in separate containers
- */
-{
-  static_assert( std::is_base_of<mutation_base,mut_type>::value,
-		 "mut_type must be derived from KTfwd::mutation_base" );
-  /// Count in population
-  unsigned n;
-  typedef mut_type mutation_type;
-  typedef list_type mutation_list_type;
-  typedef typename list_type::iterator mutation_list_type_iterator;
-  typedef std::vector< mutation_list_type_iterator > mutation_container;
-  typedef typename mutation_container::iterator mcont_iterator;
-  typedef typename mutation_container::const_iterator mcont_const_iterator;
-  /// mutations is for neutral mutations, smutations for selected...
-  mutation_container mutations,smutations;
-  gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
+  template<typename mut_type,
+	   typename list_type = std::list<mut_type> >
+  struct gamete_base
+  /*! \brief Base class for gametes.
+    A gamete is a container of pointers (iterators) to mutations + a count in the population
+    \note neutral and non-neutral mutations are stored in separate containers
+  */
   {
-  }
-  gamete_base(const unsigned & icount, const mutation_container & n,
-	      const mutation_container & s) : n(icount),mutations(n),smutations(s)
-  {
-  }
-  virtual ~gamete_base(){}
+    static_assert( std::is_base_of<mutation_base,mut_type>::value,
+		   "mut_type must be derived from KTfwd::mutation_base" );
+    /// Count in population
+    unsigned n;
+    using mutation_type = mut_type;
+    using mutation_list_type = list_type;
+    using mutation_list_type_iterator = typename list_type::iterator;
+    using mutation_container = std::vector< mutation_list_type_iterator >;
+    using mcont_iterator = typename mutation_container::iterator;
+    using mconst_const_iterator = typename mutation_container::const_iterator;
+    /// mutations is for neutral mutations, smutations for selected...
+    mutation_container mutations,smutations;
+    gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
+    {
+    }
+    gamete_base(const unsigned & icount, const mutation_container & n,
+		const mutation_container & s) : n(icount),mutations(n),smutations(s)
+    {
+    }
+    virtual ~gamete_base() noexcept {}
+    gamete_base( gamete_base & ) = default;
+    gamete_base( gamete_base const & ) = default;
+    gamete_base( gamete_base && ) = default;
+    gamete_base & operator=(gamete_base &) = default;
+    gamete_base & operator=(gamete_base const &) = default;
+    gamete_base & operator=(gamete_base &&) = default;
+    /*! \brief Equality operation
+      \note Given that mutations and smutations contains ITERATORS to actual mutations,
+      operator== does not need to be defined for the corresponding mutation type
+    */
+    inline bool operator==(const gamete_base<mut_type,list_type> & rhs) const
+    {
+      return(this->mutations == rhs.mutations && this->smutations == rhs.smutations);
+    }
+  };
 
-  /*! \brief Equality operation
-    \note Given that mutations and smutations contains ITERATORS to actual mutations,
-    operator== does not need to be defined for the corresponding mutation type
-   */
-  inline bool operator==(const gamete_base<mut_type,list_type> & rhs) const
-  {
-    return(this->mutations == rhs.mutations && this->smutations == rhs.smutations);
-  }
-};
-
-//! The simplest gamete adds nothing to the interface of the base class.
-typedef gamete_base<mutation> gamete;
+  //! The simplest gamete adds nothing to the interface of the base class.
+  using gamete = gamete_base<mutation>;
 
 }
 #endif /* _FORWARD_TYPES_HPP_ */
