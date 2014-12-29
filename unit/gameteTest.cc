@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE gameteTest.cc
+#define BOOST_TEST_MODULE gameteTest
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
