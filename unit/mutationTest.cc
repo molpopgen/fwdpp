@@ -260,5 +260,13 @@ BOOST_AUTO_TEST_CASE( boost_policy_test_2 )
   BOOST_CHECK_EQUAL(rv.second,true);
 }
 
-
+BOOST_AUTO_TEST_CASE( boost_policy_test_3 )
+{
+  mlist_t mlist;
+  auto rv = faux_mutate2( &mlist,
+			 std::bind( local_insert_at_end<const mut &,mlist_t>,std::placeholders::_1,std::placeholders::_2));
+  BOOST_CHECK_EQUAL(mlist.empty(),false);
+  BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
+  BOOST_CHECK_EQUAL(rv.second,false);
+}
 #endif
