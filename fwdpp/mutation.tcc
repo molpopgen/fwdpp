@@ -74,7 +74,7 @@ namespace KTfwd
 		      gamete_type new_gamete( 1,ibeg->mutations,ibeg->smutations );
 		      fwdpp_internal::add_N_mutations(mmodel,mpolicy,*itr,mutations,new_gamete);
 		      nmuts -= *itr;
-		      gpolicy(new_gamete,gametes);
+		      gpolicy(std::move(new_gamete),gametes);
 		      ibeg=(gametes->begin()+typename std::iterator_traits<decltype(ibeg)>::difference_type(i));
 		    }
 		  assert(nmuts==0);
@@ -106,7 +106,7 @@ namespace KTfwd
 	g->n--;
 	typename iterator_type::value_type ng( 1, g->mutations,g->smutations);
 	fwdpp_internal::add_N_mutations(mmodel,mpolicy,nm,mutations,ng);
-	return gpolicy(ng,gametes);
+	return gpolicy(std::move(ng),gametes);
       }
     return g;
   }
