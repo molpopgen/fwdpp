@@ -431,7 +431,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 
 	  fwdpp_internal::recombine_gametes(pos,ibeg,jbeg,new_gamete1,new_gamete2);
 
-	  vtype_iterator newpos = update_if_exists_insert(new_gamete1,gametes);
+	  vtype_iterator newpos = update_if_exists_insert(std::move(new_gamete1),gametes);
 	  assert(newpos->n <= twoN);
 	  auto dist = decltype(gcounts.size())(newpos - gametes->begin());
 	  if( dist < gcounts.size() )
@@ -439,7 +439,7 @@ unsigned recombine(gsl_rng * r, vector_type<gamete_type,vector_type_allocator > 
 	      gcounts[dist]++;
 	      assert( gcounts[dist] <= twoN );
 	    }
-	  newpos = update_if_exists_insert(new_gamete2,gametes);
+	  newpos = update_if_exists_insert(std::move(new_gamete2),gametes);
 	  assert(newpos->n <= twoN);
 	  dist = decltype(dist)(newpos - gametes->begin());
 	  if( dist < gcounts.size() )
