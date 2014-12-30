@@ -246,5 +246,6 @@ int main(int argc, char ** argv)
 	  std::cout << "//\nsegsites: 0\n";
 	}      
     }
+  gsl_rng_free(r);
   return 0;
 }
