@@ -32,6 +32,12 @@ namespace KTfwd
     {	
     }
     virtual ~mutation_base(){}
+    mutation_base( mutation_base & ) = default;
+    mutation_base( mutation_base const & ) = default;
+    mutation_base( mutation_base && ) = default;
+    mutation_base & operator=(mutation_base &) = default;
+    mutation_base & operator=(mutation_base const &) = default;
+    mutation_base & operator=(mutation_base &&) = default;
   };
 
   struct mutation : public mutation_base
