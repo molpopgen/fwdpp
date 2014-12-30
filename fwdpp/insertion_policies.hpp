@@ -18,7 +18,7 @@ namespace KTfwd
   template<typename T, typename cT>
   inline typename cT::iterator insert_at_end(  T && t,  cT * ct )
   {
-    return ct->insert(ct->end(),std::move(t));
+    return ct->insert(ct->end(),std::forward<T>(t));
   }
 
   /*! \brief     An insertion policy
@@ -37,7 +37,7 @@ namespace KTfwd
   template<typename T, typename cT>
   inline void push_at_end(  T && t,  cT * ct )
   {
-    ct->emplace_back(std::move(t));
+    ct->emplace_back(std::forward<T>(t));
   }
 
   /*! \brief     An insertion policy 
@@ -140,7 +140,7 @@ namespace KTfwd
 			    vector_type<gamete_type,vector_type_allocator > * gametes)const 
     {
       //gametes->push_back(ng);
-      gametes->emplace_back(std::move(ng));
+      gametes->emplace_back(std::forward<gamete_type>(ng));
     }
   };
 
@@ -171,7 +171,7 @@ namespace KTfwd
       if(itr == gametes->end())
 	{
 	  //gametes->push_back(ng);
-	  gametes->emplace_back(std::move(ng));
+	  gametes->emplace_back(std::forward<gamete_type>(ng));
 	}
       else
 	{
@@ -190,7 +190,7 @@ namespace KTfwd
   template<typename mutation_type,typename list_type>
   inline typename list_type::iterator insert_mutation_at_end( mutation_type && m,list_type * mutations)
   {
-    return (mutations->insert(mutations->end(),std::move(m)));
+    return (mutations->insert(mutations->end(),std::forward<mutation_type>(m)));
   }
   
   /*!
@@ -203,7 +203,7 @@ namespace KTfwd
   {
     typename list_type::iterator itr = std::find(mutations->begin(),mutations->end(),m);
     if( itr != mutations->end() ) return (itr);
-    return (mutations->insert(mutations->end(),std::move(m)));
+    return (mutations->insert(mutations->end(),std::forward<mutation_type>(m)));
   }
 }
 #endif /* _INSERTION_POLICIES_HPP_ */
