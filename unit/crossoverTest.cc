@@ -1,3 +1,7 @@
+/*!
+  \defgroup unit Unit testing
+ */
+//! \file crossoverTest.cc \ingroup unit
 #define BOOST_TEST_MODULE crossoverTest
 #define BOOST_TEST_DYN_LINK 
 

@@ -1,3 +1,4 @@
+//! \file mutationTest.cc \ingroup unit
 #define BOOST_TEST_MODULE mutationTest
 #define BOOST_TEST_DYN_LINK 
 
