@@ -89,7 +89,11 @@ namespace KTfwd
     virtual ~gamete_base() noexcept {}
     gamete_base( gamete_base & ) = default;
     gamete_base( gamete_base const & ) = default;
-    gamete_base( gamete_base && ) = default;
+    gamete_base( gamete_base && rhs) noexcept : n(std::move(rhs.n)),mutations(std::move(rhs.mutations)),smutations(std::move(rhs.mutations))
+    {
+      mutations.shrink_to_fit();
+      smutations.shrink_to_fit();
+    }
     gamete_base & operator=(gamete_base &) = default;
     gamete_base & operator=(gamete_base const &) = default;
     gamete_base & operator=(gamete_base &&) = default;
