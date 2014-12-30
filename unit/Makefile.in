@@ -78,7 +78,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@check_PROGRAMS = mutateTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	gameteTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	mutationTest$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	mutationTest$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT)
 @BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -110,6 +111,11 @@ am__mutationTest_SOURCES_DIST = mutationTest.cc
 @BUNIT_TEST_PRESENT_TRUE@	mutationTest.$(OBJEXT)
 mutationTest_OBJECTS = $(am_mutationTest_OBJECTS)
 mutationTest_LDADD = $(LDADD)
+am__policyTests_SOURCES_DIST = policyTests.cc
+@BUNIT_TEST_PRESENT_TRUE@am_policyTests_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	policyTests.$(OBJEXT)
+policyTests_OBJECTS = $(am_policyTests_OBJECTS)
+policyTests_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -140,10 +146,12 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
-	$(mutateTest_SOURCES) $(mutationTest_SOURCES)
+	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
+	$(policyTests_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
-	$(am__mutationTest_SOURCES_DIST)
+	$(am__mutationTest_SOURCES_DIST) \
+	$(am__policyTests_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -266,6 +274,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
 @BUNIT_TEST_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
 @BUNIT_TEST_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
+@BUNIT_TEST_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -322,6 +331,10 @@ mutationTest$(EXEEXT): $(mutationTest_OBJECTS) $(mutationTest_DEPENDENCIES) $(EX
 	@rm -f mutationTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutationTest_OBJECTS) $(mutationTest_LDADD) $(LIBS)
 
+policyTests$(EXEEXT): $(policyTests_OBJECTS) $(policyTests_DEPENDENCIES) $(EXTRA_policyTests_DEPENDENCIES) 
+	@rm -f policyTests$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(policyTests_OBJECTS) $(policyTests_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -332,6 +345,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policyTests.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

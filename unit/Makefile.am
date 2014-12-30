@@ -3,12 +3,14 @@ if BUNIT_TEST_PRESENT
 check_PROGRAMS=mutateTest \
 	crossoverTest \
 	gameteTest \
-	mutationTest
+	mutationTest \
+	policyTests
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
 gameteTest_SOURCES=gameteTest.cc
 mutationTest_SOURCES=mutationTest.cc
+policyTests_SOURCES=policyTests.cc
 
 AM_CXXFLAGS=
 
