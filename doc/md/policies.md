@@ -204,11 +204,6 @@ I'll document migration policy functions at a later date, sorry.
 This is the mutation base class  provided by __fwdpp__
 
 ~~~{.cpp}
-  /*! \brief Base class for mutations
-    At minimum, a mutation must contain a position and a count in the population.	
-    You can derive from this class, for instance to add selection coefficients,
-    counts in different sexes, etc.
-  */
   struct KTfwd::mutation_base
   {
     /// Mutation position
@@ -254,7 +249,7 @@ The mutation base class is not sufficient for any interesting sorts of simulatio
 };
 ~~~
 
-What does a mutation policy (model) need to do?  __{The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulation's mutation type with a count of 1.__
+What does a mutation policy (model) need to do?  __The answer is that a single call to the mutation model function (or function object) must return a single instance of the simulation's mutation type with a count of 1.__
 
 ### Example: the infinitely-many sites model of mutation
 
