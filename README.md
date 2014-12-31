@@ -24,7 +24,7 @@ Comments are welcome.
 
 # Preface
 
-This README is the main page of the fwdpp documentation.  It may display some things oddly when viewed on GitHub.  Please see the Reference Manual at the [fwdpp home page](http://molpopgen.github.io/fwdpp/) for a fully-formatted version of this document.
+This README is the main page of the fwdpp documentation.  It may display some things oddly when viewed on GitHub and/or links to other documentation pages may be broken.  These issues are not bugs -- please see the Reference Manual at the [fwdpp home page](http://molpopgen.github.io/fwdpp/) for a fully-formatted version of this document.
 
 # Introduction
 
