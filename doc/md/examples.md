@@ -23,13 +23,17 @@ Note: familiarity with Hudson's "[ms](http://home.uchicago.edu/~rhudson1)" progr
 
 The first program, diploid, simulates a Wright-Fisher population with mutation, recombination, and drift. To run it:
 
+~~~
 ./diploid N theta rho g n nreps seed | gzip > outfile.gz
+~~~
 
 The data in outfile.gz will be in the same format as Dick Hudson's "ms" coalescent simulator.
 
 Example:
 
-./diploid 10000 10 10 100000 50 1 $RANDOM | gzip > test\_diploid.gz
+~~~
+./diploid 10000 10 10 100000 50 1 $RANDOM | gzip > test_diploid.gz
+~~~
 
 ####diploid\_ind
 
@@ -41,7 +45,9 @@ The next program is called diploid\_binaryIO. This program is identical to diplo
 
 Usage:
 
-./diploid\_binaryIO N theta rho g replicate\_number index\_filename haplotype\_filename seed.
+~~~
+./diploid_binaryIO N theta rho g replicate\_number index\_filename haplotype\_filename seed.
+~~~
 
 Example for Open Grid Engine compute clusters:
 
@@ -55,7 +61,9 @@ seed=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
 
 \#note: the below assumes that the binary is in the users's $PATH and that the GE system knows how to link it to the relevant dynamic libraries
 
-diploid\_binaryIO 10000 10 10 100000 $SGE\_TASK\_ID indexfile hapfile $seed
+~~~
+diploid_binaryIO 10000 10 10 100000 $SGE_TASK_ID indexfile hapfile $seed
+~~~
 
 The above script, when submitted to a Grid Engine queue, will result in 100 populations of size N=10,000 being written to hapfile. Further, “indexfile” will contain the ID number and position of each file. Records are not over-written because the program uses POSIX file locking to ensure that only 1 process at a time can do the writing. This is a complex program, as it mixes C++ objects with output streams such that they can be written to C-style file descriptors, which is required in order to use file locking (which is a C feature with no C++ analog). However, the advantage is that you write all data to one large file, avoiding the plague of lots of small files that can bring distributed file systems to their knees.
 
@@ -69,7 +77,9 @@ This program is similar to diploid, but adds an additional mutation rate (theta\
 
 Usage:
 
-./dipoid\_fixed\_sh N theta theta\_selected rho s h g n nreps seed | gzip > outfile.gz
+~~~
+./dipoid_fixed_sh N theta theta_selected rho s h g n nreps seed | gzip > outfile.gz
+~~~
 
 For this program, s can be positive or negative, as can h.
 
@@ -85,15 +95,21 @@ This program simulates an ancestral population for g generations, at which point
 
 Usage:
 
-./diploid\_twopop\_mig N theta rho g g2 M n nreps seed | gzip > outfile.gz
+~~~
+./diploid_twopop_mig N theta rho g g2 M n nreps seed | gzip > outfile.gz
+~~~
 
 Note: the demographic model here implemented may be viewed as biologically bizarre, as it mimics the default behavior of “ms” for population split models. Let’s compare a specific example vs. the equivalent ms command line:
 
-./diplod\_twopop\_mig 10000 50 50 100000 1000 1 50 1 $RANDOM | gzip > outfile.gz
+~~~
+./diplod_twopop_mig 10000 50 50 100000 1000 1 50 1 $RANDOM | gzip > outfile.gz
+~~~
 
 and
 
+~~~
 ms 100 1 -t 50 -r 50 1000 -I 2 2 1 -ej 0.025 2 1 -em 0.025 1 2 0.
+~~~
 
 Why may this be considered odd? In ms, when two populations are merged, the rate of coalescence is unaffected by default (this behavior is documented, and it is up to the user to adjust population sizes when population merge and split in ms). That means when the two populations, each of size N merge, the merged (ancestral) population is still of size N. diploid\_twopop\_mig is doing the same thing forwards in time: an ancestral population of size N magically changes into two populations of size N. 
 
@@ -105,7 +121,9 @@ _Note that the two populations never share a common ancestor in this simulation!
 
 Usage:
 
-./migsel\_ind N 4Nu\_neut 4Nu\_sel 4Nr 4Nm s h f1 f2 ngens n outfilename seed
+~~~
+./migsel_ind N 4Nu_neut 4Nu_sel 4Nr 4Nm s h f1 f2 ngens n outfilename seed
+~~~
 
 where:
 N = population number for each deme.
@@ -145,7 +163,9 @@ The population is simulated for g generations with only neutral mutations, follo
 
 Usage:
 
+~~~
 ./RHH N theta rho L s Lambda g1 g2 n nreps seed | gzip > outfile.gz
+~~~
 
 Note: many of the well-known formulas for the effect of RHH on linked, neutral variation make very strong assumptions about the parameter values. For example, N needs to be large and s needs to be small, but Ns needs to be large. Further, Lambda needs to be sufficiently small such that sweeps are independent in time. This means that plugging in values to this program and comparing to theoretical predictions may lead to apparent discrepancies. This is also the case with various coalescent simulations of RHH.
 
@@ -155,7 +175,9 @@ This program simulates a population for g generations at size N. In generation g
 
 Usage:
 
-./bneck\_selection\_ind N theta\_neutral theta\_sel rho s h g1 N2 N3 g2 n nreps seed
+~~~
+./bneck_selection_ind N theta_neutral theta_sel rho s h g1 N2 N3 g2 n nreps seed
+~~~
 
 Where:<br>
 N = starting population size<br>
@@ -177,7 +199,9 @@ This is the simulation from Thornton, Foran, and Long (2013) Properties and Mode
 
 Usage:
 
-./TFL2013 N mu\_disease mu\_neutral littler esize dist sdE sdS burnin evolve msfile phenofile effectfile
+~~~
+./TFL2013 N mu_disease mu_neutral littler esize dist sdE sdS burnin evolve msfile phenofile effectfile
+~~~
 
 Where:<br>
 N = diploid population number<br>
@@ -196,7 +220,9 @@ effectfile = File to write positions and effect sizes of causative mutations. Gz
 
 Example from the PLoS Genetics paper:
 
+~~~
 ./TFL2013 20000 0.000125 0.00125 0.00125 0.5 1 0.075 1 0 160000 msfile.gz phenotypes.gz effects.gz
+~~~
 
 will simulate a mean effect size of 0.5 (exponentially-distributed).  The above will take probably many hours to run.
 
