@@ -359,6 +359,7 @@ TFL2013_SOURCES = TFL2013.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_1) $(am__append_2)
 LDADD = 
 all: all-am
+	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 
 .SUFFIXES:
 .SUFFIXES: .cc .o .obj
