@@ -153,6 +153,14 @@ make
 make install
 ~~~
 
+To compile examples and unit tests:
+
+~~~
+make check
+~~~
+
+Currently, the example programs will not get installed via "make install".   If you want them to be installed system-wide, copy the binaries manually to where you need them.
+
 ##To compile examples and install library without boost
 
 ~~~
