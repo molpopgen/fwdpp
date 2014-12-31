@@ -1,4 +1,4 @@
-# Policies in fwdpp
+# Tutorial: policies in fwdpp
 
 ## Introduction
 This document is intended to be an in-depth discussion of policies and their role in implementing forward-time population genetic simulations using the C++ template library __fwdpp__.  We will first describe what policies are using standard C++ examples, and then we will get into the harder stuff.
