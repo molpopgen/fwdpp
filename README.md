@@ -24,7 +24,7 @@ Comments are welcome.
 
 # Preface
 
-This README corresponds to fwdpp 0.2.5.  Currently, there has been no offical release of 0.2.5, but the code base is considered tested/stable, and hence is available as the "master" branch via github.  See the revision history below for changes in this release.
+This README is the main page of the fwdpp documentation.  It may display some things oddly when viewed on GitHub.  Please see the Reference Manual at the [fwdpp home page](http://molpopgen.github.io/fwdpp/) for a fully-formatted version of this document.
 
 # Introduction
 
@@ -44,7 +44,7 @@ This code is distributed via my gitub [account](http://www.github.com/molpopgen)
 
 ###Revision history
 
-Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](RELEASE_NOTES.md), beginning with release 0.2.4.
+Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](@ref md_md_RELEASE_NOTES), beginning with release 0.2.4.
 
 ##Which C++?
 
@@ -77,23 +77,14 @@ The version of fwdpp used in that publication is 0.2.4.
 
 ##Online
 
-A tutorial on policies and the library's reference manual can be found at [molpopgen.github.io/fwdpp](http://molpopgen.github.io/fwdpp)
-
+A tutorial on policies and the library's reference manual can be found at [molpopgen.github.io/fwdpp](http://molpopgen.github.io/fwdpp) or [here](@ref md_md_policies).
 
 __Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
 
 ##Built from source
-The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.  
+The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html. 
 
-The second piece of documentation is a tutorial on writing policies conforming to what fwdpp expects.  This document is doc/policies.tex and a pdf file of the documentation may be obtained by processing the file as follows:
-
-~~~
-cd doc
-pdflatex policies
-pdflatex policies
-~~~
-
-One runs pdflatex twice to ensure that cross-references within the document are processed properly.
+A tutorial on writing policies is also build via doxygen.  The source for the tutorial is a Markdown document (doc/md/policies.md).
 
 ##Example documentation
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
