@@ -253,7 +253,7 @@ The best documentation of how to use the library are the example simulations in 
 
 ###Compiling the examples:
 
-As of fwdpp 0.2.5, the examples are compiled by syaing "make" after the configure step.
+As of fwdpp 0.2.5, the examples are compiled by saying "make check" after the configure step.
 
 ###Running the examples:
 
