@@ -1,4 +1,4 @@
-#Unit tests for libsequence
+# Unit tests for fwdpp
 
 ##Dependencies
 
