@@ -1,4 +1,4 @@
-#0.2.5
+# 0.2.5
 
 The following changes:
 
@@ -17,7 +17,7 @@ The following changes:
 13. Boost's unit testing library is now used for unit testing.  To goal is to make sure that the stuff in fwdpp/internal all works.  The tests are compiled via "make check".
 14. Use config.h to manage preprocessor stuff
 
-#0.2.4
+# 0.2.4
 
 The following changes:
 
