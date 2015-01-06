@@ -683,7 +683,7 @@ namespace KTfwd
     buffer.write( reinterpret_cast<char *>(&NPOP), sizeof(unsigned) );
     
     typedef mutation_list_type< mutation_type, mutation_list_type_allocator > mlist;
-    typedef typename mlist::iterator mlist_iterator;
+    typedef typename mlist::const_iterator mlist_iterator;
     
     typedef std::vector< mlist_iterator > maptype;
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer ); 
