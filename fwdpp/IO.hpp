@@ -29,7 +29,7 @@ namespace KTfwd
 	    typename mutation_writer,
 	    typename ostreamtype>
   void write_binary_pop ( const vector_type< gamete_type, vector_type_allocator > * gametes,
-			  list_type< mutation_type, list_type_allocator > * mutations,
+			  const list_type< mutation_type, list_type_allocator > * mutations,
 			  const mutation_writer & mw,
 			  ostreamtype & buffer);
 
@@ -57,7 +57,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype>
   void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			      list_type< mutation_type, list_type_allocator > * mutations,
+			      const list_type< mutation_type, list_type_allocator > * mutations,
 			      const mutation_writer_type & mw,
 			      ostreamtype & buffer);
 
@@ -178,7 +178,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype>
   void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
 								typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
 			  vector_type_allocator > * diploids,
@@ -268,7 +268,7 @@ namespace KTfwd
 	    typename ostreamtype>
   void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
-			      mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
 										      typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
 									   vector_type_allocator >,

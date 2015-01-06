@@ -19,13 +19,13 @@ namespace KTfwd
 	      template<typename,typename> class list_type,
 	      typename mutation_writer_type,
 	      typename ostreamtype>
-    std::pair< std::vector< typename list_type< mutation_type, list_type_allocator >::iterator >,
+    std::pair< std::vector< typename list_type< mutation_type, list_type_allocator >::const_iterator >,
 	       std::vector<unsigned> >
-    operator()( list_type< mutation_type, list_type_allocator > * mutations,
+    operator()( const list_type< mutation_type, list_type_allocator > * mutations,
 		const mutation_writer_type & mw,
 		ostreamtype & buffer) const
 	      {
-		typedef typename list_type< mutation_type, list_type_allocator >::iterator mlist_iterator;
+		typedef typename list_type< mutation_type, list_type_allocator >::const_iterator mlist_iterator;
 		//initiate a list with the mutation information by iterator
 		typedef std::vector< mlist_iterator > maptype;
 		std::vector<unsigned> indexes;
@@ -60,7 +60,7 @@ namespace KTfwd
       template<typename,typename> class vector_type,
       typename ostreamtype>
     void operator()( const vector_type< gamete_type, vector_type_allocator > * gametes,
-		     const std::vector< typename gamete_type::mutation_list_type_iterator > & mut_info,
+		     const std::vector< typename gamete_type::mutation_list_type::const_iterator > & mut_info,
 		     const std::vector< unsigned > & indexes,
 		     ostreamtype & buffer) const
       {
@@ -220,7 +220,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype>
   void write_binary_pop ( const vector_type< gamete_type, vector_type_allocator > * gametes,
-			  list_type< mutation_type, list_type_allocator > * mutations,
+			  const list_type< mutation_type, list_type_allocator > * mutations,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
   {	      
@@ -230,7 +230,7 @@ namespace KTfwd
     static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
                    std::is_same<gamete_base_type,gamete_type>::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
-    typedef typename list_type< mutation_type, list_type_allocator >::iterator mlist_iterator;
+    typedef typename list_type< mutation_type, list_type_allocator >::const_iterator mlist_iterator;
     //initiate a list with the mutation information by iterator
     typedef std::vector< mlist_iterator > maptype;
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer );
@@ -248,7 +248,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype>
   void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			      list_type< mutation_type, list_type_allocator > * mutations,
+			      const list_type< mutation_type, list_type_allocator > * mutations,
 			      const mutation_writer_type & mw,
 			      ostreamtype & buffer)
   {	      
@@ -258,7 +258,7 @@ namespace KTfwd
     static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
                    std::is_same<gamete_base_type,gamete_type>::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
-    typedef typename list_type< mutation_type, list_type_allocator >::iterator mlist_iterator;
+    typedef typename list_type< mutation_type, list_type_allocator >::const_iterator mlist_iterator;
     
     //initiate a list with the mutation information by iterator
     typedef std::vector< mlist_iterator > maptype;
@@ -392,7 +392,7 @@ namespace KTfwd
     std::pair< std::vector< typename list_type< gamete_type, list_type_allocator >::const_iterator >,
 	       std::vector<unsigned> >
     operator()( const list_type< gamete_type, list_type_allocator > * gametes,
-		const std::vector< typename gamete_type::mutation_list_type_iterator > & mut_info,
+		const std::vector< typename gamete_type::mutation_list_type::const_iterator > & mut_info,
 		const std::vector< unsigned > & indexes,
 		ostreamtype & buffer) const
     {
@@ -441,14 +441,14 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype>
   void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
 								typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
 						     vector_type_allocator > * diploids,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
   {
-    typedef typename mutation_list_type< mutation_type, mutation_list_type_allocator >::iterator mlist_iterator;
+    typedef typename mutation_list_type< mutation_type, mutation_list_type_allocator >::const_iterator mlist_iterator;
     typedef typename gamete_list_type< gamete_type, gamete_list_type_allocator >::const_iterator glist_iterator;
     //initiate a list with the mutation information by iterator
     typedef std::vector< mlist_iterator > maptype;
@@ -670,7 +670,7 @@ namespace KTfwd
 	    typename ostreamtype>
   void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
-			      mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
 										      typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
 									   vector_type_allocator >,
