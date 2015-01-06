@@ -1,5 +1,11 @@
 # FWDPP RELEASE NOTES
 
+## 0.2.6 
+
+* const mutation lists now passed to binary output routines
+* The library internals now fully support C++11 move semantics
+* Default policies now support C++11 "perfect forwarding"
+
 ## 0.2.5
 
 The following changes:
