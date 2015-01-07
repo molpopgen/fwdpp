@@ -130,6 +130,10 @@ Again, a few options:
 </ol>
 </ol>
 
+Another option is to click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
+
+On a decent browser, when you click on a release, it should be called fwdpp-version.tar.gz.  Sometimes, though, you may get version.tar.gz.  This is a browser-by-github interaction problem.  On my systems, I get the correct result.
+
 # Installation
 
 ##The case of a standard system with all dependencies installed in standard locations
@@ -194,24 +198,6 @@ For example:
 ~~~
 ./configure --prefix=$HOME
 ~~~
-
-## Installing a specific release
-
-If you want a stable release of fwdpp (rather than the master branch which may be semi-experimental), click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
-
-On a decent browser, when you click on a release, it should be called fwdpp-version.tar.gz.  Sometimes, though, you may get version.tar.gz.  This is a browser-by-github interaction problem.  On my systems, I get the correct result.
-
-Then,
-
-~~~{sh}
-tar xzf fwdpp-version.tar.gz
-cd fwdpp-version
-./configure CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
-make install
-~~~
-
-And now you can compile the examples as described above.
-
 
 ##Examples
 
