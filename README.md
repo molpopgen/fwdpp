@@ -195,41 +195,7 @@ For example:
 ./configure --prefix=$HOME
 ~~~
 
-##"Fast" installation into a user's $HOME folder
-
-If you do not have permission for anything other than a local install, there is a [script](https://www.github.com/molpopgen/install_libseq) that will install gsl-1.1.6, boost 1.5.5, and the master branch of libsequence into your home directory.  This means that header files end up in $HOME/include and run-time libraries end up in $HOME/lib.  (Typically, the "should" be in /usr/local instead of $HOME, but you may not have the permissions to install there).
-
-First, get libsequence and its dependencies all installed:
-
-~~~{sh}
-git clone https://www.github.com/molpopgen/install_libseq.git
-cd install_libseq
-bash libseq _ local.sh
-~~~
-
-The above takes a while.
-
-Now, you can get fwdpp installed.  Below, we cover how to install both the master branch or a stable release into $HOME.
-
-Once installed, you should see the directory $HOME/include/fwdpp, and it should be full of header files.  Nothing goes in $HOME/lib.
-
-To get the master branch from git:
-
-~~~{sh}
-git clone https://github.com/molpopgen/fwdpp
-cd fwdpp
-./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS=-L$HOME/lib
-make install
-~~~
-
-Then, you can compile the example programs:
-
-~~~
-cd examples
-LDFLAGS=-I$HOME/lib make check
-~~~
-
-See below for how to run the examples.
+## Installing a specific release
 
 If you want a stable release of fwdpp (rather than the master branch which may be semi-experimental), click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
 
