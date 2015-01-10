@@ -4993,7 +4993,7 @@ _ACEOF
   LIBS="-lz $LIBS"
 
 else
-  as_fn_error $? "\"zlib run time library not found\";exit 1" "$LINENO" 5
+  as_fn_error $? "zlib run time library not found" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cblas_dgemm in -lgslcblas" >&5
@@ -5040,7 +5040,7 @@ _ACEOF
   LIBS="-lgslcblas $LIBS"
 
 else
-  as_fn_error $? "\"gslcblas run-time library not found\"" "$LINENO" 5
+  as_fn_error $? "gslcblas run-time library not found" "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gsl_blas_dgemm in -lgsl" >&5
@@ -5087,7 +5087,7 @@ _ACEOF
   LIBS="-lgsl $LIBS"
 
 else
-  as_fn_error $? "\"gsl run-time library not found\"" "$LINENO" 5
+  as_fn_error $? "gsl run-time library not found" "$LINENO" 5
 fi
 
 
@@ -5136,7 +5136,7 @@ _ACEOF
   LIBS="-lsequence $LIBS"
 
 else
-  as_fn_error $? "echo \"libsequence runtime library does not seem to be here\";exit 1" "$LINENO" 5
+  as_fn_error $? "libsequence runtime library does not seem to be here" "$LINENO" 5
 fi
 
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
