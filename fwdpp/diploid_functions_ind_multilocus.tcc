@@ -20,6 +20,7 @@ namespace KTfwd
 	    typename recombination_policy_container,
 	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
+	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
@@ -41,6 +42,7 @@ namespace KTfwd
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
@@ -144,7 +146,7 @@ namespace KTfwd
 	    unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	    if ( i > 0 )
 	      {
-		unsigned nrbw = gsl_ran_binomial(r,r_between_loci[i-1],1);
+		unsigned nrbw = blrf(r,r_between_loci[i-1]);
 		bool obw = (nrbw%2!=0) ? true : false;
 		p1g1 = (LO1) ? !p1g1 : p1g1;
 		p1g1 = (obw) ? !p1g1 : p1g1;
@@ -155,7 +157,7 @@ namespace KTfwd
 	    temp = rec_policies[i]( p2c[i].first, p2c[i].second );
 	    if ( i > 0 )
 	      {
-		unsigned nrbw = gsl_ran_binomial(r,r_between_loci[i-1],1);
+		unsigned nrbw = blrf(r,r_between_loci[i-1]);
 		bool obw = (nrbw%2!=0) ? true : false;
 		p2g1 = (LO2) ? !p2g1 : p2g1;
 		p2g1 = (obw) ? !p2g1 : p2g1;
@@ -237,6 +239,7 @@ namespace KTfwd
 	    typename recombination_policy_container,
 	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
+	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
@@ -257,13 +260,14 @@ namespace KTfwd
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
-    return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,mpolicy,gpolicy_mut,ff,mp,f);
+    return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,blrf,mpolicy,gpolicy_mut,ff,mp,f);
   }
 } //ns KTfwd
 #endif
