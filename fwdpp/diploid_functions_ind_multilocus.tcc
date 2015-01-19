@@ -173,6 +173,7 @@ namespace KTfwd
 	  }
       }
 
+    //update mutation counts in gametes
     auto glist_updater = []( decltype( *(gametes->begin()) ) & __g) {
       auto __first=__g.begin(),__last=__g.end();
       decltype(__first) __temp;
