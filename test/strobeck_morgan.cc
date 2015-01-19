@@ -155,6 +155,7 @@ int main(int argc, char ** argv)
 	  			 mmodels,
 	  			 recpols,
 	  			 rbw,
+				 [](gsl_rng * __r, const double & d) { return gsl_ran_poisson(__r,d); },
 	  			 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
