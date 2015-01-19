@@ -144,8 +144,7 @@ namespace KTfwd
 	    unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	    if ( i > 0 )
 	      {
-		//TODO: This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se
-		unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
+		unsigned nrbw = gsl_ran_binomial(r,r_between_loci[i-1],1);
 		bool obw = (nrbw%2!=0) ? true : false;
 		p1g1 = (LO1) ? !p1g1 : p1g1;
 		p1g1 = (obw) ? !p1g1 : p1g1;
@@ -156,8 +155,7 @@ namespace KTfwd
 	    temp = rec_policies[i]( p2c[i].first, p2c[i].second );
 	    if ( i > 0 )
 	      {
-		//TODO: This should be binomial, not Poisson: (co-inheritance probabilities, rather than "r" per se)
-		unsigned nrbw = gsl_ran_poisson(r,r_between_loci[i-1]);
+		unsigned nrbw = gsl_ran_binomial(r,r_between_loci[i-1],1);
 		bool obw = (nrbw%2!=0) ? true : false;
 		p2g1 = (LO2) ? !p2g1 : p2g1;
 		p2g1 = (obw) ? !p2g1 : p2g1;
