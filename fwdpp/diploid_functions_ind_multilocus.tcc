@@ -115,6 +115,8 @@ namespace KTfwd
       {
 	assert(dptr==diploids->begin());
 	assert( (dptr+curr_dip) < diploids->end() );
+
+	//Choose the two parents
 	typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup.get()));
 	decltype(p1) p2  = (gsl_rng_uniform(r) <= f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
 	assert(p1<N_curr);
@@ -165,9 +167,6 @@ namespace KTfwd
 	 
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
-
-	    //adjust_mutation_counts( (ptr2cdip+i)->first,1 );
-	    //adjust_mutation_counts( (ptr2cdip+i)->second,1 );
 
 	    (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
 	    (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
