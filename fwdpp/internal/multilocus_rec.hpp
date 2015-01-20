@@ -10,6 +10,17 @@
 
 namespace KTfwd {
   namespace fwdpp_internal {
+    /*!
+      The mechanics of recombination for multilocus simulations
+      \param r A GSL random number generator
+      \param rec A policy that affects recombination withing a locus
+      \param bw A policy that returns the number of recombination events between loci.  The return value must be unsigned int, and what really matters is if that value is odd or even.
+      \param r_between_loci A const array of doubles corresponding to the recombination rates between loci.  For k loci, this vector must be k-1 doubles long.  Further, the i-th value must correspond to the recombination rate between loci i-1 and i.
+      \param parental_gamete_1 An iterator to the first parental gamete
+      \param parental_gamete_1 An iterator to the second parental gamete
+      \param g1 If true, then parental_gamete_1 is inherited by the descendant.
+      \paragm LO Should be true if the last recombination even within loci resulted in an odd number of crossovers.
+     */
     template<typename within_loc_rec_policy,
 	     typename between_loc_rec_policy,
 	     typename gamete_itr_t>
