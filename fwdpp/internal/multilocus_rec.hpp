@@ -1,6 +1,11 @@
 #ifndef __FWDPP_INTERNAL_MULTILOCUS_REC_HPP__
 #define __FWDPP_INTERNAL_MULTILOCUS_REC_HPP__
 
+/*
+  The mechanics of crossing over for a multilocus
+  simulation
+ */
+
 #include <gsl/gsl_rng.h>
 
 namespace KTfwd {
