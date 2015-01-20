@@ -4,6 +4,7 @@
 
 #include <fwdpp/mutation.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
+#include <fwdpp/internal/multilocus_rec.hpp>
 
 namespace KTfwd
 {
@@ -143,28 +144,37 @@ namespace KTfwd
 	bool LO1 = true, LO2 = true;
 	for ( unsigned i = 0 ; i < p1c.size() ; ++i )
 	  {
-	    unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
-	    if ( i > 0 )
-	      {
-		unsigned nrbw = blrf(r,r_between_loci[i-1]);
-		bool obw = (nrbw%2!=0) ? true : false;
-		p1g1 = (LO1) ? !p1g1 : p1g1;
-		p1g1 = (obw) ? !p1g1 : p1g1;
-	      }
-	    (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
-	    LO1 = (temp % 2 != 0.) ? true : false;
+	    //This entire bit from here...
+	    (ptr2cdip+i)->first = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
+								  r_between_loci,i,
+								  p1c[i].first,p1c[i].second,
+								  p1g1,LO1 );
+	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
+								  r_between_loci,i,
+								  p2c[i].first,p2c[i].second,
+								  p2g1,LO2 );
+	    // unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
+	    // if ( i > 0 )
+	    //   {
+	    // 	unsigned nrbw = blrf(r,r_between_loci[i-1]);
+	    // 	bool obw = (nrbw%2!=0) ? true : false;
+	    // 	p1g1 = (LO1) ? !p1g1 : p1g1;
+	    // 	p1g1 = (obw) ? !p1g1 : p1g1;
+	    //   }
+	    // (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
+	    // LO1 = (temp % 2 != 0.) ? true : false;
 
-	    temp = rec_policies[i]( p2c[i].first, p2c[i].second );
-	    if ( i > 0 )
-	      {
-		unsigned nrbw = blrf(r,r_between_loci[i-1]);
-		bool obw = (nrbw%2!=0) ? true : false;
-		p2g1 = (LO2) ? !p2g1 : p2g1;
-		p2g1 = (obw) ? !p2g1 : p2g1;
-	      }
-	    (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
-	    LO2 = (temp % 2 != 0.) ? true : false;
-	 
+	    // unsigned temp = rec_policies[i]( p2c[i].first, p2c[i].second );
+	    // if ( i > 0 )
+	    //   {
+	    // 	unsigned nrbw = blrf(r,r_between_loci[i-1]);
+	    // 	bool obw = (nrbw%2!=0) ? true : false;
+	    // 	p2g1 = (LO2) ? !p2g1 : p2g1;
+	    // 	p2g1 = (obw) ? !p2g1 : p2g1;
+	    //   }
+	    // (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
+	    // LO2 = (temp % 2 != 0.) ? true : false;
+	    //...to here is a good candidate for isolating to an fxn in ns fwdpp_internal
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
 
