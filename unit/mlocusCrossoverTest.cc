@@ -165,6 +165,12 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
   							  //No Rec. rate = 1
 							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
+								    /*
+								      This function object forces that only a single x-over will occur internally.
+								      It works b/c, if called > 1, then it returns an xover position of 1, which is larger
+								      than the position of any mutation in this example, and thus the xovers will not
+								      affect the configuration of the gametes
+								    */
 								    [&NCALLS]() { 
 								      if(!NCALLS)
 									{
@@ -174,7 +180,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
 								      else ++NCALLS;
 									return 1.0;
 								    } ),
-  							  //Rec. b/w loci returns an ODD number
+  							  //Rec. b/w loci returns an EVEN number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
   							  &r_bw_loci,1,
   							  //the parental gamete types
@@ -204,6 +210,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_4 )
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
   							  //No Rec. rate = 1
 							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
+								    //see previous test for doc of this lambda expression
 								    [&NCALLS]() { 
 								      if(!NCALLS)
 									{
