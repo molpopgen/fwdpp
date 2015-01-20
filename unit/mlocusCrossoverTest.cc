@@ -20,7 +20,7 @@ using gtype = KTfwd::gamete;
   Initiate random number generation system -- 
   these tests will not be random, but these objects
   are req'd for function calls to fwdpp's internal 
-stuff 
+  stuff 
 */
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
@@ -97,7 +97,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   //Now, there has been a swap
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.9 );
 
-  // //Redo it so that there is not a swap
+  //Redo it so that there is not a swap
   dip2 = diploid;
   p1 = true;
   LO = false;
@@ -114,5 +114,23 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   							  p1,LO);
 
   //Now, there has NOT been a swap
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+
+  //Redo the first example, with a rec event in locus 2, and an odd no. recs b/w loci
+  //THIS TEST WILL BE HARDER TO DO!!!!
+  dip2 = diploid;
+  p1 = true;
+  LO = false;
+  ptr2cdip = dip2.begin()+1;
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+  ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
+  							  //No rec w/in loci
+  							  [](glist::iterator &a,glist::iterator & b) { return 1; },
+  							  //Rec. b/w loci returns an ODD number
+  							  [](gsl_rng * __r, const double & __d) { return 0; },
+  							  &r_bw_loci,1,
+  							  //the parental gamete types
+  							  diploid[1].first,diploid[1].second,
+  							  p1,LO);
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
 }
