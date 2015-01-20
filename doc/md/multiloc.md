@@ -11,3 +11,7 @@ Describe the current machinery
 ### Recombination between loci
 
 This needs special mention
+
+#### Mechanics of the multilocus recombination
+
+Document the logic here
