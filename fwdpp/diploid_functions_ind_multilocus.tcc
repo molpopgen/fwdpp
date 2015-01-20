@@ -150,9 +150,9 @@ namespace KTfwd
 								  p1c[i].first,p1c[i].second,
 								  p1g1,LO1 );
 	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
-								  r_between_loci,i,
-								  p2c[i].first,p2c[i].second,
-								  p2g1,LO2 );
+								   r_between_loci,i,
+								   p2c[i].first,p2c[i].second,
+								   p2g1,LO2 );
 	    // unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
 	    // if ( i > 0 )
 	    //   {
