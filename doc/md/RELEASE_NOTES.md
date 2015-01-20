@@ -5,6 +5,8 @@
 * const mutation lists now passed to binary output routines
 * The library internals now fully support C++11 move semantics
 * Default policies now support C++11 "perfect forwarding"
+* The mechanics of recombination in multilocus simulations moved to function multilocus_rec in namesapce KTfwd::fwdpp_internal.
+* A unit test for the function KTfwd::fwdpp_internal::multilocus_rec was added.
 
 ## 0.2.5
 
