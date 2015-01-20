@@ -18,7 +18,7 @@ namespace KTfwd
       typename itr_type::difference_type __dist = std::distance(__first,__last);
       if ( __dist <= 250 )
 	{
-	  //At most __last - _first comparisons of double + equal number if emplace_backs
+	  //At most __last - _first comparisons of double + equal number of emplace_backs
 	  while(__first != __last && (*__first)->pos < val)
 	    {
 	      if( SWITCH )
