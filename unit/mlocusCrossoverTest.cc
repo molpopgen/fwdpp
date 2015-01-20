@@ -123,16 +123,10 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   LO = false;
   ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
-  auto ng1(*ptr2cdip->first),ng2(*ptr2cdip->second);
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
-  							  //No rec w/in loci
-  							  [&diploid,&ptr2cdip,&ng1,&ng2](glist::iterator &a,glist::iterator & b) {
-							    std::vector<double> xoverpos(1,0.8); //xover at position 0.8
-							    KTfwd::fwdpp_internal::recombine_gametes( xoverpos,
-												      diploid[1].first,diploid[1].second,
-												      ng1,ng2 );
-							    return 1.;
-							  },
+  							  //No Rec. rate = 1
+							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
+								    []() { return 0.8;} ),
   							  //Rec. b/w loci returns an ODD number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
   							  &r_bw_loci,1,
