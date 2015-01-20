@@ -21,8 +21,9 @@ namespace KTfwd
     assert( g2 != gametes->end() );
     assert( std::is_sorted(pos.begin(),pos.end()) );
     assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
-    typedef typename iterator_type::value_type gtype;
-    typedef typename gtype::mutation_container gtype_mcont;
+
+    using gtype = typename iterator_type::value_type;
+    using gtype_mcont = typename gtype::mutation_container;
     
     //Identify cases where recombination cannot result in changed gametes, and get out quick
     // if(g1 == g2 ) return 0;
