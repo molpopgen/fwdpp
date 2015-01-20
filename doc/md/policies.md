@@ -1,13 +1,16 @@
 # Tutorial: policies in fwdpp
 
-## Introduction
+[TOC]
+
+\section intro Introduction
+
 This document is intended to be an in-depth discussion of policies and their role in implementing forward-time population genetic simulations using the C++ template library __fwdpp__.  We will first describe what policies are using standard C++ examples, and then we will get into the harder stuff.
 
 An understanding of C++ fundamentals, including containers, their iterators, and how they relate to the standard algorithms, is assumed knowledge here.
 
-## Policies in C++
+\section general Policies in C++
 
-### Policies are everywhere
+\subsection everywhere Policies are everywhere
 Policies are a part of every programming language.  Generally-speaking, they modify the behavior of what functions are with (or to) data.  In other words, they turn a generic function into a piece of code doing a specific task.  Let's start with the rather trivial example of sorting a vector:
 
 ~~~{.cpp}
@@ -35,7 +38,7 @@ The above example is 100\% standard C++.  But what is going on under the hood of
   };
 ~~~
 
-### Policies are often function objects
+\subsubsection functors Policies are often function objects
 The structure called less is a ``function object'', and is the policy being employed in the sort.  Further, is a template, meaning it works on any data type for which __operator<__ is defined.  The detail that less inherits from __std::binary\_function__ is important for how it plugs into the sort algorithm, but we'll deal with those issues later.
 
 The way such a function object is used looks like:
