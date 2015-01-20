@@ -36,6 +36,15 @@ using diploid_t = std::vector< std::pair< glist::iterator, glist::iterator> >;
   g1,l2 = 0.75,
   g2,l1 = 0.25,
   g2,l2 = 0.9
+
+  This function is all setup. 
+  Typically, these steps would be random outcomes
+  of a model, but we need to manually do these
+  steps ourselves for unit testing.  In other words,
+  what happens in this function is NOT what is happening
+  within fwdpp.  However, the unit test modules below
+  use what this function does as input to fwdpp's internal
+  functions.
 */
 void setup1( gvector & gametes,
 	     mutlist & mlist,
