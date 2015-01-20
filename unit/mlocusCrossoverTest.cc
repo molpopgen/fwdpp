@@ -24,22 +24,25 @@ using gtype = KTfwd::gamete;
 */
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
+//Set up our basic containers
+using glist = std::list<gtype>;
+using gvector = std::vector< glist >;
+using mutlist = std::list<mut>;
+using diploid_t = std::vector< std::pair< glist::iterator, glist::iterator> >;
 
-BOOST_AUTO_TEST_CASE( two_locus_test_1 )
+/*
+  Set up the following config:
+  g1,l1 = 0.5
+  g1,l2 = 0.75,
+  g2,l1 = 0.25,
+  g2,l2 = 0.9
+*/
+void setup1( gvector & gametes,
+	     mutlist & mlist,
+	     diploid_t & diploid )
 {
-  //Set up our basic containers
-  using glist = std::list<gtype>;
-  using gvector = std::vector< glist >;
-
-  gvector gametes( 2,glist(2,gtype(1)) );
-  std::list<mut> mlist;
-  /*
-    Set up the following config:
-    g1,l1 = 0.5
-    g1,l2 = 0.75,
-    g2,l1 = 0.25,
-    g2,l2 = 0.9
-  */
+  gametes = gvector( 2,glist(2,gtype(1)) );
+  mlist = mutlist();
 
   //To set this up, let's add the mutations:
   auto m1 = mlist.insert(mlist.end(),mut(0.5,0.,1));
@@ -57,8 +60,8 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   ++gitr;
   gitr->mutations.push_back(m4);
 
-  //Now, make a diploids
-  std::vector< std::pair< glist::iterator, glist::iterator> > diploid(2);
+  //Now, make a diploid
+  diploid = diploid_t(2);
   gitr=gametes[0].begin();
   diploid[0].first = gitr;
   ++gitr;
@@ -67,12 +70,14 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   diploid[1].first = gitr;
   ++gitr;
   diploid[1].second = gitr;
-  /*
-    The above is all setup.  Usually, that sort of
-    stuff would be random, and handled by other fwdpp functions
-  */
+}
 
-  //Below, we mimic what happens internally within fwdpp
+BOOST_AUTO_TEST_CASE( two_locus_test_1 )
+{
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
 
   //copy!
   auto dip2(diploid);
@@ -96,11 +101,26 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
 
   //Now, there has been a swap
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.9 );
+}
 
+BOOST_AUTO_TEST_CASE( two_locus_test_2 )
+{
   //Redo it so that there is not a swap
-  dip2 = diploid;
-  p1 = true;
-  LO = false;
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
+
+  //copy!
+  auto dip2(diploid);
+  //Make a pointer to the 2nd locus of dip2
+  auto ptr2cdip = dip2.begin()+1;
+
+  //There WILL be a crossover
+  double r_bw_loci = 1;
+  
+  bool p1 = true;
+  bool LO = false;
   ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
@@ -115,13 +135,23 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
 
   //Now, there has NOT been a swap
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+}
 
+BOOST_AUTO_TEST_CASE( two_locus_test_3 )
+{
   //Redo the first example, with a rec event in locus 2, and an odd no. recs b/w loci
   //THIS TEST WILL BE HARDER TO DO!!!!
-  dip2 = diploid;
-  p1 = true;
-  LO = false;
-  ptr2cdip = dip2.begin()+1;
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
+
+  //There WILL be a crossover
+  double r_bw_loci = 1;
+  auto dip2 = diploid;
+  bool p1 = true;
+  bool LO = false;
+  auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
   							  //No Rec. rate = 1
