@@ -11,6 +11,9 @@
 #include <functional>
 #include <list>
 #include <sstream>
+#include <fstream>
+#include <boost/interprocess/sync/file_lock.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 
 using namespace std;
 using namespace Sequence;
@@ -74,13 +77,14 @@ double mslike_map( gsl_rng * r, const double & beg, const double & L )
 int main(int argc, char ** argv)
 {
   int argument=1;
-  if ( argc != 4 )
+  if ( argc != 5 )
     {
-      cerr << "usage: strobeck_morgan nreps seed\n";
+      cerr << "usage: strobeck_morgan nreps outfile seed\n";
       exit(10);
     }
   const unsigned N = atoi(argv[argument++]); //Population size
   unsigned nreps = atoi(argv[argument++]);
+  const char * outfile = argv[argument++];
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
   if (!nreps)
     {
@@ -171,6 +175,12 @@ int main(int argc, char ** argv)
 
       buffer << l0 << '\n' << l1 << '\n' << l2 << '\n';
     }
-  cout << buffer.str() << '\n';
+  std::ofstream ofile(outfile,std::ios_base::out);
+  boost::interprocess::file_lock flock(outfile);
+  boost::interprocess::scoped_lock<boost::interprocess::file_lock> slock(flock);
+  ofile << buffer.str() << '\n';
+  ofile.flush();
+  flock.unlock();
+  ofile.close();
   exit(0);
 }
