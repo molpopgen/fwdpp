@@ -25,10 +25,10 @@ namespace KTfwd
     typedef typename gtype::mutation_container gtype_mcont;
     
     //Identify cases where recombination cannot result in changed gametes, and get out quick
-    if(g1 == g2 ) return 0;
-    auto nm1=g1->mutations.size()+g1->smutations.size();
-    auto nm2=g2->mutations.size()+g2->smutations.size();
-    if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return 0;
+    // if(g1 == g2 ) return 0;
+    // auto nm1=g1->mutations.size()+g1->smutations.size();
+    // auto nm2=g2->mutations.size()+g2->smutations.size();
+    // if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return 0;
 
     gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
       new_gamete2(new_gamete1);
