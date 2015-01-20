@@ -97,7 +97,8 @@ namespace KTfwd
   {
     assert( g1 != gametes->end() );
     assert( g2 != gametes->end() );
-    
+    assert( std::is_sorted(pos.begin(),pos.end()) );
+    assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
     typedef typename iterator_type::value_type gtype;
     typedef typename gtype::mutation_container gtype_mcont;
     
