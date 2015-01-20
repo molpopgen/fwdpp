@@ -162,6 +162,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
   auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
   unsigned NCALLS=0;
+
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
   							  //No Rec. rate = 1
 							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
@@ -178,7 +179,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
 									  return 0.8;
 									}
 								      else ++NCALLS;
-									return 1.0;
+								      return 1.0;
 								    } ),
   							  //Rec. b/w loci returns an EVEN number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
@@ -218,7 +219,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_4 )
 									  return 0.8;
 									}
 								      else ++NCALLS;
-									return 1.0;
+								      return 1.0;
 								    } ),
   							  //Rec. b/w loci returns an ODD number
   							  [](gsl_rng * __r, const double & __d) { return 1; },
@@ -228,4 +229,75 @@ BOOST_AUTO_TEST_CASE( two_locus_test_4 )
   							  p1,LO);
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 0 );
   BOOST_CHECK_EQUAL( ptr2cdip->second->mutations.size(), 1 );
+}
+
+//A redo of 3, but with two diploids as parents, and we do the xover for both chromos
+BOOST_AUTO_TEST_CASE( two_locus_test_5 )
+{
+  //Redo the first example, with a rec event in locus 2, and an even no. recs b/w loci
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
+  diploid_t diploid2(diploid); //this is the other parent
+  //There WILL be a crossover
+  double r_bw_loci = 1;
+  auto dip2 = diploid;
+  bool p1 = true;
+  bool LO = false;
+  auto ptr2cdip = dip2.begin()+1;
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+  unsigned NCALLS=0;
+
+  auto pcopy(diploid);
+  ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
+  							  //No Rec. rate = 1
+							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
+								    /*
+								      See above
+								    */
+								    [&NCALLS]() { 
+								      if(!NCALLS)
+									{
+									  ++NCALLS;
+									  return 0.8;
+									}
+								      else ++NCALLS;
+								      return 1.0;
+								    } ),
+  							  //Rec. b/w loci returns an EVEN number
+  							  [](gsl_rng * __r, const double & __d) { return 0; },
+  							  &r_bw_loci,1,
+  							  //the parental gamete types
+  							  pcopy[1].first,pcopy[1].second,
+  							  p1,LO);
+  BOOST_CHECK_EQUAL( diploid[1].first->mutations.size(),1 );
+  BOOST_CHECK_EQUAL( diploid[1].second->mutations.size(),1 );
+  p1=false; //set it equal to false, for fun
+  LO=false;
+  NCALLS=0;
+  pcopy = diploid;
+  ptr2cdip->second = KTfwd::fwdpp_internal::multilocus_rec(r,
+							   //Change rate to 300 to make sure that an xover happens at 0.8
+							   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],300.,r,
+								     /*
+								       See above
+								     */
+								     [&NCALLS]() { 
+								       if(!NCALLS)
+									{
+									  ++NCALLS;
+									  return 0.8;
+									}
+								       else ++NCALLS;
+								       return 1.0;
+								    } ),
+							   //Rec. b/w loci returns an EVEN number
+							   [](gsl_rng * __r, const double & __d) { return 0; },
+							   &r_bw_loci,1,
+							   //the parental gamete types
+							   pcopy[1].first,pcopy[1].second,
+							   p1,LO);
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( ptr2cdip->second->mutations.size(), 0 );
 }
