@@ -161,26 +161,13 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
   bool LO = false;
   auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
-  unsigned NCALLS=0;
-
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
-  							  //No Rec. rate = 1
-							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
-								    /*
-								      This function object forces that only a single x-over will occur internally.
-								      It works b/c, if called > 1, then it returns an xover position of 1, which is larger
-								      than the position of any mutation in this example, and thus the xovers will not
-								      affect the configuration of the gametes
-								    */
-								    [&NCALLS]() { 
-								      if(!NCALLS)
-									{
-									  ++NCALLS;
-									  return 0.8;
-									}
-								      else ++NCALLS;
-								      return 1.0;
-								    } ),
+							  [&gametes]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.8);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[1],g1,g2);
+							  },
   							  //Rec. b/w loci returns an EVEN number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
   							  &r_bw_loci,1,
@@ -207,20 +194,14 @@ BOOST_AUTO_TEST_CASE( two_locus_test_4 )
   bool LO = false;
   auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
-  unsigned NCALLS=0;
+
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
-  							  //No Rec. rate = 1
-							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
-								    //see previous test for doc of this lambda expression
-								    [&NCALLS]() { 
-								      if(!NCALLS)
-									{
-									  ++NCALLS;
-									  return 0.8;
-									}
-								      else ++NCALLS;
-								      return 1.0;
-								    } ),
+ 							  [&gametes]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.8);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[1],g1,g2);
+							  },
   							  //Rec. b/w loci returns an ODD number
   							  [](gsl_rng * __r, const double & __d) { return 1; },
   							  &r_bw_loci,1,
@@ -247,24 +228,15 @@ BOOST_AUTO_TEST_CASE( two_locus_test_5 )
   bool LO = false;
   auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
-  unsigned NCALLS=0;
 
   auto pcopy(diploid);
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
-  							  //No Rec. rate = 1
-							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
-								    /*
-								      See above
-								    */
-								    [&NCALLS]() { 
-								      if(!NCALLS)
-									{
-									  ++NCALLS;
-									  return 0.8;
-									}
-								      else ++NCALLS;
-								      return 1.0;
-								    } ),
+							  [&gametes]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.8);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[1],g1,g2);
+							  },
   							  //Rec. b/w loci returns an EVEN number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
   							  &r_bw_loci,1,
@@ -275,23 +247,14 @@ BOOST_AUTO_TEST_CASE( two_locus_test_5 )
   BOOST_CHECK_EQUAL( diploid[1].second->mutations.size(),1 );
   p1=false; //set it equal to false, for fun
   LO=false;
-  NCALLS=0;
   pcopy = diploid;
   ptr2cdip->second = KTfwd::fwdpp_internal::multilocus_rec(r,
-							   //Change rate to 300 to make sure that an xover happens at 0.8
-							   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],300.,r,
-								     /*
-								       See above
-								     */
-								     [&NCALLS]() { 
-								       if(!NCALLS)
-									{
-									  ++NCALLS;
-									  return 0.8;
-									}
-								       else ++NCALLS;
-								       return 1.0;
-								    } ),
+ 							  [&gametes]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.8);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[1],g1,g2);
+							  },
 							   //Rec. b/w loci returns an EVEN number
 							   [](gsl_rng * __r, const double & __d) { return 0; },
 							   &r_bw_loci,1,
