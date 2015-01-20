@@ -3,7 +3,7 @@
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
 #include <fwdpp/internal/recombination_common.hpp>
-
+#include <iostream>
 namespace KTfwd
 {
   //Overload for fixed xover positions
@@ -30,7 +30,14 @@ namespace KTfwd
     // auto nm1=g1->mutations.size()+g1->smutations.size();
     // auto nm2=g2->mutations.size()+g2->smutations.size();
     // if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return 0;
-
+    std::cerr << "internal pos: ";
+    for(const auto & p : pos) std::cerr << p << ' ';
+    std::cerr << ": ";
+    std::cerr << g1->mutations.size() << ' ' << g2->mutations.size() << ": ";
+    for( auto & m : g1->mutations ) std::cerr << m->pos << ' ';
+    std::cerr << " | ";
+    for( auto & m : g2->mutations ) std::cerr << m->pos << ' ';
+    std::cerr << '\n';
     gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
       new_gamete2(new_gamete1);
     
@@ -41,6 +48,7 @@ namespace KTfwd
 	
     fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
     
+    std::cerr << "internal: " << new_gamete1.mutations.size() << ' ' << new_gamete2.mutations.size() << '\n';
     auto current_end = gametes->end();
     bool f1 = false, f2 = false;
     for( auto itr = gametes->begin() ;

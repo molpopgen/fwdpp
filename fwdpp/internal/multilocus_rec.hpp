@@ -7,7 +7,7 @@
  */
 
 #include <gsl/gsl_rng.h>
-
+#include <iostream>
 namespace KTfwd {
   namespace fwdpp_internal {
     /*!
@@ -34,14 +34,17 @@ namespace KTfwd {
 				bool & g1, bool & LO )
     {
       unsigned temp = rec( parental_gamete_1,parental_gamete_2 );
+      std::cerr << "mloc_internal: " << parental_gamete_1->mutations.size() << ' ' << parental_gamete_2->mutations.size() << ' ' << temp << '\n';
       if ( i > 0 )
 	{
+	  std::cerr << "HERE!\n";
 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
 	  bool obw = (nrbw%2!=0) ? true : false;
 	  g1 = (LO) ? !g1 : g1;
 	  g1 = (obw) ? !g1 : g1;
 	}
       LO = (temp % 2 != 0.) ? true : false;
+      std::cerr << "g1 = " << g1 << ' ' << LO << '\n';
       return (g1) ? parental_gamete_1 : parental_gamete_2;
     }
   }

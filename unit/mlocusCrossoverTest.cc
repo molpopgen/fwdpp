@@ -264,3 +264,95 @@ BOOST_AUTO_TEST_CASE( two_locus_test_5 )
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 2 );
   BOOST_CHECK_EQUAL( ptr2cdip->second->mutations.size(), 0 );
 }
+
+
+//OK, time now for a "real" test:
+BOOST_AUTO_TEST_CASE( two_locus_test_6 )
+{
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
+  diploid_t diploid2(diploid); //create the second parent
+
+  //diploid, and diploid2 are the parents
+  diploid_t offspring(2);
+
+  bool p1g1 = true,LO = false,
+    p2g1 = true,L1 = false;
+
+  double r_bw_loci = 1.;
+  //manipulae the first locus, i = 0.
+  unsigned i = 0;
+  auto ptr2cdip = offspring.begin()+i;
+  /*
+    There is a crossover in the first parent before the first mutation at position 0.1, which will swap the two mutations in the parent
+    from p_gam_1 to p_gam_2, and there WILL be an xover b/w the two loci in parent 1
+  */
+  ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
+							  [&gametes,&i]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.1);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[i],g1,g2);
+							  },
+							  //Rec. b/w loci returns an ODD number, but this is not relevant b/c i = 0
+							  [](gsl_rng * __r, const double & __d) { return 1; },
+							  &r_bw_loci,i,
+							  //the parental gamete types
+							  diploid[i].first,diploid[i].second,
+							  p1g1,LO);
+
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 1 );
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos, 0.25 );
+  BOOST_CHECK_EQUAL( p1g1, true );
+  BOOST_CHECK_EQUAL( LO, true );
+  /*
+    In parent 2, there are two x-overs: one before the two mutations, and one in b/w the loci
+   */
+  ptr2cdip->second = KTfwd::fwdpp_internal::multilocus_rec(r,
+							   [&gametes,&i]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.1);
+							    pos.push_back(0.3);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[i],g1,g2);
+							   },
+							   //Rec. b/w loci returns an ODD number, but this is not relevant b/c i = 0
+							   [](gsl_rng * __r, const double & __d) { return 1; },
+							   &r_bw_loci,i,
+							   //the parental gamete types come from parent 2
+							   diploid2[i].first,diploid2[i].second,
+							   p2g1,L1);
+
+  BOOST_CHECK_EQUAL( ptr2cdip->second->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( ptr2cdip->second->mutations[0]->pos, 0.25 ); 
+  BOOST_CHECK_EQUAL( ptr2cdip->second->mutations[1]->pos, 0.5 ); 
+  BOOST_CHECK_EQUAL( p2g1, true );
+  BOOST_CHECK_EQUAL( L1, false );
+
+  //Now, the second locus
+  ++i;
+  ++ptr2cdip;
+
+  /*
+    There is a crossover in locus 2 b/w the two mutations, AND a crossover beteen locus 1 and 2, in parent 1
+  */
+  ptr2cdip->first =  KTfwd::fwdpp_internal::multilocus_rec(r,
+							  [&gametes,&i]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,0.8);
+							    pos.push_back(std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[i],g1,g2);
+							  },
+							  //Rec. b/w loci returns an ODD number, which will cause an x-over b/w loci 1 and 2
+							  [](gsl_rng * __r, const double & __d) { return 1; },
+							  &r_bw_loci,i,
+							  //the parental gamete types
+							  diploid[i].first,diploid[i].second,
+							  p1g1,LO);
+  
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.empty(), true );
+  std::cerr <<  ptr2cdip->first->mutations.size() << ' ' <<  ptr2cdip->first->mutations[0]->pos << '\n';
+  
+}
