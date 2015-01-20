@@ -79,7 +79,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	gameteTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	mutationTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT)
 @BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -102,6 +103,11 @@ am__gameteTest_SOURCES_DIST = gameteTest.cc
 @BUNIT_TEST_PRESENT_TRUE@am_gameteTest_OBJECTS = gameteTest.$(OBJEXT)
 gameteTest_OBJECTS = $(am_gameteTest_OBJECTS)
 gameteTest_LDADD = $(LDADD)
+am__mlocusCrossoverTest_SOURCES_DIST = mlocusCrossoverTest.cc
+@BUNIT_TEST_PRESENT_TRUE@am_mlocusCrossoverTest_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest.$(OBJEXT)
+mlocusCrossoverTest_OBJECTS = $(am_mlocusCrossoverTest_OBJECTS)
+mlocusCrossoverTest_LDADD = $(LDADD)
 am__mutateTest_SOURCES_DIST = mutateTest.cc
 @BUNIT_TEST_PRESENT_TRUE@am_mutateTest_OBJECTS = mutateTest.$(OBJEXT)
 mutateTest_OBJECTS = $(am_mutateTest_OBJECTS)
@@ -146,10 +152,12 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
-	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
-	$(policyTests_SOURCES)
+	$(mlocusCrossoverTest_SOURCES) $(mutateTest_SOURCES) \
+	$(mutationTest_SOURCES) $(policyTests_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
-	$(am__gameteTest_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
+	$(am__gameteTest_SOURCES_DIST) \
+	$(am__mlocusCrossoverTest_SOURCES_DIST) \
+	$(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
 	$(am__policyTests_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -275,6 +283,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
 @BUNIT_TEST_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
 @BUNIT_TEST_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
+@BUNIT_TEST_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -323,6 +332,10 @@ gameteTest$(EXEEXT): $(gameteTest_OBJECTS) $(gameteTest_DEPENDENCIES) $(EXTRA_ga
 	@rm -f gameteTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(gameteTest_OBJECTS) $(gameteTest_LDADD) $(LIBS)
 
+mlocusCrossoverTest$(EXEEXT): $(mlocusCrossoverTest_OBJECTS) $(mlocusCrossoverTest_DEPENDENCIES) $(EXTRA_mlocusCrossoverTest_DEPENDENCIES) 
+	@rm -f mlocusCrossoverTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(mlocusCrossoverTest_OBJECTS) $(mlocusCrossoverTest_LDADD) $(LIBS)
+
 mutateTest$(EXEEXT): $(mutateTest_OBJECTS) $(mutateTest_DEPENDENCIES) $(EXTRA_mutateTest_DEPENDENCIES) 
 	@rm -f mutateTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutateTest_OBJECTS) $(mutateTest_LDADD) $(LIBS)
@@ -343,6 +356,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policyTests.Po@am__quote@

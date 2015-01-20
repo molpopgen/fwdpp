@@ -4,13 +4,15 @@ check_PROGRAMS=mutateTest \
 	crossoverTest \
 	gameteTest \
 	mutationTest \
-	policyTests
+	policyTests \
+	mlocusCrossoverTest
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
 gameteTest_SOURCES=gameteTest.cc
 mutationTest_SOURCES=mutationTest.cc
 policyTests_SOURCES=policyTests.cc
+mlocusCrossoverTest_SOURCES=mlocusCrossoverTest.cc
 
 AM_CXXFLAGS=
 
