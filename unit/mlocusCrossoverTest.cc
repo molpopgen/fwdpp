@@ -148,8 +148,7 @@ BOOST_AUTO_TEST_CASE( two_locus_test_2 )
 
 BOOST_AUTO_TEST_CASE( two_locus_test_3 )
 {
-  //Redo the first example, with a rec event in locus 2, and an odd no. recs b/w loci
-  //THIS TEST WILL BE HARDER TO DO!!!!
+  //Redo the first example, with a rec event in locus 2, and an even no. recs b/w loci
   gvector gametes;
   mutlist mlist;
   diploid_t diploid;
@@ -162,15 +161,64 @@ BOOST_AUTO_TEST_CASE( two_locus_test_3 )
   bool LO = false;
   auto ptr2cdip = dip2.begin()+1;
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+  unsigned NCALLS=0;
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
   							  //No Rec. rate = 1
 							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
-								    []() { return 0.8;} ),
+								    [&NCALLS]() { 
+								      if(!NCALLS)
+									{
+									  ++NCALLS;
+									  return 0.8;
+									}
+								      else ++NCALLS;
+									return 1.0;
+								    } ),
   							  //Rec. b/w loci returns an ODD number
   							  [](gsl_rng * __r, const double & __d) { return 0; },
   							  &r_bw_loci,1,
   							  //the parental gamete types
   							  diploid[1].first,diploid[1].second,
   							  p1,LO);
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 2 );
   BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[1]->pos,0.9 );
+}
+
+BOOST_AUTO_TEST_CASE( two_locus_test_4 )
+{
+  //Redo the first example, with a rec event in locus 2, and an even no. recs b/w loci
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup1(gametes,mlist,diploid);
+
+  //There WILL be a crossover
+  double r_bw_loci = 1;
+  auto dip2 = diploid;
+  bool p1 = true;
+  bool LO = false;
+  auto ptr2cdip = dip2.begin()+1;
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos,0.75 );
+  unsigned NCALLS=0;
+  ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
+  							  //No Rec. rate = 1
+							  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],1.,r,
+								    [&NCALLS]() { 
+								      if(!NCALLS)
+									{
+									  ++NCALLS;
+									  return 0.8;
+									}
+								      else ++NCALLS;
+									return 1.0;
+								    } ),
+  							  //Rec. b/w loci returns an ODD number
+  							  [](gsl_rng * __r, const double & __d) { return 1; },
+  							  &r_bw_loci,1,
+  							  //the parental gamete types
+  							  diploid[1].first,diploid[1].second,
+  							  p1,LO);
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 0 );
+  BOOST_CHECK_EQUAL( ptr2cdip->second->mutations.size(), 1 );
 }
