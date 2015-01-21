@@ -352,7 +352,26 @@ BOOST_AUTO_TEST_CASE( two_locus_test_6 )
 							  diploid[i].first,diploid[i].second,
 							  p1g1,LO);
   
-  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.empty(), true );
-  std::cerr <<  ptr2cdip->first->mutations.size() << ' ' <<  ptr2cdip->first->mutations[0]->pos << '\n';
-  
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[0]->pos, 0.75 );
+  BOOST_CHECK_EQUAL( ptr2cdip->first->mutations[1]->pos, 0.9 );
+  BOOST_CHECK_EQUAL( p1g1, true );
+  BOOST_CHECK_EQUAL( LO, true );
+  /*
+    No crossover in locus 2, no crossover b/w locus 1 and 2, in parent 2
+   */
+  ptr2cdip->second =  KTfwd::fwdpp_internal::multilocus_rec(r,
+							  [&gametes,&i]( glist::iterator & g1, glist::iterator & g2 ) {
+							    std::vector<double> pos(1,std::numeric_limits<double>::max());
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(pos,&gametes[i],g1,g2);
+							  },
+							  //Rec. b/w loci returns an EVEN number, which will cause NO x-over b/w loci 1 and 2
+							  [](gsl_rng * __r, const double & __d) { return 0; },
+							  &r_bw_loci,i,
+							  //the parental gamete types
+							  diploid2[i].first,diploid2[i].second,
+							  p2g1,L1);
+
+  std::cerr << ptr2cdip->second->mutations.size() << ' ' << ' ' << ptr2cdip->second->mutations[0]->pos<<'\n';
 }
