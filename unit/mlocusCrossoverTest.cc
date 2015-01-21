@@ -401,9 +401,62 @@ void setup2( gvector & gametes,
   auto m5 = mlist.insert(mlist.end(),mut(1.25,0.1,1));
   auto m6 = mlist.insert(mlist.end(),mut(1.5,0.1,1));
   auto m7 = mlist.insert(mlist.end(),mut(1.1,0.1,1));
+
+  //put the mutations into gametes
+  auto gitr = gametes[0].begin(); //gamete 1, locus 1
+  gitr->mutations.push_back(m1);
+  ++gitr;                         //gamete 2, locus 1
+  gitr->mutations.push_back(m3);
+  gitr = gametes[1].begin();      //gamete 1, locus 2
+  gitr->mutations.push_back(m2);
+  ++gitr;                         //gamete 2, locus 2
+  gitr->mutations.push_back(m4);
+  gitr = gametes[2].begin();      //gamete 1, locus 3
+  gitr->mutations.push_back(m5);
+  gitr->mutations.push_back(m6);
+  ++gitr;                         //gamete 2, locus 3
+  gitr->mutations.push_back(m7);
+
+   //Now, make a diploid
+  diploid = diploid_t(3);
+  gitr=gametes[0].begin();
+  diploid[0].first = gitr;
+  ++gitr;
+  diploid[0].second = gitr;
+  gitr = gametes[1].begin();
+  diploid[1].first = gitr;
+  ++gitr;
+  diploid[1].second = gitr;
+  gitr = gametes[2].begin();
+  diploid[2].first = gitr;
+  ++gitr;
+  diploid[2].second = gitr;
 }
 
 BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 {
+  gvector gametes;
+  mutlist mlist;
+  diploid_t diploid;
+  setup2(gametes,mlist,diploid);
 
+  //This block makes sure that setup2 is working as far as gametes/mutations:
+  for( auto & gg : gametes )
+    {
+      for (auto & g : gg)
+	{
+	  for( auto & m : g.mutations ) std::cerr << m->pos << ' ';
+	  std::cerr << " | ";
+	}
+      std::cerr << '\n';
+    }
+
+  //And the diploid:
+  for( auto & d : diploid )
+    {
+      for( auto & m : d.first->mutations ) std::cerr << m->pos << ' ';
+      std::cerr << " | ";
+      for( auto & m : d.second->mutations ) std::cerr << m->pos << ' ';
+      std::cerr << '\n';
+    }
 }
