@@ -3,7 +3,7 @@
 #define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
 
 #include <fwdpp/internal/recombination_common.hpp>
-#include <iostream>
+
 namespace KTfwd
 {
   /*
@@ -36,14 +36,6 @@ namespace KTfwd
     using gtype = typename iterator_type::value_type;
     using gtype_mcont = typename gtype::mutation_container;
     
-    std::cerr << "internal pos: ";
-    for(const auto & p : pos) std::cerr << p << ' ';
-    std::cerr << ": ";
-    std::cerr << g1->mutations.size() << ' ' << g2->mutations.size() << ": ";
-    for( auto & m : g1->mutations ) std::cerr << m->pos << ' ';
-    std::cerr << " | ";
-    for( auto & m : g2->mutations ) std::cerr << m->pos << ' ';
-    std::cerr << '\n';
     gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
       new_gamete2(new_gamete1);
     
@@ -54,7 +46,6 @@ namespace KTfwd
 	
     fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
     
-    std::cerr << "internal: " << new_gamete1.mutations.size() << ' ' << new_gamete2.mutations.size() << '\n';
     auto current_end = gametes->end();
     bool f1 = false, f2 = false;
     for( auto itr = gametes->begin() ;
