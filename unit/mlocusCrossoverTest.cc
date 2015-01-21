@@ -310,6 +310,12 @@ BOOST_AUTO_TEST_CASE( two_locus_test_6 )
   /*
     In parent 2, there are two x-overs: one before the two mutations, and one in b/w the loci
    */
+
+  std::cerr << "parent check: ";
+  for( auto m : diploid2[i].first->mutations ) { std::cerr << m->pos << ' '; }
+  std::cerr << '\n';
+  for( auto m : diploid2[i].second->mutations ) { std::cerr << m->pos << ' '; }
+  std::cerr << '\n';
   ptr2cdip->second = KTfwd::fwdpp_internal::multilocus_rec(r,
 							   [&gametes,&i]( glist::iterator & g1, glist::iterator & g2 ) {
 							    std::vector<double> pos(1,0.1);
