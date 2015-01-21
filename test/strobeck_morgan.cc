@@ -175,7 +175,7 @@ int main(int argc, char ** argv)
 
       buffer << l0 << '\n' << l1 << '\n' << l2 << '\n';
     }
-  std::ofstream ofile(outfile,std::ios_base::out);
+  std::ofstream ofile(outfile,std::ios_base::out|std::ios_base::app);
   boost::interprocess::file_lock flock(outfile);
   boost::interprocess::scoped_lock<boost::interprocess::file_lock> slock(flock);
   ofile << buffer.str() << '\n';
