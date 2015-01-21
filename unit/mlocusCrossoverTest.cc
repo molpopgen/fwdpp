@@ -373,6 +373,4 @@ BOOST_AUTO_TEST_CASE( two_locus_test_6 )
 							  //the parental gamete types
 							  diploid2[i].first,diploid2[i].second,
 							  p2g1,L1);
-
-  std::cerr << ptr2cdip->second->mutations.size() << ' ' << ' ' << ptr2cdip->second->mutations[0]->pos<<'\n';
 }
