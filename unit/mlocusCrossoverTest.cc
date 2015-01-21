@@ -374,3 +374,16 @@ BOOST_AUTO_TEST_CASE( two_locus_test_6 )
 							  diploid2[i].first,diploid2[i].second,
 							  p2g1,L1);
 }
+
+/*
+  Setup fxn for 3-locus scenario
+ */
+void setup2( gvector & gametes,
+	     mutlist & mlist,
+	     diploid_t & diploid )
+{
+}
+
+BOOST_AUTO_TEST_CASE( three_locus_test_1 )
+{
+}
