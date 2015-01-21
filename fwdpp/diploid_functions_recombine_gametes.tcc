@@ -117,43 +117,43 @@ namespace KTfwd
 	std::sort(pos.begin(),pos.end());
 	pos.emplace_back(std::numeric_limits<double>::max());
 	return recombine_gametes(pos,gametes,g1,g2);
-    // 	gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
-    // 	  new_gamete2(new_gamete1);
+	// 	gtype new_gamete1(0u,gtype_mcont(),gtype_mcont()),
+	// 	  new_gamete2(new_gamete1);
 	
-    // 	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
-    // 	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
-    // 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
-    // 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
+	// 	new_gamete1.mutations.reserve(g1->mutations.size()+g2->mutations.size());
+	// 	new_gamete1.smutations.reserve(g1->smutations.size()+g2->smutations.size());
+	// 	new_gamete2.mutations.reserve(g1->mutations.size()+g2->mutations.size());
+	// 	new_gamete2.smutations.reserve(g1->smutations.size()+g2->smutations.size());
 	
-    // 	fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
+	// 	fwdpp_internal::recombine_gametes(pos,g1,g2,new_gamete1,new_gamete2);
 	
-    // 	auto current_end = gametes->end();
-    // 	bool f1 = false, f2 = false;
-    // 	for( auto itr = gametes->begin() ;
-    // 	     (!f1||!f2)&&itr != current_end ; ++itr )
-    // 	  {
-    // 	    if(!f1&&*itr == new_gamete1)
-    // 	      {
-    // 		g1=itr;
-    // 		f1=true;
-    // 	      }
-    // 	    if(!f2&&*itr == new_gamete2)
-    // 	      {
-    // 		g2=itr;
-    // 		f2=true;
-    // 	      }
-    // 	  }
-    // 	if(!f1)
-    // 	  {
-    // 	    g1=gametes->insert(gametes->end(),std::move(new_gamete1));
-    // 	  }
-    // 	if(!f2)
-    // 	  {
-    // 	    g2=gametes->insert(gametes->end(),std::move(new_gamete2));
-    // 	  }
-    //   }
-    // return nbreaks;
-  }
+	// 	auto current_end = gametes->end();
+	// 	bool f1 = false, f2 = false;
+	// 	for( auto itr = gametes->begin() ;
+	// 	     (!f1||!f2)&&itr != current_end ; ++itr )
+	// 	  {
+	// 	    if(!f1&&*itr == new_gamete1)
+	// 	      {
+	// 		g1=itr;
+	// 		f1=true;
+	// 	      }
+	// 	    if(!f2&&*itr == new_gamete2)
+	// 	      {
+	// 		g2=itr;
+	// 		f2=true;
+	// 	      }
+	// 	  }
+	// 	if(!f1)
+	// 	  {
+	// 	    g1=gametes->insert(gametes->end(),std::move(new_gamete1));
+	// 	  }
+	// 	if(!f2)
+	// 	  {
+	// 	    g2=gametes->insert(gametes->end(),std::move(new_gamete2));
+	// 	  }
+	//   }
+	// return nbreaks;
+      }
   }
 }
 
