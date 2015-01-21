@@ -377,13 +377,33 @@ BOOST_AUTO_TEST_CASE( two_locus_test_6 )
 
 /*
   Setup fxn for 3-locus scenario
- */
+
+  Set up the following config:
+  g1,l1 = 0.5
+  g1,l2 = 0.75,
+  g2,l1 = 0.25,
+  g2,l2 = 0.9
+  g1,l3 = 1.25, 1.5
+  g2,l3 = 1.1
+*/
 void setup2( gvector & gametes,
 	     mutlist & mlist,
 	     diploid_t & diploid )
 {
+  gametes = gvector( 3,glist(2,gtype(1)) );
+  mlist = mutlist();
+
+  //To set this up, let's add the mutations:
+  auto m1 = mlist.insert(mlist.end(),mut(0.5,0.,1));
+  auto m2 = mlist.insert(mlist.end(),mut(0.75,0.,1));
+  auto m3 = mlist.insert(mlist.end(),mut(0.25,0.,1));
+  auto m4 = mlist.insert(mlist.end(),mut(0.9,0.,1));
+  auto m5 = mlist.insert(mlist.end(),mut(1.25,0.1,1));
+  auto m6 = mlist.insert(mlist.end(),mut(1.5,0.1,1));
+  auto m7 = mlist.insert(mlist.end(),mut(1.1,0.1,1));
 }
 
 BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 {
+
 }
