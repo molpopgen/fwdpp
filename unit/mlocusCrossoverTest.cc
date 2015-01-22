@@ -441,24 +441,24 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
   setup2(gametes,mlist,diploid);
   diploid_t diploid2(diploid); //parent 2
   //This block makes sure that setup2 is working as far as gametes/mutations:
-  for( auto & gg : gametes )
-    {
-      for (auto & g : gg)
-	{
-	  for( auto & m : g.mutations ) std::cerr << m->pos << ' ';
-	  std::cerr << " | ";
-	}
-      std::cerr << '\n';
-    }
+  // for( auto & gg : gametes )
+  //   {
+  //     for (auto & g : gg)
+  // 	{
+  // 	  for( auto & m : g.mutations ) std::cerr << m->pos << ' ';
+  // 	  std::cerr << " | ";
+  // 	}
+  //     std::cerr << '\n';
+  //   }
 
   //And the diploid:
-  for( auto & d : diploid )
-    {
-      for( auto & m : d.first->mutations ) std::cerr << m->pos << ' ';
-      std::cerr << " | ";
-      for( auto & m : d.second->mutations ) std::cerr << m->pos << ' ';
-      std::cerr << '\n';
-    }
+  // for( auto & d : diploid )
+  //   {
+  //     for( auto & m : d.first->mutations ) std::cerr << m->pos << ' ';
+  //     std::cerr << " | ";
+  //     for( auto & m : d.second->mutations ) std::cerr << m->pos << ' ';
+  //     std::cerr << '\n';
+  //   }
 
   /*
     Make vectors of events regarding what happens withn and between each
@@ -467,7 +467,7 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
   //positions of x-overs within loci
   auto MVAL=std::numeric_limits<double>::max();
   auto rec1 = std::vector<std::vector<double> > { std::vector<double>{ 0.3,MVAL },
-						  std::vector<double>{ 0.55,0.9,MVAL },
+						  std::vector<double>{ 0.55,0.8,MVAL },
 						  std::vector<double>{1.3,MVAL}
   };
   auto rec2 = std::vector< std::vector<double> > { std::vector<double>{ 0.45, MVAL },
@@ -494,5 +494,31 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 							  //the parental gamete types
 							  diploid[i].first,diploid[i].second,
 							  p1g1,LO1);
+      ptr->second =  KTfwd::fwdpp_internal::multilocus_rec(r,
+							  [&gametes,&i,&rec2]( glist::iterator & g1, glist::iterator & g2 ) {
+							    //if ( rec1[i].empty() ) return;  
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(rec2[i],&gametes[i],g1,g2);
+							  },
+							  //Rec. b/w loci returns an ODD number, which will cause an x-over b/w loci 1 and 2
+							  [&bw2,&i](gsl_rng * __r, const double & __d) { return bw2[i-1]; },
+							  &r_bw_loci[0],i,
+							  //the parental gamete types
+							  diploid2[i].first,diploid2[i].second,
+							  p2g1,LO2);
     }
+  //Properties of the variables, etc., related to what happend with the offspring's FIRST gamete:
+  BOOST_CHECK_EQUAL( LO1, true );
+  BOOST_CHECK_EQUAL( offspring[0].first->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( offspring[1].first->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( offspring[2].first->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( offspring[2].first->mutations[0]->pos,1.1 );
+  BOOST_CHECK_EQUAL( offspring[2].first->mutations[1]->pos,1.5 );
+  
+  //Properties of the variables, etc., related to what happend with the offspring's SECOND gamete:
+  BOOST_CHECK_EQUAL( offspring[0].second->mutations.size(), 0 );
+  BOOST_CHECK_EQUAL( offspring[1].second->mutations.size(), 1 );
+  BOOST_CHECK_EQUAL( offspring[2].second->mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( offspring[2].second->mutations[0]->pos,1.25 );
+  BOOST_CHECK_EQUAL( offspring[2].second->mutations[1]->pos,1.5 );
 }
