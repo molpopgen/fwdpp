@@ -437,9 +437,9 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 {
   gvector gametes;
   mutlist mlist;
-  diploid_t diploid;
+  diploid_t diploid;            //parent 1
   setup2(gametes,mlist,diploid);
-
+  diploid_t diploid2(diploid); //parent 2
   //This block makes sure that setup2 is working as far as gametes/mutations:
   for( auto & gg : gametes )
     {
@@ -458,5 +458,41 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
       std::cerr << " | ";
       for( auto & m : d.second->mutations ) std::cerr << m->pos << ' ';
       std::cerr << '\n';
+    }
+
+  /*
+    Make vectors of events regarding what happens withn and between each
+    locus, for each parent.
+  */
+  //positions of x-overs within loci
+  auto MVAL=std::numeric_limits<double>::max();
+  auto rec1 = std::vector<std::vector<double> > { std::vector<double>{ 0.3,MVAL },
+						  std::vector<double>{ 0.55,0.9,MVAL },
+						  std::vector<double>{1.3,MVAL}
+  };
+  auto rec2 = std::vector< std::vector<double> > { std::vector<double>{ 0.45, MVAL },
+						   std::vector<double>{ MVAL },
+						   std::vector<double>{ MVAL }
+  };
+  //recombinations b/w loci?
+  std::vector<unsigned> bw1 = { 1,0 }, bw2 = {0,1};
+  std::vector<double> r_bw_loci = {1.,1.,1.};
+  diploid_t offspring(3); 
+  bool p1g1 = false,p2g1=true,LO1=false,LO2=false;
+  auto ptr = offspring.begin();
+  for( unsigned i = 0 ; i < offspring.size() ; ++i,++ptr )
+    {
+      ptr->first =  KTfwd::fwdpp_internal::multilocus_rec(r,
+							  [&gametes,&i,&rec1]( glist::iterator & g1, glist::iterator & g2 ) {
+							    //if ( rec1[i].empty() ) return;  
+							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							    return KTfwd::recombine_gametes(rec1[i],&gametes[i],g1,g2);
+							  },
+							  //Rec. b/w loci returns an ODD number, which will cause an x-over b/w loci 1 and 2
+							  [&bw1,&i](gsl_rng * __r, const double & __d) { return bw1[i-1]; },
+							  &r_bw_loci[0],i,
+							  //the parental gamete types
+							  diploid[i].first,diploid[i].second,
+							  p1g1,LO1);
     }
 }
