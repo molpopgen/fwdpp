@@ -5,6 +5,7 @@
 * const mutation lists now passed to binary output routines
 * The library internals now fully support C++11 move semantics
 * Default policies now support C++11 "perfect forwarding"
+* The function KTfwd::recombine_gametes, which is provided for recombination in individual-based simulations, has an overloaded version.  This new version takes a fixed set of positions representing recombination breakpoints, allowing more modeling flexibility and making unit testing easier.
 * The mechanics of recombination in multilocus simulations moved to function multilocus_rec in namesapce KTfwd::fwdpp_internal.
 * A unit test for the function KTfwd::fwdpp_internal::multilocus_rec was added.
 
