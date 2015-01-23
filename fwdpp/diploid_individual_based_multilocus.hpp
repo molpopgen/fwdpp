@@ -48,6 +48,7 @@ namespace KTfwd
 		 const double & f);
 
   /*! \brief Single deme, multilocus model, constant population size
+    \example diploid_ind_2locus.cc
   */
   template< typename gamete_type,
 	    typename glist_vector_type_allocator,
