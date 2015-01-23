@@ -6,18 +6,6 @@
 
 namespace KTfwd
 {
-  /*
-    Overload for fixed xover positions.
-    Typically, this is called by the version taking 
-    a recombination policy as an argument.
-
-    If you wish to call this version directly,
-    only do so if length pos > 1, pos is sorted
-    in ascending order, and the last value in 
-    pos is std::numeric_limits<double>::max(),
-    which is assumed to be a terminating value 
-    larger than any possible value for a mutation's position.
-  */
   template< typename iterator_type,
 	    typename list_type_allocator,
 	    typename vector_type_allocator,
