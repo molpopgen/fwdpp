@@ -160,6 +160,9 @@ int main(int argc, char ** argv)
 
   unsigned twoN = 2*N;
 
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
+    recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
+
   const double rbw = 0.;//0.1;
   while(nreps--)
     {
@@ -179,9 +182,10 @@ int main(int argc, char ** argv)
       double wbar;
       lookup_table_type lookup;  //this is our lookup table for the mutation model
       //rec policies
-      auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,[&r](){ return gsl_rng_uniform(r); });
-      auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,[&r](){ return gsl_ran_flat(r,1.,2.); });
-      std::vector< decltype(recpol0) > recpols { recpol0, recpol1 };
+      auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
+      auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
+      std::vector< decltype(recpol0) > recpols{ recpol0, recpol1 };
+
       auto mmodel0 = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,0.);
       auto mmodel1 = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,1.);
       std::vector< decltype(mmodel0) > mmodels { mmodel0, mmodel1 };
