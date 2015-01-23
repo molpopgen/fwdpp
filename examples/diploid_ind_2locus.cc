@@ -120,6 +120,21 @@ struct no_selection_multi
 int main(int argc, char ** argv)
 {
   int argument=1;
+  if (argc != 8 )
+    {
+      std::cerr << "Incorrect number of arguments.\n"
+		<< "Usage:\n"
+		<< argv[0] << " N theta rho ngens n nreps seed\n"
+		<< "Where:\n"
+		<< "N = population size (number of diploids)\n"
+		<< "theta = 4Nu, the scaled neutral mutation rate\n"
+		<< "rho = 4Nr, the scale recombination rate\n"
+		<< "n = the sample size to pull from the population at the end of each simulated replicate\n"
+		<< "ngens = the number of generations to simulate\n"
+		<< "nreps = the number of replicates to simulated\n"
+		<< "seed = seed value for random number generations\n";
+	std::exit(0);
+    }
   const unsigned N = atoi(argv[argument++]);           //Number of diploids
   const double theta = atof(argv[argument++]);         //4*n*mutation rate.  Note: mutation rate is per REGION, not SITE!!
   const double rho = atof(argv[argument++]);           //4*n*recombination rate.  Note: recombination rate is per REGION, not SITE!!
