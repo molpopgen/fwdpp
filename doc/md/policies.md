@@ -6,6 +6,8 @@
 
 This document is intended to be an in-depth discussion of policies and their role in implementing forward-time population genetic simulations using the C++ template library __fwdpp__.  We will first describe what policies are using standard C++ examples, and then we will get into the harder stuff.
 
+In this document, I am implictly assuming that the library is being used to implement what I refer to as a "single-locus" simulation, by which I mean the simulation of a contiguous genomic stretch to which we apply some arbitrary model of mutation, recombination, and fitness.  It is possible to use the same machinery to implement a "multi-locus" model of non-contiguous genomic segments, each with different mutation models, recombination models, and arbitrary linkage relationships amongst them.  However, such simulations are arguably easier to impement using the multilocus API provided by the library, and I refer the users to the [documentation](@ref md_md_multiloc) for that part of the library.
+
 An understanding of C++ fundamentals, including containers, their iterators, and how they relate to the standard algorithms, is assumed knowledge here.
 
 \section TutGeneral Policies in C++
