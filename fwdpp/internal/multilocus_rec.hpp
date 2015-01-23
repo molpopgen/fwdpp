@@ -19,7 +19,7 @@ namespace KTfwd {
       \param parental_gamete_1 An iterator to the first parental gamete
       \param parental_gamete_1 An iterator to the second parental gamete
       \param g1 If true, then parental_gamete_1 is inherited by the descendant.
-      \paragm LO Should be true if the last recombination even within loci resulted in an odd number of crossovers.
+      \param LO Should be true if the last recombination even within loci resulted in an odd number of crossovers.
      */
     template<typename within_loc_rec_policy,
 	     typename between_loc_rec_policy,
