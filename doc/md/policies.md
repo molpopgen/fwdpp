@@ -2,15 +2,15 @@
 
 [TOC]
 
-\section intro Introduction
+\section TutIntro Introduction
 
 This document is intended to be an in-depth discussion of policies and their role in implementing forward-time population genetic simulations using the C++ template library __fwdpp__.  We will first describe what policies are using standard C++ examples, and then we will get into the harder stuff.
 
 An understanding of C++ fundamentals, including containers, their iterators, and how they relate to the standard algorithms, is assumed knowledge here.
 
-\section general Policies in C++
+\section TutGeneral Policies in C++
 
-\subsection everywhere Policies are everywhere
+## Policies are everywhere
 Policies are a part of every programming language.  Generally-speaking, they modify the behavior of what functions are with (or to) data.  In other words, they turn a generic function into a piece of code doing a specific task.  Let's start with the rather trivial example of sorting a vector:
 
 ~~~{.cpp}
@@ -38,7 +38,7 @@ The above example is 100\% standard C++.  But what is going on under the hood of
   };
 ~~~
 
-\subsubsection functors Policies are often function objects
+## Policies are often function objects
 The structure called less is a ``function object'', and is the policy being employed in the sort.  Further, is a template, meaning it works on any data type for which __operator<__ is defined.  The detail that less inherits from __std::binary\_function__ is important for how it plugs into the sort algorithm, but we'll deal with those issues later.
 
 The way such a function object is used looks like:
@@ -120,13 +120,14 @@ The find_if algorithm takes each value in the range and evaluates it via the pol
 * Policies + binders + algorithms = a reusable code base that can do lots of different (and often quite complicated) things when the right policy is written.
 * Policies can often be quite short to implement (see the definition of less above).  This doesn't have to be the case, but it often works out that way in practice.
 
-# Algorithms in __fwdpp__
+\section TutAlgo Algorithms in fwdpp
 
 For individual-based simulations, the primary algorithms are __KTfwd::sample\_diploid__ and __KTfwd::remove\_lost__ and/or __KTfwd::remove\_fixed\_lost__.  For gamete-baesd simulations, additional algorithms include the functions __KTfwd::mutate__, __KTfwd::recombine__, and __KTfwd::migrate__ (and/or __KTfwd::migrate\_from\_to__).  All of these functions are in the name space __KTfwd__ and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
 
 Some of the code in some of these algorithms is quite complex, largely because generic templates can have hideous syntax.  You should't have to worry about that unless you like seeing how the sausage is made.  Most users of __fwdpp__ will be writing custom policies to stick into these algorithms and will likely be starting from the examples in order to get oriented.  For them, the necessary information is to understand what is required of a policy.  That is the subject of the remainder of this document.
 
-# Policy requirements in __fwdpp__
+\section TutPolicies Policy requirements in fwdpp
+
 This section discusses the requirements placed on policies in __fwdpp__.  These requirements are essentially standards placed on data types in order to ensure that simulations behave properly. (Note that ``behave properly'' is not the same as ``are implemented correctly''!  It is totally possible to have a simulation that compiles with no warnings and runs without crashing but is not the model you had in mind.)  The policy requirements are enforced during compilation, such that a nonconforming policy cannot result in a compiled simulation program.
 
 In the following sections, we will discuss policy requirements, how the built-in policies work, and also create some new policies.  We'll build some policies for a simple quantitative trait with selection simulation, and later on combine them all to see how __KTfwd::sample\_diploid__ would actually be called (for the case of a constant-sized population in an individual-based simulation).  For additional and more complex examples, see the code for the example programs that come with the library.
@@ -187,7 +188,7 @@ const glist::const_iterator & __gamete2) {
 
 See the header file __fwdpp/fitness\_models.hpp__ for examples of fitness policies that I provide for ``standard'' cases.
 
-A recombination policy takes two non-const references to __glist::iterator__, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  Typically, this would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the former, where the genetic map is uniform on the interval $(0,1]$:
+A recombination policy takes two non-const references to __glist::iterator__, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  Typically, this would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the former, where the genetic map is uniform on the interval \f$(0,1]\f$:
 
 ~~~{.cpp}
 //These parameters will be captuered by reference ([&] in the lambda 
@@ -203,7 +204,7 @@ glist::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&gametes,g1,g2
 
 I'll document migration policy functions at a later date, sorry.
 
-## Mutation policies
+\subsection TutMut Mutation policies
 This is the mutation base class  provided by __fwdpp__
 
 ~~~{.cpp}
@@ -264,11 +265,11 @@ This mutation model states that a new mutation occurs at a site not currently se
 
 We will now implement this mutation model for the mutation type ``mutation'' defined above.  In order to add some complexity to our mutation model, we will make the additional modeling assumptions:
 
-1. Mutation positions are continuous on the interval $[0,1)$.
-2. Neutral mutations arise at rate $\mu$ per gamete per generation
-3. Selected mutations arise at rate $\mu_s$ per gamete per generation.
-4. The selection coefficient for a newly-arising mutation is exponentially-distributed with mean $s_m$.  Further, half the time, selected mutations are deleterious ($s < 0$).  Otherwise, they are beneficial ($s > 0$).
-5. Dominance will be uniform from 0 to 2.  (We'll be scaling fitness as $1, 1+hs, 1+2s$ for genotypes AA, Aa, and aa, respectively.)
+1. Mutation positions are continuous on the interval \f$[0,1)\f$.
+2. Neutral mutations arise at rate \f$\mu\f$ per gamete per generation
+3. Selected mutations arise at rate \f$\mu_s\f$ per gamete per generation.
+4. The selection coefficient for a newly-arising mutation is exponentially-distributed with mean \f$s_m\f$.  Further, half the time, selected mutations are deleterious (\f$s < 0\f$).  Otherwise, they are beneficial (\f$s > 0\f$).
+5. Dominance will be uniform from 0 to 2.  (We'll be scaling fitness as \f$1, 1+hs, 1+2s\f$ for genotypes AA, Aa, and aa, respectively.)
 
 
 From a programming point of view, we need a means to lookup all mutation positions currently segregating in the population.  __fwdpp__ provides support for lookup tables that conform to the behavior of the type __std::map__.  While one could use a type like 
@@ -369,7 +370,7 @@ Or, using C++11 lambda expressions:
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
 ### A model for quantitative trait simulations
-Let's define a model where a mutation affecting fitness does so via its effect size, $e$, which is Gaussian-distributed with mean zero and standard deviation $\sigma_e$.
+Let's define a model where a mutation affecting fitness does so via its effect size, \f$e\f$, which is Gaussian-distributed with mean zero and standard deviation \f$\sigma_e\f$.
 
 We need a mutation class:
 
@@ -421,16 +422,16 @@ OK, our mutation model is going to be the following.  It is infinitely-many site
     }
 ~~~
 
-## Recombination
+\subsection TutRec Recombination
 
 ### How recombination is modeled in __fwdpp__
 
-Currently, recombination is modeled as follows.  In a diploid, there number of crossovers between gametes is Poisson distributed with mean $r$.  There is no notion of interference in establishing crossover positions.  (However, that can be done with a clever policy.)
+Currently, recombination is modeled as follows.  In a diploid, there number of crossovers between gametes is Poisson distributed with mean \f$r\f$.  There is no notion of interference in establishing crossover positions.  (However, that can be done with a clever policy.)
 
-Note: what I describe as $r$ above is the usual definition in population genetics. However, gamete-based simulations (confusingly, I admit) use r/2, because the per-generation r is used to determine how many recombination events a gamete is involved in.  In other words, it is treated as a "per-gamete'' parameter.  There is more detail on this in the main library documentation, and you'll see in the example simulations that I divide $\rho$ (the population-scaled rate of recombination) by $8N$ to get ``littler'' rather than the more common $4N$.  (Again, to be clear, $r=\rho/4N$ for individual-based simulations.)
+Note: what I describe as \f$r\f$ above is the usual definition in population genetics. However, gamete-based simulations (confusingly, I admit) use r/2, because the per-generation r is used to determine how many recombination events a gamete is involved in.  In other words, it is treated as a "per-gamete'' parameter.  There is more detail on this in the main library documentation, and you'll see in the example simulations that I divide \f$\rho\f$ (the population-scaled rate of recombination) by \f$8N\f$ to get ``littler'' rather than the more common \f$4N\f$.  (Again, to be clear, \f$r=\rho/4N\f$ for individual-based simulations.)
 
 ### Recombination map functions
-In __fwdpp__, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval $[0,1)$:
+In __fwdpp__, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval \f$[0,1)\f$:
 
 ~~~{.cpp}
   #include <functional>
@@ -439,7 +440,7 @@ In __fwdpp__, a recombination map is a function or function object that returns 
   std::function< double(void) > recmap = std::bind( gsl_rng_uniform, r);
 ~~~
 
-Let us write a recombination map function that models a strong hotspot of crossing over.  The positions will still be on the interval $[0,1)$.  A fraction $p$ of the recombination events will come from a uniform distribution and $1-p$ will come from a beta distribution with parameters $a$ and $b$.  The genetic map looks like this:
+Let us write a recombination map function that models a strong hotspot of crossing over.  The positions will still be on the interval \f$[0,1)\f$.  A fraction \f$p\f$ of the recombination events will come from a uniform distribution and \f$1-p\f$ will come from a beta distribution with parameters \f$a\f$ and \f$b\f$.  The genetic map looks like this:
 
 ~~~{.cpp}
   double mixture_map(gsl_rng * r, 
@@ -516,14 +517,14 @@ We pass this recombination model in an individual-based simulation to __KTfwd::s
              recmap)                 //A genetic map policy like the one we made above
 ~~~
 
-Note: if you want to write a new recombination policy, you probably want to proceed by modifying how it interacts with the the recombination map policy.  For example, if a recombination at position $x$ means that the next position must be $\geq 1.5x$ (in some model of interference).  Doing so requires making a custom version of the __KTfwd::recombine\_gametes__ function.  If you read the code for that function, you will see where the recombination map policy is called.  If you try to modify the code below that, then good luck to you.  It isn't super-complicated, but tread with caution.
+Note: if you want to write a new recombination policy, you probably want to proceed by modifying how it interacts with the the recombination map policy.  For example, if a recombination at position \f$x\f$ means that the next position must be \f$\geq 1.5x\f$ (in some model of interference).  Doing so requires making a custom version of the __KTfwd::recombine\_gametes__ function.  If you read the code for that function, you will see where the recombination map policy is called.  If you try to modify the code below that, then good luck to you.  It isn't super-complicated, but tread with caution.
 
-##Migration
+\subsection TutMig Migration
 Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing __KTfwd::migrate__) that does what you need it to and is implemented in terms of __KTfwdd::migrate\_from\_to__.
 
-For individual-based simulations involving a metapopulations, parent 1 comes from population $i$ and may or not be a migrant.  Parent two comes from population $j$ and $j = i$ in the case of no migration, otherwise $j \neq i$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  __A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population $i$, and the return value is the index of population $j$.__
+For individual-based simulations involving a metapopulations, parent 1 comes from population \f$i\f$ and may or not be a migrant.  Parent two comes from population \f$j\f$ and \f$j = i\f$ in the case of no migration, otherwise \f$j \neq i\f$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  __A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population \f$i\f$, and the return value is the index of population \f$j\f$.__
 
-For example, let's assume two demes with migration rate $m$.  Here, $m$ is the probability that a parent is a migrant. This migration rate is equal between the two demes.  Because we are in a C-like language, the values allowed for the __size\_t__ are $0 \leq i \leq 1$.  The migration policy is thus defined as follows:
+For example, let's assume two demes with migration rate \f$m\f$.  Here, \f$m\f$ is the probability that a parent is a migrant. This migration rate is equal between the two demes.  Because we are in a C-like language, the values allowed for the __size\_t__ are \f$0 \leq i \leq 1\f$.  The migration policy is thus defined as follows:
 
 ~~~{.cpp}
   size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
@@ -548,11 +549,11 @@ And we pass it to __KTfwd::ample\_diploid__ like this:
   m)     //migration rate
 ~~~
 
-# Fitness
+\subsection TutFitness Fitness
 The ability to define custom fitness policies is perhaps the most useful feature of __fwdpp__.  Broadly-speaking, there are two typical types of fitness models used in population genetics.  The first are what I call site-based models, such as the model of multipicative fitness across sites.  In this standard model, each non-neutral site is effectively its own gene. (A trans-heterozygotoe for two recessive mutations has wild-type fitness under the multiplicative assumption. That satisfies Benzer's definition of complementation, which is the operational definition of a gene.)  The second class are models are haplotype- or region- based, in that fitness depends on the effect sizes of the maternal and paternal haplotypes that a diploid inherited.  The library supports both types.  Haplotype-based fitness models are often efficient to compute, but site-based models can be done badly.  The library provides additional assistance for site-based models.
 
 __A fitness policy is a function or function object taking two iterators pointing to gametes are arguments are returning a double.  The pointers are the diploid's haplotypes, and the return value is the fitness.__
-## Site-dependent models of fitness
+### Site-dependent models of fitness
 
 The library provides a fitness policy called __KTfwd::site\_dependent\_fitness__.  This function object requires two additional policies defining what to do with homozygous sites and heterozygous sites.  These ``homozygote'' and ``heterozygote'' policies may be trivially defined as lambda expressions:
 
@@ -581,7 +582,7 @@ The library provides a fitness policy called __KTfwd::site\_dependent\_fitness__
   };
 ~~~
 
-That last variable, scaling, means that fitness is the product of $1, 1+sh, 1+s \times scaling$ over sites.  This allows you to recreate results from the different parts of the literature that use $scaling = 1$ and 2.  Many classic results are based on a scaling of 2.
+That last variable, scaling, means that fitness is the product of \f$1, 1+sh, 1+s \times \mathrm{scaling}\f$ over sites.  This allows you to recreate results from the different parts of the literature that use \f$scaling = 1\f$ and 2.  Many classic results are based on a scaling of 2.
 
 To use the multiplicative fitness policy in your simulations, this goes to __KTfwd::sample\_diploid__:
 
@@ -592,13 +593,13 @@ To use the multiplicative fitness policy in your simulations, this goes to __KTf
 If you wish to create your own site-dependent fitness policies, the recipe is:
 
 1. Create your own versions of the policies determining what happens in diploids homozygous vs. heterozygous for a mutation.  __These policies are passed the current fitness from the algorithm and an iterator to a mutation object.__
-2. Write a wrapper function like multiplicative\_diploid that passes these policies to __{KTfwd::site\_dependent\_fitness__,  _which itself is a policy requiring that iterators to two gametes, the homozygote/heterozygote policies, and a starting value for fitness be passed to it._  In the example of the built-in multiplicative fitness policy, that value of $1$ that is passed as the last argument to __KTfwd::site\_dependent\_fitness__ is the initial value of fitness for a diploid.  In other words, $w = 1$ initially, and $w$ is then modified by __KTfwd::multiplicative\_fitness\_updater\_het__ or __KTfwd::multiplicative\_fitness\_updater\_hom__ as appropriate.
+2. Write a wrapper function like multiplicative\_diploid that passes these policies to __{KTfwd::site\_dependent\_fitness__,  _which itself is a policy requiring that iterators to two gametes, the homozygote/heterozygote policies, and a starting value for fitness be passed to it._  In the example of the built-in multiplicative fitness policy, that value of \f$1\f$ that is passed as the last argument to __KTfwd::site\_dependent\_fitness__ is the initial value of fitness for a diploid.  In other words, \f$w = 1\f$ initially, and \f$w\f$ is then modified by __KTfwd::multiplicative\_fitness\_updater\_het__ or __KTfwd::multiplicative\_fitness\_updater\_hom__ as appropriate.
 3. This wrapper function is your new fitness policy.
 
 Note: the implementation  __KTfwd::site\_dependent\_fitness__ is a lot of iterator/pointer arithmetic.
 
-## Haplotype based fitness policies
-Here is one that assume a user-defined mutation type with effect size $e$ associated with it.  The effect of a haplotype is additive, the genetic model is recessive, and the phenotype is the genetic effect + a Gaussian random variable with standard deviation sigma.  Finally, fitnesses are under Gaussian stabilizing selection with a standard deviation of 1 and mean 0.
+### Haplotype based fitness policies
+Here is one that assume a user-defined mutation type with effect size \f$e\f$ associated with it.  The effect of a haplotype is additive, the genetic model is recessive, and the phenotype is the genetic effect + a Gaussian random variable with standard deviation sigma.  Finally, fitnesses are under Gaussian stabilizing selection with a standard deviation of 1 and mean 0.
 
 ~~~{.cpp}
 struct hapfitness
@@ -651,7 +652,7 @@ To use the above policy:
 
 Please note that a long-running annoyance with open-source C++ compilers (GCC!) is whether or not exp, pow, log, etc., are in namespace std or in the global namespace.  This can vary from version to version and across operating systems.  Sometimes, you need to say __std::exp__ when on another system that fails and you need __::exp__.
 
-## Updating and removal policies
+\subsection TutUpdateRemove Updating and removal policies
 
 During the course of a simulation, new mutation and gamete types come and go.  New types must be entered in to their approproate containers.  The relevant policies are basically searches followed by either a member variable update or an insertion.  For example, consider our mutation model policy in section \ref{infsites}.  The mutation returned from that function is not currently found in our mutation list (because it has a unique position).  Therefore, the relevant policy is just to insert the new mutation at the end of the doubly-linked list of mutations.  Likewise, a gamete with a new mutation from that model cannot be identical to any currently-segregating gamete.  Therefore, a good policy is just to insert it at the end of the doubly-linked list of gametes (or push it back to the vector of gametes in a gamete-based simulation).  However, a recombination event could make either a new gamete or a pre-existing gamete.  Thus, a policy to insert a recombinant gamete should do the following:
 
@@ -662,7 +663,7 @@ During the course of a simulation, new mutation and gamete types come and go.  N
 
 These types of policies are simple.  See the header files __fwdpp/insertion\_policies.hpp__ and __fwdpp/fwd\_functional.hpp__.  The latter contains the functions passed to __KTfwd::remove\_lost__ and __KTfwd::remove\_fixed\_lost__--see the example programs (and the next section here) for concrete examples.
 
-# Putting it all togeter (kinda)
+\section TutTieItup Putting it all togeter (kinda)
 
 Ok, once we have defined our mutation types, our containers, and our policies, a single generation of a constant-sized population in an individual-based simulation is evolved a follows:
 
