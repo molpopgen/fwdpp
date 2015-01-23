@@ -18,6 +18,7 @@ namespace KTfwd
 
     \example diploid.cc
     \example RHH.cc
+    \example TFL2013.cc
   */
   template< typename gamete_type,
 	    typename vector_type_allocator,

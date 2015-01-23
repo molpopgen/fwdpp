@@ -3,12 +3,10 @@
 
 #include <utility>
 
-/*! \defgroup mlocus API for individual-based, multi-locus simulations
- */
+
 namespace KTfwd
 {
   /*! \brief Single deme, multilocus model, changing population size
-    \ingroup mlocus
    */
   template< typename gamete_type,
 	    typename glist_vector_type_allocator,
@@ -50,7 +48,6 @@ namespace KTfwd
 		 const double & f);
 
   /*! \brief Single deme, multilocus model, constant population size
-    \ingroup mlocus
   */
   template< typename gamete_type,
 	    typename glist_vector_type_allocator,
