@@ -30,7 +30,6 @@ namespace KTfwd
     \return The number of crossovers that happened between g1 and g2 (which is Poisson with mean littler)
    */
   template< typename iterator_type,
-	    //typename gamete_insertion_policy,
 	    typename recombination_map,
 	    typename list_type_allocator,
 	    template<typename,typename> class list_type>
@@ -40,7 +39,7 @@ namespace KTfwd
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      const recombination_map & mf);
-  //const gamete_insertion_policy & gpolicy);
+
 
   //Multilocus models
 
