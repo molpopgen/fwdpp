@@ -100,6 +100,7 @@ namespace KTfwd
 	pos.emplace_back(std::numeric_limits<double>::max());
 	return recombine_gametes(pos,gametes,g1,g2);
       }
+    return 0;
   }
 }
 
