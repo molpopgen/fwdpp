@@ -33,9 +33,7 @@ struct mutation_with_age : public KTfwd::mutation_base
   }
 };
 
-//Simplify our lives a bit with typedefs
-
-typedef mutation_with_age mtype;
+using mtype = mutation_with_age;
 #include <common_ind.hpp>
 
 /*
@@ -45,56 +43,22 @@ mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * gener
 					      lookup_table_type * lookup, const double & beg)
 {
   //Generate new mutation position on the interval [0,1)
-  //double pos = gsl_rng_uniform(r);
   double pos = gsl_ran_flat(r,beg,beg+1.);
-  /*
-    An alternative implementation of the while loop below would be:
-    while( std::find_if( mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos) != mutations->end()) )
-    {
-    pos = gsl_rng_uniform(r);
-    }
-
-    However, that operation is typically much slower, esp. as the mutation rate gets higher
-  */
   while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
     { 
       pos = gsl_ran_flat(r,beg,beg+1.);
-      //pos = gsl_rng_uniform(r);  //if it does, generate a new one
     }
   //update the lookup table
   lookup->insert(pos);
 
-  /*
-    The program will abort if the following conditions are true:
-    1.  The mutation position that we generated does indeed exist in the population (implying that our hashing scheme has failed).
-    2.  AND, the program was NOT compiled with -DNDEBUG
-
-    fwdpp makes extensive internal use of the C-language assert macro (#include <cassert>).  The macro is enabled if a program is 
-    compiled like this:
-    c++ -o program program.cc
-
-    It is disabled if a program is compiled like this:
-    c++ -DNDEBUG program program.cc
-
-    Thus, a programmer may make use of the preprocessor macro NDEBUG to write detailed debugging routines that are easily disabled.
-    
-    For example:
-    #ifndef NDEBUG
-    bool condition = false;
-    //do some complex checking of your data here.  If all is okay, set condition = true;
-    #endif
-    assert( condition == true );
-
-    That check may be expensive at run-time, but is easily disabled by recompiling using -DNDEBUG
-
-    An example of such a debugging routine is KTfwd::check_sum
-  */
+  //In absence of DEBUG, make sure lookup table is working
   assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
 
   //return constructor call to mutation type
   return mutation_with_age(*generation,pos,1,true);
 }
  
+//Fitness function
 struct no_selection_multi
 {
   typedef double result_type;
