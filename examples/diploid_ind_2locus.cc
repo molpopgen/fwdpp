@@ -35,18 +35,6 @@ struct mutation_with_age : public KTfwd::mutation_base
 
 //Simplify our lives a bit with typedefs
 
-/*
-  NOTE: we are using boost containers with boost memory allocators.  
-  My experience on my systems is that each of those objects is worth a 5-10% 
-  run time speedup compare to the same objects from namespace std.
-
-  fwdpp is compatible with ANY container system as long as the
-  one containing gametes conforms to the behavior of std::vector and 
-  the one containing mutations conforms to the behavior of std::list 
-  (especially w/regards to no pointer invalidation upon insertion/delete!!)
-*/
-
-//compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
 typedef mutation_with_age mtype;
 #include <common_ind.hpp>
 
@@ -167,7 +155,6 @@ int main(int argc, char ** argv)
   while(nreps--)
     {
       //the population begins with 1 gamete with no mutations amd initial count 2N
-      //glist gametes(1,gtype(twoN));
       std::vector< glist > gametes (2, glist(1,gtype(twoN) ));
       //Establish the list of diploids.  Here, there is only 1 gamete, so it is easy:
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(2);
@@ -181,11 +168,12 @@ int main(int argc, char ** argv)
       unsigned generation=0;
       double wbar;
       lookup_table_type lookup;  //this is our lookup table for the mutation model
-      //rec policies
+      //within-locus recombination policies -- one per locus
       auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
       auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
-      std::vector< decltype(recpol0) > recpols{ recpol0, recpol1 };
+      std::vector< decltype(recpol0) > recpols{ recpol0 , recpol1 };
 
+      //mutation policies -- 1 per locus
       auto mmodel0 = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,0.);
       auto mmodel1 = std::bind(neutral_mutations_inf_sites,r,&generation,std::placeholders::_1,&lookup,1.);
       std::vector< decltype(mmodel0) > mmodels { mmodel0, mmodel1 };
@@ -199,7 +187,6 @@ int main(int argc, char ** argv)
 	  			 N,
 	  			 N,
 				 &mu[0],
-	  			 //mu,
 	  			 mmodels,
 	  			 recpols,
 	  			 &rbw,
