@@ -19,9 +19,13 @@ The main conceptual difference between this part of the library and the examples
 * A diploid is now represented as a vector of pairs of iterators derived from the vector of lists of gametes.
 * A fitness policy calculates individual fitnesses from that vector of pairs of iterators.
 
-At this point, it may be most useful to look at a concrete example.  The program diploid_ind_2locus.cc is distributed with the library source code, and its code looks like this:
+At this point, it may be most useful to look at a concrete example.  The program diploid_ind_2locus.cc is distributed with the library source code, and we'll break down its essential parts in the next few sections.
 
-## Recombination between loci
+### A multilocus mutation model
+
+### Separate recombination policies per locus
+
+### A (trivial) mutilocus fitness model
 
 This needs special mention
 
