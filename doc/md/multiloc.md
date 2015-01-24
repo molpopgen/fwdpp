@@ -23,6 +23,57 @@ At this point, it may be most useful to look at a concrete example.  The program
 
 ### A multilocus mutation model
 
+For this example, we simulate only neutral mutations, and the model has two loci.  Our function to return a new mutation will do the following:
+
+1. Take the start position of a locus as an argument.
+2. Return a new mutations whose position is uniformly-distributed on in interval \f$(\mathrm{start},\mathrm{start}+1]\f$
+
+This is our mutation class:
+
+~~~{.cpp}
+struct mutation_with_age : public KTfwd::mutation_base
+{
+  unsigned g;
+  double s,h;
+  /*
+    The constructor initializes all class data, including that of the base class via a constructor
+    call to the base class.
+  */
+  mutation_with_age(const unsigned & __o,const double & position, const unsigned & count, const bool & isneutral = true)
+    : KTfwd::mutation_base(position,count,isneutral),g(__o),s(0.),h(0.)
+  {	
+  }
+};
+~~~
+
+It contains info for selection coefficients, etc., but we won't be using any of that.  (It is only there b/c I use the same mutation object for all of the example programs...)
+
+Given the requirements outlined above, a function to return a mutation at a specific locus is:
+
+~~~{.cpp}
+//"beg" is the start position of this locus
+mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned * generation,mlist * mutations,
+					      lookup_table_type * lookup, const double & beg)
+{
+  //Generate new mutation position on the interval [0,1)
+  double pos = gsl_ran_flat(r,beg,beg+1.);
+  while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
+    { 
+      pos = gsl_ran_flat(r,beg,beg+1.);
+    }
+  //update the lookup table
+  lookup->insert(pos);
+
+  //In absence of DEBUG, make sure lookup table is working
+  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
+
+  //return constructor call to mutation type
+  return mutation_with_age(*generation,pos,1,true);
+}
+~~~
+
+The details of the lookup table are covered in the main [tutorial](@ref md_md_policies) on policies.  It serves to efficiently ensure that we are sampling new mutation positions from an infinitely-many sites model. 
+
 ### Separate recombination policies per locus
 
 ### A (trivial) mutilocus fitness model
