@@ -81,8 +81,8 @@ int main(int argc, char ** argv)
 		<< "N = population size (number of diploids)\n"
 		<< "theta = 4Nu, the scaled neutral mutation rate\n"
 		<< "rho = 4Nr, the scale recombination rate\n"
-		<< "n = the sample size to pull from the population at the end of each simulated replicate\n"
 		<< "ngens = the number of generations to simulate\n"
+		<< "n = the sample size to pull from the population at the end of each simulated replicate\n"
 		<< "nreps = the number of replicates to simulated\n"
 		<< "seed = seed value for random number generations\n";
 	std::exit(0);
