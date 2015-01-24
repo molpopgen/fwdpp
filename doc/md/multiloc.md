@@ -116,6 +116,7 @@ std::vector< std::function<mutation_with_age(mlist *)> > mmodels {
 	};
 ~~~
 
+In summary, we have to pay some attention to the type signatures of our policies, and lambda expressions require some special care.  We don't have to be aware of this stuff in the single-locus API, because we can rely on the compiler to just work it out for itself during template insantiation.
 
 ### Separate within-locus recombination policies
 
