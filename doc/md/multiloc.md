@@ -120,12 +120,92 @@ In summary, we have to pay some attention to the type signatures of our policies
 
 ### Separate within-locus recombination policies
 
+Our with-locus recombination models will be very simple, and will model recombination as a uniform process.  The genetic maps can therefore be defined as:
+
+~~~{.cpp}
+std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
+	recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
+~~~
+
+We use the above genetic maps to synthesize recombination policies:
+
+~~~{.cpp}
+auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
+auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
+std::vector< decltype(recpol0) > recpols{ recpol0 , recpol1 };
+~~~
+
+Why did I declare the recmaps with std::function instead of auto?  The reason is that the type deduction is more complex here, and the compiler will deduce bizarre signatures for recmap and recmap2 if left to its own devices.  I am still exploring if this can be addressed in the future to allow automatic type deduction via auto/decltype.
+
 ### Recombination between loci
+
+To model recombination between loci, you need the following two ingredients:
+
+1. An array of doubles of length \f$L-1\f$, where \f$L\f$ is the number of loci in the simulation.
+2. A policy specifying how to apply those values.  For example, you may choose to model crossing over between loci as a binomial process or a Poisson process.  This policy must return an unsinged integer, representing the number of crossovers between loci \f$i\f$ and \f$i-1\f$ (\f$1 \leq i \leq L-1\f$).  What really matters is that the return value from this policy is odd or even.
+
+In our simulation, there are only two loci, so our array may be defined as:
+
+~~~{.cpp}
+double rbw = 0. //no crossing over between loci
+~~~
+
+And we model crossing over between loci as a Poisson process using a lambda expression:
+
+~~~{.cpp}
+[](gsl_rng * __r, const double __d){ return gsl_ran_poisson(__r,__d); }
+~~~
+
+Obviously, for this specific example, having no crossover between loci (rbw = 0) make this policy irrelevant, but it does matter in general.
+
+#### Poisson or not?
 
 ### A (trivial) mutilocus fitness model
 
-This needs special mention
+In this example program, there is no selection, so our fitness model will return 1 for the fitness of any diploid.  Just like the single-locus API, multilocus fitness policies take a diploid as an argument and return a double.  The difference here is that a diploid is now a vector of pairs of iterators to gametes:
+
+~~~{.cpp}
+struct no_selection_multi
+{
+  typedef double result_type;
+  template< typename iterator_type >
+  inline double operator()( const std::vector< std::pair<iterator_type,iterator_type> > & diploid ) const
+  {
+    return 1.;
+  }
+};
+~~~
+
+### Calling sample_diploid
+
+The above definitions are used to evolve a population via a call to KTfwd::sample_diploid:
+
+~~~{.cpp}
+KTfwd::sample_diploid( r,
+	&gametes,
+	&diploids,
+	&mutations,
+	N,
+	N,
+	&mu[0],
+	mmodels,
+	recpols,
+	&rbw,
+	[](gsl_rng * __r, const double __d){ return gsl_ran_poisson(__r,__d); },
+	std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+	std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+	std::bind(no_selection_multi(),std::placeholders::_1),
+	std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N),
+	0.);
+~~~
+
+The above call is very similar to the single-locus method, except that vectors of policies are passed.  Two other differences are:
+
+1. We need an array of per-locus mutation rates.  This should be a double * of length \f$L\f$, and &mu[0] passes that pointer on to the mutation policies.
+2. We include our Poisson model of interlocus recombination.
+
+At this point, you are probably ready to see the full implementation of  diploid_ind_2locus.cc for the remaining details.
 
 ## Mechanics of the multilocus recombination
 
-Document the logic here
+If anyone is interested in how the book-keeping for multilocus recombination works, see the library file multilocus_rec.hpp, which defines the functions KTfwd::fwdpp_internal::multilocus_rec.  You can also look at the unit test code mlocusCrossoverTest.cc, which implements manually-concocted examples to make sure that the outcomes of these functions are correct (which means that I can write down what should happen on paper, and I get the same result from the unit test).
