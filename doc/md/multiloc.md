@@ -206,6 +206,14 @@ The above call is very similar to the single-locus method, except that vectors o
 
 At this point, you are probably ready to see the full implementation of  diploid_ind_2locus.cc for the remaining details.
 
+# Sampling from a multilocus simulation
+
+TODO
+
+# Serialization: in-memory copying and file I/O
+
+TODO
+
 ## Mechanics of the multilocus recombination
 
 If anyone is interested in how the book-keeping for multilocus recombination works, see the library file multilocus_rec.hpp, which defines the functions KTfwd::fwdpp_internal::multilocus_rec.  You can also look at the unit test code mlocusCrossoverTest.cc, which implements manually-concocted examples to make sure that the outcomes of these functions are correct (which means that I can write down what should happen on paper, and I get the same result from the unit test).
