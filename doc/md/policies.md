@@ -1,4 +1,4 @@
-# Tutorial: policies in fwdpp
+# Tutorial 1: Policies in fwdpp
 
 [TOC]
 
