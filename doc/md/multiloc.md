@@ -107,7 +107,14 @@ However, the above approach will fail because C++11 lambda expressions always ha
 std::vector< std::function<mutation_with_age(mlist *)> > mmodels {mmodel0,mmodel1};
 ~~~
 
-Personally, I prefer the std::bind/decltype idiom here over the lambda/std::function approach, because it means less work on my part.
+Personally, I prefer the std::bind/decltype idiom here over the lambda/std::function approach, because it means less work on my part.  However, the latter method can win you the greatest number of geek points because it allows you to do everything in one fell swoop and write code that is arguably harder to read:
+
+~~~{.cpp}
+std::vector< std::function<mutation_with_age(mlist *)> > mmodels {
+	[&]( mlist * m ) { return neutral_mutations_inf_sites(r,&generation,m,&lookup,0.); },
+	[&]( mlist * m ) { return neutral_mutations_inf_sites(r,&generation,m,&lookup,1.); }
+	};
+~~~
 
 
 ### Separate within-locus recombination policies
