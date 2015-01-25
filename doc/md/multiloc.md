@@ -216,4 +216,4 @@ TODO
 
 ## Mechanics of the multilocus recombination
 
-If anyone is interested in how the book-keeping for multilocus recombination works, see the library file multilocus_rec.hpp, which defines the functions KTfwd::fwdpp_internal::multilocus_rec.  You can also look at the unit test code mlocusCrossoverTest.cc, which implements manually-concocted examples to make sure that the outcomes of these functions are correct (which means that I can write down what should happen on paper, and I get the same result from the unit test).
+If anyone is interested in how the book-keeping for multilocus recombination works, see the library file multilocus_rec.hpp, which defines the function KTfwd::fwdpp_internal::multilocus_rec.  You can also look at the unit test code mlocusCrossoverTest.cc, which implements manually-concocted examples to make sure that the outcomes of these functions are correct (which means that I can write down what should happen on paper, and I get the same result from the unit test).
