@@ -153,28 +153,6 @@ namespace KTfwd
 								   r_between_loci,i,
 								   p2c[i].first,p2c[i].second,
 								   p2g1,LO2 );
-	    // unsigned temp = rec_policies[i]( p1c[i].first, p1c[i].second );
-	    // if ( i > 0 )
-	    //   {
-	    // 	unsigned nrbw = blrf(r,r_between_loci[i-1]);
-	    // 	bool obw = (nrbw%2!=0) ? true : false;
-	    // 	p1g1 = (LO1) ? !p1g1 : p1g1;
-	    // 	p1g1 = (obw) ? !p1g1 : p1g1;
-	    //   }
-	    // (ptr2cdip+i)->first = (p1g1) ? p1c[i].first : p1c[i].second;
-	    // LO1 = (temp % 2 != 0.) ? true : false;
-
-	    // unsigned temp = rec_policies[i]( p2c[i].first, p2c[i].second );
-	    // if ( i > 0 )
-	    //   {
-	    // 	unsigned nrbw = blrf(r,r_between_loci[i-1]);
-	    // 	bool obw = (nrbw%2!=0) ? true : false;
-	    // 	p2g1 = (LO2) ? !p2g1 : p2g1;
-	    // 	p2g1 = (obw) ? !p2g1 : p2g1;
-	    //   }
-	    // (ptr2cdip+i)->second = (p2g1) ? p2c[i].first : p2c[i].second;
-	    // LO2 = (temp % 2 != 0.) ? true : false;
-	    //...to here is a good candidate for isolating to an fxn in ns fwdpp_internal
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
 
