@@ -9,6 +9,7 @@
 * The mechanics of recombination in multilocus simulations moved to function multilocus_rec in namesapce KTfwd::fwdpp_internal.
 * A unit test for the function KTfwd::fwdpp_internal::multilocus_rec was added.
 * Added tutorial for multilocus simulation implmentation
+* Minor cleanups to the build system
 
 ## 0.2.5
 
