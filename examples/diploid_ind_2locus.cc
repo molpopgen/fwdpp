@@ -6,6 +6,7 @@
 #include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
+#include <sstream>
 /*
   We define a new mutation type, derived from the base class KTfwd::mutation_base.
   This type adds a selection coefficient (s), dominance coefficient (h),
@@ -26,6 +27,48 @@ struct mutation_with_age : public KTfwd::mutation_base
 };
 
 using mtype = mutation_with_age;
+//function object to write mutation data in binary format
+struct mwriter
+{
+  typedef void result_type;
+  result_type operator()( const mutation_with_age & m, std::ostringstream & buffer ) const
+  {
+    unsigned u = m.n;
+    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
+    u = m.g;
+    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
+    bool b = m.neutral;
+    buffer.write( reinterpret_cast< char * >(&b),sizeof(bool) );
+    double d = m.pos;
+    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
+    d = m.s;
+    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
+    d = m.h;
+    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
+  }
+};
+
+//function object to read mutation data in binary format
+// struct mreader
+// {
+//   typedef mutation_with_age result_type;
+//   result_type operator()( std::istream & in ) const
+//   {
+//     unsigned n;
+//     in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
+//     unsigned g;
+//     in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
+//     bool neut;
+//     in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
+//     double pos;
+//     in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
+//     double s;
+//     in.read( reinterpret_cast< char * >(&s),sizeof(double) );
+//     double h;
+//     in.read( reinterpret_cast< char * >(&h),sizeof(double) );
+//     return result_type(g,pos,n,s,h,neut);
+//   }
+// };
 #include <common_ind.hpp>
 
 /*
@@ -163,6 +206,8 @@ int main(int argc, char ** argv)
 	  else ++nm2;
 	}
       std::cout << nm1 << '\t' << nm2 << '\n';
+      std::ostringstream buffer;
+      KTfwd::write_binary_pop( &gametes, &mutations, &diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
     }
   return 0;
 }

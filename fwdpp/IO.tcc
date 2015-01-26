@@ -56,39 +56,48 @@ namespace KTfwd
   {
     template<
       typename gamete_type,
-      typename vector_type_allocator,
-      template<typename,typename> class vector_type,
+      typename... gamete_cont_t_details,
+      template<typename,typename... > class gamete_cont_t,
       typename ostreamtype>
-    void operator()( const vector_type< gamete_type, vector_type_allocator > * gametes,
-		     const std::vector< typename gamete_type::mutation_list_type::const_iterator > & mut_info,
-		     const std::vector< unsigned > & indexes,
-		     ostreamtype & buffer) const
-      {
-	typedef typename vector_type< gamete_type, vector_type_allocator>::const_iterator glist_iterator;
-	unsigned NHAPS = unsigned(gametes->size());
-	buffer.write( reinterpret_cast< char * >(&NHAPS), sizeof(unsigned) );
-	for( glist_iterator gtr = gametes->begin() ; gtr != gametes->end() ; ++gtr )
-	  {
-	    unsigned N = gtr->n;
-	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	    N = unsigned(gtr->mutations.size());
-	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	    for( unsigned i = 0 ; i < N ; ++i )
-	      {
-		assert( std::find(mut_info.begin(),mut_info.end(),(gtr->mutations[i])) != mut_info.end() );
-		unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gtr->mutations[i])) - mut_info.begin()) ];
-		buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
-	      }
-	    N = unsigned(gtr->smutations.size());
-	    buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	    for( unsigned i = 0 ; i < N ; ++i )
-	      {
-		assert( std::find(mut_info.begin(),mut_info.end(),(gtr->smutations[i])) != mut_info.end() );
-		unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gtr->smutations[i])) - mut_info.begin()) ];
-		buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
-	      }
-	  }
-      }
+    std::pair< std::vector< typename gamete_cont_t< gamete_type, gamete_cont_t_details... >::const_iterator >,
+	       std::vector<unsigned> >
+    operator()( const gamete_cont_t< gamete_type, gamete_cont_t_details... > * gametes,
+		const std::vector< typename gamete_type::mutation_list_type::const_iterator > & mut_info,
+		const std::vector< unsigned > & indexes,
+		ostreamtype & buffer) const
+    {
+      typedef typename gamete_cont_t< gamete_type, gamete_cont_t_details...>::const_iterator glist_iterator;
+      unsigned N = unsigned(gametes->size());
+      buffer.write( reinterpret_cast< char * >(&N), sizeof(unsigned) );
+      std::vector< glist_iterator > gam_info;
+      std::vector<unsigned> gam_indexes;
+      unsigned index = 0;
+      for( glist_iterator gptr = gametes->begin() ; gptr != gametes->end() ; ++gptr,++index )
+	{
+	  gam_info.push_back( gptr );
+	  gam_indexes.push_back(index);
+	  buffer.write( reinterpret_cast< char * >(&index),sizeof(unsigned) );
+	  N = gptr->n;
+	  buffer.write( reinterpret_cast< char * >(&N),sizeof(unsigned) );
+	  N = unsigned(gptr->mutations.size());
+	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
+	  for( unsigned i = 0 ; i < N ; ++i )
+	    {
+	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) != mut_info.end() );
+	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin()) ];
+	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
+	    }
+	  N = unsigned(gptr->smutations.size());
+	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
+	  for( unsigned i = 0 ; i < N ; ++i )
+	    {
+	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) != mut_info.end() );
+	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) - mut_info.begin()) ];
+	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
+	    }	  
+	}
+      return std::make_pair( gam_info, gam_indexes );
+    }
   };
 
   struct read_mutations
@@ -146,68 +155,82 @@ namespace KTfwd
   struct read_haplotypes
   {
     template< typename gamete_type,
-	      typename vector_type_allocator,
-	      template<typename,typename> class vector_type,
+	      typename list_type_allocator,
+	      template<typename,typename> class list_type,
 	      typename istreamtype >
-    void operator()(vector_type< gamete_type, vector_type_allocator > * gametes,
-		    std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
-		    istreamtype & in) const
+    std::map< unsigned,
+	      typename list_type< gamete_type, list_type_allocator >::iterator >
+    operator()(list_type< gamete_type, list_type_allocator > * gametes,
+	       std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
+	       istreamtype & in) const
     {
+      std::map< unsigned,
+		typename list_type< gamete_type, list_type_allocator >::iterator > rv;
       unsigned NHAPS;
-      in.read( reinterpret_cast< char * >(&NHAPS), sizeof(unsigned) );
-      for( unsigned i = 0 ; i < NHAPS ; ++i)
+      
+      in.read( reinterpret_cast<char *>(&NHAPS),sizeof(unsigned) );
+      
+      unsigned INDEX,N,ID_J;
+      for( unsigned i = 0 ; i < NHAPS ; ++i )
 	{
-	  unsigned N;
+	  in.read( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
+	  assert( rv.find(INDEX) == rv.end() );
 	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
 	  gamete_type g(N);
 	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
 	  for( unsigned j = 0 ; j < N ; ++j )
 	    {
-	      unsigned ID_J;
 	      in.read( reinterpret_cast< char * >(&ID_J), sizeof(unsigned) );
 	      g.mutations.push_back(m[ID_J]);
 	    }
 	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
 	  for( unsigned j = 0 ; j < N ; ++j )
 	    {
-	      unsigned ID_J;
 	      in.read( reinterpret_cast< char * >(&ID_J), sizeof(unsigned) );
 	      g.smutations.push_back(m[ID_J]);
 	    }
-	  gametes->push_back(g);
+	  rv[INDEX] = gametes->insert(gametes->end(),g);
 	}
+      return rv;
     }
 
     template< typename gamete_type,
-	      typename vector_type_allocator,
-	      template<typename,typename> class vector_type>
-    void operator()(vector_type< gamete_type, vector_type_allocator > * gametes,
-		    std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
-		    gzFile gzin) const
+	      typename list_type_allocator,
+	      template<typename,typename> class list_type>
+    std::map< unsigned,
+	      typename list_type< gamete_type, list_type_allocator >::iterator >
+    operator()(list_type< gamete_type, list_type_allocator > * gametes,
+	       std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
+	       gzFile gzin) const
     {
+      std::map< unsigned,
+		typename list_type< gamete_type, list_type_allocator >::iterator > rv;
       unsigned NHAPS;
-      gzread( gzin, &NHAPS, sizeof(unsigned) );
-      for( unsigned i = 0 ; i < NHAPS ; ++i)
+      
+      gzread( gzin,&NHAPS,sizeof(unsigned) );
+      
+      unsigned INDEX,N,ID_J;
+      for( unsigned i = 0 ; i < NHAPS ; ++i )
 	{
-	  unsigned N;
-	  gzread( gzin, &N, sizeof(unsigned) );
+	  gzread( gzin,&INDEX,sizeof(unsigned) );
+	  assert( rv.find(INDEX) == rv.end() );
+	  gzread( gzin,&N,sizeof(unsigned) );
 	  gamete_type g(N);
-	  gzread( gzin, &N, sizeof(unsigned) );
+	  gzread( gzin,&N,sizeof(unsigned) );
 	  for( unsigned j = 0 ; j < N ; ++j )
 	    {
-	      unsigned ID_J;
-	      gzread( gzin, &ID_J, sizeof(unsigned) );
+	      gzread( gzin,&ID_J,sizeof(unsigned) );
 	      g.mutations.push_back(m[ID_J]);
 	    }
-	  gzread( gzin, &N, sizeof(unsigned) );
+	  gzread( gzin,&N,sizeof(unsigned) );
 	  for( unsigned j = 0 ; j < N ; ++j )
 	    {
-	      unsigned ID_J;
-	      gzread( gzin, &ID_J, sizeof(unsigned) );
+	      gzread( gzin,&ID_J,sizeof(unsigned) );
 	      g.smutations.push_back(m[ID_J]);
 	    }
-	  gametes->push_back(g);
+	  rv[INDEX] = gametes->insert(gametes->end(),g);
 	}
+      return rv;
     }
   };
 
@@ -234,7 +257,7 @@ namespace KTfwd
     //initiate a list with the mutation information by iterator
     typedef std::vector< mlist_iterator > maptype;
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer );
-    write_haplotypes()(gametes,mutdata.first,mutdata.second,buffer);
+    auto xx = write_haplotypes()(gametes,mutdata.first,mutdata.second,buffer);
   }
   
   template< typename gamete_type,
@@ -269,7 +292,7 @@ namespace KTfwd
 	   vector_type_allocator2>::const_iterator pop = gametes->begin() ; 
 	 pop < gametes->end() ; ++pop )
       {
-	write_haplotypes()(&*pop,mutdata.first,mutdata.second,buffer);
+	auto xx = write_haplotypes()(&*pop,mutdata.first,mutdata.second,buffer);
       }
   }
 
@@ -382,54 +405,7 @@ namespace KTfwd
   
   //Binary I/O for individual-based simulation
 
-  struct write_haplotypes_ind
-  {
-    template<
-      typename gamete_type,
-      typename list_type_allocator,
-      template<typename,typename> class list_type,
-      typename ostreamtype>
-    std::pair< std::vector< typename list_type< gamete_type, list_type_allocator >::const_iterator >,
-	       std::vector<unsigned> >
-    operator()( const list_type< gamete_type, list_type_allocator > * gametes,
-		const std::vector< typename gamete_type::mutation_list_type::const_iterator > & mut_info,
-		const std::vector< unsigned > & indexes,
-		ostreamtype & buffer) const
-    {
-      typedef typename list_type< gamete_type, list_type_allocator>::const_iterator glist_iterator;
-      unsigned N = unsigned(gametes->size());
-      buffer.write( reinterpret_cast< char * >(&N), sizeof(unsigned) );
-      std::vector< glist_iterator > gam_info;
-      std::vector<unsigned> gam_indexes;
-      unsigned index = 0;
-      for( glist_iterator gptr = gametes->begin() ; gptr != gametes->end() ; ++gptr,++index )
-	{
-	  gam_info.push_back( gptr );
-	  gam_indexes.push_back(index);
-	  buffer.write( reinterpret_cast< char * >(&index),sizeof(unsigned) );
-	  N = gptr->n;
-	  buffer.write( reinterpret_cast< char * >(&N),sizeof(unsigned) );
-	  N = unsigned(gptr->mutations.size());
-	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	  for( unsigned i = 0 ; i < N ; ++i )
-	    {
-	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) != mut_info.end() );
-	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin()) ];
-	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
-	    }
-	  N = unsigned(gptr->smutations.size());
-	  buffer.write( reinterpret_cast<char *>(&N), sizeof(unsigned) );
-	  for( unsigned i = 0 ; i < N ; ++i )
-	    {
-	      assert( std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) != mut_info.end() );
-	      unsigned INDEX = indexes[ std::vector<unsigned>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) - mut_info.begin()) ];
-	      buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
-	    }	  
-	}
-      return std::make_pair( gam_info, gam_indexes );
-    }
-  };
-
+  //Single-locus sims, single pop
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
@@ -456,7 +432,8 @@ namespace KTfwd
     
     typedef std::vector< glist_iterator > gmaptype;
     
-    std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( gametes, mutdata.first, mutdata.second, buffer );
+    //std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( gametes, mutdata.first, mutdata.second, buffer );
+    std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
     
     //the diploids are now trivial to write
     typedef typename  diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
@@ -473,88 +450,29 @@ namespace KTfwd
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
       }
   }
+  
+  //Multi-locus sims, single pop
+  // template< typename gamete_type,
+  // 	    typename gamete_list_type_allocator,
+  // 	    template<typename,typename> class gamete_list_type,
+  // 	    typename mutation_type,
+  // 	    typename mutation_list_type_allocator,
+  // 	    template<typename,typename> class mutation_list_type,
+  // 	    typename vector_type_allocator,
+  // 	    template<typename,typename> class diploid_vector_type,
+  // 	    typename mutation_writer_type,
+  // 	    typename ostreamtype>
+  // void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
+  // 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+  // 			  const diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
+  // 								typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
+  // 						     vector_type_allocator > * diploids,
+  // 			  const mutation_writer_type & mw,
+  // 			  ostreamtype & buffer)
+  // {
+  // }
 
-  struct read_haplotypes_ind
-  {
-    template< typename gamete_type,
-	      typename list_type_allocator,
-	      template<typename,typename> class list_type,
-	      typename istreamtype >
-    std::map< unsigned,
-	      typename list_type< gamete_type, list_type_allocator >::iterator >
-    operator()(list_type< gamete_type, list_type_allocator > * gametes,
-	       std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
-	       istreamtype & in) const
-    {
-      std::map< unsigned,
-		typename list_type< gamete_type, list_type_allocator >::iterator > rv;
-      unsigned NHAPS;
-      
-      in.read( reinterpret_cast<char *>(&NHAPS),sizeof(unsigned) );
-      
-      unsigned INDEX,N,ID_J;
-      for( unsigned i = 0 ; i < NHAPS ; ++i )
-	{
-	  in.read( reinterpret_cast< char * >(&INDEX), sizeof(unsigned) );
-	  assert( rv.find(INDEX) == rv.end() );
-	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
-	  gamete_type g(N);
-	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
-	  for( unsigned j = 0 ; j < N ; ++j )
-	    {
-	      in.read( reinterpret_cast< char * >(&ID_J), sizeof(unsigned) );
-	      g.mutations.push_back(m[ID_J]);
-	    }
-	  in.read( reinterpret_cast< char * >(&N), sizeof(unsigned) );
-	  for( unsigned j = 0 ; j < N ; ++j )
-	    {
-	      in.read( reinterpret_cast< char * >(&ID_J), sizeof(unsigned) );
-	      g.smutations.push_back(m[ID_J]);
-	    }
-	  rv[INDEX] = gametes->insert(gametes->end(),g);
-	}
-      return rv;
-    }
 
-    template< typename gamete_type,
-	      typename list_type_allocator,
-	      template<typename,typename> class list_type>
-    std::map< unsigned,
-	      typename list_type< gamete_type, list_type_allocator >::iterator >
-    operator()(list_type< gamete_type, list_type_allocator > * gametes,
-	       std::map<unsigned, typename gamete_type::mutation_list_type_iterator> & m,
-	       gzFile gzin) const
-    {
-      std::map< unsigned,
-		typename list_type< gamete_type, list_type_allocator >::iterator > rv;
-      unsigned NHAPS;
-      
-      gzread( gzin,&NHAPS,sizeof(unsigned) );
-      
-      unsigned INDEX,N,ID_J;
-      for( unsigned i = 0 ; i < NHAPS ; ++i )
-	{
-	  gzread( gzin,&INDEX,sizeof(unsigned) );
-	  assert( rv.find(INDEX) == rv.end() );
-	  gzread( gzin,&N,sizeof(unsigned) );
-	  gamete_type g(N);
-	  gzread( gzin,&N,sizeof(unsigned) );
-	  for( unsigned j = 0 ; j < N ; ++j )
-	    {
-	      gzread( gzin,&ID_J,sizeof(unsigned) );
-	      g.mutations.push_back(m[ID_J]);
-	    }
-	  gzread( gzin,&N,sizeof(unsigned) );
-	  for( unsigned j = 0 ; j < N ; ++j )
-	    {
-	      gzread( gzin,&ID_J,sizeof(unsigned) );
-	      g.smutations.push_back(m[ID_J]);
-	    }
-	  rv[INDEX] = gametes->insert(gametes->end(),g);
-	}
-      return rv;
-    }
-  };
 
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
@@ -586,7 +504,8 @@ namespace KTfwd
     typedef gamete_list_type< gamete_type, gamete_list_type_allocator > glist;
     typedef std::map<unsigned,typename glist::iterator> gam_info;
     
-    gam_info g = read_haplotypes_ind()(gametes,m,in);
+    //gam_info g = read_haplotypes_ind()(gametes,m,in);
+    gam_info g = read_haplotypes()(gametes,m,in);
     
     unsigned NDIPS,c;
     in.read( reinterpret_cast<char *>(&NDIPS), sizeof(unsigned) );
@@ -634,7 +553,8 @@ namespace KTfwd
     typedef gamete_list_type< gamete_type, gamete_list_type_allocator > glist;
     typedef std::map<unsigned,typename glist::iterator> gam_info;
     
-    gam_info g = read_haplotypes_ind()(gametes,m,gzin);
+    //gam_info g = read_haplotypes_ind()(gametes,m,gzin);
+    gam_info g = read_haplotypes()(gametes,m,gzin);
     
     unsigned NDIPS,c;
     gzread( gzin,&NDIPS,sizeof(unsigned) );
@@ -668,7 +588,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+  void write_binary_pop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
 			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
@@ -705,7 +625,8 @@ namespace KTfwd
   unsigned NDIPS,c;
   for( unsigned pop = 0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
     {
-      std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
+      //std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
+      std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
       
       NDIPS = unsigned(dip_ptr->size());
       
@@ -735,15 +656,15 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-			     metapop_vector_type_allocator> * metapop,
-			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			     diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-									       typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-								    vector_type_allocator >,
-			     diploid_vv_type_allocator > * diploids,
-			     const mutation_reader_type & mr,
-			     istreamtype & in)
+  void read_binary_pop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			 metapop_vector_type_allocator> * metapop,
+			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			 diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
+			 typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
+			 vector_type_allocator >,
+			 diploid_vv_type_allocator > * diploids,
+			 const mutation_reader_type & mr,
+			 istreamtype & in)
   {
     metapop->clear();
     mutations->clear();
@@ -779,7 +700,8 @@ typedef std::map<unsigned,typename glist::iterator> gam_info;
   for( unsigned pop=0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
     {
       
-      gam_info g = read_haplotypes_ind()(&*pop_ptr,m,in);	
+      //gam_info g = read_haplotypes_ind()(&*pop_ptr,m,in);
+      gam_info g = read_haplotypes()(&*pop_ptr,m,in);	
       
       in.read(reinterpret_cast<char*>(&NDIPS),sizeof(unsigned));
       
@@ -852,7 +774,8 @@ typedef std::map<unsigned,typename glist::iterator> gam_info;
   for( unsigned pop=0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
     {
       
-      gam_info g = read_haplotypes_ind()(&*pop_ptr,m,gzin);	
+      //gam_info g = read_haplotypes_ind()(&*pop_ptr,m,gzin);	
+      gam_info g = read_haplotypes()(&*pop_ptr,m,gzin);	
       
       gzread( gzin,&NDIPS,sizeof(unsigned) );
       dip_ptr->resize(NDIPS);
