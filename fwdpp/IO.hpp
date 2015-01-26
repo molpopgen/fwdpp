@@ -46,21 +46,21 @@ namespace KTfwd
     in turn allowing file locking which speeds up performance on distributed file systems.
     \example diploid_binaryIO.cc
    */
-  template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type,
-	    typename vector_type_allocator2,
-	    template<typename,typename> class vector_type2,
-	    typename mutation_type,
-	    typename list_type_allocator,
-	    template<typename,typename> class list_type,
-	    typename mutation_writer_type,
-	    typename ostreamtype>
-  void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			      const list_type< mutation_type, list_type_allocator > * mutations,
-			      const mutation_writer_type & mw,
-			      ostreamtype & buffer);
-
+  template<typename mutation_type,
+	   typename list_type_allocator,
+	   template<typename,typename> class list_type,
+	   template<typename,typename> class gamete_type,
+	   typename vector_type_allocator,
+	   template<typename,typename> class vector_type,
+	   typename vector_type_allocator2,
+	   template<typename,typename> class vector_type2,
+	   typename mutation_writer_type,
+	   typename ostreamtype>
+  void write_binary_pop ( const vector_type2<vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
+			  const list_type< mutation_type, list_type_allocator > * mutations,
+			  const mutation_writer_type & mw,
+			  ostreamtype & buffer);
+  
   /*! \brief Read the population back from a binary-format file
     Read the population back from a binary-format file
 
@@ -142,19 +142,34 @@ namespace KTfwd
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param gzin A gzFile (from zlib) opened for reading.
    */
-  template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type,
-	    typename vector_type_allocator2,
-	    template<typename,typename> class vector_type2,
-	    typename mutation_type,
-	    typename list_type_allocator,
-	    template<typename,typename> class list_type,
-	    typename mutation_reader>
-  void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			     list_type< mutation_type, list_type_allocator > * mutations,
-			     const mutation_reader & mr,
-			     gzFile gzin );
+  template<typename mutation_type,
+	   typename list_type_allocator,
+	   template<typename,typename> class list_type,
+	   template<typename,typename> class gamete_type,
+	   typename vector_type_allocator,
+	   template<typename,typename> class vector_type,
+	   typename vector_type_allocator2,
+	   template<typename,typename> class vector_type2,
+	   typename mutation_reader,
+	   typename istreamtype>
+  void read_binary_pop ( vector_type2< vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
+			 list_type< mutation_type, list_type_allocator > * mutations,
+			 const mutation_reader & mr,
+			 istreamtype & in);
+
+  // template< typename gamete_type,
+  // 	    typename vector_type_allocator,
+  // 	    template<typename,typename> class vector_type,
+  // 	    typename vector_type_allocator2,
+  // 	    template<typename,typename> class vector_type2,
+  // 	    typename mutation_type,
+  // 	    typename list_type_allocator,
+  // 	    template<typename,typename> class list_type,
+  // 	    typename mutation_reader>
+  // void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
+  // 			     list_type< mutation_type, list_type_allocator > * mutations,
+  // 			     const mutation_reader & mr,
+  // 			     gzFile gzin );
 
   /*! \brief Write population to binary-format file for individual-based simulations
     \param gametes  The vector of lists gametes for each deme in metapop

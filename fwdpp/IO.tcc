@@ -246,7 +246,7 @@ namespace KTfwd
 			  const list_type< mutation_type, list_type_allocator > * mutations,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
-  {	      
+  {	   
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must inherit from KTfwd::mutation_base" );
     typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
@@ -260,26 +260,49 @@ namespace KTfwd
     auto xx = write_haplotypes()(gametes,mutdata.first,mutdata.second,buffer);
   }
   
-  template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type,
-	    typename vector_type_allocator2,
-	    template<typename,typename> class vector_type2,
-	    typename mutation_type,
-	    typename list_type_allocator,
-	    template<typename,typename> class list_type,
-	    typename mutation_writer_type,
-	    typename ostreamtype>
-  void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			      const list_type< mutation_type, list_type_allocator > * mutations,
-			      const mutation_writer_type & mw,
-			      ostreamtype & buffer)
+  /*
+    KTfwd::write_binary_pop<mutation_with_age, 
+			std::__1::list<mutation_with_age, std::__1::allocator<mutation_with_age> >, 
+			gamete_base,
+			std::__1::allocator<KTfwd::gamete_base<mutation_with_age, std::__1::list<mutation_with_age, std::__1::allocator<mutation_with_age> > > >, 
+			vector, mutation_with_age, std::__1::allocator<mutation_with_age>, 
+			list,
+			std::__1::__bind<mwriter, std::__1::placeholders::__ph<1> &, std::__1::placeholders::__ph<2> &>, 
+			std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > >
+  */
+  // template< typename gamete_type,
+  // 	    typename vector_type_allocator,
+  // 	    template<typename,typename> class vector_type,
+  // 	    typename vector_type_allocator2,
+  // 	    template<typename,typename> class vector_type2,
+  // 	    typename mutation_type,
+  // 	    typename list_type_allocator,
+  // 	    template<typename,typename> class list_type,
+  // 	    typename mutation_writer_type,
+  // 	    typename ostreamtype>
+  template<typename mutation_type,
+	   typename list_type_allocator,
+	   template<typename,typename> class list_type,
+	   template<typename,typename> class gamete_type,
+	   typename vector_type_allocator,
+	   template<typename,typename> class vector_type,
+	   typename vector_type_allocator2,
+	   template<typename,typename> class vector_type2,
+	   typename mutation_writer_type,
+	   typename ostreamtype>
+  //void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
+  void write_binary_pop ( const vector_type2<vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
+			  const list_type< mutation_type, list_type_allocator > * mutations,
+			  const mutation_writer_type & mw,
+			  ostreamtype & buffer)
   {	      
+    //static_assert(false,"monkeys!");
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must inherit from KTfwd::mutation_base" );
-    typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
-                   std::is_same<gamete_base_type,gamete_type>::value,
+    using gamete_t = gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >;
+    typedef gamete_base< typename gamete_t::mutation_type, typename gamete_t::mutation_list_type > gamete_base_type;
+    static_assert( std::is_base_of<gamete_base_type,gamete_t>::value ||
+                   std::is_same<gamete_base_type,gamete_t>::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef typename list_type< mutation_type, list_type_allocator >::const_iterator mlist_iterator;
     
@@ -288,7 +311,7 @@ namespace KTfwd
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer );
     unsigned NPOPS = gametes->size();
     buffer.write( reinterpret_cast< char * >(&NPOPS), sizeof(unsigned) );
-    for( typename  vector_type2<vector_type< gamete_type, vector_type_allocator >, 
+    for( typename  vector_type2<vector_type< gamete_t, vector_type_allocator >, 
 	   vector_type_allocator2>::const_iterator pop = gametes->begin() ; 
 	 pop < gametes->end() ; ++pop )
       {
@@ -325,29 +348,40 @@ namespace KTfwd
     read_haplotypes()(gametes,m,in);
   }
 			 
-  template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type,
-	    typename vector_type_allocator2,
-	    template<typename,typename> class vector_type2,
-	    typename mutation_type,
-	    typename list_type_allocator,
-	    template<typename,typename> class list_type,
-	    typename mutation_reader,
-	    typename istreamtype>
-  void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			     list_type< mutation_type, list_type_allocator > * mutations,
-			     const mutation_reader & mr,
-			     istreamtype & in)
+  // template< typename gamete_type,
+  // 	    typename vector_type_allocator,
+  // 	    template<typename,typename> class vector_type,
+  // 	    typename vector_type_allocator2,
+  // 	    template<typename,typename> class vector_type2,
+  // 	    typename mutation_type,
+  // 	    typename list_type_allocator,
+  // 	    template<typename,typename> class list_type,
+  // 	    typename mutation_reader,
+  // 	    typename istreamtype>
+  //void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
+  template<typename mutation_type,
+	   typename list_type_allocator,
+	   template<typename,typename> class list_type,
+	   template<typename,typename> class gamete_type,
+	   typename vector_type_allocator,
+	   template<typename,typename> class vector_type,
+	   typename vector_type_allocator2,
+	   template<typename,typename> class vector_type2,
+	   typename mutation_reader,
+	   typename istreamtype>
+  void read_binary_pop ( vector_type2< vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
+			 list_type< mutation_type, list_type_allocator > * mutations,
+			 const mutation_reader & mr,
+			 istreamtype & in)
   {
     gametes->clear();
     mutations->clear();
     
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must inherit from KTfwd::mutation_base" );
-    typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
-    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
-                   std::is_same<gamete_base_type,gamete_type>::value,
+    typedef gamete_base< typename gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >::mutation_type, typename gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >::mutation_list_type > gamete_base_type;
+    static_assert( std::is_base_of<gamete_base_type,gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> > >::value ||
+                   std::is_same<gamete_base_type,gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> > >::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
     typedef list_type< mutation_type, list_type_allocator > mlist;
     typedef std::map<unsigned,typename mlist::iterator> mut_info;
@@ -356,7 +390,7 @@ namespace KTfwd
     unsigned NPOP = 0;
     in.read( reinterpret_cast< char * >(&NPOP), sizeof(unsigned) );
     gametes->resize(NPOP);
-    for(typename vector_type2< vector_type< gamete_type, vector_type_allocator >, 
+    for(typename vector_type2< vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, 
 	  vector_type_allocator2 >::iterator pop = gametes->begin() ; 
 	pop < gametes->end() ; ++pop)
       {
