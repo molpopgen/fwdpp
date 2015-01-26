@@ -119,30 +119,7 @@ namespace KTfwd
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream.  Must support .read() in a manner similar to std::istream types.
    */
-  template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type,
-	    typename vector_type_allocator2,
-	    template<typename,typename> class vector_type2,
-	    typename mutation_type,
-	    typename list_type_allocator,
-	    template<typename,typename> class list_type,
-	    typename mutation_reader,
-	    typename istreamtype>
-  void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-			     list_type< mutation_type, list_type_allocator > * mutations,
-			     const mutation_reader & mr,
-			     istreamtype & in);
-
-  /*! \brief Read the metapopulation back from a compressed binary-format file
-    Read the metapopulation back from a compressed binary-format file
-
-    \param gametes Destination for the gametes
-    \param mutations Destination for the mutations
-    \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
-    \param gzin A gzFile (from zlib) opened for reading.
-   */
-  template<typename mutation_type,
+   template<typename mutation_type,
 	   typename list_type_allocator,
 	   template<typename,typename> class list_type,
 	   template<typename,typename> class gamete_type,
@@ -156,6 +133,43 @@ namespace KTfwd
 			 list_type< mutation_type, list_type_allocator > * mutations,
 			 const mutation_reader & mr,
 			 istreamtype & in);
+
+  // template< typename gamete_type,
+  // 	    typename vector_type_allocator,
+  // 	    template<typename,typename> class vector_type,
+  // 	    typename vector_type_allocator2,
+  // 	    template<typename,typename> class vector_type2,
+  // 	    typename mutation_type,
+  // 	    typename list_type_allocator,
+  // 	    template<typename,typename> class list_type,
+  // 	    typename mutation_reader,
+  // 	    typename istreamtype>
+  // void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
+  // 			     list_type< mutation_type, list_type_allocator > * mutations,
+  // 			     const mutation_reader & mr,
+  // 			     istreamtype & in);
+
+  /*! \brief Read the metapopulation back from a compressed binary-format file
+    Read the metapopulation back from a compressed binary-format file
+
+    \param gametes Destination for the gametes
+    \param mutations Destination for the mutations
+    \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
+    \param gzin A gzFile (from zlib) opened for reading.
+  */
+  template<typename mutation_type,
+	   typename list_type_allocator,
+	   template<typename,typename> class list_type,
+	   template<typename,typename> class gamete_type,
+	   typename vector_type_allocator,
+	   template<typename,typename> class vector_type,
+	   typename vector_type_allocator2,
+	   template<typename,typename> class vector_type2,
+	   typename mutation_reader>
+  void read_binary_pop ( vector_type2< vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
+  			 list_type< mutation_type, list_type_allocator > * mutations,
+  			 const mutation_reader & mr,
+  			 gzFile gzin );
 
   // template< typename gamete_type,
   // 	    typename vector_type_allocator,
