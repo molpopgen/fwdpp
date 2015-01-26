@@ -266,7 +266,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+  void write_binary_pop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
 			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
@@ -299,7 +299,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+  void read_binary_pop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			     metapop_vector_type_allocator> * metapop,
 			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			     diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
@@ -331,7 +331,7 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type>
-  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+  void read_binary_pop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			     metapop_vector_type_allocator> * metapop,
 			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			     diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
