@@ -134,20 +134,6 @@ namespace KTfwd
 			 const mutation_reader & mr,
 			 istreamtype & in);
 
-  // template< typename gamete_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class vector_type,
-  // 	    typename vector_type_allocator2,
-  // 	    template<typename,typename> class vector_type2,
-  // 	    typename mutation_type,
-  // 	    typename list_type_allocator,
-  // 	    template<typename,typename> class list_type,
-  // 	    typename mutation_reader,
-  // 	    typename istreamtype>
-  // void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-  // 			     list_type< mutation_type, list_type_allocator > * mutations,
-  // 			     const mutation_reader & mr,
-  // 			     istreamtype & in);
 
   /*! \brief Read the metapopulation back from a compressed binary-format file
     Read the metapopulation back from a compressed binary-format file
@@ -171,19 +157,6 @@ namespace KTfwd
   			 const mutation_reader & mr,
   			 gzFile gzin );
 
-  // template< typename gamete_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class vector_type,
-  // 	    typename vector_type_allocator2,
-  // 	    template<typename,typename> class vector_type2,
-  // 	    typename mutation_type,
-  // 	    typename list_type_allocator,
-  // 	    template<typename,typename> class list_type,
-  // 	    typename mutation_reader>
-  // void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
-  // 			     list_type< mutation_type, list_type_allocator > * mutations,
-  // 			     const mutation_reader & mr,
-  // 			     gzFile gzin );
 
   /*! \brief Write population to binary-format file for individual-based simulations
     \param gametes  The vector of lists gametes for each deme in metapop

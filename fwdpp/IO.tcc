@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <cassert>
 #include <type_traits>
-#include <iostream>
 
 namespace KTfwd
 {
@@ -260,27 +259,7 @@ namespace KTfwd
     std::pair< maptype, std::vector<unsigned> > mutdata = write_mutations()( mutations,mw,buffer );
     auto xx = write_haplotypes()(gametes,mutdata.first,mutdata.second,buffer);
   }
-  
-  /*
-    KTfwd::write_binary_pop<mutation_with_age, 
-			std::__1::list<mutation_with_age, std::__1::allocator<mutation_with_age> >, 
-			gamete_base,
-			std::__1::allocator<KTfwd::gamete_base<mutation_with_age, std::__1::list<mutation_with_age, std::__1::allocator<mutation_with_age> > > >, 
-			vector, mutation_with_age, std::__1::allocator<mutation_with_age>, 
-			list,
-			std::__1::__bind<mwriter, std::__1::placeholders::__ph<1> &, std::__1::placeholders::__ph<2> &>, 
-			std::__1::basic_ostringstream<char, std::__1::char_traits<char>, std::__1::allocator<char> > >
-  */
-  // template< typename gamete_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class vector_type,
-  // 	    typename vector_type_allocator2,
-  // 	    template<typename,typename> class vector_type2,
-  // 	    typename mutation_type,
-  // 	    typename list_type_allocator,
-  // 	    template<typename,typename> class list_type,
-  // 	    typename mutation_writer_type,
-  // 	    typename ostreamtype>
+
   template<typename mutation_type,
 	   typename list_type_allocator,
 	   template<typename,typename> class list_type,
@@ -291,13 +270,11 @@ namespace KTfwd
 	   template<typename,typename> class vector_type2,
 	   typename mutation_writer_type,
 	   typename ostreamtype>
-  //void write_binary_metapop ( const vector_type2<vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
   void write_binary_pop ( const vector_type2<vector_type< gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >, vector_type_allocator >, vector_type_allocator2 > * gametes,
 			  const list_type< mutation_type, list_type_allocator > * mutations,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
   {	      
-    //static_assert(false,"monkeys!");
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must inherit from KTfwd::mutation_base" );
     using gamete_t = gamete_type<mutation_type,list_type<mutation_type,list_type_allocator> >;
@@ -333,7 +310,6 @@ namespace KTfwd
 			 const mutation_reader & mr,
 			 istreamtype & in)
   {
-    std::cerr << __LINE__ << '\n';
     gametes->clear();
     mutations->clear();
     
@@ -350,17 +326,6 @@ namespace KTfwd
     read_haplotypes()(gametes,m,in);
   }
 			 
-  // template< typename gamete_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class vector_type,
-  // 	    typename vector_type_allocator2,
-  // 	    template<typename,typename> class vector_type2,
-  // 	    typename mutation_type,
-  // 	    typename list_type_allocator,
-  // 	    template<typename,typename> class list_type,
-  // 	    typename mutation_reader,
-  // 	    typename istreamtype>
-  //void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
   template<typename mutation_type,
 	   typename list_type_allocator,
 	   template<typename,typename> class list_type,
@@ -401,15 +366,6 @@ namespace KTfwd
       }
   }
 
-  // template< typename gamete_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class vector_type,
-  // 	    typename vector_type_allocator2,
-  // 	    template<typename,typename> class vector_type2,
-  // 	    typename mutation_type,
-  // 	    typename list_type_allocator,
-  // 	    template<typename,typename> class list_type,
-  // 	    typename mutation_reader>
   template<typename mutation_type,
 	   typename list_type_allocator,
 	   template<typename,typename> class list_type,
@@ -423,7 +379,6 @@ namespace KTfwd
   			 list_type< mutation_type, list_type_allocator > * mutations,
   			 const mutation_reader & mr,
   			 gzFile gzin )
-  //void read_binary_metapop ( vector_type2< vector_type< gamete_type, vector_type_allocator >, vector_type_allocator2 > * gametes,
   {
     gametes->clear();
     mutations->clear();
@@ -478,7 +433,6 @@ namespace KTfwd
     
     typedef std::vector< glist_iterator > gmaptype;
     
-    //std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( gametes, mutdata.first, mutdata.second, buffer );
     std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
     
     //the diploids are now trivial to write
@@ -527,7 +481,6 @@ namespace KTfwd
     typedef gamete_list_type< gamete_type, gamete_list_type_allocator > glist;
     typedef std::map<unsigned,typename glist::iterator> gam_info;
     
-    //gam_info g = read_haplotypes_ind()(gametes,m,in);
     gam_info g = read_haplotypes()(gametes,m,in);
     
     unsigned NDIPS,c;
@@ -564,7 +517,6 @@ namespace KTfwd
 			  const mutation_reader_type & mr,
 			  gzFile gzin )
   {
-    std::cerr << __LINE__ << '\n';
     gametes->clear();
     mutations->clear();
     diploids->clear();
@@ -577,7 +529,6 @@ namespace KTfwd
     typedef gamete_list_type< gamete_type, gamete_list_type_allocator > glist;
     typedef std::map<unsigned,typename glist::iterator> gam_info;
     
-    //gam_info g = read_haplotypes_ind()(gametes,m,gzin);
     gam_info g = read_haplotypes()(gametes,m,gzin);
     
     unsigned NDIPS,c;
@@ -649,7 +600,6 @@ namespace KTfwd
   unsigned NDIPS,c;
   for( unsigned pop = 0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
     {
-      //std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes_ind()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
       std::pair<gmaptype, std::vector<unsigned> > gamdata = write_haplotypes()( &*pop_ptr, mutdata.first, mutdata.second, buffer );
       
       NDIPS = unsigned(dip_ptr->size());
@@ -724,7 +674,6 @@ typedef std::map<unsigned,typename glist::iterator> gam_info;
   for( unsigned pop=0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
     {
       
-      //gam_info g = read_haplotypes_ind()(&*pop_ptr,m,in);
       gam_info g = read_haplotypes()(&*pop_ptr,m,in);	
       
       in.read(reinterpret_cast<char*>(&NDIPS),sizeof(unsigned));
@@ -764,7 +713,6 @@ typedef std::map<unsigned,typename glist::iterator> gam_info;
 			     const mutation_reader_type & mr,
 			     gzFile gzin)
   {
-    std::cerr << __LINE__ << '\n';
     metapop->clear();
     mutations->clear();
     diploids->clear();
@@ -797,9 +745,7 @@ typedef std::map<unsigned,typename glist::iterator> gam_info;
   
   unsigned NDIPS,c;
   for( unsigned pop=0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
-    {
-      
-      //gam_info g = read_haplotypes_ind()(&*pop_ptr,m,gzin);	
+    {      
       gam_info g = read_haplotypes()(&*pop_ptr,m,gzin);	
       
       gzread( gzin,&NDIPS,sizeof(unsigned) );
