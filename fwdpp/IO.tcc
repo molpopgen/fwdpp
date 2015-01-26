@@ -451,29 +451,6 @@ namespace KTfwd
       }
   }
   
-  //Multi-locus sims, single pop
-  // template< typename gamete_type,
-  // 	    typename gamete_list_type_allocator,
-  // 	    template<typename,typename> class gamete_list_type,
-  // 	    typename mutation_type,
-  // 	    typename mutation_list_type_allocator,
-  // 	    template<typename,typename> class mutation_list_type,
-  // 	    typename vector_type_allocator,
-  // 	    template<typename,typename> class diploid_vector_type,
-  // 	    typename mutation_writer_type,
-  // 	    typename ostreamtype>
-  // void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-  // 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-  // 			  const diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-  // 								typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-  // 						     vector_type_allocator > * diploids,
-  // 			  const mutation_writer_type & mw,
-  // 			  ostreamtype & buffer)
-  // {
-  // }
-
-
-
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
