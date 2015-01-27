@@ -160,6 +160,22 @@ Obviously, for this specific example, having no crossover between loci (rbw = 0)
 
 #### Poisson or not?
 
+Biologically, the interpretation of the values in the array of doubles matters.  For example, let's assume that we wanted to model two unlinked loci.  Our genetic classes tell us that this corresponds to:
+
+~~~{.cpp}
+double rbw = 0.5; //50 centiMorgans
+~~~
+
+However, that value of 0.5 correponds to the probability of success in a single Bernoulli trial, because the definition of the \f$r\f$ term from genetics is the probability that markers separated by that distance are observed to have recombined in the progeny.  If we were to pass 0.5 and a Poisson model like the one above, there would only be a recombinant about 30% of the time, which you can verify using R (noting that an odd number of crossovers corresponds to the terminal ends of the region being recombined in the offspring):
+
+~~~
+> x=rpois(1e6,0.5)
+> length(which (x%%2==1))/length(x)
+[1] 0.315705
+~~~
+
+Of course, for small \f$r\f$, the Poisson and the Binomial approach would give very similar results.  But, for larger \f$r\f$, be sure to model what you mean!
+
 ### A (trivial) mutilocus fitness model
 
 In this example program, there is no selection, so our fitness model will return 1 for the fitness of any diploid.  Just like the single-locus API, multilocus fitness policies take a diploid as an argument and return a double.  The difference here is that a diploid is now a vector of pairs of iterators to gametes:
@@ -208,7 +224,7 @@ At this point, you are probably ready to see the full implementation of  diploid
 
 # Sampling from a multilocus simulation
 
-TODO
+To take a sample of size \f$n \ll N\f$ from the population, you may make a call to either KTfwd::ms_sample, which returns all neutral selected mutations in a single block, or KTfwd::ms_sample_separate, which returns separate blocks for the selected and neutral mutations.
 
 # Serialization: in-memory copying and file I/O
 
