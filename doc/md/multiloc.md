@@ -212,7 +212,7 @@ TODO
 
 # Serialization: in-memory copying and file I/O
 
-TODO
+See the [tutorial on serialization](@ref md_md_serialization).
 
 ## Mechanics of the multilocus recombination
 
