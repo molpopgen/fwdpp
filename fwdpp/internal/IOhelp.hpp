@@ -6,8 +6,24 @@
   The various write_binary_pop and read_binary pop
   functions rely on these implementations
 */
+#include <zlib.h>
 namespace KTfwd {
   namespace fwdpp_internal {
+
+    template<typename T>
+    struct scalar_reader
+    {
+      template<typename streamtype>
+      inline void operator()( streamtype & i, T * __t ) const
+      {
+	i.read( reinterpret_cast<char*>(__t), sizeof(T) );
+      }
+      inline void operator()( gzFile & gzin, T * __t ) const
+      {
+	gzread(gzin,__t,sizeof(T));
+      }
+    };
+
     struct write_mutations
     {
       template< typename mutation_type,
