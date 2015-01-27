@@ -4,5 +4,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	rec_gamete_updater.hpp \
 	recombination_common.hpp \
 	gsl_discrete.hpp \
-	multilocus_rec.hpp
+	multilocus_rec.hpp \
+	IOhelp.hpp
 
