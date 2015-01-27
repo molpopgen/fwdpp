@@ -481,15 +481,15 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type>
-  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-			     metapop_vector_type_allocator> * metapop,
-			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			     diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-			     typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-			     vector_type_allocator >,
-			     diploid_vv_type_allocator > * diploids,
-			     const mutation_reader_type & mr,
-			     gzFile gzin)
+  void read_binary_pop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			 metapop_vector_type_allocator> * metapop,
+			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			 diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
+			 typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
+			 vector_type_allocator >,
+			 diploid_vv_type_allocator > * diploids,
+			 const mutation_reader_type & mr,
+			 gzFile gzin)
   {
     metapop->clear();
     mutations->clear();
@@ -534,7 +534,7 @@ namespace KTfwd
 	    gzread( gzin,&c,sizeof(unsigned) );
 	    dip->first = g[c];
 	    gzread( gzin,&c,sizeof(unsigned) );
-	    dip->second = g[c];
+	    dip->second = g[c]; 
 	  }
       }
   }
