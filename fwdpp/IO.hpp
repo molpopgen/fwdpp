@@ -170,7 +170,7 @@ namespace KTfwd
     \param mutation A linked list of mutation objects
     \param diploids A container of individuals in the simulation
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
-    \param ostreamtype An object whose public interface is compatible with std::ostream
+    \param buffer An object whose public interface is compatible with std::ostream or is a gzFile
    */
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
@@ -200,7 +200,7 @@ namespace KTfwd
     \param mutation A linked list of mutation objects
     \param diploids A container of individuals in the simulation
     \param mr A function object taking a input stream as argument, and reads a mutation object from the stream. Must be provided by the library user.
-    \param istreamtype An object whose public interface is compatible with std::ostream
+    \param in An object whose public interface is compatible with std::ostream or is a gzFile.
    */
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
