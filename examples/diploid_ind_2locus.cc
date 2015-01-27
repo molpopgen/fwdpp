@@ -7,6 +7,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+
 /*
   We define a new mutation type, derived from the base class KTfwd::mutation_base.
   This type adds a selection coefficient (s), dominance coefficient (h),
@@ -49,26 +50,26 @@ struct mwriter
 };
 
 //function object to read mutation data in binary format
-// struct mreader
-// {
-//   typedef mutation_with_age result_type;
-//   result_type operator()( std::istream & in ) const
-//   {
-//     unsigned n;
-//     in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
-//     unsigned g;
-//     in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
-//     bool neut;
-//     in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
-//     double pos;
-//     in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
-//     double s;
-//     in.read( reinterpret_cast< char * >(&s),sizeof(double) );
-//     double h;
-//     in.read( reinterpret_cast< char * >(&h),sizeof(double) );
-//     return result_type(g,pos,n,s,h,neut);
-//   }
-// };
+struct mreader
+{
+  typedef mutation_with_age result_type;
+  result_type operator()( std::istream & in ) const
+  {
+    unsigned n;
+    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
+    unsigned g;
+    in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
+    bool neut;
+    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
+    double pos;
+    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
+    double s;
+    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
+    double h;
+    in.read( reinterpret_cast< char * >(&h),sizeof(double) );
+    return result_type(g,pos,n,neut);
+  }
+};
 #include <common_ind.hpp>
 
 /*
@@ -206,8 +207,6 @@ int main(int argc, char ** argv)
 	  else ++nm2;
 	}
       std::cout << nm1 << '\t' << nm2 << '\n';
-      std::ostringstream buffer;
-      KTfwd::write_binary_pop( &gametes, &mutations, &diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
     }
   return 0;
 }
