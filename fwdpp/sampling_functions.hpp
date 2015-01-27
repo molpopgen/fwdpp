@@ -15,7 +15,7 @@ namespace KTfwd
 {
   /* \brief Site frequency spectrum
      \return Site frequency spectrum
-   */
+  */
   template<typename iterator_type>
   std::vector<unsigned> population_sfs( iterator_type beg,
 					iterator_type end,
@@ -65,15 +65,15 @@ namespace KTfwd
 
   /*!
     \brief Sampling from a population in an individual-based simulation
-   */
-template<typename iterator_type,
-	 typename allocator,
-	 template<typename,typename> class vector_type >
-std::vector< std::pair<double,std::string> >
-ms_sample( gsl_rng * r,
-	   const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
-	   const unsigned & n,
-	   const bool & remove_fixed = true);
+  */
+  template<typename iterator_type,
+	   typename allocator,
+	   template<typename,typename> class vector_type >
+  std::vector< std::pair<double,std::string> >
+  ms_sample( gsl_rng * r,
+	     const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
+	     const unsigned & n,
+	     const bool & remove_fixed = true);
 
   /*!
     \brief Sampling from a population in an individual-based simulation.  Selected and neutral mutations returned separately
@@ -87,6 +87,20 @@ ms_sample( gsl_rng * r,
 		      const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed = true);
+
+  /*!
+    \brief Sample from an individual-based, multi-locus simulation
+  */
+  template<typename iterator_type,
+	   typename allocator,
+	   typename outer_allocator,
+	   template<typename,typename> class vector_type,
+	   template<typename,typename> class outer_vector_type>
+  std::vector< std::vector< std::pair<double,std::string> > >
+  ms_sample( gsl_rng * r,
+	     const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+	     const unsigned & n,
+	     const bool & remove_fixed);
 }
 #endif 
 #include <fwdpp/sampling_functions.tcc>
