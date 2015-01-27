@@ -43,7 +43,6 @@ namespace KTfwd
 
     \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
     in turn allowing file locking which speeds up performance on distributed file systems.
-    \example diploid_binaryIO.cc
    */
   template<typename mutation_type,
 	   typename list_type_allocator,
@@ -67,8 +66,6 @@ namespace KTfwd
     \param mutations Destination for the mutations
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
-
-    \example diploid_binaryIO.cc
    */
   template< typename gamete_type,
 	    typename vector_type_allocator,
@@ -167,7 +164,7 @@ namespace KTfwd
 
   /*! \brief Write the population to a binary-format file for individual-based multilocus simulations.
     \param mlocus_gametes A container of gametes for a multilocus simulation
-    \param mutation A linked list of mutation objects
+    \param mutations A linked list of mutation objects
     \param diploids A container of individuals in the simulation
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An object whose public interface is compatible with std::ostream or is a gzFile
@@ -197,7 +194,7 @@ namespace KTfwd
 
   /*! \brief Read the population back from a binary-format file for individual-based multilocus simulations
     \param mlocus_gametes A container of gametes for a multilocus simulation
-    \param mutation A linked list of mutation objects
+    \param mutations A linked list of mutation objects
     \param diploids A container of individuals in the simulation
     \param mr A function object taking a input stream as argument, and reads a mutation object from the stream. Must be provided by the library user.
     \param in An object whose public interface is compatible with std::ostream or is a gzFile.

@@ -13,7 +13,6 @@
 namespace KTfwd
 {
   /*! \brief Apply mutation model to a population
-    \example diploid.cc
     \param r GSL random number generator
     \param gametes Pointer to the vector of gametes in the population
     \param mutations Pointer to the list of mutations in the population

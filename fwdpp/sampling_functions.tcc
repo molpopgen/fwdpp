@@ -74,26 +74,26 @@ namespace KTfwd
     return samplesfs;
   }
 
-template< typename gamete_type,
-	  typename vector_type_allocator,
-	  template<typename,typename> class vector_type>
-std::vector< std::pair<double, std::string> > 
-ms_sample(gsl_rng * r,
-	  const vector_type<gamete_type,vector_type_allocator > & gametes,
-	  const unsigned & n, const unsigned & N,
-	  bool remove_fixed)
-{
-  std::vector<unsigned> counts = sample(r,gametes,n,N);	
-  std::vector< std::pair<double, std::string> > rv;
-  std::vector< std::pair<double, std::string> >::iterator itr;
+  template< typename gamete_type,
+	    typename vector_type_allocator,
+	    template<typename,typename> class vector_type>
+  std::vector< std::pair<double, std::string> > 
+  ms_sample(gsl_rng * r,
+	    const vector_type<gamete_type,vector_type_allocator > & gametes,
+	    const unsigned & n, const unsigned & N,
+	    bool remove_fixed)
+  {
+    std::vector<unsigned> counts = sample(r,gametes,n,N);	
+    std::vector< std::pair<double, std::string> > rv;
+    std::vector< std::pair<double, std::string> >::iterator itr;
 
-  std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
-											     const double & d ) 
-    {
-      return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
-    };
+    std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
+											       const double & d ) 
+      {
+	return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
+      };
 
-  unsigned individual = 0;
+unsigned individual = 0;
   for(unsigned i=0;i<counts.size();++i)
     {
       for(unsigned j=0;j<counts[i];++j,++individual)

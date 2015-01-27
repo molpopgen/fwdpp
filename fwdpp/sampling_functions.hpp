@@ -37,9 +37,8 @@ namespace KTfwd
   std::vector<unsigned> sample_sfs(gsl_rng * r, 
 				   const vector_type<gamete_type,vector_type_allocator > & gametes,
 				   const unsigned & n, const unsigned & N);
-
   /*!
-    \example diploid.cc
+    Take a sample of size n from a larger population of N diploids
   */
   template< typename gamete_type,
 	    typename vector_type_allocator,

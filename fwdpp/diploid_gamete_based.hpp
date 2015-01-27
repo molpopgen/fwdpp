@@ -171,9 +171,7 @@ std::vector<double> sample_diploid(gsl_rng * r,
     \param twoN Twice the number of diploids
     \param littler  The recombination rate PER GAMETE!!! (I.e., 1/2 the usual definition of the recombination rate)
     \param mf A function/function object returning a position along the genetic map
-    \param f  Probability of inbreeding
-    
-    \example diploid.cc
+    \param f  Probability of inbreeding   
   */
   template< typename gamete_type,
 	    typename vector_type_allocator,

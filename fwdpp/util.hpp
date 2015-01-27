@@ -97,7 +97,6 @@ namespace KTfwd
   
   /*! \brief Remove mutations from population
     Removes mutations that are lost.
-    \example diploid.cc
   */
   template<typename mutation_type,
 	   typename list_type_allocator,
@@ -129,7 +128,6 @@ namespace KTfwd
  /*! \brief Remove mutations from population
     Removes mutations that are lost.
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
-    \example diploid.cc
    */
   template<typename mutation_type,
 	   typename list_type_allocator,
@@ -161,7 +159,6 @@ namespace KTfwd
 
   /*! \brief Remove mutations from population
     Removes mutations that are fixed or lost.
-    \example diploid.cc
    */
   template<typename mutation_type,
 	   typename vector_type_allocator1,
@@ -203,7 +200,6 @@ namespace KTfwd
   /*! \brief Remove mutations from population
     Removes mutations that are fixed or lost.
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
-    \example diploid.cc
    */
   template<typename mutation_type,
 	   typename vector_type_allocator1,

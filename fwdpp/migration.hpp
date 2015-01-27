@@ -21,8 +21,6 @@ namespace KTfwd
     \param twoN_1  2N for source
     \param twoN_1  2N for dest
     \param nmigrants The number of gametes to migrate from source to dest
-
-    \example diploid_twopop_mig.cc
   */
   template<typename gamete_type,
 	   typename vector_type_allocator,
