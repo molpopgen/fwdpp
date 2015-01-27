@@ -10,6 +10,7 @@
 * A unit test for the function KTfwd::fwdpp_internal::multilocus_rec was added.
 * Added tutorial for multilocus simulation implmentation
 * Minor cleanups to the build system
+* Reorganization of fwdpp/IO.hpp and fwdpp/IO.tcc to reduce code duplication and provide output routines for multilocus simulations.
 
 ## 0.2.5
 
