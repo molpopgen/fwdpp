@@ -66,7 +66,7 @@ namespace KTfwd
     \param gametes Destination for the gametes
     \param mutations Destination for the mutations
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
-    \param in Input stream.  Must support .read() in a manner similar to std::istream types.
+    \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
 
     \example diploid_binaryIO.cc
    */
@@ -90,7 +90,7 @@ namespace KTfwd
     \param gametes Destination for the gametes
     \param mutations Destination for the mutations
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
-    \param in Input stream.  Must support .read() in a manner similar to std::istream types.
+    \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
    template<typename mutation_type,
 	   typename list_type_allocator,
@@ -145,7 +145,7 @@ namespace KTfwd
     \param mutations Destination for the mutations
     \param diploids Destination for the diploids
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
-    \param in Input stream.  Must support .read() in a manner similar to std::istream types.
+    \param in Input stream. Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
@@ -270,7 +270,7 @@ namespace KTfwd
     \param mutations Destination for the mutations
     \param diploids Destination for the diploids
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
-    \param in Input stream.  Must support .read() in a manner similar to std::istream types.
+    \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
   template< typename gamete_type,
   	    typename gamete_list_type_allocator,
