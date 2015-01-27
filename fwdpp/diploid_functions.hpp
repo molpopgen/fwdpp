@@ -22,7 +22,6 @@ namespace KTfwd
     \param g1 Iterator to the first gamete involved in the recombination event
     \param g2 Iterator to the second gamete involved in the recombination event
     \param mf Recombination policy which generates crossover positions
-    \param gpolicy Policy determining how new gametes are added to population
 
     \note g1 and g2 will be changed
     \note The type of g1 and g2 is gamete_list_type<gamete_type,list_type_allocator >::iterator
