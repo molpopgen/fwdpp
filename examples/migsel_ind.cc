@@ -238,9 +238,9 @@ int main( int argc, char ** argv )
   std::ofstream outstream(outfilename);
 
   //Write the metapop in binary format to outstream
-  KTfwd::write_binary_pop(&metapop,&mutations,&diploids,
-			  std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),
-			  outstream);
+  KTfwd::write_binary_metapop(&metapop,&mutations,&diploids,
+			      std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),
+			      outstream);
 
   //Write the "ms" blocks
   Sequence::write_SimData_binary(outstream,neutral);
@@ -261,9 +261,9 @@ int main( int argc, char ** argv )
 
   ifstream in(outfilename);
   
-  KTfwd::read_binary_pop(&metapop2,&mutations2,&diploids2,
-			 std::bind(mreader(),std::placeholders::_1),
-			 in);
+  KTfwd::read_binary_metapop(&metapop2,&mutations2,&diploids2,
+			     std::bind(mreader(),std::placeholders::_1),
+			     in);
   
   assert( metapop2.size() == metapop.size() );
   assert( mutations2.size() == mutations.size() );
