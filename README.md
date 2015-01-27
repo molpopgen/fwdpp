@@ -121,14 +121,14 @@ You have a few options:
 
 ###Obtaining a specific release
 Again, a few options:
-<ol>
-<li> Click on "Releases" at https://github.com/molpopgen/fwdpp, then download the one you want </li>
-<li> Clone the repo (see previous section)</li>
-<ol>
-<li> Get a list of releases by saying "git tag -l" </li>
-<li> Checkout the release you want.  For example "git checkout 0.2.0"</li>
-</ol>
-</ol>
+
+1. Click on "Releases" at https://github.com/molpopgen/fwdpp, then download the one you want
+2.  Clone the repo (see previous section)
+
+Or:
+
+1. Get a list of releases by saying "git tag -l"
+2. Checkout the release you want.  For example "git checkout 0.2.0"
 
 Another option is to click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
 
