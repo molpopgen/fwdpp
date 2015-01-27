@@ -18,8 +18,6 @@ namespace KTfwd
     \param r a GSL random number generator
     \param source A vector of gametes
     \param dest A vector of gametes
-    \param twoN_1  2N for source
-    \param twoN_1  2N for dest
     \param nmigrants The number of gametes to migrate from source to dest
   */
   template<typename gamete_type,
