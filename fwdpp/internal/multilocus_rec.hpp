@@ -16,8 +16,9 @@ namespace KTfwd {
       \param rec A policy that affects recombination withing a locus
       \param bw A policy that returns the number of recombination events between loci.  The return value must be unsigned int, and what really matters is if that value is odd or even.
       \param r_between_loci A const array of doubles corresponding to the recombination rates between loci.  For k loci, this vector must be k-1 doubles long.  Further, the i-th value must correspond to the recombination rate between loci i-1 and i.
+      \param i A dummy index set equal to which locus we are processing.  Start counting from 0.
       \param parental_gamete_1 An iterator to the first parental gamete
-      \param parental_gamete_1 An iterator to the second parental gamete
+      \param parental_gamete_2 An iterator to the second parental gamete
       \param g1 If true, then parental_gamete_1 is inherited by the descendant.
       \param LO Should be true if the last recombination even within loci resulted in an odd number of crossovers.
      */
