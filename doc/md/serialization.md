@@ -40,6 +40,13 @@ The type requirements for these functions are:
 
 ## Writing and reading mutations
 
+You need to tell these functions how to read/write mutation objects.  Specifically, you need to:
+
+* Define a mutation write function, which takes a mutation object and an output stream type as an object.
+* Define a mutation read function, taking an input stream type as an object
+
+Let's look at an example.  For this definition of a mutation type:
+
 ~~~{.cpp}
 struct mutation_with_age : public KTfwd::mutation_base
 {
@@ -54,12 +61,14 @@ struct mutation_with_age : public KTfwd::mutation_base
 };
 ~~~
 
+This function object works as a writer:
+
 ~~~{.cpp}
 //function object to write mutation data in binary format
 struct mwriter
 {
   typedef void result_type;
-  result_type operator()( const mutation_with_age & m, std::ostringstream & buffer ) const
+  result_type operator()( const mutation_with_age & m, std::ostream & buffer ) const
   {
     unsigned u = m.n;
     buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
@@ -76,6 +85,8 @@ struct mwriter
   }
 };
 ~~~
+
+And this function object works as a reader:
 
 ~~~{.cpp}
 //function object to read mutation data in binary format
@@ -100,6 +111,8 @@ struct mreader
   }
 };
 ~~~
+
+In the next section, you'll see how to pass these to KTfwd::write_binary_pop and KTfwd::read_binary_pop.
 
 ## In-memory copying
 
