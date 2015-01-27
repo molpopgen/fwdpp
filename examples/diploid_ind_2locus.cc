@@ -131,8 +131,7 @@ int main(int argc, char ** argv)
   int nreps = atoi(argv[argument++]);                  //Number of replicates to simulate
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
 
-  //const double mu = theta/double(4*N);                 //per-gamete mutation rate
-  const std::vector<double> mu(2,theta/double(4*N));
+  const std::vector<double> mu(2,theta/double(4*N));   //per-gamete mutation rate per locus
   
   /*
     littler r is the recombination rate per region per generation.
