@@ -444,6 +444,67 @@ namespace KTfwd
 		   );
   }
 
+  //Multilocus, single-population, gzFile
+  template< typename gamete_type,
+	    typename gamete_list_type_allocator,
+	    template<typename,typename> class gamete_list_type,
+	    typename mlocus_vector_type_allocator,
+	    template<typename,typename> class mlocus_vector_type,
+	    typename mutation_type,
+	    typename mutation_list_type_allocator,
+	    template<typename,typename> class mutation_list_type,
+	    typename vector_type_allocator,
+	    template<typename,typename> class diploid_vector_type,
+	    typename diploid_vv_type_allocator,
+	    template<typename,typename> class diploid_vv_type,
+	    typename mutation_reader_type>
+  void read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			 diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
+			 typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
+			 vector_type_allocator >,
+			 diploid_vv_type_allocator > * diploids,
+			 const mutation_reader_type & mr,
+			 gzFile in)
+  {
+    mlocus_gametes->clear();
+    mutations->clear();
+    diploids->clear();
+
+    unsigned nloci;
+    gzread(in,&nloci,sizeof(unsigned));
+    //Write the mutations to the buffer
+    auto mutdata = fwdpp_internal::read_mutations()( mutations,mr,in);
+    using gam_info_t = std::map<unsigned,typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator>;
+    std::vector< gam_info_t > gam_info_vec;
+    mlocus_gametes->resize(nloci);
+    //Read the haplotypes
+    for( auto l = mlocus_gametes->begin();l != mlocus_gametes->end(); ++l )
+      {
+	gam_info_vec.emplace_back( std::move( fwdpp_internal::read_haplotypes()(&*l,mutdata,in) ) );
+      }
+    //read diploids
+    using diploid_t = diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
+						      typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
+					   vector_type_allocator >;
+    unsigned ndips;
+    gzread(in,&ndips,sizeof(unsigned));
+    diploids->resize(ndips, diploid_t(nloci) );
+    std::for_each( diploids->begin(), diploids->end(),
+		   [&gam_info_vec,&in]( diploid_t & diploid ) {
+		     unsigned i = 0;
+		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
+		       {
+			 unsigned c;
+			 gzread(in,&c,sizeof(unsigned));
+			 l->first = gam_info_vec[i][c];
+			 gzread(in,&c,sizeof(unsigned));
+			 l->second = gam_info_vec[i][c];
+		       }
+		   }
+		   );
+  }
+
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
