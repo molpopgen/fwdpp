@@ -149,38 +149,6 @@ namespace KTfwd
 	  {
 	    fwdpp_internal::update_sample_block(rvneut,gametes[i].mutations,individual,n,sitefinder);
 	    fwdpp_internal::update_sample_block(rvneut,gametes[i].smutations,individual,n,sitefinder);
-	    /*
-	      for(unsigned mut = 0 ; mut < gametes[i].mutations.size() ; ++mut)
-	      {
-	      double mutpos = gametes[i].mutations[mut]->pos;
-	      itr = std::find_if(rvneut.begin(),rvneut.end(),
-	      std::bind(sitefinder,std::placeholders::_1,mutpos));
-	      if( itr == rvneut.end() )
-	      {
-	      rvneut.push_back( std::make_pair(mutpos,std::string(n,'0')) );
-	      rvneut[rvneut.size()-1].second[individual] = '1';
-	      }
-	      else
-	      {
-	      itr->second[individual] = '1';
-	      }
-	      }
-	      for(unsigned mut = 0 ; mut < gametes[i].smutations.size() ; ++mut)
-	      {
-	      double mutpos = gametes[i].smutations[mut]->pos;
-	      itr = std::find_if(rvsel.begin(),rvsel.end(),
-	      std::bind(sitefinder,std::placeholders::_1,mutpos));
-	      if( itr == rvsel.end() )
-	      {
-	      rvsel.push_back( std::make_pair(mutpos,std::string(n,'0')) );
-	      rvsel[rvsel.size()-1].second[individual] = '1';
-	      }
-	      else
-	      {
-	      itr->second[individual] = '1';
-	      }
-	      }
-	    */
 	  }
       }
     assert(individual==n);
