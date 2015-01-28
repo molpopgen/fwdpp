@@ -108,7 +108,7 @@ struct no_selection_multi
 int main(int argc, char ** argv)
 {
   int argument=1;
-  if (argc != 8 )
+  if (argc != 9 )
     {
       std::cerr << "Incorrect number of arguments.\n"
 		<< "Usage:\n"
@@ -117,6 +117,7 @@ int main(int argc, char ** argv)
 		<< "N = population size (number of diploids)\n"
 		<< "theta = 4Nu, the scaled neutral mutation rate\n"
 		<< "rho = 4Nr, the scale recombination rate\n"
+		<< "rbw = the probability that the two loci cross over, per generation\n"
 		<< "ngens = the number of generations to simulate\n"
 		<< "n = the sample size to pull from the population at the end of each simulated replicate\n"
 		<< "nreps = the number of replicates to simulated\n"
@@ -126,6 +127,7 @@ int main(int argc, char ** argv)
   const unsigned N = atoi(argv[argument++]);           //Number of diploids
   const double theta = atof(argv[argument++]);         //4*n*mutation rate.  Note: mutation rate is per REGION, not SITE!!
   const double rho = atof(argv[argument++]);           //4*n*recombination rate.  Note: recombination rate is per REGION, not SITE!!
+  const double rbw = atof(argv[argument++]);           //rec rate b/w loci.
   const unsigned ngens = atoi(argv[argument++]);       //Number of generations to simulate
   const unsigned samplesize1 = atoi(argv[argument++]); //Sample size to draw from the population
   int nreps = atoi(argv[argument++]);                  //Number of replicates to simulate
@@ -150,7 +152,6 @@ int main(int argc, char ** argv)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
     recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
 
-  const double rbw = 0.;//0.1;
   while(nreps--)
     {
       //the population begins with 1 gamete with no mutations amd initial count 2N
@@ -189,7 +190,7 @@ int main(int argc, char ** argv)
 	  			 mmodels,
 	  			 recpols,
 	  			 &rbw,
-				 [](gsl_rng * __r, const double __d){ return gsl_ran_poisson(__r,__d); },
+				 [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 	  			 std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
