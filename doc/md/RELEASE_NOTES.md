@@ -11,6 +11,7 @@
 * Added tutorial for multilocus simulation implmentation
 * Minor cleanups to the build system
 * Reorganization of fwdpp/IO.hpp and fwdpp/IO.tcc to reduce code duplication and provide output routines for multilocus simulations.  There are no longer separate read functions for gzFiles.  The necessary operations are handled automatically by overloads of template functions in namespace KTfwd::fwdpp_internal.
+* Reorganization of fwdpp/sampling_functions.tcc: overloads of ms_sample are now implemented via calls to ms_sample_separate.  The results from the latter function are then merged using C++11 move semantics.  This reduces code redundancy, reduces the possible locations of bugs, and should keep efficiency about the same.
 
 ## 0.2.5
 
