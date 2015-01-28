@@ -199,14 +199,11 @@ int main(int argc, char ** argv)
 	  assert( check_sum(gametes[1],twoN) );
       	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
 	}
-      unsigned nm1=0,nm2=0;
-      for(mlist::const_iterator i = mutations.begin() ; i != mutations.end() ; ++i )
-	{
-	  if ( i->pos < 1.)++nm1;
-	  else ++nm2;
-	}
-      std::cout << nm1 << '\t' << nm2 << '\n';
-      auto x = KTfwd::ms_sample(r,diploids,50u,true);
+      //Take a sample and print it to screen.
+      auto x = KTfwd::ms_sample(r,&diploids,samplesize1,true);
+      Sequence::SimData l1(x[0].begin(),x[0].end()),
+	l2(x[1].begin(),x[1].end());
+      std::cout << l1 << '\n' << l2 << '\n';	
     }
   return 0;
 }
