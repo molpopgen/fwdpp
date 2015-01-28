@@ -206,6 +206,7 @@ int main(int argc, char ** argv)
 	  else ++nm2;
 	}
       std::cout << nm1 << '\t' << nm2 << '\n';
+      auto x = KTfwd::ms_sample(r,diploids,50u,true);
     }
   return 0;
 }
