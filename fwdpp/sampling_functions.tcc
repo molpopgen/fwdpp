@@ -84,42 +84,14 @@ namespace KTfwd
 	    const unsigned & n, const unsigned & N,
 	    bool remove_fixed)
   {
-    std::vector<unsigned> counts = sample(r,gametes,n,N);	
-    std::vector< std::pair<double, std::string> > rv;
-    std::vector< std::pair<double, std::string> >::iterator itr;
-
-    std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
-											       const double & d ) 
-      {
-	return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
-      };
-
-    unsigned individual = 0;
-    for(unsigned i=0;i<counts.size();++i)
-      {
-	for(unsigned j=0;j<counts[i];++j,++individual)
-	  {
-	    fwdpp_internal::update_sample_block(rv,gametes[i].mutations,individual,n,sitefinder);
-	    fwdpp_internal::update_sample_block(rv,gametes[i].smutations,individual,n,sitefinder);
-	  }
-      }
-    assert(individual==n);
-		
-    if(remove_fixed&&!rv.empty())
-      {
-	rv.erase( std::remove_if(rv.begin(),rv.end(),[&n]( const std::pair<double,std::string> & site ) {
-	      return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
-		} ),
-	  rv.end() );
-      }
-    if(!rv.empty())
-      {
-	std::sort(rv.begin(),
-		  rv.end(),
-		  [](std::pair<double,std::string> lhs,
-		     std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
-      }
-    return rv;
+    auto separate = ms_sample_separate(r,gametes,n,N,remove_fixed);
+    std::move(separate.second.begin(),separate.second.end(),
+    	      std::back_inserter(separate.first));
+    std::sort(separate.first.begin(),
+    	      separate.first.end(),
+    	      [](std::pair<double,std::string> lhs,
+    		 std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+    return separate.first;
   }
 
   template< typename gamete_type,
@@ -147,8 +119,8 @@ namespace KTfwd
       {
 	for(unsigned j=0;j<counts[i];++j,++individual)
 	  {
-	    fwdpp_internal::update_sample_block(rvneut,gametes[i].mutations,individual,n,sitefinder);
-	    fwdpp_internal::update_sample_block(rvneut,gametes[i].smutations,individual,n,sitefinder);
+	    fwdpp_internal::update_sample_block(rvneut,gametes[i].mutations,individual,n,sitefinder,0,1);
+	    fwdpp_internal::update_sample_block(rvsel,gametes[i].smutations,individual,n,sitefinder,0,1);
 	  }
       }
     assert(individual==n);
@@ -190,40 +162,12 @@ namespace KTfwd
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {
-    std::vector< std::pair<double,std::string> > rv;
-    std::vector< std::pair<double, std::string> >::iterator itr;
-  
-    std::function<bool(const std::pair<double,std::string> &, const double &)> sitefinder = [](const std::pair<double,std::string> & site,
-											       const double & d ) 
-      {
-	return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
-      };
-
-    const auto dptr = diploids->cbegin();
-    for( unsigned i = 0 ; i < n/2 ; ++i )
-      {
-	typename decltype(dptr)::difference_type ind = decltype(ind)(gsl_ran_flat(r,0.,double(diploids->size())));
-	assert(ind >= 0);
-	assert( unsigned(ind) < diploids->size() );
-	fwdpp_internal::update_sample_block( rv,(dptr+ind)->first->mutations,i,n,sitefinder);
-	fwdpp_internal::update_sample_block( rv,(dptr+ind)->second->mutations,i,n,sitefinder,1);
-	fwdpp_internal::update_sample_block( rv,(dptr+ind)->first->smutations,i,n,sitefinder);
-	fwdpp_internal::update_sample_block( rv,(dptr+ind)->second->smutations,i,n,sitefinder,1);
-      }
-    if(remove_fixed&&!rv.empty())
-      {
-	rv.erase( std::remove_if(rv.begin(),rv.end(),[&n]( const std::pair<double,std::string> & site ) {
-	      return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
-		} ),
-	  rv.end() );
-      }
-    if(!rv.empty())
-      {
-	std::sort(rv.begin(),rv.end(),
-		  [](std::pair<double,std::string> lhs,
-		     std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
-      }
-    return rv;
+    auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
+    std::move( separate.second.begin(), separate.second.end(), std::back_inserter(separate.first) );
+    std::sort(separate.first.begin(),separate.first.end(),
+	      [](std::pair<double,std::string> lhs,
+			   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+    return separate.first;
   }
 
   template<typename iterator_type,
