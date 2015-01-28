@@ -10,7 +10,8 @@ namespace KTfwd {
 			     const unsigned & i,
 			     const unsigned & n,
 			     const pos_finder & pf,
-			     const unsigned & offset = 0)
+			     const unsigned & offset = 0,
+			     const unsigned & scalar = 2)
     {
       for( auto mptr = mutations.cbegin() ; mptr != mutations.cend() ; ++mptr )
 	{
@@ -19,11 +20,11 @@ namespace KTfwd {
 	  if( itr == block.end() )
 	    {
 	      block.push_back( std::make_pair(mutpos,std::string(n,'0')) );
-	      block[block.size()-1].second[2*i+offset] = '1';
+	      block[block.size()-1].second[scalar*i+offset] = '1';
 	    }
 	  else
 	    {
-	      itr->second[2*i+offset]='1';
+	      itr->second[scalar*i+offset]='1';
 	    }
 	}
     }
