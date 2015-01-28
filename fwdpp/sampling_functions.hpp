@@ -89,7 +89,9 @@ namespace KTfwd
 		      const bool & remove_fixed = true);
 
   /*!
-    \brief Sample from an individual-based, multi-locus simulation
+    \brief Sample from an individual-based, multi-locus simulation.
+    \return A vector of vectors of variable sites.  There is 1 vector per locus.
+    \note Neutral + selected mutations intermixed
   */
   template<typename iterator_type,
 	   typename allocator,
@@ -101,6 +103,22 @@ namespace KTfwd
 	     const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed);
+
+  /*!
+    \brief Sample from an individual-based, multi-locus simulation.
+    \return A vector of pairs of vectors of variable sites.  There is 1 vector per locus.
+    \note For each locus, the first member of the pair corresponds to neutral sites, the second to selected.
+  */
+  template<typename iterator_type,
+	   typename allocator,
+	   typename outer_allocator,
+	   template<typename,typename> class vector_type,
+	   template<typename,typename> class outer_vector_type>
+  std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
+  ms_sample_separate( gsl_rng * r,
+		      const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+		      const unsigned & n,
+		      const bool & remove_fixed);
 }
 #endif 
 #include <fwdpp/sampling_functions.tcc>
