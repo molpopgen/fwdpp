@@ -83,7 +83,7 @@ Usage:
 
 For this program, s can be positive or negative, as can h.
 
-####diploid\_fixed\_sh\_ind and diploid\_fixe\_sh\_lambda
+####diploid\_fixed\_sh\_ind and diploid\_fixed\_sh\_lambda
 
 Identical to diploid\_fixed\_sh, but based on the individual-based sampler.
 
