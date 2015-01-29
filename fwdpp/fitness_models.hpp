@@ -10,6 +10,19 @@
 
 /*!
   \defgroup fitness Policies for calculating fitnesses.
+  This group contains the following data structures to help you implement custom fitness policies:
+  1. KTfwd::site_dependent_fitness for implementing typical population-genetic-like models where trait values are a function of the properties of individual mutations
+  2. KTfwd::haplotype_dependent_fitness for implementing models where trait values are the functions properties of haplotypes.
+
+  Truthfully, the latter is so trivial that a library user may never see any need for it.
+
+  The library also defines two site-dependent fitness models:
+  1. KTfwd::multiplicative_diploid
+  2. KTfwd::additive_diploid
+
+  These are arguably the "standard" models of the field as far as selection is concerned.
+
+  Finally, KTfwd::no_selection is provided to force all diploid fitnesses to be equal to 1.
 */
 namespace KTfwd
 {

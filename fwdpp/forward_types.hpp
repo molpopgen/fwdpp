@@ -1,6 +1,7 @@
 /*!
   \file forward_types.hpp
-\defgroup basicTypes Mutation and gamete data types
+  \defgroup basicTypes Mutation and gamete data types
+  These are the basic types common to all simulations: mutations and gametes.  See @ref md_md_policies for more details.
 */
 #ifndef _FORWARD_TYPES_HPP_
 #define _FORWARD_TYPES_HPP_

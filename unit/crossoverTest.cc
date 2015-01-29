@@ -1,5 +1,12 @@
 /*!
   \defgroup unit Unit testing
+
+  This documentation page is a list of links to the source code for the library's unit test programs.
+
+  These sources are distributed with fwdpp in the unit/ directory of the source repository.
+
+  They are implemented using boost's unit testing framework, and will not be compiled unless
+  the configure script finds this library on your system.
  */
 //! \file crossoverTest.cc \ingroup unit
 #define BOOST_TEST_MODULE crossoverTest
