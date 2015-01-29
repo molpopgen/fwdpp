@@ -228,7 +228,7 @@ will simulate a mean effect size of 0.5 (exponentially-distributed).  The above 
 
 ####diploid\_ind\_2locus
 
-This program simulates a 2-locus neutral model.  Mutations arise at rate \f$\theta\f$ at each locus, and each locus recombines at rate \f$\rho\f$.  The recombination rate between loci is \f$r_{bw}\f$, which corresponds to the probability a crossover is observed between loci.  In other words, if you imagine that the genotypes at the two loci are \f[\frac{AB}{ab}\f,] they switch to \f[\frac{Ab}{aB}\f] with probability \f$r_{bw}\f$.
+This program simulates a 2-locus neutral model.  Mutations arise at rate \f$\theta\f$ at each locus, and each locus recombines at rate \f$\rho\f$.  The recombination rate between loci is \f$r_{bw}\f$, which corresponds to the probability a crossover is observed between loci.  In other words, the genotypes at the two loci will switch from \f[\frac{AB}{ab}\f] to \f[\frac{Ab}{aB}\f] with probability \f$r_{bw}\f$.
 
 The output of the simulation is an "ms"-style block for each locus. Positions  are uniform on the interval \f$[0,1)\f$ at locus 1, and uniform on the interval \f$[1,2)\f$ at locus 2.
 
