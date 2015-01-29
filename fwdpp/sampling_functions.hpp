@@ -45,7 +45,7 @@ namespace KTfwd
 	    template<typename,typename> class vector_type>
   std::vector< std::pair<double, std::string> > 
   ms_sample(gsl_rng * r,
-	    const vector_type<gamete_type,vector_type_allocator > & gametes,
+	    const vector_type<gamete_type,vector_type_allocator > * gametes,
 	    const unsigned & n, const unsigned & N,
 	    bool remove_fixed = true);
   
@@ -59,7 +59,7 @@ namespace KTfwd
   std::pair< std::vector< std::pair<double, std::string> > ,
 	     std::vector< std::pair<double, std::string> > >
   ms_sample_separate(gsl_rng * r,
-		     const vector_type<gamete_type,vector_type_allocator > & gametes,
+		     const vector_type<gamete_type,vector_type_allocator > * gametes,
 		     const unsigned & n, const unsigned & N,
 		     bool remove_fixed = true);
 

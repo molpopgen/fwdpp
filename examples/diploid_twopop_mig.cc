@@ -148,8 +148,8 @@ int main(int argc, char ** argv)
 	} 
       
       //sample each pop, then merge the results into 1 "ms" block:
-      std::vector<std::pair<double,std::string> > sample1 = KTfwd::ms_sample(r,metapop[0],samplesize1,twoN,false);
-      std::vector<std::pair<double,std::string> > sample2 = KTfwd::ms_sample(r,metapop[1],samplesize1,twoN,false);
+      std::vector<std::pair<double,std::string> > sample1 = KTfwd::ms_sample(r,&metapop[0],samplesize1,twoN,false);
+      std::vector<std::pair<double,std::string> > sample2 = KTfwd::ms_sample(r,&metapop[1],samplesize1,twoN,false);
       Sequence::SimData tsample=merge(sample1,sample2,samplesize1);
       std::cout << tsample << '\n';
     }

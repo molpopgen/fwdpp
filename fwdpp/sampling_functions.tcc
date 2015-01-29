@@ -80,7 +80,7 @@ namespace KTfwd
 	    template<typename,typename> class vector_type>
   std::vector< std::pair<double, std::string> > 
   ms_sample(gsl_rng * r,
-	    const vector_type<gamete_type,vector_type_allocator > & gametes,
+	    const vector_type<gamete_type,vector_type_allocator > * gametes,
 	    const unsigned & n, const unsigned & N,
 	    bool remove_fixed)
   {
@@ -100,11 +100,11 @@ namespace KTfwd
   std::pair< std::vector< std::pair<double, std::string> > ,
 	     std::vector< std::pair<double, std::string> > >
   ms_sample_separate(gsl_rng * r,
-		     const vector_type<gamete_type,vector_type_allocator > & gametes,
+		     const vector_type<gamete_type,vector_type_allocator > * gametes,
 		     const unsigned & n, const unsigned & N,
 		     bool remove_fixed)
   {
-    std::vector<unsigned> counts = sample(r,gametes,n,N);	
+    std::vector<unsigned> counts = sample(r,*gametes,n,N);	
     std::vector< std::pair<double, std::string> > rvsel,rvneut;
     std::vector< std::pair<double, std::string> >::iterator itr;
 
@@ -119,8 +119,8 @@ namespace KTfwd
       {
 	for(unsigned j=0;j<counts[i];++j,++individual)
 	  {
-	    fwdpp_internal::update_sample_block(rvneut,gametes[i].mutations,individual,n,sitefinder,0,1);
-	    fwdpp_internal::update_sample_block(rvsel,gametes[i].smutations,individual,n,sitefinder,0,1);
+	    fwdpp_internal::update_sample_block(rvneut,(*gametes)[i].mutations,individual,n,sitefinder,0,1);
+	    fwdpp_internal::update_sample_block(rvsel,(*gametes)[i].smutations,individual,n,sitefinder,0,1);
 	  }
       }
     assert(individual==n);

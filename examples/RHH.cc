@@ -217,7 +217,7 @@ int main(int argc, char ** argv)
       Sequence::SimData sdata;
       //.first is the neutral data, .second the selected sites
       std::pair< std::vector<std::pair<double,std::string> >,
-	std::vector<std::pair<double,std::string> > > mslike = KTfwd::ms_sample_separate(r,gametes,samplesize1,twoN,true);
+	std::vector<std::pair<double,std::string> > > mslike = KTfwd::ms_sample_separate(r,&gametes,samplesize1,twoN,true);
 
       //Convert the results of KTfwd::ms_sample to a Sequence::SimData object and print to the screen
       if(!mslike.first.empty())

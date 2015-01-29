@@ -246,7 +246,7 @@ int main(int argc, char ** argv)
 	}
       Sequence::SimData sdata;
 
-      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r,gametes,samplesize1,twoN,true);
+      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r,&gametes,samplesize1,twoN,true);
 
       if(!mslike.empty())
 	{
