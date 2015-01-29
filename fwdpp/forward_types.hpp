@@ -1,5 +1,6 @@
 /*!
   \file forward_types.hpp
+\defgroup basicTypes Mutation and gamete data types
 */
 #ifndef _FORWARD_TYPES_HPP_
 #define _FORWARD_TYPES_HPP_
@@ -9,13 +10,14 @@
 #include <list>
 #include <cmath>
 #include <type_traits>
-
 namespace KTfwd
 {
   /*! \brief Base class for mutations
     At minimum, a mutation must contain a position and a count in the population.	
     You can derive from this class, for instance to add selection coefficients,
     counts in different sexes, etc.
+    \ingroup basicTypes
+    \note See @ref TutMut in @ref md_md_policies for more detail on how to extend this type
   */
   struct mutation_base
   {
@@ -41,7 +43,10 @@ namespace KTfwd
   };
 
   struct mutation : public mutation_base
-  //!The simplest mutation type, adding just a selection coefficient and dominance to the interface
+  /*!
+    \brief The simplest mutation type, adding just a selection coefficient and dominance to the interface
+    \ingroup basicTypes
+  */
   {
     /// selection coefficient
     mutable double s;
@@ -59,17 +64,23 @@ namespace KTfwd
     }
   };
 
+  /*! \brief Base class for gametes.
+    A gamete is a container of pointers (iterators) to mutations + a count in the population
+    \note The typical use of this class is simply to define your mutation type (see @ref TotMut)
+    and then use a typedef to define your gamete type in the simulations:
+    \code
+    using gamete_t = KTfwd::gamete_base<mutation_type>
+    \endcode
+    See @ref md_md_policies for examples of this.
+    \ingroup basicTypes
+  */
   template<typename mut_type,
 	   typename list_type = std::list<mut_type> >
   struct gamete_base
-  /*! \brief Base class for gametes.
-    A gamete is a container of pointers (iterators) to mutations + a count in the population
-    \note neutral and non-neutral mutations are stored in separate containers
-  */
   {
     static_assert( std::is_base_of<mutation_base,mut_type>::value,
 		   "mut_type must be derived from KTfwd::mutation_base" );
-    /// Count in population
+    //! Count in population
     unsigned n;
     using mutation_type = mut_type;
     using mutation_list_type = list_type;
@@ -77,30 +88,41 @@ namespace KTfwd
     using mutation_container = std::vector< mutation_list_type_iterator >;
     using mcont_iterator = typename mutation_container::iterator;
     using mcont_const_iterator = typename mutation_container::const_iterator;
-    /// mutations is for neutral mutations, smutations for selected...
-    mutation_container mutations,smutations;
+    //! Container of mutations not affecting trait value/fitness ("neutral mutations")
+    mutation_container mutations;
+    //! Container of mutations affecting trait value/fitness ("neutral mutations")
+    mutation_container smutations;
+
+    /*! @brief Constructor
+      \param icount The number of occurrences of this gamete in the population
+    */
     gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
     {
     }
+
+    /*! @brief Constructor
+      \param icount The number of occurrences of this gamete in the population
+      \param n A container of mutations not affecting trait value/fitness
+      \param s A container of mutations affecting trait value/fitness
+    */
     gamete_base(const unsigned & icount, const mutation_container & n,
 		const mutation_container & s) : n(icount),mutations(n),smutations(s)
     {
     }
+    //! Destructor is virtual, so you may inherit from this type
     virtual ~gamete_base() noexcept {}
+    //! Copy constructor
     gamete_base( gamete_base & ) = default;
+    //! Copy constructor
     gamete_base( gamete_base const & ) = default;
-    //! This seems better for large simulations
+    //! Move constructor
     gamete_base( gamete_base && ) = default;
-    // This may have an edge for smaller sims:
-    /*
-      gamete_base( gamete_base && rhs) noexcept : n(std::move(rhs.n)),mutations(std::move(rhs.mutations)),smutations(std::move(rhs.mutations))
-      {
-      mutations.shrink_to_fit();
-      smutations.shrink_to_fit();
-      }
-    */
+
+    //! Assignment operator
     gamete_base & operator=(gamete_base &) = default;
+    //! Assignment operator
     gamete_base & operator=(gamete_base const &) = default;
+    //! Move assignment operator
     gamete_base & operator=(gamete_base &&) = default;
     /*! \brief Equality operation
       \note Given that mutations and smutations contains ITERATORS to actual mutations,
@@ -112,7 +134,9 @@ namespace KTfwd
     }
   };
 
-  //! The simplest gamete adds nothing to the interface of the base class.
+  /*! The simplest gamete adds nothing to the interface of the base class.
+    \ingroup basicTypes
+  */
   using gamete = gamete_base<mutation>;
 
 }
