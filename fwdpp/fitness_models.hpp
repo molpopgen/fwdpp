@@ -8,6 +8,9 @@
 #include <algorithm>
 #include <functional>
 
+/*!
+  \defgroup fitness Policies for calculating fitnesses.
+*/
 namespace KTfwd
 {
   /*! \brief Returns a fitness of 1
@@ -16,6 +19,7 @@ namespace KTfwd
     \param g2 A gamete
 
     \note g1 and g2 must be part of the gamete_base hierarchy
+    \ingroup fitness
   */
   struct no_selection
   {
@@ -41,11 +45,12 @@ namespace KTfwd
     \return The fitness of a diploid with genotype g1 and g2
     \note The updating policies must take a non-const reference to a double as the first argument and
     an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
-    \example diploid_fixed_sh_ind.cc
+    \ingroup fitness
    */
   struct site_dependent_fitness
   {
     typedef double result_type;
+    ///\example diploid_fixed_sh_ind.cc
     template<typename iterator_type,
 	     typename fitness_updating_policy_hom,
 	     typename fitness_updating_policy_het>
@@ -200,6 +205,7 @@ namespace KTfwd
     \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
     \return dpol( hpol(g1), hpol(g2) )
     \note This really is just a convenience function. Depending on the specifics of the model, this function may be totally unnecessary.
+    \ingroup fitness
   */
   struct haplotype_dependent_fitness
   {
@@ -225,7 +231,7 @@ namespace KTfwd
     \param scaling Fitnesses are 1, 1+h*s, 1+scaling*s, for AA,Aa,aa, resp.  This parameter lets you make sure your
     simulation is on the same scale as various formula in the literature
     \return Multiplicative fitness across sites.
-    1.);
+    \ingroup fitness
   */
   struct multiplicative_diploid
   {
@@ -255,6 +261,7 @@ namespace KTfwd
     simulation is on the same scale as various formula in the literature
     \return Additive fitness across sites.
     \note g1 and g2 must be part of the gamete_base hierarchy
+    \ingroup fitness
   */
   struct additive_diploid
   {

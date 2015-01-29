@@ -10,7 +10,7 @@
 
 namespace KTfwd {
   namespace fwdpp_internal {
-    /*!
+    /*! \brief The mechanics of recombination for multilocus simulations
       The mechanics of recombination for multilocus simulations
       \param r A GSL random number generator
       \param rec A policy that affects recombination withing a locus
