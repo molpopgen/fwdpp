@@ -5,33 +5,31 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/internal/ms_sampling.hpp>
 #include <limits>
-#include <iostream>
+#include <algorithm>
 
 namespace KTfwd
 {
   template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type>
+	    typename allocator_t,
+	    template<typename,typename> class container_type>
   std::vector<unsigned> sample(gsl_rng * r,
-			       const vector_type<gamete_type,vector_type_allocator > & gametes,
+			       const container_type<gamete_type,allocator_t > & gametes,
 			       const unsigned & n, const unsigned & N)
   {
-    std::vector<double> freqs(gametes.size(),0);
+    std::vector<double> freqs;
     std::vector<unsigned> counts(gametes.size(),0);
-    for(unsigned i=0;i<gametes.size();++i)
-      {
-	double f = double(gametes[i].n)/double(N);
-	freqs[i]=f;
-      }
+    std::for_each( gametes.begin(), gametes.end(), [&freqs,&N](const gamete_type & __g) {
+	freqs.emplace_back( std::move( double(__g.n)/double(N) ) );
+      } );
     gsl_ran_multinomial(r,gametes.size(),n,&freqs[0],&counts[0]);
     return counts;
   }
 
   template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type>
+	    typename allocator_t,
+	    template<typename,typename> class container_type>
   std::vector<unsigned> sample_sfs(gsl_rng * r, 
-				   const vector_type<gamete_type,vector_type_allocator > & gametes,
+				   const container_type<gamete_type,allocator_t > & gametes,
 				   const unsigned & n, const unsigned & N)
   {
     std::vector<unsigned> counts = sample(r,gametes,n,N);
@@ -76,11 +74,11 @@ namespace KTfwd
   }
 
   template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type>
+	    typename allocator_t,
+	    template<typename,typename> class container_t>
   std::vector< std::pair<double, std::string> > 
   ms_sample(gsl_rng * r,
-	    const vector_type<gamete_type,vector_type_allocator > * gametes,
+	    const container_t<gamete_type,allocator_t > * gametes,
 	    const unsigned & n, const unsigned & N,
 	    bool remove_fixed)
   {
@@ -95,12 +93,12 @@ namespace KTfwd
   }
 
   template< typename gamete_type,
-	    typename vector_type_allocator,
-	    template<typename,typename> class vector_type>
+	    typename allocator_t,
+	    template<typename,typename> class container_t>
   std::pair< std::vector< std::pair<double, std::string> > ,
 	     std::vector< std::pair<double, std::string> > >
   ms_sample_separate(gsl_rng * r,
-		     const vector_type<gamete_type,vector_type_allocator > * gametes,
+		     const container_t<gamete_type,allocator_t > * gametes,
 		     const unsigned & n, const unsigned & N,
 		     bool remove_fixed)
   {
@@ -119,8 +117,10 @@ namespace KTfwd
       {
 	for(unsigned j=0;j<counts[i];++j,++individual)
 	  {
-	    fwdpp_internal::update_sample_block(rvneut,(*gametes)[i].mutations,individual,n,sitefinder,0,1);
-	    fwdpp_internal::update_sample_block(rvsel,(*gametes)[i].smutations,individual,n,sitefinder,0,1);
+	    auto gbegin = gametes->begin();
+	    std::advance(gbegin,i);
+	    fwdpp_internal::update_sample_block(rvneut,gbegin->mutations,individual,n,sitefinder,0,1);
+	    fwdpp_internal::update_sample_block(rvsel,gbegin->smutations,individual,n,sitefinder,0,1);
 	  }
       }
     assert(individual==n);
