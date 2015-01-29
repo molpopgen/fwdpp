@@ -128,7 +128,7 @@ Again, a few options:
 Or:
 
 1. Get a list of releases by saying "git tag -l"
-2. Checkout the release you want.  For example "git checkout 0.2.0"
+2. Checkout the release you want.  For example "git checkout 0.2.6"
 
 Another option is to click on [releases](https://github.com/molpopgen/fwdpp/releases) from the main [project page](https://github.com/molpopgen/fwdpp) at github.
 
