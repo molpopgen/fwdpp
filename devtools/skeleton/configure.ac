@@ -11,7 +11,7 @@ AC_PROG_CC
 AC_C_CONST
 AC_PROG_CXX
 
-AM_MAINTAINER_MODE([enable])
+AM_MAINTAINER_MODE([disable])
 
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
