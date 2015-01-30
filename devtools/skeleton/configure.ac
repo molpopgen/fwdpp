@@ -23,6 +23,7 @@ AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boos
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 
+AC_CHECK_HEADER(fwdpp/diploid.hh,,[AC_MSG_ERROR([fwdpp/diploid.hh not found -- please install fwdpp (https://github.com/molpopgen/fwdpp)])])
 AC_CHECK_HEADER(boost/container/vector.hpp, [AC_DEFINE([HAVE_BOOST_VECTOR],[1],[Define if boost/container/vector.hpp exists])], [echo "boost/container/vector.hpp not found.  Will use std::vector for examples."])
 AC_CHECK_HEADER(boost/container/list.hpp, [AC_DEFINE([HAVE_BOOST_LIST],[1],[Define if boost/container/list.hpp exists])], [echo "boost/container/list.hpp not found.  Will use std::list for examples."])
 AC_CHECK_HEADER(boost/pool/pool_alloc.hpp, [AC_DEFINE([HAVE_BOOST_POOL_ALLOC],[1],[Define if boost/pool/pool_alloc.hpp exists])])
