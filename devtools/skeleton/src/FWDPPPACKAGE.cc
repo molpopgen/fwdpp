@@ -4,7 +4,7 @@
   This is a MINIMAL .cc file.
  */
 #include <fwdpp/diploid.hh>
-
+#include <config.h>
 //If you make a custom mutation type,
 //you need to define it above,
 //and adjust this using declaration:
