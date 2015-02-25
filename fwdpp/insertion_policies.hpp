@@ -76,6 +76,19 @@ namespace KTfwd
     return itr;
   }
 
+  template<typename T, typename cT>
+  inline typename cT::iterator insert_if_not_found( T && t,  cT * ct, const unsigned & n )
+  {
+    typename cT::iterator itr = std::find(ct->begin(),ct->end(),t);
+    if(itr == ct->end())
+      {
+	auto __ii = insert_at_end(std::forward<T>(t),ct);
+	__ii->n=n;
+	return __ii;
+      }
+    return itr;
+  }
+
   /*! \brief    An insertion policy 
     
     Useful when mutation models can give rise to gametes identical to those currently existing in the population. 
