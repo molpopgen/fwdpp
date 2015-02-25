@@ -1,6 +1,10 @@
 # FWDPP RELEASE NOTES
 
-## 0.2.7 (unreleased)
+## 0.2.8
+
+* Fixed issue #5, which was bug in migrating gametes in multi-population, individual-based simulations.
+
+## 0.2.7 
 
 * Versions ms_sample and ms_sample_separate that took containers of gametes as arguments are now compatible with individual-based simulations.
 * The "devtools" stuff is greatly improved, and a new tutorial added on how to use it: @ref md_md_devtools
