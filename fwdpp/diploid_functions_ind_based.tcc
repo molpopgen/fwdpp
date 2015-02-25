@@ -336,13 +336,14 @@ namespace KTfwd
 			//not migrant
 			{
 			  p1g1 = (pptr+p1)->first;
+
 			  p1g2 = (pptr+p1)->second;
 			}
 		      else
 			//migrant                                                                                    
 			{
-			  p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop );
-			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop );
+			  p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop,1u );
+			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop,1u );
 			}
 
 		      /*
@@ -373,17 +374,18 @@ namespace KTfwd
 		      else
 			{
 			  //We may need to put p2's gametes into the pop pointed to by pop_ptr
-			  p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop);
-			  p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop );
+			  p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop,1u);
+			  p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop,1u);
 			}
 		      
 		      NREC += rec_pol(p1g1,p1g2,tpop);
 		      NREC += rec_pol( p2g1,p2g2, tpop );
+
 		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 		      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 		      assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
 			      != (pop_ptr)->end() );
-		      
+
 		      (dptr+i)->first->n++;
 		      assert((dptr+i)->first->n <= 2*demesize);
 		      (dptr+i)->second->n++;
