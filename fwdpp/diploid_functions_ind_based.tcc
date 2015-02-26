@@ -342,8 +342,8 @@ namespace KTfwd
 		      else
 			//migrant                                                                                    
 			{
-			  p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop,1u );
-			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop,1u );
+			  p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop,0u );
+			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop,0u );
 			}
 
 		      /*
@@ -374,8 +374,8 @@ namespace KTfwd
 		      else
 			{
 			  //We may need to put p2's gametes into the pop pointed to by pop_ptr
-			  p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop,1u);
-			  p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop,1u);
+			  p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop,0u);
+			  p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop,0u);
 			}
 		      
 		      NREC += rec_pol(p1g1,p1g2,tpop);
