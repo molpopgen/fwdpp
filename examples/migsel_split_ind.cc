@@ -134,13 +134,13 @@ struct multiplicative_diploid_minus
 };
 
 #if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
-using glist_vec =  boost::container::vector< glist >;
-using diploid_bucket=  boost::container::vector< std::pair< glist::iterator, glist::iterator > >;
-using diploit_bucket_vec = boost::container::vector< diploid_bucket >;
+using glist_vec = boost::container::vector< glist >;
+using diploid_bucket = boost::container::vector< std::pair< glist::iterator, glist::iterator > >;
+using diploid_bucket_vec = boost::container::vector< diploid_bucket >;
 #else
 using glist_vect = std::vector< glist >;
 using diploid_bucket = std::vector< std::pair< glist::iterator, glist::iterator > >;
-using diploid_bucket_vec =  std::vector< diploid_bucket >;
+using diploid_bucket_vec = std::vector< diploid_bucket >;
 #endif
 
 int main( int argc, char ** argv )
@@ -204,6 +204,9 @@ int main( int argc, char ** argv )
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
     }
+
+  glist_vec metatpop_gametes(1,std::move(gametes));
+  diploid_bucket_vec metapop_diploids(1,std::move(diploids));
 }
 //   for ( auto i = metapop.begin() ;
 // 	i != metapop.end() ; ++i )
