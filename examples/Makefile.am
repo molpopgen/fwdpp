@@ -8,6 +8,7 @@ check_PROGRAMS=diploid \
 	diploid_fixed_sh_ind \
 	diploid_fixed_sh_ind_lambda \
 	migsel_ind \
+	migsel_split_ind \
 	bneck_selection_ind \
 	diploid_ind_2locus \
 	diploid_twopop_mig \
@@ -25,6 +26,7 @@ diploid_fixed_sh_SOURCES=diploid_fixed_sh.cc common_gamete.hpp
 diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_lambda_SOURCES=diploid_fixed_sh_ind_lambda.cc common_ind.hpp
 migsel_ind_SOURCES=migsel_ind.cc common_gamete.hpp
+migsel_split_ind_SOURCES=migsel_split_ind.cc common_gamete.hpp
 bneck_selection_ind_SOURCES=bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES=diploid_ind_2locus.cc common_ind.hpp
 diploid_twopop_mig_SOURCES=diploid_twopop_mig.cc common_gamete.hpp
