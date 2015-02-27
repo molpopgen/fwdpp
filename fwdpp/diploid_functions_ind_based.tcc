@@ -298,7 +298,7 @@ namespace KTfwd
 	      
 	      assert(lookups.size() == diploids->size());
 	      //copy diploids into temporary parents
-	      decltype(*diploids) parents(*diploids);
+	      auto parents(*diploids);
 	      
 	      //Update the diploids
 	      popindex = 0;
@@ -415,12 +415,13 @@ namespace KTfwd
 			  ++gptr;
 			}
 		    }
-		  for (auto gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
-		    {
-		      gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
-		      gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
-		    }
 		}
+	      for(auto ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
+		for (auto gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
+		  {
+		    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
+		    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
+		  }
 	      return wbars;
 	    }
 }
