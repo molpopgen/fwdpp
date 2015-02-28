@@ -1,4 +1,4 @@
-/*! \include migsel_split_ind.cc
+/*! \include migsel_split_ind_list.cc
   Evolve a constant-N pop, split it off, then evolve both with migration.
 
   The selection coefficient, s, is treated as -s in deme 2, just for fun.
@@ -135,37 +135,30 @@ struct multiplicative_diploid_minus
 };
 
 #if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
-using glist_vec = boost::container::vector< glist >;
+//using glist_vec = boost::container::vector< glist >;
+using glist_list = boost::container::list< glist >;
 using diploid_bucket = boost::container::vector< std::pair< glist::iterator, glist::iterator > >;
 using diploid_bucket_vec = boost::container::vector< diploid_bucket >;
 #else
-using glist_vec = std::vector< glist >;
+//using glist_vec = std::vector< glist >;
+using glist_list = std::list< glist >;
 using diploid_bucket = std::vector< std::pair< glist::iterator, glist::iterator > >;
 using diploid_bucket_vec = std::vector< diploid_bucket >;
 #endif
 
-void duplicate_pop(glist_vec & metapop, diploid_bucket_vec & diploids, mlist & mutations)
+void duplicate_pop(glist_list & metapop, diploid_bucket_vec & diploids, mlist & mutations)
 {
-  /*
-    Warning: could cause realloc.  Pushing into metapop
-    will likely trigger reallocation, moving the address
-    of metapop[0] in memory and invalidating the
-    interators contained by diploids[0].
-
-    This function assumes that metapop and diploids 
-    are both pre-allocated to the correct size.
-  */
-  //diploids.push_back(diploid_bucket(diploids[0]));
-  //metapop.push_back(glist(metapop[0]));
-  diploids[1] = diploid_bucket(diploids[0]);
-  metapop[1] = glist(metapop[0]);
+  diploids.push_back( diploid_bucket(diploids[0]) );
+  metapop.insert( metapop.end(), glist(*metapop.begin()) );
+  auto pptr1 = metapop.begin(),pptr2=metapop.begin();
+  ++pptr2;
   for (auto dptr=diploids[0].begin(), newdptr=diploids[1].begin(); dptr!=diploids[0].end(); ++dptr, ++newdptr)
     {
-      auto pos1=std::distance(metapop[0].begin(), dptr->first);
-      auto pos2=std::distance(metapop[0].begin(), dptr->second);
-      auto newgptr1=metapop[1].begin(); 
+      auto pos1=std::distance(pptr1->begin(), dptr->first);
+      auto pos2=std::distance(pptr1->begin(), dptr->second);
+      auto newgptr1=pptr2->begin();
       std::advance(newgptr1, pos1);
-      auto newgptr2=metapop[1].begin();
+      auto newgptr2=pptr2->begin();
       std::advance(newgptr2, pos2);
       newdptr->first=newgptr1;
       newdptr->second=newgptr2;
@@ -243,10 +236,23 @@ int main( int argc, char ** argv )
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
     }
 
-  glist_vec metapop_gametes(2);
-  metapop_gametes[0]=std::move(gametes);
-  diploid_bucket_vec metapop_diploids(2);
-  metapop_diploids[0] = std::move(diploids);
+  /*
+    Warning: you could attempt to make the list like this:
+    glist_list metapop_gametes(1,std::move(gametes));
+
+    However, the C++11/C++14 std::list and the
+    boost::container::list constructors work via
+    const references to value types.  Therefore, the above 
+    line of code copies rather than moves, which invalidates
+    the pointers contained in diploids.
+    
+    Likewise with metapop_diploids.  The code below uses move
+    semantics to avoid a copy.
+  */
+  glist_list metapop_gametes;
+  metapop_gametes.insert(metapop_gametes.end(),std::move(gametes));
+  diploid_bucket_vec metapop_diploids;
+  metapop_diploids.emplace_back(std::move(diploids));
   duplicate_pop(metapop_gametes,metapop_diploids,mutations);
   std::vector<std::function<double (glist::const_iterator,
 				    glist::const_iterator)> > vbf = {
