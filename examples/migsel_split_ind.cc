@@ -148,7 +148,7 @@ void duplicate_pop(glist_vec & metapop, diploid_bucket_vec & diploids, mlist & m
   //Warning: could cause realloc?
   //diploids.push_back(diploid_bucket(diploids[0]));
   diploids[1] = diploid_bucket(diploids[0]);
-  metapop.push_back(glist(metapop[0]));
+  metapop[1] = glist(metapop[0]);
   for (auto dptr=diploids[0].begin(), newdptr=diploids[1].begin(); dptr!=diploids[0].end(); ++dptr, ++newdptr)
     {
       auto pos1=std::distance(metapop[0].begin(), dptr->first);
@@ -231,11 +231,23 @@ int main( int argc, char ** argv )
 
   glist_vec metapop_gametes(2);
   metapop_gametes[0]=std::move(gametes);
-  diploid_bucket_vec metapop_diploids(1,std::move(diploids));
+  diploid_bucket_vec metapop_diploids(2);
+  metapop_diploids[0] = std::move(diploids);
+  for( unsigned i = 0 ; i < N ; ++i )
+    {
+      std::cerr << std::distance( metapop_gametes[0].begin(),metapop_diploids[0][i].first) << ' '
+		<< std::distance( metapop_gametes[0].begin(),metapop_diploids[0][i].second) << '\n';
+    }
   std::cerr << "duplicating...";
   duplicate_pop(metapop_gametes,metapop_diploids,mutations);
   std::cerr << "done" << std::endl;
-
+  for( unsigned i = 0 ; i < N ; ++i )
+    {
+      std::cerr << std::distance( metapop_gametes[0].begin(),metapop_diploids[0][i].first) << ' '
+		<< std::distance( metapop_gametes[0].begin(),metapop_diploids[0][i].second) << ' '
+		<< std::distance( metapop_gametes[1].begin(),metapop_diploids[1][i].first) << ' '
+		<< std::distance( metapop_gametes[1].begin(),metapop_diploids[1][i].second) << '\n';
+    }
    std::vector<std::function<double (glist::const_iterator,
 				     glist::const_iterator)> > vbf = {
      std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
