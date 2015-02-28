@@ -198,6 +198,12 @@ int main( int argc, char ** argv )
   const unsigned n = atoi(argv[argn++]);
   const unsigned seed = atoi(argv[argn++]);
 
+  if(!ngens2) 
+    {
+      std::cerr << "Error: ngens2 must be > 0\n";
+      std::exit(EXIT_FAILURE);
+    }
+
   const double mu_neutral = theta_neut/double(4*N);
   const double mu_del = theta_del/double(4*N);
   const double littler = rho/double(4*N);
@@ -271,11 +277,19 @@ int main( int argc, char ** argv )
       //4*N b/c it needs to be fixed in the metapopulation
       remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,4*N);
     }
+  std::pair< std::vector< std::pair<double,std::string> >,
+	     std::vector< std::pair<double,std::string> > > sample1 = ms_sample_separate(r,&metapop_diploids[0],n),
+    sample2 = ms_sample_separate(r,&metapop_diploids[1],n);
+
+  auto neutral = merge(sample1.first,sample2.first,n),
+    selected = merge(sample1.second,sample2.second,n);
+
+  std::cout << neutral << '\n' << selected << '\n';
 }
 
 SimData merge( const std::vector<std::pair<double,std::string> > & sample1,
-			 const std::vector<std::pair<double,std::string> > & sample2 ,
-			 const unsigned & nsam)
+	       const std::vector<std::pair<double,std::string> > & sample2 ,
+	       const unsigned & nsam)
 {
   std::map<double, std::string> temp;
 
