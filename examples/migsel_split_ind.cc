@@ -138,15 +138,24 @@ using glist_vec = boost::container::vector< glist >;
 using diploid_bucket = boost::container::vector< std::pair< glist::iterator, glist::iterator > >;
 using diploid_bucket_vec = boost::container::vector< diploid_bucket >;
 #else
-using glist_vect = std::vector< glist >;
+using glist_vec = std::vector< glist >;
 using diploid_bucket = std::vector< std::pair< glist::iterator, glist::iterator > >;
 using diploid_bucket_vec = std::vector< diploid_bucket >;
 #endif
 
 void duplicate_pop(glist_vec & metapop, diploid_bucket_vec & diploids, mlist & mutations)
 {
-  //Warning: could cause realloc?
+  /*
+    Warning: could cause realloc.  Pushing into metapop
+    will likely trigger reallocation, moving the address
+    of metapop[0] in memory and invalidating the
+    interators contained by diploids[0].
+
+    This function assumes that metapop and diploids 
+    are both pre-allocated to the correct size.
+  */
   //diploids.push_back(diploid_bucket(diploids[0]));
+  //metapop.push_back(glist(metapop[0]));
   diploids[1] = diploid_bucket(diploids[0]);
   metapop[1] = glist(metapop[0]);
   for (auto dptr=diploids[0].begin(), newdptr=diploids[1].begin(); dptr!=diploids[0].end(); ++dptr, ++newdptr)
