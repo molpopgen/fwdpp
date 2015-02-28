@@ -143,9 +143,32 @@ using diploid_bucket = std::vector< std::pair< glist::iterator, glist::iterator 
 using diploid_bucket_vec = std::vector< diploid_bucket >;
 #endif
 
+void duplicate_pop(glist_vec & metapop, diploid_bucket_vec & diploids, mlist & mutations)
+{
+  //Warning: could cause realloc?
+  //diploids.push_back(diploid_bucket(diploids[0]));
+  diploids[1] = diploid_bucket(diploids[0]);
+  metapop.push_back(glist(metapop[0]));
+  for (auto dptr=diploids[0].begin(), newdptr=diploids[1].begin(); dptr!=diploids[0].end(); ++dptr, ++newdptr)
+    {
+      auto pos1=std::distance(metapop[0].begin(), dptr->first);
+      auto pos2=std::distance(metapop[0].begin(), dptr->second);
+      auto newgptr1=metapop[1].begin(); 
+      std::advance(newgptr1, pos1);
+      auto newgptr2=metapop[1].begin();
+      std::advance(newgptr2, pos2);
+      newdptr->first=newgptr1;
+      newdptr->second=newgptr2;
+    }
+  for (auto mptr=mutations.begin(); mptr!=mutations.end(); ++mptr)
+    {
+      mptr->n+=mptr->n;
+    }
+}
+
 int main( int argc, char ** argv )
 {
-  if (argc != 14)
+  if (argc != 15)
     {
       std::cerr << "Too few arguments.\n"
 		<< "Usage: " << argv[0] << " N theta_neutral theta_deleterious rho M s h f1 f2 ngens ngens2 n outfilename seed\n";
@@ -186,6 +209,7 @@ int main( int argc, char ** argv )
   unsigned generation = 0;
   for( unsigned i = 0 ; i < ngens ; ++i,++generation )
     {
+      if(i%100==0.)std::cerr<<i<<'\n';
       double wbar = KTfwd::sample_diploid(r,
 					  &gametes,
 					  &diploids,
@@ -205,8 +229,44 @@ int main( int argc, char ** argv )
       KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
     }
 
-  glist_vec metatpop_gametes(1,std::move(gametes));
+  glist_vec metapop_gametes(2);
+  metapop_gametes[0]=std::move(gametes);
   diploid_bucket_vec metapop_diploids(1,std::move(diploids));
+  std::cerr << "duplicating...";
+  duplicate_pop(metapop_gametes,metapop_diploids,mutations);
+  std::cerr << "done" << std::endl;
+
+   std::vector<std::function<double (glist::const_iterator,
+				     glist::const_iterator)> > vbf = {
+     std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+     std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,2.)
+   };
+   unsigned Ns[2] = {N,N};
+   double fs[2]={f1,f2};
+   for( unsigned i = 0 ; i < ngens2 ; ++i, ++generation )
+     {
+      if(i%100==0.)std::cerr<<i<<'\n';
+      std::vector<double> wbars = sample_diploid(r,
+						 &metapop_gametes,
+						 &metapop_diploids,
+						 &mutations,
+						 &Ns[0],
+						 mu_neutral + mu_del,
+						 std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+						 std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
+							     littler,
+							     r,
+							     recmap),
+						 std::bind(insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+						 vbf,
+						 //4*N b/c it needs to be fixed in the metapopulation
+						 std::bind(mutation_remover(),std::placeholders::_1,0,4*N),
+						 std::bind(migpop,std::placeholders::_1,r,m),
+						 &fs[0]);
+      //4*N b/c it needs to be fixed in the metapopulation
+      remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,4*N);
+     }
 }
 //   for ( auto i = metapop.begin() ;
 // 	i != metapop.end() ; ++i )
