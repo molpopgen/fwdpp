@@ -136,10 +136,10 @@ h = dominance of newly-arising selected mutations
 f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
 ngens = # of generations to simulate
 n = sample size to take from each deme @ end of simulation (must be even #)
-out filename = name of output file
+outfilename = name of output file
 seed = random number seed.
 
-Notes: s is taken to be s in deme 1 and -s jn deme 2. This let’s me illustrate how different fitness functions can be passed to different demes using fwdpp.
+Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
 
 The output file contains the following:
 
@@ -147,6 +147,36 @@ The output file contains the following:
 2. Two "ms"-format blocks of size 2*n. These are for neutral and selected mutations, respectively. Within each block, the first n haplotypes are from deme 1 and the second n are from deme 2.
 
 The program writes the data to the output file and then reads it in again. This is mainly to illustrate the binary I/O routines for individual-based metapopulation simulations.
+
+####migsel\_split\_ind and migsel\_split\_ind\_list
+
+Simulates a constant-sized population of N diploids with selection at strength s and dominance h for ngens generations. Then, a copy is made of the population, and the two demes are simulated with migration for another ngens2 generations.
+
+Usage:
+
+~~~
+./migsel_split_ind N 4Nu_neut 4Nu_sel 4Nr 4Nm s h f1 f2 ngens ngens2 n seed
+~~~
+
+~~~
+./migsel_split_ind_list N 4Nu_neut 4Nu_sel 4Nr 4Nm s h f1 f2 ngens ngens2 n seed
+~~~
+
+where:
+N = population number for each deme.
+4Nu\_neut = 4N times the neutral mutation rate per gamete
+4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
+4Nr = 4N times the recombination rate per diploid per region per generation
+4Nm = 4N times the probability of migration per diploid per generation
+s = the selection coefficient of newly-arising selected mutations
+h = dominance of newly-arising selected mutations
+f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
+ngens = # of generations to simulate
+ngens2 = # of generations to simulate after the split
+n = sample size to take from each deme @ end of simulation (must be even #)
+seed = random number seed.
+
+Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
 
 ####RHH
 
