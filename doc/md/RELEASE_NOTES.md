@@ -2,7 +2,10 @@
 
 ## 0.2.8
 
-* Fixed issue #5, which was bug in migrating gametes in multi-population, individual-based simulations.
+* Fixed issue #5, which was a bug in migrating gametes in multi-population, individual-based simulations.
+* Fixed issue #6, which was a bug in how parents were copied in multi-population, individual-based simulations.
+* Fixed issue #7, which was a bug in when gametes were updated post-sampling in multi-population, individual-based simulations.
+* Two new example programs added: migsel_split_ind and migsel_split_ind_list
 
 ## 0.2.7 
 
