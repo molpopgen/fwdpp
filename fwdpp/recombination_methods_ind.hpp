@@ -11,7 +11,7 @@ struct genetics101
 /*! Genetics 101: simple model of recombination.  r is the probability that the two gametes recombine
 */
 {
-  typedef unsigned result_type;
+  using result_type = unsigned;
   template<typename gamete_iterator_type,
 	   typename gamete_list_type_allocator,
 	   template<typename,typename> class gamete_list_type,

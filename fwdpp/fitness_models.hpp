@@ -36,7 +36,7 @@ namespace KTfwd
   */
   struct no_selection
   {
-    typedef double result_type;
+    using result_type = double;
     template<typename iterator_type >
     inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
     {
@@ -62,7 +62,7 @@ namespace KTfwd
    */
   struct site_dependent_fitness
   {
-    typedef double result_type;
+    using result_type = double;
     ///\example diploid_fixed_sh_ind.cc
     template<typename iterator_type,
 	     typename fitness_updating_policy_hom,
@@ -222,7 +222,7 @@ namespace KTfwd
   */
   struct haplotype_dependent_fitness
   {
-    typedef double result_type;
+    using result_type = double;
     template< typename iterator_type,
 	      typename haplotype_policy,
 	      typename diploid_policy >
@@ -248,7 +248,7 @@ namespace KTfwd
   */
   struct multiplicative_diploid
   {
-    typedef double result_type;
+    using result_type = double;
     template< typename iterator_type>
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const
@@ -278,7 +278,7 @@ namespace KTfwd
   */
   struct additive_diploid
   {
-    typedef double result_type;
+    using result_type = double;
     template< typename iterator_type>
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
 			     const double scaling = 1.) const

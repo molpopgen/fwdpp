@@ -35,8 +35,8 @@ namespace KTfwd
 	    {
 	      static_assert( std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
                              "gamete_type::mutation_type must be derived from KTfwd::mutation_base" );
-	      typedef gamete_base< typename gamete_type::mutation_type, 
-				   typename gamete_type::mutation_list_type > gamete_base_type;
+	      using gamete_base_type = gamete_base< typename gamete_type::mutation_type, 
+						    typename gamete_type::mutation_list_type >;
 	      static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
                              std::is_same<gamete_base_type,gamete_type>::value,
                              "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
@@ -55,10 +55,10 @@ namespace KTfwd
 		  NM += nmuts;
 		  
 #if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
-		  typedef boost::container::vector<unsigned> vu;
+		  using vu = boost::container::vector<unsigned>;
 		  boost::container::vector<double> pm(ibeg->n,1./double(ibeg->n));
 #else
-		  typedef std::vector<unsigned> vu;
+		  using vu = std::vector<unsigned>;
 		  std::vector<double> pm(ibeg->n,1./double(ibeg->n));
 #endif
 		  vu nm(ibeg->n,0u);

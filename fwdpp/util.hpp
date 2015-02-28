@@ -47,10 +47,10 @@ namespace KTfwd
   {
     static_assert( std::is_same<typename gamete_type::mutation_type,mutation_type>::value,
                    "gamete_type::mutation type and mutation_type must be the same" );
-    typedef typename source_gamete_container<gamete_type,gamete_allocator_type>::const_iterator giterator;
-    typedef typename source_mut_container<mutation_type,mutation_allocator_type>::iterator literator;  
-    typedef typename source_mut_container<mutation_type,mutation_allocator_type>::const_iterator cliterator;
-    typedef typename gamete_type::mutation_container::const_iterator gciterator;
+    using giterator = typename source_gamete_container<gamete_type,gamete_allocator_type>::const_iterator;
+    using literator = typename source_mut_container<mutation_type,mutation_allocator_type>::iterator;  
+    using cliterator = typename source_mut_container<mutation_type,mutation_allocator_type>::const_iterator;
+    using gciterator = typename gamete_type::mutation_container::const_iterator;
     gametes_destination.clear();
     mutations_destination.clear();
     //copying the mutations is trivial

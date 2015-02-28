@@ -38,7 +38,7 @@ namespace KTfwd
 		     list_type<mutation_type,list_allocator_type> * mutations,
 		     const unsigned & max_chroms = std::numeric_limits<unsigned>::max())
   {
-    typedef list_type<mutation_type,list_allocator_type> MLIST_TYPE;
+    using MLIST_TYPE = list_type<mutation_type,list_allocator_type>;
     /*
       add the mutations to the list.
       We create a lookup table of position -> pointer to mutations,

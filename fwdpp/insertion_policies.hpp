@@ -152,7 +152,6 @@ namespace KTfwd
     inline void operator()(  gamete_type && ng, 
 			    vector_type<gamete_type,vector_type_allocator > * gametes)const 
     {
-      //gametes->push_back(ng);
       gametes->emplace_back(std::forward<gamete_type>(ng));
     }
   };
@@ -179,11 +178,10 @@ namespace KTfwd
     inline void operator()( gamete_type && ng, 
 			   vector_type<gamete_type,vector_type_allocator > * gametes) const
     {
-      typedef typename  vector_type<gamete_type,vector_type_allocator >::iterator vtype_iterator;
+      using vtype_iterator = typename vector_type<gamete_type,vector_type_allocator >::iterator;
       vtype_iterator itr=std::find(gametes->begin(),gametes->end(),ng);
       if(itr == gametes->end())
 	{
-	  //gametes->push_back(ng);
 	  gametes->emplace_back(std::forward<gamete_type>(ng));
 	}
       else

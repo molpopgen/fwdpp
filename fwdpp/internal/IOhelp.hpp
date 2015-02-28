@@ -37,9 +37,9 @@ namespace KTfwd {
 		  const mutation_writer_type & mw,
 		  ostreamtype & buffer) const
       {
-	typedef typename list_type< mutation_type, list_type_allocator >::const_iterator mlist_iterator;
+	using mlist_iterator = typename list_type< mutation_type, list_type_allocator >::const_iterator;
 	//initiate a list with the mutation information by iterator
-	typedef std::vector< mlist_iterator > maptype;
+	using maptype = std::vector< mlist_iterator >;
 	std::vector<unsigned> indexes;
 	maptype mut_info;
 		
@@ -78,7 +78,7 @@ namespace KTfwd {
 		  const std::vector< unsigned > & indexes,
 		  ostreamtype & buffer) const
       {
-	typedef typename gamete_cont_t< gamete_type, gamete_cont_t_details...>::const_iterator glist_iterator;
+	using glist_iterator = typename gamete_cont_t< gamete_type, gamete_cont_t_details...>::const_iterator;
 	unsigned N = unsigned(gametes->size());
 	buffer.write( reinterpret_cast< char * >(&N), sizeof(unsigned) );
 	std::vector< glist_iterator > gam_info;
@@ -124,8 +124,8 @@ namespace KTfwd {
 		 const mutation_reader & mr,
 		 istreamtype & in) const
       {
-	typedef list_type< mutation_type, list_type_allocator > mlist;
-	typedef std::map<unsigned,typename mlist::iterator> mut_info;
+	using mlist = list_type< mutation_type, list_type_allocator >;
+	using mut_info = std::map<unsigned,typename mlist::iterator>;
       
 	mut_info m;
 	unsigned NMUTS;
@@ -148,8 +148,8 @@ namespace KTfwd {
 		 const mutation_reader & mr,
 		 gzFile gzin) const
       {
-	typedef list_type< mutation_type, list_type_allocator > mlist;
-	typedef std::map<unsigned,typename mlist::iterator> mut_info;
+	using mlist = list_type< mutation_type, list_type_allocator >;
+	using mut_info = std::map<unsigned,typename mlist::iterator>;
       
 	mut_info m;
 	unsigned NMUTS;

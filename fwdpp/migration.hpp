@@ -28,11 +28,11 @@ namespace KTfwd
 			vector_type<gamete_type,vector_type_allocator> * dest, 
 			const unsigned & nmigrants)
   {
-    typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
+    using gamete_base_type = gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type >;
     static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
                    std::is_same<gamete_base_type,gamete_type >::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
-    typedef typename vector_type<gamete_type,vector_type_allocator>::iterator vgitr;
+    using vgitr = typename vector_type<gamete_type,vector_type_allocator>::iterator;
     for(unsigned i = 0 ; i < nmigrants ; ++i)
       {
 	vgitr itr =  KTfwd::pgam( r, source ); 
@@ -73,7 +73,7 @@ namespace KTfwd
 		const unsigned & twoN_1, const unsigned & twoN_2,
 		const double & m)
   {
-    typedef gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type > gamete_base_type;
+    using gamete_base_type = gamete_base< typename gamete_type::mutation_type, typename gamete_type::mutation_list_type >;
     static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
                    std::is_same<gamete_base_type,gamete_type >::value,
                    "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );

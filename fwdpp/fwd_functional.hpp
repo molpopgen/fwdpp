@@ -16,7 +16,7 @@ namespace KTfwd
    */
   struct n_is_zero
   {
-    typedef bool result_type;
+    using result_type = bool;
     template<typename T>
     inline bool operator()(const T & t)const
     {
@@ -29,7 +29,7 @@ namespace KTfwd
    */
   struct mutation_at_pos
   {
-    typedef bool result_type;
+    using result_type = bool;
     template<typename mutation_type>
     inline bool operator()(const mutation_type & m, const double & d) const
     {
@@ -42,7 +42,7 @@ namespace KTfwd
   */
   struct same_pos
   {
-    typedef bool result_type;
+    using result_type = bool;
     template<typename mutation_type>
     inline bool operator()(const mutation_type & m1, const mutation_type & m2) const
     {
@@ -56,7 +56,7 @@ namespace KTfwd
     /*! \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
       Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
     */
-    typedef bool result_type;
+    using result_type = bool;
     template<typename T>
     inline bool operator()(const T & lhs, const T & rhs) const
     {
@@ -75,7 +75,7 @@ namespace KTfwd
    */
   struct mutation_remover
   {
-    typedef bool result_type;
+    using result_type = bool;
     template<typename iterator_type> 
     inline result_type operator()(const iterator_type & i,
 				  const unsigned & x1 ) const
