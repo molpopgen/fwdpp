@@ -242,13 +242,10 @@ namespace KTfwd
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
-    //typedef std::vector< std::vector< std::pair<double,std::string> > > rvtype;
     using rvtype = std::vector< std::pair<std::vector< std::pair<double,std::string> > ,
 					  std::vector< std::pair<double,std::string> > > >;
-    typedef std::vector< std::pair<double,std::string> >::iterator rv_inner_itr;
-    typedef vector_type< std::pair<iterator_type,iterator_type>, allocator > genotype;
-    typedef outer_vector_type< genotype, outer_allocator > dip_ctr;
-    typedef typename iterator_type::value_type::mcont_iterator mut_itr;
+    using genotype = vector_type< std::pair<iterator_type,iterator_type>, allocator >;
+    using dip_ctr = outer_vector_type< genotype, outer_allocator >;
 
     rvtype rv( diploids->size() );
 
