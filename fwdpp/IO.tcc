@@ -60,7 +60,7 @@ namespace KTfwd
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer );
     unsigned NPOPS = gametes->size();
     buffer.write( reinterpret_cast< char * >(&NPOPS), sizeof(unsigned) );
-    for( auto pop = gametes->begin() ; pop < gametes->end() ; ++pop )
+    for( auto pop = gametes->begin() ; pop != gametes->end() ; ++pop )
       {
 	auto xx = fwdpp_internal::write_haplotypes()(&*pop,mutdata.first,mutdata.second,buffer);
       }
@@ -121,7 +121,7 @@ namespace KTfwd
     unsigned NPOP = 0;
     fwdpp_internal::scalar_reader<unsigned>()(in,&NPOP);
     gametes->resize(NPOP);
-    for(auto pop = gametes->begin() ; pop < gametes->end() ; ++pop)
+    for(auto pop = gametes->begin() ; pop != gametes->end() ; ++pop)
       {
 	pop->clear();
 	fwdpp_internal::read_haplotypes()(&*pop,m,in);
