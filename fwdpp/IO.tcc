@@ -150,8 +150,6 @@ namespace KTfwd
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer)
   {
-    using mlist_iterator = typename mutation_list_type< mutation_type, mutation_list_type_allocator >::const_iterator;
-    using glist_iterator = typename gamete_list_type< gamete_type, gamete_list_type_allocator >::const_iterator;
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer ); 
     auto gamdata = fwdpp_internal::write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
     unsigned NDIPS = unsigned(diploids->size());
