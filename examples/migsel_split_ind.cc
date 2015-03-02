@@ -18,6 +18,7 @@
 #include <cassert>
 #include <iomanip>
 #include <fstream>
+#include <sstream>
 //the type of mutation
 typedef KTfwd::mutation mtype;
 #include <common_ind.hpp>
@@ -286,6 +287,79 @@ int main( int argc, char ** argv )
     selected = merge(sample1.second,sample2.second,n);
 
   std::cout << neutral << '\n' << selected << '\n';
+
+  //Write the metapop in binary format to outstream
+  std::ostringstream outstream;
+  KTfwd::write_binary_metapop(&metapop_gametes,&mutations,&metapop_diploids,
+			      std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),
+			      outstream);
+
+  std::istringstream instream(outstream.str());
+  glist_list metapop_gametes2;
+  diploid_bucket_vec metapop_diploids2;
+  mlist mutations2;
+
+  KTfwd::read_binary_metapop(&metapop_gametes2,&mutations2,&metapop_diploids2,
+			     std::bind(mreader(),std::placeholders::_1),
+			     instream);
+
+  //Make sure that the output and the input are the same
+  if(mutations.size() != mutations2.size())
+    {
+      std::cerr << "Error: mutation containers are different sizes. "
+	   << "Line " << __LINE__ << " of " << __FILE__ << '\n';
+      std::exit(EXIT_FAILURE);
+    }
+  auto mitr1 = mutations.begin(),mitr2=mutations.begin();
+  for( ; mitr1 != mutations.end() ; ++mitr1,++mitr2 ) 
+    {
+      if(mitr1->n != mitr2->n)
+	{
+	  std::cerr << "Error: mutation counts differ. "
+	       << "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	  std::exit(EXIT_FAILURE);
+	}
+      if(mitr1->pos != mitr2->pos)
+	{
+	  std::cerr << "Error: mutation positions differ. "
+	       << "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	  std::exit(EXIT_FAILURE);
+	}
+      if(mitr1->s != mitr2->s)
+	{
+	  std::cerr << "Error: mutation selection coefficients differ. "
+	       << "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	  std::exit(EXIT_FAILURE);
+	}
+      if(mitr1->h != mitr2->h)
+	{
+	  std::cerr << "Error: mutation dominance coefficients differ. "
+	       << "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	  std::exit(EXIT_FAILURE);
+	}
+    }
+
+  auto pptr1 = metapop_gametes.begin(),pptr2=metapop_gametes2.begin();
+  for( unsigned i = 0 ; i < metapop_diploids.size() ; ++i,++pptr1,++pptr2 )
+    {
+      for(unsigned j = 0 ; j < N ; ++j )
+	{
+	  if ( std::distance( pptr1->begin(),metapop_diploids[i][j].first ) !=
+	       std::distance( pptr2->begin(),metapop_diploids2[i][j].first ) )
+	    {
+	      std::cerr << "Error: first gametes differ. " 
+			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	      std::exit(EXIT_FAILURE);
+	    }
+	  if ( std::distance( pptr1->begin(),metapop_diploids[i][j].second ) !=
+	       std::distance( pptr2->begin(),metapop_diploids2[i][j].second ) )
+	    {
+	      std::cerr << "Error: second gametes differ. " 
+			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
+	      std::exit(EXIT_FAILURE);
+	    }
+	}
+    }
 }
 
 SimData merge( const std::vector<std::pair<double,std::string> > & sample1,
