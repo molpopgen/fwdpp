@@ -152,6 +152,10 @@ The program writes the data to the output file and then reads it in again. This 
 
 Simulates a constant-sized population of N diploids with selection at strength s and dominance h for ngens generations. Then, a copy is made of the population, and the two demes are simulated with migration for another ngens2 generations.
 
+These two programs also serialize their data, read the copied data back, and make sure that input equals output.
+
+These two examples are hints on how to code up "IM"-like models.
+
 Usage:
 
 ~~~

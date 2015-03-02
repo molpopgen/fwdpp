@@ -6,6 +6,7 @@
 * Fixed issue #6, which was a bug in how parents were copied in multi-population, individual-based simulations.
 * Fixed issue #7, which was a bug in when gametes were updated post-sampling in multi-population, individual-based simulations.
 * Two new example programs added: migsel_split_ind and migsel_split_ind_list
+* fwdpp/IO.tcc streamlined using C++11 "auto" instead of nasty typedefs
 
 ## 0.2.7 
 
