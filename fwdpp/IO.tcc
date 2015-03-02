@@ -344,15 +344,8 @@ namespace KTfwd
     
     buffer.write( reinterpret_cast<char *>(&NPOP), sizeof(unsigned) );
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer );
-    
     typename metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 				  metapop_vector_type_allocator>::const_iterator pop_ptr = metapop->begin();
-    /*
-    typename diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-							       typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-						    vector_type_allocator >,
-			       diploid_vv_type_allocator >::const_iterator dip_ptr = diploids->begin();
-    */
     auto dip_ptr = diploids->begin();
     unsigned NDIPS,c;
     for( unsigned pop = 0 ; pop < NPOP ; ++pop,++pop_ptr,++dip_ptr )
