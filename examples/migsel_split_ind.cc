@@ -295,7 +295,7 @@ int main( int argc, char ** argv )
 			      outstream);
 
   std::istringstream instream(outstream.str());
-  glist_list metapop_gametes2;
+  glist_vec metapop_gametes2;
   diploid_bucket_vec metapop_diploids2;
   mlist mutations2;
 
