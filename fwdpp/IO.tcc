@@ -2,13 +2,13 @@
 #ifndef __FWDPP_IO_TCC__
 #define __FWDPP_IO_TCC__
 
-#include <fwdpp/forward_types.hpp>
-#include <fwdpp/internal/IOhelp.hpp>
 #include <map>
 #include <vector>
 #include <algorithm>
 #include <cassert>
 #include <type_traits>
+#include <fwdpp/forward_types.hpp>
+#include <fwdpp/internal/IOhelp.hpp>
 
 namespace KTfwd
 {
