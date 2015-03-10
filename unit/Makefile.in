@@ -80,7 +80,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	gameteTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	mutationTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	siteDepFitness$(EXEEXT)
 @BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -122,6 +123,11 @@ am__policyTests_SOURCES_DIST = policyTests.cc
 @BUNIT_TEST_PRESENT_TRUE@	policyTests.$(OBJEXT)
 policyTests_OBJECTS = $(am_policyTests_OBJECTS)
 policyTests_LDADD = $(LDADD)
+am__siteDepFitness_SOURCES_DIST = siteDepFitness.cc
+@BUNIT_TEST_PRESENT_TRUE@am_siteDepFitness_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
+siteDepFitness_OBJECTS = $(am_siteDepFitness_OBJECTS)
+siteDepFitness_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -153,13 +159,15 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
 	$(mlocusCrossoverTest_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(policyTests_SOURCES)
+	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
+	$(siteDepFitness_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
-	$(am__policyTests_SOURCES_DIST)
+	$(am__policyTests_SOURCES_DIST) \
+	$(am__siteDepFitness_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -284,6 +292,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
 @BUNIT_TEST_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
 @BUNIT_TEST_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
+@BUNIT_TEST_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -348,6 +357,10 @@ policyTests$(EXEEXT): $(policyTests_OBJECTS) $(policyTests_DEPENDENCIES) $(EXTRA
 	@rm -f policyTests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(policyTests_OBJECTS) $(policyTests_LDADD) $(LIBS)
 
+siteDepFitness$(EXEEXT): $(siteDepFitness_OBJECTS) $(siteDepFitness_DEPENDENCIES) $(EXTRA_siteDepFitness_DEPENDENCIES) 
+	@rm -f siteDepFitness$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(siteDepFitness_OBJECTS) $(siteDepFitness_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -360,6 +373,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policyTests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitness.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

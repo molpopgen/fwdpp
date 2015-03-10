@@ -5,7 +5,8 @@ check_PROGRAMS=mutateTest \
 	gameteTest \
 	mutationTest \
 	policyTests \
-	mlocusCrossoverTest
+	mlocusCrossoverTest \
+	siteDepFitness
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
@@ -13,6 +14,7 @@ gameteTest_SOURCES=gameteTest.cc
 mutationTest_SOURCES=mutationTest.cc
 policyTests_SOURCES=policyTests.cc
 mlocusCrossoverTest_SOURCES=mlocusCrossoverTest.cc
+siteDepFitness_SOURCES=siteDepFitness.cc
 
 AM_CXXFLAGS=
 
