@@ -1,5 +1,10 @@
 # FWDPP RELEASE NOTES
 
+## 0.2.9
+
+* Added new unit test (siteDepFitness) to check for the effect of issue #8.  Fortunately, fitness calculations were correct even with the bug, as the rest of the function did the right thing.
+* Fixed issue #8, so that the code block in question will actually do what is intended.
+
 ## 0.2.8
 
 * Fixed issue #5, which was a bug in migrating gametes in multi-population, individual-based simulations.
