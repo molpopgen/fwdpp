@@ -118,3 +118,35 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative3 )
 					     1.);
   BOOST_CHECK_EQUAL(w,1.1*1.1);
 }
+
+/*
+  Now, g1 has 2 mutations
+*/
+BOOST_AUTO_TEST_CASE( simple_multiplicative4 )
+{
+  gtype g1(1),g2(1);
+  mlist mutations;
+
+  //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
+  auto mitr = mutations.insert( mutations.end(), mut(0.1,0.1,1u,0.5) );
+  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mitr = mutations.insert( mutations.end(), mut(0.2,0.1,1u,0.5) );
+  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  BOOST_CHECK_EQUAL(g1.smutations.size(),2);
+
+  glist g;
+  auto gitr1 = g.insert(g.end(),g1);
+  auto gitr2 = g.insert(g.end(),g2);
+
+  double w = KTfwd::site_dependent_fitness()(gitr1,gitr2,
+					     [&](double & fitness,const mlist::iterator & __mut)
+					     {
+					       fitness *= std::pow(1. + __mut->s,2.);
+					     },
+					     [](double & fitness,const mlist::iterator & __mut)
+					     {
+					       fitness *= (1. + __mut->s);
+					     },
+					     1.);
+  BOOST_CHECK_EQUAL(w,1.1*1.1);
+}
