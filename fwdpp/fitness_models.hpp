@@ -78,7 +78,7 @@ namespace KTfwd
                      "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
       result_type fitness=starting_fitness;
       if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
-      if( g1->smutations.empty() && g2->smutations.empty() ) 
+      if( !g1->smutations.empty() && g2->smutations.empty() ) 
 	{
 	  std::for_each( g1->smutations.begin(),
 			 g1->smutations.end(),
