@@ -2,6 +2,7 @@
 #define __FWDPP_INTERNAL_MUTATION_HPP__
 
 #include <algorithm>
+#include <fwdpp/tags/mutation_tags.hpp>
 
 namespace KTfwd {
   namespace fwdpp_internal
@@ -64,11 +65,31 @@ namespace KTfwd {
 			  const mutation_insertion_policy & mpolicy,
 			  const unsigned & n,
 			  mlist_type * mutations,
-			  gamete_type & g )
+			  gamete_type & g,
+			  KTfwd::tags::gamete_independent)
     {
       for( unsigned i = 0 ; i < n ; ++i )
 	{
 	  auto m = mmodel(mutations);
+	  auto mitr = mpolicy(std::move(m),mutations);
+	  add_new_mutation(mitr,g);
+	}
+    }
+
+    template<typename mutation_model,
+	     typename mutation_insertion_policy,
+	     typename mlist_type,
+	     typename gamete_type>
+    void add_N_mutations( const mutation_model & mmodel,
+			  const mutation_insertion_policy & mpolicy,
+			  const unsigned & n,
+			  mlist_type * mutations,
+			  gamete_type & g,
+			  KTfwd::tags::gamete_dependent)
+    {
+      for( unsigned i = 0 ; i < n ; ++i )
+	{
+	  auto m = mmodel(g,mutations);
 	  auto mitr = mpolicy(std::move(m),mutations);
 	  add_new_mutation(mitr,g);
 	}

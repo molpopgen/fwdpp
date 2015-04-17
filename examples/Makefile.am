@@ -15,7 +15,8 @@ check_PROGRAMS=diploid \
 	diploid_twopop_mig \
 	pfix \
 	RHH \
-	TFL2013 
+	TFL2013 \
+	HOCind
 
 diploid_SOURCES=diploid.cc common_gamete.hpp
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
@@ -35,6 +36,7 @@ diploid_twopop_mig_SOURCES=diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES=pfix.cc
 RHH_SOURCES=RHH.cc
 TFL2013_SOURCES=TFL2013.cc
+HOCind_SOURCES=HOCind.cc
 
 AM_CPPFLAGS=-Wall -W -I.
 

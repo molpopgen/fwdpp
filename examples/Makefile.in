@@ -83,7 +83,7 @@ check_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	migsel_split_ind$(EXEEXT) migsel_split_ind_list$(EXEEXT) \
 	bneck_selection_ind$(EXEEXT) diploid_ind_2locus$(EXEEXT) \
 	diploid_twopop_mig$(EXEEXT) pfix$(EXEEXT) RHH$(EXEEXT) \
-	TFL2013$(EXEEXT)
+	TFL2013$(EXEEXT) HOCind$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -97,6 +97,10 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am_HOCind_OBJECTS = HOCind.$(OBJEXT)
+HOCind_OBJECTS = $(am_HOCind_OBJECTS)
+HOCind_LDADD = $(LDADD)
+HOCind_DEPENDENCIES =
 am_RHH_OBJECTS = RHH.$(OBJEXT)
 RHH_OBJECTS = $(am_RHH_OBJECTS)
 RHH_LDADD = $(LDADD)
@@ -212,7 +216,7 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(RHH_SOURCES) $(TFL2013_SOURCES) \
+SOURCES = $(HOCind_SOURCES) $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_SOURCES) \
 	$(diploid_binaryIO_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
@@ -222,7 +226,7 @@ SOURCES = $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(diploid_twopop_mig_SOURCES) \
 	$(migsel_ind_SOURCES) $(migsel_split_ind_SOURCES) \
 	$(migsel_split_ind_list_SOURCES) $(pfix_SOURCES)
-DIST_SOURCES = $(RHH_SOURCES) $(TFL2013_SOURCES) \
+DIST_SOURCES = $(HOCind_SOURCES) $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_SOURCES) \
 	$(diploid_binaryIO_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
@@ -368,6 +372,7 @@ diploid_twopop_mig_SOURCES = diploid_twopop_mig.cc common_gamete.hpp
 pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
+HOCind_SOURCES = HOCind.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
 LDADD = 
 all: all-am
@@ -407,6 +412,10 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+
+HOCind$(EXEEXT): $(HOCind_OBJECTS) $(HOCind_DEPENDENCIES) $(EXTRA_HOCind_DEPENDENCIES) 
+	@rm -f HOCind$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(HOCind_OBJECTS) $(HOCind_LDADD) $(LIBS)
 
 RHH$(EXEEXT): $(RHH_OBJECTS) $(RHH_DEPENDENCIES) $(EXTRA_RHH_DEPENDENCIES) 
 	@rm -f RHH$(EXEEXT)
@@ -486,6 +495,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HOCind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/RHH.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TFL2013.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bneck_selection_ind.Po@am__quote@

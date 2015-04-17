@@ -4436,7 +4436,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile examples/Makefile unit/Makefile"
+ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile examples/Makefile unit/Makefile"
 
 
 # Check whether --enable-standard was given.
@@ -5932,6 +5932,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "fwdpp/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/Makefile" ;;
     "fwdpp/internal/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/internal/Makefile" ;;
+    "fwdpp/tags/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/tags/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "unit/Makefile") CONFIG_FILES="$CONFIG_FILES unit/Makefile" ;;
 
