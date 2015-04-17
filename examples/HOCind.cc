@@ -2,7 +2,8 @@
   A twist of additive House-of-Cards models with mutations within haplotypes
   having their effect sizes constrained to = new haplotype effect size.
 */
-
+#include <config.h>
+#if defined(HAVE_BOOST_ACCUMULATORS) && defined(HAVE_BOOST_STATS) &&  defined(HAVE_BOOST_VARIANCE)
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <vector>
@@ -188,3 +189,6 @@ int main(int argc, char ** argv)
   gsl_rng_free(r);
   return 0;
 }
+#else
+#warning "Cannot compile this example due to missing boost headers"
+#endif //only compile if boost stuff here
