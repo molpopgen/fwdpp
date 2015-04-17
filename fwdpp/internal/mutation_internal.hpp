@@ -76,6 +76,12 @@ namespace KTfwd {
 	}
     }
 
+    /*!
+      Apply mutation model N times to a new gamete.
+      Updates mutation list
+
+      \example HOChap.cc
+    */
     template<typename mutation_model,
 	     typename mutation_insertion_policy,
 	     typename mlist_type,
