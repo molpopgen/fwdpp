@@ -1,4 +1,4 @@
-/*! \include HOChap.cc
+/*! \include HOCind.cc
   A twist of additive House-of-Cards models with mutations within haplotypes
   having their effect sizes constrained to = new haplotype effect size.
 */
