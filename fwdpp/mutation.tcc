@@ -13,6 +13,7 @@
 #endif
 
 #include <fwdpp/internal/mutation_internal.hpp>
+#include <fwdpp/tags/mutation_tags.hpp>
 #include <vector>
 
 namespace KTfwd

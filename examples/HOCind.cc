@@ -4,7 +4,6 @@
 */
 
 #include <fwdpp/diploid.hh>
-#include <fwdpp/tags/mutation_tags.hpp>
 #include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
