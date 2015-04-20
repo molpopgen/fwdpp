@@ -44,3 +44,7 @@
 /*! \namespace KTfwd::fwdpp_internal
   \brief Nested namespace for nuts and bolts of certain library functions
 */
+
+/*! \namespace KTfwd::tags
+  \brief Nested namespace for dispatch tags for template functions.
+*/
