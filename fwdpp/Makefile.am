@@ -1,6 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp
 
-SUBDIRS=internal tags
+SUBDIRS=internal tags sugar
 pkginclude_HEADERS=debug.hpp \
 	diploid_functions.hpp \
 	diploid_gamete_based.hpp \
