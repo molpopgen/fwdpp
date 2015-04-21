@@ -7,7 +7,8 @@ check_PROGRAMS=mutateTest \
 	policyTests \
 	mlocusCrossoverTest \
 	siteDepFitness \
-	sugar1
+	sugar1 \
+	sugar2
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
@@ -17,6 +18,7 @@ policyTests_SOURCES=policyTests.cc
 mlocusCrossoverTest_SOURCES=mlocusCrossoverTest.cc
 siteDepFitness_SOURCES=siteDepFitness.cc
 sugar1_SOURCES=sugar1.cc
+sugar2_SOURCES=sugar2.cc
 
 AM_CXXFLAGS=
 
