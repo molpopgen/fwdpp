@@ -19,6 +19,17 @@ namespace KTfwd
 							      std::vector<unsigned>,
 							      std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
 							      >;
+
+  template<typename mtype,
+	   typename mwriter_t,
+	   typename mreader_t> using singlepop_serialized = sugar::singlepop_serialized<mtype,
+											mwriter_t,mreader_t,
+											mlist_t<mtype>,
+											glist_t<mtype>,
+											std::vector<mtype>,
+											std::vector<unsigned>,
+											std::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
+											>;
 }
 #endif
 
