@@ -35,7 +35,10 @@ namespace KTfwd {
       using mtype = mutation_type;
       using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
       using dipvector = std::vector< std::pair<typename glist::iterator,typename glist::iterator> >;
-
+      using mlist_t = mlist;
+      using glist_t = glist;
+      using lookup_table_t = lookup_table_type;
+      
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
@@ -95,8 +98,8 @@ namespace KTfwd {
       Allows copy/construction/assignment via deep copy
     */
     template<typename mutation_type,
-	     typename mwriter_t,
-	     typename mreader_t,
+	     typename mwriter,
+	     typename mreader,
 	     typename mlist,
 	     typename glist,
 	     typename mvector,
@@ -111,7 +114,12 @@ namespace KTfwd {
       using mtype = mutation_type;
       using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
       using dipvector = std::vector< std::pair<typename glist::iterator,typename glist::iterator> >;
-
+      using mwriter_t = mwriter;
+      using mreader_t = mreader;
+      using mlist_t = mlist;
+      using glist_t = glist;
+      using lookup_table_t = lookup_table_type;
+      
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
