@@ -86,6 +86,14 @@ namespace KTfwd {
       }
     };
 
+    /*!
+      Abstraction of what is needed to simulate a single population
+      using an individual-based sampler from fwdpp
+      
+      All that is missing is the mutation_type and the container types.
+      
+      Allows copy/construction/assignment via deep copy
+    */
     template<typename mutation_type,
 	     typename mwriter_t,
 	     typename mreader_t,
@@ -111,8 +119,6 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       mvector fixations;
       ftvector fixation_times;
-      // mwriter_t mwriter;
-      //mreader_t mreader;
       
       //Constructors
       singlepop_serialized( const unsigned & popsize ) : N(popsize),
@@ -125,8 +131,6 @@ namespace KTfwd {
       {
       }
 
-      //Do NOT allow copy construction
-      //singlepop_serialized( singlepop_serialized & pop) : 
       singlepop_serialized( const singlepop_serialized & pop) : N(0u),
 								mutations(mlist()),                //No muts in the population
 								gametes(glist(1,gtype(1))), //The population contains a single gamete in 2N copies
