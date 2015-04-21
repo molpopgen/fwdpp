@@ -16,7 +16,7 @@ namespace KTfwd
     inline result_type operator()( const singlepop_t & pop,
 				   const writer_t & wt ) const
     {
-      //buffer.str(std::string());
+      buffer.str(std::string());
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
       write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
       //Step 2: output fixations 
