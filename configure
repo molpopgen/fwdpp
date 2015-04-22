@@ -4436,7 +4436,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile examples/Makefile unit/Makefile"
+ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/gsl/Makefile examples/Makefile unit/Makefile"
 
 
 # Check whether --enable-standard was given.
@@ -5959,6 +5959,7 @@ do
     "fwdpp/tags/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/tags/Makefile" ;;
     "fwdpp/sugar/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/Makefile" ;;
     "fwdpp/sugar/singlepop/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/singlepop/Makefile" ;;
+    "fwdpp/sugar/gsl/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/gsl/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "unit/Makefile") CONFIG_FILES="$CONFIG_FILES unit/Makefile" ;;
 
