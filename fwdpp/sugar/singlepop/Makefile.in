@@ -249,10 +249,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = singlepop.hpp \
-	boost.hpp \
-	std.hpp
-
+pkginclude_HEADERS = singlepop.hpp
 all: all-am
 
 .SUFFIXES:

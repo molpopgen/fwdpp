@@ -1,5 +1,3 @@
 pkgincludedir=$(prefix)/include/fwdpp/sugar/singlepop
 
-pkginclude_HEADERS=singlepop.hpp \
-	boost.hpp \
-	std.hpp
+pkginclude_HEADERS=singlepop.hpp
