@@ -64,7 +64,7 @@ namespace KTfwd
 											glist_t<mtype>,
 											std::vector<mtype>,
 											std::vector<unsigned>,
-											std::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
+											std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
 											>;
 }
 #endif
