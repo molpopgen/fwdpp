@@ -113,6 +113,7 @@ BOOST_AUTO_TEST_CASE( copy_construct_test )
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
   BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
+  BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
   //Compare the mutations
   for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
     {
