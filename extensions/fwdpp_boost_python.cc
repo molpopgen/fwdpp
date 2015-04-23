@@ -77,7 +77,7 @@ struct mreader
 using poptype = KTfwd::singlepop_serialized<KTfwd::mutation,mwriter,mreader>;
 
 //mutation function is infinitely-many sites, all neutral variants
-poptype::mtype neutral_mutations_inf_sites(gsl_rng * r,
+poptype::mutation_t neutral_mutations_inf_sites(gsl_rng * r,
 					   poptype::mlist_t * mutations,
 					   poptype::lookup_table_t * lookup)
 {
@@ -87,7 +87,7 @@ poptype::mtype neutral_mutations_inf_sites(gsl_rng * r,
       pos = gsl_rng_uniform(r);  //if it does, generate a new one
     }
   lookup->insert(pos);
-  return poptype::mtype(pos,0.,1,true);
+  return poptype::mutation_t(pos,0.,1,true);
 }
 
 //Evolve the population for some amount of time with mutation and recombination
@@ -113,8 +113,8 @@ poptype evolve( GSLrng & rng,
 						    recrate, 
 						    rng,
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::mtype,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::insert_at_end<poptype::gtype,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);

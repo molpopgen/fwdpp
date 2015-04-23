@@ -36,8 +36,8 @@ namespace KTfwd {
       unsigned N;
 
       //Typedefs for various container
-      using mtype = mutation_type;
-      using gtype = typename glist::value_type;
+      using mutation_t = mutation_type;
+      using gamete_t = typename glist::value_type;
       using dipvector_t = dipvector;
       using diploid_t = typename dipvector_t::value_type;
       using mlist_t = mlist;
@@ -55,7 +55,7 @@ namespace KTfwd {
       //Constructors
       singlepop( const unsigned & popsize ) : N(popsize),
 					      mutations(mlist()),                //No muts in the population
-					      gametes(glist(1,gtype(2*popsize))), //The population contains a single gamete in 2N copies
+					      gametes(glist(1,gamete_t(2*popsize))), //The population contains a single gamete in 2N copies
 					      diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
 					      mut_lookup(lookup_table_type()),
 					      fixations(mvector()),
@@ -76,7 +76,7 @@ namespace KTfwd {
       {
 	//Fill the mutation lookup!
 	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mtype & __m ) { mut_lookup.insert(__m.pos); } );
+		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
       }
       //Do not allow assignment from a reference
       singlepop & operator=(singlepop &) = delete;
@@ -113,12 +113,15 @@ namespace KTfwd {
 	     typename lookup_table_type>
     class singlepop_serialized
     {
+      static_assert( std::is_same< typename glist::value_type,
+		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
+		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
     public:
       unsigned N;
 
       //Typedefs for various container
-      using mtype = mutation_type;
-      using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
+      using mutation_t = mutation_type;
+      using gamete_t = typename glist::value_type;
       using dipvector_t = dipvector;
       using mwriter_t = mwriter;
       using mreader_t = mreader;
@@ -137,7 +140,7 @@ namespace KTfwd {
       //Constructors
       singlepop_serialized( const unsigned & popsize ) : N(popsize),
 							 mutations(mlist()),                //No muts in the population
-							 gametes(glist(1,gtype(2*popsize))), //The population contains a single gamete in 2N copies
+							 gametes(glist(1,gamete_t(2*popsize))), //The population contains a single gamete in 2N copies
 							 diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
 							 mut_lookup(lookup_table_type()),
 							 fixations(mvector()),
@@ -147,13 +150,13 @@ namespace KTfwd {
 
       singlepop_serialized( const singlepop_serialized & pop) : N(0u),
 								mutations(mlist()),                //No muts in the population
-								gametes(glist(1,gtype(1))), //The population contains a single gamete in 2N copies
+								gametes(glist(1,gamete_t(1))), //The population contains a single gamete in 2N copies
 								diploids(dipvector_t()), //All N diploids contain the only gamete in the pop
 								mut_lookup(lookup_table_type()),
 								fixations(mvector()),
 								fixation_times(ftvector())
       {
-	static_assert( std::is_same<mtype,typename mreader_t::result_type>::value,
+	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
 		       "Mutation type must be same for class and mreader_t" );
 	serialize s;
 	s(pop,mwriter_t());
@@ -169,12 +172,12 @@ namespace KTfwd {
       {
 	//Fill the mutation lookup!
 	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mtype & __m ) { mut_lookup.insert(__m.pos); } );
+		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
       }
 
       singlepop_serialized & operator=(const singlepop_serialized & p)
       {
-	static_assert( std::is_same<mtype,typename mreader_t::result_type>::value,
+	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
 		       "Mutation type must be same for class and mreader_t" );
 	serialize s;
 	s(p,mwriter_t());
