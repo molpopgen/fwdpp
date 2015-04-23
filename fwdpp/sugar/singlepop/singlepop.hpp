@@ -36,6 +36,7 @@ namespace KTfwd {
       using mtype = mutation_type;
       using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
       using dipvector_t = dipvector;
+      using diploid_t = typename dipvector_t::value_type;
       using mlist_t = mlist;
       using glist_t = glist;
       using lookup_table_t = lookup_table_type;
