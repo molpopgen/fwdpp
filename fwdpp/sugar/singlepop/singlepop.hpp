@@ -29,18 +29,21 @@ namespace KTfwd {
 	     typename lookup_table_type>
     class singlepop
     {
+      static_assert( std::is_same< typename glist::value_type,
+		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
+		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
     public:
       unsigned N;
 
       //Typedefs for various container
       using mtype = mutation_type;
-      using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
+      using gtype = typename glist::value_type;
       using dipvector_t = dipvector;
       using diploid_t = typename dipvector_t::value_type;
       using mlist_t = mlist;
       using glist_t = glist;
       using lookup_table_t = lookup_table_type;
-      
+
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
