@@ -71,13 +71,10 @@ namespace KTfwd {
 				    mutations(std::move(p.mutations)),
 				    gametes(std::move(p.gametes)),
 				    diploids(std::move(p.diploids)),
-				    mut_lookup(lookup_table_type()),
+				    mut_lookup(std::move(p.mut_lookup)),
 				    fixations(std::move(p.fixations)),
 				    fixation_times(std::move(p.fixation_times))
       {
-	//Fill the mutation lookup!
-	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
       }
       //Do not allow assignment from a reference
       singlepop & operator=(singlepop &) = delete;
@@ -168,13 +165,10 @@ namespace KTfwd {
 							  mutations(std::move(p.mutations)),
 							  gametes(std::move(p.gametes)),
 							  diploids(std::move(p.diploids)),
-							  mut_lookup(lookup_table_type()),
+							  mut_lookup(std::move(p.mut_lookup)),
 							  fixations(std::move(p.fixations)),
 							  fixation_times(std::move(p.fixation_times))
       {
-	//Fill the mutation lookup!
-	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
       }
 
       singlepop_serialized & operator=(const singlepop_serialized & p)
