@@ -6,7 +6,8 @@
 #include <boost/test/unit_test.hpp>
 #include <gsl/gsl_rng.h>
 #include <fwdpp/diploid.hh>
-#include <fwdpp/sugar/singlepop/boost.hpp>
+#define FWDPP_SUGAR_USE_BOOST
+#include <fwdpp/sugar/singlepop.hpp>
 
 struct mutation_with_age : public KTfwd::mutation_base
 {
@@ -98,8 +99,8 @@ BOOST_AUTO_TEST_CASE( copy_construct_test )
 						    0., //no rec
 						    r,
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::mtype,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::insert_at_end<poptype::gtype,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
@@ -179,8 +180,8 @@ BOOST_AUTO_TEST_CASE( assignment_test )
 						    0., //no rec
 						    r,
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::mtype,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::insert_at_end<poptype::gtype,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
+					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
