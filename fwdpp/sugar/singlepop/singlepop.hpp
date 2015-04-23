@@ -15,14 +15,15 @@ namespace KTfwd {
     /*!
       Abstraction of what is needed to simulate a single population
       using an individual-based sampler from fwdpp
-
+      
       All that is missing is the mutation_type and the container types.
-
+      
       Does not allow copy construction/assignment!
     */
     template<typename mutation_type,
 	     typename mlist,
 	     typename glist,
+	     typename dipvector,
 	     typename mvector,
 	     typename ftvector,
 	     typename lookup_table_type>
@@ -34,7 +35,7 @@ namespace KTfwd {
       //Typedefs for various container
       using mtype = mutation_type;
       using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
-      using dipvector = std::vector< std::pair<typename glist::iterator,typename glist::iterator> >;
+      using dipvector_t = dipvector;
       using mlist_t = mlist;
       using glist_t = glist;
       using lookup_table_t = lookup_table_type;
@@ -42,7 +43,7 @@ namespace KTfwd {
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
-      dipvector diploids;
+      dipvector_t diploids;
       lookup_table_type mut_lookup;
       mvector fixations;
       ftvector fixation_times;
@@ -51,7 +52,7 @@ namespace KTfwd {
       singlepop( const unsigned & popsize ) : N(popsize),
 					      mutations(mlist()),                //No muts in the population
 					      gametes(glist(1,gtype(2*popsize))), //The population contains a single gamete in 2N copies
-					      diploids(dipvector(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
+					      diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
 					      mut_lookup(lookup_table_type()),
 					      fixations(mvector()),
 					      fixation_times(ftvector())
@@ -102,6 +103,7 @@ namespace KTfwd {
 	     typename mreader,
 	     typename mlist,
 	     typename glist,
+	     typename dipvector,
 	     typename mvector,
 	     typename ftvector,
 	     typename lookup_table_type>
@@ -113,7 +115,7 @@ namespace KTfwd {
       //Typedefs for various container
       using mtype = mutation_type;
       using gtype = KTfwd::gamete_base< typename mlist::value_type, mlist >;
-      using dipvector = std::vector< std::pair<typename glist::iterator,typename glist::iterator> >;
+      using dipvector_t = dipvector;
       using mwriter_t = mwriter;
       using mreader_t = mreader;
       using mlist_t = mlist;
@@ -132,7 +134,7 @@ namespace KTfwd {
       singlepop_serialized( const unsigned & popsize ) : N(popsize),
 							 mutations(mlist()),                //No muts in the population
 							 gametes(glist(1,gtype(2*popsize))), //The population contains a single gamete in 2N copies
-							 diploids(dipvector(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
+							 diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
 							 mut_lookup(lookup_table_type()),
 							 fixations(mvector()),
 							 fixation_times(ftvector())
@@ -142,7 +144,7 @@ namespace KTfwd {
       singlepop_serialized( const singlepop_serialized & pop) : N(0u),
 								mutations(mlist()),                //No muts in the population
 								gametes(glist(1,gtype(1))), //The population contains a single gamete in 2N copies
-								diploids(dipvector()), //All N diploids contain the only gamete in the pop
+								diploids(dipvector_t()), //All N diploids contain the only gamete in the pop
 								mut_lookup(lookup_table_type()),
 								fixations(mvector()),
 								fixation_times(ftvector())

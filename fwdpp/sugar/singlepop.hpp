@@ -19,6 +19,8 @@ namespace KTfwd
   template<typename mtype> using singlepop = sugar::singlepop<mtype,
 							      mlist_t<mtype>,
 							      glist_t<mtype>,
+							      boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
+												 typename glist_t<mtype>::iterator> >,
 							      boost::container::vector<mtype>,
 							      boost::container::vector<unsigned>,
 							      boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
@@ -30,6 +32,8 @@ namespace KTfwd
 											mwriter_t,mreader_t,
 											mlist_t<mtype>,
 											glist_t<mtype>,
+											boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
+															   typename glist_t<mtype>::iterator> >,
 											boost::container::vector<mtype>,
 											boost::container::vector<unsigned>,
 											boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
@@ -43,6 +47,7 @@ namespace KTfwd
 #include <fwdpp/fwd_functional.hpp> 
 #include <fwdpp/sugar/singlepop/singlepop.hpp>
 
+
 namespace KTfwd
 {
   template<typename mtype> using mlist_t = std::list<mtype,std::allocator<mtype> >;
@@ -51,6 +56,8 @@ namespace KTfwd
   template<typename mtype> using singlepop = sugar::singlepop<mtype,
 							      mlist_t<mtype>,
 							      glist_t<mtype>,
+							      std::vector< std::pair<typename glist_t<mtype>::iterator,
+										     typename glist_t<mtype>::iterator> >,
 							      std::vector<mtype>,
 							      std::vector<unsigned>,
 							      std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
@@ -62,6 +69,8 @@ namespace KTfwd
 											mwriter_t,mreader_t,
 											mlist_t<mtype>,
 											glist_t<mtype>,
+											std::vector< std::pair<typename glist_t<mtype>::iterator,
+													       typename glist_t<mtype>::iterator> >,
 											std::vector<mtype>,
 											std::vector<unsigned>,
 											std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
