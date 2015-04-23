@@ -71,6 +71,7 @@ namespace KTfwd {
 				    mutations(std::move(p.mutations)),
 				    gametes(std::move(p.gametes)),
 				    diploids(std::move(p.diploids)),
+				    mut_lookup(lookup_table_type()),
 				    fixations(std::move(p.fixations)),
 				    fixation_times(std::move(p.fixation_times))
       {
@@ -164,11 +165,12 @@ namespace KTfwd {
       }
       //Allow move construction
       singlepop_serialized( singlepop_serialized && p ) : N (std::move(p.N)),
-				    mutations(std::move(p.mutations)),
-				    gametes(std::move(p.gametes)),
-				    diploids(std::move(p.diploids)),
-				    fixations(std::move(p.fixations)),
-				    fixation_times(std::move(p.fixation_times))
+							  mutations(std::move(p.mutations)),
+							  gametes(std::move(p.gametes)),
+							  diploids(std::move(p.diploids)),
+							  mut_lookup(lookup_table_type()),
+							  fixations(std::move(p.fixations)),
+							  fixation_times(std::move(p.fixation_times))
       {
 	//Fill the mutation lookup!
 	std::for_each( mutations.begin(), mutations.end(),
