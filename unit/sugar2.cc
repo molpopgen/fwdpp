@@ -195,6 +195,7 @@ BOOST_AUTO_TEST_CASE( assignment_test )
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
   BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
+  BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
   //Compare the mutations
   for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
     {
@@ -237,4 +238,9 @@ BOOST_AUTO_TEST_CASE( assignment_test )
 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
 	}
     }
+
+  poptype pop3(std::move(pop));
+  BOOST_REQUIRE(pop2.mut_lookup == pop3.mut_lookup);
+  BOOST_REQUIRE(pop.mut_lookup != pop3.mut_lookup); //Assert that it moved
+  BOOST_REQUIRE(pop.mut_lookup.empty());
 }
