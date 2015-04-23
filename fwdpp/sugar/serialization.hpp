@@ -57,7 +57,7 @@ namespace KTfwd
 
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename singlepop_t::mtype & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename singlepop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
     }
   };
 }
