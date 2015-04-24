@@ -1,10 +1,10 @@
-#ifndef __FWDPP_SUGAR_SINGLEPOP_BOOST_HPP__
-#define __FWDPP_SUGAR_SINGLEPOP_BOOST_HPP__
+#ifndef __FWDPP_SUGAR_SINGLEPOP_HPP__
+#define __FWDPP_SUGAR_SINGLEPOP_HPP__
 
 #include <fwdpp/sugar/singlepop/singlepop.hpp>
+#include <fwdpp/fwd_functional.hpp>
 
 #ifdef FWDPP_SUGAR_USE_BOOST
-#include <fwdpp/fwd_functional.hpp> 
 #include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
