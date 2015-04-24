@@ -33,7 +33,6 @@ namespace KTfwd
 #include <list>
 #include <vector>
 #include <unordered_set>
-#include <fwdpp/fwd_functional.hpp> 
 #include <fwdpp/sugar/metapop/metapop.hpp>
 namespace KTfwd
 {
