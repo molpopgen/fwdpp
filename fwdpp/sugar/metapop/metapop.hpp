@@ -1,5 +1,5 @@
-#ifndef __FWDPP_SUGAR_METAPOP_HPP__
-#define __FWDPP_SUGAR_METAPOP_HPP__
+#ifndef __FWDPP_SUGAR_METAPOP_METAPOP_HPP__
+#define __FWDPP_SUGAR_METAPOP_METAPOP_HPP__
 
 #include <type_traits>
 #include <vector>
@@ -68,7 +68,7 @@ namespace KTfwd {
       }
 
       //! Move constructor
-      metatpop( metapop && __m ) : Ns(std::move(__m.Ns)),
+      metapop( metapop && __m ) : Ns(std::move(__m.Ns)),
 				   mutations(std::move(__m.mutations)),
 				   metapop_gametes(std::move(__m.metapop_gametes)),
 				   diploids(std::move(__m.diploids)),
@@ -85,6 +85,17 @@ namespace KTfwd {
       metapop( const metapop & ) = delete;
       metapop & operator=(metapop &) = delete;
       metapop & operator=(const metapop &) = delete;
+
+      void clear() 
+      {
+	mutations.clear();
+	metapop_gametes.clear();
+	diploids.clear();
+	mut_lookup.clear();
+	fixations.clear();
+	fixation_times.clear();
+      }
+    };
   }
 }
 
