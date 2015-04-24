@@ -30,6 +30,15 @@ namespace KTfwd {
       static_assert( std::is_same< typename glist::value_type,
 		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
 		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
+    private:
+      void init_vectors()
+      {
+	for( unsigned i = 0 ; i < Ns.size() ; ++i )
+	  {
+	    metapop_gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
+	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( metapop_gametes[i].begin(),metapop_gametes[i].begin())));
+	  }
+      }
     public:
       //Typedefs for various container
       using mutation_t = mutation_type;
@@ -60,11 +69,19 @@ namespace KTfwd {
 							  fixations(mvector()),
 							  fixation_times(ftvector())
       {
-	for( unsigned i = 0 ; i < Ns.size() ; ++i )
-	  {
-	    metapop_gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( metapop_gametes[i].begin(),metapop_gametes[i].begin())));
-	  }
+	init_vectors();
+      }
+
+      metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>(num_Ns)),
+							    mutations(mlist_t()),
+							    metapop_gametes(vglist_t()),
+							    diploids(vdipvector_t()),
+							    mut_lookup(lookup_table_type()),
+							    fixations(mvector()),
+							    fixation_times(ftvector())
+      {
+	std::copy(__Ns,__Ns + num_Ns,Ns.begin());
+	init_vectors();
       }
 
       //! Move constructor
