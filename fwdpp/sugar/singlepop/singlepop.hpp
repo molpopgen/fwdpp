@@ -1,5 +1,5 @@
-#ifndef __FWDPP_SUGAR_SINGLEPOP_HPP__
-#define __FWDPP_SUGAR_SINGLEPOP_HPP__
+#ifndef __FWDPP_SUGAR_SINGLEPOP_SINGLEPOP_HPP__
+#define __FWDPP_SUGAR_SINGLEPOP_SINGLEPOP_HPP__
 
 /*
   A structure representing a single Wright-Fisher population.
