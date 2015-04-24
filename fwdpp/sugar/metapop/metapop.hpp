@@ -61,13 +61,13 @@ namespace KTfwd {
       ftvector fixation_times;
       
       //! Construct with a list of population sizes
-      metapop( std::initializer_list<unsigned> & __Ns ) : Ns(__Ns),
-							  mutations(mlist_t()),
-							  metapop_gametes(vglist_t()),
-							  diploids(vdipvector_t()),
-							  mut_lookup(lookup_table_type()),
-							  fixations(mvector()),
-							  fixation_times(ftvector())
+      metapop( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
+							mutations(mlist_t()),
+							metapop_gametes(vglist_t()),
+							diploids(vdipvector_t()),
+							mut_lookup(lookup_table_type()),
+							fixations(mvector()),
+							fixation_times(ftvector())
       {
 	init_vectors();
       }
