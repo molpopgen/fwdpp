@@ -72,7 +72,7 @@ namespace KTfwd {
 	init_vectors();
       }
 
-      metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>(num_Ns)),
+      metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
 							    mutations(mlist_t()),
 							    metapop_gametes(vglist_t()),
 							    diploids(vdipvector_t()),
@@ -80,7 +80,7 @@ namespace KTfwd {
 							    fixations(mvector()),
 							    fixation_times(ftvector())
       {
-	std::copy(__Ns,__Ns + num_Ns,Ns.begin());
+	Ns.assign(__Ns,__Ns+num_Ns);
 	init_vectors();
       }
 
