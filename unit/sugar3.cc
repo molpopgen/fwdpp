@@ -3,6 +3,7 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
+#include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
 #define FWDPP_SUGAR_USE_BOOST
@@ -58,13 +59,14 @@ BOOST_AUTO_TEST_CASE( test1 )
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
 						       std::bind(migpop,std::placeholders::_1,rng,0.001)
 						       );
-      //KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
+      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
     }
+  std::cerr << pop.mutations.size() << '\n';
   //attempt to copy
   KTfwd::serialize s;
   s(pop,mwriter());
   //poptype pop2({0,0});
-  //KTfwd::deserialize()(pop2,s,mreader());
+  KTfwd::deserialize()(pop,s,mreader());
 
   // BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
   // BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
