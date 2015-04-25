@@ -18,6 +18,11 @@ namespace KTfwd
   template<typename mtype> using metapop_glist_t = boost::container::list<metapop_gamete_t<mtype>, boost::pool_allocator<metapop_gamete_t<mtype>>>;
   template<typename mtype> using metapop_dipvector_t = boost::container::vector<std::pair<typename metapop_glist_t<mtype>::iterator,
 											  typename metapop_glist_t<mtype>::iterator> >;
+
+  /*!
+    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \ingroup sugar
+  */
   template<typename mtype> using metapop = sugar::metapop<mtype,
 							  metapop_mlist_t<mtype>,
 							  metapop_glist_t<mtype>,
@@ -28,6 +33,10 @@ namespace KTfwd
 							  boost::container::vector<unsigned>,
 							  boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
 
+  /*!
+    \brief Metapopulation with serialization.  Can be copied, etc.
+    \ingroup sugar
+  */
   template<typename mtype,
 	   typename mwriter_t,
 	   typename mreader_t> using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
@@ -53,6 +62,10 @@ namespace KTfwd
   template<typename mtype> using metapop_glist_t = std::list<metapop_gamete_t<mtype> >;
   template<typename mtype> using metapop_dipvector_t = std::vector<std::pair<typename metapop_glist_t<mtype>::iterator,
 									     typename metapop_glist_t<mtype>::iterator> >;
+  /*!
+    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \ingroup sugar
+  */
   template<typename mtype> using metapop = sugar::metapop<mtype,
 							  metapop_mlist_t<mtype>,
 							  metapop_glist_t<mtype>,
@@ -63,6 +76,10 @@ namespace KTfwd
 							  std::vector<unsigned>,
 							  std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
 
+  /*!
+    \brief Metapopulation with serialization.  Can be copied, etc.
+    \ingroup sugar
+  */
   template<typename mtype,
 	   typename mwriter_t,
 	   typename mreader_t> using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
