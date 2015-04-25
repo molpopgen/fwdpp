@@ -1,14 +1,75 @@
 #ifndef __FWDPP_SUGAR_SINGLEPOP_SERIALIZATON_HPP__
 #define __FWDPP_SUGAR_SINGLEPOP_SERIALIZATON_HPP__
 
+#include <iosfwd>
 #include <sstream>
 #include <algorithm>
 #include <type_traits>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-
+#include <fwdpp/sugar/popgenmut.hpp>
 namespace KTfwd
 {
+  struct mutation_writer
+  {
+    using result_type = void;
+    template<typename mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,popgenmut>::value,result_type>::type
+    operator()( const mutation_t &m,
+		std::ostream & buffer) const
+    {
+      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
+      buffer.write( reinterpret_cast<const char *>(&m.g),sizeof(unsigned));
+      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+    }
+    template<typename mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
+    operator()( const mutation_t &m,
+		std::ostream & buffer) const
+    {
+      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
+      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+    }
+  };
+
+  template<typename mutation_t>
+  struct mutation_reader
+  {
+    using result_type = mutation_t;
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
+    operator()( std::istream & in ) const
+    {
+      unsigned n,g;
+      bool neutral;
+      double pos,s,h;
+      in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
+      in.read( reinterpret_cast<char *>(&neutral),sizeof(bool));
+      in.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
+      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      in.read( reinterpret_cast<char *>(&s),sizeof(double));
+      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+      return result_type(pos,s,h,g,n);
+    }
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
+    operator()( std::istream & in ) const
+    {
+      unsigned n,g;
+      bool neutral;
+      double pos,s,h;
+      in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
+      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      in.read( reinterpret_cast<char *>(&s),sizeof(double));
+      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+      return result_type(pos,s,n,h);
+    }
+  };
+  
   class serialize
   {
   public:
@@ -24,7 +85,7 @@ namespace KTfwd
       unsigned temp = pop.fixations.size();
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
       std::for_each( pop.fixations.begin(), pop.fixations.end(),
-		     std::bind(wt,std::placeholders::_1,std::ref(buffer)) );
+		     std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
       //Step 3:the fixation times
       buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
     }
