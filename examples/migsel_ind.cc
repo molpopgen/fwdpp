@@ -195,7 +195,7 @@ int main( int argc, char ** argv )
 
   //create a vector of fitness functions for each population
   std::vector<std::function<double (glist::const_iterator,
-				      glist::const_iterator)> > vbf;
+				    glist::const_iterator)> > vbf;
   vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
   vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,2.));
 
