@@ -179,23 +179,23 @@ namespace KTfwd {
       
       //! Construct with a list of population sizes
       metapop_serialized( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
-							mutations(mlist_t()),
-							gametes(vglist_t()),
-							diploids(vdipvector_t()),
-							mut_lookup(lookup_table_type()),
-							fixations(mvector()),
-							fixation_times(ftvector())
+								   mutations(mlist_t()),
+								   gametes(vglist_t()),
+								   diploids(vdipvector_t()),
+								   mut_lookup(lookup_table_type()),
+								   fixations(mvector()),
+								   fixation_times(ftvector())
       {
 	init_vectors();
       }
 
       metapop_serialized(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
-							    mutations(mlist_t()),
-							    gametes(vglist_t()),
-							    diploids(vdipvector_t()),
-							    mut_lookup(lookup_table_type()),
-							    fixations(mvector()),
-							    fixation_times(ftvector())
+								       mutations(mlist_t()),
+								       gametes(vglist_t()),
+								       diploids(vdipvector_t()),
+								       mut_lookup(lookup_table_type()),
+								       fixations(mvector()),
+								       fixation_times(ftvector())
       {
 	Ns.assign(__Ns,__Ns+num_Ns);
 	init_vectors();
@@ -203,12 +203,12 @@ namespace KTfwd {
 
       //! Move constructor
       metapop_serialized( metapop_serialized && __m ) : Ns(std::move(__m.Ns)),
-				   mutations(std::move(__m.mutations)),
-				   gametes(std::move(__m.gametes)),
-				   diploids(std::move(__m.diploids)),
-				   mut_lookup(lookup_table_type()),
-				   fixations(std::move(__m.fixations)),
-				   fixation_times(std::move(__m.fixation_times))
+							mutations(std::move(__m.mutations)),
+							gametes(std::move(__m.gametes)),
+							diploids(std::move(__m.diploids)),
+							mut_lookup(lookup_table_type()),
+							fixations(std::move(__m.fixations)),
+							fixation_times(std::move(__m.fixation_times))
       {
 	//Fill the mutation lookup!
 	std::for_each( mutations.begin(), mutations.end(),
@@ -217,17 +217,18 @@ namespace KTfwd {
 
       //! Copy constructor
       metapop_serialized( const metapop_serialized & __m) : Ns(std::vector<unsigned>()),
-							 mutations(mlist_t()),
-							 gametes(vglist_t()),
-							 diploids(vdipvector_t()),
-							 mut_lookup(lookup_table_type()),
-							 fixations(mvector()),
-							 fixation_times(ftvector())
+							    mutations(mlist_t()),
+							    gametes(vglist_t()),
+							    diploids(vdipvector_t()),
+							    mut_lookup(lookup_table_type()),
+							    fixations(mvector()),
+							    fixation_times(ftvector())
       {
 	serialize s;
 	s(__m,mwriter_t());
 	deserialize()(*this,s,mreader_t());
       }
+      
       //! Assignment operator
       metapop_serialized & operator=(const metapop_serialized & __m)
       {
