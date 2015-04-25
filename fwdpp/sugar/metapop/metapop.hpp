@@ -36,8 +36,8 @@ namespace KTfwd {
       {
 	for( unsigned i = 0 ; i < Ns.size() ; ++i )
 	  {
-	    metapop_gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( metapop_gametes[i].begin(),metapop_gametes[i].begin())));
+	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
+	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( gametes[i].begin(),gametes[i].begin())));
 	  }
       }
     public:
@@ -58,7 +58,7 @@ namespace KTfwd {
       //public, non-const data
       std::vector<unsigned> Ns;
       mlist_t mutations;
-      vglist_t metapop_gametes;
+      vglist_t gametes;
       vdipvector_t diploids;
       lookup_table_type mut_lookup;
       mvector fixations;
@@ -67,7 +67,7 @@ namespace KTfwd {
       //! Construct with a list of population sizes
       metapop( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
 							mutations(mlist_t()),
-							metapop_gametes(vglist_t()),
+							gametes(vglist_t()),
 							diploids(vdipvector_t()),
 							mut_lookup(lookup_table_type()),
 							fixations(mvector()),
@@ -78,7 +78,7 @@ namespace KTfwd {
 
       metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
 							    mutations(mlist_t()),
-							    metapop_gametes(vglist_t()),
+							    gametes(vglist_t()),
 							    diploids(vdipvector_t()),
 							    mut_lookup(lookup_table_type()),
 							    fixations(mvector()),
@@ -91,7 +91,7 @@ namespace KTfwd {
       //! Move constructor
       metapop( metapop && __m ) : Ns(std::move(__m.Ns)),
 				   mutations(std::move(__m.mutations)),
-				   metapop_gametes(std::move(__m.metapop_gametes)),
+				   gametes(std::move(__m.gametes)),
 				   diploids(std::move(__m.diploids)),
 				   mut_lookup(lookup_table_type()),
 				   fixations(std::move(__m.fixations)),
@@ -110,7 +110,7 @@ namespace KTfwd {
       void clear() 
       {
 	mutations.clear();
-	metapop_gametes.clear();
+	gametes.clear();
 	diploids.clear();
 	mut_lookup.clear();
 	fixations.clear();
