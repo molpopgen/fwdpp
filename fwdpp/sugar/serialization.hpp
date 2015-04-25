@@ -56,20 +56,17 @@ namespace KTfwd
 			  
   };
 
-  struct deserialize
+  class deserialize
   {
+  public:
     using result_type = void;
+  private:
     template<typename sugarpop_t,
 	     typename reader_t>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
-    operator()( sugarpop_t & pop,
-		const serialize & s,
-		const reader_t & rt ) const
+    result_type do_work( sugarpop_t & pop,
+			 std::istringstream & i,
+			 const reader_t & rt ) const
     {
-      pop.clear();
-      std::istringstream i(s.buffer.str());
-      //Step 0: read N
-      i.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,i );
       unsigned temp;
@@ -85,6 +82,37 @@ namespace KTfwd
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    }
+  public:
+    template<typename sugarpop_t,
+	     typename reader_t>
+    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
+    operator()( sugarpop_t & pop,
+		const serialize & s,
+		const reader_t & rt ) const
+    {
+      pop.clear();
+      std::istringstream i(s.buffer.str());
+      //Step 0: read N
+      i.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      do_work(pop,i,rt);
+    }
+
+    template<typename sugarpop_t,
+	     typename reader_t>
+    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
+    operator()( sugarpop_t & pop,
+		const serialize & s,
+		const reader_t & rt ) const
+    {
+      pop.clear();
+      std::istringstream i(s.buffer.str());
+      //Step 0: read N
+      unsigned numNs;
+      i.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
+      pop.Ns.resize(numNs);
+      i.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
+      do_work(pop,i,rt);
     }
   };
 }
