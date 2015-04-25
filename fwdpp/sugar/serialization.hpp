@@ -8,7 +8,7 @@
 #include <fwdpp/IO.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <iostream>
+
 namespace KTfwd
 {
   struct mutation_writer
@@ -123,12 +123,10 @@ namespace KTfwd
     operator()( const sugarpop_t & pop,
 		const writer_t & wt ) const
     {
-      std::cerr << "this one\n";
       buffer.str(std::string());
       unsigned npops = pop.Ns.size();
       buffer.write(reinterpret_cast<char *>(&npops),sizeof(unsigned));
       buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(unsigned) );
-      std::cerr << "here" << std::endl;
       do_work_metapop(pop,wt);
     }
 			  
@@ -205,7 +203,6 @@ namespace KTfwd
 		const serialize & s,
 		const reader_t & rt ) const
     {
-      std::cerr << "this one reader!\n";
       pop.clear();
       std::istringstream i(s.buffer.str());
       //Step 0: read N
@@ -213,7 +210,6 @@ namespace KTfwd
       i.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
       pop.Ns.resize(numNs);
       i.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
-      std::cerr << numNs << '\n';
       do_work_metapop(pop,i,rt);
     }
   };
