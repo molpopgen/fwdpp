@@ -5,7 +5,7 @@
 #include <vector>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/serialization.hpp>
-#include <fwdpp/sugar/popmodels/tags.hpp>
+#include <fwdpp/sugar/poptypes/tags.hpp>
 
 namespace KTfwd {
   namespace sugar {
