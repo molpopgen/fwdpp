@@ -61,16 +61,15 @@ BOOST_AUTO_TEST_CASE( test1 )
 						       );
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
     }
-  std::cerr << pop.mutations.size() << '\n';
   //attempt to copy
   KTfwd::serialize s;
   s(pop,mwriter());
-  //poptype pop2({0,0});
-  KTfwd::deserialize()(pop,s,mreader());
+  poptype pop2({0,0});
+  KTfwd::deserialize()(pop2,s,mreader());
 
-  // BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  // BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  // BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
+  BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
+  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
+  BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
   // //Compare the mutations
   // for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
   //   {
