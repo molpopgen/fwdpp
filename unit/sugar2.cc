@@ -16,7 +16,7 @@ using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_with_age>;
 using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader>;
 
-BOOST_AUTO_TEST_CASE( copy_construct_test )
+BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 {
   poptype pop(1000);
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE( copy_construct_test )
     }
 }
 
-BOOST_AUTO_TEST_CASE( assignment_test )
+BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 {
   poptype pop(1000);
 

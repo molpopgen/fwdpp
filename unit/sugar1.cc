@@ -2,7 +2,6 @@
 #define BOOST_TEST_MODULE sugarTest1
 #define BOOST_TEST_DYN_LINK 
 
-#include <iostream>
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
@@ -16,7 +15,7 @@ using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_with_age>;
 using poptype = KTfwd::singlepop<mutation_with_age>;
 
-BOOST_AUTO_TEST_CASE( test1 )
+BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 {
   poptype pop(1000);
 
@@ -50,8 +49,6 @@ BOOST_AUTO_TEST_CASE( test1 )
   s(pop,mwriter());
   poptype pop2(0);
   KTfwd::deserialize()(pop2,s,mreader());
-  std::cerr << pop.mutations.size() << ' ' << pop2.mutations.size() << ' '
-	    << pop.gametes.size() << ' ' << pop2.gametes.size() << '\n';
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
   BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());

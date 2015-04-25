@@ -3,7 +3,6 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
-#include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
 #define FWDPP_SUGAR_USE_BOOST
@@ -25,7 +24,7 @@ size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
   return source_pop;
 }
 
-BOOST_AUTO_TEST_CASE( test1 )
+BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 {
   poptype pop({1000,1000});
 
