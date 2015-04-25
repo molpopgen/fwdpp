@@ -5,6 +5,7 @@
 #include <vector>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/sugar/popmodels/tags.hpp>
 
 namespace KTfwd {
   namespace sugar {
@@ -40,6 +41,9 @@ namespace KTfwd {
 	  }
       }
     public:
+      //Dispatch tags for other parts of sugar layer
+      using popmodel_t = sugar::METAPOP_TAG;
+      
       //Typedefs for various container
       using mutation_t = mutation_type;
       using gamete_t = typename glist::value_type;
