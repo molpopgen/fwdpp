@@ -9,9 +9,26 @@
 
 namespace KTfwd
 {
-  struct serialize
+  class serialize
   {
+  public:
     using result_type = void;
+  private:
+    template<typename sugarpop_t,
+	     typename writer_t>
+    result_type do_work( const sugarpop_t & pop,
+			 const writer_t & wt ) const
+    {
+      write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
+      //Step 2: output fixations 
+      unsigned temp = pop.fixations.size();
+      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
+      std::for_each( pop.fixations.begin(), pop.fixations.end(),
+		     std::bind(wt,std::placeholders::_1,std::ref(buffer)) );
+      //Step 3:the fixation times
+      buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+    }
+  public:
     mutable std::ostringstream buffer;
     template<typename sugarpop_t,
 	     typename writer_t>
@@ -21,14 +38,7 @@ namespace KTfwd
     {
       buffer.str(std::string());
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
-      write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
-      //Step 2: output fixations 
-      unsigned temp = pop.fixations.size();
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
-      std::for_each( pop.fixations.begin(), pop.fixations.end(),
-		     std::bind(wt,std::placeholders::_1,std::ref(buffer)) );
-      //Step 3:the fixation times
-      buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+      do_work(pop,wt);
     }
 
     template<typename sugarpop_t,
@@ -41,14 +51,7 @@ namespace KTfwd
       unsigned npops = pop.Ns.size();
       buffer.write(reinterpret_cast<char *>(&npops),sizeof(unsigned));
       buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(unsigned) );
-      write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
-      //Step 2: output fixations 
-      unsigned temp = pop.fixations.size();
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
-      std::for_each( pop.fixations.begin(), pop.fixations.end(),
-		     std::bind(wt,std::placeholders::_1,std::ref(buffer)) );
-      //Step 3:the fixation times
-      buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+      do_work(pop,wt);
     }
 			  
   };
