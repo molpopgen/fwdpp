@@ -27,6 +27,18 @@ namespace KTfwd
 							  boost::container::vector<mtype>,
 							  boost::container::vector<unsigned>,
 							  boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
+
+  template<typename mtype,
+	   typename mwriter_t,
+	   typename mreader_t> using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
+										    metapop_mlist_t<mtype>,
+										    metapop_glist_t<mtype>,
+										    metapop_dipvector_t<mtype>,
+										    boost::container::vector<metapop_glist_t<mtype>>,
+										    boost::container::vector<metapop_dipvector_t<mtype>>,
+										    boost::container::vector<mtype>,
+										    boost::container::vector<unsigned>,
+										    boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
 }
 #else
 
@@ -50,6 +62,18 @@ namespace KTfwd
 							  std::vector<mtype>,
 							  std::vector<unsigned>,
 							  std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
+
+  template<typename mtype,
+	   typename mwriter_t,
+	   typename mreader_t> using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
+										    metapop_mlist_t<mtype>,
+										    metapop_glist_t<mtype>,
+										    metapop_dipvector_t<mtype>,
+										    std::vector<metapop_glist_t<mtype>>,
+										    std::vector<metapop_dipvector_t<mtype>>,
+										    std::vector<mtype>,
+										    std::vector<unsigned>,
+										    std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
 }
 #endif
 

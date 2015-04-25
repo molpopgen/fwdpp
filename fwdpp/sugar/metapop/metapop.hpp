@@ -117,6 +117,136 @@ namespace KTfwd {
 	fixation_times.clear();
       }
     };
+
+    /*!
+      Abstraction of what is needed to simulate a single population
+      using an individual-based sampler from fwdpp
+      
+      All that is missing is the mutation_type and the container types.
+      
+      Provides deep copy capabilities.
+    */
+    template<typename mutation_type,
+	     typename mwriter,
+	     typename mreader,
+	     typename mlist,
+	     typename glist,
+	     typename dipvector,
+	     typename vglist,
+	     typename vdipvector,
+	     typename mvector,
+	     typename ftvector,
+	     typename lookup_table_type>
+    class metapop_serialized
+    {
+      static_assert( std::is_same< typename glist::value_type,
+		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
+		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
+    private:
+      void init_vectors()
+      {
+	for( unsigned i = 0 ; i < Ns.size() ; ++i )
+	  {
+	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
+	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( gametes[i].begin(),gametes[i].begin())));
+	  }
+      }
+    public:
+      //Dispatch tags for other parts of sugar layer
+      using popmodel_t = sugar::METAPOP_TAG;
+      
+      //Typedefs for various container
+      using mutation_t = mutation_type;
+      using mwriter_t = mwriter;
+      using mreader_t = mreader;
+      using gamete_t = typename glist::value_type;
+      using dipvector_t = dipvector;
+      using vdipvector_t = vdipvector;
+      using diploid_t = typename dipvector_t::value_type;
+      using mlist_t = mlist;
+      using glist_t = glist;
+      using vglist_t = vglist;
+      using lookup_table_t = lookup_table_type;
+
+      //public, non-const data
+      std::vector<unsigned> Ns;
+      mlist_t mutations;
+      vglist_t gametes;
+      vdipvector_t diploids;
+      lookup_table_type mut_lookup;
+      mvector fixations;
+      ftvector fixation_times;
+      
+      //! Construct with a list of population sizes
+      metapop_serialized( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
+							mutations(mlist_t()),
+							gametes(vglist_t()),
+							diploids(vdipvector_t()),
+							mut_lookup(lookup_table_type()),
+							fixations(mvector()),
+							fixation_times(ftvector())
+      {
+	init_vectors();
+      }
+
+      metapop_serialized(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
+							    mutations(mlist_t()),
+							    gametes(vglist_t()),
+							    diploids(vdipvector_t()),
+							    mut_lookup(lookup_table_type()),
+							    fixations(mvector()),
+							    fixation_times(ftvector())
+      {
+	Ns.assign(__Ns,__Ns+num_Ns);
+	init_vectors();
+      }
+
+      //! Move constructor
+      metapop_serialized( metapop_serialized && __m ) : Ns(std::move(__m.Ns)),
+				   mutations(std::move(__m.mutations)),
+				   gametes(std::move(__m.gametes)),
+				   diploids(std::move(__m.diploids)),
+				   mut_lookup(lookup_table_type()),
+				   fixations(std::move(__m.fixations)),
+				   fixation_times(std::move(__m.fixation_times))
+      {
+	//Fill the mutation lookup!
+	std::for_each( mutations.begin(), mutations.end(),
+		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
+      }
+
+      //! Copy constructor
+      metapop_serialized( const metapop_serialized & __m) : Ns(std::vector<unsigned>()),
+							 mutations(mlist_t()),
+							 gametes(vglist_t()),
+							 diploids(vdipvector_t()),
+							 mut_lookup(lookup_table_type()),
+							 fixations(mvector()),
+							 fixation_times(ftvector())
+      {
+	serialize s;
+	s(__m,mwriter_t());
+	deserialize()(*this,s,mreader_t());
+      }
+      //! Assignment operator
+      metapop_serialized & operator=(const metapop_serialized & __m)
+      {
+	serialize s;
+	s(__m,mwriter_t());
+	deserialize()(*this,s,mreader_t());
+	return *this;
+      }
+
+      void clear() 
+      {
+	mutations.clear();
+	gametes.clear();
+	diploids.clear();
+	mut_lookup.clear();
+	fixations.clear();
+	fixation_times.clear();
+      }
+    };
   }
 }
 
