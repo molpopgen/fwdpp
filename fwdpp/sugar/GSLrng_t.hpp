@@ -16,8 +16,8 @@ namespace KTfwd {
   using GSL_RNG_TAUS2 = sugar::GSL_RNG_TYPE_TAG<sugar::GSL_RNG_TYPE::TAUS2>;
 
   /*!
-    A wrapper around gsl_rng * objects.
-
+    \brief A wrapper around gsl_rng * objects.
+    
     The template instantiation type must be a model of 
     KTfwd::sugar::GSL_RNG_TYPE_TAG, which specifies the
     gsl_rng type.
@@ -43,17 +43,12 @@ namespace KTfwd {
     //! Smart pointer wrapping the gsl_rng *
     sugar::gsl_rng_ptr_t r;
 
-    /*!
-      Construction requires a seed
-     */
+    //! Construct with a seed
     GSLrng_t(const unsigned & seed) : r(setup(T())) {
       gsl_rng_set(r.get(),seed);
     }
-    /*!
-      boost python requires that things be copy-constructable
-      However, the gsl_rng_ptr_t is not, so we gotta write
-      a manual copy-constructor
-    */
+
+    //! Copy constructor
     GSLrng_t( const GSLrng_t & __rng) : r(gsl_rng_clone(__rng.r.get()))
     {
     }

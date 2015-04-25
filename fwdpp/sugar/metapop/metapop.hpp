@@ -10,7 +10,7 @@
 namespace KTfwd {
   namespace sugar {
     /*!
-      Abstraction of what is needed to simulate a single population
+      \brief Abstraction of what is needed to simulate a metapopulation
       using an individual-based sampler from fwdpp
       
       All that is missing is the mutation_type and the container types.
@@ -119,7 +119,7 @@ namespace KTfwd {
     };
 
     /*!
-      Abstraction of what is needed to simulate a single population
+      \brief Abstraction of what is needed to simulate a metapopulation
       using an individual-based sampler from fwdpp
       
       All that is missing is the mutation_type and the container types.

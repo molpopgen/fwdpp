@@ -6,14 +6,19 @@
 
 namespace KTfwd {
   namespace sugar {
+    /*!
+      \brief Function object to delete a gsl_rng *
+     */
     struct gsl_rng_deleter
     {
+      //! calls gsl_rng_free on r
       void operator()( gsl_rng * r ) noexcept
       {
 	gsl_rng_free(r);
       }
     };
-    
+
+    //! Smart pointer wrapper to gsl_rng *
     using gsl_rng_ptr_t = std::unique_ptr< gsl_rng,
 					   gsl_rng_deleter >;
   }

@@ -48,3 +48,8 @@
 /*! \namespace KTfwd::tags
   \brief Nested namespace for dispatch tags for template functions.
 */
+
+/*! \namespace KTfwd::sugar
+  \brief Nested namespace for sugar layer.
+  @defgroup sugar Syntatic sugar layer for fwdpp
+ */
