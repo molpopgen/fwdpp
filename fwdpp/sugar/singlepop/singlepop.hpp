@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/sugar/poptypes/tags.hpp>
 
 namespace KTfwd {
   namespace sugar {
@@ -35,6 +36,8 @@ namespace KTfwd {
     public:
       unsigned N;
 
+      //dispatch tag for other parts of sugar layer
+      using popmodel_t = sugar::SINGLEPOP_TAG;
       //Typedefs for various container
       using mutation_t = mutation_type;
       using gamete_t = typename glist::value_type;
@@ -117,6 +120,9 @@ namespace KTfwd {
     public:
       unsigned N;
 
+      //dispatch tag for other parts of sugar layer
+      using popmodel_t = sugar::SINGLEPOP_TAG;
+      
       //Typedefs for various container
       using mutation_t = mutation_type;
       using gamete_t = typename glist::value_type;

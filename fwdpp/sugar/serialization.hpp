@@ -3,7 +3,9 @@
 
 #include <sstream>
 #include <algorithm>
+#include <type_traits>
 #include <fwdpp/IO.hpp>
+#include <fwdpp/sugar/poptypes/tags.hpp>
 
 namespace KTfwd
 {
@@ -11,10 +13,11 @@ namespace KTfwd
   {
     using result_type = void;
     mutable std::ostringstream buffer;
-    template<typename singlepop_t,
+    template<typename sugarpop_t,
 	     typename writer_t>
-    inline result_type operator()( const singlepop_t & pop,
-				   const writer_t & wt ) const
+    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
+    operator()( const sugarpop_t & pop,
+		const writer_t & wt ) const
     {
       buffer.str(std::string());
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
@@ -33,11 +36,12 @@ namespace KTfwd
   struct deserialize
   {
     using result_type = void;
-    template<typename singlepop_t,
+    template<typename sugarpop_t,
 	     typename reader_t>
-    inline result_type operator()( singlepop_t & pop,
-				   const serialize & s,
-				   const reader_t & rt ) const
+    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
+    operator()( sugarpop_t & pop,
+		const serialize & s,
+		const reader_t & rt ) const
     {
       pop.clear();
       std::istringstream i(s.buffer.str());
@@ -57,7 +61,7 @@ namespace KTfwd
 
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename singlepop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
     }
   };
 }
