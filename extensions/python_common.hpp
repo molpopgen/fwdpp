@@ -8,7 +8,8 @@
 //Include the necessary "sugar" components
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-
+#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/sugar/infsites.hpp>
 /*
   We will use a gsl_rng_mt19937 as our RNG.
   This type is implicitly convertible to gsl_rng *,
@@ -23,59 +24,10 @@ using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
   As far as fwdpp is concerned, this requirement means that 
   we must use the serializable version of the fwdpp sugar libary.
 
-  In order to use those object, we must define objects that will write
-  and read mutation types.
+  This example is implemented in terms of KTfwd::mutation, and
+  the fwdpp sugar layer supports serialization of this type
  */
-struct mwriter
-{
-  using result_type = void;
-  inline result_type operator()( const KTfwd::mutation & m,
-				 std::ostream & o ) const
-  {
-    o.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
-    o.write( reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
-    o.write( reinterpret_cast<const char *>(&m.neutral),sizeof(bool));
-    o.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
-    o.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
-  }
-};
-
-struct mreader
-{
-  using result_type = KTfwd::mutation;
-  inline result_type operator()( std::istream & in ) const
-  {
-    double pos,s,h;
-    unsigned n;
-    bool neutral;
-    in.read( reinterpret_cast< char *>(&pos),sizeof(double));
-    in.read( reinterpret_cast< char *>(&n),sizeof(unsigned));
-    in.read( reinterpret_cast< char *>(&neutral),sizeof(bool));
-    in.read( reinterpret_cast< char *>(&s),sizeof(double));
-    in.read( reinterpret_cast< char *>(&h),sizeof(double));
-    return result_type(pos,s,n,h);
-  }
-};
-
-/*
-  With the above definitions, we can not define what our population looks like.
- */
-
-using poptype = KTfwd::singlepop_serialized<KTfwd::mutation,mwriter,mreader>;
-
-//mutation function is infinitely-many sites, all neutral variants
-poptype::mutation_t neutral_mutations_inf_sites(gsl_rng * r,
-					   poptype::mlist_t * mutations,
-					   poptype::lookup_table_t * lookup)
-{
-  double pos = gsl_rng_uniform(r);
-  while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
-    { 
-      pos = gsl_rng_uniform(r);  //if it does, generate a new one
-    }
-  lookup->insert(pos);
-  return poptype::mutation_t(pos,0.,1,true);
-}
+using poptype = KTfwd::singlepop_serialized<KTfwd::mutation,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::mutation>>;
 
 //Evolve the population for some amount of time with mutation and recombination
 poptype evolve( GSLrng & rng,
@@ -94,7 +46,8 @@ poptype evolve( GSLrng & rng,
 					  &pop.mutations,
 					  N,
 					  mu,
-					  std::bind(neutral_mutations_inf_sites,rng,std::placeholders::_1,&pop.mut_lookup),
+					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,
+						    mu,0.,[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						    &pop.gametes,
 						    recrate, 

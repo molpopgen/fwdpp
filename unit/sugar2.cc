@@ -8,96 +8,36 @@
 #include <fwdpp/diploid.hh>
 #define FWDPP_SUGAR_USE_BOOST
 #include <fwdpp/sugar/singlepop.hpp>
+#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/sugar/infsites.hpp>
 
-struct mutation_with_age : public KTfwd::mutation_base
-{
-  unsigned g;
-  double s,h;
-  /*
-    The constructor initializes all class data, including that of the base class via a constructor
-    call to the base class.
-  */
-  mutation_with_age(const unsigned & __o,const double & position, const unsigned & count, const bool & isneutral = true)
-    : KTfwd::mutation_base(position,count,isneutral),g(__o),s(0.),h(0.)
-  {	
-  }
-};
-
-//function object to write mutation data in binary format
-struct mwriter
-{
-  typedef void result_type;
-  result_type operator()( const mutation_with_age & m, std::ostringstream & buffer ) const
-  {
-    unsigned u = m.n;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    u = m.g;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    bool b = m.neutral;
-    buffer.write( reinterpret_cast< char * >(&b),sizeof(bool) );
-    double d = m.pos;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.s;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-  }
-};
-
-//function object to read mutation data in binary format
-struct mreader
-{
-  typedef mutation_with_age result_type;
-  result_type operator()( std::istream & in ) const
-  {
-    unsigned n;
-    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
-    unsigned g;
-    in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
-    bool neut;
-    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
-    double pos;
-    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
-    double s;
-    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
-    return result_type(g,pos,n);
-  }
-};
-
+using mutation_with_age = KTfwd::popgenmut;
+using mwriter = KTfwd::mutation_writer;
+using mreader = KTfwd::mutation_reader<mutation_with_age>;
 using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader>;
-
-mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,poptype::mlist_t * mutations,
-					      KTfwd::singlepop<mutation_with_age>::lookup_table_t * lookup)
-{
-  double pos = gsl_rng_uniform(r);
-  while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
-    { 
-      pos = gsl_rng_uniform(r);  //if it does, generate a new one
-    }
-  lookup->insert(pos);
-  return mutation_with_age(generation,pos,1,true);
-}
 
 BOOST_AUTO_TEST_CASE( copy_construct_test )
 {
   poptype pop(1000);
 
-  gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
-  gsl_rng_set(r,0); //seed is set to 0
-
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+  
   //Evolve for 10 generations
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng);
   for( unsigned generation= 0 ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid(r,
+      double wbar = KTfwd::sample_diploid(rng,
 					  &pop.gametes,
 					  &pop.diploids,
 					  &pop.mutations,
 					  1000,
 					  0.005,
-					  std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&pop.mut_lookup),
+					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
+						    0.005,0.,[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						    &pop.gametes,
 						    0., //no rec
-						    r,
+						    rng,
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
@@ -162,24 +102,24 @@ BOOST_AUTO_TEST_CASE( assignment_test )
 {
   poptype pop(1000);
 
-  gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
-  gsl_rng_set(r,0); //seed is set to 0
-
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    
   //Evolve for 10 generations
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng);
   for( unsigned generation= 0 ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid(r,
+      double wbar = KTfwd::sample_diploid(rng,
 					  &pop.gametes,
 					  &pop.diploids,
 					  &pop.mutations,
 					  1000,
 					  0.005,
-					  std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&pop.mut_lookup),
+					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
+						    0.005,0.,[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						    &pop.gametes,
 						    0., //no rec
-						    r,
+						    rng,
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
