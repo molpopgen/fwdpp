@@ -161,6 +161,28 @@ namespace KTfwd
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
     }
+    template<typename sugarpop_t,
+	     typename reader_t>
+    result_type do_work_metapop( sugarpop_t & pop,
+				 std::istringstream & i,
+				 const reader_t & rt ) const
+    {
+      //Step 1: write the mutations, diploids, gametes to the stream
+      KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,i );
+      unsigned temp;
+      i.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
+      for( unsigned m=0;m<temp ;++m )
+    	{
+    	  typename reader_t::result_type mm = rt(i);
+    	  pop.fixations.emplace_back( std::move(mm) );
+    	}
+      pop.fixation_times.resize(temp);
+      i.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+
+      //Finally, fill the lookup table:
+      std::for_each( pop.mutations.begin(), pop.mutations.end(),
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    }
   public:
     template<typename sugarpop_t,
 	     typename reader_t>
@@ -183,6 +205,7 @@ namespace KTfwd
 		const serialize & s,
 		const reader_t & rt ) const
     {
+      std::cerr << "this one reader!\n";
       pop.clear();
       std::istringstream i(s.buffer.str());
       //Step 0: read N
@@ -190,7 +213,8 @@ namespace KTfwd
       i.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
       pop.Ns.resize(numNs);
       i.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
-      do_work(pop,i,rt);
+      std::cerr << numNs << '\n';
+      do_work_metapop(pop,i,rt);
     }
   };
 }
