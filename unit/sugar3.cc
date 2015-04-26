@@ -1,4 +1,4 @@
-//! \file sugar1.cc \ingroup unit
+//! \file sugar3.cc \ingroup unit
 #define BOOST_TEST_MODULE sugarTest1
 #define BOOST_TEST_DYN_LINK 
 
