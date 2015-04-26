@@ -70,15 +70,8 @@ namespace KTfwd {
       singlepop( singlepop & ) = delete;
       singlepop( const singlepop & ) = delete;
       //Allow move construction
-      singlepop( singlepop && p ) : N (std::move(p.N)),
-				    mutations(std::move(p.mutations)),
-				    gametes(std::move(p.gametes)),
-				    diploids(std::move(p.diploids)),
-				    mut_lookup(std::move(p.mut_lookup)),
-				    fixations(std::move(p.fixations)),
-				    fixation_times(std::move(p.fixation_times))
-      {
-      }
+      singlepop( singlepop &&  ) = default;
+      
       //Do not allow assignment from a reference
       singlepop & operator=(singlepop &) = delete;
       singlepop & operator=(const singlepop &) = delete;
@@ -167,15 +160,7 @@ namespace KTfwd {
 	deserialize()(*this,s,mreader_t());
       }
       //Allow move construction
-      singlepop_serialized( singlepop_serialized && p ) : N (std::move(p.N)),
-							  mutations(std::move(p.mutations)),
-							  gametes(std::move(p.gametes)),
-							  diploids(std::move(p.diploids)),
-							  mut_lookup(std::move(p.mut_lookup)),
-							  fixations(std::move(p.fixations)),
-							  fixation_times(std::move(p.fixation_times))
-      {
-      }
+      singlepop_serialized( singlepop_serialized && ) = default;
 
       singlepop_serialized & operator=(const singlepop_serialized & p)
       {
