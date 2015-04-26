@@ -11,8 +11,16 @@
 
 namespace KTfwd
 {
+  /*!
+    \brief Facilitates serialization of mutation
+    types supported by the fwdpp sugar library
+    \ingroup sugar
+  */
   struct mutation_writer
   {
+    /*!
+      \brief overload for KTfwd::popgenmut
+     */
     using result_type = void;
     template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,popgenmut>::value,result_type>::type
@@ -25,6 +33,9 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
     }
+    /*!
+      \brief overload for KTfwd::mutation
+     */
     template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
     operator()( const mutation_t &m,
@@ -37,10 +48,23 @@ namespace KTfwd
     }
   };
 
+  /*!
+    \brief Facilitates serialization of mutation
+    types supported by the fwdpp sugar library.
+
+    The template parameter must be derived from
+    KTfwd::mutation_base
+
+    \ingroup sugar
+  */
   template<typename mutation_t>
   struct mutation_reader
   {
+    //! The return value of operator()
     using result_type = mutation_t;
+    /*!
+      \brief overload for KTfwd::popgenmut
+     */
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
     operator()( std::istream & in ) const
@@ -55,6 +79,9 @@ namespace KTfwd
       in.read( reinterpret_cast<char *>(&h),sizeof(double));
       return result_type(pos,s,h,g,n);
     }
+    /*!
+      \brief overload for KTfwd::mutation
+     */
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
     operator()( std::istream & in ) const
@@ -69,11 +96,18 @@ namespace KTfwd
       return result_type(pos,s,n,h);
     }
   };
-  
+
+  /*!
+    \brief Serialize populations.
+    \ingroup sugar
+   */
   struct serialize
   {
     using result_type = void;
     mutable std::ostringstream buffer;
+    /*!
+      \brief Overload for single population simulations
+     */
     template<typename sugarpop_t,
 	     typename writer_t>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
@@ -92,6 +126,9 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
     }
 
+    /*!
+      \brief Overload for metapopulation simulations
+     */
     template<typename sugarpop_t,
 	     typename writer_t>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
@@ -111,12 +148,20 @@ namespace KTfwd
       //Step 3:the fixation times
       buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
     }
-			  
   };
 
+
+  /*!
+    \brief Deserialize population objects
+    \ingroup sugar
+   */
   struct deserialize
   {
+    //! The return type for operator()
     using result_type = void;
+    /*!
+      \brief Overload for single population simulations
+     */
     template<typename sugarpop_t,
 	     typename reader_t>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
@@ -144,6 +189,9 @@ namespace KTfwd
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
     }
 
+    /*!
+      \brief Overload for metapopulation simulations
+     */
     template<typename sugarpop_t,
 	     typename reader_t>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type

@@ -49,7 +49,18 @@
   \brief Nested namespace for dispatch tags for template functions.
 */
 
+/*! @defgroup sugar
+  \brief Syntatic sugar for easier development of simulations
+
+  See @ref md_md_sugar for a full description of the features that fwdpp's sugar layer provides.
+ */
+
 /*! \namespace KTfwd::sugar
   \brief Nested namespace for sugar layer.
-  @defgroup sugar Syntatic sugar layer for fwdpp
+
+  This namespace provides the implementation details for @ref sugar.
+
+  See @ref md_md_sugar for a full description of the features that fwdpp's sugar layer provides.
  */
+
+
