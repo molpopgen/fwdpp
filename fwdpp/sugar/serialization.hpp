@@ -70,7 +70,6 @@ namespace KTfwd
     operator()( std::istream & in ) const
     {
       unsigned n,g;
-      bool neutral;
       double pos,s,h;
       in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
       in.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
@@ -87,7 +86,6 @@ namespace KTfwd
     operator()( std::istream & in ) const
     {
       unsigned n,g;
-      bool neutral;
       double pos,s,h;
       in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
       in.read( reinterpret_cast<char *>(&pos),sizeof(double));
