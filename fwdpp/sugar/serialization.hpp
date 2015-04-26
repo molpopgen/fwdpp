@@ -184,10 +184,11 @@ namespace KTfwd
     	}
       pop.fixation_times.resize(temp);
       s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
-
+      s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+
     }
 
     /*!
@@ -217,7 +218,7 @@ namespace KTfwd
     	}
       pop.fixation_times.resize(temp);
       s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
-
+      s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
