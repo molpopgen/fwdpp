@@ -17,7 +17,7 @@ namespace KTfwd
   template<typename mtype> using gamete_t = gamete_base<mtype,mlist_t<mtype>>;
   template<typename mtype> using glist_t = boost::container::list<gamete_t<mtype>, boost::pool_allocator<gamete_t<mtype>>>;
   /*!
-    Single population without serialization.  Cannot be copied, etc.
+    Single locus, single population without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using singlepop = sugar::singlepop<mtype,
@@ -31,7 +31,7 @@ namespace KTfwd
 							      >;
 
   /*!
-    Single population with serialization.  Can be copied, etc.
+    Single locus, single population with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,
@@ -62,7 +62,7 @@ namespace KTfwd
   template<typename mtype> using gamete_t = gamete_base<mtype,mlist_t<mtype>>;
   template<typename mtype> using glist_t = std::list<gamete_t<mtype>, std::allocator<gamete_t<mtype>>>;
   /*!
-    \brief Single population without serialization.  Cannot be copied, etc.
+    \brief Single locus, single population without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using singlepop = sugar::singlepop<mtype,
@@ -76,7 +76,7 @@ namespace KTfwd
 							      >;
 
   /*! 
-    \brief Single population with serialization.  Can be copied, etc.
+    \brief Single locus, single population with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,

@@ -20,7 +20,7 @@ namespace KTfwd
 											  typename metapop_glist_t<mtype>::iterator> >;
 
   /*!
-    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \brief Single locus metapopulation simulation without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using metapop = sugar::metapop<mtype,
@@ -34,7 +34,7 @@ namespace KTfwd
 							  boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
 
   /*!
-    \brief Metapopulation with serialization.  Can be copied, etc.
+    \brief Single locus metapopulation simulation with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,
@@ -63,7 +63,7 @@ namespace KTfwd
   template<typename mtype> using metapop_dipvector_t = std::vector<std::pair<typename metapop_glist_t<mtype>::iterator,
 									     typename metapop_glist_t<mtype>::iterator> >;
   /*!
-    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \brief Single locus metapopulation simulation without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using metapop = sugar::metapop<mtype,
@@ -77,7 +77,7 @@ namespace KTfwd
 							  std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
 
   /*!
-    \brief Metapopulation with serialization.  Can be copied, etc.
+    \brief Single locus metapopulation simulation with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,

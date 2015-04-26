@@ -22,7 +22,7 @@ namespace KTfwd
 										  >;
 
   /*!
-    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \brief Single population, multilocus simulation without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using multiloc = sugar::multiloc<mtype,
@@ -35,7 +35,7 @@ namespace KTfwd
 							    boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
 
   /*!
-    \brief Metapopulation with serialization.  Can be copied, etc.
+    \brief Single population, multilocus simulation with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,
@@ -67,7 +67,7 @@ namespace KTfwd
 								     >;
 
   /*!
-    \brief Metapopulation without serialization.  Cannot be copied, etc.
+    \brief Single population, multilocus simulation without serialization.  Cannot be copied, etc.
     \ingroup sugar
   */
   template<typename mtype> using multiloc = sugar::multiloc<mtype,
@@ -80,7 +80,7 @@ namespace KTfwd
 							    std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
 
   /*!
-    \brief Metapopulation with serialization.  Can be copied, etc.
+    \brief Single population, multilocus simulation with serialization.  Can be copied, etc.
     \ingroup sugar
   */
   template<typename mtype,
