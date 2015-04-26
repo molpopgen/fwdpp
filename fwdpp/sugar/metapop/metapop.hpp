@@ -89,18 +89,7 @@ namespace KTfwd {
       }
 
       //! Move constructor
-      metapop( metapop && __m ) : Ns(std::move(__m.Ns)),
-				   mutations(std::move(__m.mutations)),
-				   gametes(std::move(__m.gametes)),
-				   diploids(std::move(__m.diploids)),
-				   mut_lookup(lookup_table_type()),
-				   fixations(std::move(__m.fixations)),
-				   fixation_times(std::move(__m.fixation_times))
-      {
-	//Fill the mutation lookup!
-	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
-      }
+      metapop( metapop && __m ) = default;
 
       metapop( metapop & ) = delete;
       metapop( const metapop & ) = delete;
@@ -122,9 +111,7 @@ namespace KTfwd {
       \brief Abstraction of what is needed to simulate a metapopulation
       using an individual-based sampler from fwdpp
       
-      All that is missing is the mutation_type and the container types.
-      
-      Provides deep copy capabilities.
+      Provides for copy construction and assignment via deep copy.
     */
     template<typename mutation_type,
 	     typename mwriter,
@@ -202,18 +189,7 @@ namespace KTfwd {
       }
 
       //! Move constructor
-      metapop_serialized( metapop_serialized && __m ) : Ns(std::move(__m.Ns)),
-							mutations(std::move(__m.mutations)),
-							gametes(std::move(__m.gametes)),
-							diploids(std::move(__m.diploids)),
-							mut_lookup(lookup_table_type()),
-							fixations(std::move(__m.fixations)),
-							fixation_times(std::move(__m.fixation_times))
-      {
-	//Fill the mutation lookup!
-	std::for_each( mutations.begin(), mutations.end(),
-		       [this]( const mutation_t & __m ) { mut_lookup.insert(__m.pos); } );
-      }
+      metapop_serialized( metapop_serialized && ) = default;
 
       //! Copy constructor
       metapop_serialized( const metapop_serialized & __m) : Ns(std::vector<unsigned>()),

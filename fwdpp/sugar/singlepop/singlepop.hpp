@@ -92,8 +92,6 @@ namespace KTfwd {
       \brief Abstraction of what is needed to simulate a single population
       using an individual-based sampler from fwdpp
       
-      All that is missing is the mutation_type and the container types.
-      
       Allows copy/construction/assignment via deep copy
     */
     template<typename mutation_type,

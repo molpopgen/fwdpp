@@ -85,7 +85,7 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
     operator()( std::istream & in ) const
     {
-      unsigned n,g;
+      unsigned n;
       double pos,s,h;
       in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
       in.read( reinterpret_cast<char *>(&pos),sizeof(double));
@@ -108,7 +108,9 @@ namespace KTfwd
      */
     template<typename sugarpop_t,
 	     typename writer_t>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
+    inline typename std::enable_if< (std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value |
+				     std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value )
+				   ,result_type>::type
     operator()( const sugarpop_t & pop,
 		const writer_t & wt ) const
     {
@@ -162,7 +164,9 @@ namespace KTfwd
      */
     template<typename sugarpop_t,
 	     typename reader_t>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
+    inline typename std::enable_if<(std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value|
+				    std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value),
+				   result_type>::type
     operator()( sugarpop_t & pop,
 		const serialize & s,
 		const reader_t & rt ) const
