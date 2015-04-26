@@ -14,8 +14,18 @@ namespace KTfwd
   {
     //! The generation when the mutation arose
     unsigned g;
-    //! Selection and dominance coefficients
-    double s,h;
+    //! Selection coefficient
+    double s;
+    //! Dominance of the mutation
+    double h;
+    /*!
+      \brief Constructor
+      \param __pos Mutation position
+      \param __s Selection coefficient
+      \param __h Dominance coefficient
+      \param __g Generation when mutation arose
+      \param __n Number of copies of mutation in population
+    */
     popgenmut(const double & __pos, const double & __s, const double & __h,
 	      const unsigned & __g,const unsigned & __n)
       : mutation_base(__pos,__n,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
