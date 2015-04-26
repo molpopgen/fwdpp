@@ -2,7 +2,7 @@
 
 ## 0.3.0
 
-* Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent
+* Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent.  Example HOCind.cc illustrates its use.
 * Namespace KTfwd::sugar and \ref sugar functions added.
 * New tutorial added: \ref md_md_sugar
 * Unit tests for sugar layer added
