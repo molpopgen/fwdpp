@@ -1,5 +1,12 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.0
+
+* Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent
+* Namespace KTfwd::sugar and \ref sugar functions added.
+* New tutorial added: \ref md_md_sugar
+* Unit tests for sugar layer added
+
 ## 0.2.9
 
 * Added new unit test (siteDepFitness) to check for the effect of issue #8.  Fortunately, fitness calculations were correct even with the bug, as the rest of the function did the right thing.
