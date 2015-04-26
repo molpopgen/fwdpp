@@ -36,15 +36,21 @@ namespace KTfwd {
     public:
       unsigned N;
 
-      //dispatch tag for other parts of sugar layer
+      //! Dispatch tag for other parts of sugar layer
       using popmodel_t = sugar::SINGLEPOP_TAG;
-      //Typedefs for various container
+      //! Mutation type
       using mutation_t = mutation_type;
+      //! Gamete type
       using gamete_t = typename glist::value_type;
+      //! Diploid vector type
       using dipvector_t = dipvector;
+      //! Diploid type
       using diploid_t = typename dipvector_t::value_type;
+      //! Mutation list type
       using mlist_t = mlist;
+      //! Gamete list type
       using glist_t = glist;
+      //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
 
       //Data types -- the names should make the above typedefs a bit more clear
@@ -55,7 +61,7 @@ namespace KTfwd {
       mvector fixations;
       ftvector fixation_times;
 
-      //Constructors
+      //! Constructor
       singlepop( const unsigned & popsize ) : N(popsize),
 					      mutations(mlist()),                //No muts in the population
 					      gametes(glist(1,gamete_t(2*popsize))), //The population contains a single gamete in 2N copies
@@ -66,17 +72,19 @@ namespace KTfwd {
       {
       }
 
-      //Do NOT allow copy construction
+      //! Deleted
       singlepop( singlepop & ) = delete;
+      //! Deleted
       singlepop( const singlepop & ) = delete;
-      //Allow move construction
+      //! Move constructor
       singlepop( singlepop &&  ) = default;
       
-      //Do not allow assignment from a reference
+      //! Deleted
       singlepop & operator=(singlepop &) = delete;
+      //! Deleted
       singlepop & operator=(const singlepop &) = delete;
 
-      //Member functions
+      //! Empty all the containers
       void clear() 
       {
 	mutations.clear();

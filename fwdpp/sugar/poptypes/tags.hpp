@@ -1,4 +1,4 @@
-/*! \file tags.hpp
+/*! \file fwdpp/sugar/poptypes/tags.hpp
  */
 #ifndef __FWDPP_SUGAR_POPTYPES_TAGS_HPP__
 #define __FWDPP_SUGAR_POPTYPES_TAGS_HPP__

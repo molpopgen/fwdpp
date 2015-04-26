@@ -49,8 +49,8 @@
   \brief Nested namespace for dispatch tags for template functions.
 */
 
-/*! @defgroup sugar
-  \brief Syntatic sugar for easier development of simulations
+/*! @defgroup sugar Syntactic sugar layer
+  \brief Syntactic sugar for easier development of simulations
 
   See @ref md_md_sugar for a full description of the features that fwdpp's sugar layer provides.
  */
