@@ -102,7 +102,7 @@ namespace KTfwd
   struct serialize
   {
     using result_type = void;
-    mutable std::ostringstream buffer;
+    mutable std::stringstream buffer;
     /*!
       \brief Overload for single population simulations
      */
@@ -172,19 +172,18 @@ namespace KTfwd
 		const reader_t & rt ) const
     {
       pop.clear();
-      std::istringstream i(s.buffer.str());
       //Step 0: read N
-      i.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
-      KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,i );
+      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer );
       unsigned temp;
-      i.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
       for( unsigned m=0;m<temp ;++m )
     	{
-    	  typename reader_t::result_type mm = rt(i);
+    	  typename reader_t::result_type mm = rt(s.buffer);
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      i.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
 
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
@@ -202,23 +201,22 @@ namespace KTfwd
 		const reader_t & rt ) const
     {
       pop.clear();
-      std::istringstream i(s.buffer.str());
       //Step 0: read N
       unsigned numNs;
-      i.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
       pop.Ns.resize(numNs);
-      i.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
       //Step 1: write the mutations, diploids, gametes to the stream
-      KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,i );
+      KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer );
       unsigned temp;
-      i.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
       for( unsigned m=0;m<temp ;++m )
     	{
-    	  typename reader_t::result_type mm = rt(i);
+    	  typename reader_t::result_type mm = rt(s.buffer);
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      i.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
 
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
