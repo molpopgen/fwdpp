@@ -8,6 +8,7 @@ namespace KTfwd {
   namespace sugar {
     /*!
       \brief Function object to delete a gsl_rng *
+      \ingroup sugar
      */
     struct gsl_rng_deleter
     {
@@ -18,7 +19,10 @@ namespace KTfwd {
       }
     };
 
-    //! Smart pointer wrapper to gsl_rng *
+    /*!
+      \brief Smart pointer wrapper to gsl_rng *
+      \ingroup sugar
+    */
     using gsl_rng_ptr_t = std::unique_ptr< gsl_rng,
 					   gsl_rng_deleter >;
   }
