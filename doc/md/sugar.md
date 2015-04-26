@@ -195,6 +195,19 @@ int main(int argc, char ** argv)
   }
 ~~~
 
+### Further customization
+
+It you aren't happy with how I've set up the "poptypes", you may provide your own typedefs in terms of the following classes:
+
+* KTfwd::sugar::singlepop
+* KTfwd::sugar::singlepop_serialized
+* KTfwd::sugar::metapop 
+* KTfwd::sugar::metapop_serialized
+* KTfwd::sugar::multiloc 
+* KTfwd::sugar::multiloc_serialized
+
+You should also be able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
+
 ## Simplifying serializing of simulated data
 
 The population types discussed above may be serialized using KTfwd::serialize and deserialized using KTfwd::deserialize.  The sugar layer also provides KTfwd::mutation_writer and KTfwd::mutation reader to support the serialization of KTfwd::mutation and KTfwd::popgenmut.
