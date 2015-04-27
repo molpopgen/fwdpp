@@ -3,7 +3,6 @@
   having their effect sizes constrained to = new haplotype effect size.
 */
 #include <config.h>
-#if defined(HAVE_BOOST_ACCUMULATORS) && defined(HAVE_BOOST_STATS) &&  defined(HAVE_BOOST_VARIANCE)
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <vector>
@@ -189,11 +188,4 @@ int main(int argc, char ** argv)
   gsl_rng_free(r);
   return 0;
 }
-#else
-#warning "Cannot compile this example due to missing boost headers.  Will compile empty main() and move on"
-#include <iostream>
-	  int main(int argc, char ** argv)
-	  {
-	    std::cerr << "Not fully compiled due to missing boost headers\n";
-	  }
-#endif //only compile if boost stuff here
+
