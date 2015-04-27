@@ -41,30 +41,47 @@ namespace KTfwd {
 	  }
       }
     public:
-      //Dispatch tags for other parts of sugar layer
+      //! Dispatch tags for other parts of sugar layer
       using popmodel_t = sugar::METAPOP_TAG;
       
-      //Typedefs for various container
+
+      //! Mutation type
       using mutation_t = mutation_type;
+      //! Gamete type
       using gamete_t = typename glist::value_type;
+      //! Diploid vector type
       using dipvector_t = dipvector;
+      //! Vector of dipvectors (vector of diploids for each deme)
       using vdipvector_t = vdipvector;
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
       using diploid_t = typename dipvector_t::value_type;
+      //! Mutation list type
       using mlist_t = mlist;
+      //! Gamete list type
       using glist_t = glist;
+      //! Container of glist_t (container of gametes lists for each deme)
       using vglist_t = vglist;
+      //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
 
-      //public, non-const data
+      //! Deme sizes
       std::vector<unsigned> Ns;
       mlist_t mutations;
       vglist_t gametes;
       vdipvector_t diploids;
+      /*!
+	\brief Can be used to track positions of segregating mutations.
+	\note Must have interface like std::map or std::unordered_set
+      */
       lookup_table_type mut_lookup;
+      //! Vector of mutation_t to track fixations
       mvector fixations;
+      /*! \brief vector<unsigned> records times when mutation_ts 
+	were added to mut_lookup
+      */
       ftvector fixation_times;
       
-      //! Construct with a list of population sizes
+      //! Construct with a list of deme sizes
       metapop( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
 							mutations(mlist_t()),
 							gametes(vglist_t()),
@@ -76,6 +93,7 @@ namespace KTfwd {
 	init_vectors();
       }
 
+      //! Construct with array of deme sizes
       metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
 							    mutations(mlist_t()),
 							    gametes(vglist_t()),
@@ -91,11 +109,16 @@ namespace KTfwd {
       //! Move constructor
       metapop( metapop && __m ) = default;
 
+      //! Deleted
       metapop( metapop & ) = delete;
+      //! Deleted
       metapop( const metapop & ) = delete;
+      //! Deleted
       metapop & operator=(metapop &) = delete;
+      //! Deleted
       metapop & operator=(const metapop &) = delete;
 
+      //! Empty all containers
       void clear() 
       {
 	mutations.clear();
@@ -139,29 +162,47 @@ namespace KTfwd {
 	  }
       }
     public:
-      //Dispatch tags for other parts of sugar layer
+      //! Dispatch tags for other parts of sugar layer
       using popmodel_t = sugar::METAPOP_TAG;
       
-      //Typedefs for various container
+      //! Mutation type
       using mutation_t = mutation_type;
+      //! mutation_t serialization type
       using mwriter_t = mwriter;
+      //! mutation_t deserialization type
       using mreader_t = mreader;
+      //! Gamete type
       using gamete_t = typename glist::value_type;
+      //! Diploid vector type
       using dipvector_t = dipvector;
+      //! Vector of dipvectors (vector of diploids for each deme)
       using vdipvector_t = vdipvector;
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
       using diploid_t = typename dipvector_t::value_type;
+      //! Mutation list type
       using mlist_t = mlist;
+      //! Gamete list type
       using glist_t = glist;
+      //! Container of glist_t (container of gametes lists for each deme)
       using vglist_t = vglist;
+      //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
 
-      //public, non-const data
+      //! Deme sizes
       std::vector<unsigned> Ns;
       mlist_t mutations;
       vglist_t gametes;
       vdipvector_t diploids;
+      /*!
+	\brief Can be used to track positions of segregating mutations.
+	\note Must have interface like std::map or std::unordered_set
+      */
       lookup_table_type mut_lookup;
+      //! Vector of mutation_t to track fixations
       mvector fixations;
+      /*! \brief vector<unsigned> records times when mutation_ts 
+	were added to mut_lookup
+      */
       ftvector fixation_times;
       
       //! Construct with a list of population sizes
@@ -214,6 +255,7 @@ namespace KTfwd {
 	return *this;
       }
 
+      //! Empty all containers
       void clear() 
       {
 	mutations.clear();
