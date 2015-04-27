@@ -8,9 +8,7 @@
 #include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/stats.hpp>
-#include <boost/accumulators/statistics/variance.hpp>
+#include <gsl/gsl_statistics_double.h>
 /*
   NOTE: we are using boost containers with boost memory allocators.  
   My experience on my systems is that each of those objects is worth a 5-10% 
@@ -176,15 +174,17 @@ int main(int argc, char ** argv)
 	  assert(KTfwd::check_sum(gametes,twoN));
 	}    
       //Get VG for this replicate
-      boost::accumulators::accumulator_set<double,boost::accumulators::stats<boost::accumulators::tag::variance> > VG;
-      std::for_each(diploids.cbegin(),diploids.cend(),[&VG](const std::pair< glist::iterator, glist::iterator> & dip ) {
-	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
-				       [](double & d, const mlist::iterator & m) { return d + m->s; } );
-	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
-				 [](double & d, const mlist::iterator & m) { return d + m->s; } );
-	  VG(sum);
-	} );
-      std::cout << boost::accumulators::variance(VG) << '\n';
+      //Note: this can be done more efficiently via the boost accumulator library, which
+      //we don't use here to reduce dependencies.
+      std::vector<double> G;
+      std::for_each(diploids.cbegin(),diploids.cend(),[&G](const std::pair< glist::iterator, glist::iterator> & dip ) {
+      	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
+      				       [](double & d, const mlist::iterator & m) { return d + m->s; } );
+      	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
+      				 [](double & d, const mlist::iterator & m) { return d + m->s; } );
+	  G.push_back(sum);
+	});
+      std::cout << gsl_stats_variance(&G[0],1,G.size()) << '\n';
     }
   gsl_rng_free(r);
   return 0;

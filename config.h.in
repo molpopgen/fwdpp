@@ -1,8 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define if boost accumulators are present */
-#undef HAVE_BOOST_ACCUMULATORS
-
 /* Define if boost/functional/hash.hpp exists */
 #undef HAVE_BOOST_HASH
 
@@ -12,14 +9,8 @@
 /* Define if boost/pool/pool_alloc.hpp exists */
 #undef HAVE_BOOST_POOL_ALLOC
 
-/* Define if boost stats header is present */
-#undef HAVE_BOOST_STATS
-
 /* Define if boost/unordered_set.hpp exists */
 #undef HAVE_BOOST_UNORDERED_SET
-
-/* Define if boost variance header is present */
-#undef HAVE_BOOST_VARIANCE
 
 /* Define if boost/container/vector.hpp exists */
 #undef HAVE_BOOST_VECTOR
