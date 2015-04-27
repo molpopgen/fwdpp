@@ -1,6 +1,6 @@
 AC_PREREQ(2.59)
 
-AC_INIT([fwdpp], [0.2.9], [https://github.com/molpopgen/fwdpp])
+AC_INIT([fwdpp], [0.3.0], [https://github.com/molpopgen/fwdpp])
 AC_CONFIG_SRCDIR([fwdpp/diploid.hh])
 AC_CONFIG_SRCDIR([examples/diploid_ind.cc])
 AC_CONFIG_SRCDIR([unit/mutateTest.cc])
