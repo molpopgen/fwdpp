@@ -44,7 +44,7 @@ namespace KTfwd {
       using gamete_t = typename glist::value_type;
       //! Diploid vector type
       using dipvector_t = dipvector;
-      //! Diploid type
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
       using diploid_t = typename dipvector_t::value_type;
       //! Mutation list type
       using mlist_t = mlist;
@@ -53,19 +53,29 @@ namespace KTfwd {
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
 
-      //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
       dipvector_t diploids;
+      /*!
+	\brief Can be used to track positions of segregating mutations.
+	\note Must have interface like std::map or std::unordered_set
+      */
       lookup_table_type mut_lookup;
+      //! Vector of mutation_t to track fixations
       mvector fixations;
+      /*! \brief vector<unsigned> records times when mutation_ts 
+	were added to mut_lookup
+      */
       ftvector fixation_times;
 
       //! Constructor
       singlepop( const unsigned & popsize ) : N(popsize),
-					      mutations(mlist()),                //No muts in the population
-					      gametes(glist(1,gamete_t(2*popsize))), //The population contains a single gamete in 2N copies
-					      diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
+					      //No muts in the population
+					      mutations(mlist()),
+					      //The population contains a single gamete in 2N copies
+					      gametes(glist(1,gamete_t(2*popsize))),
+					      //All N diploids contain the only gamete in the pop
+					      diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))),
 					      mut_lookup(lookup_table_type()),
 					      fixations(mvector()),
 					      fixation_times(ftvector())
@@ -119,42 +129,66 @@ namespace KTfwd {
     public:
       unsigned N;
 
-      //dispatch tag for other parts of sugar layer
+      //! Dispatch tag for other parts of sugar layer
       using popmodel_t = sugar::SINGLEPOP_TAG;
       
-      //Typedefs for various container
+      //! Mutation type
       using mutation_t = mutation_type;
+      //! Gamete type
       using gamete_t = typename glist::value_type;
+      //! Vector of diploids
       using dipvector_t = dipvector;
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
+      using diploid_t = typename dipvector_t::value_type;
+      //! mutation_t serialization type
       using mwriter_t = mwriter;
+      //! mutation_t deserialization type
       using mreader_t = mreader;
+      //! Mutation list type
       using mlist_t = mlist;
+      //! Gamete list type
       using glist_t = glist;
+      //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
       
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
       dipvector diploids;
+      /*!
+	\brief Can be used to track positions of segregating mutations.
+	\note Must have interface like std::map or std::unordered_set
+      */
       lookup_table_type mut_lookup;
+      //! Vector of mutation_t to track fixations
       mvector fixations;
+      /*! \brief vector<unsigned> records times when mutation_ts 
+	were added to mut_lookup
+      */
       ftvector fixation_times;
       
-      //Constructors
+      //! Constructor
       singlepop_serialized( const unsigned & popsize ) : N(popsize),
-							 mutations(mlist()),                //No muts in the population
-							 gametes(glist(1,gamete_t(2*popsize))), //The population contains a single gamete in 2N copies
-							 diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), //All N diploids contain the only gamete in the pop
+							 //No muts in the population
+							 mutations(mlist()),
+							 //The population contains a single gamete in 2N copies
+							 gametes(glist(1,gamete_t(2*popsize))),
+							 //All N diploids contain the only gamete in the pop
+							 diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), 
 							 mut_lookup(lookup_table_type()),
 							 fixations(mvector()),
 							 fixation_times(ftvector())
       {
       }
 
+      //! Copy constructor
       singlepop_serialized( const singlepop_serialized & pop) : N(0u),
-								mutations(mlist()),                //No muts in the population
-								gametes(glist(1,gamete_t(1))), //The population contains a single gamete in 2N copies
-								diploids(dipvector_t()), //All N diploids contain the only gamete in the pop
+								//No muts in the population
+								mutations(mlist()),
+								//The population contains a single gamete in 2N copies
+								gametes(glist(1,gamete_t(1))),
+								//All N diploids contain the only gamete in the pop
+								diploids(dipvector_t()),
 								mut_lookup(lookup_table_type()),
 								fixations(mvector()),
 								fixation_times(ftvector())
@@ -165,9 +199,11 @@ namespace KTfwd {
 	s(pop,mwriter_t());
 	deserialize()(*this,s,mreader_t());
       }
-      //Allow move construction
+      
+      //! Move constructor
       singlepop_serialized( singlepop_serialized && ) = default;
 
+      //! Assignment operator
       singlepop_serialized & operator=(const singlepop_serialized & p)
       {
 	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
@@ -178,7 +214,7 @@ namespace KTfwd {
 	return *this;
       }
 
-      //Member functions
+      //! Clear all containers
       void clear() 
       {
 	mutations.clear();
