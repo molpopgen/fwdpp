@@ -53,7 +53,7 @@ namespace KTfwd {
       using dipvector_t = dipvector;
       //! Vector of dipvectors (vector of diploids for each deme)
       using vdipvector_t = vdipvector;
-      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator>)
       using diploid_t = typename dipvector_t::value_type;
       //! Mutation list type
       using mlist_t = mlist;
@@ -177,7 +177,7 @@ namespace KTfwd {
       using dipvector_t = dipvector;
       //! Vector of dipvectors (vector of diploids for each deme)
       using vdipvector_t = vdipvector;
-      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator>)
       using diploid_t = typename dipvector_t::value_type;
       //! Mutation list type
       using mlist_t = mlist;

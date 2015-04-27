@@ -44,7 +44,7 @@ namespace KTfwd {
       using gamete_t = typename glist::value_type;
       //! Diploid vector type
       using dipvector_t = dipvector;
-      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator>)
       using diploid_t = typename dipvector_t::value_type;
       //! Mutation list type
       using mlist_t = mlist;
@@ -138,7 +138,7 @@ namespace KTfwd {
       using gamete_t = typename glist::value_type;
       //! Vector of diploids
       using dipvector_t = dipvector;
-      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator)
+      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator>)
       using diploid_t = typename dipvector_t::value_type;
       //! mutation_t serialization type
       using mwriter_t = mwriter;
