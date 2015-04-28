@@ -136,6 +136,10 @@ namespace KTfwd {
 
       //! Mutation type
       using mutation_t = mutation_type;
+      //! Mutation serialization type
+      using mwriter_t = mwriter;
+      //! Mutation deserialization type
+      using mreader_t = mreader;
       //! Gamete type
       using gamete_t = typename glist::value_type;
       //! Vector of diploids
@@ -167,27 +171,7 @@ namespace KTfwd {
 	were added to mut_lookup
       */
       ftvector fixation_times;
-      
-      using mwriter_t = mwriter;
-      using mreader_t = mreader;
-      
-      //public, non-const data
-      unsigned N;
-      mlist_t mutations;
-      vglist_t gametes;
-      dipvector_t diploids;
-      /*!
-	\brief Can be used to track positions of segregating mutations.
-	\note Must have interface like std::map or std::unordered_set
-      */
-      lookup_table_type mut_lookup;
-      //! Vector of mutation_t to track fixations
-      mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
-	were added to mut_lookup
-      */
-      ftvector fixation_times;
-
+     
       //! Construct with population size and number of loci
       multiloc_serialized(const unsigned & __N, const unsigned & __nloci) : N(__N),
 									    mutations(mlist_t()),
