@@ -115,8 +115,8 @@ The first three are  available as pre-built packages on most Linux distributions
 ###Obtaining the master branch
 You have a few options:
 
-1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git</li>
-2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp </li>
+1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git
+2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp 
 
 
 ###Obtaining a specific release
