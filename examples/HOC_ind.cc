@@ -1,4 +1,4 @@
-/*! \include HOCind.cc
+/*! \include HOC_ind.cc
   A twist of additive House-of-Cards models with mutations within haplotypes
   having their effect sizes constrained to = new haplotype effect size.
 */
@@ -62,7 +62,14 @@ int main(int argc, char ** argv)
   if (argc != 8)
     {
       std::cerr << "Too few arguments\n"
-		<< "Usage: HOCind N mu sigmu rho ngens nreps seed\n";
+		<< "Usage: " << argv[0] << " N mu sigmu rho ngens nreps seed\n"
+		<< "where:\n"
+		<< "N = diploid population size\n"
+		<< "mu = mutation rate to variants affecting fitness\n"
+		<< "sigmu = standard deviation of effect sizes.  E ~ N(0,sigmu^2)\n"
+		<< "r = recombination rate (per diploid, per generation)\n"
+		<< "nreps = number of replicates to simulate\n"
+		<< "seed = random number seed\n";	
       exit(10);
     } 
   int argument=1;
@@ -183,7 +190,7 @@ int main(int argc, char ** argv)
       				 [](double & d, const mlist::iterator & m) { return d + m->s; } );
 	  G.push_back(sum);
 	});
-      std::cout << gsl_stats_variance(&G[0],1,G.size()) << '\n';
+      std::cout << gsl_stats_variance(&G[0],1,G.size()) << std::endl;
     }
   gsl_rng_free(r);
   return 0;

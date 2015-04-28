@@ -281,3 +281,27 @@ n = the sample size to pull from the population at the end of each simulated rep
 nreps = the number of replicates to simulated
 seed = seed value for random number generations
 ~~~
+
+#### HOC_ind
+
+This program simulates a little twist on Turelli's House-of-Cards (HOC) model.  The main point of this model is to demonstrate how to use KTfwd::tags::gamete_dependent to implement mutation models that depend on the current gamete state.
+
+In a typical HOC model (Kingman), the effect size of a mutated allele is a new draw from a Gaussian distribution.  In this simulation, the current effect size of an allele, before mutation, is additive over causative mutations, with sum \f$y\f$.  After the addition of a single mutation, its new effect size will be \f$x\f$, and thus the effect size of the new mutation, \f$e\f$, is chosen such that \f$x = y+e\f$.
+
+The fitness model here is Gaussian stabilizing selection with a mean of 0 and a standard deviation of 1.  With this fitness function and the additive model of Turelli, \f$V(G) \approx 4\mu\f$ when the ratio of the variance in effect sizes over the variance in fitness falls within a certain range.  That approximation seems to hold, at least roughly, for this odd method of generating the effect sizes of new variants.
+
+The usage is:
+
+~~~
+Usage: ./HOC_ind N mu sigmu rho ngens nreps seed
+where:
+N = diploid population size
+mu = mutation rate to variants affecting fitness
+sigmu = standard deviation of effect sizes.  E ~ N(0,sigmu^2)
+r = recombination rate (per diploid, per generation)
+nreps = number of replicates to simulate
+seed = random number seed
+~~~
+
+The only output is that $V(G)$, the genetic variance in fitness, is written to stdout for each replicate.
+

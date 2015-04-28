@@ -52,9 +52,9 @@ The template parameters are of type KTfwd::sugar::GSL_RNG_TYPE_TAG;
 
 ## Built-in "standard" mutation types and models.
 
-__fwdpp__ provides KTfwd::mutation, which is a "standard" type of variant for a population-genetic simulation.  A mutation is association with a selection coefficient, $s$, and a dominance coefficient, $h$.  The typical "popgen" type of simulation assigns traits values $1$, $1+hs$, and $1+xs$ (where $x = 1$ or 2, depending on the particulars) to genotypes $AA$, $Aa$, and $aa$, respectively, where $a$ represents the mutation.
+__fwdpp__ provides KTfwd::mutation, which is a "standard" type of variant for a population-genetic simulation.  A mutation is association with a selection coefficient, \f$s\f$, and a dominance coefficient, \f$h\f$.  The typical "popgen" type of simulation assigns traits values \f$1\f$, \f$1+hs\f$, and \f$1+xs\f$ (where \f$x = 1\f$ or 2, depending on the particulars) to genotypes \f$AA\f$, \f$Aa\f$, and \f$aa\f$, respectively, where \f$a\f$ represents the mutation.
 
-The sugar layer provides the additional type KTfwd::popgenmut, which also tracks $g$, the generation in the simulation where the mutation first arose.
+The sugar layer provides the additional type KTfwd::popgenmut, which also tracks \f$g\f$, the generation in the simulation where the mutation first arose.
 
 The sugar layer also provides KTfwd::infsites, which generates mutations according to an infinitely-many sites scheme.  The mutation types that are supported are KTfwd::mutation and KTfwd::popgenmut.  I intend KTfwd::infsites to facilitate rapid prototyping of __fwdpp__-based simulations, and many users may find these mutation-related types sufficient for their own research needs.
 

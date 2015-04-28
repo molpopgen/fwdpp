@@ -80,7 +80,7 @@ namespace KTfwd {
       Apply mutation model N times to a new gamete.
       Updates mutation list
 
-      \example HOCind.cc
+      \example HOC_ind.cc
     */
     template<typename mutation_model,
 	     typename mutation_insertion_policy,

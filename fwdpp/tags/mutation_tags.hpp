@@ -7,7 +7,7 @@ namespace KTfwd {
     template<bool> struct mmodel_type{};
     //! Gamete-independent mutation model tag (will typically not be used)
     using gamete_independent = mmodel_type<false>;
-    //! Gamete-dependent mutation model tag \example HOCind.cc
+    //! Gamete-dependent mutation model tag
     using gamete_dependent = mmodel_type<true>;
   }
 }
