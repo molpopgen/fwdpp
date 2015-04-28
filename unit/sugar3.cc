@@ -69,46 +69,54 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
   BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
-  // //Compare the mutations
-  // for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
-  //   {
-  //     BOOST_CHECK_EQUAL( m1->pos, m2->pos );
-  //     BOOST_CHECK_EQUAL( m1->n, m2->n );
-  //   }
+
+  //Compare the mutations
+  for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
+    {
+      BOOST_CHECK_EQUAL( m1->pos, m2->pos );
+      BOOST_CHECK_EQUAL( m1->n, m2->n );
+    }
   
-  // //Compare the gametes
-  // for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-  //   {
-  //     BOOST_CHECK( g1 != g2 );
-  //     for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  //Compare the gametes
+  for( auto gpop1 = pop.gametes.begin(),gpop2 = pop2.gametes.begin() ; gpop1 != pop.gametes.end() ; ++gpop1,++gpop2 )
+    {
+      BOOST_REQUIRE( gpop1->size() == gpop2->size() );
+      for( auto g1 = gpop1->begin(),g2 = gpop2->begin() ; g1 != gpop1->end() ; ++g1,++g2 )
+	{
+	  BOOST_CHECK( g1 != g2 );
+	  for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
+	    {
+	      BOOST_CHECK( m1 != m2 );
+	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+	    }
+	}
+    }
   
   // //Compare the diploids
-  // for( auto d1 = pop.diploids.begin(),d2 = pop2.diploids.begin() ; d1 != pop.diploids.end() ; ++d1,++d2 )
-  //   {
-  //     BOOST_CHECK(d1->first != d2->first);
-  //     BOOST_CHECK(d1->second != d2->second);
-  //     BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-  //     BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
-  //     for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //     for( auto m1 = d1->second->mutations.begin(),m2=d2->second->mutations.begin() ; m1 != d1->second->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  for( auto dpop1 = pop.diploids.begin(),dpop2 = pop2.diploids.begin() ; dpop1 != pop.diploids.end() ; ++dpop1,++dpop2 )
+    {
+      for( auto d1 = dpop1->begin(),d2 = dpop2->begin() ; d1 != dpop1->end() ; ++d1,++d2 )
+	{
+	  BOOST_CHECK(d1->first != d2->first);
+	  BOOST_CHECK(d1->second != d2->second);
+	  BOOST_CHECK( std::distance( dpop1->begin(),d1->first ) == std::distance( dpop2->begin(),d2->first ) );
+	  BOOST_CHECK( std::distance( dpop1->begin(),d1->second ) == std::distance( dpop2->begin(),d2->second ) );
+	  for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
+	    {
+	      BOOST_CHECK( m1 != m2 );
+	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+	    }
+	  for( auto m1 = d1->second->mutations.begin(),m2=d2->second->mutations.begin() ; m1 != d1->second->mutations.end() ; ++m1,++m2 )
+	    {
+	      BOOST_CHECK( m1 != m2 );
+	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+	    }
+	}
+    }
 }
