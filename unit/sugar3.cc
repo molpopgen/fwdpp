@@ -3,6 +3,15 @@
   \ingroup unit
   \brief Testing KTfwd::multiloc and KTfwd::multiloc_serialized
 */
+
+/*
+  This typedef in sugar/multiloc.hpp is causing the assert()
+to faile:
+  template<typename mtype> using multiloc_dipvector_t = boost::container::vector< boost::container::vector<
+										    std::pair<typename multiloc_glist_t<mtype>::iterator,
+											      typename multiloc_glist_t<mtype>::iterator> >
+										  >;
+*/
 #define BOOST_TEST_MODULE sugarTest3
 #define BOOST_TEST_DYN_LINK 
 
