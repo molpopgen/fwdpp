@@ -13,7 +13,9 @@
 #include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
+#ifndef USE_STANDARD_CONTAINERS //from config.h
 #define FWDPP_SUGAR_USE_BOOST
+#endif
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>
@@ -349,7 +351,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assigment_operator )
       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng,[&rng](){ return gsl_ran_flat(rng,3.,4.); })
       };
 
-  //Equal mutation and rec. rates per locus
+  //Equal mutation within and rec. rates b/w loci
   std::vector<double> mu(4,0.005),rbw(3,0.005);
   BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
