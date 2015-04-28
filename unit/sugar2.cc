@@ -12,7 +12,7 @@
 #ifndef USE_STANDARD_CONTAINERS //from config.h
 #define FWDPP_SUGAR_USE_BOOST
 #endif
-su#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 
