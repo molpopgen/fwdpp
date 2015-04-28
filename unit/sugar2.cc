@@ -2,7 +2,7 @@
   \ingroup unit 
   \brief Testing KTfwd::metapop and KTfwd::metapop_serialized
 */
-#define BOOST_TEST_MODULE sugarTest1
+#define BOOST_TEST_MODULE sugarTest2
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
