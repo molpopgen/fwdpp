@@ -8,8 +8,7 @@ check_PROGRAMS=mutateTest \
 	mlocusCrossoverTest \
 	siteDepFitness \
 	sugar1 \
-	sugar2 \
-	sugar3
+	sugar2
 
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
@@ -20,7 +19,6 @@ mlocusCrossoverTest_SOURCES=mlocusCrossoverTest.cc
 siteDepFitness_SOURCES=siteDepFitness.cc
 sugar1_SOURCES=sugar1.cc
 sugar2_SOURCES=sugar2.cc
-sugar3_SOURCES=sugar3.cc
 
 AM_CXXFLAGS=
 
