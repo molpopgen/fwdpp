@@ -151,7 +151,7 @@ namespace KTfwd {
       using glist_t = glist;
       //! Container of glist_t (gametes for each locus)
       using vglist_t = vglist;
-            //! Lookup table type for recording mutation positions, etc.
+      //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
       
       //! Population size
