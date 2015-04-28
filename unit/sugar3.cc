@@ -6,6 +6,7 @@
 #define BOOST_TEST_MODULE sugarTest3
 #define BOOST_TEST_DYN_LINK 
 
+#include <iostream>
 #include <config.h>
 #include <functional>
 #include <algorithm>
@@ -24,7 +25,6 @@ struct no_selection_multi
 {
   typedef double result_type;
   template< typename diploid_type >
-  //inline double operator()( const std::vector< std::pair<iterator_type,iterator_type> > & diploid ) const
   inline double operator()( diploid_type & diploid ) const
   {
     return 1.;
@@ -37,6 +37,22 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
   poptype pop(1000,4);
+  BOOST_REQUIRE_EQUAL( pop.gametes[0].size(),1 );
+  BOOST_REQUIRE_EQUAL( pop.gametes[1].size(),1 );
+  BOOST_REQUIRE_EQUAL( pop.gametes[2].size(),1 );
+  BOOST_REQUIRE_EQUAL( pop.gametes[3].size(),1 );
+  BOOST_REQUIRE_EQUAL( pop.diploids.size(), 1000 );
+  for( unsigned i = 0 ; i < pop.diploids.size() ; ++i )
+    {
+      BOOST_REQUIRE_EQUAL( pop.diploids[i].size(), 4 );
+      auto gptr = pop.gametes.begin();
+      for( unsigned j = 0 ; j < 4 ; ++j, ++gptr )
+	{
+	  BOOST_REQUIRE( pop.diploids[i][j].first == gptr->begin() );
+	  BOOST_REQUIRE( pop.diploids[i][j].second == gptr->begin() );
+	}
+    }
+  BOOST_REQUIRE( pop.mutations.empty() == true );
   unsigned generation = 0;
   
   //Mutation model for 4 loci
@@ -70,6 +86,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 
   //Equal mutation and rec. rates per locus
   std::vector<double> mu(4,0.005),rbw(3,0.005);
+  BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
     {
       double wbar = KTfwd::sample_diploid( rng,
