@@ -101,14 +101,42 @@ You must have the following on your system:
 ##Library dependencies
 fwdpp depends upon the following libraries:
 
-1.  [boost](http://www.boost.org).  Note: use of boost is optional, but is the default.  See below for more info.
+1.  [boost](http://www.boost.org).  Note: use of boost is optional, but is the default. 
 2.  [GSL](http://gnu.org/software/gsl)
 3.  [zlib](http://zlib.net)
 4.  [libsequence](http://github.com/molpopgen/libsequence).
 
+The first three are  available as pre-built packages on most Linux distributions and via [homebrew-science](http://github.com/homebrew-science) on OS X .  The latter (libsequence) also depends on the first three, and must be built from source or via  [homebrew-science](http://github.com/homebrew-science) on OS X.
 
+### Why use boost?
 
-The first three are  available as pre-built packages on most Linux distributions.  The latter (libsequence) also depends on the first three, and must be built from source.
+C++ containers (vectors, lists, etc.) are parameterized by the type of data that they store and the method use to allocate memory.  Thus, when you declare:
+
+~~~{.cpp}
+#include <list>
+#include <diploid.hh>
+std::list< KTfwd::mutation > mlist;
+~~~
+
+you are really saying:
+
+~~~{.cpp}
+#include <list>
+#include <diploid.hh>
+std::list< KTfwd::mutation, std::allocator<KTfwd::mutation> >
+~~~
+
+Boost provides a memory pool allocator that can be used to greatly speed up simulations:
+
+~~~{.cpp}
+#include <list>
+#include <boost/pool/pool_alloc.hpp>
+#include <diploid.hh>
+//You can also use boost::container::list instead of std::list, etc.
+std::list< KTfwd::mutation,boost::pool_allocator<KTfwd::mutation> >
+~~~
+
+The memory pool is more efficient than the standard allocator in the case where objects are constantly being allocated and deallocated, which is the case for forward simulations, where mutations are entering the population and often rapidly going extinct.
 
 ##Obtaining the source code
 
@@ -173,7 +201,7 @@ make check
 make install
 ~~~
 
-The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  The effect of this is roughly a 10% performance loss (e.g., simulations will take about 10% longer to run).
+The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  Not using boost's pool_allocator can result in substantial performance loss in simulations with high mutation and/or recombination rates.
 
 Related to the above note, it is worth installing boost on your system.  Many of their libraries, especially program_options, will probably be worth using for simulations that you write.
 
