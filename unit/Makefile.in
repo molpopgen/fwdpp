@@ -82,7 +82,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	sugar3$(EXEEXT)
 @BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -137,6 +138,10 @@ am__sugar2_SOURCES_DIST = sugar2.cc
 @BUNIT_TEST_PRESENT_TRUE@am_sugar2_OBJECTS = sugar2.$(OBJEXT)
 sugar2_OBJECTS = $(am_sugar2_OBJECTS)
 sugar2_LDADD = $(LDADD)
+am__sugar3_SOURCES_DIST = sugar3.cc
+@BUNIT_TEST_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
+sugar3_OBJECTS = $(am_sugar3_OBJECTS)
+sugar3_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -169,7 +174,8 @@ am__v_CXXLD_1 =
 SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
 	$(mlocusCrossoverTest_SOURCES) $(mutateTest_SOURCES) \
 	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
-	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) $(sugar2_SOURCES)
+	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) $(sugar2_SOURCES) \
+	$(sugar3_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
@@ -177,7 +183,7 @@ DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
 	$(am__policyTests_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
-	$(am__sugar2_SOURCES_DIST)
+	$(am__sugar2_SOURCES_DIST) $(am__sugar3_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -305,6 +311,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
 @BUNIT_TEST_PRESENT_TRUE@sugar1_SOURCES = sugar1.cc
 @BUNIT_TEST_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
+@BUNIT_TEST_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -381,6 +388,10 @@ sugar2$(EXEEXT): $(sugar2_OBJECTS) $(sugar2_DEPENDENCIES) $(EXTRA_sugar2_DEPENDE
 	@rm -f sugar2$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sugar2_OBJECTS) $(sugar2_LDADD) $(LIBS)
 
+sugar3$(EXEEXT): $(sugar3_OBJECTS) $(sugar3_DEPENDENCIES) $(EXTRA_sugar3_DEPENDENCIES) 
+	@rm -f sugar3$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar3_OBJECTS) $(sugar3_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -396,6 +407,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar3.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
