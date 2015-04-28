@@ -6,7 +6,6 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-#include <iostream>
 namespace KTfwd {
   namespace sugar {
     /*!
