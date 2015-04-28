@@ -1,4 +1,8 @@
-//! \file mutateTest.cc \ingroup unit
+/*!
+  \file gametaTest.cc
+  \ingroup unit
+  \brief Tests construction and assigment to gametes via std::move
+*/
 #define BOOST_TEST_MODULE gameteTest
 #define BOOST_TEST_DYN_LINK 
 

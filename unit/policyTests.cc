@@ -1,3 +1,7 @@
+/*! \file policyTests.cc
+  \ingroup unit
+  \brief Checks whether or not move or copy constructors are called.  Results can vary system-to-system/compiler-to-compiler.
+*/
 #define BOOST_TEST_MODULE policyTests
 #define BOOST_TEST_DYN_LINK
 

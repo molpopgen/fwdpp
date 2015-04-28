@@ -1,4 +1,7 @@
-//! \file sugar3.cc \ingroup unit
+/*! \file sugar2.cc
+  \ingroup unit 
+  \brief Testing KTfwd::metapop and KTfwd::metapop_serialized
+*/
 #define BOOST_TEST_MODULE sugarTest1
 #define BOOST_TEST_DYN_LINK 
 

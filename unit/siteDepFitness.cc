@@ -1,5 +1,7 @@
-/*
-  Unit tests of KTfwd::site_dependent_fitness
+/*!
+  \file siteDepFitness.cc
+  \brief Unit tests of KTfwd::site_dependent_fitness
+  \ingroup unit
  */
 
 #define BOOST_TEST_MODULE siteDepFitness

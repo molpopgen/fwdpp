@@ -1,4 +1,8 @@
-//! \file mutationTest.cc \ingroup unit
+/*!
+  \file mutationTest.cc 
+  \ingroup unit
+  \brief Tests that move semantics work with mutations
+*/
 #define BOOST_TEST_MODULE mutationTest
 #define BOOST_TEST_DYN_LINK 
 

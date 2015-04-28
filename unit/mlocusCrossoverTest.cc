@@ -1,4 +1,8 @@
-//! \file mlocusCrossoverTest.cc \ingroup unit
+/*!
+  \file mlocusCrossoverTest.cc
+  \ingroup unit
+  \brief Tests KTfwd::fwdpp_internal::multilocus_rec
+*/
 
 #define BOOST_TEST_MODULE mlocusCrossoverTest
 #define BOOST_TEST_DYN_LINK 

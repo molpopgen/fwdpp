@@ -1,4 +1,8 @@
-//! \file mutateTest.cc \ingroup unit
+/*!
+  \file mutateTest.cc
+  \ingroup unit
+  \brief Tests KTfwd::fwdpp_internal::add_N_mutations, KTfwd::fwdpp_internal::add_new_mutation, KTfwd::mutation, KTfwd::gamete
+*/
 #define BOOST_TEST_MODULE mutateTest
 #define BOOST_TEST_DYN_LINK 
 

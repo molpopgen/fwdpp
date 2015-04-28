@@ -8,7 +8,10 @@
   They are implemented using boost's unit testing framework, and will not be compiled unless
   the configure script finds this library on your system.
  */
-//! \file crossoverTest.cc \ingroup unit
+/*! \file crossoverTest.cc
+  \ingroup unit
+  \brief Tests of KTfwd::fwdpp_internal::recombine_gametes
+*/
 #define BOOST_TEST_MODULE crossoverTest
 #define BOOST_TEST_DYN_LINK 
 
