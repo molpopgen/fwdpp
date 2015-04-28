@@ -62,7 +62,7 @@ int main(int argc, char ** argv)
   if (argc != 8)
     {
       std::cerr << "Too few arguments\n"
-		<< "Usage: diploid_ind N theta rho ngens samplesize nreps seed\n";
+		<< "Usage: HOCind N mu sigmu rho ngens nreps seed\n";
       exit(10);
     } 
   int argument=1;
