@@ -44,6 +44,8 @@ This code is distributed via my gitub [account](http://www.github.com/molpopgen)
 
 ###Revision history
 
+[Release notes](@ref md_md_RELEASE_NOTES)
+
 Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](@ref md_md_RELEASE_NOTES), beginning with release 0.2.4.
 
 ##Which C++?
