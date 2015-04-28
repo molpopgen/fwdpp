@@ -4,6 +4,17 @@ Through __fwdpp__ 0.2.9, a lot of the basic setup of a simulation could get tedi
 
 These functions are only relevant to _indivdual-based_ simulations.  The gamete-based portion of __fwdpp__ is unlikely to be supported (which is fine, as it is slower...).
 
+## Purpose
+
+The intention of the "sugar layer" is to:
+
+* Provide a path to more rapid development of simulations, which is accomplished by providing a set of C++11 template aliases for structures defining population objects.
+* Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include KTfwd::mutation (which has been in the library "forever"), KTfwd::popgenmut, which is implemented over and over again as mutation_with_age in the examples (@ref md_md_examples), and KTfwd::infsites, which implements an infinitely-many sites mutation scheme that can return either of these two types of mutation.
+* Provide data types wrapping the serialization methods in __fwdpp__ (see @ref md_md_serialization).  The relevant sugar components are KTfwd::serialize and KTfwd::deserialize.
+* Make sure that all types defined in the sugar layer are properly-defined so that they may be used in conjunction with tools like [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) to enable running/processing simulations within R, and [boost](http://www.boost.org)'s "boost.python" library to enable processing/running simulations in python.
+
+__Note:__  You may find an example of using __fwdpp__ + Rcpp in [foRward](http://github.com/molpopgen/foRward) and an example of using boost.python in the extensions subdirectory of the __fwdpp__ source code repository.  I  will address the issue of Cython support soon, but am currently finding the C++-related documentation for that project to be, well, horrid.
+
 ## Overview
 
 The sugar layer is comprised of several different headers, all located in _fwdpp/sugar_.  These header files are intended to be used directly for implementing simulations.
@@ -12,12 +23,8 @@ Further subdirectories contain the details of the namespace KTfwd::sugar, which 
 
 Importantly, _the use of these headers is optional_, and may not work for every type of simulation.  Much of this is based upon what I've found to work for my own research using __fwdpp__.
 
-A major goal of this part of __fwdpp__ is to facilitate using the library in other programming environments, especially R and python.  I have successfully used this code to execute simulations in R using [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) and in python via [boost](http://www.boost.org)'s "boost.python" library.
-
-You may find an example of using __fwdpp__ + Rcpp in [foRward](http://github.com/molpopgen/foRward) and an example of using boost.python in the extensions subdirectory of the __fwdpp__ source code repository.
-
-
-## Smart wrapper to GSL random number generators
+## Components 
+### Smart wrapper to GSL random number generators
 
 __fwdpp__ using the [GSL](http://gnu.org/software/gsl) for random number generation.  The sugar layer provides a smart pointer wrapper around a gsl_rng *.  Currently, the only supported rng types are gsl_rng_mt19937 and gsl_rng_taus2.
 
@@ -50,7 +57,7 @@ This wrapper has the following properties:
 
 The template parameters are of type KTfwd::sugar::GSL_RNG_TYPE_TAG;
 
-## Built-in "standard" mutation types and models.
+### Built-in "standard" mutation types and models.
 
 __fwdpp__ provides KTfwd::mutation, which is a "standard" type of variant for a population-genetic simulation.  A mutation is association with a selection coefficient, \f$s\f$, and a dominance coefficient, \f$h\f$.  The typical "popgen" type of simulation assigns traits values \f$1\f$, \f$1+hs\f$, and \f$1+xs\f$ (where \f$x = 1\f$ or 2, depending on the particulars) to genotypes \f$AA\f$, \f$Aa\f$, and \f$aa\f$, respectively, where \f$a\f$ represents the mutation.
 
@@ -67,7 +74,7 @@ The relevant sugar headers are:
 #include <fwdpp/sugar/infsites.hpp>
 ~~~
 
-## Simplifying the declaration of a population
+### Simplifying the declaration of a population
 
 The sugar layer greatly simplifies the setup of the various containers needed for a simulation.  The typical simulation requires that the programmer define mutation types, gamete types, mutation list types, gamete list types, and diploid vector types.  Further, the programmer may choose to use boost's rapid memory allocation pools and use conditional compilation to support systems without boost.
 
@@ -118,7 +125,7 @@ using poptype = KTfwd::singlepop<KTfwd::popgenmut>;
 
 (Note that simulations will typically be a lot faster if you use boost's memory pools!)
 
-### Copyable populations
+#### Copyable populations
 
 There are important use cases that require copyable populations.  For example, exposing classes to python using boost.python requires that the underlying C++ types are copy-constructible, and thus the "poptypes" described above will not compile successfully because their copy constructors are deleted for safety.
 
@@ -148,7 +155,7 @@ int main( int argc, char ** argv )
 }
 ~~~
 
-### Details
+#### Details
 
 These "poptypes" contain all of the types needed to make calls to KTfwd::sample_diploid, etc.:
 
@@ -195,7 +202,7 @@ int main(int argc, char ** argv)
   }
 ~~~
 
-### Further customization
+#### Further customization
 
 It you aren't happy with how I've set up the "poptypes", you may provide your own typedefs in terms of the following classes:
 
@@ -208,7 +215,7 @@ It you aren't happy with how I've set up the "poptypes", you may provide your ow
 
 You should also be able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
 
-## Simplifying serializing of simulated data
+### Simplifying serializing of simulated data
 
 The population types discussed above may be serialized using KTfwd::serialize and deserialized using KTfwd::deserialize.  The sugar layer also provides KTfwd::mutation_writer and KTfwd::mutation reader to support the serialization of KTfwd::mutation and KTfwd::popgenmut.
 
@@ -236,7 +243,7 @@ int main( int argc, char ** argv )
 
 The above will also work with the _serialized versions of the various "poptypes".
 
-### Details
+#### Details
 
 KTfwd::serialize contains a std::stringstream called "buffer", which will hold the serialized data.  After deserializing, buffer.seekg(0) is called so that you may read from the beginning of the buffer.
 

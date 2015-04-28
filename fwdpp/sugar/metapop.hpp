@@ -21,6 +21,7 @@ namespace KTfwd
 
   /*!
     \brief Single locus metapopulation simulation without serialization.  Cannot be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype> using metapop = sugar::metapop<mtype,
@@ -35,6 +36,7 @@ namespace KTfwd
 
   /*!
     \brief Single locus metapopulation simulation with serialization.  Can be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype,
@@ -64,6 +66,7 @@ namespace KTfwd
 									     typename metapop_glist_t<mtype>::iterator> >;
   /*!
     \brief Single locus metapopulation simulation without serialization.  Cannot be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype> using metapop = sugar::metapop<mtype,
@@ -78,6 +81,7 @@ namespace KTfwd
 
   /*!
     \brief Single locus metapopulation simulation with serialization.  Can be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype,

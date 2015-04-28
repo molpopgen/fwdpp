@@ -23,6 +23,7 @@ namespace KTfwd
 
   /*!
     \brief Single population, multilocus simulation without serialization.  Cannot be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype> using multiloc = sugar::multiloc<mtype,
@@ -68,6 +69,7 @@ namespace KTfwd
 
   /*!
     \brief Single population, multilocus simulation without serialization.  Cannot be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype> using multiloc = sugar::multiloc<mtype,
@@ -81,6 +83,7 @@ namespace KTfwd
 
   /*!
     \brief Single population, multilocus simulation with serialization.  Can be copied, etc.
+    See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype,

@@ -20,6 +20,10 @@ namespace KTfwd {
       All that is missing is the mutation_type and the container types.
       
       Does not allow copy construction/assignment!
+      
+      See @ref md_md_sugar for rationale, etc.
+
+      \ingroup sugar
     */
     template<typename mutation_type,
 	     typename mlist,
@@ -108,9 +112,13 @@ namespace KTfwd {
 
     /*!
       \brief Abstraction of what is needed to simulate a single population
-      using an individual-based sampler from fwdpp
+      using an individual-based sampler from fwdpp.
       
-      Allows copy/construction/assignment via deep copy
+      Allows copy/construction/assignment via deep copy.
+
+      See @ref md_md_sugar for rationale, etc.
+
+      \ingroup sugar
     */
     template<typename mutation_type,
 	     typename mwriter,

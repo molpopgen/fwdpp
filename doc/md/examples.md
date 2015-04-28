@@ -303,5 +303,5 @@ nreps = number of replicates to simulate
 seed = random number seed
 ~~~
 
-The only output is that $V(G)$, the genetic variance in fitness, is written to stdout for each replicate.
+The only output is \f$V(G)\f$, the genetic variance in fitness, which is written to stdout for each replicate.
 
