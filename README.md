@@ -138,6 +138,8 @@ std::list< KTfwd::mutation,boost::pool_allocator<KTfwd::mutation> >
 
 The memory pool is more efficient than the standard allocator in the case where objects are constantly being allocated and deallocated, which is the case for forward simulations, where mutations are entering the population and often rapidly going extinct.
 
+Technically, if your write your own vector/list classes that are parameterized in the same way as the STL classes, then you may also (attempt to) use those with __fwdpp__.
+
 ##Obtaining the source code
 
 ###Obtaining the master branch
