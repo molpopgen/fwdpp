@@ -127,10 +127,25 @@ namespace KTfwd
      
 	//Need to store a vector of the equivalent of p1g1,p1g2 out to p1gn,p2gn
 	//This is a trivial copying of iterators, so not that expensive
-	auto p1c( *(pptr+p1) ),
+	auto p1c = *(pptr+p1),
 	  p2c( *(pptr+p2) );
-	assert( p1c == *(pptr+p1) );
-	assert( p2c == *(pptr+p2) );
+	/*
+	  Through 0.2.9, we just said assert(p1c == *(pptr+p1)) here.
+	  Oddly, that assert always fails if the type of a diploid is
+	  boost::container::vector< std::pairs of iterators to gametes >.
+	*/
+#ifndef NDEBUG
+	for(unsigned i = 0 ; i < p1c.size() ; ++i )
+	  {
+	    assert( (p1c.begin()+i)->first == ((pptr+p1)->begin()+i)->first );
+	    assert( (p1c.begin()+i)->second == ((pptr+p1)->begin()+i)->second );
+	  }
+	for(unsigned i = 0 ; i < p2c.size() ; ++i )
+	  {
+	    assert( (p2c.begin()+i)->first == ((pptr+p2)->begin()+i)->first );
+	    assert( (p2c.begin()+i)->second == ((pptr+p2)->begin()+i)->second );
+	  }
+#endif
 
 	//Using just the routines below give correct E[S] for n = 20.
 	//recombination, too! OK--this seems good based on some limited testing.
