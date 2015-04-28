@@ -67,7 +67,7 @@ namespace KTfwd
 
   /*! \brief Base class for gametes.
     A gamete is a container of pointers (iterators) to mutations + a count in the population
-    \note The typical use of this class is simply to define your mutation type (see @ref TotMut)
+    \note The typical use of this class is simply to define your mutation type (see @ref md_md_policies)
     and then use a typedef to define your gamete type in the simulations:
     \code
     using gamete_t = KTfwd::gamete_base<mutation_type>
