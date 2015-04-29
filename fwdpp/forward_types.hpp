@@ -11,6 +11,8 @@
 #include <list>
 #include <cmath>
 #include <type_traits>
+#include <fwdpp/tags/gamete_tags.hpp>
+
 namespace KTfwd
 {
   /*! \brief Base class for mutations
@@ -66,7 +68,16 @@ namespace KTfwd
   };
 
   /*! \brief Base class for gametes.
-    A gamete is a container of pointers (iterators) to mutations + a count in the population
+
+    A gamete is a container of pointers (iterators) to mutations + a count in the population.
+
+    The template parameter types are:
+    mut_type = the mutation type to be used.  Must be a model of KTfwd::mutation_base
+    list_type = the (doubly-linked) list that mutations are stored in.  This is mainly used for defining types for this class
+    tag_type = A type that can be used as a "dispatch tag".  Currently, these are not used elsewhere in the library, but they may
+    be in the future, or this may disappear in future library releases.  The current default (KTfwd::tags::standard_gamete) maintains
+    backwards compatibility with previous library versions and does not affect compilation of existing programs based on the library.
+
     \note The typical use of this class is simply to define your mutation type (see @ref md_md_policies)
     and then use a typedef to define your gamete type in the simulations:
     \code
@@ -76,7 +87,8 @@ namespace KTfwd
     \ingroup basicTypes
   */
   template<typename mut_type,
-	   typename list_type = std::list<mut_type> >
+	   typename list_type = std::list<mut_type>,
+	   typename tag_type = tags::standard_gamete>
   struct gamete_base
   {
     static_assert( std::is_base_of<mutation_base,mut_type>::value,
@@ -89,6 +101,8 @@ namespace KTfwd
     using mutation_container = std::vector< mutation_list_type_iterator >;
     using mcont_iterator = typename mutation_container::iterator;
     using mcont_const_iterator = typename mutation_container::const_iterator;
+    //! Dispatch tag type
+    using gamete_tag = tag_type;
     //! Container of mutations not affecting trait value/fitness ("neutral mutations")
     mutation_container mutations;
     //! Container of mutations affecting trait value/fitness ("neutral mutations")
