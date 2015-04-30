@@ -106,7 +106,7 @@ Usage:
 Note: the demographic model here implemented may be viewed as biologically bizarre, as it mimics the default behavior of “ms” for population split models. Let’s compare a specific example vs. the equivalent ms command line:
 
 ~~~
-./diplod_twopop_mig 10000 50 50 100000 1000 1 50 1 $RANDOM | gzip > outfile.gz
+./diploid_twopop_mig 10000 50 50 100000 1000 1 50 1 $RANDOM | gzip > outfile.gz
 ~~~
 
 and

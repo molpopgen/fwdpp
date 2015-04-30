@@ -69,7 +69,7 @@ The [boost](http://www.boost.org) C++ libraries provide nicely-implemented memor
 ~~~{.cpp}
 #include <boost/container/list.hpp>
 #include <boost/pool/pool_alloc.hpp>
-#include <fwdpp/diplod.hh>
+#include <fwdpp/diploid.hh>
 
 //We see that typedefs lead to improved sanity:
 using mutation_t = KTfwd::mutation;
@@ -104,7 +104,7 @@ If your mutation list type is not std::list, then you must provide an additional
 ~~~{.cpp}
 #include <boost/container/list.hpp>
 #include <boost/pool/pool_alloc.hpp>
-#include <fwdpp/diplod.hh>
+#include <fwdpp/diploid.hh>
 
 //We see that typedefs lead to improved sanity:
 using mutation_t = KTfwd::mutation;
