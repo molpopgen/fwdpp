@@ -3,36 +3,30 @@
   having their effect sizes constrained to = new haplotype effect size.
 */
 #include <config.h>
-#include <fwdpp/diploid.hh>
-#include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
+#include <iostream>
 #include <gsl/gsl_statistics_double.h>
-/*
-  NOTE: we are using boost containers with boost memory allocators.  
-  My experience on my systems is that each of those objects is worth a 5-10% 
-  run time speedup compare to the same objects from namespace std.
+#include <fwdpp/diploid.hh>
+#if !defined(USE_STANDARD_CONTAINERS) && (defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_HASH))
+#define FWDPP_SUGAR_USE_BOOST
+#endif
+#include <fwdpp/sugar/singlepop.hpp>
+#include <fwdpp/sugar/GSLrng_t.hpp>
 
-  fwdpp is compatible with ANY container system as long as the
-  one containing gametes conforms to the behavior of std::vector and 
-  the one containing mutations conforms to the behavior of std::list 
-  (especially w/regards to no pointer invalidation upon insertion/delete!!)
-*/
-
-//compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
-typedef KTfwd::mutation mtype;
-#include <common_ind.hpp>
+using mtype = KTfwd::mutation;
+using poptype = KTfwd::singlepop<mtype>;
 
 struct HOChap : public KTfwd::tags::gamete_dependent
 {
   gsl_rng * r;
   const double sigmu;
-  lookup_table_type * lookup;
+  poptype::lookup_table_t * lookup;
   HOChap( gsl_rng * __r, const double & __sigmu,
-	  lookup_table_type * __lookup ) : r(__r),sigmu(__sigmu),lookup(__lookup)
+	  poptype::lookup_table_t * __lookup ) : r(__r),sigmu(__sigmu),lookup(__lookup)
   {
   }
-  inline mtype operator()(gtype & g,mlist * mutations) const
+  inline mtype operator()(poptype::gamete_t & g,poptype::mlist_t * mutations) const
   {
     double pos = gsl_rng_uniform(r);
     while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
@@ -42,18 +36,18 @@ struct HOChap : public KTfwd::tags::gamete_dependent
     lookup->insert(pos);
     double E = gsl_ran_gaussian(r,sigmu); //effect size of hap, after mutation
     double sum = std::accumulate(g.smutations.begin(),g.smutations.end(),0.,
-				 [](double & d, const mlist::iterator & m) { return d + m->s; });
+				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
     double esize = (E > sum) ? std::fabs(E-sum) : -1.*std::fabs(E-sum);
     return mtype(pos,esize,1);
   }
 };
 
-double simple_gaussian( const glist::iterator & h1, const glist::iterator & h2 )
+double simple_gaussian( const poptype::glist_t::iterator & h1, const poptype::glist_t::iterator & h2 )
 {
   double sum = std::accumulate(h1->smutations.begin(),h1->smutations.end(),0.,
-			       [](double & d, const mlist::iterator & m) { return d + m->s; });
+			       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
   sum += std::accumulate(h2->smutations.begin(),h2->smutations.end(),0.,
-			 [](double & d, const mlist::iterator & m) { return d + m->s; });
+			 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
   return std::exp(-1.*std::pow(sum,2.)/2.);
 }
 
@@ -93,9 +87,8 @@ int main(int argc, char ** argv)
   std::copy(argv,argv+argc,std::ostream_iterator<char*>(std::cerr," "));
   std::cerr << '\n';
   
-  //Initiate random number generation system
-  gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
-  gsl_rng_set(r,seed);
+  //Initiate random number generation system from sugar layer
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> r(seed);
 
   unsigned twoN = 2*N;
 
@@ -104,28 +97,16 @@ int main(int argc, char ** argv)
 
   while(nreps--)
     {
-      //the population begins with 1 gamete with no mutations amd initial count 2N
-      glist gametes(1,gtype(twoN));
+      poptype pop(N);
 
-      //Establish the list of diploids.  Here, there is only 1 gamete, so it is easy:
-      std::vector< std::pair< glist::iterator, glist::iterator> > diploids(N,
-									   std::make_pair(gametes.begin(),
-											  gametes.begin()));
-      mlist mutations;  //the population is devoid of mutations
-      std::vector<mtype> fixations;  //store mutation that fix.  Passed to KTfwd::remove_fixed_lost
-      std::vector<unsigned> fixation_times; //store when they fix.  Passed to KTfwd::remove_fixed_lost
-      unsigned generation;
-      double wbar;
-      lookup_table_type lookup;  //this is our lookup table for the mutation model
-
-      HOChap mmodel(r,sigmu,&lookup);
-      for( generation = 0; generation < ngens; ++generation )
+      HOChap mmodel(r,sigmu,&pop.mut_lookup);
+      for( unsigned generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
-      	  wbar = KTfwd::sample_diploid(r,
-      				       &gametes,  //non-const pointer to gametes
-      				       &diploids, //non-const pointer to diploids
-      				       &mutations, //non-const pointer to mutations
+      	  double wbar = KTfwd::sample_diploid(r,
+      				       &pop.gametes,  //non-const pointer to gametes
+      				       &pop.diploids, //non-const pointer to diploids
+      				       &pop.mutations, //non-const pointer to mutations
       				       N,     //current pop size, remains constant
       				       mu,    //mutation rate per gamete
       				       /*
@@ -136,14 +117,14 @@ int main(int argc, char ** argv)
 				       mmodel,
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						   &gametes,
+						   &pop.gametes,
       						   littler,
       						   r,
       						   recmap),
 				       /*
 					 Policy to insert new mutations at the end of the mutations list
 				       */
-      				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				       /*
 					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					 If mutation results in a new gamete, add that gamete to the 
@@ -152,7 +133,7 @@ int main(int argc, char ** argv)
 					 copy identical to an existing gamete.  If so,
 					 that gamete's frequency increases by 1.
 				       */
-      				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
       				       /*
       					 Fitness is multiplicative over sites.
 
@@ -176,23 +157,22 @@ int main(int argc, char ** argv)
       					 been lost from the population.
       				       */
       				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0));
-      	  KTfwd::remove_lost(&mutations,&lookup);
-	  assert(KTfwd::check_sum(gametes,twoN));
+      	  KTfwd::remove_lost(&pop.mutations,&pop.mut_lookup);
+	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}    
       //Get VG for this replicate
       //Note: this can be done more efficiently via the boost accumulator library, which
       //we don't use here to reduce dependencies.
       std::vector<double> G;
-      std::for_each(diploids.cbegin(),diploids.cend(),[&G](const std::pair< glist::iterator, glist::iterator> & dip ) {
+      std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const std::pair< poptype::glist_t::iterator, poptype::glist_t::iterator> & dip ) {
       	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
-      				       [](double & d, const mlist::iterator & m) { return d + m->s; } );
+      				       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
       	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
-      				 [](double & d, const mlist::iterator & m) { return d + m->s; } );
+      				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
 	  G.push_back(sum);
 	});
       std::cout << gsl_stats_variance(&G[0],1,G.size()) << std::endl;
     }
-  gsl_rng_free(r);
   return 0;
 }
 
