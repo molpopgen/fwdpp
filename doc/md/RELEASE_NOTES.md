@@ -6,6 +6,7 @@
 * Added dispatch tag to KTfwd::gamete_base, via KTfwd::tags::gamete_type_tag.  Currently, this feature is not used in the library.  Its addition affects nothing other than what happens during compilation, and it may be used in the future to add new features to the library, or it may be remvoed.
 * Namespace KTfwd::sugar and \ref sugar functions added.
 * New tutorial added: \ref md_md_sugar
+* New tutorial added: \ref md_md_datatypes
 * Unit tests for sugar layer added
 
 ## 0.2.9
