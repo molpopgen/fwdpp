@@ -120,7 +120,7 @@ fwdpp depends upon the following libraries:
 3.  [zlib](http://zlib.net)
 4.  [libsequence](http://github.com/molpopgen/libsequence).
 
-The first three are  available as pre-built packages on most Linux distributions and via [homebrew-science](http://github.com/homebrew-science) on OS X .  The latter (libsequence) also depends on the first three, and must be built from source or via  [homebrew-science](http://github.com/homebrew-science) on OS X.
+The first three are  available as pre-built packages on most Linux distributions and via [homebrew-science](http://github.com/Homebrew/homebrew-science) on OS X .  The latter (libsequence) also depends on the first three, and must be built from source or via  [homebrew-science](http://github.com/Homebrew/homebrew-science) on OS X.
 
 ### Why use boost?
 
