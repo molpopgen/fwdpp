@@ -2,7 +2,7 @@
 
 This document introduces the fundamental data types for simulations implemented using __fwdpp__.
 
-The relevant header file defining these types xis 
+The relevant header file defining these types is 
 
 ~~~{.cpp}
 #include <fwdpp/forward_types.hpp>
