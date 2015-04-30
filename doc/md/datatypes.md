@@ -34,7 +34,7 @@ bool checked;
 This type is usable in a simulation, but not in an interesting simulation, as there is no selection coefficient, etc.  In order to add things to a mutation type, you extend KTfwd::mutation_base via public inheritance.  You may find an example of that in the next tutorial (@ref md_md_policies) and in the following types provided by the library:
 
 * KTfwd::mutation
-* Ktfwd::popgenmut
+* KTfwd::popgenmut
 
 ### Notes
 
