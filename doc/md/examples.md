@@ -19,7 +19,7 @@ seed = a random number seed. I will use $RANDOM as a seed, referring to the bash
 
 Note: familiarity with Hudson's "[ms](http://home.uchicago.edu/~rhudson1)" program is helpful for some of what comes below.
 
-####diploid
+####diploid (diploid.cc)
 
 The first program, diploid, simulates a Wright-Fisher population with mutation, recombination, and drift. To run it:
 
