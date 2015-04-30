@@ -35,11 +35,11 @@ Example:
 ./diploid 10000 10 10 100000 50 1 $RANDOM | gzip > test_diploid.gz
 ~~~
 
-####diploid\_ind
+####diploid\_ind (diploid_ind.cc)
 
 Identical to diploids, but uses the individual-based sampler. As this program (and diploid) simulate neutral models, this program will typically be slower than that gamete-based implementation when N is large.
 
-####diploid\_binaryIO
+####diploid\_binaryIO (diploid_binaryIO.cc)
 
 The next program is called diploid\_binaryIO. This program is identical to diploid, except that it only simulates one replicate at a time, creates two output files, and outputs the entire population rather than a sample of size n << 2N. The first file is an index file, containing an integer representing the replicate number of the output and the position in the haplotypes file where this record begins. The second file is the haplotypes file, which contains the entire population in binary format. 
 
@@ -67,11 +67,11 @@ diploid_binaryIO 10000 10 10 100000 $SGE_TASK_ID indexfile hapfile $seed
 
 The above script, when submitted to a Grid Engine queue, will result in 100 populations of size N=10,000 being written to hapfile. Further, “indexfile” will contain the ID number and position of each file. Records are not over-written because the program uses POSIX file locking to ensure that only 1 process at a time can do the writing. This is a complex program, as it mixes C++ objects with output streams such that they can be written to C-style file descriptors, which is required in order to use file locking (which is a C feature with no C++ analog). However, the advantage is that you write all data to one large file, avoiding the plague of lots of small files that can bring distributed file systems to their knees.
 
-####diploid\_binaryIO\_ind
+####diploid\_binaryIO\_ind (diploid_binaryIO_ind.cc)
 
 Identical to diploid\_binaryIO, but individual-based.
 
-####diploid\_fixed\_sh
+####diploid\_fixed\_sh (diploid_fixed_sh.cc)
 
 This program is similar to diploid, but adds an additional mutation rate (theta\_selected = 4Nu\_s, where u\_s is the mutation rate per gamete per generation to mutations with selection coefficient s) to mutations with selection coefficient s and dominance h. Fitness across sites is multiplicative. The output is in "ms" format--one block for neutral mutations followed by one block for selected mutations.
 
@@ -83,13 +83,13 @@ Usage:
 
 For this program, s can be positive or negative, as can h.
 
-####diploid\_fixed\_sh\_ind and diploid\_fixed\_sh\_lambda
+####diploid\_fixed\_sh\_ind (diploid_fixed_sh_ind.cc) and diploid\_fixed\_sh\_ind_lambda (diploid_fixed_sh_ind_lambda.cc)
 
 Identical to diploid\_fixed\_sh, but based on the individual-based sampler.
 
 These two programs are identical in function, but differ in that the former is implemented using std::bind and the latter using lambda expressions.
 
-####diploid\_twopop\_mig
+####diploid\_twopop\_mig (diploid_twopop_mig.cc)
 
 This program simulates an ancestral population for g generations, at which point a daughter population of size N is “budded” off from the ancestral population. Evolution continues for g2 more generations, with symmetric migration at rate M = 4Nm, where m is the migration rate per diploid per generation. The output is in "ms" format, with n haplotypes per sample just like how ms outputs data for multi-population models.
 
@@ -113,7 +113,7 @@ ms 100 1 -t 50 -r 50 1000 -I 2 2 1 -ej 0.025 2 1 -em 0.025 1 2 0.
 
 Why may this be considered odd? In ms, when two populations are merged, the rate of coalescence is unaffected by default (this behavior is documented, and it is up to the user to adjust population sizes when population merge and split in ms). That means when the two populations, each of size N merge, the merged (ancestral) population is still of size N. diploid\_twopop\_mig is doing the same thing forwards in time: an ancestral population of size N magically changes into two populations of size N. 
 
-####migsel\_ind
+####migsel\_ind (migsel_ind.cc)
 
 Simulates 2 equal-sized populations of size N (N remains constant over time) diploids with selection at strength s and dominance h. Migration occurs between the two populations.
 
@@ -148,7 +148,7 @@ The output file contains the following:
 
 The program writes the data to the output file and then reads it in again. This is mainly to illustrate the binary I/O routines for individual-based metapopulation simulations.
 
-####migsel\_split\_ind and migsel\_split\_ind\_list
+####migsel\_split\_ind (migsel_split_ind.cc) and migsel\_split\_ind\_list (migsel_split_ind_list.cc)
 
 Simulates a constant-sized population of N diploids with selection at strength s and dominance h for ngens generations. Then, a copy is made of the population, and the two demes are simulated with migration for another ngens2 generations.
 
@@ -182,7 +182,7 @@ seed = random number seed.
 
 Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
 
-####RHH
+####RHH (RHH.cc)
 
 This program simulates the "recurrent hitch-hiking" model in which the expected number of fixations of beneficial codominant mutations per site per 4N generations is Lambda. The output is ms-format (just one block for neutral mutations). This model is one of the most thoroughly-studied models of the effect of selection on linked variation. See, for example:
 
@@ -203,7 +203,7 @@ Usage:
 
 Note: many of the well-known formulas for the effect of RHH on linked, neutral variation make very strong assumptions about the parameter values. For example, N needs to be large and s needs to be small, but Ns needs to be large. Further, Lambda needs to be sufficiently small such that sweeps are independent in time. This means that plugging in values to this program and comparing to theoretical predictions may lead to apparent discrepancies. This is also the case with various coalescent simulations of RHH.
 
-####bneck\_selection\_ind
+####bneck\_selection\_ind (bneck_selection_ind.cc)
 
 This program simulates a population for g generations at size N. In generation g+1, N changes to N2 <= N. The population then grows exponentially to size N3 >= N2 in g2 generations. Selected and neutral mutations are allowed each generation. The output is in “ms” format--one block for neutral mutations followed by one block for selected mutations.
 
@@ -227,7 +227,7 @@ n = sample size to take from the population.<br>
 nreps = # replicates to simulate<br>
 seed = random number seed.<br>
 
-####TFL2013
+####TFL2013 (TFL2013.cc)
 
 This is the simulation from Thornton, Foran, and Long (2013) Properties and Modeling of GWAS when Complex Disease Risk Is Due to Non-Complementing, Deleterious Mutations in Genes of Large Effect. PLoS Genetics 9: e1003258. The manuscript is available [here](http://www.plosgenetics.org/article/info%3Adoi%2F10.1371%2Fjournal.pgen.1003258). See that paper for modeling details.
 
@@ -260,7 +260,7 @@ Example from the PLoS Genetics paper:
 
 will simulate a mean effect size of 0.5 (exponentially-distributed).  The above will take probably many hours to run.
 
-####diploid\_ind\_2locus
+####diploid\_ind\_2locus (diploid_ind_2locus.cc)
 
 This program simulates a 2-locus neutral model.  Mutations arise at rate \f$\theta\f$ at each locus, and each locus recombines at rate \f$\rho\f$.  The recombination rate between loci is \f$r_{bw}\f$, which corresponds to the probability a crossover is observed between loci.  In other words, the genotypes at the two loci will switch from \f[\frac{AB}{ab}\f] to \f[\frac{Ab}{aB}\f] with probability \f$r_{bw}\f$.
 
@@ -282,7 +282,7 @@ nreps = the number of replicates to simulated
 seed = seed value for random number generations
 ~~~
 
-#### HOC_ind
+#### HOC_ind (HOC_ind.cc)
 
 This program simulates a little twist on Turelli's House-of-Cards (HOC) model.  The main point of this model is to demonstrate how to use KTfwd::tags::gamete_dependent to implement mutation models that depend on the current gamete state.
 

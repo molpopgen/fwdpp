@@ -1,5 +1,5 @@
 /*
-  \include diploid_fixed_sh_ind.cc
+  \include diploid_fixed_sh_ind_lambda.cc
   
   Same as diploid_fixed_sh.cc, but individual-based
  */
