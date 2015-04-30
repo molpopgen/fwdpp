@@ -2,6 +2,10 @@
 
 The best documentation of how to use the library are the example simulations in the examples/ subdirectory.
 
+Example programs with _ind in their name are individual-based.  Otherwise, they are gamete-based.
+
+The individual-based programs represent the best/most efficient way to use __fwdpp__.  The others are here for legacy purposes.
+
 ###Compiling the examples:
 
 As of fwdpp 0.2.5, the examples are compiled by saying "make check" after the configure step.
