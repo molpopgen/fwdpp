@@ -83,6 +83,18 @@ A tutorial on policies and the library's reference manual can be found at [molpo
 
 __Note:__ the links above may be out of date, as the online documentation are not regenerated automatically.  If you want the latest, builds the docs from source.
 
+## Tutorials
+
+The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutorials:
+
+* @ref md_md_datatypes
+* @ref md_md_policies
+* @ref md_md_multiloc
+* @ref md_md_serialization
+* @ref md_md_devtools
+* @ref md_md_sugar
+
+
 ##Built from source
 The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html. 
 
