@@ -26,9 +26,9 @@ using mreader = KTfwd::mutation_reader<KTfwd::popgenmut>;
 //Fitness function
 struct no_selection_multi
 {
-  typedef double result_type;
-  template< typename diploid_type >
-  inline double operator()( diploid_type & diploid ) const
+  using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
+  using result_type = double;
+  inline double operator()(const poptype::diploid_t & ) const
   {
     return 1.;
   }
