@@ -213,7 +213,7 @@ struct HOChap : public KTfwd::tags::gamete_dependent
 };
 ~~~
 
-The public base class acts as a "distpatch" tag telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
+The public base class acts as a "dispatch tag" telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
 
 We then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
 
