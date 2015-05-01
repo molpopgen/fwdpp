@@ -152,9 +152,35 @@ Caveat emptor:
 
 In this section, I define the _minimal_ requirements that a policy must conform to.  I also provide pseudocode in the form of lambda expressions in order to illustrate these requirements.  By "requirements'', I mean "things that must be true, otherwise a program using __fwdpp__ will fail to compile.''  Because __fwdpp__ is a template library, policy errors are caught at compile-time.  (Biological errors in your policies, however, will result in run-time issues.  For example, doing your fitness calculations incorrectly, etc.)  When policies require more than the minimal requirements described here, the programmer sends them along via either the usual "bind'' mechanisms or via capature in lambda expressions.
 
-The example program __diploid\_fixed\_sh\_lambda__ is an example of writing all policies using lambda expressions--take a look there for a concrete example of these concepts.  The lambda expressions are very nice in that they document the policy requirements completely, as one is required to write them in the lambda arguments.
+I will describe the minimap policy requirements in terms of their equivalent declarations as objects of type [std::function](http://en.cppreference.com/w/cpp/utility/functional/function), which is a (variadic) C++11 template type that is used like this:
 
-For the sake of this example, let's assume that we are using the following types in an individual-based simulation (in C++11, "using'' statements replace typedefs.):
+~~~{.cpp}
+#include <cmath>
+#include <functional>
+
+//A function returning a double and taking two const double & as arguments
+std::function< double(const double &, const double &) > mypow = [](const double & a, const double & b) { return std::pow(a,b); };
+
+//A function returning a double and taking three const double & as arguments
+std::function< double(const double &, const double &,const double &) > mypow_over_x = [](const double & a, const double & b, const double & c) { return std::pow(a,b)/c; };
+
+//A function returning a double and taking a single const double & as argument.  It is implemented in terms of a wrapper to the previous function.
+std::function<double(const double &)> mypow_over_x_wrapper = std::bind(mypow_over_x,3,2,std::placeholders::_1);
+
+int main()
+{
+  std::cout << mypow(3,2) << '\n';
+  for(unsigned i=1;i<11;++i)
+    {
+      //These two calls will give the same result:
+      std::cout << mypow_over_x(3,2,i) << ' ' <<  mypow_over_x_wrapper(i) << '\n';
+    }
+}
+~~~
+
+So, std::function is a concrete type defining the _signature_ of a function (return type and arguments).  Internally, that signature must be met by your policies, and you can "bind" additional arguments to them in order to implement specific models.
+
+For the sake of being explicit, let's assume that we are using the following types in an individual-based simulation (in C++11, "using'' statements replace typedefs.):
 
 ~~~{.cpp}
 using mtype = KTfwd::mutation;
@@ -166,14 +192,14 @@ using glist = std::list<gtype>;
 A minimal mutation policy takes a non-const pointer to an __mlist__ as an argument, and returns an __mtype__:
 
 ~~~{.cpp}
-//the [&] is used to capture any things that may be needed
-auto mut_policy = [&](mlist * __mutations){ return function_generating_new_type( arguments ); };
+//A mutation policy must conform to this
+std::function< mtype(mlist *) > = something...
 ~~~
 
 We then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
 
 ~~~{.cpp}
-auto mut_insertion_policy = [](const mtype & m,mlist * __mutations) { 
+std::function< mlist::iterator( const mtype &, mlist * ) mut_insertion_policy = [](const mtype & m,mlist * __mutations) { 
 return __mutations->insert(__mutations->end(),m); 
 };
 ~~~
@@ -181,7 +207,7 @@ return __mutations->insert(__mutations->end(),m);
 When a gamete is mutated, we need to decide how to insert it into the __glist__.  This "gamete insertion policy'' takes a const reference to an __gtype__ and a non-const pointer to an __glist__ as arguments, and returns an __glist::iterator__.  Again, under the infinitely-many sites model, a gamete with a new mutation is guaranteed to be unique, so we can simply insert it:
 
 ~~~{.cpp}
-auto gamete_insertion_policy = [](const gtype & g,glist * __gametes) { 
+std::function<glist::iterator(const gtype &, glist *)> gamete_insertion_policy = [](const gtype & g,glist * __gametes) { 
 return __gametes->insert(__gametes->end(),g); 
 };
 ~~~
@@ -189,8 +215,8 @@ return __gametes->insert(__gametes->end(),g);
 A fitness policy takes two const references to __glist::const\_iterator__ as arguments and returns a double:
 
 ~~~{.cpp}
-auto fitness_policy = [&](const glist::const_iterator & __gamete1,
-const glist::const_iterator & __gamete2) {
+std::function<double(const glist::const_iterator &, const glist::const_iterator &)> fitness_policy = [&](const glist::const_iterator & __gamete1,
+const glist::const_iterator & __gamete2) {	 
   //No selection!
   return 1.;
 }
@@ -198,21 +224,81 @@ const glist::const_iterator & __gamete2) {
 
 See the header file __fwdpp/fitness\_models.hpp__ for examples of fitness policies that I provide for "standard'' cases.
 
-A recombination policy takes two non-const references to __glist::iterator__, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  Typically, this would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the former, where the genetic map is uniform on the interval \f$(0,1]\f$:
+A recombination policy takes two non-const references to __glist::iterator__, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  
+
+Typically, recombination would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the former, where the genetic map is uniform on the interval \f$(0,1]\f$:
 
 ~~~{.cpp}
 //These parameters will be captuered by reference ([&] in the lambda 
 //expression below), because their state will be modified
 gsl_rng * r;
 glist gametes;
-//littler is the recombination rate per diploid per generation
-auto rec_policy =  [&](glist::iterator & g1,
-glist::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&gametes,g1,g2,
+std::function<unsigned(glist::iterator &, glist::iterator &)> rec_policy =  [&](glist::iterator & g1,
+				       glist::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&gametes,g1,g2,
   //This nested lambda is our genetic map: uniform on interval (0,1]
-  [&](){return gsl_rng_uniform(r);}); },
+  [&](){return gsl_rng_uniform(r);}); },	       
 ~~~
 
-I'll document migration policy functions at a later date, sorry.
+For individual-based simulations with migration, returns an unsigned integer and takes on as an argument:
+
+~~~{.cpp}
+/*
+Simple migration policy for two-deme simulation
+*/
+size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
+{
+  if( gsl_rng_uniform(r) <= mig_prob )
+    {
+      return ! source_pop;
+    }
+  return source_pop;
+}
+//Assume r and mig_prob are defined somewhere...
+std::function< unsigned(const unsigned &) > migpol = std::bind(migpop,std::placeholders::_1,r,mig_prob);
+~~~
+
+## Technicalities related to policy "types"
+
+C++11 programmers will note that judicious use of "auto" will make all of the above code more streamlined.  Further, policies could be implemented in many cases as one or more of the following:
+
+* functions
+* function objects
+* lambda expressions
+* expressions synthesized from any of the above using std::bind
+
+Further, the functions and function objects could themselves be implemented in terms of templates, meaning there are lots of ways to do things.
+
+The use of std::function in the preceding section makes the return type and argument requirements explicit.  Further, it is often convenient to create policies by mixing std::bind and lambda expressions.  Let's revisit our previous C++ example:
+
+~~~{.cpp} 
+#include <cmath>
+#include <functional>
+#include <iostream>
+
+auto mypow_over_x= [](const double & a, const double & b, const double & c) { return std::pow(a,b)/c; };
+auto mypow_over_x_wrapper1 = [&](const double & a, const double & b, const double & c) { return mypow_over_x(a,b,c); };
+//This is the same as "wrapper1"
+auto mypow_over_x_wrapper2 = [&](const double & a, const double & b, const double & c) { return mypow_over_x(a,b,c); };
+
+//These two are the same as wrappers 1 and 2...
+std::function<double(const double &,const double &, const double &)> mypow_over_x_wrapper3 = [&](const double & a, const double & b, const double & c) { return mypow_over_x(a,b,c); };
+std::function<double(const double &,const double &, const double &)> mypow_over_x_wrapper4 = [&](const double & a, const double & b, const double & c) { return mypow_over_x(a,b,c); };
+
+int main()
+{
+  //This will evaluate to 0!!!!
+  std::cout << (typeid(mypow_over_x_wrapper1).name() == typeid(mypow_over_x_wrapper2).name()) << '\n';
+  //This will evaluate to 1!!!!
+  std::cout << (typeid(mypow_over_x_wrapper3).name() == typeid(mypow_over_x_wrapper4).name()) << '\n';
+}
+~~~
+
+The lesson: lambda expression __always__ have different signatures.  This matters for the metapopulation and multi-locus simulations where you must provide _vectors_ of policies, _e.g._:
+
+~~~{.cpp}
+//The only way to have a vector of policies is to force them to have the same signature ("type"):
+std::vector< std::function< return_value( arg1_type, arg2_type, etc. )> > policies;
+~~~
 
 \subsection TutMut Mutation policies
 This is the mutation base class  provided by __fwdpp__
