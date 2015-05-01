@@ -4,9 +4,11 @@
 
 * Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent.  Example HOC_ind.cc illustrates its use.
 * Added dispatch tag to KTfwd::gamete_base, via KTfwd::tags::gamete_type_tag.  Currently, this feature is not used in the library.  Its addition affects nothing other than what happens during compilation, and it may be used in the future to add new features to the library, or it may be remvoed.
-* Namespace KTfwd::sugar and \ref sugar functions added.  Two example programs are implemented using some of these tools: HOC_ind.cc and diploid_ind_2locus.cc
+* Namespace KTfwd::sugar and \ref sugar functions added.  
+* All _individual-based_ examples have been rewritten using the sugar code
 * New tutorial added: \ref md_md_sugar
 * New tutorial added: \ref md_md_datatypes
+* The policies tutorial (\ref md_md_policies) has been rewritten
 * Unit tests for sugar layer added
 
 ## 0.2.9
