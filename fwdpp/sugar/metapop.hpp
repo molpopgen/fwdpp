@@ -56,7 +56,7 @@ namespace KTfwd
 #include <list>
 #include <vector>
 #include <unordered_set>
-#include <fwdpp/sugar/metapop/metapop.hpp>
+
 namespace KTfwd
 {
   template<typename mtype> using metapop_mlist_t = std::list<mtype>;
