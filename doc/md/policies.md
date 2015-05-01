@@ -203,18 +203,6 @@ In fwdpp 0.3.0, you are able to write mutation policies that depend on the type 
 std::function< mtype( glist::value_type &, mlist * ) > gamete_dependend_mutation_policy;
 ~~~
 
-In order to implement such "gamete-dependent" mutation policies, your policy must be a function object inheriting from KTfwd::tags::gamete_dependent :
-
-~~~{.cpp}
-//See HOC_ind.cc for the full implementation
-struct HOChap : public KTfwd::tags::gamete_dependent
-{
-  inline mtype operator()(poptype::gamete_t & g,poptype::mlist_t * mutations) const;
-};
-~~~
-
-The public base class acts as a "dispatch tag" telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
-
 We then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
 
 ~~~{.cpp}
@@ -536,6 +524,20 @@ OK, our mutation model is going to be the following.  It is infinitely-many site
       return mtype(pos,1,gsl_ran_gaussian(r,sigma_e),false);
     }
 ~~~
+
+\subsubsection GameteDependent Gamete-dependent mutation policies
+
+In order to implement such "gamete-dependent" mutation policies, your policy must be a function object inheriting from KTfwd::tags::gamete_dependent :
+
+~~~{.cpp}
+//See HOC_ind.cc for the full implementation
+struct HOChap : public KTfwd::tags::gamete_dependent
+{
+  inline mtype operator()(poptype::gamete_t & g,poptype::mlist_t * mutations) const;
+};
+~~~
+
+The public base class acts as a "dispatch tag" telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
 
 \subsection TutRec Recombination
 
