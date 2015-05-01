@@ -515,7 +515,7 @@ The policy looks like this:
 
 The main thing a library user needs to focus on is the argument list for __operator()__.  Specifically, it requires a variable of type __rec\_pos\_generator__ which is stated in the documentation to be a recombination map policy. Thus, a recombination model is a policy that requires another policy.  Further, __a recombination policy is passed non-const references to iterators to two gametes (g1 and g2 in the code above). Those iterators are updated in place.  In the event of no recombination, g1 and g2 remain unchanged.  Otherwise, g1 and g2 are modified to point to the new recombinants, which are new gametes inersted into the population at a count of 1.__
 
-We pass this recombination model in an individual-based simulation to __KTfwd::sample\_diploid__ like this:
+We pass this recombination model in an individual-based simulation to KTfwd::sample_diploid like this:
 
 ~~~{.cpp}
   using std::placeholders; //_1,_2, etc.
@@ -530,9 +530,9 @@ We pass this recombination model in an individual-based simulation to __KTfwd::s
 Note: if you want to write a new recombination policy, you probably want to proceed by modifying how it interacts with the the recombination map policy.  For example, if a recombination at position \f$x\f$ means that the next position must be \f$\geq 1.5x\f$ (in some model of interference).  Doing so requires making a custom version of the __KTfwd::recombine\_gametes__ function.  If you read the code for that function, you will see where the recombination map policy is called.  If you try to modify the code below that, then good luck to you.  It isn't super-complicated, but tread with caution.
 
 \subsection TutMig Migration
-Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing __KTfwd::migrate__) that does what you need it to and is implemented in terms of __KTfwdd::migrate\_from\_to__.
+Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing __KTfwd::migrate__) that does what you need it to and is implemented in terms of __KTfwd::migrate\_from\_to__.
 
-For individual-based simulations involving a metapopulations, parent 1 comes from population \f$i\f$ and may or not be a migrant.  Parent two comes from population \f$j\f$ and \f$j = i\f$ in the case of no migration, otherwise \f$j \neq i\f$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  __A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population \f$i\f$, and the return value is the index of population \f$j\f$.__
+For individual-based simulations involving a metapopulations, parent 1 comes from population \f$i\f$ and may or not be a migrant.  Parent two comes from population \f$j\f$ and \f$j = i\f$ in the case of no migration, otherwise \f$j \neq i\f$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population \f$i\f$, and the return value is the index of population \f$j\f$.
 
 For example, let's assume two demes with migration rate \f$m\f$.  Here, \f$m\f$ is the probability that a parent is a migrant. This migration rate is equal between the two demes.  Because we are in a C-like language, the values allowed for the __size\_t__ are \f$0 \leq i \leq 1\f$.  The migration policy is thus defined as follows:
 
