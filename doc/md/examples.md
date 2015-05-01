@@ -154,6 +154,8 @@ The program writes the data to the output file and then reads it in again. This 
 
 ####migsel\_split\_ind (migsel_split_ind.cc) and migsel\_split\_ind\_list (migsel_split_ind_list.cc)
 
+__NOTE:__ migsel_split_ind is not longer compiled as of fwdpp 0.3.0.  It may be resurrected in the future.
+
 Simulates a constant-sized population of N diploids with selection at strength s and dominance h for ngens generations. Then, a copy is made of the population, and the two demes are simulated with migration for another ngens2 generations.
 
 These two programs also serialize their data, read the copied data back, and make sure that input equals output.
