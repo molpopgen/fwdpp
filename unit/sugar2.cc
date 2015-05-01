@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 						       &pop.Ns[0],
 						       0.005,
 						       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
-								 0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+								 0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}),
 						       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 								 std::placeholders::_3,
 								 0., //no rec
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct_test )
 						       &pop.Ns[0],
 						       0.005,
 						       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
-								 0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+								 0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}),
 						       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 								 std::placeholders::_3,
 								 0., //no rec
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assign_test )
 						       &pop.Ns[0],
 						       0.005,
 						       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
-								 0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+								 0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}),
 						       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 								 std::placeholders::_3,
 								 0., //no rec

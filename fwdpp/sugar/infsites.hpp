@@ -25,16 +25,16 @@ namespace KTfwd
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker(r);
+      double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
-	  pos = posmaker(r);
+	  pos = posmaker();
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
       if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
-	  return typename mlist_t::value_type(pos,smaker(r),hmaker(r),generation,1);
+	  return typename mlist_t::value_type(pos,smaker(),hmaker(),generation,1);
 	}
       //return a neutral mutation
       return typename mlist_t::value_type(pos,0.,0.,generation,1);
@@ -55,16 +55,16 @@ namespace KTfwd
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker(r);
+      double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
-	  pos = posmaker(r);
+	  pos = posmaker();
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
       if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
-	  return typename mlist_t::value_type(pos,smaker(r),hmaker(r),*generation,1);
+	  return typename mlist_t::value_type(pos,smaker(),hmaker(),*generation,1);
 	}
       //return a neutral mutation
       return typename mlist_t::value_type(pos,0.,0.,*generation,1);
@@ -84,16 +84,16 @@ namespace KTfwd
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker(r);
+      double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
-	  pos = posmaker(r);
+	  pos = posmaker();
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
       if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
-	  return typename mlist_t::value_type(pos,smaker(r),1,hmaker(r));
+	  return typename mlist_t::value_type(pos,smaker(),1,hmaker());
 	}
       //return a neutral mutation
       return typename mlist_t::value_type(pos,0.,1,0.);

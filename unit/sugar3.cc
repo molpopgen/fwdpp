@@ -62,16 +62,16 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
     std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-	      0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}) ,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,1.,2.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,2.,3.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,3.,4.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;})
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
@@ -195,16 +195,16 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct )
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
     std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-	      0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}) ,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,1.,2.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,2.,3.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,3.,4.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;})
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
@@ -326,16 +326,16 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assigment_operator )
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
     std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-	      0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}) ,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,1.,2.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,2.,3.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
       std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,&generation,
-      		0.005,0.,[](gsl_rng * r){return gsl_ran_flat(r,3.,4.);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;})
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
