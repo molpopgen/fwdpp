@@ -98,8 +98,6 @@ The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutoria
 ##Built from source
 The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html. 
 
-A tutorial on writing policies is also build via doxygen.  The source for the tutorial is a Markdown document (doc/md/policies.md).
-
 ##Example documentation
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
 
