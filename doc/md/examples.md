@@ -292,7 +292,14 @@ This program simulates a little twist on Turelli's House-of-Cards (HOC) model.  
 
 In a typical HOC model (Kingman), the effect size of a mutated allele is a new draw from a Gaussian distribution.  In this simulation, the current effect size of an allele, before mutation, is additive over causative mutations, with sum \f$y\f$.  After the addition of a single mutation, its new effect size will be \f$x\f$, and thus the effect size of the new mutation, \f$e\f$, is chosen such that \f$x = y+e\f$.
 
-The fitness model here is Gaussian stabilizing selection with a mean of 0 and a standard deviation of 1.  With this fitness function and the additive model of Turelli, \f$V(G) \approx 4\mu\f$ when the ratio of the variance in effect sizes over the variance in fitness falls within a certain range.  That approximation seems to hold, at least roughly, for this odd method of generating the effect sizes of new variants.
+The fitness model here is Gaussian stabilizing selection with a mean of 0 and a standard deviation of 1.  With this fitness function and the additive model of Turelli, \f$V(G) \approx 4\mu\f$ when the ratio of the variance in effect sizes over the variance in fitness falls within a certain range.  That approximation seems to hold, at least roughly, for this odd method of generating the effect sizes of new variants.  For example, these commands return a mean of approximately \f$4 \times 10^{-4}\f$
+
+~~~
+#Generate 100 seeds
+Rscript -e "cat(as.integer(runif(1e2,0,1e6)),sep=\"\n\")" > seeds
+#run jobs in parallel on a 4-core machine, write VG to a file
+parallel --jobs 4 ./HOC_ind 10000 0.0001 0.25 0 100000 1 {} :::: seeds > VG.txt
+~~~
 
 The usage is:
 
