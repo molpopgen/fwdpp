@@ -41,7 +41,9 @@ namespace KTfwd {
 	for( unsigned i = 0 ; i < Ns.size() ; ++i )
 	  {
 	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( gametes[i].begin(),gametes[i].begin())));
+	    auto itr = gametes.begin();
+	    std::advance(itr,i);
+	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( itr->begin(),itr->begin())));
 	  }
       }
     public:
@@ -166,7 +168,9 @@ namespace KTfwd {
 	for( unsigned i = 0 ; i < Ns.size() ; ++i )
 	  {
 	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( gametes[i].begin(),gametes[i].begin())));
+	    auto itr = gametes.begin();
+	    std::advance(itr,i);
+	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( itr->begin(),itr->begin())));
 	  }
       }
     public:
