@@ -8,14 +8,12 @@
 #include <iostream>
 #include <gsl/gsl_statistics_double.h>
 #include <fwdpp/diploid.hh>
-#if !defined(USE_STANDARD_CONTAINERS) && (defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_HASH))
-#define FWDPP_SUGAR_USE_BOOST
-#endif
-#include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 
 using mtype = KTfwd::mutation;
-using poptype = KTfwd::singlepop<mtype>;
+#define SINGLEPOP_SIM
+#include <common_ind.hpp>
+using poptype = singlepop_t;
 
 struct HOChap : public KTfwd::tags::gamete_dependent
 {

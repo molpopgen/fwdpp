@@ -10,100 +10,17 @@
   4.  Outputting a sample in "ms" format
 */
 
-#include <fwdpp/diploid.hh>
-#include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
-/*
-  We define a new mutation type, derived from the base class KTfwd::mutation_base.
-  This type adds a selection coefficient (s), dominance coefficient (h),
-  and the generation when the mutation first appeared in the population (g)
-*/
-struct mutation_with_age : public KTfwd::mutation_base
-{
-  unsigned g;
-  double s,h;
-  /*
-    The constructor initializes all class data, including that of the base class via a constructor
-    call to the base class.
-  */
-  mutation_with_age(const unsigned & __o,const double & position, const unsigned & count, const bool & isneutral = true)
-    : KTfwd::mutation_base(position,count,isneutral),g(__o),s(0.),h(0.)
-  {	
-  }
-};
+#include <Sequence/SimData.hpp>
+#include <fwdpp/diploid.hh>
+//Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
+#include <fwdpp/sugar/infsites.hpp>
 
-//Simplify our lives a bit with typedefs
-
-/*
-  NOTE: we are using boost containers with boost memory allocators.  
-  My experience on my systems is that each of those objects is worth a 5-10% 
-  run time speedup compare to the same objects from namespace std.
-
-  fwdpp is compatible with ANY container system as long as the
-  one containing gametes conforms to the behavior of std::vector and 
-  the one containing mutations conforms to the behavior of std::list 
-  (especially w/regards to no pointer invalidation upon insertion/delete!!)
-*/
-
-//compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
-typedef mutation_with_age mtype;
+//typedef mutation_with_age mtype;
+using mtype = KTfwd::popgenmut;
+#define SINGLEPOP_SIM
 #include <common_ind.hpp>
-
-/*
-  This function generates neutral mutations under the infinitely-many sites assumption
-*/
-mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
-					      lookup_table_type * lookup)
-{
-  //Generate new mutation position on the interval [0,1)
-  double pos = gsl_rng_uniform(r);
-  /*
-    An alternative implementation of the while loop below would be:
-    while( std::find_if( mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos) != mutations->end()) )
-    {
-    pos = gsl_rng_uniform(r);
-    }
-
-    However, that operation is typically much slower, esp. as the mutation rate gets higher
-  */
-  while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
-    { 
-      pos = gsl_rng_uniform(r);  //if it does, generate a new one
-    }
-  //update the lookup table
-  lookup->insert(pos);
-
-  /*
-    The program will abort if the following conditions are true:
-    1.  The mutation position that we generated does indeed exist in the population (implying that our hashing scheme has failed).
-    2.  AND, the program was NOT compiled with -DNDEBUG
-
-    fwdpp makes extensive internal use of the C-language assert macro (#include <cassert>).  The macro is enabled if a program is 
-    compiled like this:
-    c++ -o program program.cc
-
-    It is disabled if a program is compiled like this:
-    c++ -DNDEBUG program program.cc
-
-    Thus, a programmer may make use of the preprocessor macro NDEBUG to write detailed debugging routines that are easily disabled.
-    
-    For example:
-    #ifndef NDEBUG
-    bool condition = false;
-    //do some complex checking of your data here.  If all is okay, set condition = true;
-    #endif
-    assert( condition == true );
-
-    That check may be expensive at run-time, but is easily disabled by recompiling using -DNDEBUG
-
-    An example of such a debugging routine is KTfwd::check_sum
-  */
-  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
-
-  //return constructor call to mutation type
-  return mutation_with_age(generation,pos,1,true);
-}
  
 int main(int argc, char ** argv)
 {
@@ -136,9 +53,8 @@ int main(int argc, char ** argv)
   std::copy(argv,argv+argc,std::ostream_iterator<char*>(std::cerr," "));
   std::cerr << '\n';
   
-  //Initiate random number generation system
-  gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
-  gsl_rng_set(r,seed);
+  //Initiate random number generation system (via fwdpp/sugar/GSLrng_t.hpp)
+  GSLrng r(seed);
 
   unsigned twoN = 2*N;
 
@@ -147,45 +63,39 @@ int main(int argc, char ** argv)
 
   while(nreps--)
     {
-      //the population begins with 1 gamete with no mutations amd initial count 2N
-      glist gametes(1,gtype(twoN));
+      //Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
+      singlepop_t pop(N);
 
-      //Establish the list of diploids.  Here, there is only 1 gamete, so it is easy:
-      std::vector< std::pair< glist::iterator, glist::iterator> > diploids(N,
-									   std::make_pair(gametes.begin(),
-											  gametes.begin()));
-      mlist mutations;  //the population is devoid of mutations
-      std::vector<mtype> fixations;  //store mutation that fix.  Passed to KTfwd::remove_fixed_lost
-      std::vector<unsigned> fixation_times; //store when they fix.  Passed to KTfwd::remove_fixed_lost
       unsigned generation;
       double wbar;
-      lookup_table_type lookup;  //this is our lookup table for the mutation model
+      //lookup_table_type lookup;  //this is our lookup table for the mutation model
 
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
       	  wbar = KTfwd::sample_diploid(r,
-      				       &gametes,  //non-const pointer to gametes
-      				       &diploids, //non-const pointer to diploids
-      				       &mutations, //non-const pointer to mutations
+      				       &pop.gametes,  //non-const pointer to gametes
+      				       &pop.diploids, //non-const pointer to diploids
+      				       &pop.mutations, //non-const pointer to mutations
       				       N,     //current pop size, remains constant
       				       mu,    //mutation rate per gamete
       				       /*
-      					 The mutation model (defined above) will pass each gamete
-      					 to be mutated to the mutation model function.  Again, _1
+      					 The mutation model (KTfwd::infsites) will pass each gamete
+      					 to be mutated to the mutation model function.  The _1
       					 is used as a placeholder for that gamete.
       				       */
-      				       std::bind(neutral_mutations_inf_sites,r,generation,std::placeholders::_1,&lookup),
+				       std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,generation,
+						 mu,0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						   &gametes,
+						   &pop.gametes,
       						   littler,
       						   r,
       						   recmap),
 				       /*
 					 Policy to insert new mutations at the end of the mutations list
 				       */
-      				       std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				       /*
 					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					 If mutation results in a new gamete, add that gamete to the 
@@ -194,7 +104,7 @@ int main(int argc, char ** argv)
 					 copy identical to an existing gamete.  If so,
 					 that gamete's frequency increases by 1.
 				       */
-      				       std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
       				       /*
       					 Fitness is multiplicative over sites.
 
@@ -229,12 +139,12 @@ int main(int argc, char ** argv)
       					 can remove them, making the simulation faster, etc.
       				       */
       				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
-      	  KTfwd::remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,2*N);
-	  assert(KTfwd::check_sum(gametes,twoN));
+      	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;
 
-      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r,&diploids,samplesize1,true);
+      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r,&pop.diploids,samplesize1,true);
 
       if(!mslike.empty())
 	{

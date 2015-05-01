@@ -5,25 +5,35 @@
 #include <iostream>
 
 #if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
-#include <boost/container/vector.hpp>
-#include <boost/container/list.hpp>
-#include <boost/pool/pool_alloc.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/functional/hash.hpp>
-typedef boost::pool_allocator<mtype> mut_allocator;
-typedef boost::container::list<mtype,mut_allocator > mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef boost::pool_allocator<gtype> gam_allocator;
-typedef boost::container::list<gtype,gam_allocator > glist;
-typedef boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps > lookup_table_type;
-#else
-#include <unordered_set>
-#include <vector>
-#include <list>
-typedef std::list<mtype> mlist;
-typedef KTfwd::gamete_base<mtype,mlist> gtype;
-typedef std::list<gtype> glist;
-typedef std::unordered_set<double,std::hash<double>,KTfwd::equal_eps > lookup_table_type;
+#define FWDPP_SUGAR_USE_BOOST
 #endif
+
+/* 
+   The various examples will define the appropriate symbol,
+   so that the minimum stuff is included
+
+   We expect that the typedef "mtype" exists prior
+   to including this header, and is an alias to the simulation's
+   mutation type
+*/
+
+#ifdef SINGLEPOP_SIM
+#include <fwdpp/sugar/singlepop.hpp>
+using singlepop_t = KTfwd::singlepop<mtype>;
+using singlepop_serialized_t = KTfwd::singlepop<mtype>;
+#elif defined(METAPOP_SIM)
+#include <fwdpp/sugar/metapop.hpp>
+using metapop_t = KTfwd::metapop<mtype>;
+using metapop_serialized_t = KTfwd::metapop<mtype>;
+#elif defined(MULTILOCUS_SIM)
+#include <fwdpp/sugar/multiloc.hpp>
+using multiloc_t = KTfwd::multiloc<mtype>;
+using multiloc_serialized_t = KTfwd::multiloc<mtype>;
+#endif
+
+//RNG type
+#include <fwdpp/sugar/GSLrng_t.hpp>
+
+using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
 #endif

@@ -8,7 +8,6 @@ check_PROGRAMS=diploid \
 	diploid_fixed_sh_ind \
 	diploid_fixed_sh_ind_lambda \
 	migsel_ind \
-	migsel_split_ind \
 	migsel_split_ind_list \
 	bneck_selection_ind \
 	diploid_ind_2locus \
@@ -18,17 +17,19 @@ check_PROGRAMS=diploid \
 	TFL2013 \
 	HOC_ind
 
+#	migsel_split_ind 
+
 diploid_SOURCES=diploid.cc common_gamete.hpp
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
 diploid_binaryIO_SOURCES=diploid_binaryIO.cc common_gamete.hpp
 diploid_binaryIO_ind_SOURCES=diploid_binaryIO_ind.cc common_ind.hpp
 diploid_gzbinaryIO_SOURCES=diploid_gzbinaryIO.cc common_gamete.hpp
-diploid_gzbinaryIO_ind_SOURCES=diploid_binaryIO_ind.cc common_ind.hpp
+diploid_gzbinaryIO_ind_SOURCES=diploid_gzbinaryIO_ind.cc common_ind.hpp
 diploid_fixed_sh_SOURCES=diploid_fixed_sh.cc common_gamete.hpp
 diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_lambda_SOURCES=diploid_fixed_sh_ind_lambda.cc common_ind.hpp
 migsel_ind_SOURCES=migsel_ind.cc common_gamete.hpp
-migsel_split_ind_SOURCES=migsel_split_ind.cc common_gamete.hpp
+#migsel_split_ind_SOURCES=migsel_split_ind.cc common_gamete.hpp
 migsel_split_ind_list_SOURCES=migsel_split_ind_list.cc common_gamete.hpp
 bneck_selection_ind_SOURCES=bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES=diploid_ind_2locus.cc common_ind.hpp

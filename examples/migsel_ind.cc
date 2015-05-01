@@ -17,73 +17,22 @@
 #include <cassert>
 #include <iomanip>
 #include <fstream>
+#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/serialization.hpp>
 //the type of mutation
-typedef KTfwd::mutation mtype;
+using mtype = KTfwd::mutation;
+#define METAPOP_SIM
 #include <common_ind.hpp>
+
+using poptype = metapop_serialized_t;
+using mlist = poptype::mlist_t;
+using gtype = poptype::gamete_t;
+using glist = poptype::glist_t;
 
 using namespace std;
 using namespace KTfwd;
 using namespace Sequence;
 
-//function object to write mutation data in binary format
-struct mwriter
-{
-  typedef void result_type;
-  result_type operator()( const mtype & m, std::ostream & buffer ) const
-  {
-    unsigned u = m.n;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    bool b = m.neutral;
-    buffer.write( reinterpret_cast< char * >(&b),sizeof(bool) );
-    double d = m.pos;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.s;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.h;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-  }
-};
-
-//function object to read mutation data in binary format
-struct mreader
-{
-  typedef mtype result_type;
-  result_type operator()( std::istream & in ) const
-  {
-    unsigned n;
-    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
-    bool neut;
-    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
-    double pos;
-    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
-    double s;
-    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
-    double h;
-    in.read( reinterpret_cast< char * >(&h),sizeof(double) );
-    return result_type(pos,n,s,h);
-  }
-};
-
-mutation neutral_mutations_selection(gsl_rng * r,mlist * mutations,
-					    const double & mu_neutral, const double & mu_selected,
-					    const double & s, const double & h,
-					    lookup_table_type * lookup)
-{
-  /*
-    Choose a mutation position [0,1) that does not currently exist in the population.
-  */
-  double pos = gsl_rng_uniform(r);
-  while( lookup->find(pos) != lookup->end() )
-    {
-      pos = gsl_rng_uniform(r);
-    }
-  lookup->insert(pos);
-  assert(std::find_if(mutations->begin(),mutations->end(),std::bind(mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
-  //Choose mutation class (neutral or selected) proportional to underlying mutation rates
-  bool neutral_mut = ( gsl_rng_uniform(r) <= mu_neutral/(mu_neutral+mu_selected) ) ? true : false;
-  //Return a mutation of the correct type.  Neutral means s = h = 0, selected means s=s and h=h.
-  return (neutral_mut == true) ? mutation(pos,0.,1,0.) : mutation(pos,s,1,h);
-}
 
 size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 {
@@ -161,37 +110,12 @@ int main( int argc, char ** argv )
   const double littler = rho/double(4*N);
   const double m = M/double(4*N);
 
-  gsl_rng * r =  gsl_rng_alloc(gsl_rng_taus2);
-  gsl_rng_set(r,seed);
 
-  mlist mutations; 
-  std::vector<mtype> fixations;
-  std::vector<unsigned> fixation_times;
+  GSLrng r(seed);
 
-  lookup_table_type lookup;
-#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
-  boost::container::vector< glist > metapop(2, glist(1,gtype(2*N)));
-  typedef boost::container::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
-  boost::container::vector< diploid_bucket > diploids;
-  boost::container::vector<unsigned> Ns(2,N);
-  boost::container::vector<double> fs;
-#else
-  std::vector< glist > metapop(2, glist(1,gtype(2*N)));
-  typedef std::vector< std::pair< glist::iterator, glist::iterator > > diploid_bucket;
-  std::vector< diploid_bucket > diploids;
-  std::vector<unsigned> Ns(2,N);
-  std::vector<double> fs;
-#endif
-
-
-  for ( auto i = metapop.begin() ;
-	i != metapop.end() ; ++i )
-    {
-      diploids.push_back ( diploid_bucket(N,std::make_pair(i->begin(),i->begin())) );
-    }
-
-  fs.push_back(f1);
-  fs.push_back(f2);
+  unsigned Ns[2] = {N,N};
+  double fs[2] = {f1,f2};
+  poptype pop({N,N});
 
   //create a vector of fitness functions for each population
   std::vector<std::function<double (glist::const_iterator,
@@ -205,12 +129,13 @@ int main( int argc, char ** argv )
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {
       std::vector<double> wbars = sample_diploid(r,
-						 &metapop,
-						 &diploids,
-						 &mutations,
+						 &pop.gametes,
+						 &pop.diploids,
+						 &pop.mutations,
 						 &Ns[0],
 						 mu_neutral + mu_del,
-						 std::bind(neutral_mutations_selection,r,std::placeholders::_1,mu_neutral,mu_del,s,h,&lookup),
+						 std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,
+							   mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r);},[&s](){return s;},[&h](){return h;}),
 						 std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
 							     littler,
 							     r,
@@ -223,14 +148,14 @@ int main( int argc, char ** argv )
 						 std::bind(migpop,std::placeholders::_1,r,m),
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation
-      remove_fixed_lost(&mutations,&fixations,&fixation_times,&lookup,generation,4*N);
+      remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4*N);
     }
   
   std::pair< std::vector<std::pair<double,std::string> >,
-	     std::vector<std::pair<double,std::string> > > spop1 = ms_sample_separate(r,&diploids[0],n);
+	     std::vector<std::pair<double,std::string> > > spop1 = ms_sample_separate(r,&pop.diploids[0],n);
 
   std::pair< std::vector<std::pair<double,std::string> >,
-	     std::vector<std::pair<double,std::string> > > spop2 = ms_sample_separate(r,&diploids[1],n);
+	     std::vector<std::pair<double,std::string> > > spop2 = ms_sample_separate(r,&pop.diploids[1],n);
 
   SimData neutral = merge( spop1.first,spop2.first,n );
   SimData selected = merge( spop1.second,spop2.second,n );
@@ -238,36 +163,29 @@ int main( int argc, char ** argv )
   std::ofstream outstream(outfilename);
 
   //Write the metapop in binary format to outstream
-  KTfwd::write_binary_metapop(&metapop,&mutations,&diploids,
-			      std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),
+  KTfwd::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
+			      std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),
 			      outstream);
 
   //Write the "ms" blocks
   Sequence::write_SimData_binary(outstream,neutral);
   Sequence::write_SimData_binary(outstream,selected);
-  
   outstream.close();
 
-  //Now, read it all back in, for fun.
-#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
-  boost::container::vector< glist > metapop2;
-  boost::container::vector< diploid_bucket > diploids2;
-#else
-  std::vector< glist > metapop2;
-  std::vector< diploid_bucket > diploids2;
-#endif
-  mlist mutations2;
+  poptype::vglist_t metapop2;
+  poptype::vdipvector_t diploids2;
+  poptype::mlist_t mutations2;
   Sequence::SimData neutral2,selected2;
 
   ifstream in(outfilename);
   
   KTfwd::read_binary_metapop(&metapop2,&mutations2,&diploids2,
-			     std::bind(mreader(),std::placeholders::_1),
+			     std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
 			     in);
   
-  assert( metapop2.size() == metapop.size() );
-  assert( mutations2.size() == mutations.size() );
-  assert( diploids2.size() == diploids.size() );
+  assert( metapop2.size() == pop.gametes.size() );
+  assert( mutations2.size() == pop.mutations.size() );
+  assert( diploids2.size() == pop.diploids.size() );
   
   neutral2 = Sequence::read_SimData_binary(in);
   selected2 = Sequence::read_SimData_binary(in);
