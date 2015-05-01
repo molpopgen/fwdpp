@@ -9,6 +9,8 @@ namespace KTfwd
     \brief Mutations with selection, dominance, and tracking age of origin 
     The "standard" mutation type for population genetic simulation.
     A mutation has its own selection and dominance coefficients.
+
+    \ingroup sugar
    */
   struct popgenmut : public mutation_base
   {
