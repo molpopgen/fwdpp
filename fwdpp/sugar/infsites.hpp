@@ -8,6 +8,12 @@
 
 namespace KTfwd
 {
+  /*!
+    \brief Generic function object implementing 
+    the infinitely-many sites mutation model for 
+    "standard" population-genetic scenarios
+    \ingroup sugar
+   */
   struct infsites
   {
     /*!
