@@ -41,6 +41,9 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
+      //Next two lines cynically suppress compiler warnings...
+      using VT = typename std::remove_reference<decltype(*mutations)>::type;
+      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
@@ -87,6 +90,9 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
+      //Next two lines cynically suppress compiler warnings...
+      using VT = typename std::remove_reference<decltype(*mutations)>::type;
+      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
       bool selected = gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if( selected )
 	{
@@ -134,6 +140,9 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
+      //Next two lines cynically suppress compiler warnings...
+      using VT = typename std::remove_reference<decltype(*mutations)>::type;
+      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
@@ -149,7 +158,7 @@ namespace KTfwd
       //return a neutral mutation
       return typename mlist_t::value_type(pos,0.,0.,*generation,1);
     }
-    
+
     template<typename mlist_t,
 	     typename lookup_table_t,
 	     typename position_t,
@@ -163,6 +172,9 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
+      //Next two lines cynically suppress compiler warnings...
+      using VT = typename std::remove_reference<decltype(*mutations)>::type;
+      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
@@ -208,6 +220,9 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
+      //Next two lines cynically suppress compiler warnings...
+      using VT = typename std::remove_reference<decltype(*mutations)>::type;
+      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
       bool selected = gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if ( selected )
 	{

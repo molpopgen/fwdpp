@@ -3,6 +3,7 @@
 ## 0.3.1
 
 * Multilocus, single-population version of KTfwd::sample_diploid now allows for inbreeding coefficient of 0 by default.
+* Warnings from KTfwd::infinite_sites suppressed w/compiler trick
 
 ## 0.3.0
 
