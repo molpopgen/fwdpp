@@ -97,7 +97,6 @@ int main(int argc, char ** argv)
 	  			 &pop.diploids,
 	  			 &pop.mutations,
 	  			 N,
-	  			 N,
 				 &mu[0],
 	  			 mmodels,
 	  			 recpols,
@@ -106,8 +105,7 @@ int main(int argc, char ** argv)
 	  			 std::bind(KTfwd::insert_at_end<multiloc_t::mutation_t,multiloc_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(KTfwd::insert_at_end<multiloc_t::gamete_t,multiloc_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
-	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N),
-	  			 0.);
+	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
 	  assert( check_sum(pop.gametes[0],twoN) );
 	  assert( check_sum(pop.gametes[1],twoN) );
       	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);

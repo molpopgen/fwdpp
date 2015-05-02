@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.1
+
+* Multilocus, single-population version of KTfwd::sample_diploid now allows for inbreeding coefficient of 0 by default.
+
 ## 0.3.0
 
 * Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent.  Example HOC_ind.cc illustrates its use.

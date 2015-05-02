@@ -20,6 +20,7 @@ namespace KTfwd
 	    typename recombination_policy_container,
 	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
+	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
@@ -41,15 +42,17 @@ namespace KTfwd
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
-		 const double & f);
-
+		 const double & f = 0);
+  
   /*! \brief Single deme, multilocus model, constant population size
     \example diploid_ind_2locus.cc
   */
+  //single deme, constant N
   template< typename gamete_type,
 	    typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
@@ -62,6 +65,7 @@ namespace KTfwd
 	    typename recombination_policy_container,
 	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
+	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
@@ -82,10 +86,11 @@ namespace KTfwd
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
 		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
-		 const double & f);
+		 const double & f = 0);
 }
 #endif
