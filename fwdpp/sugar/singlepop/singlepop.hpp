@@ -79,7 +79,7 @@ namespace KTfwd {
 					      //The population contains a single gamete in 2N copies
 					      gametes(glist(1,gamete_t(2*popsize))),
 					      //All N diploids contain the only gamete in the pop
-					      diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))),
+					      diploids(dipvector_t(popsize,diploid_t(gametes.begin(),gametes.begin()))),
 					      mut_lookup(lookup_table_type()),
 					      fixations(mvector()),
 					      fixation_times(ftvector())
@@ -182,7 +182,7 @@ namespace KTfwd {
 							 //The population contains a single gamete in 2N copies
 							 gametes(glist(1,gamete_t(2*popsize))),
 							 //All N diploids contain the only gamete in the pop
-							 diploids(dipvector_t(popsize,std::make_pair(gametes.begin(),gametes.begin()))), 
+							 diploids(dipvector_t(popsize,diploid_t(gametes.begin(),gametes.begin()))), 
 							 mut_lookup(lookup_table_type()),
 							 fixations(mvector()),
 							 fixation_times(ftvector())
