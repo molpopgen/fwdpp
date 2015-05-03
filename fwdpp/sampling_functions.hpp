@@ -161,7 +161,9 @@ namespace KTfwd
 	   typename allocator,
 	   typename diploid_t,
 	   template<typename,typename> class vector_type >
-  std::vector< std::pair<double,std::string> >
+  //std::vector< std::pair<double,std::string> >
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_t::first_type::value_type::mutation_type>::value,
+			   std::vector< std::pair<double,std::string> > >::type
   ms_sample( gsl_rng * r,
 	     const vector_type< diploid_t, allocator > * diploids,
 	     const unsigned & n,
@@ -210,7 +212,10 @@ namespace KTfwd
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
+  //std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_type::first_type::value_type::mutation_type>::value,
+			   std::pair<std::vector< std::pair<double,std::string> >,
+				     std::vector< std::pair<double,std::string> > > >::type
   ms_sample_separate( gsl_rng * r,
 		      const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,

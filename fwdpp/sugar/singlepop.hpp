@@ -18,8 +18,10 @@ namespace KTfwd
   template<typename mtype> using glist_t = boost::container::list<gamete_t<mtype>, boost::pool_allocator<gamete_t<mtype>>>;
 
   template<typename T>
-  struct diploid_hack
+  struct diploid_hack 
   {
+    using first_type = T;
+    using second_type = T;
     T first,second;
     diploid_hack() : first(T()),second(T()) {}
     diploid_hack(  T const & f, T const & s ) : first(f),second(s)
