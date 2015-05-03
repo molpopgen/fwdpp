@@ -5,6 +5,7 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/internal/ms_sampling.hpp>
 #include <limits>
+#include <type_traits>
 #include <algorithm>
 
 namespace KTfwd
@@ -76,7 +77,8 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  std::vector< std::pair<double, std::string> > 
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			   std::vector< std::pair<double, std::string> > >::type
   ms_sample(gsl_rng * r,
 	    const container_t<gamete_type,allocator_t > * gametes,
 	    const unsigned & n, const unsigned & N,
@@ -95,8 +97,9 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  std::pair< std::vector< std::pair<double, std::string> > ,
-	     std::vector< std::pair<double, std::string> > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			   std::pair< std::vector< std::pair<double, std::string> > ,
+				      std::vector< std::pair<double, std::string> > > >::type
   ms_sample_separate(gsl_rng * r,
 		     const container_t<gamete_type,allocator_t > * gametes,
 		     const unsigned & n, const unsigned & N,
@@ -152,13 +155,15 @@ namespace KTfwd
   }
 
   //SAMPLERS FOR INDIVIDUAL-BASED SIMULATIONS
-
-  template<typename iterator_type,
+  template<//typename iterator_type,
 	   typename allocator,
+	   typename diploid_t,
 	   template<typename,typename> class vector_type >
-  std::vector< std::pair<double,std::string> >
+  // typename std::enable_if< !std::is_base_of<mutation_base,typename vector_type< diploid_t, allocator >::value_type>::value,
+  // 			     std::vector< std::pair<double, std::string> > >::type
+  std::vector< std::pair<double, std::string> >
   ms_sample( gsl_rng * r,
-	     const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
+	     const vector_type< diploid_t, allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {
@@ -170,13 +175,17 @@ namespace KTfwd
     return separate.first;
   }
 
-  template<typename iterator_type,
+  template<//typename iterator_type,
 	   typename allocator,
+	   typename diploid_t,
 	   template<typename,typename> class vector_type >
+  // typename std::enable_if< !std::is_base_of<mutation_base,typename vector_type< diploid_t, allocator >::value_type>::value,
+  // 			   std::pair<std::vector< std::pair<double,std::string> >,
+  // 				     std::vector< std::pair<double,std::string> > > >::type
   std::pair<std::vector< std::pair<double,std::string> >,
-	    std::vector< std::pair<double,std::string> > >
+				     std::vector< std::pair<double,std::string> > >
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
+		      const vector_type< diploid_t, allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
@@ -231,20 +240,21 @@ namespace KTfwd
   }
 
   //Individual-based sims, multilocus algorithm
-  template<typename iterator_type,
+  template<typename diploid_type,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+		      const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
     using rvtype = std::vector< std::pair<std::vector< std::pair<double,std::string> > ,
 					  std::vector< std::pair<double,std::string> > > >;
-    using genotype = vector_type< std::pair<iterator_type,iterator_type>, allocator >;
+    //using genotype = vector_type< std::pair<iterator_type,iterator_type>, allocator >;
+    using genotype = vector_type< diploid_type, allocator >;
     using dip_ctr = outer_vector_type< genotype, outer_allocator >;
 
     rvtype rv( diploids->size() );
@@ -304,14 +314,15 @@ namespace KTfwd
     return rv;
   }
 
- template<typename iterator_type,
+ template<typename diploid56_type,
 	  typename allocator,
+	  typename diploid_type,
 	  typename outer_allocator,
 	  template<typename,typename> class vector_type,
 	  template<typename,typename> class outer_vector_type>
   std::vector< std::vector< std::pair<double,std::string> > >
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+	     const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {

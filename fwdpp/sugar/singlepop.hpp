@@ -30,8 +30,8 @@ namespace KTfwd
     diploid_hack & operator=( diploid_hack && ) = default;
     diploid_hack & operator=( diploid_hack const & ) = default;
   };
-  template<typename mtype> using DIPT = diploid_hack<typename glist_t<mtype>::iterator>;
-  //template<typename mtype> using DIPT = std::pair<typename glist_t<mtype>::iterator,typename glist_t<mtype>::iterator>;
+  //template<typename mtype> using DIPT = diploid_hack<typename glist_t<mtype>::iterator>;
+  template<typename mtype> using DIPT = std::pair<typename glist_t<mtype>::iterator,typename glist_t<mtype>::iterator>;
   /*!
     \brief Single locus, single population without serialization.  Cannot be copied, etc.
     See @ref md_md_sugar for rationale, etc.

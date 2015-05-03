@@ -128,7 +128,9 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  std::vector< std::pair<double, std::string> > 
+  //std::vector< std::pair<double, std::string> >
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			   std::vector< std::pair<double, std::string> > >::type
   ms_sample(gsl_rng * r,
 	    const container_t<gamete_type,allocator_t > * gametes,
 	    const unsigned & n, const unsigned & N,
@@ -141,8 +143,11 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  std::pair< std::vector< std::pair<double, std::string> > ,
-	     std::vector< std::pair<double, std::string> > >
+  //std::pair< std::vector< std::pair<double, std::string> > ,
+  //	     std::vector< std::pair<double, std::string> > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
+			   std::pair< std::vector< std::pair<double, std::string> > ,
+				      std::vector< std::pair<double, std::string> > > >::type
   ms_sample_separate(gsl_rng * r,
 		     const container_t<gamete_type,allocator_t > * gametes,
 		     const unsigned & n, const unsigned & N,
@@ -152,12 +157,13 @@ namespace KTfwd
     \brief Sampling from a population in an individual-based simulation
     \ingroup samplingPopsInd
   */
-  template<typename iterator_type,
+  template<//typename iterator_type,
 	   typename allocator,
+	   typename diploid_t,
 	   template<typename,typename> class vector_type >
   std::vector< std::pair<double,std::string> >
   ms_sample( gsl_rng * r,
-	     const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
+	     const vector_type< diploid_t, allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed = true);
 
@@ -165,13 +171,14 @@ namespace KTfwd
     \brief Sampling from a population in an individual-based simulation.  Selected and neutral mutations returned separately
     \ingroup samplingPopsInd
   */
-  template<typename iterator_type,
+  template<//typename iterator_type,
 	   typename allocator,
+	   typename diploid_t,
 	   template<typename,typename> class vector_type >
   std::pair<std::vector< std::pair<double,std::string> >,
 	    std::vector< std::pair<double,std::string> > >
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< std::pair<iterator_type,iterator_type>, allocator > * diploids,
+		      const vector_type< diploid_t, allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed = true);
 
@@ -181,14 +188,14 @@ namespace KTfwd
     \note Neutral + selected mutations intermixed
     \ingroup samplingPopsInd
   */
-  template<typename iterator_type,
+  template<typename diploid_type,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   std::vector< std::vector< std::pair<double,std::string> > >
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+	     const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed);
 
@@ -198,14 +205,14 @@ namespace KTfwd
     \note For each locus, the first member of the pair corresponds to neutral sites, the second to selected.
     \ingroup samplingPopsInd
   */
-  template<typename iterator_type,
+  template<typename diploid_type,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< std::pair<iterator_type,iterator_type>, allocator >, outer_allocator > * diploids,
+		      const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed);
 }
