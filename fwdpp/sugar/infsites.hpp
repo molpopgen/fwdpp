@@ -192,7 +192,7 @@ namespace KTfwd
     {
       //Next two lines cynically suppress compiler warnings...
       using VT = typename std::remove_reference<decltype(*mutations)>::type;
-      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
+      static_assert( std::is_same< typename VT::value_type ,mutation>::value, "Just checking" );
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
@@ -241,7 +241,7 @@ namespace KTfwd
     {
       //Next two lines cynically suppress compiler warnings...
       using VT = typename std::remove_reference<decltype(*mutations)>::type;
-      static_assert( std::is_same< typename VT::value_type ,popgenmut>::value, "Just checking" );
+      static_assert( std::is_same< typename VT::value_type,mutation>::value, "Just checking" );
       bool selected = gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if ( selected )
 	{
