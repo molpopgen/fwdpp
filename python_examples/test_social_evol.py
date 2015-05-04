@@ -15,12 +15,10 @@ THETA=50
 RHO=THETA
 mu=THETA/(4.*N)
 mu_del = 0.1*mu
-s=10/(2*N)
-h=2
 r=RHO/(4.*N)
 SFS=[0]*(NSAM-1)
 for i in range(0,NREPS):
-    XX=social_evol.evolve(gsl_rng,N,GENS,mu,mu_del,s,h,r,0.1,0.1,0.005,0.0025)
+    XX=social_evol.evolve(gsl_rng,N,GENS,mu,mu_del,r,6.0, -1.4, 4.56, -1.6)
     XX.sfs=social_evol.sfs(gsl_rng,XX,NSAM)
     for i in range(0,(NSAM-1)):
         SFS[i]=SFS[i]+XX.sfs[i]
