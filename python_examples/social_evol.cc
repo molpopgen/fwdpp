@@ -110,8 +110,6 @@ poptype evolve( GSLrng & rng,
 		const unsigned & generations,
 		const double & mu,
 		const double & mu_del,
-		const double & s,
-		const double &h,
 		const double & recrate,
 		const double & b1, const double & b2, const double & c1, const double & c2)
 {
@@ -125,11 +123,8 @@ poptype evolve( GSLrng & rng,
       std::for_each( pop.diploids.begin(),pop.diploids.end(),
 		     [&i,&phenotypes]( poptype::diploid_t & dip ) {
 		       dip.i=i;
-		       phenotypes[i]=KTfwd::additive_diploid()(dip.first,dip.second,2.);
+		       phenotypes[i++]=KTfwd::additive_diploid()(dip.first,dip.second,2.);
 		     } );
-      std::set<double> up(phenotypes.begin(),phenotypes.end());
-      for(const auto &__p:up) std::cerr << __p << ' ';
-      std::cerr << '\n';
       double wbar = KTfwd::sample_diploid(rng,
 					  &pop.gametes,
 					  &pop.diploids,
@@ -137,7 +132,9 @@ poptype evolve( GSLrng & rng,
 					  N,
 					  mu+mu_del,
 					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,
-						    mu,mu_del,[&rng](){return gsl_rng_uniform(rng);},[&s](){return s;},[&h](){return h;}),
+						    mu,mu_del,[&rng](){return gsl_rng_uniform(rng);},
+						    [&rng](){return 0.1*(0.5-gsl_rng_uniform(rng));},
+						    [](){return 2.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 						    &pop.gametes,
 						    recrate, 
@@ -147,7 +144,6 @@ poptype evolve( GSLrng & rng,
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
-      for(const auto & __d : pop.diploids ) { std::cerr << __d.first->smutations.size() << ' ' << __d.second->smutations.size() << '\n'; }
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
   return pop;
