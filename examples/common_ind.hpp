@@ -20,15 +20,15 @@
 #ifdef SINGLEPOP_SIM
 #include <fwdpp/sugar/singlepop.hpp>
 using singlepop_t = KTfwd::singlepop<mtype>;
-using singlepop_serialized_t = KTfwd::singlepop<mtype>;
+using singlepop_serialized_t = KTfwd::singlepop_serialized<mtype>;
 #elif defined(METAPOP_SIM)
 #include <fwdpp/sugar/metapop.hpp>
 using metapop_t = KTfwd::metapop<mtype>;
-using metapop_serialized_t = KTfwd::metapop<mtype>;
+using metapop_serialized_t = KTfwd::metapop_serialized<mtype>;
 #elif defined(MULTILOCUS_SIM)
 #include <fwdpp/sugar/multiloc.hpp>
 using multiloc_t = KTfwd::multiloc<mtype>;
-using multiloc_serialized_t = KTfwd::multiloc<mtype>;
+using multiloc_serialized_t = KTfwd::multiloc_serialized<mtype>;
 #endif
 
 //RNG type
