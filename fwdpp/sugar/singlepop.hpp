@@ -17,35 +17,16 @@ namespace KTfwd
   template<typename mtype> using gamete_t = gamete_base<mtype,mlist_t<mtype>>;
   template<typename mtype> using glist_t = boost::container::list<gamete_t<mtype>, boost::pool_allocator<gamete_t<mtype>>>;
 
-  template<typename T>
-  struct diploid_hack 
-  {
-    using first_type = T;
-    using second_type = T;
-    T first,second;
-    diploid_hack() : first(T()),second(T()) {}
-    diploid_hack(  T const & f, T const & s ) : first(f),second(s)
-    {
-    }
-    diploid_hack( const diploid_hack & ) = default;
-    diploid_hack( diploid_hack && ) = default;
-    diploid_hack & operator=( diploid_hack && ) = default;
-    diploid_hack & operator=( diploid_hack const & ) = default;
-  };
-  //template<typename mtype> using DIPT = diploid_hack<typename glist_t<mtype>::iterator>;
-  template<typename mtype> using DIPT = std::pair<typename glist_t<mtype>::iterator,typename glist_t<mtype>::iterator>;
   /*!
     \brief Single locus, single population without serialization.  Cannot be copied, etc.
     See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
-  boost::container::vector<DIPT<mtype>> foobar;
   template<typename mtype> using singlepop = sugar::singlepop<mtype,
 							      mlist_t<mtype>,
 							      glist_t<mtype>,
-							      boost::container::vector<DIPT<mtype>>,
-							      //boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
-							      //typename glist_t<mtype>::iterator> >,
+							      boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
+												 typename glist_t<mtype>::iterator> >,
 							      boost::container::vector<mtype>,
 							      boost::container::vector<unsigned>,
 							      boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
