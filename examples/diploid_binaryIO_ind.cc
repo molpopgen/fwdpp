@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
   //now, read the data back in...
   glist gametes2;
   mlist mutations2;
-  std::vector< std::pair< glist::iterator,glist::iterator > > diploids2;
+  singlepop_serialized_t::dipvector_t diploids2;
 
   std::ifstream in(hapfile,std::ios_base::in|std::ios_base::binary);
   in.seekg(offset);
