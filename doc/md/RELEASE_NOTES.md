@@ -4,6 +4,9 @@
 
 * Multilocus, single-population version of KTfwd::sample_diploid now allows for inbreeding coefficient of 0 by default.
 * Warnings from KTfwd::infinite_sites suppressed w/compiler trick
+* Extraneous gsl_rng free removed from diploid_ind.cc
+* Issue #12 in examples/common_ind.hpp fixed
+* The library no longer requires that std::pair< T,T > are the types used for a diploid genotype (where the "T" are iterator types derived from gametes lists).  Now, custom diploid genotypes may be used, as long as the follow certain constraints.  Thanks to Jeremy Van Cleve for motivating this change, which should allow models involving space and social interactions.
 
 ## 0.3.0
 

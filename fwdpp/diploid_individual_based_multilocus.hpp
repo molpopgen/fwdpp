@@ -8,7 +8,8 @@ namespace KTfwd
 {
   /*! \brief Single deme, multilocus model, changing population size
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
@@ -31,10 +32,7 @@ namespace KTfwd
 		 glist_vector_type< gamete_list_type<gamete_type,
 		 gamete_list_type_allocator> ,
 		 glist_vector_type_allocator > * gametes,
-		 diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-		 typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-		 locus_vector_type_allocator>,
-		 diploid_vector_type_allocator> * diploids,
+		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned & N_curr, 
 		 const unsigned & N_next, 
@@ -53,7 +51,8 @@ namespace KTfwd
     \example diploid_ind_2locus.cc
   */
   //single deme, constant N
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
@@ -76,10 +75,7 @@ namespace KTfwd
 		 glist_vector_type< gamete_list_type<gamete_type,
 		 gamete_list_type_allocator> ,
 		 glist_vector_type_allocator > * gametes,
-		 diploid_vector_type<locus_vector_type<std::pair<typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator,
-		 typename gamete_list_type< gamete_type,gamete_list_type_allocator >::iterator>,
-		 locus_vector_type_allocator>,
-		 diploid_vector_type_allocator> * diploids,
+		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned & N,
 		 const double * mu,

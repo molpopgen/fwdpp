@@ -22,7 +22,7 @@
 
   The following features are in common to all versions of these functions:
 
-  1. They only support bi-allelic mutation positions.
+  1. They only supp]ort bi-allelic mutation positions.
   2. All functions return some number of objects of type std::vector< std::pair<double, std::string> >.  
   Each element in the vector corresponds to a mutation.  The double corresponds to the mutation position,
   and the string corresponds to the character states in each of the \f$n\f$ samples.  The strings contain the character
@@ -143,8 +143,6 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  //std::pair< std::vector< std::pair<double, std::string> > ,
-  //	     std::vector< std::pair<double, std::string> > >
   typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
 			   std::pair< std::vector< std::pair<double, std::string> > ,
 				      std::vector< std::pair<double, std::string> > > >::type
@@ -159,13 +157,12 @@ namespace KTfwd
   */
   template<//typename iterator_type,
 	   typename allocator,
-	   typename diploid_t,
+	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  //std::vector< std::pair<double,std::string> >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
 			   std::vector< std::pair<double,std::string> > >::type
   ms_sample( gsl_rng * r,
-	     const vector_type< diploid_t, allocator > * diploids,
+	     const vector_type< diploid_geno_t, allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed = true);
 
@@ -175,12 +172,13 @@ namespace KTfwd
   */
   template<//typename iterator_type,
 	   typename allocator,
-	   typename diploid_t,
+	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  std::pair<std::vector< std::pair<double,std::string> >,
-	    std::vector< std::pair<double,std::string> > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+			   std::pair<std::vector< std::pair<double,std::string> >,
+				     std::vector< std::pair<double,std::string> > > >::type
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< diploid_t, allocator > * diploids,
+		      const vector_type< diploid_geno_t, allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed = true);
 
@@ -190,14 +188,15 @@ namespace KTfwd
     \note Neutral + selected mutations intermixed
     \ingroup samplingPopsInd
   */
-  template<typename diploid_type,
+  template<typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  std::vector< std::vector< std::pair<double,std::string> > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+			    std::vector< std::vector< std::pair<double,std::string> > > >::type
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
+	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed);
 
@@ -207,17 +206,16 @@ namespace KTfwd
     \note For each locus, the first member of the pair corresponds to neutral sites, the second to selected.
     \ingroup samplingPopsInd
   */
-  template<typename diploid_type,
+  template<typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  //std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_type::first_type::value_type::mutation_type>::value,
-			   std::pair<std::vector< std::pair<double,std::string> >,
-				     std::vector< std::pair<double,std::string> > > >::type
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+			   std::vector<std::pair<std::vector< std::pair<double,std::string> >,
+						 std::vector< std::pair<double,std::string> > > > >::type
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
+		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed);
 }

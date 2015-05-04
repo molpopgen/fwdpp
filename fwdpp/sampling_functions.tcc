@@ -157,15 +157,12 @@ namespace KTfwd
   //SAMPLERS FOR INDIVIDUAL-BASED SIMULATIONS
   template<//typename iterator_type,
 	   typename allocator,
-	   typename diploid_t,
+	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  // typename std::enable_if< !std::is_base_of<mutation_base,typename vector_type< diploid_t, allocator >::value_type>::value,
-  // 			     std::vector< std::pair<double, std::string> > >::type
-  //std::vector< std::pair<double, std::string> >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
 			   std::vector< std::pair<double,std::string> > >::type
   ms_sample( gsl_rng * r,
-	     const vector_type< diploid_t, allocator > * diploids,
+	     const vector_type< diploid_geno_t, allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {
@@ -179,16 +176,13 @@ namespace KTfwd
 
   template<//typename iterator_type,
 	   typename allocator,
-	   typename diploid_t,
+	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  // typename std::enable_if< !std::is_base_of<mutation_base,typename vector_type< diploid_t, allocator >::value_type>::value,
-  // 			   std::pair<std::vector< std::pair<double,std::string> >,
-  // 				     std::vector< std::pair<double,std::string> > > >::type
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
 			   std::pair<std::vector< std::pair<double,std::string> >,
 				     std::vector< std::pair<double,std::string> > > >::type
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< diploid_t, allocator > * diploids,
+		      const vector_type< diploid_geno_t, allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
@@ -243,24 +237,22 @@ namespace KTfwd
   }
 
   //Individual-based sims, multilocus algorithm
-  template<typename diploid_type,
+  template<typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  //std::vector< std::pair<std::vector< std::pair<double,std::string> >,std::vector< std::pair<double,std::string> > > >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_type::first_type::value_type::mutation_type>::value,
-			   std::pair<std::vector< std::pair<double,std::string> >,
-				     std::vector< std::pair<double,std::string> > > >::type
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+			   std::vector<std::pair<std::vector< std::pair<double,std::string> >,
+						 std::vector< std::pair<double,std::string> > > > >::type
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
+		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
     using rvtype = std::vector< std::pair<std::vector< std::pair<double,std::string> > ,
 					  std::vector< std::pair<double,std::string> > > >;
-    //using genotype = vector_type< std::pair<iterator_type,iterator_type>, allocator >;
-    using genotype = vector_type< diploid_type, allocator >;
+    using genotype = vector_type< diploid_geno_t, allocator >;
     using dip_ctr = outer_vector_type< genotype, outer_allocator >;
 
     rvtype rv( diploids->size() );
@@ -320,15 +312,15 @@ namespace KTfwd
     return rv;
   }
 
- template<typename diploid56_type,
+ template<typename diploid_geno_t,
 	  typename allocator,
-	  typename diploid_type,
 	  typename outer_allocator,
 	  template<typename,typename> class vector_type,
 	  template<typename,typename> class outer_vector_type>
-  std::vector< std::vector< std::pair<double,std::string> > >
+  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+			   std::vector< std::vector< std::pair<double,std::string> > > >::type
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< diploid_type, allocator >, outer_allocator > * diploids,
+	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {

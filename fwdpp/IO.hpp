@@ -116,7 +116,8 @@ namespace KTfwd
     \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
     in turn allowing file locking which speeds up performance on distributed file systems.
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
 	    typename mutation_type,
@@ -126,13 +127,13 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  const diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-								typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-			  vector_type_allocator > * diploids,
-			  const mutation_writer_type & mw,
-			  ostreamtype & buffer);
+  //void 
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
+		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+		     const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+		     const mutation_writer_type & mw,
+		     ostreamtype & buffer);
 
 
 
@@ -144,7 +145,8 @@ namespace KTfwd
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream. Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
 	    typename mutation_type,
@@ -154,13 +156,12 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-							  typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-					       vector_type_allocator > * diploids,
-			  const mutation_reader_type & mr,
-			  istreamtype & in);
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
+		     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+		     const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+		     const mutation_reader_type & mr,
+		     istreamtype & in);
 
   /*! \brief Write the population to a binary-format file for individual-based multilocus simulations.
     \param mlocus_gametes A container of gametes for a multilocus simulation
@@ -169,7 +170,8 @@ namespace KTfwd
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An object whose public interface is compatible with std::ostream or is a gzFile
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
 	    typename mlocus_vector_type_allocator,
@@ -183,14 +185,12 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-			  typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-			  vector_type_allocator >,
-			  diploid_vv_type_allocator > * diploids,
-			  const mutation_writer_type & mw,
-			  ostreamtype & buffer);
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+		     const diploid_vv_type < diploid_vector_type< diploid_geno_t ,vector_type_allocator >,diploid_vv_type_allocator > * diploids,
+		     const mutation_writer_type & mw,
+		     ostreamtype & buffer);
 
   /*! \brief Read the population back from a binary-format file for individual-based multilocus simulations
     \param mlocus_gametes A container of gametes for a multilocus simulation
@@ -199,7 +199,8 @@ namespace KTfwd
     \param mr A function object taking a input stream as argument, and reads a mutation object from the stream. Must be provided by the library user.
     \param in An object whose public interface is compatible with std::ostream or is a gzFile.
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
 	    typename mlocus_vector_type_allocator,
@@ -213,14 +214,12 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			 diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-			 typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-			 vector_type_allocator >,
-			 diploid_vv_type_allocator > * diploids,
-			 const mutation_reader_type & mr,
-			 istreamtype & in);
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+		    mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+		    diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+		    const mutation_reader_type & mr,
+		    istreamtype & in);
 
   /*! \brief Write the metapopulation to a compact binary-format output file for individual-based simulations.
     Write the metapopulation to a compact binary-format output file.
@@ -236,7 +235,8 @@ namespace KTfwd
     in turn allowing file locking which speeds up performance on distributed file systems.
     \example diploid_binaryIO_ind.cc
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
 	    typename metapop_vector_type_allocator,
@@ -250,26 +250,24 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-			      metapop_vector_type_allocator> * metapop,
-			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			      const diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-										      typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-									   vector_type_allocator >,
-			      diploid_vv_type_allocator > * diploids,
-			      const mutation_writer_type & mw,
-			      ostreamtype & buffer);
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			 metapop_vector_type_allocator> * metapop,
+			 const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			 const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			 const mutation_writer_type & mw,
+			 ostreamtype & buffer);
 
   /*! \brief Read the metapopulation back from a binary-format file for individual-based simulations
     Read the metapopulation back from a binary-format file
-
     \param metapop Destination for the gametes
     \param mutations Destination for the mutations
     \param diploids Destination for the diploids
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
-  template< typename gamete_type,
+  template< typename diploid_geno_t,
+	    typename gamete_type,
   	    typename gamete_list_type_allocator,
   	    template<typename,typename> class gamete_list_type,
   	    typename metapop_vector_type_allocator,
@@ -283,15 +281,13 @@ namespace KTfwd
   	    template<typename,typename> class diploid_vv_type,
   	    typename mutation_reader_type,
   	    typename istreamtype>
-  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-  			     metapop_vector_type_allocator> * metapop,
-  			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-  			     diploid_vv_type < diploid_vector_type< std::pair< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,
-  									       typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator >,
-  								    vector_type_allocator >,
-  			     diploid_vv_type_allocator > * diploids,
-  			     const mutation_reader_type & mr,
-  			     istreamtype & in);
+  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			metapop_vector_type_allocator> * metapop,
+			mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			diploid_vv_type < diploid_vector_type<diploid_geno_t ,vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			const mutation_reader_type & mr,
+			istreamtype & in);
 
 }
 #endif
