@@ -79,7 +79,7 @@ namespace KTfwd {
 	diploid_t idip;
 	for( auto gitr = gametes.begin() ; gitr != gametes.end() ; ++gitr )
 	  {
-	    idip.emplace_back(std::make_pair(gitr->begin(),gitr->begin()));
+	    idip.emplace_back(typename diploid_t::value_type(gitr->begin(),gitr->begin()));
 	  }
 	diploids = dipvector_t(N,idip);
       }
@@ -183,7 +183,7 @@ namespace KTfwd {
 	diploid_t idip;
 	for( auto gitr = gametes.begin() ; gitr != gametes.end() ; ++gitr )
 	  {
-	    idip.emplace_back(std::make_pair(gitr->begin(),gitr->begin()));
+	    idip.emplace_back(typename diploid_t::value_type(gitr->begin(),gitr->begin()));
 	  }
 	diploids = dipvector_t(N,idip);
       }
