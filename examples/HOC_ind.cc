@@ -162,7 +162,7 @@ int main(int argc, char ** argv)
       //Note: this can be done more efficiently via the boost accumulator library, which
       //we don't use here to reduce dependencies.
       std::vector<double> G;
-      std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const std::pair< poptype::glist_t::iterator, poptype::glist_t::iterator> & dip ) {
+      std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const poptype::diploid_t & dip ) {
       	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
       				       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
       	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
