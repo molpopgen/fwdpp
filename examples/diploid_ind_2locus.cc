@@ -72,7 +72,7 @@ int main(int argc, char ** argv)
 
   while(nreps--)
     {
-      multiloc_t pop(N,2);
+      multiloc_serialized_t pop(N,2);
       unsigned generation=0;
       double wbar;
 
@@ -110,6 +110,8 @@ int main(int argc, char ** argv)
 	  assert( check_sum(pop.gametes[1],twoN) );
       	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	}
+      //For giggles, make sure that the pop. is copy-constructible...
+      multiloc_serialized_t pop2(pop);
       //Take a sample and print it to screen.
       auto x = KTfwd::ms_sample(r,&pop.diploids,samplesize1,true);
       Sequence::SimData l1(x[0].begin(),x[0].end()),
