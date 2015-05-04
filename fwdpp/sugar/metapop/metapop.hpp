@@ -43,7 +43,8 @@ namespace KTfwd {
 	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
 	    auto itr = gametes.begin();
 	    std::advance(itr,i);
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( itr->begin(),itr->begin())));
+	    //The value_type is the same as diploid_t below
+	    diploids.emplace_back(dipvector_t(Ns[i],typename dipvector::value_type( itr->begin(),itr->begin())));
 	  }
       }
     public:
@@ -170,7 +171,8 @@ namespace KTfwd {
 	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
 	    auto itr = gametes.begin();
 	    std::advance(itr,i);
-	    diploids.emplace_back(dipvector_t(Ns[i],std::make_pair( itr->begin(),itr->begin())));
+	    //The value_type is the same as diploid_t below
+	    diploids.emplace_back(dipvector_t(Ns[i],typename dipvector::value_type( itr->begin(),itr->begin())));
 	  }
       }
     public:
