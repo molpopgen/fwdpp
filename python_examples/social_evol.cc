@@ -122,25 +122,13 @@ poptype evolve( GSLrng & rng,
     {
       //Fill phenotypes
       unsigned i = 0;
-      /*
-	for( auto itr = pop.diploids.begin() ; itr != pop.diploids.end() ; ++itr )
-	{
-	itr->i=i;
-	phenotypes[i++] = KTfwd::additive_diploid()(itr,2.);
+
+      for( auto & dip : pop.diploids ) 
+	{ 
+	  dip.i = i; 
+	  phenotypes[i++] = KTfwd::additive_diploid(dip,2.); 
 	}
-      */
-      /*
-      std::for_each( pop.diploids.begin(),pop.diploids.end(),
-		     [&i,&phenotypes]( poptype::diploid_t & dip ) {
-		       dip.i=i;
-		       phenotypes[i++]=KTfwd::additive_diploid()(dip,2.);
-		     } );
-      */
-      for( auto & dip : pop.diploids )
-	{
-	  dip.i=i;
-	  phenotypes[i++]=KTfwd::additive_diploid()(dip,2.);
-	}
+
       double wbar = KTfwd::sample_diploid(rng,
 					  &pop.gametes,
 					  &pop.diploids,
