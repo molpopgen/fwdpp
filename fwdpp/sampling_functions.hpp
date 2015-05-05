@@ -123,6 +123,7 @@ namespace KTfwd
 				   const unsigned & n, const unsigned & N);
   /*!
     Take a sample of size n from a larger population of N diploids
+    \return A vector  of variable sites. The first block corresponds to neutral variants, and the second to non-neutral
     \ingroup samplingPopsGamete
   */
   template< typename gamete_type,
@@ -152,6 +153,7 @@ namespace KTfwd
 
   /*!
     \brief Sampling from a population in an individual-based simulation
+    \return A vector of variable sites
     \ingroup samplingPopsInd
   */
   template<typename allocator,
@@ -166,6 +168,7 @@ namespace KTfwd
 
   /*!
     \brief Sampling from a population in an individual-based simulation.  Selected and neutral mutations returned separately
+    \return A pair of vectors of variable sites.  The first block is neutral variants, the second is non-neutral variants
     \ingroup samplingPopsInd
   */
   template<typename allocator,
@@ -191,7 +194,7 @@ namespace KTfwd
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			    std::vector< std::vector< std::pair<double,std::string> > > >::type
+			   std::vector< std::vector< std::pair<double,std::string> > > >::type
   ms_sample( gsl_rng * r,
 	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
