@@ -45,9 +45,11 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
   //"perfect forwarding" constructor does not work with iterator from boost containers...
   //diploid_t(first_type && g1, first_type && g2) : first(std::forward(g1)),second(std::forward(g2)),i(numeric_limits<unsigned>::max()) {}
   diploid_t(first_type g1, first_type g2) : first(g1),second(g2),i(std::numeric_limits<unsigned>::max()) {}
-  diploid_t( const diploid_t & ) = default;
-  diploid_t( diploid_t && ) = default;
-  diploid_t & operator=(const diploid_t &) = default;
+  //The following constructors SHOULD be generated automagically by your compiler, so you don't have to:
+  //(no idea what, if any, performance effect this may have.  Worst case is prob. the move constructor doesn't get auto-generated...
+  //diploid_t( const diploid_t & ) = default;
+  //diploid_t( diploid_t && ) = default;
+  //diploid_t & operator=(const diploid_t &) = default;
 };
 
 //Define our our population type via KTfwd::sugar 
