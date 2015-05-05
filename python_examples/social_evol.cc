@@ -121,7 +121,7 @@ poptype evolve( GSLrng & rng,
       //Fill phenotypes
       unsigned i = 0;
       std::for_each( pop.diploids.begin(),pop.diploids.end(),
-		     [&i,&phenotypes]( const poptype::diploid_t & dip ) {
+		     [&i,&phenotypes]( poptype::diploid_t & dip ) {
 		       dip.i=i;
 		       phenotypes[i++]=KTfwd::additive_diploid()(dip.first,dip.second,2.);
 		     } );
@@ -163,7 +163,6 @@ boost::python::list sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam)
       unsigned chrom = unsigned(gsl_ran_flat(rng,0.,double(twoN)));
       //get pointer to that chrom from the individual
       auto gamete = (chrom%2==0.) ? pop.diploids[chrom/2].first : pop.diploids[chrom/2].second;
-      //In this example, there are only neutral mutations, so that's what we'll iterate over
       for( auto m = gamete->mutations.begin() ; m != gamete->mutations.end() ; ++m )
 	{
 	  auto pos_itr = mutfreqs.find( (*m)->pos );
