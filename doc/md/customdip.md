@@ -128,28 +128,8 @@ struct my_new_fitness_pol_template {
 };
 ~~~
 
-This definition will work with KTfwd::sample_diploid, but it may not be good enough for you.  It is likely that you want a version that will work on a const reference to your custom type as well as on the iterator type.  C++11 allows us to do that:
+This definition will work with KTfwd::sample_diploid, but it may not be good enough for you.  It is likely that you want a version that will work on a const reference to your custom type as well as on the iterator type.  C++11 allows us to do that by overloading operator() in many ways, and using [SFINAE](http://en.cppreference.com/w/cpp/language/sfinae) to choose the correct overload.  The dispatch tag KTfwd::tags::custom_diploid_t helps in choosing the overload, and I would recommend that you look at the implementations of the following fitness policies in the library for further guidance:
 
-~~~{.cpp}
-#include <type_traits>
-
-struct my_new_fitness_pol_template {
-	using result_type = double;
-
-	//Overload for const reference to diploid type
-	template< typename diploid_genotype_t >
-	inline typename std::enable_if< std::is_base_of<tags::custom_diploid_t, diploid_genotype_t>::value, result_type >::type
-	operator()( const diploid_genotype_t & dip_itr ) const {
-	//Do something interesting and return a double.
-	//dip_itr.first will access the first gamete, etc.
-	}
-
-	//Overload for iterator to custom diploid type
-	template< typename diploid_genotype_itr >
-	inline typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
-	operator()( const diploid_genotype_itr & dip_itr ) const {
-		//Call the other operator() to minimize code duplication
-		return this->operator()(*dip_itr);
-	}
-};	
-~~~
+* Ktfwd::site_dependent_fitness
+* Ktfwd::additive_diploid
+* Ktfwd::multiplicative_diploid
