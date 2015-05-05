@@ -18,7 +18,7 @@ using mtype = KTfwd::popgenmut;
 struct no_selection_multi
 {
   typedef double result_type;
-  inline double operator()( const multiloc_t::diploid_t & diploid ) const
+  inline double operator()( const multiloc_t::dipvector_t::const_iterator & diploid ) const
   {
     return 1.;
   }
