@@ -145,6 +145,7 @@ namespace KTfwd
 
     /*!
       \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype,
 	      typename fitness_updating_policy_hom,
@@ -161,6 +162,7 @@ namespace KTfwd
 
     /*!
       \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype_itr,
 	      typename fitness_updating_policy_hom,
@@ -309,6 +311,7 @@ namespace KTfwd
     }
     /*!
       \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype >
     inline 
@@ -321,6 +324,7 @@ namespace KTfwd
     
     /*!
       \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype_itr >
     inline  
@@ -363,6 +367,7 @@ namespace KTfwd
 
     /*!
       \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype >
     inline 
@@ -375,6 +380,7 @@ namespace KTfwd
     
     /*!
       \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+      \note See @ref md_md_customdip
     */
     template< typename diploid_genotype_itr >
     inline  
