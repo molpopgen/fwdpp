@@ -64,6 +64,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
 	second_type second;
 	//Constructor
 	diploid_t() : first(first_type()),second(second_type()) {}
+        diploid_t(first_type g1, first_type g2) : first(g1),second(g2){}
 };
 ~~~
 
@@ -89,6 +90,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
 	bool female;
 	//Constructor -- and you may want to write others in this case...
 	diploid_t() : first(first_type()),second(second_type()),female(true) {}
+        diploid_t(first_type g1, first_type g2) : first(g1),second(g2),female(true){}
 };
 ~~~
 
