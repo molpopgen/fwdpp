@@ -126,7 +126,7 @@ poptype evolve( GSLrng & rng,
       for( auto & dip : pop.diploids ) 
 	{ 
 	  dip.i = i; 
-	  phenotypes[i++] = KTfwd::additive_diploid(dip,2.); 
+	  phenotypes[i++] = KTfwd::additive_diploid()(dip,2.); 
 	}
 
       double wbar = KTfwd::sample_diploid(rng,
