@@ -17,7 +17,7 @@ The main conceptual difference between this part of the library and the examples
 * Similarly, you implement a recombination policy per locus, and pass a vector of those policies along to KTfwd::sample_diploid.
 * Instead of a single list of gametes, you have a vector of lists of gametes, where each list represents the current gametes at a particular locus.
 * A diploid is now represented as a vector of pairs of iterators derived from the vector of lists of gametes.
-* A fitness policy calculates individual fitnesses from that vector of pairs of iterators.
+* A fitness policy calculates individual fitnesses from an iterator pointing to that vector of pairs of iterators.
 
 At this point, it may be most useful to look at a concrete example.  The program diploid_ind_2locus.cc is distributed with the library source code, and we'll break down its essential parts in the next few sections.
 
@@ -184,8 +184,11 @@ In this example program, there is no selection, so our fitness model will return
 struct no_selection_multi
 {
   typedef double result_type;
-  template< typename iterator_type >
-  inline double operator()( const std::vector< std::pair<iterator_type,iterator_type> > & diploid ) const
+  //The template type is an iterator derived from the vector containing the diploids,
+  //and therefore points to a std::vector< std::pair<gamete_itr_t,gamete_itr_r> >,
+  //where the gamete_itr_t are iterators pointing to gametes
+  template< typename dipoid_vec_itr_t >
+  inline double operator()( const diploid_vec_itr_t & diploid ) const
   {
     return 1.;
   }
