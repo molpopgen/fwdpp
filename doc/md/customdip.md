@@ -135,3 +135,20 @@ This definition will work with KTfwd::sample_diploid, but it may not be good eno
 * KTfwd::site_dependent_fitness
 * KTfwd::additive_diploid
 * KTfwd::multiplicative_diploid
+
+### Fitness models in multilocus simulations
+
+For multilocus simulations, a diploid is a vector of diploid genotype types, which by default is assumed to be a vector of pairs of iterators to gametes.  Thus, for multilocus sims involving custom types, there is no need to make use of the dispatch tags discussed above, unless you want to use custom diploid types _and_ the built-in fitness policies:
+
+~~~{.cpp}
+struct mloc_fitness {
+  typedef double result_type;
+  inline double operator()( const multiloc_t::dipvector_t::const_iterator & diploid ) const {
+     using itr_t = multiloc_t::dipvector_t::const_iterator;
+     //Fitness is additive across loci, and loci are additive over mutations:
+     return std::accumulate( diploid.begin(), diploid.end(), 0, [](const double & w, const itr_t::value_type & __l ) {
+     	    return w + KTfwd::additive_diploid(__l,2.);
+	    } );
+  }
+};
+~~~
