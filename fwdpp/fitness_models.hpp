@@ -150,12 +150,12 @@ namespace KTfwd
     template< typename diploid_genotype,
 	      typename fitness_updating_policy_hom,
 	      typename fitness_updating_policy_het>
-    inline 
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
+    inline result_type
     operator()(const diploid_genotype & diploid_g,
 	       const fitness_updating_policy_hom & fpol_hom,
 	       const fitness_updating_policy_het & fpol_het,
-	       const double & starting_fitness = 1. ) const
+	       const double & starting_fitness,
+	       std::true_type) const
     {
       return this->operator()(diploid_g.first,diploid_g.second,fpol_hom,fpol_het,starting_fitness);
     }
@@ -167,14 +167,30 @@ namespace KTfwd
     template< typename diploid_genotype_itr,
 	      typename fitness_updating_policy_hom,
 	      typename fitness_updating_policy_het>
-    inline 
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
+    inline result_type
     operator()(const diploid_genotype_itr & diploid_g,
 	       const fitness_updating_policy_hom & fpol_hom,
 	       const fitness_updating_policy_het & fpol_het,
-	       const double & starting_fitness = 1. ) const
+	       const double & starting_fitness,
+	       std::false_type ) const
     {
       return this->operator()(diploid_g->first,diploid_g->second,fpol_hom,fpol_het,starting_fitness);
+    }
+    
+    /*!
+      \brief Overload for custom diploids.  This is what a programmer's functions will call.
+      This function will select the correct overload for const reference or iterator types
+      \note See @ref md_md_customdip
+    */
+    template< typename diploid2dispatch,
+	      typename fitness_updating_policy_hom,
+	      typename fitness_updating_policy_het>
+    inline result_type operator()( const diploid2dispatch & dip,
+				   const fitness_updating_policy_hom & fpol_hom,
+				   const fitness_updating_policy_het & fpol_het,
+				   const double & starting_fitness = 1. ) const
+    {
+      return this->operator()(dip,fpol_hom,fpol_het,starting_fitness,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
     }
   };
 
@@ -314,10 +330,9 @@ namespace KTfwd
       \note See @ref md_md_customdip
     */
     template< typename diploid_genotype >
-    inline 
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
-    operator()(const diploid_genotype & diploid_g,
-	       const double scaling = 1.) const
+    inline result_type operator()(const diploid_genotype & diploid_g,
+				  const double & scaling,
+				  std::true_type) const
     {
       return this->operator()(diploid_g.first,diploid_g.second,scaling);
     }
@@ -327,12 +342,23 @@ namespace KTfwd
       \note See @ref md_md_customdip
     */
     template< typename diploid_genotype_itr >
-    inline  
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
-    operator()(const diploid_genotype_itr & ditr,
-	       const double scaling = 1.) const
+    inline result_type  operator()(const diploid_genotype_itr & ditr,
+				   const double & scaling,
+				   std::false_type) const
     {
       return this->operator()(ditr->first,ditr->second,scaling);
+    }
+
+    /*!
+      \brief Overload for custom diploids.  This is what a programmer's functions will call.
+      This function will select the correct overload for const reference or iterator types
+      \note See @ref md_md_customdip
+    */
+    template< typename diploid2dispatch>
+    inline result_type operator()( const diploid2dispatch & dip,
+				   const double & scaling = 1. ) const
+    {
+      return this->operator()(dip,scaling,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
     }
   };
 
@@ -370,10 +396,9 @@ namespace KTfwd
       \note See @ref md_md_customdip
     */
     template< typename diploid_genotype >
-    inline 
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
-    operator()(const diploid_genotype & diploid_g,
-	       const double scaling = 1.) const
+    inline result_type operator()(const diploid_genotype & diploid_g,
+				  const double & scaling, 
+				  std::true_type) const
     {
       return this->operator()(diploid_g.first,diploid_g.second,scaling);
     }
@@ -383,12 +408,23 @@ namespace KTfwd
       \note See @ref md_md_customdip
     */
     template< typename diploid_genotype_itr >
-    inline  
-    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
-    operator()(const diploid_genotype_itr & ditr,
-	       const double scaling = 1.) const
+    inline result_type operator()(const diploid_genotype_itr & ditr,
+				  const double & scaling,
+				  std::false_type) const
     {
       return this->operator()(ditr->first,ditr->second,scaling);
+    }
+
+    /*!
+      \brief Overload for custom diploids.  This is what a programmer's functions will call.
+      This function will select the correct overload for const reference or iterator types
+      \note See @ref md_md_customdip
+    */
+    template< typename diploid2dispatch >
+    inline result_type operator()( const diploid2dispatch & dip,
+				   const double & scaling = 1. ) const
+    {
+      return this->operator()(dip,scaling,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
     }
   };
 }
