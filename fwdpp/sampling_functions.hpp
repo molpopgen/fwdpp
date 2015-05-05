@@ -155,8 +155,7 @@ namespace KTfwd
     \brief Sampling from a population in an individual-based simulation
     \ingroup samplingPopsInd
   */
-  template<//typename iterator_type,
-	   typename allocator,
+  template<typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
@@ -170,8 +169,7 @@ namespace KTfwd
     \brief Sampling from a population in an individual-based simulation.  Selected and neutral mutations returned separately
     \ingroup samplingPopsInd
   */
-  template<//typename iterator_type,
-	   typename allocator,
+  template<typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
