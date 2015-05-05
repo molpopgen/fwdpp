@@ -100,7 +100,7 @@ struct snowdrift_diploid
 	    fitness += 1 + std::max(a, 0.0);
 	  }
       }
-    return fitness;
+    return fitness/double(N-1);
   }
 };
 
