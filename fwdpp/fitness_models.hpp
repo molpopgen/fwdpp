@@ -36,6 +36,9 @@ namespace KTfwd
   */
   struct no_selection
   {
+    /*!
+      \brief Method for standard diploid simulations of a single locus.
+    */
     using result_type = double;
     template<typename iterator_type >
     inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
@@ -43,6 +46,12 @@ namespace KTfwd
       static_assert( std::is_base_of<mutation_base,
 		     typename iterator_type::value_type::mutation_type>::value,
                      "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
+      return 1.;
+    }
+    //! \brief Naive implementation for non-standard cases
+    template<typename T >
+    inline result_type operator()(const T & t) const
+    {
       return 1.;
     }
   };
@@ -71,7 +80,7 @@ namespace KTfwd
 				   const iterator_type & g2,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
-				   const double starting_fitness = 1. ) const
+				   const double & starting_fitness  = 1. ) const
     {
       static_assert( std::is_base_of<mutation_base,
                                      typename iterator_type::value_type::mutation_type>::value,
@@ -131,6 +140,38 @@ namespace KTfwd
       std::for_each( b2,e2,
 		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
       return fitness;
+    }
+
+    /*!
+      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype,
+	      typename fitness_updating_policy_hom,
+	      typename fitness_updating_policy_het>
+    inline 
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
+    operator()(const diploid_genotype & diploid_g,
+	       const fitness_updating_policy_hom & fpol_hom,
+	       const fitness_updating_policy_het & fpol_het,
+	       const double & starting_fitness = 1. ) const
+    {
+      return this->operator()(diploid_g.first,diploid_g.second,fpol_hom,fpol_het,starting_fitness);
+    }
+
+    /*!
+      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype_itr,
+	      typename fitness_updating_policy_hom,
+	      typename fitness_updating_policy_het>
+    inline 
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
+    operator()(const diploid_genotype_itr & diploid_g,
+	       const fitness_updating_policy_hom & fpol_hom,
+	       const fitness_updating_policy_het & fpol_het,
+	       const double & starting_fitness = 1. ) const
+    {
+      return this->operator()(diploid_g->first,diploid_g->second,fpol_hom,fpol_het,starting_fitness);
     }
   };
 
@@ -265,6 +306,29 @@ namespace KTfwd
 				      },
 				      1.);
     }
+    /*!
+      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype >
+    inline 
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
+    operator()(const diploid_genotype & diploid_g,
+	       const double scaling = 1.) const
+    {
+      return this->operator()(diploid_g.first,diploid_g.second,scaling);
+    }
+    
+    /*!
+      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype_itr >
+    inline  
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
+    operator()(const diploid_genotype_itr & ditr,
+	       const double scaling = 1.) const
+    {
+      return this->operator()(ditr->first,ditr->second,scaling);
+    }
   };
 
   /*! \brief Additive fitness across sites
@@ -280,8 +344,8 @@ namespace KTfwd
   {
     using result_type = double;
     template< typename iterator_type>
-    inline double operator()(const iterator_type & g1, const iterator_type & g2, 
-			     const double scaling = 1.) const
+    inline result_type operator()(const iterator_type & g1, const iterator_type & g2, 
+				  const double scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return 1. + site_dependent_fitness()(g1,g2,
@@ -294,6 +358,30 @@ namespace KTfwd
 					     fitness += (mut->h*mut->s);
 					   },
 					   0.);
+    }
+
+    /*!
+      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype >
+    inline 
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,diploid_genotype>::value, result_type >::type
+    operator()(const diploid_genotype & diploid_g,
+	       const double scaling = 1.) const
+    {
+      return this->operator()(diploid_g.first,diploid_g.second,scaling);
+    }
+    
+    /*!
+      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
+    */
+    template< typename diploid_genotype_itr >
+    inline  
+    typename std::enable_if< std::is_base_of<tags::custom_diploid_t,typename diploid_genotype_itr::value_type>::value, result_type >::type
+    operator()(const diploid_genotype_itr & ditr,
+	       const double scaling = 1.) const
+    {
+      return this->operator()(ditr->first,ditr->second,scaling);
     }
   };
 }
