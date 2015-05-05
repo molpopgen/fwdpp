@@ -128,7 +128,6 @@ namespace KTfwd
   template< typename gamete_type,
 	    typename allocator_t,
 	    template<typename,typename> class container_t>
-  //std::vector< std::pair<double, std::string> >
   typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value,
 			   std::vector< std::pair<double, std::string> > >::type
   ms_sample(gsl_rng * r,

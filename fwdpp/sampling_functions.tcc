@@ -155,8 +155,7 @@ namespace KTfwd
   }
 
   //SAMPLERS FOR INDIVIDUAL-BASED SIMULATIONS
-  template<//typename iterator_type,
-	   typename allocator,
+  template<typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
@@ -174,8 +173,7 @@ namespace KTfwd
     return separate.first;
   }
 
-  template<//typename iterator_type,
-	   typename allocator,
+  template<typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
