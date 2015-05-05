@@ -121,7 +121,7 @@ poptype evolve( GSLrng & rng,
       //Fill phenotypes
       unsigned i = 0;
       std::for_each( pop.diploids.begin(),pop.diploids.end(),
-		     [&i,&phenotypes]( poptype::diploid_t & dip ) {
+		     [&i,&phenotypes]( const poptype::diploid_t & dip ) {
 		       dip.i=i;
 		       phenotypes[i++]=KTfwd::additive_diploid()(dip.first,dip.second,2.);
 		     } );
