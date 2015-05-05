@@ -9,7 +9,7 @@
 * The library no longer requires that std::pair< T,T > are the types used for a diploid genotype (where the "T" are iterator types derived from gametes lists).  Now, custom diploid genotypes may be used, as long as the follow certain constraints.  Thanks to Jeremy Van Cleve for motivating this change, which should allow models involving space and social interactions.
 * extensions/ directory renamed python_examples
 * Fitness policies for multilocus simulations now take iterators pointing to multilocus genotypes, in lieu of const-references to those genotypes.  This is done for the sake of API consistency across the library, but it does break source-level compatibility with existing simulations (although fixes will be easy).  Examples, unit tests, tutorials, etc., have been updated to account for this change.
-
+* Mutation distpach methods implemented in 0.3.0 via KTfwd::tags::gamete_dependent are now dispatched using std::true_type and std::false_type
 ## 0.3.0
 
 * Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent.  Example HOC_ind.cc illustrates its use.

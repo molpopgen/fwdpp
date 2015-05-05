@@ -66,7 +66,7 @@ namespace KTfwd {
 			  const unsigned & n,
 			  mlist_type * mutations,
 			  gamete_type & g,
-			  KTfwd::tags::gamete_independent)
+			  std::false_type)
     {
       for( unsigned i = 0 ; i < n ; ++i )
 	{
@@ -91,7 +91,7 @@ namespace KTfwd {
 			  const unsigned & n,
 			  mlist_type * mutations,
 			  gamete_type & g,
-			  KTfwd::tags::gamete_dependent)
+			  std::true_type )
     {
       for( unsigned i = 0 ; i < n ; ++i )
 	{
