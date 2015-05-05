@@ -311,7 +311,7 @@ namespace KTfwd
     using result_type = double;
     template< typename iterator_type>
     inline double operator()(const iterator_type & g1, const iterator_type & g2, 
-			     const double scaling = 1.) const
+			     const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return site_dependent_fitness()(g1,g2,
@@ -376,7 +376,7 @@ namespace KTfwd
     using result_type = double;
     template< typename iterator_type>
     inline result_type operator()(const iterator_type & g1, const iterator_type & g2, 
-				  const double scaling = 1.) const
+				  const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return 1. + site_dependent_fitness()(g1,g2,
