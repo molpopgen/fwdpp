@@ -74,7 +74,7 @@ namespace KTfwd
 	    j->second->n=0;
 	  }
 	//Calculate the fitness of this parent
-	fitnesses[i] += ff( *dptr );
+	fitnesses[i] += ff( dptr );
 	//increment pop. mean fitness
 	wbar += fitnesses[i];
       }
