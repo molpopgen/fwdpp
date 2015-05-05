@@ -143,7 +143,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 		     const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
@@ -174,7 +174,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 		     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 		     diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
@@ -214,7 +214,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 		     const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
@@ -267,7 +267,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 		    mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 		    diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
@@ -326,7 +326,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			 metapop_vector_type_allocator> * metapop,
 			 const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
@@ -374,7 +374,7 @@ namespace KTfwd
   	    template<typename,typename> class diploid_vv_type,
   	    typename mutation_reader_type,
   	    typename istreamtype>
-  typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
+  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
   read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			metapop_vector_type_allocator> * metapop,
 			mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
