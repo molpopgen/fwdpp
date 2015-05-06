@@ -1,19 +1,12 @@
 /*
-  Snowdrift model of social interactions
-
+  \include sex_limited.cc
+  Total madness:
+  1. Opposite fitness effects in "males" vs. "females"
+  2. Gaussian stabiliziing selection
+  3. House of cards
   Interaction parameters are hard-coded in.
 */
 
-/*
-  In addition to the usual fwdpp depdencies, we need boost.python.
-
-  To compile:
-  g++ -fPIC -Wall -W -O3 -I.. -I. `python-config --includes` -std=c++11 -c social_evol.cc
-  g++ -std=c++11 -shared -o social_evol.so social_evol.o -lboost_python -lboost_system  -lpython -lgsl -lgslcblas
-
-  To run:
-  python test_boost_python.py
-*/
 #include <limits>
 #include <algorithm>
 
@@ -45,12 +38,12 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
   using second_type = glist_t::iterator;
   first_type first;
   second_type second;
-  unsigned i;
+  bool sex; //male = false, I guess...
   //constructors, etc.
-  diploid_t() : first(first_type()),second(second_type()),i(std::numeric_limits<unsigned>::max()) {}
+  diploid_t() : first(first_type()),second(second_type()),sex(false) {}
   //"perfect forwarding" constructor does not work with iterator from boost containers...
   //diploid_t(first_type && g1, first_type && g2) : first(std::forward(g1)),second(std::forward(g2)),i(numeric_limits<unsigned>::max()) {}
-  diploid_t(first_type g1, first_type g2) : first(g1),second(g2),i(std::numeric_limits<unsigned>::max()) {}
+  diploid_t(first_type g1, first_type g2) : first(g1),second(g2),sex(false) {}
   //The following constructors SHOULD be generated automagically by your compiler, so you don't have to:
   //(no idea what, if any, performance effect this may have.  Worst case is prob. the move constructor doesn't get auto-generated...
   //diploid_t( const diploid_t & ) = default;
@@ -85,30 +78,6 @@ using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
   \return Mean payoff (fitness) from pairwise interactions in snowdrift game
   \ingroup fitness
 */
-struct snowdrift_diploid
-{
-  using result_type = double;
-  inline result_type operator()( const poptype::dipvector_t::const_iterator dip,
-				 const std::vector<double> & phenotypes, 
-				 //Pass const refs to avoid copying!
-				 const double & b1, const double & b2, const double & c1, const double & c2) const
-  {
-    unsigned N = phenotypes.size();
-    double zself = phenotypes[dip->i];
-    result_type fitness = 0;
-    for (unsigned j = 0; j < N; ++j)	  
-      {
-	if (dip->i != j)
-	  {
-	    double zpair = zself+phenotypes[j];
-	    // Payoff function from Fig 1
-	    double a = b1*zpair + b2*zpair*zpair - c1*zself - c2*zself*zself;
-	    fitness += 1 + std::max(a, 0.0);
-	  }
-      }
-    return fitness/double(N-1);
-  }
-};
 
 int main(int argc, char ** argv)
 {
@@ -133,8 +102,6 @@ int main(int argc, char ** argv)
   const unsigned seed = atoi(argv[argument++]);
 
   GSLrng rng(seed);
-  std::vector<double> phenotypes(N);
-  double b1 = 6.0, b2 = -1.4,c1 = 4.56,c2 = -1.6;
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
   for( unsigned rep = 0 ; rep < nreps ; ++rep )
     {
@@ -143,13 +110,6 @@ int main(int argc, char ** argv)
 	{
 	  //Fill phenotypes
 	  unsigned i = 0;
-      
-	  for( auto & dip : pop.diploids ) 
-	    { 
-	      dip.i = i; 
-	      phenotypes[i++] = KTfwd::additive_diploid()(dip,2.); 
-	    }
-
 	  double wbar = KTfwd::sample_diploid(rng,
 					      &pop.gametes,
 					      &pop.diploids,
@@ -167,7 +127,7 @@ int main(int argc, char ** argv)
 							recmap),
 					      std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					      std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					      std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
+					      //std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
 					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
 	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
 	}
