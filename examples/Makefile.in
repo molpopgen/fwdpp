@@ -82,7 +82,8 @@ check_PROGRAMS = diploid$(EXEEXT) diploid_ind$(EXEEXT) \
 	diploid_fixed_sh_ind_lambda$(EXEEXT) migsel_ind$(EXEEXT) \
 	migsel_split_ind_list$(EXEEXT) bneck_selection_ind$(EXEEXT) \
 	diploid_ind_2locus$(EXEEXT) diploid_twopop_mig$(EXEEXT) \
-	pfix$(EXEEXT) RHH$(EXEEXT) TFL2013$(EXEEXT) HOC_ind$(EXEEXT)
+	pfix$(EXEEXT) RHH$(EXEEXT) TFL2013$(EXEEXT) HOC_ind$(EXEEXT) \
+	sex_limited_ind$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -170,6 +171,10 @@ am_pfix_OBJECTS = pfix.$(OBJEXT)
 pfix_OBJECTS = $(am_pfix_OBJECTS)
 pfix_LDADD = $(LDADD)
 pfix_DEPENDENCIES =
+am_sex_limited_ind_OBJECTS = sex_limited_ind.$(OBJEXT)
+sex_limited_ind_OBJECTS = $(am_sex_limited_ind_OBJECTS)
+sex_limited_ind_LDADD = $(LDADD)
+sex_limited_ind_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -220,7 +225,7 @@ SOURCES = $(HOC_ind_SOURCES) $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(diploid_twopop_mig_SOURCES) \
 	$(migsel_ind_SOURCES) $(migsel_split_ind_list_SOURCES) \
-	$(pfix_SOURCES)
+	$(pfix_SOURCES) $(sex_limited_ind_SOURCES)
 DIST_SOURCES = $(HOC_ind_SOURCES) $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_SOURCES) \
 	$(diploid_binaryIO_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
@@ -230,7 +235,7 @@ DIST_SOURCES = $(HOC_ind_SOURCES) $(RHH_SOURCES) $(TFL2013_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(diploid_twopop_mig_SOURCES) \
 	$(migsel_ind_SOURCES) $(migsel_split_ind_list_SOURCES) \
-	$(pfix_SOURCES)
+	$(pfix_SOURCES) $(sex_limited_ind_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -370,6 +375,7 @@ pfix_SOURCES = pfix.cc
 RHH_SOURCES = RHH.cc
 TFL2013_SOURCES = TFL2013.cc
 HOC_ind_SOURCES = HOC_ind.cc
+sex_limited_ind_SOURCES = sex_limited_ind.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
 LDADD = 
 all: all-am
@@ -482,6 +488,10 @@ pfix$(EXEEXT): $(pfix_OBJECTS) $(pfix_DEPENDENCIES) $(EXTRA_pfix_DEPENDENCIES)
 	@rm -f pfix$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(pfix_OBJECTS) $(pfix_LDADD) $(LIBS)
 
+sex_limited_ind$(EXEEXT): $(sex_limited_ind_OBJECTS) $(sex_limited_ind_DEPENDENCIES) $(EXTRA_sex_limited_ind_DEPENDENCIES) 
+	@rm -f sex_limited_ind$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sex_limited_ind_OBJECTS) $(sex_limited_ind_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -506,6 +516,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_split_ind_list.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pfix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sex_limited_ind.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
