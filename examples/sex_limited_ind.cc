@@ -2,6 +2,12 @@
   Pseudo separate sex model with sex-specific mutation rates 
   and fitness effects of mutations.
 
+  NOTE: this is a toy example.  It is possible for two "males"
+  or two "females" to be chosen as parents.  The point here is 
+  to show how custom diploid types may be used, and how that extra
+  data may be used to do things like calculate fitness and (diploid label) 
+  by (mutation label) interactions, etc.
+
   \include sex_limited.cc
   Total madness:
   1. Opposite fitness effects in "males" vs. "females"
@@ -85,41 +91,36 @@ using poptype = KTfwd::sugar::singlepop_serialized<mtype,KTfwd::mutation_writer,
 */
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
-//We need a mutation model
-struct sex_specifc_mut_model
+mtype sex_specific_mut_model( gsl_rng * r,
+			      poptype::mlist_t * mutations,
+			      poptype::lookup_table_t * lookup,
+			      const double & mu_total,
+			      const double & mu_male,
+			      const double & mu_female,
+			      const double & sigma )
 {
-  using result_type = mtype;
-  inline result_type operator()( gsl_rng * r,
-				 poptype::mlist_t * mutations,
-				 poptype::lookup_table_t * lookup,
-				 const double & mu_total,
-				 const double & mu_male,
-				 const double & mu_female,
-				 const double & sigma ) const
-  {
-    double pos = gsl_rng_uniform(r);
-    while(lookup->find(pos) != lookup->end())
-      {
-	pos = gsl_rng_uniform(r);
-      }
-    lookup->insert(pos);
-    double u = gsl_rng_uniform(r);
-    if(u <= mu_male/mu_total)
-      {
-    	return mtype(pos,gsl_ran_gaussian(r,sigma),false,1,false);
-      }
-    else if (u <= (mu_male+mu_female)/mu_total)
-      {
-    	return mtype(pos,gsl_ran_gaussian(r,sigma),true,1,false);
-      }
-    //Otherwise, neutral mutation
-    //We "hack" this and assign the mutation a "male" type,
-    //As they'll never be used in a fitness calc,
-    //as they'll be stored in mutations rather than
-    //smutations
-    return mtype(pos,0.,false,1,true);
-  }
-};
+  double pos = gsl_rng_uniform(r);
+  while(lookup->find(pos) != lookup->end())
+    {
+      pos = gsl_rng_uniform(r);
+    }
+  lookup->insert(pos);
+  double u = gsl_rng_uniform(r);
+  if(u <= mu_male/mu_total)
+    {
+      return mtype(pos,gsl_ran_gaussian(r,sigma),false,1,false);
+    }
+  else if (u <= (mu_male+mu_female)/mu_total)
+    {
+      return mtype(pos,gsl_ran_gaussian(r,sigma),true,1,false);
+    }
+  //Otherwise, neutral mutation
+  //We "hack" this and assign the mutation a "male" type,
+  //As they'll never be used in a fitness calc,
+  //as they'll be stored in mutations rather than
+  //smutations
+  return mtype(pos,0.,false,1,true);
+}
 
 //We need a fitness model
 double sex_specific_fitness( const poptype::dipvector_t::const_iterator & dip, gsl_rng * r, const double & sigmaE )
@@ -194,7 +195,7 @@ int main(int argc, char ** argv)
 					      &pop.mutations,
 					      N,
 					      mu_total,
-					      std::bind(sex_specifc_mut_model(),rng.r.get(),std::placeholders::_1,
+					      std::bind(sex_specific_mut_model,rng.r.get(),std::placeholders::_1,
 							&pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
 					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 							&pop.gametes,
