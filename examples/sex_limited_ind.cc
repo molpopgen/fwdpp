@@ -1,4 +1,7 @@
 /*
+  Pseudo separate sex model with sex-specific mutation rates 
+  and fitness effects of mutations.
+
   \include sex_limited.cc
   Total madness:
   1. Opposite fitness effects in "males" vs. "females"
@@ -26,7 +29,21 @@
 #include <fwdpp/sugar/infsites.hpp>
 
 //FWDPP-related stuff
-using mtype = KTfwd::mutation;
+
+struct sex_specific_mutation : public KTfwd::mutation_base
+{
+  //Effect size
+  double s;
+  //The effect size applies to this sex, is 0 otherwise
+  bool sex;
+  sex_specific_mutation(const double & __pos, const double & __s, const bool & __sex,
+			const unsigned & __n, const bool & __neutral)
+    : KTfwd::mutation_base(__pos,__n,__neutral),s(__s),sex(__sex)
+  {	
+  }
+};
+
+using mtype = sex_specific_mutation;
 using mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
 using gamete_t = KTfwd::gamete_base<mtype,mlist_t>;
 using glist_t = boost::container::list<gamete_t, boost::pool_allocator<gamete_t>>;
@@ -60,12 +77,68 @@ using poptype = KTfwd::sugar::singlepop_serialized<mtype,KTfwd::mutation_writer,
 						   boost::container::vector<unsigned>,
 						   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
 						   >;
+
 /*
   We will use a gsl_rng_mt19937 as our RNG.
   This type is implicitly convertible to gsl_rng *,
   and auto-handles the gsl_rng_free steps, etc.
 */
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
+
+//We need a mutation model
+struct sex_specifc_mut_model
+{
+  using result_type = mtype;
+  inline result_type operator()( gsl_rng * r,
+				 poptype::mlist_t * mutations,
+				 poptype::lookup_table_t * lookup,
+				 const double & mu_total,
+				 const double & mu_male,
+				 const double & mu_female,
+				 const double & sigma ) const
+  {
+    double pos = gsl_rng_uniform(r);
+    while(lookup->find(pos) != lookup->end())
+      {
+	pos = gsl_rng_uniform(r);
+      }
+    lookup->insert(pos);
+    double u = gsl_rng_uniform(r);
+    if(u <= mu_male/mu_total)
+      {
+    	return mtype(pos,gsl_ran_gaussian(r,sigma),false,1,false);
+      }
+    else if (u <= (mu_male+mu_female)/mu_total)
+      {
+    	return mtype(pos,gsl_ran_gaussian(r,sigma),true,1,false);
+      }
+    //Otherwise, neutral mutation
+    //We "hack" this and assign the mutation a "male" type,
+    //As they'll never be used in a fitness calc,
+    //as they'll be stored in mutations rather than
+    //smutations
+    return mtype(pos,0.,false,1,true);
+  }
+};
+
+//We need a fitness model
+double sex_specific_fitness( const poptype::dipvector_t::const_iterator & dip, gsl_rng * r, const double & sigmaE )
+{
+  double trait_value = std::accumulate( dip->first->smutations.begin(),
+					dip->first->smutations.end(),
+					0.,[&dip](const double & a, const poptype::mlist_t::const_iterator & m)
+					{
+					  return a + (dip->sex==m->sex) ? m->s : 0.;
+					} );
+  trait_value += std::accumulate( dip->second->smutations.begin(),
+				  dip->second->smutations.end(),
+				  0.,[&dip](const double & a, const poptype::mlist_t::const_iterator & m)
+				  {
+				    return a + (dip->sex==m->sex) ? m->s : 0.;
+				  } );
+  return std::exp( -std::pow(trait_value+gsl_ran_gaussian(r,sigmaE),2.)/2.);
+}
+
 
 /*! \brief Continuous Snowdrift Game from Doebeli, Hauert, and Killingback (2004, Science, 306:859--862)
   as implemented by Wakano and Lehmann (2014, J Theor Biol, 351:83--95)
@@ -81,21 +154,22 @@ using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
 int main(int argc, char ** argv)
 {
-  if (argc != 11)
+  if (argc != 12)
     {
       std::cerr << "Too few arguments.\n"
 		<< "Usage: " << argv[0]
-		<< " N mu_neutral mu_deleterious recrate s h ngens samplesize nreps seed\n";
+		<< " N mu_neutral mu_male mu_female sigma_mu sigma_e recrate ngens samplesize nreps seed\n";
       exit(10);
     }
   int argument=1;
   
   const unsigned N = atoi(argv[argument++]);
   const double mu_neutral = atof(argv[argument++]);
-  const double mu_del = atof(argv[argument++]);
+  const double mu_male = atof(argv[argument++]);
+  const double mu_female = atof(argv[argument++]);
+  const double sigma = atof(argv[argument++]);
+  const double sigmaE = atof(argv[argument++]);
   const double recrate = atof(argv[argument++]);
-  const double s = atof(argv[argument++]);
-  const double h = atof(argv[argument++]);
   const unsigned ngens = atoi(argv[argument++]);
   const unsigned samplesize1 = atoi(argv[argument++]);
   const unsigned nreps = atoi(argv[argument++]);
@@ -103,23 +177,25 @@ int main(int argc, char ** argv)
 
   GSLrng rng(seed);
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
+  const double mu_total = mu_neutral+mu_male+mu_female;
   for( unsigned rep = 0 ; rep < nreps ; ++rep )
     {
       poptype pop(N);
       for( unsigned generation = 0 ; generation < ngens ; ++generation )
 	{
-	  //Fill phenotypes
-	  unsigned i = 0;
+	  //Assign "sex"
+	  for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
+	    {
+	      dip->sex = (gsl_rng_uniform(rng) <= 0.5); //false = male, true = female.
+	    }
 	  double wbar = KTfwd::sample_diploid(rng,
 					      &pop.gametes,
 					      &pop.diploids,
 					      &pop.mutations,
 					      N,
-					      mu_neutral+mu_del,
-					      std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,
-							mu_neutral,mu_del,[&rng](){return gsl_rng_uniform(rng);},
-							[&rng,&s](){return -1.*gsl_ran_exponential(rng,s);},
-							[&h](){return h;}),
+					      mu_total,
+					      std::bind(sex_specifc_mut_model(),rng.r.get(),std::placeholders::_1,
+							&pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
 					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 							&pop.gametes,
 							recrate, 
@@ -127,7 +203,7 @@ int main(int argc, char ** argv)
 							recmap),
 					      std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					      std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					      //std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
+					      std::bind(sex_specific_fitness,std::placeholders::_1,rng,sigmaE),
 					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
 	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
 	}
