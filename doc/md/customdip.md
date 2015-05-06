@@ -152,3 +152,16 @@ struct mloc_fitness {
   }
 };
 ~~~
+
+## Cost vs. benefit
+
+The pros of defining your own diploid type are:
+
+* Being able to attach data to a diploid genotype beyond the two gametes that it contains.  One can imagine all sorts of things here, but the existing code base may not (yet) support them all.
+
+The cons are:
+
+* Fitness policies are written differently
+* The sugar layer can only be used after defining your own typedefs in terms of KTfwd::sugar::singlepop, etc.
+
+The cons mean that it is not trivial to switch an impementation back and forth between custom and non-custom diploid genotype representations.
