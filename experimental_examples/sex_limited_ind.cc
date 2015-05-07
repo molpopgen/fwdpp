@@ -187,7 +187,7 @@ struct sexSpecificRules
      */
     std::transform( male_fitnesses.begin(),male_fitnesses.begin()+male, 
 		    male_fitnesses.begin(),std::bind(std::divides<double>(),std::placeholders::_1,wbar) );
-    std::transform( female_fitnesses.begin(),female_fitnesses.begin()+male, 
+    std::transform( female_fitnesses.begin(),female_fitnesses.begin()+female, 
 		    female_fitnesses.begin(),std::bind(std::divides<double>(),std::placeholders::_1,wbar) );
     /*!
       Black magic alert:
