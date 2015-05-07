@@ -587,6 +587,7 @@ PACKAGE_URL=''
 
 ac_unique_file="fwdpp/diploid.hh"
 ac_unique_file="examples/diploid_ind.cc"
+ac_unique_file="experimental_examples/sex_limited_ind.cc"
 ac_unique_file="unit/mutateTest.cc"
 # Factoring default headers for most tests.
 ac_includes_default="\
@@ -2139,6 +2140,7 @@ ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
 
 
 
@@ -4436,7 +4438,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile examples/Makefile unit/Makefile"
+ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile"
 
 
 # Check whether --enable-standard was given.
@@ -5941,6 +5943,7 @@ do
     "fwdpp/sugar/gsl/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/gsl/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "unit/Makefile") CONFIG_FILES="$CONFIG_FILES unit/Makefile" ;;
+    "experimental_examples/Makefile") CONFIG_FILES="$CONFIG_FILES experimental_examples/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

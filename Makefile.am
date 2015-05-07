@@ -1,4 +1,4 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS=fwdpp examples unit
+SUBDIRS=fwdpp examples unit experimental_examples
 ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST=doc/fwdpp.doxygen examples/*.cc examples/*.hpp examples/Makefile extensions/*.cc extensions/*.py LICENSE
+EXTRA_DIST=doc/fwdpp.doxygen examples/*.cc examples/*.hpp examples/Makefile extensions/*.cc extensions/*.py LICENSE experimental_examples/*.cc

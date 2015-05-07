@@ -15,8 +15,7 @@ check_PROGRAMS=diploid \
 	pfix \
 	RHH \
 	TFL2013 \
-	HOC_ind \
-	sex_limited_ind
+	HOC_ind 
 
 #	migsel_split_ind 
 
@@ -39,7 +38,6 @@ pfix_SOURCES=pfix.cc
 RHH_SOURCES=RHH.cc
 TFL2013_SOURCES=TFL2013.cc
 HOC_ind_SOURCES=HOC_ind.cc
-sex_limited_ind_SOURCES=sex_limited_ind.cc
 
 AM_CPPFLAGS=-Wall -W -I.
 
@@ -48,4 +46,3 @@ else !DEBUG
 AM_CPPFLAGS+=-DNDEBUG
 endif
 LDADD=
-
