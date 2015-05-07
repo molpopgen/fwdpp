@@ -8,8 +8,11 @@ namespace KTfwd {
       mutable double wbar;
       mutable std::vector<double> fitnesses;
 
+      mutable fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
       //! \brief Constructor
-      standardWFrules() : wbar(0.),fitnesses(std::vector<double>()){}
+      standardWFrules() : wbar(0.),fitnesses(std::vector<double>()),lookup(fwdpp_internal::gsl_ran_discrete_t_ptr(nullptr))
+      {
+      }
 
       //! \brief The "fitness manager"
       template<typename T,typename fitness_func>
@@ -32,26 +35,41 @@ namespace KTfwd {
 	    wbar += fitnesses[i];
 	  }
 	wbar /= double(diploids->size());
+
+	/*!
+	  Black magic alert:
+	  fwdpp_internal::gsl_ran_discrete_t_ptr contains a std::unique_ptr wrapping the GSL pointer.
+	  This type has its own deleter, which is convenient, because
+	  operator= for unique_ptrs automagically calls the deleter before assignment!
+	  Details: http://www.cplusplus.com/reference/memory/unique_ptr/operator=
+	*/
+	lookup = fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(N_curr,&fitnesses[0]));
       }
 
       //! \brief Pick parent one
-      inline size_t pick1() const
+      inline size_t pick1(gsl_rng * r) const
       {
-	return 1;
+	return gsl_ran_discrete(r,lookup.get());
       }
 
       //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
       template<typename diploid_itr_t>
-      inline size_t pick2(const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
+      inline size_t pick2(gsl_rng * r, const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
       {
-	return 1;
+	static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
+	return (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());;
       }
 
       //! \brief Update some property of the offspring based on properties of the parents
-      template<typename diploid_itr_t>
-      void update( diploid_itr_t & offspring, const diploid_itr_t & p1_itr, const diploid_itr_t & p2_itr ) const
+      template<typename offspring_itr_t, typename parent_itr_t>
+      void update( offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
       {
+	static_assert(!std::is_const<decltype(offspring)>::value, "offspring_itr_t must not be const");
+	static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
+	static_assert(!std::is_const<decltype(*p2_itr)>::value, "parent_itr_t must not be const");
+	return;
       }
+
     };
 
     //single deme, N changing
@@ -69,7 +87,7 @@ namespace KTfwd {
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
 	      template<typename,typename> class diploid_vector_type,
-	      typename mean_fitness_calculator = standardWFrules>
+	      typename popmodel_rules = standardWFrules>
     double
     sample_diploid(gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
@@ -85,21 +103,21 @@ namespace KTfwd {
 		   const diploid_fitness_function & ff,
 		   const mutation_removal_policy & mp,
 		   const double & f = 0.,
-		   const mean_fitness_calculator & mfc = mean_fitness_calculator())
+		   const popmodel_rules & pmr = popmodel_rules())
     {
       assert(N_curr == diploids->size());
 
       std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
 
-      mfc.w(diploids,ff);
+      pmr.w(diploids,ff);
 
 #ifndef NDEBUG
       std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	  assert( !__g.n ); } );
 #endif
-      fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,&mfc.fitnesses[0]));
+      fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,&pmr.fitnesses[0]));
       auto parents(*diploids); //copy the parents
-      auto pptr = parents.begin();
+      auto pptr = parents.cbegin();
     
       //Change the population size
       if( diploids->size() != N_next)
@@ -114,8 +132,10 @@ namespace KTfwd {
 	{
 	  assert(dptr==diploids->begin());
 	  assert( (dptr+i) < diploids->end() );
-	  size_t p1 = gsl_ran_discrete(r,lookup.get());
-	  size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
+	  //Pick parent 1
+	  size_t p1 = pmr.pick1(r);
+	  //Pick parent 2
+	  size_t p2 = pmr.pick2(r,p1,pptr+typename decltype(pptr)::difference_type(p1),f);
 	  assert(p1<parents.size());
 	  assert(p2<parents.size());
 	
@@ -140,6 +160,8 @@ namespace KTfwd {
 	  //now, add new mutations
 	  (dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	  (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+
+	  pmr.update((dptr+i),pptr+typename decltype(pptr)::difference_type(p1),pptr+typename decltype(pptr)::difference_type(p2));
 	}
 #ifndef NDEBUG
       for( unsigned i = 0 ; i < diploids->size() ; ++i )
@@ -172,7 +194,7 @@ namespace KTfwd {
 		       __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
 		     });
       assert(check_sum(gametes,2*N_next));
-      return mfc.wbar;
+      return pmr.wbar;
     }
 
     //single deme, N constant
@@ -190,7 +212,7 @@ namespace KTfwd {
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
 	      template<typename,typename> class diploid_vector_type,
-	      typename mean_fitness_calculator = standardWFrules>
+	      typename popmodel_rules = standardWFrules>
     double
     sample_diploid(gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
@@ -205,9 +227,9 @@ namespace KTfwd {
 		   const diploid_fitness_function & ff,
 		   const mutation_removal_policy & mp,
 		   const double & f = 0.,
-		   const mean_fitness_calculator & mfc = mean_fitness_calculator())
+		   const popmodel_rules & pmr = popmodel_rules())
     {
-      return experimental::sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,gpolicy_mut,ff,mp,f,mfc);
+      return experimental::sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,gpolicy_mut,ff,mp,f,pmr);
     }
   }
 }
