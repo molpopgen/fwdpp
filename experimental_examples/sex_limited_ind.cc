@@ -140,19 +140,6 @@ double sex_specific_fitness( const poptype::dipvector_t::const_iterator & dip, g
   return std::exp( -std::pow(trait_value+gsl_ran_gaussian(r,sigmaE),2.)/2.);
 }
 
-
-/*! \brief Continuous Snowdrift Game from Doebeli, Hauert, and Killingback (2004, Science, 306:859--862)
-  as implemented by Wakano and Lehmann (2014, J Theor Biol, 351:83--95)
-  \param phenotypes phenotypes in population
-  \param fitnesses fitnesses in population
-  \param b1 linear benefit term
-  \param b2 quadratic benefit term
-  \param c1 linear cost term
-  \param c2 quadratic cost term
-  \return Mean payoff (fitness) from pairwise interactions in snowdrift game
-  \ingroup fitness
-*/
-
 int main(int argc, char ** argv)
 {
   if (argc != 12)
