@@ -2,6 +2,9 @@
   \include diploid_fixed_sh_ind.cc
   
   Same as diploid_fixed_sh.cc, but individual-based
+
+  This version uses the overload of sample diploid found in
+  fwdpp/experimenta/sample_diploid.hpp
  */
 
 #include <fwdpp/diploid.hh>
