@@ -62,7 +62,7 @@ namespace KTfwd {
 
       //! \brief Update some property of the offspring based on properties of the parents
       template<typename offspring_itr_t, typename parent_itr_t>
-      void update( offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
+      void update(gsl_rng * r, offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
       {
 	static_assert(!std::is_const<decltype(offspring)>::value, "offspring_itr_t must not be const");
 	static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
@@ -115,7 +115,6 @@ namespace KTfwd {
       std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	  assert( !__g.n ); } );
 #endif
-      fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,&pmr.fitnesses[0]));
       auto parents(*diploids); //copy the parents
       auto pptr = parents.cbegin();
     
@@ -161,7 +160,7 @@ namespace KTfwd {
 	  (dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
 	  (dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
 
-	  pmr.update((dptr+i),pptr+typename decltype(pptr)::difference_type(p1),pptr+typename decltype(pptr)::difference_type(p2));
+	  pmr.update(r,(dptr+i),pptr+typename decltype(pptr)::difference_type(p1),pptr+typename decltype(pptr)::difference_type(p2));
 	}
 #ifndef NDEBUG
       for( unsigned i = 0 ; i < diploids->size() ; ++i )
