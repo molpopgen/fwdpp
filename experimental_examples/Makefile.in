@@ -75,7 +75,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = sex_limited_ind$(EXEEXT)
+check_PROGRAMS = sex_limited_ind$(EXEEXT) \
+	diploid_fixed_sh_ind$(EXEEXT)
 @DEBUG_FALSE@am__append_1 = -DNDEBUG
 subdir = experimental_examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -89,6 +90,10 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
+diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
+diploid_fixed_sh_ind_LDADD = $(LDADD)
+diploid_fixed_sh_ind_DEPENDENCIES =
 am_sex_limited_ind_OBJECTS = sex_limited_ind.$(OBJEXT)
 sex_limited_ind_OBJECTS = $(am_sex_limited_ind_OBJECTS)
 sex_limited_ind_LDADD = $(LDADD)
@@ -122,8 +127,9 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(sex_limited_ind_SOURCES)
-DIST_SOURCES = $(sex_limited_ind_SOURCES)
+SOURCES = $(diploid_fixed_sh_ind_SOURCES) $(sex_limited_ind_SOURCES)
+DIST_SOURCES = $(diploid_fixed_sh_ind_SOURCES) \
+	$(sex_limited_ind_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -242,7 +248,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-sex_limited_ind_SOURCES = sex_limited_ind.cc
+sex_limited_ind_SOURCES = sex_limited_ind.cc 
+diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
 LDADD = 
 all: all-am
@@ -283,6 +290,10 @@ $(am__aclocal_m4_deps):
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
+diploid_fixed_sh_ind$(EXEEXT): $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_DEPENDENCIES) $(EXTRA_diploid_fixed_sh_ind_DEPENDENCIES) 
+	@rm -f diploid_fixed_sh_ind$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_LDADD) $(LIBS)
+
 sex_limited_ind$(EXEEXT): $(sex_limited_ind_OBJECTS) $(sex_limited_ind_DEPENDENCIES) $(EXTRA_sex_limited_ind_DEPENDENCIES) 
 	@rm -f sex_limited_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sex_limited_ind_OBJECTS) $(sex_limited_ind_LDADD) $(LIBS)
@@ -293,6 +304,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sex_limited_ind.Po@am__quote@
 
 .cc.o:
