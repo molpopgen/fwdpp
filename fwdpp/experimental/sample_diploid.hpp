@@ -3,18 +3,26 @@
 
 namespace KTfwd {
   namespace experimental {
-    struct STANDARDMFC
+    struct standardWFrules
     {
+      mutable double wbar;
+      mutable std::vector<double> fitnesses;
+
+      //! \brief Constructor
+      standardWFrules() : wbar(0.),fitnesses(std::vector<double>()){}
+
+      //! \brief The "fitness manager"
       template<typename T,typename fitness_func>
-      inline std::pair<double,std::vector<double> > operator()(const T * diploids,
-							       const fitness_func & ff)const
+      void w(const T * diploids,
+	     const fitness_func & ff)const
       {
 	using diploid_geno_t = typename T::value_type;
-	std::vector<double> fitnesses(diploids->size());
-	double wbar = 0.;
+	unsigned N_curr = diploids->size();
+	if(fitnesses.size() < N_curr) fitnesses.resize(N_curr);
+	wbar = 0.;
       
 	auto dptr = diploids->begin();
-	unsigned N_curr = diploids->size();
+
 	for( unsigned i = 0 ; i < N_curr ; ++i )
 	  {
 	    (dptr+i)->first->n = 0;
@@ -24,7 +32,25 @@ namespace KTfwd {
 	    wbar += fitnesses[i];
 	  }
 	wbar /= double(diploids->size());
-	return std::make_pair(wbar,fitnesses);
+      }
+
+      //! \brief Pick parent one
+      inline size_t pick1() const
+      {
+	return 1;
+      }
+
+      //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
+      template<typename diploid_itr_t>
+      inline size_t pick2(const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
+      {
+	return 1;
+      }
+
+      //! \brief Update some property of the offspring based on properties of the parents
+      template<typename diploid_itr_t>
+      void update( diploid_itr_t & offspring, const diploid_itr_t & p1_itr, const diploid_itr_t & p2_itr ) const
+      {
       }
     };
 
@@ -43,7 +69,7 @@ namespace KTfwd {
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
 	      template<typename,typename> class diploid_vector_type,
-	      typename mean_fitness_calculator = STANDARDMFC>
+	      typename mean_fitness_calculator = standardWFrules>
     double
     sample_diploid(gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
@@ -64,15 +90,14 @@ namespace KTfwd {
       assert(N_curr == diploids->size());
 
       std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
-      //HACK
-      auto VV = mfc(diploids,ff);
-      double wbar=VV.first;
-      auto fitnesses = std::move(VV.second);
+
+      mfc.w(diploids,ff);
+
 #ifndef NDEBUG
       std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	  assert( !__g.n ); } );
 #endif
-      fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
+      fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,&mfc.fitnesses[0]));
       auto parents(*diploids); //copy the parents
       auto pptr = parents.begin();
     
@@ -147,7 +172,7 @@ namespace KTfwd {
 		       __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
 		     });
       assert(check_sum(gametes,2*N_next));
-      return wbar;
+      return mfc.wbar;
     }
 
     //single deme, N constant
@@ -165,7 +190,7 @@ namespace KTfwd {
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
 	      template<typename,typename> class diploid_vector_type,
-	      typename mean_fitness_calculator = STANDARDMFC>
+	      typename mean_fitness_calculator = standardWFrules>
     double
     sample_diploid(gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
