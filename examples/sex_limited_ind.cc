@@ -129,13 +129,13 @@ double sex_specific_fitness( const poptype::dipvector_t::const_iterator & dip, g
 					dip->first->smutations.end(),
 					0.,[&dip](const double & a, const poptype::mlist_t::const_iterator & m)
 					{
-					  return a + (dip->sex==m->sex) ? m->s : 0.;
+					  return a + ((dip->sex==m->sex) ? m->s : 0.);
 					} );
   trait_value += std::accumulate( dip->second->smutations.begin(),
 				  dip->second->smutations.end(),
 				  0.,[&dip](const double & a, const poptype::mlist_t::const_iterator & m)
 				  {
-				    return a + (dip->sex==m->sex) ? m->s : 0.;
+				    return a + ((dip->sex==m->sex) ? m->s : 0.);
 				  } );
   return std::exp( -std::pow(trait_value+gsl_ran_gaussian(r,sigmaE),2.)/2.);
 }
