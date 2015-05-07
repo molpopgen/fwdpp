@@ -33,7 +33,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-
+#include <fwdpp/experimental/sample_diploid.hpp>
 //FWDPP-related stuff
 
 struct sex_specific_mutation : public KTfwd::mutation_base
@@ -189,23 +189,24 @@ int main(int argc, char ** argv)
 	    {
 	      dip->sex = (gsl_rng_uniform(rng) <= 0.5); //false = male, true = female.
 	    }
-	  double wbar = KTfwd::sample_diploid(rng,
-					      &pop.gametes,
-					      &pop.diploids,
-					      &pop.mutations,
-					      N,
-					      mu_total,
-					      std::bind(sex_specific_mut_model,rng.r.get(),std::placeholders::_1,
-							&pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
-					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-							&pop.gametes,
-							recrate, 
-							rng,
-							recmap),
-					      std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-					      std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					      std::bind(sex_specific_fitness,std::placeholders::_1,rng,sigmaE),
-					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+	  //double wbar = KTfwd::sample_diploid(rng,
+	  double wbar = KTfwd::experimental::sample_diploid(rng,
+							    &pop.gametes,
+							    &pop.diploids,
+							    &pop.mutations,
+							    N,
+							    mu_total,
+							    std::bind(sex_specific_mut_model,rng.r.get(),std::placeholders::_1,
+								      &pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
+							    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+								      &pop.gametes,
+								      recrate, 
+								      rng,
+								      recmap),
+							    std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
+							    std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
+							    std::bind(sex_specific_fitness,std::placeholders::_1,rng,sigmaE),
+							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
 	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
 	}
       Sequence::SimData neutral_muts,selected_muts;

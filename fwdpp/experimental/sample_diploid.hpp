@@ -43,7 +43,7 @@ namespace KTfwd {
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
 	      template<typename,typename> class diploid_vector_type,
-	      typename mean_fitness_calculator>
+	      typename mean_fitness_calculator = STANDARDMFC>
     double
     sample_diploid(gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
@@ -58,8 +58,8 @@ namespace KTfwd {
 		   const gamete_insertion_policy & gpolicy_mut,
 		   const diploid_fitness_function & ff,
 		   const mutation_removal_policy & mp,
-		   const double & f,
-		   const mean_fitness_calculator & mfc)
+		   const double & f = 0.,
+		   const mean_fitness_calculator & mfc = mean_fitness_calculator())
     {
       assert(N_curr == diploids->size());
 
@@ -68,20 +68,6 @@ namespace KTfwd {
       auto VV = mfc(diploids,ff);
       double wbar=VV.first;
       auto fitnesses = std::move(VV.second);
-      // std::vector<double> fitnesses(diploids->size());
-      // double wbar = 0.;
-    
-      // auto dptr = diploids->begin();
-      // for( unsigned i = 0 ; i < N_curr ; ++i )
-      //   {
-      // 	(dptr+i)->first->n = 0;
-      // 	(dptr+i)->second->n = 0;
-      // 	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
-      // 								tags::diploid_type<std::is_base_of<tags::custom_diploid_t,diploid_geno_t>::value>());
-      // 	wbar += fitnesses[i];
-      //   }
-      // wbar /= double(diploids->size());
-
 #ifndef NDEBUG
       std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	  assert( !__g.n ); } );
@@ -162,6 +148,41 @@ namespace KTfwd {
 		     });
       assert(check_sum(gametes,2*N_next));
       return wbar;
+    }
+
+    //single deme, N constant
+    template< typename gamete_type,
+	      typename gamete_list_type_allocator,
+	      typename mutation_list_type_allocator,
+	      typename diploid_geno_t,
+	      typename diploid_vector_type_allocator,
+	      typename diploid_fitness_function,
+	      typename mutation_removal_policy,
+	      typename mutation_model,
+	      typename recombination_policy,
+	      typename mutation_insertion_policy,
+	      typename gamete_insertion_policy,
+	      template<typename,typename> class gamete_list_type,
+	      template<typename,typename> class mutation_list_type,
+	      template<typename,typename> class diploid_vector_type,
+	      typename mean_fitness_calculator = STANDARDMFC>
+    double
+    sample_diploid(gsl_rng * r,
+		   gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
+		   diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
+		   mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+		   const unsigned & N_curr, 
+		   const double & mu,
+		   const mutation_model & mmodel,
+		   const recombination_policy & rec_pol,
+		   const mutation_insertion_policy & mpolicy,
+		   const gamete_insertion_policy & gpolicy_mut,
+		   const diploid_fitness_function & ff,
+		   const mutation_removal_policy & mp,
+		   const double & f = 0.,
+		   const mean_fitness_calculator & mfc = mean_fitness_calculator())
+    {
+      return experimental::sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,gpolicy_mut,ff,mp,f,mfc);
     }
   }
 }
