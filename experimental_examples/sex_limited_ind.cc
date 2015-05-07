@@ -1,19 +1,12 @@
 /*
-  Pseudo separate sex model with sex-specific mutation rates 
-  and fitness effects of mutations.
-
-  NOTE: this is a toy example.  It is possible for two "males"
-  or two "females" to be chosen as parents.  The point here is 
-  to show how custom diploid types may be used, and how that extra
-  data may be used to do things like calculate fitness and (diploid label) 
-  by (mutation label) interactions, etc.
+  Separate sex model with sex-specific mutation rates 
+  and fitness effects of mutations being different in each sex.
 
   \include sex_limited.cc
   Total madness:
   1. Opposite fitness effects in "males" vs. "females"
   2. Gaussian stabiliziing selection
   3. House of cards
-  Interaction parameters are hard-coded in.
 */
 
 #include <limits>
@@ -122,6 +115,117 @@ mtype sex_specific_mut_model( gsl_rng * r,
   return mtype(pos,0.,false,1,true);
 }
 
+//Now, we need our own "rules"
+struct sexSpecificRules
+{
+  mutable double wbar,mwbar,fwbar;
+  mutable std::vector<double> male_fitnesses,female_fitnesses;
+  mutable std::vector<size_t> male_indexes,female_indexes;
+  mutable KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr male_lookup,female_lookup;
+  //! \brief Constructor
+  sexSpecificRules() : wbar(0.),
+		       male_fitnesses(std::vector<double>()),
+		       female_fitnesses(std::vector<double>()),
+		       male_indexes(std::vector<size_t>()),
+		       female_indexes(std::vector<size_t>()),
+		       male_lookup(KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(nullptr)),
+		       female_lookup(KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(nullptr))
+  {
+  }
+  //! \brief The "fitness manager"
+  template<typename T,typename fitness_func>
+  void w(const T * diploids,
+	 const fitness_func & ff)const
+  {
+    using diploid_geno_t = typename T::value_type;
+    unsigned N_curr = diploids->size();
+    if(male_fitnesses.size() < N_curr) {
+      male_fitnesses.resize(N_curr);
+      male_indexes.resize(N_curr);
+    }
+    if(female_fitnesses.size() < N_curr) {
+      female_fitnesses.resize(N_curr);
+      female_indexes.resize(N_curr);
+    }
+    wbar = mwbar = fwbar = 0.;
+    
+    auto dptr = diploids->begin();
+
+    double w;    
+    unsigned male=0,female=0;
+    for( unsigned i = 0 ; i < N_curr ; ++i )
+      {
+	(dptr+i)->first->n = 0;
+	(dptr+i)->second->n = 0;
+	w = KTfwd::fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
+							    KTfwd::tags::diploid_type<std::is_base_of<KTfwd::tags::custom_diploid_t,diploid_geno_t>::value>());
+	  if(!(dptr+i)->sex) {
+	    male_fitnesses[male]=w;
+	    mwbar += w;
+	    male_indexes[male++]=i;
+	  } else {
+	    female_fitnesses[female]=w;
+	    fwbar += w;
+	    female_indexes[female++]=i;
+	  }
+	wbar += w;
+      }
+    wbar /= double(diploids->size());
+    mwbar /= double(male);
+    fwbar /= double(female);
+
+    /*
+      Biological point:
+      
+      We want to ensure that ANY individual is chosen as a parent proportional to w/wbar (conditional on the
+      individual being of the desired "sex".
+
+      Thus, we need to transform all male and female fitnesses by wbar.
+
+      If we did not do this transform, individuals would be chosen according to w/wbar_sex, which is desired in 
+      some cases, but not here...
+     */
+    std::transform( male_fitnesses.begin(),male_fitnesses.begin()+male, 
+		    male_fitnesses.begin(),std::bind(std::divides<double>(),std::placeholders::_1,wbar) );
+    std::transform( female_fitnesses.begin(),female_fitnesses.begin()+male, 
+		    female_fitnesses.begin(),std::bind(std::divides<double>(),std::placeholders::_1,wbar) );
+    /*!
+      Black magic alert:
+      fwdpp_internal::gsl_ran_discrete_t_ptr contains a std::unique_ptr wrapping the GSL pointer.
+      This type has its own deleter, which is convenient, because
+      operator= for unique_ptrs automagically calls the deleter before assignment!
+      Details: http://www.cplusplus.com/reference/memory/unique_ptr/operator=
+    */
+    male_lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(male,&male_fitnesses[0]));
+    female_lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(female,&female_fitnesses[0]));
+  }
+
+  //! \brief Pick parent one
+  inline size_t pick1(gsl_rng * r) const
+  {
+    return male_indexes[gsl_ran_discrete(r,male_lookup.get())];
+  }
+
+  //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
+  template<typename diploid_itr_t>
+  inline size_t pick2(gsl_rng * r, const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
+  {
+    static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
+    return female_indexes[gsl_ran_discrete(r,female_lookup.get())];
+  }
+  
+  //! \brief Update some property of the offspring based on properties of the parents
+  template<typename offspring_itr_t, typename parent_itr_t>
+  void update(gsl_rng * r,offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
+  {
+    offspring->sex = (gsl_rng_uniform(r) <= 0.5);
+    static_assert(!std::is_const<decltype(offspring)>::value, "offspring_itr_t must not be const");
+    static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
+    static_assert(!std::is_const<decltype(*p2_itr)>::value, "parent_itr_t must not be const");
+    return;
+  }  
+};
+
 //We need a fitness model
 double sex_specific_fitness( const poptype::dipvector_t::const_iterator & dip, gsl_rng * r, const double & sigmaE )
 {
@@ -166,16 +270,17 @@ int main(int argc, char ** argv)
   GSLrng rng(seed);
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
   const double mu_total = mu_neutral+mu_male+mu_female;
+  sexSpecificRules rules;
   for( unsigned rep = 0 ; rep < nreps ; ++rep )
     {
       poptype pop(N);
+      //Assign "sex"
+      for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
+	{
+	  dip->sex = (gsl_rng_uniform(rng) <= 0.5); //false = male, true = female.
+	}
       for( unsigned generation = 0 ; generation < ngens ; ++generation )
 	{
-	  //Assign "sex"
-	  for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
-	    {
-	      dip->sex = (gsl_rng_uniform(rng) <= 0.5); //false = male, true = female.
-	    }
 	  //double wbar = KTfwd::sample_diploid(rng,
 	  double wbar = KTfwd::experimental::sample_diploid(rng,
 							    &pop.gametes,
@@ -193,7 +298,10 @@ int main(int argc, char ** argv)
 							    std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(sex_specific_fitness,std::placeholders::_1,rng,sigmaE),
-							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N),
+							    0., //Gotta pass the "selfing" rate, even though it makes no sense for this model.  API tradeoff for flexibility...
+							    rules
+							    );
 	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
 	}
       Sequence::SimData neutral_muts,selected_muts;
