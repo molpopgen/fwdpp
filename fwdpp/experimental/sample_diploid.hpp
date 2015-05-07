@@ -54,19 +54,22 @@ namespace KTfwd {
 
       //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
       template<typename diploid_itr_t>
-      inline size_t pick2(gsl_rng * r, const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
+      inline size_t pick2(gsl_rng * r, const size_t & p1, diploid_itr_t p1_itr, const double & f ) const
       {
-	static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
-	return (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());;
+	//static asserts suppress hideously-long compiler warnings on GCC
+	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
+	return (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
       }
 
       //! \brief Update some property of the offspring based on properties of the parents
       template<typename offspring_itr_t, typename parent_itr_t>
       void update(gsl_rng * r, offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
       {
-	static_assert(!std::is_const<decltype(offspring)>::value, "offspring_itr_t must not be const");
-	static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
-	static_assert(!std::is_const<decltype(*p2_itr)>::value, "parent_itr_t must not be const");
+	//static asserts suppress hideously-long compiler warnings on GCC
+	static_assert( std::is_pointer<decltype(r)>::value, "r must be a pointer" );
+	static_assert(!std::is_const< typename std::remove_pointer<typename decltype(offspring)::pointer>::type >::value , "offpsring must point to non-const data");
+	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
+	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p2_itr)::pointer>::type >::value , "p2_itr must point to const data");
 	return;
       }
 
