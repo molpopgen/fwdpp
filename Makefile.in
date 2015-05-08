@@ -287,7 +287,7 @@ top_srcdir = @top_srcdir@
 AUTOMAKE_OPTIONS = foreign
 SUBDIRS = fwdpp examples unit experimental_examples
 ACLOCAL_AMFLAGS = -I m4
-EXTRA_DIST = doc/fwdpp.doxygen examples/*.cc examples/*.hpp examples/Makefile extensions/*.cc extensions/*.py LICENSE experimental_examples/*.cc
+EXTRA_DIST = doc/fwdpp.doxygen examples/*.cc examples/*.hpp experimental_examples/*.cc python_examples/*.cc python_examples/*.py LICENSE experimental_examples/*.cc
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
