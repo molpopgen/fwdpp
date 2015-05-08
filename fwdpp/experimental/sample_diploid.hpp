@@ -3,6 +3,9 @@
 
 namespace KTfwd {
   namespace experimental {
+    /*!
+      \brief Abstraction of the standard Wright-Fisher sampling process
+     */
     struct standardWFrules
     {
       mutable double wbar;
@@ -76,6 +79,8 @@ namespace KTfwd {
     };
 
     //single deme, N changing
+
+    //! \brief Experimental variant where the population rules are implemented via an external policy
     template< typename gamete_type,
 	      typename gamete_list_type_allocator,
 	      typename mutation_list_type_allocator,
@@ -200,6 +205,8 @@ namespace KTfwd {
     }
 
     //single deme, N constant
+
+    //! \brief Experimental variant where the population rules are implemented via an external policy
     template< typename gamete_type,
 	      typename gamete_list_type_allocator,
 	      typename mutation_list_type_allocator,
