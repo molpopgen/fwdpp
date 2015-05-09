@@ -4,9 +4,9 @@
 
   \include sex_limited.cc
   Total madness:
-  1. Opposite fitness effects in "males" vs. "females"
-  2. Gaussian stabiliziing selection
-  3. House of cards
+  1. Different mutation rates to variants affecting traits in each sex
+  2. Mutation effects are sex-limited ("male" mutations only affect trait values in males, etc.)
+  3. House of cards model of additive fitness effects and then stabilizing selection on trait according to a unit Gaussian
 */
 
 #include <limits>
@@ -22,7 +22,8 @@
 #include <fwdpp/diploid.hh>
 //Include the necessary "sugar" components
 //We need to get the 'deep' version of singlepop, as we need to make a custom singlepop_serialized_t for our sim
-#include <fwdpp/sugar/singlepop/singlepop.hpp>
+#define FWDPP_SUGAR_USE_BOOST
+#include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
@@ -67,15 +68,12 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
   //diploid_t & operator=(const diploid_t &) = default;
 };
 
-//Define our our population type via KTfwd::sugar 
-using poptype = KTfwd::sugar::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>,
-						   mlist_t,
-						   glist_t,
-						   boost::container::vector< diploid_t >,
-						   boost::container::vector<mtype>,
-						   boost::container::vector<unsigned>,
-						   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
-						   >;
+/*
+  Define our our population type via KTfwd::sugar 
+  In 0.3.1, I introduced the ability to use custom diploid types with the library's sugar layer.
+*/
+using poptype = KTfwd::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>,diploid_t>;
+
 
 /*
   We will use a gsl_rng_mt19937 as our RNG.
