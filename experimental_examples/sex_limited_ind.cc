@@ -69,7 +69,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
 };
 
 /*
-  Define our our population type via KTfwd::sugar 
+  Define our our population type via sugar template
   In 0.3.1, I introduced the ability to use custom diploid types with the library's sugar layer.
 */
 using poptype = KTfwd::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>,diploid_t>;
