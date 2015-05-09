@@ -8,6 +8,7 @@
 * Issue #12 in examples/common_ind.hpp fixed
 * The library no longer requires that std::pair< T,T > are the types used for a diploid genotype (where the "T" are iterator types derived from gametes lists).  Now, custom diploid genotypes may be used, as long as the follow certain constraints.  Thanks to Jeremy Van Cleve for motivating this change, which should allow models involving space and social interactions, once some experimental features are worked out and become part of the main library (see below).
 * extensions/ directory renamed python_examples
+* Makefiles added for the boost.python examples
 * Fitness policies for multilocus simulations now take iterators pointing to multilocus genotypes, in lieu of const-references to those genotypes.  This is done for the sake of API consistency across the library, but it does break source-level compatibility with existing simulations (although fixes will be easy).  Examples, unit tests, tutorials, etc., have been updated to account for this change.
 * Mutation distpach methods implemented in 0.3.0 via KTfwd::tags::gamete_dependent are now dispatched using std::true_type and std::false_type
 * Namespace KTfwd::experimental has been added as a safe place for experimenting with future library features.  The source files are in fwdpp/experimental. These headers do get installed with the library, but documentation will be minimal.
