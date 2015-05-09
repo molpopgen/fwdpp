@@ -1,6 +1,7 @@
 #ifndef __FWDPP_SUGAR_SINGLEPOP_HPP__
 #define __FWDPP_SUGAR_SINGLEPOP_HPP__
 
+#include <utility>
 #include <fwdpp/sugar/singlepop/singlepop.hpp>
 #include <fwdpp/fwd_functional.hpp>
 
@@ -22,15 +23,17 @@ namespace KTfwd
     See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
-  template<typename mtype> using singlepop = sugar::singlepop<mtype,
-							      mlist_t<mtype>,
-							      glist_t<mtype>,
-							      boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
-												 typename glist_t<mtype>::iterator> >,
-							      boost::container::vector<mtype>,
-							      boost::container::vector<unsigned>,
-							      boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
-							      >;
+  template<typename mtype,
+	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
+					  typename glist_t<mtype>::iterator> >
+  using singlepop = sugar::singlepop<mtype,
+				     mlist_t<mtype>,
+				     glist_t<mtype>,
+				     boost::container::vector< diploid_t >,
+				     boost::container::vector<mtype>,
+				     boost::container::vector<unsigned>,
+				     boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
+				     >;
 
   /*!
     \brief Single locus, single population with serialization.  Can be copied, etc.
@@ -39,16 +42,18 @@ namespace KTfwd
   */
   template<typename mtype,
 	   typename mwriter_t,
-	   typename mreader_t> using singlepop_serialized = sugar::singlepop_serialized<mtype,
-											mwriter_t,mreader_t,
-											mlist_t<mtype>,
-											glist_t<mtype>,
-											boost::container::vector<std::pair<typename glist_t<mtype>::iterator,
-															   typename glist_t<mtype>::iterator> >,
-											boost::container::vector<mtype>,
-											boost::container::vector<unsigned>,
-											boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
-											>;
+	   typename mreader_t,
+	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
+					  typename glist_t<mtype>::iterator>>
+    using singlepop_serialized = sugar::singlepop_serialized<mtype,
+							     mwriter_t,mreader_t,
+							     mlist_t<mtype>,
+							     glist_t<mtype>,
+							     boost::container::vector< diploid_t >,
+							     boost::container::vector<mtype>,
+							     boost::container::vector<unsigned>,
+							     boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
+							     >;
 }
 #else
 
@@ -69,15 +74,17 @@ namespace KTfwd
     See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
-  template<typename mtype> using singlepop = sugar::singlepop<mtype,
-							      mlist_t<mtype>,
-							      glist_t<mtype>,
-							      std::vector< std::pair<typename glist_t<mtype>::iterator,
-										     typename glist_t<mtype>::iterator> >,
-							      std::vector<mtype>,
-							      std::vector<unsigned>,
-							      std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
-							      >;
+  template<typename mtype,
+	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
+					  typename glist_t<mtype>::iterator> >
+    using singlepop = sugar::singlepop<mtype,
+				       mlist_t<mtype>,
+				       glist_t<mtype>,
+				       std::vector< diploid_t >,
+				       std::vector<mtype>,
+				       std::vector<unsigned>,
+				       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
+				       >;
 
   /*! 
     \brief Single locus, single population with serialization.  Can be copied, etc.
@@ -86,16 +93,18 @@ namespace KTfwd
   */
   template<typename mtype,
 	   typename mwriter_t,
-	   typename mreader_t> using singlepop_serialized = sugar::singlepop_serialized<mtype,
-											mwriter_t,mreader_t,
-											mlist_t<mtype>,
-											glist_t<mtype>,
-											std::vector< std::pair<typename glist_t<mtype>::iterator,
-													       typename glist_t<mtype>::iterator> >,
-											std::vector<mtype>,
-											std::vector<unsigned>,
-											std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
-											>;
+	   typename mreader_t,
+	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
+					  typename glist_t<mtype>::iterator> >
+  using singlepop_serialized = sugar::singlepop_serialized<mtype,
+							   mwriter_t,mreader_t,
+							   mlist_t<mtype>,
+							   glist_t<mtype>,
+							   std::vector< diploid_t >,
+							   std::vector<mtype>,
+							   std::vector<unsigned>,
+							   std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
+							   >;
 }
 #endif
 
