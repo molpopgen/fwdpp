@@ -24,15 +24,19 @@ namespace KTfwd
     See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
-  template<typename mtype> using metapop = sugar::metapop<mtype,
-							  metapop_mlist_t<mtype>,
-							  metapop_glist_t<mtype>,
-							  metapop_dipvector_t<mtype>,
-							  boost::container::vector<metapop_glist_t<mtype>>,
-							  boost::container::vector<metapop_dipvector_t<mtype>>,
-							  boost::container::vector<mtype>,
-							  boost::container::vector<unsigned>,
-							  boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
+  template<typename mtype,
+	   typename diploid_t = std::pair<typename metapop_glist_t<mtype>::iterator,
+					  typename metapop_glist_t<mtype>::iterator> >
+  using metapop = sugar::metapop<mtype,
+				 metapop_mlist_t<mtype>,
+				 metapop_glist_t<mtype>,
+				 //metapop_dipvector_t<mtype>,
+				 boost::container::vector<diploid_t>,
+				 boost::container::vector<metapop_glist_t<mtype>>,
+				 boost::container::vector<boost::container::vector<diploid_t>>,
+				 boost::container::vector<mtype>,
+				 boost::container::vector<unsigned>,
+				 boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
 
   /*!
     \brief Single locus metapopulation simulation with serialization.  Can be copied, etc.
