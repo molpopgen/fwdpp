@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm>
 #include <type_traits>
+#include <functional>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
