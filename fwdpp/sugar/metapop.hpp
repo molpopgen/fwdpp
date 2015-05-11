@@ -100,10 +100,10 @@ namespace KTfwd
 						       metapop_glist_t<mtype>,
 						       std::vector<diploid_t>,
 						       std::vector<metapop_glist_t<mtype>>,
-						       std::vector<std::vector<diploid_t>,
+						       std::vector<std::vector<diploid_t> >,
 						       std::vector<mtype>,
 						       std::vector<unsigned>,
-						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
+						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
 }
 #endif
 
