@@ -48,6 +48,6 @@ fi
 cp -r skeleton/* $DIR/$PROJECT
 
 mv $DIR/$PROJECT/src/FWDPPPACKAGE.cc $DIR/$PROJECT/src/$PROJECT.cc
-sed -i '' "s/FWDPPPACKAGE/$PROJECT/" $DIR/$PROJECT/configure.ac
-sed -i '' "s/FWDPPPACKAGE/$PROJECT/g" $DIR/$PROJECT/src/Makefile.am
-sed -i '' "s/FWDPPPROJECTURL/$URL/" $DIR/$PROJECT/configure.ac
+sed -i "s/FWDPPPACKAGE/$PROJECT/" $DIR/$PROJECT/configure.ac
+sed -i "s/FWDPPPACKAGE/$PROJECT/g" $DIR/$PROJECT/src/Makefile.am
+sed -i "s/FWDPPPROJECTURL/$URL/" $DIR/$PROJECT/configure.ac
