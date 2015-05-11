@@ -143,12 +143,11 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-		     const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
-		     const mutation_writer_type & mw,
-		     ostreamtype & buffer)
+  void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
+			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			  const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+			  const mutation_writer_type & mw,
+			  ostreamtype & buffer)
   {
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer ); 
     auto gamdata = fwdpp_internal::write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
@@ -174,12 +173,11 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
-		     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-		     diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
-		     const mutation_reader_type & mr,
-		     istreamtype & in)
+  void read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
+			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			  diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+			  const mutation_reader_type & mr,
+			  istreamtype & in)
   {
     gametes->clear();
     mutations->clear();
@@ -214,12 +212,11 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-		     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-		     const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
-		     const mutation_writer_type & mw,
-		     ostreamtype & buffer)
+  void  write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			   const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			   const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
+			   const mutation_writer_type & mw,
+			   ostreamtype & buffer)
   {
     unsigned nloci = mlocus_gametes->size();
     buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
@@ -267,12 +264,11 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-		    mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-		    diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
-		    const mutation_reader_type & mr,
-		    istreamtype & in)
+  void read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			 diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			 const mutation_reader_type & mr,
+			 istreamtype & in)
   {
     mlocus_gametes->clear();
     mutations->clear();
@@ -326,13 +322,12 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-			 metapop_vector_type_allocator> * metapop,
-			 const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			 const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
-			 const mutation_writer_type & mw,
-			 ostreamtype & buffer)
+  void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			      metapop_vector_type_allocator> * metapop,
+			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			      const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			      const mutation_writer_type & mw,
+			      ostreamtype & buffer)
   {
     unsigned NPOP = unsigned(metapop->size());
     
@@ -374,13 +369,12 @@ namespace KTfwd
   	    template<typename,typename> class diploid_vv_type,
   	    typename mutation_reader_type,
   	    typename istreamtype>
-  void //typename std::enable_if< std::is_base_of<mutation_base,typename gamete_type::mutation_type>::value, void>::type
-  read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
-			metapop_vector_type_allocator> * metapop,
-			mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			diploid_vv_type < diploid_vector_type<diploid_geno_t ,vector_type_allocator >, diploid_vv_type_allocator > * diploids,
-			const mutation_reader_type & mr,
-			istreamtype & in)
+  void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
+			     metapop_vector_type_allocator> * metapop,
+			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			     diploid_vv_type < diploid_vector_type<diploid_geno_t ,vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			     const mutation_reader_type & mr,
+			     istreamtype & in)
   {
     metapop->clear();
     mutations->clear();
