@@ -34,6 +34,7 @@ fi
 if [ -d $DIR/$PROJECT ]
 then 
     echo "error, $DIR/$PROJECT already exists, exiting"
+    exit
 fi
 
 mkdir $DIR/$PROJECT
