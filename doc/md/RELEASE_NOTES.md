@@ -15,6 +15,7 @@
 * Example programs based on experimental features are in experimental_examples.  These examples are "bleeding edge", and are not guaranteed to compile on all systems, especially those without complete working boost installations (including the compiled run-time libraries).
 * experimental_examples/sex_limited_ind.cc is an example of using experimental library features to simulate separate sexes, sex-specific fitness effects, etc.
 * Sugar typedefs in fwdpp/sugar/singlepop.hpp, fwdpp/sugar/metapop.hpp, and in fwdpp/sugar/multiloc.hpp are now compatible with custom diploid types.  The template alias now defaults to a pair of iterators pointing to gametes, which you may over-ride with your own type.
+* The devtools setup script had some bugs fixed. (@ref md_md_devtools)
 
 ## 0.3.0
 
