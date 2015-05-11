@@ -28,7 +28,6 @@ namespace KTfwd
   using metapop = sugar::metapop<mtype,
 				 metapop_mlist_t<mtype>,
 				 metapop_glist_t<mtype>,
-				 //metapop_dipvector_t<mtype>,
 				 boost::container::vector<diploid_t>,
 				 boost::container::vector<metapop_glist_t<mtype>>,
 				 boost::container::vector<boost::container::vector<diploid_t>>,
