@@ -162,6 +162,6 @@ The pros of defining your own diploid type are:
 The cons are:
 
 * Fitness policies are written differently
-* The sugar layer can only be used after defining your own typedefs in terms of KTfwd::sugar::singlepop, etc.
+* In order to use the sugar layer's streamlined methods for declaring population containers, you must pass your diploid type to those templates (see @ref md_md_sugar).
 
 The cons mean that it is not trivial to switch an impementation back and forth between custom and non-custom diploid genotype representations.

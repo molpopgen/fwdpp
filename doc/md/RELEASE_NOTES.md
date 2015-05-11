@@ -14,6 +14,7 @@
 * Namespace KTfwd::experimental has been added as a safe place for experimenting with future library features.  The source files are in fwdpp/experimental. These headers do get installed with the library, but documentation will be minimal.
 * Example programs based on experimental features are in experimental_examples.  These examples are "bleeding edge", and are not guaranteed to compile on all systems, especially those without complete working boost installations (including the compiled run-time libraries).
 * experimental_examples/sex_limited_ind.cc is an example of using experimental library features to simulate separate sexes, sex-specific fitness effects, etc.
+* Sugar typedefs in fwdpp/sugar/singlepop.hpp, fwdpp/sugar/metapop.hpp, and in fwdpp/sugar/multiloc.hpp are now compatible with custom diploid types.  The template alias now defaults to a pair of iterators pointing to gametes, which you may over-ride with your own type.
 
 ## 0.3.0
 
