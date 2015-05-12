@@ -1,6 +1,8 @@
 #ifndef __FWDPP_EXPERIMENTAL_SAMPLE_DIPLOID_HPP__
 #define __FWDPP_EXPERIMENTAL_SAMPLE_DIPLOID_HPP__
 
+#include <fwdpp/diploid.hh>
+
 namespace KTfwd {
   namespace experimental {
     /*!
