@@ -217,7 +217,7 @@ namespace KTfwd
       pop.Ns.resize(numNs);
       s.buffer.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
       //Step 1: write the mutations, diploids, gametes to the stream
-      KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer );
+      KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
       unsigned temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
       for( unsigned m=0;m<temp ;++m )
