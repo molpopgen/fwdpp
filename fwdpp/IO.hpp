@@ -174,7 +174,7 @@ namespace KTfwd
 	    typename diploid_reader_t = diploidIOplaceholder>
   void read_binary_pop ( gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			 const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+			 diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
 			 const mutation_reader_type & mr,
 			 istreamtype & in,
 			 const diploid_reader_t & dr = diploid_reader_t());
