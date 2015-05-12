@@ -108,16 +108,18 @@ namespace KTfwd
       \brief Overload for single population simulations
      */
     template<typename sugarpop_t,
-	     typename writer_t>
+	     typename writer_t,
+	     typename diploid_writer_t = diploidIOplaceholder>
     inline typename std::enable_if< (std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value |
 				     std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value )
 				   ,result_type>::type
     operator()( const sugarpop_t & pop,
-		const writer_t & wt ) const
+		const writer_t & wt,
+		const diploid_writer_t & dw = diploid_writer_t()) const
     {
       buffer.str(std::string());
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
-            write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
+      write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
       unsigned temp = pop.fixations.size();
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
@@ -131,16 +133,18 @@ namespace KTfwd
       \brief Overload for metapopulation simulations
      */
     template<typename sugarpop_t,
-	     typename writer_t>
+	     typename writer_t,
+	     typename diploid_writer_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
     operator()( const sugarpop_t & pop,
-		const writer_t & wt ) const
+		const writer_t & wt,
+		const diploid_writer_t & dw = diploid_writer_t()) const
     {
       buffer.str(std::string());
       unsigned npops = pop.Ns.size();
       buffer.write(reinterpret_cast<char *>(&npops),sizeof(unsigned));
       buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(unsigned) );
-            write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer);
+      write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
       unsigned temp = pop.fixations.size();
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
@@ -164,18 +168,20 @@ namespace KTfwd
       \brief Overload for single population simulations
      */
     template<typename sugarpop_t,
-	     typename reader_t>
+	     typename reader_t,
+	     typename diploid_reader_t = diploidIOplaceholder>
     inline typename std::enable_if<(std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value|
 				    std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value),
 				   result_type>::type
     operator()( sugarpop_t & pop,
 		const serialize & s,
-		const reader_t & rt ) const
+		const reader_t & rt,
+		const diploid_reader_t & dr = diploid_reader_t()) const
     {
       pop.clear();
       //Step 0: read N
       s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
-      KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer );
+      KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
       unsigned temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
       for( unsigned m=0;m<temp ;++m )
@@ -196,11 +202,13 @@ namespace KTfwd
       \brief Overload for metapopulation simulations
      */
     template<typename sugarpop_t,
-	     typename reader_t>
+	     typename reader_t,
+	     typename diploid_reader_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
     operator()( sugarpop_t & pop,
 		const serialize & s,
-		const reader_t & rt ) const
+		const reader_t & rt,
+		const diploid_reader_t & dr = diploid_reader_t()) const
     {
       pop.clear();
       //Step 0: read N
