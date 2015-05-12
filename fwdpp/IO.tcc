@@ -175,12 +175,14 @@ namespace KTfwd
 	    typename vector_type_allocator,
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_reader_type,
-	    typename istreamtype>
+	    typename istreamtype,
+	    typename diploid_reader_t>
   void read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
 			  const mutation_reader_type & mr,
-			  istreamtype & in)
+			  istreamtype & in,
+			  const diploid_reader_t & dr)
   {
     gametes->clear();
     mutations->clear();
@@ -196,6 +198,7 @@ namespace KTfwd
 	dp->first = g[c];
 	fwdpp_internal::scalar_reader<unsigned>()(in,&c);
 	dp->second = g[c];
+	dr(dp,in);
       }
   }
 
@@ -269,12 +272,14 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
-	    typename istreamtype>
+	    typename istreamtype,
+	    typename diploid_reader_t>
   void read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			 diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			 const mutation_reader_type & mr,
-			 istreamtype & in)
+			 istreamtype & in,
+			 const diploid_reader_t & dr )
   {
     mlocus_gametes->clear();
     mutations->clear();
@@ -299,7 +304,7 @@ namespace KTfwd
     fwdpp_internal::scalar_reader<unsigned>()(in,&ndips);
     diploids->resize(ndips, mloc_diploid_geno_t(nloci,diploid_geno_t()) );
     std::for_each( diploids->begin(), diploids->end(),
-		   [&gam_info_vec,&in]( mloc_diploid_geno_t & diploid ) {
+		   [&gam_info_vec,&in,&dr]( mloc_diploid_geno_t & diploid ) {
 		     unsigned i = 0;
 		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
 		       {
@@ -308,6 +313,7 @@ namespace KTfwd
 			 l->first = gam_info_vec[i][c];
 			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
 			 l->second = gam_info_vec[i][c];
+			 dr(l,in);
 		       }
 		   }
 		   );
@@ -377,13 +383,15 @@ namespace KTfwd
   	    typename diploid_vv_type_allocator,
   	    template<typename,typename> class diploid_vv_type,
   	    typename mutation_reader_type,
-  	    typename istreamtype>
+  	    typename istreamtype,
+	    typename diploid_reader_t>
   void read_binary_metapop ( metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			     metapop_vector_type_allocator> * metapop,
 			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			     diploid_vv_type < diploid_vector_type<diploid_geno_t ,vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			     const mutation_reader_type & mr,
-			     istreamtype & in)
+			     istreamtype & in,
+			     const diploid_reader_t & dr )
   {
     metapop->clear();
     mutations->clear();
@@ -422,6 +430,7 @@ namespace KTfwd
 	    dip->first = g[c];
 	    fwdpp_internal::scalar_reader<unsigned>()(in,&c);
 	    dip->second = g[c];
+	    dr(dip,in);
 	  }
       }
   }
