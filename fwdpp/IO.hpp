@@ -2,7 +2,7 @@
 #define __FWDPP_IO_HPP__
 
 #include <utility>
-#include <fwdpp/internal/IOhelp.hpp>
+
 namespace KTfwd
 {
   /*! \brief Write the population to a compact binary-format output file.
