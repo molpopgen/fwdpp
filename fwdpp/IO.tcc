@@ -142,12 +142,14 @@ namespace KTfwd
 	    typename vector_type_allocator,
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
-	    typename ostreamtype>
+	    typename ostreamtype,
+	    typename diploid_writer_t>
   void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
 			  const mutation_writer_type & mw,
-			  ostreamtype & buffer)
+			  ostreamtype & buffer,
+			  const diploid_writer_t & dw )
   {
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer ); 
     auto gamdata = fwdpp_internal::write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
@@ -159,6 +161,7 @@ namespace KTfwd
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
 	c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),dip->second ) - gamdata.first.begin()) ];
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
+	dw(dip);
       }
   }
   

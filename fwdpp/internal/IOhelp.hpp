@@ -7,6 +7,7 @@
   functions rely on these implementations
 */
 #include <zlib.h>
+
 namespace KTfwd {
   namespace fwdpp_internal {
 
@@ -24,6 +25,16 @@ namespace KTfwd {
       }
     };
 
+    struct standard_diploid_writer
+    {
+      using result_type = void;
+      template< typename iterator >
+      inline result_type operator()( iterator i ) const
+      {
+	//Does nothing!
+      }
+    };
+    
     struct write_mutations
     {
       template< typename mutation_type,
