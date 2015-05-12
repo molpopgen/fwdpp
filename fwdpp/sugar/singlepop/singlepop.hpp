@@ -129,8 +129,8 @@ namespace KTfwd {
 	     typename mvector,
 	     typename ftvector,
 	     typename lookup_table_type,
-	     typename dip_reader_t,
-	     typename dip_writer_t>
+	     typename dip_reader_t = KTfwd::diploidIOplaceholder,
+	     typename dip_writer_t = KTfwd::diploidIOplaceholder>
     class singlepop_serialized
     {
       static_assert( std::is_same< typename glist::value_type,
