@@ -23,8 +23,8 @@ using mreader = KTfwd::mutation_reader<mutation_with_age>;
 //Custom diploid type.
 struct diploid_t : public KTfwd::tags::custom_diploid_t
 {
-  using first_type = KTfwd::glist_t<mutation_with_age>::iterator;
-  using second_type = KTfwd::glist_t<mutation_with_age>::iterator;
+  using first_type = KTfwd::singlepop_glist_t<mutation_with_age>::iterator;
+  using second_type = KTfwd::singlepop_glist_t<mutation_with_age>::iterator;
   first_type first;
   second_type second;
   unsigned i;
