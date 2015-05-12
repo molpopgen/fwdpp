@@ -59,7 +59,9 @@ using poptype = KTfwd::sugar::singlepop_serialized<mtype,KTfwd::mutation_writer,
 						   boost::container::vector< diploid_t >,
 						   boost::container::vector<mtype>,
 						   boost::container::vector<unsigned>,
-						   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
+						   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>,
+						   KTfwd::diploidIOplaceholder,
+						   KTfwd::diploidIOplaceholder
 						   >;
 /*
   We will use a gsl_rng_mt19937 as our RNG.
