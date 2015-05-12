@@ -161,7 +161,7 @@ namespace KTfwd
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
 	c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),dip->second ) - gamdata.first.begin()) ];
 	buffer.write( reinterpret_cast<char *>(&c), sizeof(unsigned) );
-	dw(dip);
+	dw(dip,buffer);
       }
   }
   
@@ -214,12 +214,14 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
-	    typename ostreamtype>
+	    typename ostreamtype,
+	    typename diploid_writer_t>
   void  write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			   const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			   const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
 			   const mutation_writer_type & mw,
-			   ostreamtype & buffer)
+			   ostreamtype & buffer,
+			   const diploid_writer_t & dw )
   {
     unsigned nloci = mlocus_gametes->size();
     buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
@@ -238,7 +240,7 @@ namespace KTfwd
     buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
     using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator >::value_type;
     std::for_each( diploids->cbegin(), diploids->cend(),
-		   [&gamdata_vec,&buffer]( const mloc_diploid_geno_t & diploid ) {
+		   [&gamdata_vec,&buffer,&dw]( const mloc_diploid_geno_t & diploid ) {
 		     unsigned i = 0;
 		     for( auto genotype = diploid.cbegin() ; genotype != diploid.cend(); ++genotype,++i )
 		       {
@@ -246,6 +248,7 @@ namespace KTfwd
 			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
 			 c = gamdata_vec[i].second[ std::vector<unsigned>::size_type(std::find( gamdata_vec[i].first.begin(),gamdata_vec[i].first.end(),genotype->second ) - gamdata_vec[i].first.begin()) ];
 			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
+			 dw(genotype,buffer);
 		       }
 		   } 
 		   );
@@ -324,13 +327,15 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
-	    typename ostreamtype>
+	    typename ostreamtype,
+	    typename diploid_writer_t>
   void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
 			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			      const mutation_writer_type & mw,
-			      ostreamtype & buffer)
+			      ostreamtype & buffer,
+			      const diploid_writer_t & dw )
   {
     unsigned NPOP = unsigned(metapop->size());
     
@@ -353,6 +358,7 @@ namespace KTfwd
 	    buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
 	    c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(), gamdata.first.end(), dip->second ) - gamdata.first.begin()) ];
 	    buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
+	    dw(dip,buffer);
 	  }
       }
   }

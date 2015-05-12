@@ -105,6 +105,16 @@ namespace KTfwd
 			     istreamtype & in);
 
 
+  struct standard_diploid_writer
+    {
+      using result_type = void;
+      template< typename iterator, typename streamtype >
+      inline result_type operator()( iterator i, streamtype & ) const
+      {
+	//Does nothing!
+      }
+    };
+  
   /*! \brief Write population to binary-format file for individual-based simulations
     \param gametes  The vector of lists gametes for each deme in metapop
     \param mutations The list of mutations
@@ -127,7 +137,7 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
-	    typename diploid_writer_t = fwdpp_internal::standard_diploid_writer>
+	    typename diploid_writer_t = standard_diploid_writer>
   void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
@@ -183,12 +193,14 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
-	    typename ostreamtype>
+	    typename ostreamtype,
+	    typename diploid_writer_t = standard_diploid_writer>
   void write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vv_type < diploid_vector_type< diploid_geno_t ,vector_type_allocator >,diploid_vv_type_allocator > * diploids,
 			  const mutation_writer_type & mw,
-			  ostreamtype & buffer);
+			  ostreamtype & buffer,
+			  const diploid_writer_t & dw = diploid_writer_t());
 
   /*! \brief Read the population back from a binary-format file for individual-based multilocus simulations
     \param mlocus_gametes A container of gametes for a multilocus simulation
@@ -246,13 +258,15 @@ namespace KTfwd
 	    typename diploid_vv_type_allocator,
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
-	    typename ostreamtype>
+	    typename ostreamtype,
+	    typename diploid_writer_t = standard_diploid_writer>
   void write_binary_metapop ( const metapop_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >,
 			      metapop_vector_type_allocator> * metapop,
 			      const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			      const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			      const mutation_writer_type & mw,
-			      ostreamtype & buffer);
+			      ostreamtype & buffer,
+			      const diploid_writer_t & dw = diploid_writer_t());
 
   /*! \brief Read the metapopulation back from a binary-format file for individual-based simulations
     Read the metapopulation back from a binary-format file

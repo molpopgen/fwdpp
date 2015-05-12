@@ -24,16 +24,6 @@ namespace KTfwd {
 	gzread(gzin,__t,sizeof(T));
       }
     };
-
-    struct standard_diploid_writer
-    {
-      using result_type = void;
-      template< typename iterator >
-      inline result_type operator()( iterator i ) const
-      {
-	//Does nothing!
-      }
-    };
     
     struct write_mutations
     {
