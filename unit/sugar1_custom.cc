@@ -182,7 +182,6 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 		[&i]( diploid_t & dip ) { dip.i = i++; } );
 
   //attempt to copy
-  KTfwd::serialize s;
   poptype pop2(pop);
 
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
@@ -274,7 +273,6 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 		[&i]( diploid_t & dip ) { dip.i = i++; } );
 
   //attempt to copy
-  KTfwd::serialize s;
   poptype pop2 = pop;
 
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
