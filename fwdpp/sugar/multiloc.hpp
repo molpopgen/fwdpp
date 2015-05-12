@@ -42,7 +42,9 @@ namespace KTfwd
 	   typename mwriter,
 	   typename mreader,
 	   typename diploid_t = std::pair<typename multiloc_glist_t<mtype>::iterator,
-					  typename multiloc_glist_t<mtype>::iterator> >
+					  typename multiloc_glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
   using multiloc_serialized = sugar::multiloc_serialized<mtype,mwriter,mreader,
 							 multiloc_mlist_t<mtype>,
 							 multiloc_glist_t<mtype>,
@@ -50,7 +52,9 @@ namespace KTfwd
 							 boost::container::vector<multiloc_glist_t<mtype>>,
 							 boost::container::vector<mtype>,
 							 boost::container::vector<unsigned>,
-							 boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
+							 boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>,
+							 diploid_writer_t,
+							 diploid_reader_t>;
 }
 
 #else
@@ -91,7 +95,9 @@ namespace KTfwd
 	   typename mwriter,
 	   typename mreader,
 	   typename diploid_t = std::pair<typename multiloc_glist_t<mtype>::iterator,
-					  typename multiloc_glist_t<mtype>::iterator> >
+					  typename multiloc_glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
   using multiloc_serialized = sugar::multiloc_serialized<mtype,mwriter,mreader,
 							 multiloc_mlist_t<mtype>,
 							 multiloc_glist_t<mtype>,
@@ -99,7 +105,9 @@ namespace KTfwd
 							 std::vector<multiloc_glist_t<mtype>>,
 							 std::vector<mtype>,
 							 std::vector<unsigned>,
-							 std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>>;
+							 std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>,
+							 diploid_writer_t,
+							 diploid_reader_t>;
 }
 #endif
 

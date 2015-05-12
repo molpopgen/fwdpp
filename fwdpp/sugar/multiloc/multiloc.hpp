@@ -127,7 +127,9 @@ namespace KTfwd {
 	     typename vglist,
 	     typename mvector,
 	     typename ftvector,
-	     typename lookup_table_type>
+	     typename lookup_table_type,
+	     typename dip_reader_t,
+	     typename dip_writer_t>
     struct multiloc_serialized
     {
       //Dispatch tags for other parts of sugar layer
@@ -153,6 +155,10 @@ namespace KTfwd {
       using vglist_t = vglist;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
+      //! Serialization type for writing diploid genotypes
+      using diploid_reader_t = dip_reader_t;
+      //! Serialization type for reading diploid genotypes
+      using diploid_writer_t = dip_writer_t;
       
       //! Population size
       unsigned N;
@@ -200,16 +206,16 @@ namespace KTfwd {
 							       fixation_times(ftvector())
       {
 	serialize s;
-	s(__m,mwriter_t());
-	deserialize()(*this,s,mreader_t());
+	s(__m,mwriter_t(),dip_writer_t());
+	deserialize()(*this,s,mreader_t(),dip_reader_t());
       }
 
       //! Assignment operator
       multiloc_serialized & operator=(const multiloc_serialized & __m)
       {
 	serialize s;
-	s(__m,mwriter_t());
-	deserialize()(*this,s,mreader_t());
+	s(__m,mwriter_t(),dip_writer_t());
+	deserialize()(*this,s,mreader_t(),dip_reader_t());
 	return *this;
       }
 

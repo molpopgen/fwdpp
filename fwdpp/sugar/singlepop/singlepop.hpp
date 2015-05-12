@@ -128,7 +128,9 @@ namespace KTfwd {
 	     typename dipvector,
 	     typename mvector,
 	     typename ftvector,
-	     typename lookup_table_type>
+	     typename lookup_table_type,
+	     typename dip_reader_t,
+	     typename dip_writer_t>
     class singlepop_serialized
     {
       static_assert( std::is_same< typename glist::value_type,
@@ -158,7 +160,11 @@ namespace KTfwd {
       using glist_t = glist;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
-      
+      //! Serialization type for writing diploid genotypes
+      using diploid_reader_t = dip_reader_t;
+      //! Serialization type for reading diploid genotypes
+      using diploid_writer_t = dip_writer_t;
+
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;
       glist gametes;
@@ -204,8 +210,8 @@ namespace KTfwd {
 	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
 		       "Mutation type must be same for class and mreader_t" );
 	serialize s;
-	s(pop,mwriter_t());
-	deserialize()(*this,s,mreader_t());
+	s(pop,mwriter_t(),dip_writer_t());
+	deserialize()(*this,s,mreader_t(),dip_reader_t());
       }
       
       //! Move constructor
@@ -217,8 +223,8 @@ namespace KTfwd {
 	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
 		       "Mutation type must be same for class and mreader_t" );
 	serialize s;
-	s(p,mwriter_t());
-	deserialize()(*this,s,mreader_t());
+	s(p,mwriter_t(),dip_writer_t());
+	deserialize()(*this,s,mreader_t(),dip_reader_t());
 	return *this;
       }
 

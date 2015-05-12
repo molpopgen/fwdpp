@@ -44,16 +44,20 @@ namespace KTfwd
 	   typename mwriter_t,
 	   typename mreader_t,
 	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
-					  typename glist_t<mtype>::iterator>>
-    using singlepop_serialized = sugar::singlepop_serialized<mtype,
-							     mwriter_t,mreader_t,
-							     mlist_t<mtype>,
-							     glist_t<mtype>,
-							     boost::container::vector< diploid_t >,
-							     boost::container::vector<mtype>,
-							     boost::container::vector<unsigned>,
-							     boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
-							     >;
+					  typename glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
+  using singlepop_serialized = sugar::singlepop_serialized<mtype,
+							   mwriter_t,mreader_t,
+							   mlist_t<mtype>,
+							   glist_t<mtype>,
+							   boost::container::vector< diploid_t >,
+							   boost::container::vector<mtype>,
+							   boost::container::vector<unsigned>,
+							   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>,
+							   diploid_reader_t,
+							   diploid_writer_t
+							   >;
 }
 #else
 
@@ -95,7 +99,9 @@ namespace KTfwd
 	   typename mwriter_t,
 	   typename mreader_t,
 	   typename diploid_t = std::pair<typename glist_t<mtype>::iterator,
-					  typename glist_t<mtype>::iterator> >
+					  typename glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
   using singlepop_serialized = sugar::singlepop_serialized<mtype,
 							   mwriter_t,mreader_t,
 							   mlist_t<mtype>,
@@ -103,7 +109,9 @@ namespace KTfwd
 							   std::vector< diploid_t >,
 							   std::vector<mtype>,
 							   std::vector<unsigned>,
-							   std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>
+							   std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>,
+							   diploid_writer_t,
+							   diploid_reader_t
 							   >;
 }
 #endif

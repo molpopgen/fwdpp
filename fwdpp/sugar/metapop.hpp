@@ -44,7 +44,9 @@ namespace KTfwd
 	   typename mwriter_t,
 	   typename mreader_t,
 	   typename diploid_t = std::pair<typename metapop_glist_t<mtype>::iterator,
-					  typename metapop_glist_t<mtype>::iterator> >
+					  typename metapop_glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
   using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
 						       metapop_mlist_t<mtype>,
 						       metapop_glist_t<mtype>,
@@ -53,7 +55,9 @@ namespace KTfwd
 						       boost::container::vector<boost::container::vector<diploid_t>>,
 						       boost::container::vector<mtype>,
 						       boost::container::vector<unsigned>,
-						       boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
+						       boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>,
+						       diploid_writer_t,
+						       diploid_reader_t>;
 }
 #else
 
@@ -94,7 +98,9 @@ namespace KTfwd
 	   typename mwriter_t,
 	   typename mreader_t,
 	   typename diploid_t = std::pair<typename metapop_glist_t<mtype>::iterator,
-					  typename metapop_glist_t<mtype>::iterator> >
+					  typename metapop_glist_t<mtype>::iterator>,
+	   typename diploid_writer_t = diploidIOplaceholder,
+	   typename diploid_reader_t = diploidIOplaceholder>
   using metapop_serialized = sugar::metapop_serialized<mtype,mwriter_t,mreader_t,
 						       metapop_mlist_t<mtype>,
 						       metapop_glist_t<mtype>,
@@ -103,7 +109,9 @@ namespace KTfwd
 						       std::vector<std::vector<diploid_t> >,
 						       std::vector<mtype>,
 						       std::vector<unsigned>,
-						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps> >;
+						       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>,
+						       diploid_writer_t,
+						       diploid_reader_t>;
 }
 #endif
 
