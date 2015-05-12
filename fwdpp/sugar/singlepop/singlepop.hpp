@@ -56,6 +56,10 @@ namespace KTfwd {
       using glist_t = glist;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
+      //! container type for fixations
+      using mvector_t = mvector;
+      //! container type for fixation times
+      using ftvector_t = ftvector;
 
       mlist mutations;
       glist gametes;
@@ -164,6 +168,10 @@ namespace KTfwd {
       using diploid_reader_t = dip_reader_t;
       //! Serialization type for reading diploid genotypes
       using diploid_writer_t = dip_writer_t;
+      //! container type for fixations
+      using mvector_t = mvector;
+      //! container type for fixation times
+      using ftvector_t = ftvector;
 
       //Data types -- the names should make the above typedefs a bit more clear
       mlist mutations;

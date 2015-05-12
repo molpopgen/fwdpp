@@ -70,6 +70,10 @@ namespace KTfwd {
       using vglist_t = vglist;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
+      //! container type for fixations
+      using mvector_t = mvector;
+      //! container type for fixation times
+      using ftvector_t = ftvector;
 
       //! Deme sizes
       std::vector<unsigned> Ns;
@@ -207,6 +211,10 @@ namespace KTfwd {
       using diploid_reader_t = dip_reader_t;
       //! Serialization type for reading diploid genotypes
       using diploid_writer_t = dip_writer_t;
+      //! container type for fixations
+      using mvector_t = mvector;
+      //! container type for fixation times
+      using ftvector_t = ftvector;
 
       //! Deme sizes
       std::vector<unsigned> Ns;
