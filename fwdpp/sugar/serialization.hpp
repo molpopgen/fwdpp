@@ -123,10 +123,13 @@ namespace KTfwd
       //Step 2: output fixations 
       unsigned temp = pop.fixations.size();
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
-      std::for_each( pop.fixations.begin(), pop.fixations.end(),
-		     std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
-      //Step 3:the fixation times
-      buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+      if( temp )
+	{
+	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
+			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
+	  //Step 3:the fixation times
+	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+	}
     }
 
     /*!
@@ -148,10 +151,13 @@ namespace KTfwd
       //Step 2: output fixations 
       unsigned temp = pop.fixations.size();
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
-      std::for_each( pop.fixations.begin(), pop.fixations.end(),
-		     std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
-      //Step 3:the fixation times
-      buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+      if( temp )
+	{
+	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
+			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
+	  //Step 3:the fixation times
+	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+	}
     }
   };
 
@@ -190,9 +196,10 @@ namespace KTfwd
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      if(temp) {
-	s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
-      }
+      if(temp)
+	{
+	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
@@ -228,9 +235,10 @@ namespace KTfwd
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      if(temp) {
-	s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
-      }
+      if(temp)
+	{
+	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
