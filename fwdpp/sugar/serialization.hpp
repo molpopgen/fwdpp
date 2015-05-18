@@ -190,7 +190,9 @@ namespace KTfwd
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      if(temp) {
+	s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      }
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
@@ -226,7 +228,9 @@ namespace KTfwd
     	  pop.fixations.emplace_back( std::move(mm) );
     	}
       pop.fixation_times.resize(temp);
-      s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      if(temp) {
+	s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+      }
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
