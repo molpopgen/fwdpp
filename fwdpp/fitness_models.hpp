@@ -42,7 +42,7 @@ namespace KTfwd
     */
     using result_type = double;
     template<typename iterator_type >
-    inline result_type operator()(const iterator_type & g1, const iterator_type &g2) const
+    inline result_type operator()(const iterator_type &, const iterator_type &) const
     {
       static_assert( std::is_base_of<mutation_base,
 		     typename iterator_type::value_type::mutation_type>::value,
@@ -51,7 +51,7 @@ namespace KTfwd
     }
     //! \brief Naive implementation for non-standard cases
     template<typename T >
-    inline result_type operator()(const T & t) const
+    inline result_type operator()(const T &) const
     {
       return 1.;
     }
