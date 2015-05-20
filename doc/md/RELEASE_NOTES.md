@@ -17,6 +17,8 @@
 * experimental_examples/sex_limited_ind.cc is an example of using experimental library features to simulate separate sexes, sex-specific fitness effects, etc.
 * Sugar typedefs in fwdpp/sugar/singlepop.hpp, fwdpp/sugar/metapop.hpp, and in fwdpp/sugar/multiloc.hpp are now compatible with custom diploid types.  The template alias now defaults to a pair of iterators pointing to gametes, which you may over-ride with your own type.
 * The devtools setup script had some bugs fixed. (@ref md_md_devtools)
+* KTfwd::sample_diploid has been modified to make fewer calls to random number generators for the common use case of no selfing.  This change results in N*generations fewer RNG calls, and can speed simulations by as much as ten percent. A side-effect is that results will differ from simulations compiled against earlier versions of the library.  A preprocessor macro/symbol (COMPAT_0_3_0) has been introduced.  Compilling programs with -DCOMPAT_0_3_0 will result in the older/slower algorithm being used.
+* A new document describing preprocessor symbols and their effect on fwdpp has been added (@ref md_md_preproc)
 
 ## 0.3.0
 

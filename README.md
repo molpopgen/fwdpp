@@ -46,6 +46,8 @@ This code is distributed via my gitub [account](http://www.github.com/molpopgen)
 
 [Release notes](@ref md_md_RELEASE_NOTES)
 
+You should pay particular attention to any statements about backwards compatibility.  If you are updating from a previous version of __fwdpp__, you may wish to read this document regarding how to reproduce results based on previous versions: @ref md_md_preproc.
+
 Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](@ref md_md_RELEASE_NOTES), beginning with release 0.2.4.
 
 ##Which C++?

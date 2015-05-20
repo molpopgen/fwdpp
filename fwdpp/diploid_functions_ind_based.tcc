@@ -113,7 +113,11 @@ namespace KTfwd
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
+#ifdef COMPAT_0_3_0
 	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
+#else
+	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<=f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+#endif
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 	
@@ -348,11 +352,15 @@ namespace KTfwd
 			deme from the migration policy for parent 2
 		      */
 		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
+#ifdef COMPAT_0_3_0
 		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
-			{
-			  pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(popindex))->begin();
-			  p2=p1;
-			}
+#else
+			if( f != NULL && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) <= *(f + popindex)) ) ) //individual is inbred
+#endif
+			  {
+			    pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(popindex))->begin();
+			    p2=p1;
+			  }
 		      else
 			{
 			  deme_other_parent = decltype(deme_other_parent)(mig(size_t(popindex)));

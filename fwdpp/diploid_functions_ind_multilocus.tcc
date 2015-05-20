@@ -119,7 +119,11 @@ namespace KTfwd
 
 	//Choose the two parents
 	typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+#ifdef COMPAT_0_3_0
 	decltype(p1) p2  = (gsl_rng_uniform(r) <= f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+#else
+	decltype(p1) p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<=f)) ? p1 :  decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+#endif
 	assert(p1<N_curr);
 	assert(p2<N_curr);
      
