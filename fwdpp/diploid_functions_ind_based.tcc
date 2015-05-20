@@ -353,9 +353,9 @@ namespace KTfwd
 		      */
 		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
 #ifdef FWDPP_COMPAT_0_3_0
-		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
+		      if( f != nullptr && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
 #else
-			if( f != NULL && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) <= *(f + popindex)) ) ) //individual is inbred
+			if( f != nullptr && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) <= *(f + popindex)) ) ) //individual is inbred
 #endif
 			  {
 			    pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(popindex))->begin();

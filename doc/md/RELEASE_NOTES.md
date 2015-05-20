@@ -19,6 +19,7 @@
 * The devtools setup script had some bugs fixed. (@ref md_md_devtools)
 * KTfwd::sample_diploid has been modified to make fewer calls to random number generators for the common use case of no selfing.  This change results in N*generations fewer RNG calls, and can speed simulations by as much as ten percent. A side-effect is that results will differ from simulations compiled against earlier versions of the library.  A preprocessor macro/symbol (FWDPP_COMPAT_0_3_0) has been introduced.  Compilling programs with -DFWDPP_COMPAT_0_3_0 will result in the older/slower algorithm being used.
 * A new document describing preprocessor symbols and their effect on fwdpp has been added (@ref md_md_preproc)
+* All occurrences of NULL in the library have been replaced with the C++11 [nullptr](http://www.cplusplus.com/reference/cstddef/nullptr_t/).  The latter is safer in templates because the former can evaluate to 0 in some cases.
 
 ## 0.3.0
 

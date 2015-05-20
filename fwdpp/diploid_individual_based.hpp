@@ -161,7 +161,7 @@ sample_diploid(gsl_rng * r,
 	       const diploid_fitness_function_container & ffs,
 	       const mutation_removal_policy & mp,
 	       const migration_policy & mig,
-	       const double * f = NULL);
+	       const double * f = nullptr);
 
   /*! \brief Evolve a metapopulation where demes may be changing size.  For individual-based sims.
     Evolve a metapopulation where demes may be changing size.  For individual-based sims.
@@ -219,7 +219,7 @@ sample_diploid(gsl_rng * r,
 	       const diploid_fitness_function_container & ffs,
 	       const mutation_removal_policy & mp,
 	       const migration_policy & mig,
-	       const double * f = NULL);
+	       const double * f = nullptr);
 }
 
 #endif
