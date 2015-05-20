@@ -113,7 +113,7 @@ namespace KTfwd
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
-#ifdef COMPAT_0_3_0
+#ifdef FWDPP_COMPAT_0_3_0
 	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
 #else
 	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<=f)) ? p1 : gsl_ran_discrete(r,lookup.get());
@@ -352,7 +352,7 @@ namespace KTfwd
 			deme from the migration policy for parent 2
 		      */
 		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
-#ifdef COMPAT_0_3_0
+#ifdef FWDPP_COMPAT_0_3_0
 		      if( f != NULL && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
 #else
 			if( f != NULL && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) <= *(f + popindex)) ) ) //individual is inbred

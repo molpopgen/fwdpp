@@ -10,14 +10,14 @@ The format for these symbols is COMPAT_X, meaning that defining the symbols resu
 
 The symbols curently in use are:
 
-* COMPAT_0_3_0: version 0.3.1 of the library made changes to the implementation of selfing.  If you need to reproduce results based on __fwdpp__ version prior to 0.3.1, compile your program with -DCOMPAT_0_3_0
+* FWDPP_COMPAT_0_3_0: version 0.3.1 of the library made changes to the implementation of selfing.  If you need to reproduce results based on __fwdpp__ version prior to 0.3.1, compile your program with -DFWDPP_COMPAT_0_3_0
 
 ### Example use
 
 To compile the example programs using the selfing implementation from version 0.3.0 and earlier, you may configure the library like this:
 
 ~~~{.sh}
-./configure CXXFLAGS="-O2 -g -DCOMPAT_0_3_0"
+./configure CXXFLAGS="-O2 -g -DFWDPP_COMPAT_0_3_0"
 ~~~
 
 You need to add the "-g -O2" as well, because you are asking the configure script to override the default compiler flags with your own custom flags, but you definitely want to compile with optimization!
