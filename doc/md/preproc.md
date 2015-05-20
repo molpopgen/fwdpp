@@ -6,7 +6,7 @@ This document describes the various preprocessor symbols affecting how simulatio
 
 With the exception of bug fixes, the intention is that simulation results are reproducible when compiled against different versions of the library.  Sometimes, though, algorithm improvements may be introduced that change the order and/or the number of calls to a random number generator.  Such changes necessarily change the final output of a simulation.  Where possible, the preprocessor can be used to select between the new/improved code and the older code for situations where you want to reproduce results exactly (assuming the same GSL random number generator, seed, etc.).
 
-The format for these symbols is COMPAT_X, meaning that defining the symbols results in code identical to that used in __fwdpp__ versions _less than or equal to X_.
+The format for these symbols is FWDPP_COMPAT_X, meaning that defining the symbols results in code identical to that used in __fwdpp__ versions _less than or equal to X_.
 
 The symbols curently in use are:
 
