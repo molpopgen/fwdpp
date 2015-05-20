@@ -3,7 +3,7 @@
 ## 0.3.1
 
 * Multilocus, single-population version of KTfwd::sample_diploid now allows for inbreeding coefficient of 0 by default.
-* Warnings from KTfwd::infinite_sites suppressed w/compiler trick
+* Warnings from KTfwd::infsites suppressed w/compiler trick
 * Extraneous gsl_rng free removed from diploid_ind.cc
 * Issue #12 in examples/common_ind.hpp fixed
 * Issue #13 appears to be fixed, too.  This was tricky, as it was not reproducible on my systems, but is now fixed on the system of the person who reported it.
