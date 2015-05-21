@@ -25,11 +25,9 @@ As with the rest of the library, these functions are implemented using a combina
 
 Currently, these functions support the following types of simulations:
 
-* single-locus, single-deme, gamete-based 
-* single-locus, multi-deme, gamete-based
-* single-locus, single-deme, individual-based 
-* single-locus, multi-deme, individual-based
-* multi-locus, single-deme, individual-based 
+* single-locus, single-deme
+* single-locus, multi-deme
+* multi-locus, single-deme
 
 The type requirements for these functions are:
 

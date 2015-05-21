@@ -12,31 +12,6 @@
 
 namespace KTfwd
 {
-  /*! \brief Apply mutation model to a population
-    \param r GSL random number generator
-    \param gametes Pointer to the vector of gametes in the population
-    \param mutations Pointer to the list of mutations in the population
-    \param mu the TOTAL mutation rate per gamete
-    \param mmodel Mutation model policy
-    \param gpolicy Policy determining how new gametes are added to population
-    \param mpolicy Policy determining how new mutations are added to the population
-   */
-  template< typename gamete_type,
-	    typename mutation_model,
-	    typename gamete_insertion_policy,
-	    typename mutation_insertion_policy,
-	    typename vector_type_allocator,
-	    typename list_type_allocator,
-	    template<typename,typename> class vector_type,
-	    template<typename,typename> class list_type>
-  unsigned mutate(gsl_rng * r, 
-		  vector_type<gamete_type,vector_type_allocator > * gametes, 
-		  list_type<typename gamete_type::mutation_type,list_type_allocator > * mutations, 
-		  const double & mu,
-		  const mutation_model & mmodel,
-		  const gamete_insertion_policy & gpolicy, 
-		  const mutation_insertion_policy & mpolicy);
-
   /*! \brief Apply mutation model to an individual gamete.  Used for individual-based forward simulations
     \param r GSL random number generator
     \param gametes Pointer to the list of gametes in the population

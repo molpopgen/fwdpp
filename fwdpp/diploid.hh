@@ -23,7 +23,6 @@
 
 //headers from this project
 #include <fwdpp/debug.hpp>
-#include <fwdpp/migration.hpp>
 #include <fwdpp/diploid_functions.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/forward_types.hpp>

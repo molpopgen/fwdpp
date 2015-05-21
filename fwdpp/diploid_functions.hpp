@@ -9,7 +9,6 @@
 */ 
 
 //There are too many variants of sample_diploid to list here, so they are spawned off into other headers
-#include <fwdpp/diploid_gamete_based.hpp>
 #include <fwdpp/diploid_individual_based.hpp>
 #include <fwdpp/diploid_individual_based_multilocus.hpp>
 

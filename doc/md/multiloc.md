@@ -9,8 +9,6 @@ This document covers the latter method, which I call the "multilocus" part of __
 
 # Simple policies using the multi-locus machinery
 
-__fwdpp__ only supports the implementation of individual-based multilocus simulations, and it is unlikely that these features will be added to the gamete-based part of the library.
-
 The main conceptual difference between this part of the library and the examples shown in the [tutorial on policies](@ref md_md_policies) is the following:
 
 * Instead of a single mutation model policy, you implement one mutation model per "locus".  These policies are stored in a vector and passed to KTfwd::sample_diploid.

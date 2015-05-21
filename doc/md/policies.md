@@ -132,7 +132,7 @@ The find_if algorithm takes each value in the range and evaluates it via the pol
 
 \section TutAlgo Algorithms in fwdpp
 
-For individual-based simulations, the primary algorithms are __KTfwd::sample\_diploid__ and __KTfwd::remove\_lost__ and/or __KTfwd::remove\_fixed\_lost__.  For gamete-baesd simulations, additional algorithms include the functions __KTfwd::mutate__, __KTfwd::recombine__, and __KTfwd::migrate__ (and/or __KTfwd::migrate\_from\_to__).  All of these functions are in the name space __KTfwd__ and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
+For individual-based simulations, the primary algorithms are __KTfwd::sample\_diploid__ and __KTfwd::remove\_lost__ and/or __KTfwd::remove\_fixed\_lost__.  All of these functions are in the name space __KTfwd__ and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
 
 Some of the code in some of these algorithms is quite complex, largely because generic templates can have hideous syntax.  You should't have to worry about that unless you like seeing how the sausage is made.  Most users of __fwdpp__ will be writing custom policies to stick into these algorithms and will likely be starting from the examples in order to get oriented.  For them, the necessary information is to understand what is required of a policy.  That is the subject of the remainder of this document.
 
@@ -545,8 +545,6 @@ The public base class acts as a "dispatch tag" telling the __fwdpp__ internals t
 
 Currently, recombination is modeled as follows.  In a diploid, there number of crossovers between gametes is Poisson distributed with mean \f$r\f$.  There is no notion of interference in establishing crossover positions.  (However, that can be done with a clever policy.)
 
-Note: what I describe as \f$r\f$ above is the usual definition in population genetics. However, gamete-based simulations (confusingly, I admit) use r/2, because the per-generation r is used to determine how many recombination events a gamete is involved in.  In other words, it is treated as a "per-gamete" parameter.  There is more detail on this in the main library documentation, and you'll see in the example simulations that I divide \f$\rho\f$ (the population-scaled rate of recombination) by \f$8N\f$ to get "littler'' rather than the more common \f$4N\f$.  (Again, to be clear, \f$r=\rho/4N\f$ for individual-based simulations.)
-
 ### Recombination map functions
 In __fwdpp__, a recombination map is a function or function object that returns a double and takes no additional arguments from the algorithm.  The return value is the position of the crossing over event.  The simplest recombination map is uniform.  Here is how to implement such a map on the interval \f$[0,1)\f$:
 
@@ -577,8 +575,6 @@ Let us write a recombination map function that models a strong hotspot of crossi
 Either of the above code blocks results in a variable called recmap which is a function object representing a function call that takes no additional arguments and returns a double.  The variable recmap can be passed to the algorithm as the recombination (sometimes called genetic in the library documentation) map policy.
 
 Note that the above policies were implemented by _synthesiszing_ a new function object type from a stdd::bind operation via the std::function template class.  You may synthesize all of your policies into variables this way, but it is not required.  However, the next subsection will reveal a case where it is required.
-
-Note that gamete-based simulations only require this policy.
 
 ### Recombination model policy functions
 
@@ -637,7 +633,7 @@ We pass this recombination model in an individual-based simulation to KTfwd::sam
 Note: if you want to write a new recombination policy, you probably want to proceed by modifying how it interacts with the the recombination map policy.  For example, if a recombination at position \f$x\f$ means that the next position must be \f$\geq 1.5x\f$ (in some model of interference).  Doing so requires making a custom version of the __KTfwd::recombine\_gametes__ function.  If you read the code for that function, you will see where the recombination map policy is called.  If you try to modify the code below that, then good luck to you.  It isn't super-complicated, but tread with caution.
 
 \subsection TutMig Migration
-Migration policies are only used in individual-based simulations.  For gamete-based simulations, you may write a migration function (replacing __KTfwd::migrate__) that does what you need it to and is implemented in terms of __KTfwd::migrate\_from\_to__.
+Migration policies are only used in individual-based simulations.
 
 For individual-based simulations involving a metapopulations, parent 1 comes from population \f$i\f$ and may or not be a migrant.  Parent two comes from population \f$j\f$ and \f$j = i\f$ in the case of no migration, otherwise \f$j \neq i\f$.  Migration policies may be the trickiest to write effectively because spatial models of migration can be complicated.  However, a migration policies requirements are simple.  A migration policy is a function or function object taking an argument if type size\_t and returning a value of type size\_t.  The argument is the index of population \f$i\f$, and the return value is the index of population \f$j\f$.
 
@@ -771,7 +767,7 @@ Please note that a long-running annoyance with open-source C++ compilers (GCC!) 
 
 \subsection TutUpdateRemove Updating and removal policies
 
-During the course of a simulation, new mutation and gamete types come and go.  New types must be entered in to their approproate containers.  The relevant policies are basically searches followed by either a member variable update or an insertion.  For example, consider our mutation model policy in section \ref{infsites}.  The mutation returned from that function is not currently found in our mutation list (because it has a unique position).  Therefore, the relevant policy is just to insert the new mutation at the end of the doubly-linked list of mutations.  Likewise, a gamete with a new mutation from that model cannot be identical to any currently-segregating gamete.  Therefore, a good policy is just to insert it at the end of the doubly-linked list of gametes (or push it back to the vector of gametes in a gamete-based simulation).  However, a recombination event could make either a new gamete or a pre-existing gamete.  Thus, a policy to insert a recombinant gamete should do the following:
+During the course of a simulation, new mutation and gamete types come and go.  New types must be entered in to their approproate containers.  The relevant policies are basically searches followed by either a member variable update or an insertion.  For example, consider our mutation model policy in section \ref{infsites}.  The mutation returned from that function is not currently found in our mutation list (because it has a unique position).  Therefore, the relevant policy is just to insert the new mutation at the end of the doubly-linked list of mutations.  Likewise, a gamete with a new mutation from that model cannot be identical to any currently-segregating gamete.  Therefore, a good policy is just to insert it at the end of the doubly-linked list of gametes.  However, a recombination event could make either a new gamete or a pre-existing gamete.  Thus, a policy to insert a recombinant gamete should do the following:
 
 
 1. Figure out of the gamete is new or not.
