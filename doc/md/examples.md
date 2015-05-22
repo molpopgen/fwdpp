@@ -210,7 +210,7 @@ The usage is:
 
 ~~~
 Usage:
-./diploid_ind_2locus N theta rho ngens n nreps seed
+./diploid_ind_2locus N theta rho rbw ngens n nreps seed
 Where:
 N = population size (number of diploids)
 theta = 4Nu, the scaled neutral mutation rate
