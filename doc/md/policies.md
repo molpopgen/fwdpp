@@ -196,14 +196,35 @@ A minimal mutation policy takes a non-const pointer to an __mlist__ as an argume
 std::function< mtype(mlist *) > = something...
 ~~~
 
-In fwdpp 0.3.0, you are able to write mutation policies that depend on the type of a gamete.  The signatures of such policies are:
+In fwdpp 0.3.0, you are able to write mutation policies that depend on the type of a gamete.  These policies are more complex to write, but here is a brief outline:
 
+* The policy must boil down to the following call signature:
 ~~~{.cpp}
-//These policies take non-const references to gametes and the pointer to the mutation list as arguments.
-std::function< mtype( glist::value_type &, mlist * ) > gamete_dependend_mutation_policy;
+std::function< mtype( glist::value_type &, mlist * ) > gamete_dependent_mutation_policy;
+~~~
+* However, it must be a type publicly inheriting from KTfwd::tags::gamete_dependent.
+* Thus, it cannot be a simple application of std::bind or std::function.
+* Rather, it must be a fully-formed class/struct whose call operator takes no additional arguments.  Thus, and additional parameters should be passed to the type's constructor:
+~~~{.cpp}
+struct my_gam_dependent_mutation_model {
+	//define public data here.  For example:
+	gsl_rng * r;
+	double minval,maxval;
+	my_gam_dependent_mutation_model( gsl_rng * __r, double && __minval, double && __maxval ) :
+		r(__r),minval(std::forward(__minval)),maxval(std::forward(__maxval)
+	{
+	}
+	//assume mtype is defined elsehere--this is the mutation type
+	using result_type = mtype;
+	//now, define our call operator.
+	//Compare its signature to what was mentioned in the first point above:
+	inline result_type operator()(  glist_t::value_type & g, mlist_t * mutations ) const {
+		//Do your thing here, and return a result_type.
+	}
+};
 ~~~
 
-We then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
+Having defined our mutation policies, we then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
 
 ~~~{.cpp}
 std::function< mlist::iterator( const mtype &, mlist * ) mut_insertion_policy = [](const mtype & m,mlist * __mutations) { 
@@ -538,6 +559,8 @@ struct HOChap : public KTfwd::tags::gamete_dependent
 ~~~
 
 The public base class acts as a "dispatch tag" telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
+
+In order to use such a mutation policy, you must pass an object of that type to KTfwd::sample_diploid, _but you cannot pass it wrapped in std::bind, nor can you pass a lambda expression._  The reason is that an object created by a call to std::bind or a lambda expression is its own type, and thus the dispatch method will assume that it _does not_ inherit from KTfwd::tags::gamete_dependent, meaning that the library will assume that the mutation model is _gamete-indepdendent_, and your program will not compile.  This issue with type deduction means that gamete-dependent mutation policies must be self-contained objects, and nothing more can be bound to their call operators when passed to the library.  If I figure out a nice way of having our cake and eating it, too, then I'll simplify this corner of the library in a future release.
 
 \subsection TutRec Recombination
 
