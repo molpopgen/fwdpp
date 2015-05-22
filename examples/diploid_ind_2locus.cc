@@ -31,7 +31,7 @@ int main(int argc, char ** argv)
     {
       std::cerr << "Incorrect number of arguments.\n"
 		<< "Usage:\n"
-		<< argv[0] << " N theta rho ngens n nreps seed\n"
+		<< argv[0] << " N theta rho rbw ngens n nreps seed\n"
 		<< "Where:\n"
 		<< "N = population size (number of diploids)\n"
 		<< "theta = 4Nu, the scaled neutral mutation rate\n"
