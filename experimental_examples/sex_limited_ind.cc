@@ -156,7 +156,7 @@ struct sexSpecificRules
 	(dptr+i)->first->n = 0;
 	(dptr+i)->second->n = 0;
 	w = KTfwd::fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
-							    KTfwd::tags::diploid_type<std::is_base_of<KTfwd::tags::custom_diploid_t,diploid_geno_t>::value>());
+							    typename KTfwd::traits::is_custom_diploid_t<diploid_geno_t>::type());
 	  if(!(dptr+i)->sex) {
 	    male_fitnesses[male]=w;
 	    mwbar += w;
