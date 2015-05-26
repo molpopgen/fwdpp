@@ -3,6 +3,7 @@
 
 #include <fwdpp/internal/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/tags/diploid_tags.hpp>
 namespace KTfwd {
   namespace traits {
 
@@ -21,6 +22,9 @@ namespace KTfwd {
     template<typename F,typename A1,typename A2>
     using is_binary_t = typename internal::is_binary<F,A1,A2>::type;
 
+    //! Evaluates to std::true_type if T publicly inherits from KTfwd::tags::custom_diploid_t
+    template<typename T>
+    using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type; 
   }
 } 
 #endif

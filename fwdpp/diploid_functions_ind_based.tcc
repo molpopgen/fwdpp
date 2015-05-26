@@ -86,7 +86,7 @@ namespace KTfwd
 	(dptr+i)->first->n = 0;
 	(dptr+i)->second->n = 0;
 	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
-								tags::diploid_type<std::is_base_of<tags::custom_diploid_t,diploid_geno_t>::value>());
+								typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	wbar += fitnesses[i];
       }
     wbar /= double(diploids->size());
@@ -287,7 +287,7 @@ namespace KTfwd
 		       gptr != dptr->end() ; ++gptr,++ith_dip )
 		    {
 		      fitnesses[ith_dip] = fwdpp_internal::diploid_fitness_dispatch(ffs[typename diploid_fitness_function_container::size_type(popindex)],gptr,
-								 tags::diploid_type<std::is_base_of<tags::custom_diploid_t,diploid_geno_t>::value>());
+										    typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 		      wbars[std::vector<double>::size_type(popindex)]+=fitnesses[ith_dip];
 		      gptr->first->n = 0;
 		      gptr->second->n = 0;

@@ -36,7 +36,7 @@ namespace KTfwd {
 	    (dptr+i)->first->n = 0;
 	    (dptr+i)->second->n = 0;
 	    fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
-								    tags::diploid_type<std::is_base_of<tags::custom_diploid_t,diploid_geno_t>::value>());
+								    typename KTfwd::traits::is_custom_diploid_t<diploid_geno_t>::type());
 	    wbar += fitnesses[i];
 	  }
 	wbar /= double(diploids->size());

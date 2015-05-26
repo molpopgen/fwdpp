@@ -190,7 +190,8 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness = 1. ) const
     {
-      return this->operator()(dip,fpol_hom,fpol_het,starting_fitness,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
+      return this->operator()(dip,fpol_hom,fpol_het,starting_fitness,
+			      typename traits::is_custom_diploid_t<diploid2dispatch>::value());
     }
   };
 
@@ -358,7 +359,8 @@ namespace KTfwd
     inline result_type operator()( const diploid2dispatch & dip,
 				   const double & scaling = 1. ) const
     {
-      return this->operator()(dip,scaling,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
+      return this->operator()(dip,scaling,
+			      typename traits::is_custom_diploid_t<diploid2dispatch>::type());
     }
   };
 
@@ -424,7 +426,8 @@ namespace KTfwd
     inline result_type operator()( const diploid2dispatch & dip,
 				   const double & scaling = 1. ) const
     {
-      return this->operator()(dip,scaling,typename std::is_base_of<tags::custom_diploid_t,diploid2dispatch>::type());
+      return this->operator()(dip,scaling,
+			      typename traits::is_custom_diploid_t<diploid2dispatch>::type());
     }
   };
 }
