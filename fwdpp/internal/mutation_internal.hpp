@@ -4,7 +4,7 @@
 #include <algorithm>
 //#include <fwdpp/tags/mutation_tags.hpp>
 #include <fwdpp/type_traits.hpp>
-#include <iostream>
+
 namespace KTfwd {
   namespace fwdpp_internal
   {
@@ -62,7 +62,6 @@ namespace KTfwd {
 			     typename std::result_of<mmodel()>::type >::type
     mmodel_dispatcher( const mmodel & m, gamete_type &, mlist_type * ) 
     {
-      std::cerr << "void\n";
       return m();
     }
     
@@ -74,7 +73,6 @@ namespace KTfwd {
 			     typename std::result_of<mmodel(gamete_type &)>::type >::type
     mmodel_dispatcher( mmodel & m, gamete_type & g, mlist_type * ) 
     {
-      std::cerr << "gameta\n";
       return m(g);
     }
     
@@ -86,7 +84,6 @@ namespace KTfwd {
 			     typename std::result_of<mmodel(mlist_type *)>::type >::type
     mmodel_dispatcher( mmodel & m, gamete_type & , mlist_type * mutations) 
     {
-      std::cerr << "mutations\n";
       return m(mutations);
     }
     
@@ -99,7 +96,6 @@ namespace KTfwd {
 			     typename std::result_of<mmodel(gamete_type&,mlist_type*)>::type >::type
     mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations)
     {
-      std::cerr << "g+m\n";
       return m(g,mutations);
     }
     
