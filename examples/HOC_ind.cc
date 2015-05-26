@@ -15,26 +15,19 @@ using mtype = KTfwd::mutation;
 #include <common_ind.hpp>
 using poptype = singlepop_t;
 
-struct HOChap : public KTfwd::tags::gamete_dependent
+struct HOChap
 {
-  gsl_rng * r;
-  const double sigmu;
-  poptype::lookup_table_t * lookup;
-  HOChap( gsl_rng * __r, const double & __sigmu,
-	  poptype::lookup_table_t * __lookup ) : r(__r),sigmu(__sigmu),lookup(__lookup)
-  {
-  }
-  inline mtype operator()(poptype::gamete_t & g,poptype::mlist_t * mutations) const
+  inline mtype operator()(poptype::gamete_t & g,gsl_rng * r, poptype::lookup_table_t * lookup, const double & sigmu) const
   {
     double pos = gsl_rng_uniform(r);
     while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
       { 
-	pos = gsl_rng_uniform(r);  //if it does, generate a new one
+  	pos = gsl_rng_uniform(r);  //if it does, generate a new one
       }
     lookup->insert(pos);
     double E = gsl_ran_gaussian(r,sigmu); //effect size of hap, after mutation
     double sum = std::accumulate(g.smutations.begin(),g.smutations.end(),0.,
-				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
+    				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
     double esize = (E > sum) ? std::fabs(E-sum) : -1.*std::fabs(E-sum);
     return mtype(pos,esize,1);
   }
@@ -97,64 +90,65 @@ int main(int argc, char ** argv)
     {
       poptype pop(N);
 
-      HOChap mmodel(r,sigmu,&pop.mut_lookup);
+      //HOChap mmodel(r,sigmu,&pop.mut_lookup);
       for( unsigned generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
       	  double wbar = KTfwd::sample_diploid(r,
-      				       &pop.gametes,  //non-const pointer to gametes
-      				       &pop.diploids, //non-const pointer to diploids
-      				       &pop.mutations, //non-const pointer to mutations
-      				       N,     //current pop size, remains constant
-      				       mu,    //mutation rate per gamete
-      				       /*
-      					 The mutation model (defined above) will pass each gamete
-      					 to be mutated to the mutation model function.  Again, _1
-      					 is used as a placeholder for that gamete.
-      				       */
-				       mmodel,
-				       //The recombination policy includes the uniform crossover rate
-      				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						   &pop.gametes,
-      						   littler,
-      						   r,
-      						   recmap),
-				       /*
-					 Policy to insert new mutations at the end of the mutations list
-				       */
-      				       std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-				       /*
-					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
-					 If mutation results in a new gamete, add that gamete to the 
-					 end of gametes. This is always the case under infinitely-many sites,
-					 but for other mutation models, mutation may result in a new
-					 copy identical to an existing gamete.  If so,
-					 that gamete's frequency increases by 1.
-				       */
-      				       std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-      				       /*
-      					 Fitness is multiplicative over sites.
-
-      					 The fitness model takes two gametes as arguments.  
-      					 The gametes are passed to this function by 
-      					 KTfwd::sample_diploid, and the _1 and _2 are placeholders for
-      					 those gametes (see documentation for boost/bind.hpp for details).
-      					 The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
-      					 AA, Aa, and aa, respectively, where a is a mutation with
-      					 selection coefficient s and dominance h, and the fitness of 
-      					 the diploid is the product of fitness over sites
-
-      					 There is no selection in this simulation, but this
-      					 function is called anyways to illustrate it as multiplicative
-      					 models are very common in population genetics
-      				       */
-      				       std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
-      				       /*
-      					 For each gamete still extant after sampling,
-      					 remove the pointers to any mutations that have 
-      					 been lost from the population.
-      				       */
-      				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0));
+					      &pop.gametes,  //non-const pointer to gametes
+					      &pop.diploids, //non-const pointer to diploids
+					      &pop.mutations, //non-const pointer to mutations
+					      N,     //current pop size, remains constant
+					      mu,    //mutation rate per gamete
+					      /*
+						The mutation model (defined above) will pass each gamete
+						to be mutated to the mutation model function.  Again, _1
+						is used as a placeholder for that gamete.
+					      */
+					      std::bind(HOChap(),std::placeholders::_1,r,&pop.mut_lookup,sigmu),
+					      // mmodel,
+					      //The recombination policy includes the uniform crossover rate
+					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+							&pop.gametes,
+							littler,
+							r,
+							recmap),
+					      /*
+						Policy to insert new mutations at the end of the mutations list
+					      */
+					      std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
+					      /*
+						Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
+						If mutation results in a new gamete, add that gamete to the 
+						end of gametes. This is always the case under infinitely-many sites,
+						but for other mutation models, mutation may result in a new
+						copy identical to an existing gamete.  If so,
+						that gamete's frequency increases by 1.
+					      */
+					      std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
+					      /*
+						Fitness is multiplicative over sites.
+						
+						The fitness model takes two gametes as arguments.  
+						The gametes are passed to this function by 
+						KTfwd::sample_diploid, and the _1 and _2 are placeholders for
+						those gametes (see documentation for boost/bind.hpp for details).
+						The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
+						AA, Aa, and aa, respectively, where a is a mutation with
+						selection coefficient s and dominance h, and the fitness of 
+						the diploid is the product of fitness over sites
+						
+						There is no selection in this simulation, but this
+						function is called anyways to illustrate it as multiplicative
+						models are very common in population genetics
+					      */
+					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
+					      /*
+						For each gamete still extant after sampling,
+						remove the pointers to any mutations that have 
+						been lost from the population.
+					      */
+					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0));
       	  KTfwd::remove_lost(&pop.mutations,&pop.mut_lookup);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}    

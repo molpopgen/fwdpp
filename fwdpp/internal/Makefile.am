@@ -7,5 +7,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	multilocus_rec.hpp \
 	IOhelp.hpp \
 	ms_sampling.hpp \
-	diploid_fitness_dispatch.hpp
+	diploid_fitness_dispatch.hpp \
+	type_traits.hpp
 

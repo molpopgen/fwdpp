@@ -13,7 +13,6 @@
 #endif
 
 #include <fwdpp/internal/mutation_internal.hpp>
-#include <fwdpp/tags/mutation_tags.hpp>
 #include <vector>
 
 namespace KTfwd
@@ -41,8 +40,7 @@ namespace KTfwd
 	assert( g->n > 0 );
 	g->n--;
 	typename iterator_type::value_type ng( 1, g->mutations,g->smutations);
-	fwdpp_internal::add_N_mutations(mmodel,mpolicy,nm,mutations,ng,
-					typename std::is_base_of<tags::gamete_dependent,mutation_model>::type());
+	fwdpp_internal::add_N_mutations(mmodel,mpolicy,nm,mutations,ng);
 	return gpolicy(std::move(ng),gametes);
       }
     return g;

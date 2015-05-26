@@ -189,48 +189,14 @@ using gtype = KTfwd::gamete_base<mtype>;
 using glist = std::list<gtype>;
 ~~~
 
-A minimal mutation policy takes a non-const pointer to an __mlist__ as an argument, and returns an __mtype__:
+A minimal mutation policy returns an __mtype__ and takes one of the following sets of arguments:
 
-~~~{.cpp}
-//A mutation policy must conform to this
-std::function< mtype(mlist *) > = something...
-~~~
-
-In fwdpp 0.3.0, you are able to write mutation policies that depend on the type of a gamete.  These policies are more complex to write, but here is a brief outline:
-
-* The policy must boil down to the following call signature:
-~~~{.cpp}
-std::function< mtype( glist::value_type &, mlist * ) > gamete_dependent_mutation_policy;
-~~~
-* However, it must be a type publicly inheriting from KTfwd::tags::gamete_dependent.
-* Thus, it cannot be a simple application of std::bind or std::function.
-* Rather, it must be a fully-formed class/struct whose call operator takes no additional arguments.  Thus, and additional parameters should be passed to the type's constructor:
-~~~{.cpp}
-struct my_gam_dependent_mutation_model {
-	//define public data here.  For example:
-	gsl_rng * r;
-	double minval,maxval;
-	my_gam_dependent_mutation_model( gsl_rng * __r, double && __minval, double && __maxval ) :
-		r(__r),minval(std::forward(__minval)),maxval(std::forward(__maxval)
-	{
-	}
-	//assume mtype is defined elsehere--this is the mutation type
-	using result_type = mtype;
-	//now, define our call operator.
-	//Compare its signature to what was mentioned in the first point above:
-	inline result_type operator()(  glist_t::value_type & g, mlist_t * mutations ) const {
-		//Do your thing here, and return a result_type.
-	}
-};
-~~~
+* Nothing
+* A non-const reference to a __gtype__.  This allows you to have mutation models where the outcome depends on the current state of the gamete being mutated
+* A non-cont pointer to an __mlist__.  This allows you to have mutation models where the outcome depends on all the mutations currently in the population.  (This was also the minimally-sufficient policy through __fwdpp__ 0.3.0, and it exists to maintain source code compatibiltiy with existing simulations.)
+* A non-const referenct to a __gtype__ _and_ and non-const pointer to an __mlist__. This allows you to mix the previous two.
 
 Having defined our mutation policies, we then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
-
-~~~{.cpp}
-std::function< mlist::iterator( const mtype &, mlist * ) mut_insertion_policy = [](const mtype & m,mlist * __mutations) { 
-return __mutations->insert(__mutations->end(),m); 
-};
-~~~
 
 When a gamete is mutated, we need to decide how to insert it into the __glist__.  This "gamete insertion policy'' takes a const reference to an __gtype__ and a non-const pointer to an __glist__ as arguments, and returns an __glist::iterator__.  Again, under the infinitely-many sites model, a gamete with a new mutation is guaranteed to be unique, so we can simply insert it:
 
@@ -423,7 +389,7 @@ The above code creates a new data type called __lookup\_table\_type__ that hashe
   };
 ~~~
 
-Note that you could provide your own equality comparison policy for the hashing table.  This one would be excellent, and should be included int the library in future versions as it may be the most robust:
+Note that you could provide your own equality comparison policy for the hashing table.  This one would be excellent, and should be included in the library in future versions as it may be the most robust:
 
 ~~~{.cpp}
   struct equality_comparison_strict
@@ -443,7 +409,7 @@ We can now completely define our mutation model as a function (we could do it as
   typedef KTfwd::mutation mtype;
   typedef boost::pool_allocator<mtype> mut_allocator;
   typedef boost::container::list<mtype,mut_allocator > mlist;
-  mtype mutmodel( gsl_rng * r, mlist * mutations,
+  mtype mutmodel( gsl_rng * r,
                   const double & mu_neutral,
                   const double & mu_selected,
                   const double & mean_s,
@@ -479,17 +445,22 @@ That is is--the mutation model is complete.  We still need to deal with how muta
 The mutation policy is passed to any of the various __KTfwd::sample\_diploid__ functions in the library like this:
 
 ~~~{.cpp}
-  std::bind(mutmodel,r,&mutations,
-  mu_neutral, mu_selected,
-  mean_s, &lookup);
+  std::bind(mutmodel,r, mu_neutral, mu_selected, mean_s, &lookup);
 ~~~
 
 Or, using C++11 lambda expressions:
 
 ~~~{.cpp}
-  [&](mlist * __mutations){ return mutmodel(r,__mutations,mu_neutral,
-    mu_selected,mean_s,&lookup); }
+  [&](){ return mutmodel(r,mu_neutral, mu_selected,mean_s,&lookup); }
+  ~~~
+
+Note that both of the above declarations are the first of the four types of mutation moel alluded to above--they take no further arguments from the library's internals, and their signature is thus
+
+~~~{.cpp}
+std::function<mtype(void)>
 ~~~
+
+as far as the library is concerned.
 
 Note that several of the data types passed to the model are non-const pointers.  Therefore, it is very likely that the data pointed to will be modified my the mutation model!
 
@@ -546,21 +517,6 @@ OK, our mutation model is going to be the following.  It is infinitely-many site
     }
 ~~~
 
-\subsubsection GameteDependent Gamete-dependent mutation policies
-
-In order to implement such "gamete-dependent" mutation policies, your policy must be a function object inheriting from KTfwd::tags::gamete_dependent :
-
-~~~{.cpp}
-//See HOC_ind.cc for the full implementation
-struct HOChap : public KTfwd::tags::gamete_dependent
-{
-  inline mtype operator()(poptype::gamete_t & g,poptype::mlist_t * mutations) const;
-};
-~~~
-
-The public base class acts as a "dispatch tag" telling the __fwdpp__ internals to pass both the gamete and the mutation list on to the mutation model policy.  See the example program source file HOC_ind.cc for a complete working example.
-
-In order to use such a mutation policy, you must pass an object of that type to KTfwd::sample_diploid, _but you cannot pass it wrapped in std::bind, nor can you pass a lambda expression._  The reason is that an object created by a call to std::bind or a lambda expression is its own type, and thus the dispatch method will assume that it _does not_ inherit from KTfwd::tags::gamete_dependent, meaning that the library will assume that the mutation model is _gamete-indepdendent_, and your program will not compile.  This issue with type deduction means that gamete-dependent mutation policies must be self-contained objects, and nothing more can be bound to their call operators when passed to the library.  If I figure out a nice way of having our cake and eating it, too, then I'll simplify this corner of the library in a future release.
 
 \subsection TutRec Recombination
 

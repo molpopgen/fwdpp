@@ -22,6 +22,7 @@
 #include <gsl/gsl_randist.h>
 
 //headers from this project
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/diploid_functions.hpp>
 #include <fwdpp/fitness_models.hpp>
@@ -42,6 +43,14 @@
 
 /*! \namespace KTfwd::fwdpp_internal
   \brief Nested namespace for nuts and bolts of certain library functions
+*/
+
+/*! \namespace KTfwd::traits
+  \brief Nested namespace type traits
+*/
+
+/*! \namespace KTfwd::traits::internal
+  \brief Nested namespace implementation details of type traits
 */
 
 /*! \namespace KTfwd::tags

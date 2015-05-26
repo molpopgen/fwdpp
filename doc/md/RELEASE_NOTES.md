@@ -2,6 +2,8 @@
 
 ## 0.3.1
 
+This release has many significant changes.  With the exception of the removal of KTfwd::tags::gamete_dependent, which was released in 0.3.0, the library remains source-compatible with existing simulations.
+
 * Multilocus, single-population version of KTfwd::sample_diploid now allows for inbreeding coefficient of 0 by default.
 * Warnings from KTfwd::infsites suppressed w/compiler trick
 * Extraneous gsl_rng free removed from diploid_ind.cc
@@ -21,6 +23,8 @@
 * A new document describing preprocessor symbols and their effect on fwdpp has been added (@ref md_md_preproc)
 * All occurrences of NULL in the library have been replaced with the C++11 [nullptr](http://www.cplusplus.com/reference/cstddef/nullptr_t/).  The latter is safer in templates because the former can evaluate to 0 in some cases.
 * All gamete-based code has been removed from the library.  If you need it for any reason, you're stuck with with 0.3.0 and earlier.
+* Mutation models may now have various function signatures.  See @ref md_md_policies and the example programs for details.  The file fwdpp/tags/mutation_tags.hpp has been removed.  This was introduced in 0.3.0, and defined KTfwd::tags::gamete_dependent, which has been replaced with a newer, much more flexible method of policy dispatching.  See fwdpp/internal/mutation_internal.hpp for the details of how this was done.
+* fwdpp/type_traits.hpp was added to the library, proving namespace KTfwd::traits.
 
 ## 0.3.0
 
