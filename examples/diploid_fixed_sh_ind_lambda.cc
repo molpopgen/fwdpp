@@ -72,7 +72,7 @@ singlepop_t pop(N);
 				       N,
 				       mu_neutral+mu_del,
 				       //The mutation model function will be passed a non-const pointer to an singlepop_t::mlist_t
-				       std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,
+				       std::bind(KTfwd::infsites(),r,&pop.mut_lookup,
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r);},[&s](){return s;},[&h](){return h;}),
 				       //The recombination policy must take two non-const iterators from the glist
 					 [&](singlepop_t::glist_t::iterator & g1,

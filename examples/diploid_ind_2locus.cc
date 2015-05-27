@@ -83,10 +83,10 @@ int main(int argc, char ** argv)
 
       std::vector< std::function<mtype(multiloc_t::mlist_t *)> > mmodels {
 	//Locus 0: positions Uniform [0,1)
-	std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,&generation,
+	std::bind(KTfwd::infsites(),r,&pop.mut_lookup,&generation,
 		  mu[0],0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}) ,
 	  //Locus 1: positions Uniform [1,2)
-	  std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,&generation,
+	  std::bind(KTfwd::infsites(),r,&pop.mut_lookup,&generation,
 		    mu[1],0.,[&r](){return gsl_ran_flat(r,1.,2.);},[](){return 0.;},[](){return 0.;})
 	  };
       for( generation = 0; generation < ngens; ++generation )

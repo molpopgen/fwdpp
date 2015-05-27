@@ -84,7 +84,7 @@ int main(int argc, char ** argv)
       					 to be mutated to the mutation model function.  The _1
       					 is used as a placeholder for that gamete.
       				       */
-				       std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,generation,
+				       std::bind(KTfwd::infsites(),r,&pop.mut_lookup,generation,
 						 mu,0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,

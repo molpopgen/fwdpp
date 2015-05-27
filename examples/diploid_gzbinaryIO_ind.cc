@@ -132,7 +132,7 @@ int main(int argc, char ** argv)
 				   &pop.mutations,
 				   N,     
 				   mu,   
-				   std::bind(KTfwd::infsites(),r,std::placeholders::_1,&pop.mut_lookup,generation,
+				   std::bind(KTfwd::infsites(),r,&pop.mut_lookup,generation,
 						 mu,0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}),
 				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 					       &pop.gametes,
