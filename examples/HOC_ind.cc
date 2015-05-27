@@ -101,9 +101,11 @@ int main(int argc, char ** argv)
 					      N,     //current pop size, remains constant
 					      mu,    //mutation rate per gamete
 					      /*
-						The mutation model (defined above) will pass each gamete
-						to be mutated to the mutation model function.  Again, _1
-						is used as a placeholder for that gamete.
+						The mutation model below will be applied by
+						sample_diploid in order to add mutations to gametes each generation.
+
+						The _1 is a placeholder for a non-const reference to a gamete (see defn'
+						of HOChap above).
 					      */
 					      std::bind(HOChap(),std::placeholders::_1,r,&pop.mut_lookup,sigmu),
 					      // mmodel,

@@ -71,7 +71,10 @@ singlepop_t pop(N);
 				       &pop.mutations,
 				       N,
 				       mu_neutral+mu_del,
-				       //The mutation model function will be passed a non-const pointer to an singlepop_t::mlist_t
+      				       /*
+      					 The mutation model (KTfwd::infsites) will be applied by
+					 sample_diploid in order to add mutations to gametes each generation.
+      				       */
 				       std::bind(KTfwd::infsites(),r,&pop.mut_lookup,
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r);},[&s](){return s;},[&h](){return h;}),
 				       //The recombination policy must take two non-const iterators from the glist
