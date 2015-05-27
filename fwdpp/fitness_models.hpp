@@ -142,44 +142,9 @@ namespace KTfwd
 		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
       return fitness;
     }
-
-    /*!
-      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype,
-	      typename fitness_updating_policy_hom,
-	      typename fitness_updating_policy_het>
-    inline result_type
-    operator()(const diploid_genotype & diploid_g,
-	       const fitness_updating_policy_hom & fpol_hom,
-	       const fitness_updating_policy_het & fpol_het,
-	       const double & starting_fitness,
-	       std::true_type) const
-    {
-      return this->operator()(diploid_g.first,diploid_g.second,fpol_hom,fpol_het,starting_fitness);
-    }
-
-    /*!
-      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype_itr,
-	      typename fitness_updating_policy_hom,
-	      typename fitness_updating_policy_het>
-    inline result_type
-    operator()(const diploid_genotype_itr & diploid_g,
-	       const fitness_updating_policy_hom & fpol_hom,
-	       const fitness_updating_policy_het & fpol_het,
-	       const double & starting_fitness,
-	       std::false_type ) const
-    {
-      return this->operator()(diploid_g->first,diploid_g->second,fpol_hom,fpol_het,starting_fitness);
-    }
     
     /*!
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
-      This function will select the correct overload for const reference or iterator types
       \note See @ref md_md_customdip
     */
     template< typename diploid2dispatch,
@@ -190,8 +155,7 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness = 1. ) const
     {
-      return this->operator()(dip,fpol_hom,fpol_het,starting_fitness,
-			      typename traits::is_custom_diploid_t<diploid2dispatch>::value());
+      return this->operator()(dip->first,dip->second,fpol_hom,fpol_het,starting_fitness);
     }
   };
 
@@ -327,40 +291,14 @@ namespace KTfwd
 				      1.);
     }
     /*!
-      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype >
-    inline result_type operator()(const diploid_genotype & diploid_g,
-				  const double & scaling,
-				  std::true_type) const
-    {
-      return this->operator()(diploid_g.first,diploid_g.second,scaling);
-    }
-    
-    /*!
-      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype_itr >
-    inline result_type  operator()(const diploid_genotype_itr & ditr,
-				   const double & scaling,
-				   std::false_type) const
-    {
-      return this->operator()(ditr->first,ditr->second,scaling);
-    }
-
-    /*!
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
-      This function will select the correct overload for const reference or iterator types
       \note See @ref md_md_customdip
     */
     template< typename diploid2dispatch>
     inline result_type operator()( const diploid2dispatch & dip,
 				   const double & scaling = 1. ) const
     {
-      return this->operator()(dip,scaling,
-			      typename traits::is_custom_diploid_t<diploid2dispatch>::type());
+      return this->operator()(dip->first,dip->second,scaling);
     }
   };
 
@@ -394,40 +332,14 @@ namespace KTfwd
     }
 
     /*!
-      \brief Overload to forward const references to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype >
-    inline result_type operator()(const diploid_genotype & diploid_g,
-				  const double & scaling, 
-				  std::true_type) const
-    {
-      return this->operator()(diploid_g.first,diploid_g.second,scaling);
-    }
-    
-    /*!
-      \brief Overload to forward iterators pointing to types inheriting from KTfwd::tags::custom_diploid_t
-      \note See @ref md_md_customdip
-    */
-    template< typename diploid_genotype_itr >
-    inline result_type operator()(const diploid_genotype_itr & ditr,
-				  const double & scaling,
-				  std::false_type) const
-    {
-      return this->operator()(ditr->first,ditr->second,scaling);
-    }
-
-    /*!
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
-      This function will select the correct overload for const reference or iterator types
       \note See @ref md_md_customdip
     */
     template< typename diploid2dispatch >
     inline result_type operator()( const diploid2dispatch & dip,
 				   const double & scaling = 1. ) const
     {
-      return this->operator()(dip,scaling,
-			      typename traits::is_custom_diploid_t<diploid2dispatch>::type());
+      return this->operator()(dip->first,dip->second,scaling);
     }
   };
 }

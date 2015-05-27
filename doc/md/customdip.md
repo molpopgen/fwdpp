@@ -130,7 +130,7 @@ struct my_new_fitness_pol_template {
 };
 ~~~
 
-This definition will work with KTfwd::sample_diploid, but it may not be good enough for you.  It is likely that you want a version that will work on a const reference to your custom type as well as on the iterator type.  C++11 allows us to do that by overloading operator() in many ways, and using [SFINAE](http://en.cppreference.com/w/cpp/language/sfinae) to choose the correct overload.  The dispatch tag KTfwd::tags::custom_diploid_t helps in choosing the overload, and I would recommend that you look at the implementations of the following fitness policies in the library for further guidance:
+The following built-in functions support custom diploids in this way:
 
 * KTfwd::site_dependent_fitness
 * KTfwd::additive_diploid
