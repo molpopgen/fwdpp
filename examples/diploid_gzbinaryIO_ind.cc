@@ -25,70 +25,6 @@ using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
-//function object to write mutation data in binary format
-struct mwriter
-{
-  typedef void result_type;
-  result_type operator()( const mtype & m, std::ostringstream & buffer ) const
-  {
-    unsigned u = m.n;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    u = m.g;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    bool b = m.neutral;
-    buffer.write( reinterpret_cast< char * >(&b),sizeof(bool) );
-    double d = m.pos;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.s;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.h;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-  }
-};
-
-/*
-  Function object to read mutation data in binary format.
-  This is the difference from diploid_binaryIO_ind.cc,
-  as it is based on gzread from a gzFile rather than
-  an istream.
-
-  Note: zlib.h is already included via fwdpp,
-  but there would be no harm in doing so again above.
-*/
-struct mreader
-{
-  using result_type = mtype;
-  result_type operator()( gzFile gzin ) const
-  {
-    unsigned n;
-    gzread( gzin,&n,sizeof(unsigned) );
-    unsigned g;
-    gzread( gzin,&g,sizeof(unsigned) );
-    bool neut;
-    gzread( gzin,&neut,sizeof(bool) );
-    double pos;
-    gzread( gzin,&pos,sizeof(double) );
-    double s;
-    gzread( gzin,&s,sizeof(double) );
-    double h;
-    gzread( gzin,&h,sizeof(double) );
-    return result_type(pos,s,h,g,n);
-  }
-};
-
-// mutation_with_age neutral_mutations_inf_sites(gsl_rng * r,const unsigned & generation,mlist * mutations,
-// 					      lookup_table_type * lookup)
-// {
-//   double pos = gsl_rng_uniform(r);
-//   while( lookup->find(pos) != lookup->end() )
-//     {
-//       pos = gsl_rng_uniform(r);
-//     }
-//   lookup->insert(pos);
-//   assert(std::find_if(mutations->begin(),mutations->end(),std::bind(KTfwd::mutation_at_pos(),std::placeholders::_1,pos)) == mutations->end());
-//   return mutation_with_age(generation,pos,1,0.,0.,true);
-// }
-
 int main(int argc, char ** argv)
 {
   if (argc != 9)
@@ -146,8 +82,9 @@ int main(int argc, char ** argv)
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
     }
   std::ostringstream buffer;
-      
-  KTfwd::write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
+
+  //Use sugar type from fwdpp/sugar/serialization.hpp
+  KTfwd::write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   /*
     Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
@@ -230,7 +167,8 @@ int main(int argc, char ** argv)
   KTfwd::read_binary_pop(&gametes2,
 			 &mutations2,
 			 &diploids2,
-			 std::bind(mreader(),std::placeholders::_1),
+			 //Use sugar type from fwdpp/sugar/serialization.hpp
+			 std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
 			 gzin);
 
   //Now, compare what we wrote to what we read

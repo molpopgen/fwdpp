@@ -26,6 +26,7 @@ This release has many significant changes.  With the exception of the removal of
 * Mutation models may now have various function signatures.  See @ref md_md_policies and the example programs for details.  The file fwdpp/tags/mutation_tags.hpp has been removed.  This was introduced in 0.3.0, and defined KTfwd::tags::gamete_dependent, which has been replaced with a newer, much more flexible method of policy dispatching.  See fwdpp/internal/mutation_internal.hpp for the details of how this was done.
 * fwdpp/type_traits.hpp was added to the library, proving namespace KTfwd::traits.
 * KTfwd::infsites no longer requires that a pointer to a mutation list be passed to the call operator
+* KTfwd::mutation_writer and KTfwd::mutation_reader now support gzFiles
 
 ## 0.3.0
 

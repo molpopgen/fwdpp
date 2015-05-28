@@ -20,7 +20,7 @@ namespace KTfwd
   struct mutation_writer
   {
     /*!
-      \brief overload for KTfwd::popgenmut
+      \brief overload for KTfwd::popgenmut and ostreams
      */
     using result_type = void;
     template<typename mutation_t>
@@ -34,8 +34,24 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
     }
+
     /*!
-      \brief overload for KTfwd::mutation
+      \brief overload for KTfwd::popgenmut and zlib/gzFile
+    */
+    template<typename mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,popgenmut>::value,result_type>::type
+    operator()( const mutation_t &m,
+		gzFile gzout) const
+    {
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.g),sizeof(unsigned));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
+    }
+    
+    /*!
+      \brief overload for KTfwd::mutation and ostreams
      */
     template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
@@ -46,6 +62,20 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+    }
+
+    /*!
+      \brief overload for KTfwd::mutation and zlib/gzFile
+    */
+    template<typename mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
+    operator()( const mutation_t &m,
+		gzFile gzout) const
+    {
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
     }
   };
 
@@ -64,7 +94,7 @@ namespace KTfwd
     //! The return value of operator()
     using result_type = mutation_t;
     /*!
-      \brief overload for KTfwd::popgenmut
+      \brief overload for KTfwd::popgenmut and istreams
      */
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
@@ -79,8 +109,26 @@ namespace KTfwd
       in.read( reinterpret_cast<char *>(&h),sizeof(double));
       return result_type(pos,s,h,g,n);
     }
+
     /*!
-      \brief overload for KTfwd::mutation
+      \brief overload for KTfwd::popgenmut and zlib/gzFile
+    */
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
+    operator()( gzFile in ) const
+    {
+      unsigned n,g;
+      double pos,s,h;
+      gzread(in,&n,sizeof(unsigned));
+      gzread(in,&g,sizeof(unsigned));
+      gzread(in,&pos,sizeof(double));
+      gzread(in,&s,sizeof(double));
+      gzread(in,&h,sizeof(double));
+      return result_type(pos,s,h,g,n);
+    }
+    
+    /*!
+      \brief overload for KTfwd::mutation and istreams
      */
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
@@ -92,6 +140,23 @@ namespace KTfwd
       in.read( reinterpret_cast<char *>(&pos),sizeof(double));
       in.read( reinterpret_cast<char *>(&s),sizeof(double));
       in.read( reinterpret_cast<char *>(&h),sizeof(double));
+      return result_type(pos,s,n,h);
+    }
+
+        
+    /*!
+      \brief overload for KTfwd::mutation and gzFile
+    */
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
+    operator()( gzFile in ) const
+    {
+      unsigned n;
+      double pos,s,h;
+      gzread(in,&n,sizeof(unsigned));
+      gzread(in,&pos,sizeof(double));
+      gzread(in,&s,sizeof(double));
+      gzread(in,&h,sizeof(double));
       return result_type(pos,s,n,h);
     }
   };
