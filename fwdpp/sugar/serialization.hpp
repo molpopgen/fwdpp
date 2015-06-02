@@ -311,8 +311,16 @@ namespace KTfwd
     }
   };
 
+  /*!
+    Write a population to a gzFile in a binary format
+  */
   struct gzserialize
   {
+    using result_type = long long;
+    /*
+      \brief Call operator
+      \note gzout must already be opened, and with a mode involving 'b'
+     */
     template<typename sugarpop_t,
 	     typename writer_t,
 	     typename diploid_writer_t = diploidIOplaceholder>
@@ -327,9 +335,16 @@ namespace KTfwd
     }
   };
 
+  /*!
+    Read a population from a gzFile in binary format
+   */
   struct gzdeserialize
   {
     using result_type = void;
+    /*!
+      \brief Call operator
+      \note gzin must be opened for reading in binary mode
+    */
     template<typename sugarpop_t,
 	     typename reader_t,
 	     typename diploid_reader_t = diploidIOplaceholder>
@@ -361,6 +376,10 @@ namespace KTfwd
     		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
     }
 
+    /*!
+      \brief Call operator
+      \note gzin must be opened for reading in binary mode
+    */
     template<typename sugarpop_t,
 	     typename reader_t,
 	     typename diploid_reader_t = diploidIOplaceholder>

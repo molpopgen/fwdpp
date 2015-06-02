@@ -286,4 +286,4 @@ int main( int argc, char ** argv )
 
 You may use KTfwd::serialize and KTfwd::deserialize for any custom mutation types, once the proper serializing objects are written (see \ref md_md_serialization).
 
-In future releases, support for direct serialization to/from gzipped files will be added.  In the mean time, you can do this manually using __fwdpp__ functions like KTfwd::write_binary_pop, etc.
+In 0.3.1, KTfwd::gzserialize and KTfwd::gzdeserialize were added to handle gzipped output and input, respectivel.  The interface is similar to the above.
