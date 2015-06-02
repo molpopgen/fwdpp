@@ -81,10 +81,6 @@ int main(int argc, char ** argv)
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
       KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
     }
-  std::ostringstream buffer;
-
-  //Use sugar type from fwdpp/sugar/serialization.hpp
-  KTfwd::write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   /*
     Note: gzFiles are not as easily compatible with file-locking and creating an index, etc.,
@@ -116,7 +112,7 @@ int main(int argc, char ** argv)
 
   //Now, write output to a gzipped file
   gzFile gzout = gzopen( hapfile, "ab" ); //open in append mode.  The b = binary mode.  Not required on all systems, but never hurts.
-  gzwrite( gzout, buffer.str().c_str(), buffer.str().size() ); //write buffer to gzfile
+  long long written = KTfwd::gzserialize()(gzout,pop,KTfwd::mutation_writer());
   //write info to index file
   fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzout ) );
   gzclose(gzout);
@@ -158,22 +154,16 @@ int main(int argc, char ** argv)
       exit(10);
     }
 
-  singlepop_t::mlist_t mutations2;
-  singlepop_t::glist_t gametes2;
-  singlepop_t::dipvector_t diploids2;
-
+  singlepop_t pop2(pop.N);
+  
   gzFile gzin = gzopen( hapfile, "rb" ); //open it for reading.  Again, binary mode.
   gzseek( gzin, rec_offset, SEEK_CUR ); //seek to position
-  KTfwd::read_binary_pop(&gametes2,
-			 &mutations2,
-			 &diploids2,
-			 //Use sugar type from fwdpp/sugar/serialization.hpp
-			 std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
-			 gzin);
+
+  KTfwd::gzdeserialize()(gzin,pop2,std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1));
 
   //Now, compare what we wrote to what we read
-  std::cout << pop.gametes.size() << ' ' << gametes2.size() << ' ' << pop.mutations.size() << ' ' << mutations2.size() 
-	    << ' ' << pop.diploids.size() << ' ' << diploids2.size() << '\n';
+  std::cout << pop.gametes.size() << ' ' << pop2.gametes.size() << ' ' << pop.mutations.size() << ' ' << pop2.mutations.size() 
+	    << ' ' << pop.diploids.size() << ' ' << pop2.diploids.size() << '\n';
 
   for( unsigned i = 0 ; i < pop.diploids.size() ; ++i )
     {
@@ -192,16 +182,16 @@ int main(int argc, char ** argv)
       std::cout << '\n';
 
       std::cout << "Read:\n";
-      for( unsigned j = 0 ; j < diploids2[i].first->mutations.size() ; ++j )
+      for( unsigned j = 0 ; j < pop2.diploids[i].first->mutations.size() ; ++j )
 	{
-	  std::cout << '(' << diploids2[i].first->mutations[j]->pos << ','
-		    << diploids2[i].first->mutations[j]->n << ')';
+	  std::cout << '(' << pop2.diploids[i].first->mutations[j]->pos << ','
+		    << pop2.diploids[i].first->mutations[j]->n << ')';
 	}
       std::cout << '\n';
-      for( unsigned j = 0 ; j < diploids2[i].second->mutations.size() ; ++j )
+      for( unsigned j = 0 ; j < pop2.diploids[i].second->mutations.size() ; ++j )
 	{
-	  std::cout << '(' << diploids2[i].second->mutations[j]->pos << ','
-		    << diploids2[i].second->mutations[j]->n << ')';
+	  std::cout << '(' << pop2.diploids[i].second->mutations[j]->pos << ','
+		    << pop2.diploids[i].second->mutations[j]->n << ')';
 	}
       std::cout << '\n';
     }
