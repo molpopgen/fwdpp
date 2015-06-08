@@ -179,9 +179,9 @@ namespace KTfwd
 	  }
       }
   }
-  
+
   template<typename iterator_type>
-  void adjust_mutation_counts( iterator_type g , const unsigned & n)
+  void adjust_mutation_counts( iterator_type & g , const unsigned & n)
   /*! \brief used internally
     \note Will need a specialization if types have other data that need updating
   */
