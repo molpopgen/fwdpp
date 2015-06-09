@@ -11,7 +11,7 @@ namespace KTfwd
   {
     template< typename itr_type,
 	      typename cont_type >
-    itr_type rec_gam_updater( itr_type __first, itr_type __last,
+    itr_type rec_gam_updater( itr_type & __first, itr_type & __last,
 			      cont_type & m1, cont_type & m2,
 			      const short & SWITCH, const double & val )
     {
@@ -34,10 +34,12 @@ namespace KTfwd
 	  return __first;
 	}
       //O(log_2) comparisons of double plus at most __last - __first copies
-      itr_type __ub = std::upper_bound(__first,__last,
+      itr_type __ub = std::lower_bound(__first,__last,
 				       std::cref(val),
-				       [](const double __val,const typename itr_type::value_type __mut) {
-					 return __val < __mut->pos;
+				       [](const typename itr_type::value_type & __mut,const double & __val) {
+				       //[](const double & __val,const typename itr_type::value_type & __mut) {
+					 return __mut->pos < __val;
+					 //return __val < __mut->pos;
 				       });
       if (SWITCH)
 	std::copy(__first,__ub,std::back_inserter(m1));

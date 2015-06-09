@@ -31,7 +31,7 @@ namespace KTfwd {
       decltype(ibeg->mutations.size()) nm1=ibeg->mutations.size()+ibeg->smutations.size(),
 	nm2=jbeg->mutations.size()+jbeg->smutations.size();
 #endif
-      for( const auto dummy : pos )
+      for( const auto & dummy : pos )
 	{
 	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
 						new_gamete2.mutations,new_gamete1.mutations,SWITCH,dummy);
