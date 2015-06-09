@@ -29,9 +29,9 @@
 #include <boost/unordered_set.hpp>
 #include <boost/functional/hash.hpp>
 
-template<typename mtype> using metapop_mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
+template<typename mtype> using metapop_mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
 template<typename mtype> using metapop_gamete_t = KTfwd::gamete_base<mtype,metapop_mlist_t<mtype>>;
-template<typename mtype> using metapop_glist_t = boost::container::list<metapop_gamete_t<mtype>, boost::pool_allocator<metapop_gamete_t<mtype>>>;
+template<typename mtype> using metapop_glist_t = boost::container::list<metapop_gamete_t<mtype>, boost::fast_pool_allocator<metapop_gamete_t<mtype>>>;
 template<typename mtype> using metapop_dipvector_t = boost::container::vector<std::pair<typename metapop_glist_t<mtype>::iterator,
 											typename metapop_glist_t<mtype>::iterator> >;
 
