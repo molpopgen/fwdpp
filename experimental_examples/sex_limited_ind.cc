@@ -44,9 +44,9 @@ struct sex_specific_mutation : public KTfwd::mutation_base
 };
 
 using mtype = sex_specific_mutation;
-using mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
+using mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
 using gamete_t = KTfwd::gamete_base<mtype,mlist_t>;
-using glist_t = boost::container::list<gamete_t, boost::pool_allocator<gamete_t>>;
+using glist_t = boost::container::list<gamete_t, boost::fast_pool_allocator<gamete_t>>;
 
 //We need to define a custom diploid genotype for our model
 struct diploid_t : public KTfwd::tags::custom_diploid_t
