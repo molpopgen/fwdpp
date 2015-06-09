@@ -1,5 +1,12 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.2
+
+This release make some tweaks that improve performance:
+
+* All occurrences of boost::pool_allocator have been replaced by boost::fast_pool_allocator in the declarations of population types in the sugar layer (see @ref md_md_sugar).  This can result in >= 10% reductions in run times are recombination rates increase.
+* The mechanics of adding mutations and recombining gametes have been streamlined slightly.
+
 ## 0.3.1
 
 This release has many significant changes.  With the exception of the removal of KTfwd::tags::gamete_dependent, which was released in 0.3.0, and the change in the implementation of KTfwd::infsites::operator(), the library remains source-compatible with existing simulations.
