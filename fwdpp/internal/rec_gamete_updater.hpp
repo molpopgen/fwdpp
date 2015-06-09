@@ -9,12 +9,16 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
+    /*
+      The code used thru 0.3.1 is kept here
+     */
     template< typename itr_type,
 	      typename cont_type >
     itr_type rec_gam_updater( itr_type & __first, itr_type & __last,
 			      cont_type & m1, cont_type & m2,
 			      const short & SWITCH, const double & val )
     {
+      /*
       typename itr_type::difference_type __dist = std::distance(__first,__last);
       if ( __dist <= 250 )
 	{
@@ -33,6 +37,7 @@ namespace KTfwd
 	    }
 	  return __first;
 	}
+      */
       //O(log_2) comparisons of double plus at most __last - __first copies
       itr_type __ub = std::lower_bound(__first,__last,
 				       std::cref(val),
