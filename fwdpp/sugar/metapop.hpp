@@ -13,9 +13,9 @@
 
 namespace KTfwd
 {
-  template<typename mtype> using metapop_mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
+  template<typename mtype> using metapop_mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
   template<typename mtype> using metapop_gamete_t = gamete_base<mtype,metapop_mlist_t<mtype>>;
-  template<typename mtype> using metapop_glist_t = boost::container::list<metapop_gamete_t<mtype>, boost::pool_allocator<metapop_gamete_t<mtype>>>;
+  template<typename mtype> using metapop_glist_t = boost::container::list<metapop_gamete_t<mtype>, boost::fast_pool_allocator<metapop_gamete_t<mtype>>>;
 
   /*!
     \brief Single locus metapopulation simulation without serialization.  Cannot be copied, etc.

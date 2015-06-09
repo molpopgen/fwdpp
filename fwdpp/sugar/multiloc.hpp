@@ -13,9 +13,9 @@
 
 namespace KTfwd
 {
-  template<typename mtype> using multiloc_mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
+  template<typename mtype> using multiloc_mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
   template<typename mtype> using multiloc_gamete_t = gamete_base<mtype,multiloc_mlist_t<mtype>>;
-  template<typename mtype> using multiloc_glist_t = boost::container::list<multiloc_gamete_t<mtype>, boost::pool_allocator<multiloc_gamete_t<mtype>>>;
+  template<typename mtype> using multiloc_glist_t = boost::container::list<multiloc_gamete_t<mtype>, boost::fast_pool_allocator<multiloc_gamete_t<mtype>>>;
 
   /*!
     \brief Single population, multilocus simulation without serialization.  Cannot be copied, etc.
