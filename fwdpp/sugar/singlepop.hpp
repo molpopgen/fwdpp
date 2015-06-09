@@ -14,9 +14,10 @@
 
 namespace KTfwd
 {
-  template<typename mtype> using singlepop_mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
+  template<typename mtype> using singlepop_mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
   template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype>>;
-  template<typename mtype> using singlepop_glist_t = boost::container::list<singlepop_gamete_t<mtype>, boost::pool_allocator<singlepop_gamete_t<mtype>>>;
+  template<typename mtype> using singlepop_glist_t = boost::container::list<singlepop_gamete_t<mtype>,
+									    boost::fast_pool_allocator<singlepop_gamete_t<mtype>>>;
 
   /*!
     \brief Single locus, single population without serialization.  Cannot be copied, etc.
