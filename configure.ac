@@ -45,6 +45,7 @@ dnl check for C run-time libraries
 AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR([zlib run time library not found])])
 AC_CHECK_LIB([gslcblas],[cblas_dgemm],,[AC_MSG_ERROR([gslcblas run-time library not found])])
 AC_CHECK_LIB([gsl],[gsl_blas_dgemm],,[AC_MSG_ERROR([gsl run-time library not found])])
+AC_CHECK_LIB([tcmalloc],[tc_cfree],,[AC_MSG_WARN([tcmalloc not found])])
 dnl check for C++ run-time libraries
 AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
