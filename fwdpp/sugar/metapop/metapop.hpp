@@ -173,11 +173,11 @@ namespace KTfwd {
       void init_vectors()
       {
 	unsigned metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
-	gametes.emplace_back( gamete_t,2*metapopsize );
+	gametes.emplace_back( gamete_t(2*metapopsize) );
 	auto gam = gametes.begin();
 	for(unsigned i = 0 ; i < Ns.size() ; ++i )
 	  {
-	    diploids.emplace_back( dipvector_t(Ns[i],typename dipvector::value_type(gam,gam)) )
+	    diploids.emplace_back( dipvector_t(Ns[i],typename dipvector::value_type(gam,gam)) );
 	  }
 	/*
 	for( unsigned i = 0 ; i < Ns.size() ; ++i )

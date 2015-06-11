@@ -179,7 +179,7 @@ namespace KTfwd
   
   //Metapopulation version of sample_diploid for individual-based simulations and constant N
   template< typename gamete_type,
-	    typename metapop_gamete_vector_type_allocator,
+	    //typename metapop_gamete_vector_type_allocator,
 	    typename metapop_diploid_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
@@ -195,12 +195,13 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_gamete_vector_type,
+	    //template<typename,typename> class metapop_gamete_vector_type,
 	    template<typename,typename> class metapop_diploid_vector_type>
   std::vector< double >
   sample_diploid(gsl_rng * r,
-		 metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-		 metapop_gamete_vector_type_allocator > * metapop,
+		 //metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
+		 //metapop_gamete_vector_type_allocator > * metapop,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned * N_curr, 
@@ -221,7 +222,7 @@ namespace KTfwd
   
   //Metapopulation version of sample_diploid for individual-based simulations with changing population size
   template< typename gamete_type,
-	    typename metapop_gamete_vector_type_allocator,
+	    //typename metapop_gamete_vector_type_allocator,
 	    typename metapop_diploid_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
@@ -237,12 +238,13 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_gamete_vector_type,
+	    //template<typename,typename> class metapop_gamete_vector_type,
 	    template<typename,typename> class metapop_diploid_vector_type>
   std::vector< double >
   sample_diploid(gsl_rng * r,
-		 metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-		 metapop_gamete_vector_type_allocator > * metapop,
+		 //metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
+		 //metapop_gamete_vector_type_allocator > * metapop,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned * N_curr, 
@@ -257,14 +259,15 @@ namespace KTfwd
 		 const migration_policy & mig,
 		 const double * f)
 	    {
-	      assert( metapop->size() == diploids->size() );
+	      //std::cerr << metapop->size() << ' ' << mutations->size() << '\n';
+	      //assert( metapop->size() == diploids->size() );
 
 	      std::for_each(mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){ __m.n=0; });
 
 	      //get the fitnesses for each diploid in each deme and make the lookup table of parental fitnesses
 	      using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
 	      std::vector<lookup_t> lookups;
-	      std::vector<double> wbars(metapop->size(),0);
+	      std::vector<double> wbars(diploids->size(),0);
 	      typename decltype(diploids->begin())::difference_type popindex = 0;
 
 	      //get max N
@@ -304,10 +307,12 @@ namespace KTfwd
 	      //Update the diploids
 	      popindex = 0;
 	      unsigned NREC=0;
-	      decltype(metapop->begin()) pop_ptr = metapop->begin();
+	      //decltype(metapop->begin()) pop_ptr = metapop->begin();
 
-	      decltype(metapop->begin()->begin()) p1g1,p1g2,p2g1,p2g2;
-	      for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr, ++pop_ptr,++popindex )
+	      //decltype(metapop->begin()->begin()) p1g1,p1g2,p2g1,p2g2;
+	      decltype(metapop->begin()) p1g1,p1g2,p2g1,p2g2;
+	      //for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr, ++pop_ptr,++popindex )
+	      for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr,++popindex )
 		{
 		  unsigned demesize =*(N_next+popindex);
 		  if( demesize != *(N_curr+popindex) )
@@ -319,7 +324,7 @@ namespace KTfwd
 		    tpop is a non-const pointer to a 
 		    gamete_list_type<gamete_type,gamete_list_type_allocator >
 		  */
-		  auto tpop = &*pop_ptr;
+		  //auto tpop = &*pop_ptr;
 		  for( unsigned i = 0 ; i < demesize ; ++i )
 		    {
 		      /* Figure out if parent 1 is migrant or not.
@@ -328,25 +333,34 @@ namespace KTfwd
 			an argument.  It returns popindex if there is no migration,
 			else it returns the index of the deme of a migrant parent
 		      */
+
+		      //std::cerr << "dealing with p1...\n";
 		      decltype(popindex) deme_first_parent = decltype(popindex)(mig(size_t(popindex))),deme_other_parent=popindex;
 		      auto pptr=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_first_parent))->begin();
 		      typename decltype(pptr)::difference_type p1 = 
 			typename decltype(pptr)::difference_type(gsl_ran_discrete(r,lookups[std::vector<lookup_t>::size_type(deme_first_parent)].get())),p2;
 
-		      if( popindex == deme_first_parent )
-			//not migrant
-			{
-			  p1g1 = (pptr+p1)->first;
-
-			  p1g2 = (pptr+p1)->second;
-			}
-		      else
+		      p1g1 = (pptr+p1)->first;
+		      p1g2 = (pptr+p1)->second;
+		      
+		      // if( popindex == deme_first_parent )
+		      // 	//not migrant
+		      // 	{
+		      // 	  p1g1 = (pptr+p1)->first;
+		      // 	  p1g2 = (pptr+p1)->second;
+		      // 	}
+		      // else
 			//migrant                                                                                    
-			{
-			  p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop,0u );
-			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop,0u );
-			}
+		      //{
+			  //p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),tpop,0u );
+			  //			  p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),tpop,0u );
 
+			  //Nothing to do now, as "gamete pool" is shared.
+			  //p1g1 = insert_if_not_found( std::cref(*((pptr+p1)->first)),metapop,0u );
+			  //p1g2 = insert_if_not_found( std::cref(*((pptr+p1)->second)),metapop,0u );
+			  //}
+
+		      //std::cerr << "dealing with p2...\n";
 		      /*
 			If the individual is not inbred, then we pick a 
 			deme from the migration policy for parent 2
@@ -371,62 +385,85 @@ namespace KTfwd
 			  assert( (pptr2+p2) < (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
 			}
 		      assert( pptr2 != (parents.begin() + typename decltype(parents.begin())::difference_type(deme_other_parent))->end() );
-		      if(deme_other_parent == popindex)
-			{
-			  p2g1 = (pptr2+p2)->first;
-			  p2g2 = (pptr2+p2)->second;
-			}
-		      else
-			{
-			  //We may need to put p2's gametes into the pop pointed to by pop_ptr
-			  p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop,0u);
-			  p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop,0u);
-			}
+
+		      p2g1 = (pptr2+p2)->first;
+		      p2g2 = (pptr2+p2)->second;
 		      
-		      NREC += rec_pol(p1g1,p1g2,tpop);
-		      NREC += rec_pol( p2g1,p2g2, tpop );
+		      // if(deme_other_parent == popindex)
+		      // 	{
+		      // 	  p2g1 = (pptr2+p2)->first;
+		      // 	  p2g2 = (pptr2+p2)->second;
+		      // 	}
+		      // else
+		      // 	{
+			  //We may need to put p2's gametes into the pop pointed to by pop_ptr
+			  //p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),tpop,0u);
+			  //p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),tpop,0u);
+
+			  //Nothing to do now due 2 shared "gamete pool"
+			  //p2g1 = insert_if_not_found( std::cref(*((pptr2+p2)->first)),metapop,0u);
+			  //p2g2 = insert_if_not_found( std::cref(*((pptr2+p2)->second)),metapop,0u);
+		      //}
+
+		      //std::cerr << "rec...\n";
+		      //NREC += rec_pol(p1g1,p1g2,tpop);
+		      //NREC += rec_pol( p2g1,p2g2, tpop );
+		      NREC += rec_pol(p1g1,p1g2,metapop);
+		      NREC += rec_pol(p2g1,p2g2,metapop);
 
 		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 		      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-		      assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
-			      != (pop_ptr)->end() );
+		      //assert( std::find( (pop_ptr)->begin(), (pop_ptr)->end(), *( (dptr+i)->second ) )
+		      //!= (pop_ptr)->end() );
+		      assert( std::find( (metapop)->begin(), (metapop)->end(), *( (dptr+i)->second ) )
+			      != (metapop)->end() );
 
+		      //std::cerr << "increment...\n";
 		      (dptr+i)->first->n++;
-		      assert((dptr+i)->first->n <= 2*demesize);
+		      //assert((dptr+i)->first->n <= 2*demesize);
 		      (dptr+i)->second->n++;
-		      assert((dptr+i)->second->n <= 2*demesize);
-		      
+		      //assert((dptr+i)->second->n <= 2*demesize);
+
+		      //std::cerr << "mutate...\n";
 		      //now, add new mutations
-		      (dptr+i)->first = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-		      (dptr+i)->second = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		      //(dptr+i)->first = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+		      //(dptr+i)->second = mutate_gamete(r,mu,&*(pop_ptr),mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		      (dptr+i)->first = mutate_gamete(r,mu,metapop,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+		      (dptr+i)->second = mutate_gamete(r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
 		    }
 		}
-	      
+
+	      //std::cerr << "cleanup...\n";
 	      //get rid of extinct stuff, etc.
-	      for(auto ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
+	      for(auto gptr = metapop->begin(), temp = gptr ; gptr != metapop->end() ; ) //++gptr)
 		{
-		  decltype(ptr->begin()) temp;
-		  for (auto gptr = ptr->begin() ; gptr != ptr->end() ;  )
-		    {
+		  //decltype(ptr->begin()) temp;
+		  //		  for (auto gptr = ptr->begin() ; gptr != ptr->end() ;  )
+		  //{
 		      if( gptr->n == 0 )//extinct gamete, remove it
 			{
 			  temp = gptr;
 			  ++gptr;
-			  ptr->erase(temp);
+			  //ptr->erase(temp);
+			  metapop->erase(temp);
 			}
 		      else
 			{
+			  //std::cerr << "adjust...";
 			  adjust_mutation_counts(gptr,gptr->n);
+			  //std::cerr << "done" << std::endl;
 			  ++gptr;
 			}
-		    }
+		      //  }
 		}
-	      for(auto ptr = metapop->begin() ; ptr != metapop->end() ; ++ptr)
-		for (auto gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
+	      //std::cerr << "cleanup gametes...\n";
+	      for(auto gptr = metapop->begin() ; gptr != metapop->end() ; ++gptr)
+		//for (auto gptr = ptr->begin() ; gptr != ptr->end() ; ++gptr )
 		  {
 		    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
 		    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
 		  }
+	      //std::cerr << "return...\n";
 	      return wbars;
 	    }
 }
