@@ -315,28 +315,27 @@ int main( int argc, char ** argv )
   	}
     }
 
-  //Should fix
-  // auto pptr1 = pop.gametes.begin(),pptr2=metapop_gametes2.begin();
-  // for( unsigned i = 0 ; i < pop.diploids.size() ; ++i,++pptr1,++pptr2 )
-  //   {
-  //     for(unsigned j = 0 ; j < N ; ++j )
-  // 	{
-  // 	  if ( std::distance( pptr1->begin(),pop.diploids[i][j].first ) !=
-  // 	       std::distance( pptr2->begin(),metapop_diploids2[i][j].first ) )
-  // 	    {
-  // 	      std::cerr << "Error: first gametes differ. " 
-  // 			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
-  // 	      std::exit(EXIT_FAILURE);
-  // 	    }
-  // 	  if ( std::distance( pptr1->begin(),pop.diploids[i][j].second ) !=
-  // 	       std::distance( pptr2->begin(),metapop_diploids2[i][j].second ) )
-  // 	    {
-  // 	      std::cerr << "Error: second gametes differ. " 
-  // 			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
-  // 	      std::exit(EXIT_FAILURE);
-  // 	    }
-  // 	}
-  //   }
+  auto pptr1 = pop.gametes.begin(),pptr2=metapop_gametes2.begin();
+  for( unsigned i = 0 ; i < pop.diploids.size() ; ++i)//,++pptr1,++pptr2 )
+    {
+      for(unsigned j = 0 ; j < N ; ++j )
+  	{
+  	  if ( std::distance( pptr1,pop.diploids[i][j].first ) !=
+  	       std::distance( pptr2,metapop_diploids2[i][j].first ) )
+  	    {
+  	      std::cerr << "Error: first gametes differ. " 
+  			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
+  	      std::exit(EXIT_FAILURE);
+  	    }
+  	  if ( std::distance( pptr1,pop.diploids[i][j].second ) !=
+  	       std::distance( pptr2,metapop_diploids2[i][j].second ) )
+  	    {
+  	      std::cerr << "Error: second gametes differ. " 
+  			<< "Line " << __LINE__ << " of " << __FILE__ << '\n';
+  	      std::exit(EXIT_FAILURE);
+  	    }
+  	}
+    }
 }
 
 SimData merge( const std::vector<std::pair<double,std::string> > & sample1,
