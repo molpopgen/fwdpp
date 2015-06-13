@@ -128,7 +128,6 @@ template< typename gamete_type,
      \example migsel_ind.cc
    */
 template< typename gamete_type,
-	  //typename metapop_gamete_vector_type_allocator,
 	  typename metapop_diploid_vector_type_allocator,
 	  typename gamete_list_type_allocator,
 	  typename mutation_list_type_allocator,
@@ -144,12 +143,9 @@ template< typename gamete_type,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
-	  //template<typename,typename> class metapop_gamete_vector_type,
 	  template<typename,typename> class metapop_diploid_vector_type>
 std::vector< double >
 sample_diploid(gsl_rng * r,
-	       //metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-	       //metapop_gamete_vector_type_allocator > * metapop,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
 	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
@@ -186,7 +182,6 @@ sample_diploid(gsl_rng * r,
     \return The mean fitness of the parental generation
   */
 template< typename gamete_type,
-	  //typename metapop_gamete_vector_type_allocator,
 	  typename metapop_diploid_vector_type_allocator,
 	  typename gamete_list_type_allocator,
 	  typename mutation_list_type_allocator,
@@ -202,12 +197,9 @@ template< typename gamete_type,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
-	  //template<typename,typename> class metapop_gamete_vector_type,
 	  template<typename,typename> class metapop_diploid_vector_type>
 std::vector< double >
 sample_diploid(gsl_rng * r,
-	       // metapop_gamete_vector_type < gamete_list_type<gamete_type,gamete_list_type_allocator > ,
-	       // metapop_gamete_vector_type_allocator > * metapop,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>, metapop_diploid_vector_type_allocator > * diploids,
 	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
