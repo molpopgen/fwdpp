@@ -172,7 +172,7 @@ int main( int argc, char ** argv )
   Sequence::write_SimData_binary(outstream,selected);
   outstream.close();
 
-  poptype::vglist_t metapop2;
+  poptype::glist_t metapop2;
   poptype::vdipvector_t diploids2;
   poptype::mlist_t mutations2;
   Sequence::SimData neutral2,selected2;
