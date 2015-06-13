@@ -25,7 +25,7 @@ namespace KTfwd {
 	     typename mlist,
 	     typename glist,
 	     typename dipvector,
-	     typename vglist,
+	     //typename vglist,
 	     typename vdipvector,
 	     typename mvector,
 	     typename ftvector,
@@ -38,6 +38,14 @@ namespace KTfwd {
     private:
       void init_vectors()
       {
+	unsigned metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
+	gametes.emplace_back( gamete_t(2*metapopsize) );
+	auto gam = gametes.begin();
+	for(unsigned i = 0 ; i < Ns.size() ; ++i )
+	  {
+	    diploids.emplace_back( dipvector_t(Ns[i],typename dipvector::value_type(gam,gam)) );
+	  }
+	/*
 	for( unsigned i = 0 ; i < Ns.size() ; ++i )
 	  {
 	    gametes.emplace_back( glist_t(1,gamete_t(2*Ns[i])) );
@@ -46,6 +54,7 @@ namespace KTfwd {
 	    //The value_type is the same as diploid_t below
 	    diploids.emplace_back(dipvector_t(Ns[i],typename dipvector::value_type( itr->begin(),itr->begin())));
 	  }
+	*/
       }
     public:
       //! Dispatch tags for other parts of sugar layer
@@ -67,7 +76,7 @@ namespace KTfwd {
       //! Gamete list type
       using glist_t = glist;
       //! Container of glist_t (container of gametes lists for each deme)
-      using vglist_t = vglist;
+      //using vglist_t = vglist;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
       //! container type for fixations
@@ -78,7 +87,7 @@ namespace KTfwd {
       //! Deme sizes
       std::vector<unsigned> Ns;
       mlist_t mutations;
-      vglist_t gametes;
+      glist_t gametes;
       vdipvector_t diploids;
       /*!
 	\brief Can be used to track positions of segregating mutations.
@@ -95,7 +104,7 @@ namespace KTfwd {
       //! Construct with a list of deme sizes
       metapop( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
 							mutations(mlist_t()),
-							gametes(vglist_t()),
+							gametes(glist_t()),
 							diploids(vdipvector_t()),
 							mut_lookup(lookup_table_type()),
 							fixations(mvector()),
@@ -107,7 +116,7 @@ namespace KTfwd {
       //! Construct with array of deme sizes
       metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
 							    mutations(mlist_t()),
-							    gametes(vglist_t()),
+							    gametes(glist_t()),
 							    diploids(vdipvector_t()),
 							    mut_lookup(lookup_table_type()),
 							    fixations(mvector()),
