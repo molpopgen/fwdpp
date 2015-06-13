@@ -150,7 +150,7 @@ int main( int argc, char ** argv )
       //4*N b/c it needs to be fixed in the metapopulation
       remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4*N);
     }
-  
+
   std::pair< std::vector<std::pair<double,std::string> >,
 	     std::vector<std::pair<double,std::string> > > spop1 = ms_sample_separate(r,&pop.diploids[0],n);
 

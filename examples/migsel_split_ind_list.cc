@@ -198,7 +198,7 @@ int main( int argc, char ** argv )
 
   poptype pop({N}); //Initialize a SINGLE population in the metapop sim!
   //  std::cerr << typeid(*(pop.gametes.begin())).name() << '\n';
-  std::cerr << typeid(pop.gametes).name() << '\n';
+  //std::cerr << typeid(pop.gametes).name() << '\n';
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
   unsigned generation = 0;
   for( unsigned i = 0 ; i < ngens ; ++i,++generation )
