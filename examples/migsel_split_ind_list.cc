@@ -213,7 +213,7 @@ int main( int argc, char ** argv )
 					  std::bind(KTfwd::infsites(),r,&pop.mut_lookup,
 						    mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r);},[&s](){return s;},[&h](){return h;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						    &(*pop.gametes.begin()),
+						    &pop.gametes,
 						    littler,
 						    r,
 						    recmap),
