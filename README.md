@@ -113,46 +113,31 @@ You must have the following on your system:
 2. Ideally, one should have the [git](http://git-scm.com/book/en/Getting-Started-Installing-Git) command line tools installed.  These are likely already installed on many systems.
 
 ##Library dependencies
-fwdpp depends upon the following libraries:
 
-1.  [boost](http://www.boost.org).  Note: use of boost is optional, but is the default. 
-2.  [GSL](http://gnu.org/software/gsl)
-3.  [zlib](http://zlib.net)
-4.  [libsequence](http://github.com/molpopgen/libsequence).
+The minimal dependencies required to use the library to develop simulations are:
 
-The first three are  available as pre-built packages on most Linux distributions and via [homebrew-science](http://github.com/Homebrew/homebrew-science) on OS X .  The latter (libsequence) also depends on the first three, and must be built from source or via  [homebrew-science](http://github.com/Homebrew/homebrew-science) on OS X.
+1.  [GSL](http://gnu.org/software/gsl) 
+2.  [zlib](http://zlib.net) 
+3.  [libsequence](http://github.com/molpopgen/libsequence).
 
-### Why use boost?
+In order to compile the unit tests, you also need:
 
-C++ containers (vectors, lists, etc.) are parameterized by the type of data that they store and the method use to allocate memory.  Thus, when you declare:
+1.  [boost](http://www.boost.org).
 
-~~~{.cpp}
-#include <list>
-#include <diploid.hh>
-std::list< KTfwd::mutation > mlist;
-~~~
+In order to get good performance out of simulations you also need one or both of the following:
 
-you are really saying:
+1.  [boost](http://www.boost.org).
+2.  [Google's perftools](https://code.google.com/p/gperftools/)
 
-~~~{.cpp}
-#include <list>
-#include <diploid.hh>
-std::list< KTfwd::mutation, std::allocator<KTfwd::mutation> >
-~~~
+For OS X users, all of the above dependencies are available via [homebrew](http://brew.sh).
 
-Boost provides a memory pool allocator that can be used to greatly speed up simulations:
+### Why use boost and/or Google's perftools?
 
-~~~{.cpp}
-#include <list>
-#include <boost/pool/pool_alloc.hpp>
-#include <diploid.hh>
-//You can also use boost::container::list instead of std::list, etc.
-std::list< KTfwd::mutation,boost::pool_allocator<KTfwd::mutation> >
-~~~
+Forward simulations are constantly allocating relativel small objects whose lifetimes are random variables.  For example, mutations enter populations every generation and are typically rapidly lost.   We can improve the performance of a simulation using various techniques, including replacing the C++ standard library's allocator with a custom allocator and/or replacing the C library's malloc function with a faster replacement.
 
-The memory pool is more efficient than the standard allocator in the case where objects are constantly being allocated and deallocated, which is the case for forward simulations, where mutations are entering the population and often rapidly going extinct.
+The boost library provides fast_pool_allocator, which is a good replacement for the standard allocators.  Google's perftools provide the tcmalloc library, which provides a faster malloc.
 
-Technically, if your write your own vector/list classes that are parameterized in the same way as the STL classes, then you may also (attempt to) use those with __fwdpp__.  If such containers work, let me know.  If they are really fast, let me know.
+Empirically, on my linux systems, I have found that the fastest combination appears to be the standard C++ allocator combined with linking to tcmalloc.  See below for how to compile the examples in various ways, allowing you to benchmark performance on your own system.
 
 ##Obtaining the source code
 
@@ -209,17 +194,42 @@ make check
 
 Currently, the example programs will not get installed via "make install".   If you want them to be installed system-wide, copy the binaries manually to where you need them.
 
-##To compile examples and install library without boost
+##To compile examples and unit tests
 
+__Note:__ if you only wish to compile the example, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
+
+### Using boost containers and the standard C-library malloc
+
+This is the default:
+
+~~~{.sh}
+./configure
+make check
 ~~~
+
+### Using the standard C++ containers and the standard C library malloc
+
+~~~{.sh}
 ./configure --enable-standard=yes
 make check
-make install
 ~~~
 
-The option passed to the configure script will pass -DUSE_STANDARD_CONTAINERS to the C++ preprocessor.  This symbol means that the example programs will be built using containers from the C++ standard library rather than from the boost libraries.  Not using boost's pool_allocator can result in substantial performance loss in simulations with high mutation and/or recombination rates.
+### Using boost containers and Google's tcmalloc replacement for malloc
 
-Related to the above note, it is worth installing boost on your system.  Many of their libraries, especially program_options, will probably be worth using for simulations that you write.
+~~~{.sh}
+./configure --enable-tcmalloc=yes
+make check
+~~~
+
+
+### Using the standard C++ library containers and Google's tcmalloc replacement for malloc
+
+~~~{.sh}
+./configure --enable-standard=yes --enable-tcmalloc=yes
+make check
+~~~~
+
+Note:  none of these options affect any other programs that you write using fwdpp!  You'll have to manage that on your own for your projects' builds.
 
 ##If dependent libraries are in non-stanard locations.
 
