@@ -56,8 +56,8 @@ namespace KTfwd
 							   boost::container::vector<mtype>,
 							   boost::container::vector<unsigned>,
 							   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>,
-							   diploid_reader_t,
-							   diploid_writer_t
+							   diploid_writer_t,
+							   diploid_reader_t
 							   >;
 }
 #else
