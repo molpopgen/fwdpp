@@ -31,8 +31,12 @@ namespace KTfwd {
       decltype(ibeg->mutations.size()) nm1=ibeg->mutations.size()+ibeg->smutations.size(),
 	nm2=jbeg->mutations.size()+jbeg->smutations.size();
 #endif
-      for( const auto & dummy : pos )
+      //AUDIT/update--the last pos does not need the binary search...
+      //for( const auto & dummy : pos )
+      //Look at: merge: http://www.cplusplus.com/reference/algorithm/merge/
+      for( unsigned i = 0 ; i < pos.size()-1 ; ++i )
 	{
+	  double dummy = pos[i];
 	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
 						new_gamete2.mutations,new_gamete1.mutations,SWITCH,dummy);
 	  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,
@@ -42,6 +46,21 @@ namespace KTfwd {
 	  jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,
 						  new_gamete1.smutations,new_gamete2.smutations,SWITCH,dummy);
 	  SWITCH=!SWITCH;
+	}
+      //Cleanup if needed
+      if(SWITCH)
+	{
+	  std::copy(itr,itr_e,std::back_inserter(new_gamete2.mutations));
+	  std::copy(itr_s,itr_s_e,std::back_inserter(new_gamete2.smutations));
+	  std::copy(jtr,jtr_e,std::back_inserter(new_gamete1.mutations));
+	  std::copy(jtr_s,jtr_s_e,std::back_inserter(new_gamete1.smutations));
+	}
+      else
+	{
+	  std::copy(itr,itr_e,std::back_inserter(new_gamete1.mutations));
+	  std::copy(itr_s,itr_s_e,std::back_inserter(new_gamete1.smutations));
+	  std::copy(jtr,jtr_e,std::back_inserter(new_gamete2.mutations));
+	  std::copy(jtr_s,jtr_s_e,std::back_inserter(new_gamete2.smutations));
 	}
 #ifndef NDEBUG
       decltype(new_gamete1.mutations.size()) __nm1 = new_gamete1.mutations.size()+new_gamete1.smutations.size(),
