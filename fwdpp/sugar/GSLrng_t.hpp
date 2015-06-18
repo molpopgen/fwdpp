@@ -34,6 +34,7 @@ namespace KTfwd {
     //! Smart pointer wrapping the gsl_rng *
     sugar::gsl_rng_ptr_t r;
 
+    //! Typedef for RNG type, if needed
     using rngtype = T;
     
     //! Construct with a seed
