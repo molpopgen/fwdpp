@@ -8,6 +8,8 @@ This release make some tweaks that improve performance:
 * The mechanics of adding mutations and recombining gametes have been streamlined slightly.
 * A handful of cases where objects were copied instead of passed-by-reference were fixed.
 * Issue #17 fixed
+* Issue #14 fixed
+* Issue #16 fixed
 
 ## 0.3.1
 
