@@ -9,7 +9,6 @@
   3.  Iterating a population through its life cycle
   4.  Outputting a sample in "ms" format
 */
-
 #include <vector>
 #include <list>
 #include <Sequence/SimData.hpp>
@@ -87,6 +86,7 @@ int main(int argc, char ** argv)
 						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						 std::placeholders::_3,std::placeholders::_4,
 						 &pop.gametes,
 						 littler,
 						 r.get(),
