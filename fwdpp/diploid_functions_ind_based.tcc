@@ -105,11 +105,17 @@ namespace KTfwd
 	diploids->resize(N_next);
 	dptr = diploids->begin();
       }
-    unsigned NREC=0;
+    unsigned NREC=0,NRECI,NRECJ;
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
+
+    typename gamete_type::mutation_container neutral,selected;
+    neutral.reserve(100);
+    selected.reserve(100);
     for( unsigned i = 0 ; i < N_next ; ++i )
       {
+	neutral.clear();
+	selected.clear();
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
@@ -125,12 +131,19 @@ namespace KTfwd
 	p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
 	p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
 	p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
-	
-	NREC += rec_pol(p1g1,p1g2);
-	NREC += rec_pol(p2g1,p2g2);
-	
-	(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-	(dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+
+	if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
+	if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
+
+	NRECI = rec_pol(p1g1,p1g2,neutral,selected);
+	//Gotta clear in b/w uses...
+	neutral.clear();
+	selected.clear();
+	NRECJ = rec_pol(p2g1,p2g2,neutral,selected);
+	NREC+=(NRECI+NRECJ);
+
+	(dptr+i)->first = p1g1;
+	(dptr+i)->second = p2g1;
 	
 	(dptr+i)->first->n++;
 	assert( (dptr+i)->first->n > 0 );
@@ -151,6 +164,7 @@ namespace KTfwd
 	assert( (dptr+i)->second->n > 0 );
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
+    for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
 #endif
     decltype(gametes->begin()) temp;
     for( auto itr = gametes->begin() ; itr != gametes->end() ;  )

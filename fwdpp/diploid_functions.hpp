@@ -36,7 +36,9 @@ namespace KTfwd
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
-			      const recombination_map & mf);
+			      const recombination_map & mf,
+			      typename iterator_type::value_type::mutation_container & neutral,
+			      typename iterator_type::value_type::mutation_container & selected );
 
   /*!
     Overload for fixed xover positions.
@@ -65,7 +67,9 @@ namespace KTfwd
   unsigned recombine_gametes( const vector_type< double, vector_type_allocator > & pos,
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
-			      iterator_type & g2);
+			      iterator_type & g2,
+			      typename iterator_type::value_type::mutation_container & neutral,
+			      typename iterator_type::value_type::mutation_container & selected );
 
   //Multilocus models
 
