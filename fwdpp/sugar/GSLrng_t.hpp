@@ -29,16 +29,7 @@ namespace KTfwd {
   template<typename T>
   class GSLrng_t {
   private:
-    template<typename U=T>
-    sugar::gsl_rng_ptr_t setup(typename std::enable_if<std::is_same<U,GSL_RNG_TAUS2>::value,U>::type)
-    {
-      return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
-    }
-    template<typename U=T>
-    sugar::gsl_rng_ptr_t setup(typename std::enable_if<std::is_same<U,GSL_RNG_MT19937>::value,U>::type)
-    {
-      return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937));
-    }
+    sugar::gsl_rng_ptr_t setup( T );
   public:
     //! Smart pointer wrapping the gsl_rng *
     sugar::gsl_rng_ptr_t r;
@@ -49,15 +40,27 @@ namespace KTfwd {
     }
 
     //! Copy constructor
-    GSLrng_t( const GSLrng_t & __rng) : r(gsl_rng_clone(__rng.r.get()))
-    {
-    }
-
+    GSLrng_t( const GSLrng_t & ) = delete;
+    GSLrng_t( GSLrng_t & ) = delete;
+    GSLrng_t & operator=(GSLrng_t &) = delete;
+    
     //! Return underlying pointer
     gsl_rng * get() const {
       return r.get();
     }
   };
+
+  template<>
+  sugar::gsl_rng_ptr_t GSLrng_t<GSL_RNG_MT19937>::setup( GSL_RNG_MT19937 )
+  {
+    return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937));
+  }
+
+  template<>
+  sugar::gsl_rng_ptr_t GSLrng_t<GSL_RNG_TAUS2>::setup( GSL_RNG_TAUS2 )
+  {
+    return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
+  }
 }
 
 #endif
