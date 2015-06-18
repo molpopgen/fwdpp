@@ -51,8 +51,8 @@ GSLrng rng(101); //101 is the seed value
 This wrapper has the following properties:
 * It is constructed with an unsigned integer, which will be used as a seed
 * It is implemented in terms of a std::unique_ptr
-* It is copy-constructable via a call to gsl_rng_clone to create a new unique_ptr
-* It is implicitly convertible to a gsl_rng *, and thus may be passed to any function taking such a type as a parameter
+* It is not copyable
+* The underlying pointer is retrived via a call to get()
 * It frees the gsl_rng * upon destruction using KTfwd::sugar::gsl_rng_deleter
 
 The template parameters are of type KTfwd::sugar::GSL_RNG_TYPE_TAG;
