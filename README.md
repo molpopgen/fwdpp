@@ -139,7 +139,7 @@ The boost library provides fast_pool_allocator, which is a good replacement for 
 
 Empirically, on my linux systems, I have found that the fastest combination appears to be the standard C++ allocator combined with linking to tcmalloc.  See below for how to compile the examples in various ways, allowing you to benchmark performance on your own system.
 
-![See here](tcmalloc.pdf?raw=true "Performance using fwdpp 0.3.2 and various containers/allocators") for an example of how tcmalloc can improve performance.  Results are based on running the example program diploid_ind with N=1000, theta=rho=5000 for 10N generations.
+![See here](performance/tcmalloc.pdf?raw=true "Performance using fwdpp 0.3.2 and various containers/allocators") for an example of how tcmalloc can improve performance.  Results are based on running the example program diploid_ind with N=1000, theta=rho=5000 for 10N generations.
 
 ##Obtaining the source code
 
