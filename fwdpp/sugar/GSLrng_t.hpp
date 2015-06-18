@@ -29,7 +29,15 @@ namespace KTfwd {
   template<typename T>
   class GSLrng_t {
   private:
-    sugar::gsl_rng_ptr_t setup( T );
+    sugar::gsl_rng_ptr_t setup( GSL_RNG_MT19937 )
+    {
+      return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937));
+    }
+
+    sugar::gsl_rng_ptr_t setup( GSL_RNG_TAUS2 )
+    {
+      return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
+    }
   public:
     //! Smart pointer wrapping the gsl_rng *
     sugar::gsl_rng_ptr_t r;
@@ -52,18 +60,6 @@ namespace KTfwd {
       return r.get();
     }
   };
-
-  template<>
-  sugar::gsl_rng_ptr_t GSLrng_t<GSL_RNG_MT19937>::setup( GSL_RNG_MT19937 )
-  {
-    return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937));
-  }
-
-  template<>
-  sugar::gsl_rng_ptr_t GSLrng_t<GSL_RNG_TAUS2>::setup( GSL_RNG_TAUS2 )
-  {
-    return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
-  }
 }
 
 #endif
