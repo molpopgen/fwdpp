@@ -26,16 +26,10 @@ namespace KTfwd
     fwdpp_internal::recombine_gametes(pos,g1,g2,neutral,selected);
 
     typename iterator_type::value_type ng(0u,neutral,selected);
-    //IDEA: FUTURE: seems better to do a backwards search, right?
-    auto itr = std::find(gametes->begin(),gametes->end(),ng);
-    if(itr != gametes->end() )
-      {
-	g1 = itr;
-      }
-    else
-      {
-	g1 = gametes->emplace(gametes->end(),std::move(ng));
-      }
+    //NOTE: backwards searches have little effect on speed, apparently...
+    auto itr=std::find(gametes->begin(),gametes->end(),ng);
+    if(itr!=gametes->end())g1=itr;
+    else g1 = gametes->emplace(gametes->end(),std::move(ng));
     return pos.size()-1;
   }
 

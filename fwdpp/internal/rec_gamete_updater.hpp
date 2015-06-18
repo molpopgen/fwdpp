@@ -21,8 +21,12 @@ namespace KTfwd
 				       [](const typename itr_type::value_type & __mut,const double & __val) {
 					 return __mut->pos < __val;
 				       });
-      //IDEA: this can realloc, right?
-      std::copy(__first,__ub,std::back_inserter(muts));
+      /*
+	NOTE: the use of insert here
+	instead of std::copy(__first,__ub,std::back_inserter(muts));
+	Reduced peak RAM use on GCC 4.9.2/Ubuntu Linux.
+      */
+      muts.insert(muts.end(),__first,__ub);
       return __ub;
     }
   }
