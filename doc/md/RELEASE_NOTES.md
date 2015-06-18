@@ -1,5 +1,18 @@
 # FWDPP RELEASE NOTES
 
+##0.3.3
+
+* Crossing over has been streamlined.  Unfortunately, this changes the library API.  However, run times improve substantially.
+* The library internals now use different insertion methods during recombination.  We swtiched from copy(beg,end,back_inserter(x)) to x.insert(x.end(),beg,end), which results in less memory usage, and some run-time improvement for large simulations.
+
+TODO:
+Document new crossover
+Update policies tutorial
+
+TEST:
+insert at end and sort vs. current method for adding muts during mutation
+streamling crossing-over even further for single-region sims, based on finding "meiosis" that we can ignore/not go through the rigamarole for.
+
 ## 0.3.2
 
 This release make some tweaks that improve performance:
