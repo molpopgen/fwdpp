@@ -61,30 +61,30 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
   //Mutation model for 4 loci
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
-    std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
+    std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
   std::vector< std::function<unsigned(typename poptype::glist_t::iterator &,
 				      typename poptype::glist_t::iterator &)> > recmodels {
     //Locus 0: positions = uniform [0,1)
-    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng,[&rng](){ return gsl_rng_uniform(rng); }),
+    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng.get(),[&rng](){ return gsl_rng_uniform(rng.get()); }),
       //Locus 1: positions = uniform [1,2)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng,[&rng](){ return gsl_ran_flat(rng,1.,2.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),1.,2.); }),
       //Locus 2: positions = beta(1,10) from 2 to 3
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng,[&rng](){ return 2. + gsl_ran_beta(rng,1.,10.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng.get(),[&rng](){ return 2. + gsl_ran_beta(rng.get(),1.,10.); }),
       //Locus 2: positions = uniform [3,4)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng,[&rng](){ return gsl_ran_flat(rng,3.,4.); })
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),3.,4.); })
       };
 
   //Equal mutation and rec. rates per locus
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
   BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid( rng,
+      double wbar = KTfwd::sample_diploid( rng.get(),
 					   &pop.gametes,
 					   &pop.diploids,
 					   &pop.mutations,
@@ -194,30 +194,30 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_gzserialize_test )
   //Mutation model for 4 loci
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
-    std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
+    std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
   std::vector< std::function<unsigned(typename poptype::glist_t::iterator &,
 				      typename poptype::glist_t::iterator &)> > recmodels {
     //Locus 0: positions = uniform [0,1)
-    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng,[&rng](){ return gsl_rng_uniform(rng); }),
+    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng.get(),[&rng](){ return gsl_rng_uniform(rng.get()); }),
       //Locus 1: positions = uniform [1,2)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng,[&rng](){ return gsl_ran_flat(rng,1.,2.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),1.,2.); }),
       //Locus 2: positions = beta(1,10) from 2 to 3
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng,[&rng](){ return 2. + gsl_ran_beta(rng,1.,10.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng.get(),[&rng](){ return 2. + gsl_ran_beta(rng.get(),1.,10.); }),
       //Locus 2: positions = uniform [3,4)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng,[&rng](){ return gsl_ran_flat(rng,3.,4.); })
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),3.,4.); })
       };
 
   //Equal mutation and rec. rates per locus
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_gzserialize_test )
   BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid( rng,
+      double wbar = KTfwd::sample_diploid( rng.get(),
 					   &pop.gametes,
 					   &pop.diploids,
 					   &pop.mutations,
@@ -329,30 +329,30 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct )
   //Mutation model for 4 loci
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
-    std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
+    std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
   std::vector< std::function<unsigned(typename poptype::glist_t::iterator &,
 				      typename poptype::glist_t::iterator &)> > recmodels {
     //Locus 0: positions = uniform [0,1)
-    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng,[&rng](){ return gsl_rng_uniform(rng); }),
+    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng.get(),[&rng](){ return gsl_rng_uniform(rng.get()); }),
       //Locus 1: positions = uniform [1,2)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng,[&rng](){ return gsl_ran_flat(rng,1.,2.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),1.,2.); }),
       //Locus 2: positions = beta(1,10) from 2 to 3
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng,[&rng](){ return 2. + gsl_ran_beta(rng,1.,10.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng.get(),[&rng](){ return 2. + gsl_ran_beta(rng.get(),1.,10.); }),
       //Locus 2: positions = uniform [3,4)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng,[&rng](){ return gsl_ran_flat(rng,3.,4.); })
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),3.,4.); })
       };
 
   //Equal mutation and rec. rates per locus
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct )
   BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid( rng,
+      double wbar = KTfwd::sample_diploid( rng.get(),
 					   &pop.gametes,
 					   &pop.diploids,
 					   &pop.mutations,
@@ -460,30 +460,30 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assigment_operator )
   //Mutation model for 4 loci
   std::vector< std::function<KTfwd::popgenmut(typename poptype::mlist_t *)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
-    std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-	      0.005,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}) ,
+    std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+	      0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}) ,
       //Locus 1: positions Uniform [1,2)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,1.,2.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),1.,2.);},[](){return 0.;},[](){return 0.;}),
       //Locus 2: positions Uniform [2,3)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,2.,3.);},[](){return 0.;},[](){return 0.;}),
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),2.,3.);},[](){return 0.;},[](){return 0.;}),
       //Locus 3: positions Uniform [3,4)
-      std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,&generation,
-      		0.005,0.,[&rng](){return gsl_ran_flat(rng,3.,4.);},[](){return 0.;},[](){return 0.;})
+      std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,&generation,
+      		0.005,0.,[&rng](){return gsl_ran_flat(rng.get(),3.,4.);},[](){return 0.;},[](){return 0.;})
   };
   
   //Within-locus recombination models for 4 loci
   std::vector< std::function<unsigned(typename poptype::glist_t::iterator &,
 				      typename poptype::glist_t::iterator &)> > recmodels {
     //Locus 0: positions = uniform [0,1)
-    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng,[&rng](){ return gsl_rng_uniform(rng); }),
+    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],0.005,rng.get(),[&rng](){ return gsl_rng_uniform(rng.get()); }),
       //Locus 1: positions = uniform [1,2)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng,[&rng](){ return gsl_ran_flat(rng,1.,2.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),1.,2.); }),
       //Locus 2: positions = beta(1,10) from 2 to 3
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng,[&rng](){ return 2. + gsl_ran_beta(rng,1.,10.); }),
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[2],0.005,rng.get(),[&rng](){ return 2. + gsl_ran_beta(rng.get(),1.,10.); }),
       //Locus 2: positions = uniform [3,4)
-      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng,[&rng](){ return gsl_ran_flat(rng,3.,4.); })
+      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[3],0.005,rng.get(),[&rng](){ return gsl_ran_flat(rng.get(),3.,4.); })
       };
 
   //Equal mutation within and rec. rates b/w loci
@@ -491,7 +491,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assigment_operator )
   BOOST_REQUIRE_EQUAL(mu.size(),4);
   for( ; generation < 10 ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid( rng,
+      double wbar = KTfwd::sample_diploid( rng.get(),
 					   &pop.gametes,
 					   &pop.diploids,
 					   &pop.mutations,

@@ -52,8 +52,11 @@ namespace KTfwd {
     GSLrng_t( const GSLrng_t & __rng) : r(gsl_rng_clone(__rng.r.get()))
     {
     }
-    //!Allow explicit conversion to gsl_rng *
-    operator gsl_rng *() const { return r.get(); }
+
+    //! Return underlying pointer
+    gsl_rng * get() const {
+      return r.get();
+    }
   };
 }
 

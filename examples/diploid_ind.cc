@@ -59,7 +59,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
   while(nreps--)
     {
@@ -73,7 +73,7 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
-      	  wbar = KTfwd::sample_diploid(r,
+      	  wbar = KTfwd::sample_diploid(r.get(),
       				       &pop.gametes,  //non-const pointer to gametes
       				       &pop.diploids, //non-const pointer to diploids
       				       &pop.mutations, //non-const pointer to mutations
@@ -83,14 +83,14 @@ int main(int argc, char ** argv)
       					 The mutation model (KTfwd::infsites) will be applied by
 					 sample_diploid in order to add mutations to gametes each generation.
       				       */
-				       std::bind(KTfwd::infsites(),r,&pop.mut_lookup,generation,
-						 mu,0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}),
+				       std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,generation,
+						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						   &pop.gametes,
-      						   littler,
-      						   r,
-      						   recmap),
+						 &pop.gametes,
+						 littler,
+						 r.get(),
+						 recmap),
 				       /*
 					 Policy to insert new mutations at the end of the mutations list
 				       */
@@ -143,7 +143,7 @@ int main(int argc, char ** argv)
 	}
       Sequence::SimData sdata;
 
-      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r,&pop.diploids,samplesize1,true);
+      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
 
       if(!mslike.empty())
 	{

@@ -84,7 +84,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   //recombination map is uniform[0,1)
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
   while(nreps--)
     {
@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
       for( unsigned generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
-      	  double wbar = KTfwd::sample_diploid(r,
+      	  double wbar = KTfwd::sample_diploid(r.get(),
 					      &pop.gametes,  //non-const pointer to gametes
 					      &pop.diploids, //non-const pointer to diploids
 					      &pop.mutations, //non-const pointer to mutations
@@ -107,13 +107,13 @@ int main(int argc, char ** argv)
 						The _1 is a placeholder for a non-const reference to a gamete (see defn'
 						of HOChap above).
 					      */
-					      std::bind(HOChap(),std::placeholders::_1,r,&pop.mut_lookup,sigmu),
+					      std::bind(HOChap(),std::placeholders::_1,r.get(),&pop.mut_lookup,sigmu),
 					      // mmodel,
 					      //The recombination policy includes the uniform crossover rate
 					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 							&pop.gametes,
 							littler,
-							r,
+							r.get(),
 							recmap),
 					      /*
 						Policy to insert new mutations at the end of the mutations list

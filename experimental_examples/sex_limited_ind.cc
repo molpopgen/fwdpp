@@ -266,7 +266,7 @@ int main(int argc, char ** argv)
   const unsigned seed = atoi(argv[argument++]);
 
   GSLrng rng(seed);
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   const double mu_total = mu_neutral+mu_male+mu_female;
   sexSpecificRules rules;
   for( unsigned rep = 0 ; rep < nreps ; ++rep )
@@ -275,27 +275,27 @@ int main(int argc, char ** argv)
       //Assign "sex"
       for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
 	{
-	  dip->sex = (gsl_rng_uniform(rng) <= 0.5); //false = male, true = female.
+	  dip->sex = (gsl_rng_uniform(rng.get()) <= 0.5); //false = male, true = female.
 	}
       for( unsigned generation = 0 ; generation < ngens ; ++generation )
 	{
 	  //double wbar = KTfwd::sample_diploid(rng,
-	  double wbar = KTfwd::experimental::sample_diploid(rng,
+	  double wbar = KTfwd::experimental::sample_diploid(rng.get(),
 							    &pop.gametes,
 							    &pop.diploids,
 							    &pop.mutations,
 							    N,
 							    mu_total,
-							    std::bind(sex_specific_mut_model,rng.r.get(),std::placeholders::_1,
+							    std::bind(sex_specific_mut_model,rng.get(),std::placeholders::_1,
 								      &pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
 							    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
 								      &pop.gametes,
 								      recrate, 
-								      rng,
+								      rng.get(),
 								      recmap),
 							    std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-							    std::bind(sex_specific_fitness,std::placeholders::_1,rng,sigmaE),
+							    std::bind(sex_specific_fitness,std::placeholders::_1,rng.get(),sigmaE),
 							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N),
 							    0., //Gotta pass the "selfing" rate, even though it makes no sense for this model.  API tradeoff for flexibility...
 							    rules
@@ -306,7 +306,7 @@ int main(int argc, char ** argv)
       
       //Take a sample of size samplesize1.  Two data blocks are returned, one for neutral mutations, and one for selected
       std::pair< std::vector< std::pair<double,std::string> >,
-		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(rng,&pop.diploids,samplesize1);
+		 std::vector< std::pair<double,std::string> > > sample = KTfwd::ms_sample_separate(rng.get(),&pop.diploids,samplesize1);
       
       neutral_muts.assign( sample.first.begin(), sample.first.end() );
       selected_muts.assign( sample.second.begin(), sample.second.end() );

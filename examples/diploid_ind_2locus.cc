@@ -67,8 +67,8 @@ int main(int argc, char ** argv)
 
   unsigned twoN = 2*N;
 
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
-    recmap2 = std::bind(gsl_ran_flat,r,1.,2.);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get()),
+    recmap2 = std::bind(gsl_ran_flat,r.get(),1.,2.);
 
   while(nreps--)
     {
@@ -77,22 +77,22 @@ int main(int argc, char ** argv)
       double wbar;
 
       //within-locus recombination policies -- one per locus
-      auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],littler,r,recmap);
-      auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],littler,r,recmap2);
+      auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[0],littler,r.get(),recmap);
+      auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&pop.gametes[1],littler,r.get(),recmap2);
       std::vector< decltype(recpol0) > recpols{ recpol0 , recpol1 };
 
       std::vector< std::function<mtype(multiloc_t::mlist_t *)> > mmodels {
 	//Locus 0: positions Uniform [0,1)
-	std::bind(KTfwd::infsites(),r,&pop.mut_lookup,&generation,
-		  mu[0],0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}) ,
+	std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,&generation,
+		  mu[0],0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}) ,
 	  //Locus 1: positions Uniform [1,2)
-	  std::bind(KTfwd::infsites(),r,&pop.mut_lookup,&generation,
-		    mu[1],0.,[&r](){return gsl_ran_flat(r,1.,2.);},[](){return 0.;},[](){return 0.;})
+	  std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,&generation,
+		    mu[1],0.,[&r](){return gsl_ran_flat(r.get(),1.,2.);},[](){return 0.;},[](){return 0.;})
 	  };
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
-	  KTfwd::sample_diploid( r,
+	  KTfwd::sample_diploid( r.get(),
 	  			 &pop.gametes,
 	  			 &pop.diploids,
 	  			 &pop.mutations,
@@ -113,7 +113,7 @@ int main(int argc, char ** argv)
       //For giggles, make sure that the pop. is copy-constructible...
       multiloc_serialized_t pop2(pop);
       //Take a sample and print it to screen.
-      auto x = KTfwd::ms_sample(r,&pop.diploids,samplesize1,true);
+      auto x = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
       Sequence::SimData l1(x[0].begin(),x[0].end()),
 	l2(x[1].begin(),x[1].end());
       std::cout << l1 << '\n' << l2 << '\n';	

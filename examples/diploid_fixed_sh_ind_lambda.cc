@@ -65,7 +65,7 @@ singlepop_t pop(N);
 	    }
 #endif
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
-	  wbar = KTfwd::sample_diploid(r,
+	  wbar = KTfwd::sample_diploid(r.get(),
 				       &pop.gametes,
 				       &pop.diploids,
 				       &pop.mutations,
@@ -75,13 +75,13 @@ singlepop_t pop(N);
       					 The mutation model (KTfwd::infsites) will be applied by
 					 sample_diploid in order to add mutations to gametes each generation.
       				       */
-				       std::bind(KTfwd::infsites(),r,&pop.mut_lookup,
-						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r);},[&s](){return s;},[&h](){return h;}),
+				       std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,
+						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
 				       //The recombination policy must take two non-const iterators from the glist
 					 [&](singlepop_t::glist_t::iterator & g1,
-					       singlepop_t::glist_t::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&pop.gametes,g1,g2,
-														      //This nested lambda is our genetic map: uniform on interval (0,1]
-															[&](){return gsl_rng_uniform(r);}); },
+					     singlepop_t::glist_t::iterator & g2) { return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,
+														    //This nested lambda is our genetic map: uniform on interval (0,1]
+														    [&](){return gsl_rng_uniform(r.get());}); },
 				       //The mutation insertion policy takes a const singlepop_t::mutation_t and a non-const pointer to an singlepop_t::mlist_t
 				       [](const singlepop_t::mutation_t & m,singlepop_t::mlist_t * __mutations) { return __mutations->insert(__mutations->end(),m); },
 				       //The gamete insertion policy takes a const singlepop_t::gamete_t and a non-const pointer to a glist
@@ -110,7 +110,7 @@ singlepop_t pop(N);
 
       //Take a sample of size samplesize1.  Two data blocks are returned, one for neutral mutations, and one for selected
       std::pair< std::vector< std::pair<double,std::string> >,
-	std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r,&pop.diploids,samplesize1);
+		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r.get(),&pop.diploids,samplesize1);
 
       neutral_muts.assign( sample.first.begin(), sample.first.end() );
       selected_muts.assign( sample.second.begin(), sample.second.end() );

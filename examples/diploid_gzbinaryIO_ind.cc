@@ -58,23 +58,23 @@ int main(int argc, char ** argv)
 
 
   //recombination map is uniform[0,1)  
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
   for( generation = 0; generation < ngens; ++generation )
     {
-      wbar = KTfwd::sample_diploid(r,
+      wbar = KTfwd::sample_diploid(r.get(),
 				   &pop.gametes, 
 				   &pop.diploids,
 				   &pop.mutations,
 				   N,     
 				   mu,   
-				   std::bind(KTfwd::infsites(),r,&pop.mut_lookup,generation,
-						 mu,0.,[&r](){return gsl_rng_uniform(r);},[](){return 0.;},[](){return 0.;}),
+				   std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,generation,
+					     mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-					       &pop.gametes,
-					       littler,
-					       r,
-					       recmap),
+					     &pop.gametes,
+					     littler,
+					     r.get(),
+					     recmap),
 				   std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
