@@ -56,7 +56,7 @@ As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of
 
 ##Citation
 
-The fwdpp manuscript has been accepted for publication in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
+The fwdpp manuscript has published in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
 
 ~~~
 @Article{,
