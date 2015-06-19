@@ -22,6 +22,7 @@
 #include <iterator>
 #include <functional>
 #include <list>
+#include <iostream>
 
 using mut = KTfwd::mutation;
 using gtype = KTfwd::gamete;
@@ -82,29 +83,27 @@ BOOST_AUTO_TEST_CASE( simple_test_1 )
   BOOST_CHECK_EQUAL( g2.mutations.size(), 1 );
 
   //These are our containers for the recombinants
-  gtype ng1(1),ng2(1);
-  
+
+  //0.3.3 containers tha we need
+  gtype::mutation_container neutral,selected;
   KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
 					    g1_itr, g2_itr,
-					    ng1,ng2 );
-
+					    neutral,selected);
   /*
-    Now, ng1 must have both mutations,
-    and ng2 must be empty
+    Now, neutral should have both mutations
   */
-  BOOST_CHECK( std::find_if( ng1.mutations.begin(),
-			     ng1.mutations.end(),
+  BOOST_CHECK( std::find_if( neutral.begin(),
+			     neutral.end(),
 			     []( std::list<mut>::iterator __m ) {
 			       return __m->pos == 0.9;
-			     } ) != ng1.mutations.end() );
+			     } ) != neutral.end() );
 
-  BOOST_CHECK( std::find_if( ng1.mutations.begin(),
-			     ng1.mutations.end(),
+  BOOST_CHECK( std::find_if( neutral.begin(),
+			     neutral.end(),
 			     []( std::list<mut>::iterator __m ) {
 			       return __m->pos == 0.1;
-			     } ) != ng1.mutations.end() );
+			     } ) != neutral.end() );
 
-  BOOST_CHECK( ng2.mutations.empty() );
 }
 
 BOOST_AUTO_TEST_CASE( three_point_cross_1 )
@@ -133,30 +132,32 @@ BOOST_AUTO_TEST_CASE( three_point_cross_1 )
   auto g1_itr = gametes.begin(),
     g2_itr = g1_itr+1;
 
-  gtype ng1(1),ng2(1);
-  
+  //gtype ng1(1),ng2(1);
+
+  //Needed as of 0.3.3
+  gtype::mutation_container neutral,selected;
   KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
 					    g1_itr, g2_itr,
-					    ng1,ng2 );
+					    neutral,selected );
 
 
   /*
-    This was a double x-over.  ng1 must have a mutation at 0.1
-    and ng2 must have the mutations at 0.5 and 0.9
+    This was a double x-over.
+    Neutral must therefore only contain 0.1
   */
-  BOOST_CHECK( std::find_if( ng1.mutations.begin(),
-			     ng1.mutations.end(),
+  BOOST_CHECK( std::find_if( neutral.begin(),
+			     neutral.end(),
 			     []( std::list<mut>::iterator __m ) {
 			       return __m->pos == 0.1;
-			     } ) != ng1.mutations.end() );
+			     } ) != neutral.end());
 
   for( auto d : {0.5,0.9} )
     {
-      BOOST_CHECK( std::find_if( ng2.mutations.begin(),
-				 ng2.mutations.end(),
+      BOOST_CHECK( std::find_if( neutral.begin(),
+				 neutral.end(),
 				 [d]( std::list<mut>::iterator __m ) {
 				   return __m->pos == d;
-				 } ) != ng2.mutations.end() );
+				 } ) == neutral.end() );
 
     }
 }

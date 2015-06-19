@@ -41,6 +41,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 					  std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,generation,
 						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						    std::ref(pop.neutral),std::ref(pop.selected),
 						    &pop.gametes,
 						    0., //no rec
 						    rng.get(),
@@ -123,6 +124,7 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 					  std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,generation,
 						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						    std::ref(pop.neutral),std::ref(pop.selected),
 						    &pop.gametes,
 						    0., //no rec
 						    rng.get(),
@@ -205,6 +207,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 					  std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,generation,
 						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						    std::ref(pop.neutral),std::ref(pop.selected),
 						    &pop.gametes,
 						    0., //no rec
 						    rng.get(),
