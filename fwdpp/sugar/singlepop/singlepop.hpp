@@ -65,20 +65,23 @@ namespace KTfwd {
       glist gametes;
       dipvector_t diploids;
 
-        /*!
-	  Vectors for holding copies of pointers to mutations during recombination.
-	  The requirement to declare these was introduced in fwdpp 0.3.3.
-	  
-	  In previous versions of the library, vectors like this had to be allocated
-	  for every crossover event for every generation.  The result was an excessive 
-	  number of requests for memory allocation.
-	  
-	  Now, we create the vector once per simulation.  Further, we will reserve memory
-	  here, to minimize reallocs, etc., within fwdpp.
-	  
-	  Internally, fwdpp's job is to make sure that this vector is appropriately 
-	  and efficiently cleared, but only when needed.
-	*/
+      /*!
+	Vectors for holding copies of pointers to mutations during recombination.
+	The requirement to declare these was introduced in fwdpp 0.3.3.
+	
+	In previous versions of the library, vectors like this had to be allocated
+	for every crossover event for every generation.  The result was an excessive 
+	number of requests for memory allocation.
+	
+	Now, we create the vector once per replicate.  Further, we will reserve memory
+	here, to minimize reallocs, etc., within fwdpp.
+	
+	Internally, fwdpp's job is to make sure that this vector is appropriately 
+	and efficiently cleared, but only when needed.
+
+	\note: if not using the sugar features, you can create these vectors
+	only once per simulation...
+      */
       typename gamete_t::mutation_container neutral,selected;
 
       /*!
@@ -200,6 +203,26 @@ namespace KTfwd {
       mlist mutations;
       glist gametes;
       dipvector diploids;
+
+      /*!
+	Vectors for holding copies of pointers to mutations during recombination.
+	The requirement to declare these was introduced in fwdpp 0.3.3.
+	
+	In previous versions of the library, vectors like this had to be allocated
+	for every crossover event for every generation.  The result was an excessive 
+	number of requests for memory allocation.
+	
+	Now, we create the vector once per replicate.  Further, we will reserve memory
+	here, to minimize reallocs, etc., within fwdpp.
+	
+	Internally, fwdpp's job is to make sure that this vector is appropriately 
+	and efficiently cleared, but only when needed.
+	
+	\note: if not using the sugar features, you can create these vectors
+	only once per simulation...
+      */
+      typename gamete_t::mutation_container neutral,selected;
+      
       /*!
 	\brief Can be used to track positions of segregating mutations.
 	\note Must have interface like std::map or std::unordered_set
@@ -213,30 +236,37 @@ namespace KTfwd {
       ftvector fixation_times;
       
       //! Constructor
-      singlepop_serialized( const unsigned & popsize ) : N(popsize),
-							 //No muts in the population
-							 mutations(mlist()),
-							 //The population contains a single gamete in 2N copies
-							 gametes(glist(1,gamete_t(2*popsize))),
-							 //All N diploids contain the only gamete in the pop
-							 diploids(dipvector_t(popsize,diploid_t(gametes.begin(),gametes.begin()))), 
-							 mut_lookup(lookup_table_type()),
-							 fixations(mvector()),
-							 fixation_times(ftvector())
+      singlepop_serialized( const unsigned & popsize,
+			    typename gamete_t::mutation_container::size_type reserve_size = 100) : N(popsize),
+												   //No muts in the population
+												   mutations(mlist()),
+												   //The population contains a single gamete in 2N copies
+												   gametes(glist(1,gamete_t(2*popsize))),
+												   //All N diploids contain the only gamete in the pop
+												   diploids(dipvector_t(popsize,diploid_t(gametes.begin(),gametes.begin()))),
+												   neutral(typename gamete_t::mutation_container()),
+												   selected(typename gamete_t::mutation_container()),
+												   mut_lookup(lookup_table_type()),
+												   fixations(mvector()),
+												   fixation_times(ftvector())
       {
+	neutral.reserve(reserve_size);
+	selected.reserve(reserve_size);
       }
-
+    
       //! Copy constructor
-      singlepop_serialized( const singlepop_serialized & pop) : N(0u),
-								//No muts in the population
-								mutations(mlist()),
-								//The population contains a single gamete in 2N copies
-								gametes(glist(1,gamete_t(1))),
-								//All N diploids contain the only gamete in the pop
-								diploids(dipvector_t()),
-								mut_lookup(lookup_table_type()),
-								fixations(mvector()),
-								fixation_times(ftvector())
+      singlepop_serialized(const singlepop_serialized & pop) : N(0u),
+							       //No muts in the population
+							       mutations(mlist()),
+							       //The population contains a single gamete in 2N copies
+							       gametes(glist(1,gamete_t(1))),
+							       //All N diploids contain the only gamete in the pop
+							       diploids(dipvector_t()),
+							       neutral(pop.neutral),
+							       selected(pop.selected),
+							       mut_lookup(lookup_table_type()),
+							       fixations(mvector()),
+							       fixation_times(ftvector())
       {
 	static_assert( std::is_same<mutation_t,typename mreader_t::result_type>::value,
 		       "Mutation type must be same for class and mreader_t" );

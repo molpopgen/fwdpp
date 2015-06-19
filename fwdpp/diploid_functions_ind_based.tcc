@@ -357,8 +357,8 @@ namespace KTfwd
 		      p2g1 = (pptr2+p2)->first;
 		      p2g2 = (pptr2+p2)->second;
 		      
-		      NREC += rec_pol(p1g1,p1g2,metapop);
-		      NREC += rec_pol(p2g1,p2g2,metapop);
+		      NREC += rec_pol(p1g1,p1g2);
+		      NREC += rec_pol(p2g1,p2g2);
 
 		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 		      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;

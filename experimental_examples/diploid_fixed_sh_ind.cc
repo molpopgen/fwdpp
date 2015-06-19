@@ -81,6 +81,7 @@ int main(int argc, char ** argv)
 						     std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,
 							       mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
 						     std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+							       std::ref(pop.neutral),std::ref(pop.selected),
 							       &pop.gametes,
 							       littler,
 							       r.get(),

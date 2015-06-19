@@ -77,6 +77,26 @@ namespace KTfwd {
       mlist_t mutations;
       glist_t gametes;
       vdipvector_t diploids;
+
+      /*!
+	Vectors for holding copies of pointers to mutations during recombination.
+	The requirement to declare these was introduced in fwdpp 0.3.3.
+	
+	In previous versions of the library, vectors like this had to be allocated
+	for every crossover event for every generation.  The result was an excessive 
+	number of requests for memory allocation.
+	
+	Now, we create the vector once per replicate.  Further, we will reserve memory
+	here, to minimize reallocs, etc., within fwdpp.
+	
+	Internally, fwdpp's job is to make sure that this vector is appropriately 
+	and efficiently cleared, but only when needed.
+
+	\note: if not using the sugar features, you can create these vectors
+	only once per simulation...
+      */
+      typename gamete_t::mutation_container neutral,selected;
+      
       /*!
 	\brief Can be used to track positions of segregating mutations.
 	\note Must have interface like std::map or std::unordered_set
@@ -90,28 +110,40 @@ namespace KTfwd {
       ftvector fixation_times;
       
       //! Construct with a list of deme sizes
-      metapop( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
-							mutations(mlist_t()),
-							gametes(glist_t()),
-							diploids(vdipvector_t()),
-							mut_lookup(lookup_table_type()),
-							fixations(mvector()),
-							fixation_times(ftvector())
+      metapop( std::initializer_list<unsigned> __Ns,
+	       typename gamete_t::mutation_container::size_type reserve_size = 100) :
+	Ns(__Ns),
+	mutations(mlist_t()),
+	gametes(glist_t()),
+	diploids(vdipvector_t()),
+	neutral(typename gamete_t::mutation_container()),
+	selected(typename gamete_t::mutation_container()),
+	mut_lookup(lookup_table_type()),
+	fixations(mvector()),
+	fixation_times(ftvector())
       {
 	init_vectors();
+	neutral.reserve(reserve_size);
+	selected.reserve(reserve_size);
       }
 
       //! Construct with array of deme sizes
-      metapop(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
-							    mutations(mlist_t()),
-							    gametes(glist_t()),
-							    diploids(vdipvector_t()),
-							    mut_lookup(lookup_table_type()),
-							    fixations(mvector()),
-							    fixation_times(ftvector())
+      metapop(const unsigned * __Ns, const size_t num_Ns,
+	      typename gamete_t::mutation_container::size_type reserve_size = 100) :
+	Ns(std::vector<unsigned>(__Ns,__Ns+num_Ns)),
+	mutations(mlist_t()),
+	gametes(glist_t()),
+	diploids(vdipvector_t()),
+	neutral(typename gamete_t::mutation_container()),
+	selected(typename gamete_t::mutation_container()),
+	mut_lookup(lookup_table_type()),
+	fixations(mvector()),
+	fixation_times(ftvector())
       {
-	Ns.assign(__Ns,__Ns+num_Ns);
+	//Ns.assign(__Ns,__Ns+num_Ns);
 	init_vectors();
+	neutral.reserve(reserve_size);
+	selected.reserve(reserve_size);
       }
 
       //! Move constructor
@@ -215,6 +247,26 @@ namespace KTfwd {
       mlist_t mutations;
       glist_t gametes;
       vdipvector_t diploids;
+
+      /*!
+	Vectors for holding copies of pointers to mutations during recombination.
+	The requirement to declare these was introduced in fwdpp 0.3.3.
+	
+	In previous versions of the library, vectors like this had to be allocated
+	for every crossover event for every generation.  The result was an excessive 
+	number of requests for memory allocation.
+	
+	Now, we create the vector once per replicate.  Further, we will reserve memory
+	here, to minimize reallocs, etc., within fwdpp.
+	
+	Internally, fwdpp's job is to make sure that this vector is appropriately 
+	and efficiently cleared, but only when needed.
+
+	\note: if not using the sugar features, you can create these vectors
+	only once per simulation...
+      */
+      typename gamete_t::mutation_container neutral,selected;
+      
       /*!
 	\brief Can be used to track positions of segregating mutations.
 	\note Must have interface like std::map or std::unordered_set
@@ -228,27 +280,38 @@ namespace KTfwd {
       ftvector fixation_times;
       
       //! Construct with a list of population sizes
-      metapop_serialized( std::initializer_list<unsigned> __Ns ) : Ns(__Ns),
-								   mutations(mlist_t()),
-								   gametes(glist_t()),
-								   diploids(vdipvector_t()),
-								   mut_lookup(lookup_table_type()),
-								   fixations(mvector()),
-								   fixation_times(ftvector())
+      metapop_serialized( std::initializer_list<unsigned> __Ns,
+			  typename gamete_t::mutation_container::size_type reserve_size = 100) : Ns(__Ns),
+												 mutations(mlist_t()),
+												 gametes(glist_t()),
+												 diploids(vdipvector_t()),
+												 neutral(typename gamete_t::mutation_container()),
+												 selected(typename gamete_t::mutation_container()),
+												 mut_lookup(lookup_table_type()),
+												 fixations(mvector()),
+												 fixation_times(ftvector())
       {
 	init_vectors();
+	neutral.reserve(reserve_size);
+	selected.reserve(reserve_size);
       }
 
-      metapop_serialized(const unsigned * __Ns, const size_t num_Ns) : Ns(std::vector<unsigned>()),
-								       mutations(mlist_t()),
-								       gametes(glist_t()),
-								       diploids(vdipvector_t()),
-								       mut_lookup(lookup_table_type()),
-								       fixations(mvector()),
-								       fixation_times(ftvector())
+      metapop_serialized(const unsigned * __Ns, const size_t num_Ns,
+			 typename gamete_t::mutation_container::size_type reserve_size = 100) :
+	Ns(std::vector<unsigned>(__Ns,__Ns+num_Ns)),
+	mutations(mlist_t()),
+	gametes(glist_t()),
+	diploids(vdipvector_t()),
+	neutral(typename gamete_t::mutation_container()),
+	selected(typename gamete_t::mutation_container()),
+	mut_lookup(lookup_table_type()),
+	fixations(mvector()),
+	fixation_times(ftvector())
       {
-	Ns.assign(__Ns,__Ns+num_Ns);
+	//	Ns.assign(__Ns,__Ns+num_Ns);
 	init_vectors();
+	neutral.reserve(reserve_size);
+	selected.reserve(reserve_size);
       }
 
       //! Move constructor

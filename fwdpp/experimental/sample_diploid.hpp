@@ -152,12 +152,16 @@ namespace KTfwd {
 	  p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
 	  p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
 	  p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
-	
+
+	  //0.3.3 change:
+	  if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
+	  if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
+	  
 	  NREC += rec_pol(p1g1,p1g2);
 	  NREC += rec_pol(p2g1,p2g2);
 	
-	  (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-	  (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+	  // (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+	  // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 	
 	  (dptr+i)->first->n++;
 	  assert( (dptr+i)->first->n > 0 );

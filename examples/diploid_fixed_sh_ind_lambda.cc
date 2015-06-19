@@ -80,6 +80,7 @@ singlepop_t pop(N);
 				       //The recombination policy must take two non-const iterators from the glist
 					 [&](singlepop_t::glist_t::iterator & g1,
 					     singlepop_t::glist_t::iterator & g2) { return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,
+														    std::ref(pop.neutral),std::ref(pop.selected),
 														    //This nested lambda is our genetic map: uniform on interval (0,1]
 														    [&](){return gsl_rng_uniform(r.get());}); },
 				       //The mutation insertion policy takes a const singlepop_t::mutation_t and a non-const pointer to an singlepop_t::mlist_t

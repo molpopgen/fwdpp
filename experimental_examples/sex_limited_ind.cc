@@ -289,6 +289,7 @@ int main(int argc, char ** argv)
 							    std::bind(sex_specific_mut_model,rng.get(),std::placeholders::_1,
 								      &pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
 							    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+								      std::ref(pop.neutral),std::ref(pop.selected),
 								      &pop.gametes,
 								      recrate, 
 								      rng.get(),

@@ -4,6 +4,7 @@
 
 * Crossing over has been streamlined.  Unfortunately, this changes the library API.  However, run times improve substantially.
 * The library internals now use different insertion methods during recombination.  We swtiched from copy(beg,end,back_inserter(x)) to x.insert(x.end(),beg,end), which results in less memory usage, and some run-time improvement for large simulations.
+* API change: the simplification of metapopulation containers in 0.3.2 means that we can make the recombination policies required for such simulations the same as for single-deme simulations.
 
 TODO:
 Document new crossover
