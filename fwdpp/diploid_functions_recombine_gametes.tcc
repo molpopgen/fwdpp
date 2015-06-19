@@ -17,12 +17,15 @@ namespace KTfwd
 			      iterator_type & g2,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected )
-  {
+  {    
     assert( g1 != gametes->end() );
     assert( g2 != gametes->end() );
     assert( std::is_sorted(pos.begin(),pos.end()) );
     assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
 
+    //We defer clearing all the way to this point
+    neutral.clear();
+    selected.clear();
     fwdpp_internal::recombine_gametes(pos,g1,g2,neutral,selected);
 
     typename iterator_type::value_type ng(0u,neutral,selected);

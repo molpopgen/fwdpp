@@ -109,13 +109,8 @@ namespace KTfwd
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
-    typename gamete_type::mutation_container neutral,selected;
-    neutral.reserve(100);
-    selected.reserve(100);
     for( unsigned i = 0 ; i < N_next ; ++i )
       {
-	neutral.clear();
-	selected.clear();
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
@@ -135,11 +130,8 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 
-	NRECI = rec_pol(p1g1,p1g2,neutral,selected);
-	//Gotta clear in b/w uses...
-	neutral.clear();
-	selected.clear();
-	NRECJ = rec_pol(p2g1,p2g2,neutral,selected);
+	NRECI = rec_pol(p1g1,p1g2);
+	NRECJ = rec_pol(p2g1,p2g2);
 	NREC+=(NRECI+NRECJ);
 
 	(dptr+i)->first = p1g1;

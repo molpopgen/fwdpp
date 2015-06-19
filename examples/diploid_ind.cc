@@ -9,6 +9,7 @@
   3.  Iterating a population through its life cycle
   4.  Outputting a sample in "ms" format
 */
+#include <iostream>
 #include <vector>
 #include <list>
 #include <Sequence/SimData.hpp>
@@ -60,11 +61,33 @@ int main(int argc, char ** argv)
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
+  /*
+    Vectors for holding copies of pointers to mutations during recombination.
+    The requirement to declare these was introduced in fwdpp 0.3.3.
+
+    In previous versions of the library, vectors like this had to be allocated
+    for every crossover event for every generation.  The result was an excessive 
+    number of requests for memory allocation.
+
+    Now, we create the vector once per simulation.  Further, we will reserve memory
+    here, to minimize reallocs, etc., within fwdpp.
+
+    Internally, fwdpp's job is to make sure that this vector is appropriately 
+    and efficiently cleared, but only when needed.
+
+    Should this move into sugar struct?  Probably
+  */
+  //singlepop_t::gamete_t::mutation_container neutral,selected;
   while(nreps--)
     {
-      //Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
-      singlepop_t pop(N);
-
+      /* 
+	 Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
+	 Starting in fwdpp 0.3.3, the sugar struct constructor may take a second argument,
+	 which reserves memory for the containers used to hold the intermediate results of 
+	 recombination events.  The default is 100, which is probably too small for large-4Nu 
+	 simulations, so we use the call to std::max to select something better.
+      */
+      singlepop_t pop(N);//,std::max(100u,unsigned(std::round(theta))));
       unsigned generation;
       double wbar;
       //lookup_table_type lookup;  //this is our lookup table for the mutation model
@@ -86,7 +109,8 @@ int main(int argc, char ** argv)
 						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						 std::placeholders::_3,std::placeholders::_4,
+						 //Pass as reference
+						 std::ref(pop.neutral),std::ref(pop.selected),
 						 &pop.gametes,
 						 littler,
 						 r.get(),
