@@ -105,7 +105,7 @@ namespace KTfwd
 	diploids->resize(N_next);
 	dptr = diploids->begin();
       }
-    unsigned NREC=0,NRECI,NRECJ;
+    unsigned NREC=0;
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
@@ -130,9 +130,8 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 
-	NRECI = rec_pol(p1g1,p1g2);
-	NRECJ = rec_pol(p2g1,p2g2);
-	NREC+=(NRECI+NRECJ);
+	NREC += rec_pol(p1g1,p1g2);
+	NREC += rec_pol(p2g1,p2g2);
 
 	(dptr+i)->first = p1g1;
 	(dptr+i)->second = p2g1;
@@ -356,12 +355,18 @@ namespace KTfwd
 
 		      p2g1 = (pptr2+p2)->first;
 		      p2g2 = (pptr2+p2)->second;
+
+		      //0.3.3: Do "Mendel" now...
+		      if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
+		      if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 		      
 		      NREC += rec_pol(p1g1,p1g2);
 		      NREC += rec_pol(p2g1,p2g2);
 
-		      (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-		      (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
+		      (dptr+i)->first = p1g1;
+		      (dptr+i)->second = p2g1;
+		      //(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
+		      //(dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 		      assert( std::find( (metapop)->begin(), (metapop)->end(), *( (dptr+i)->second ) )
 			      != (metapop)->end() );
 
