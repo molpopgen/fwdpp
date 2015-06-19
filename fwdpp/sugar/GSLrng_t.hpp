@@ -7,6 +7,7 @@
 
 #include <fwdpp/sugar/gsl/tags.hpp>
 #include <fwdpp/sugar/gsl/deleter.hpp>
+#include <cassert>
 
 namespace KTfwd {
 
@@ -51,7 +52,11 @@ namespace KTfwd {
     }
 
     //! Copy constructor
-    GSLrng_t( const GSLrng_t & ) = delete;
+    GSLrng_t( const GSLrng_t & rng) : r(setup(T())) {
+      int rv = gsl_rng_memcpy(r.get(),rng.get());
+      assert(rv);
+    }
+      
     GSLrng_t( GSLrng_t & ) = delete;
     GSLrng_t & operator=(GSLrng_t &) = delete;
     
