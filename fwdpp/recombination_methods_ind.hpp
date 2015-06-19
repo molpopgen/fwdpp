@@ -6,35 +6,33 @@
 
 namespace KTfwd
 {
-
-struct genetics101
-/*! Genetics 101: simple model of recombination.  r is the probability that the two gametes recombine
-*/
-{
-  using result_type = unsigned;
-  template<typename gamete_iterator_type,
-	   typename gamete_list_type_allocator,
-	   template<typename,typename> class gamete_list_type,
-	   typename rec_pos_generator>
-  unsigned operator()( gamete_iterator_type & g1,
-		       gamete_iterator_type & g2,
-		       typename gamete_iterator_type::value_type::mutation_container & neutral,
-		       typename gamete_iterator_type::value_type::mutation_container & selected,
-		       gamete_list_type< typename gamete_iterator_type::value_type, gamete_list_type_allocator > * gametes,
-		       const double & littler,
-		       gsl_rng * r,
-		       const rec_pos_generator & rp) const
+  struct genetics101
+  /*! Genetics 101: simple model of recombination.  r is the probability that the two gametes recombine
+   */
   {
-    unsigned NREC = 0;
-    if( g1 != g2 )
-      //then a non-parental type is inherited from p1 and p1 has two different gametes
-      {
-	NREC += recombine_gametes(r,littler,gametes,g1,g2,neutral,selected,rp);
-      }
-    return NREC;
-  }	   
-};
-
+    using result_type = unsigned;
+    template<typename gamete_iterator_type,
+	     typename gamete_list_type_allocator,
+	     template<typename,typename> class gamete_list_type,
+	     typename rec_pos_generator>
+    unsigned operator()( gamete_iterator_type & g1,
+			 gamete_iterator_type & g2,
+			 typename gamete_iterator_type::value_type::mutation_container & neutral,
+			 typename gamete_iterator_type::value_type::mutation_container & selected,
+			 gamete_list_type< typename gamete_iterator_type::value_type, gamete_list_type_allocator > * gametes,
+			 const double & littler,
+			 gsl_rng * r,
+			 const rec_pos_generator & rp) const
+    {
+      unsigned NREC = 0;
+      if( g1 != g2 )
+	//then a non-parental type is inherited from p1 and p1 has two different gametes
+	{
+	  NREC += recombine_gametes(r,littler,gametes,g1,g2,neutral,selected,rp);
+	}
+      return NREC;
+    }
+  };
 }
 
 #endif //__RECOMBINATION_METHODS_IND_HPP__
