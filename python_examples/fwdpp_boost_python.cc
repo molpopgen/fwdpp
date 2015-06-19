@@ -24,7 +24,7 @@ boost::python::list sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam)
   for( unsigned i = 0 ; i < nsam ; ++i )
     {
       //pick a random chrom (w/replacement...)
-      unsigned chrom = unsigned(gsl_ran_flat(rng,0.,double(twoN)));
+      unsigned chrom = unsigned(gsl_ran_flat(rng.get(),0.,double(twoN)));
       //get pointer to that chrom from the individual
       auto gamete = (chrom%2==0.) ? pop.diploids[chrom/2].first : pop.diploids[chrom/2].second;
       //In this example, there are only neutral mutations, so that's what we'll iterate over

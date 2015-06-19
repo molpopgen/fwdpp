@@ -37,21 +37,22 @@ poptype evolve( GSLrng & rng,
 		const double & recrate)
 {
   poptype pop(N);
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   for( unsigned generation = 0 ; generation < generations ; ++generation )
     {
-      double wbar = KTfwd::sample_diploid(rng,
+      double wbar = KTfwd::sample_diploid(rng.get(),
 					  &pop.gametes,
 					  &pop.diploids,
 					  &pop.mutations,
 					  N,
 					  mu,
-					  std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,
-						    mu,0.,[&rng](){return gsl_rng_uniform(rng);},[](){return 0.;},[](){return 0.;}),
+					  std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,
+						    mu,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						    std::ref(pop.neutral),std::ref(pop.selected),
 						    &pop.gametes,
 						    recrate, 
-						    rng,
+						    rng.get(),
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),

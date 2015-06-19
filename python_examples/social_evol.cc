@@ -116,7 +116,7 @@ poptype evolve( GSLrng & rng,
 		const double & b1, const double & b2, const double & c1, const double & c2)
 {
   poptype pop(N);
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng); //uniform crossover map
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   std::vector<double> phenotypes(N);
   for( unsigned generation = 0 ; generation < generations ; ++generation )
     {
@@ -129,20 +129,21 @@ poptype evolve( GSLrng & rng,
 	  phenotypes[i++] = KTfwd::additive_diploid()(dip,2.); 
 	}
 
-      double wbar = KTfwd::sample_diploid(rng,
+      double wbar = KTfwd::sample_diploid(rng.get(),
 					  &pop.gametes,
 					  &pop.diploids,
 					  &pop.mutations,
 					  N,
 					  mu+mu_del,
-					  std::bind(KTfwd::infsites(),rng,&pop.mut_lookup,
-						    mu,mu_del,[&rng](){return gsl_rng_uniform(rng);},
-						    [&rng](){return 0.1*(0.5-gsl_rng_uniform(rng));},
+					  std::bind(KTfwd::infsites(),rng.get(),&pop.mut_lookup,
+						    mu,mu_del,[&rng](){return gsl_rng_uniform(rng.get());},
+						    [&rng](){return 0.1*(0.5-gsl_rng_uniform(rng.get()));},
 						    [](){return 2.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+						    std::ref(pop.neutral),std::ref(pop.selected),
 						    &pop.gametes,
 						    recrate, 
-						    rng,
+						    rng.get(),
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
@@ -164,7 +165,7 @@ boost::python::list sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam)
   for( unsigned i = 0 ; i < nsam ; ++i )
     {
       //pick a random chrom (w/replacement...)
-      unsigned chrom = unsigned(gsl_ran_flat(rng,0.,double(twoN)));
+      unsigned chrom = unsigned(gsl_ran_flat(rng.get(),0.,double(twoN)));
       //get pointer to that chrom from the individual
       auto gamete = (chrom%2==0.) ? pop.diploids[chrom/2].first : pop.diploids[chrom/2].second;
       for( auto m = gamete->mutations.begin() ; m != gamete->mutations.end() ; ++m )
