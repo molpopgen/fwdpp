@@ -5,6 +5,7 @@
 #include <fwdpp/mutation.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
+#include <fwdpp/internal/gamete_lookup_table.hpp>
 
 namespace KTfwd
 {
@@ -111,7 +112,12 @@ namespace KTfwd
       }
   
     assert(diploids->size()==N_next);
- 
+
+    //0.3.3: need lookup tables for gametes
+    std::vector<decltype(fwdpp_internal::gamete_lookup_table(&*gametes->begin()))> gamete_lookups;
+    for(auto itr = gametes->begin(); itr != gametes->end() ; ++itr )
+      gamete_lookups.emplace_back( fwdpp_internal::gamete_lookup_table(&*itr) );
+    
     for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
       {
 	assert(dptr==diploids->begin());
