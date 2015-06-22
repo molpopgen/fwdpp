@@ -2,7 +2,7 @@
   \include diploid_fixed_sh_ind_lambda.cc
   
   Same as diploid_fixed_sh.cc, but individual-based
- */
+*/
 
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
@@ -52,7 +52,7 @@ int main(int argc, char ** argv)
   KTfwd::site_dependent_fitness fitness_model;
   while(nreps--)
     {
-singlepop_t pop(N);
+      singlepop_t pop(N);
       unsigned generation;
       double wbar=1;
       for( generation = 0; generation < ngens; ++generation )
@@ -78,11 +78,18 @@ singlepop_t pop(N);
 				       std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
 				       //The recombination policy must take two non-const iterators from the glist
-					 [&](singlepop_t::glist_t::iterator & g1,
-					     singlepop_t::glist_t::iterator & g2) { return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,
-														    std::ref(pop.neutral),std::ref(pop.selected),
-														    //This nested lambda is our genetic map: uniform on interval (0,1]
-														    [&](){return gsl_rng_uniform(r.get());}); },
+				       [&](singlepop_t::glist_t::iterator & g1,
+					   singlepop_t::glist_t::iterator & g2,
+					   /*
+					     This is an oddity of lambdas: the user will either have to dig into fwdpp's internals
+					     to determine what this type is, or rely on decltype, which in this case is asking about the
+					     return type of the function creating the lookup table.
+					   */
+					   decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&pop.gametes)) & gamete_lookup) {
+					 return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,gamete_lookup,
+									 std::ref(pop.neutral),std::ref(pop.selected),
+									 //This nested lambda is our genetic map: uniform on interval (0,1]
+									 [&](){return gsl_rng_uniform(r.get());}); },
 				       //The mutation insertion policy takes a const singlepop_t::mutation_t and a non-const pointer to an singlepop_t::mlist_t
 				       [](const singlepop_t::mutation_t & m,singlepop_t::mlist_t * __mutations) { return __mutations->insert(__mutations->end(),m); },
 				       //The gamete insertion policy takes a const singlepop_t::gamete_t and a non-const pointer to a glist

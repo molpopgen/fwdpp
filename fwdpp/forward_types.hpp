@@ -32,11 +32,11 @@ namespace KTfwd
     bool neutral;
     /// Used internally (don't worry about it for now...)
     bool checked;
-    mutation_base(const double & position, const unsigned & count, const bool & isneutral = true)
+    mutation_base(const double & position, const unsigned & count, const bool & isneutral = true) noexcept
       : pos(position),n(count),neutral(isneutral),checked(false)
     {	
     }
-    virtual ~mutation_base(){}
+    virtual ~mutation_base() noexcept {}
     mutation_base( mutation_base & ) = default;
     mutation_base( mutation_base const & ) = default;
     mutation_base( mutation_base && ) = default;
@@ -111,7 +111,7 @@ namespace KTfwd
     /*! @brief Constructor
       \param icount The number of occurrences of this gamete in the population
     */
-    gamete_base(const unsigned & icount) : n(icount),mutations( mutation_container() ),smutations(mutation_container())
+    gamete_base(const unsigned & icount) noexcept : n(icount),mutations( mutation_container() ),smutations(mutation_container())
     {
     }
 
@@ -121,7 +121,7 @@ namespace KTfwd
       \param s A container of mutations affecting trait value/fitness
     */
     gamete_base(const unsigned & icount, const mutation_container & n,
-		const mutation_container & s) : n(icount),mutations(n),smutations(s)
+		const mutation_container & s) noexcept : n(icount),mutations(n),smutations(s)
     {
     }
     //! Destructor is virtual, so you may inherit from this type

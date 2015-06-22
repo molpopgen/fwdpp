@@ -70,7 +70,7 @@ int main(int argc, char ** argv)
 				   mu,   
 				   std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,generation,
 					     mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
-				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
 					     std::ref(pop.neutral),std::ref(pop.selected),
 					     &pop.gametes,
 					     littler,

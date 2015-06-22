@@ -159,14 +159,17 @@ namespace KTfwd
     typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
     while(i != mutations->end())
       {
-	assert(i->n <= twoN);			
+	assert(i->n <= twoN);
+	//0.3.3
 	i->checked = false;
 	if(i->n==twoN )
 	  {
 	    fixations->push_back(*i);
 	    fixation_times->push_back(generation);
 	  }
+	//0.3.3: !checked is logically equivalent to i->n==0
 	if( i->n == 0 || i->n == twoN )
+	  //if(!i->checked ||  i->n == twoN )
 	  {
 	    lookup->erase(lookup->find(i->pos));
 	    temp=i;
@@ -175,6 +178,8 @@ namespace KTfwd
 	  }
 	else
 	  {
+	    //0.3.3
+	    //i->checked=false;
 	    ++i;
 	  }
       }

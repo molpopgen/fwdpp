@@ -4,7 +4,7 @@
 
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
-
+#include <fwdpp/internal/gamete_lookup_table.hpp>
 namespace KTfwd
 {
   //single deme, constant N
@@ -75,6 +75,7 @@ namespace KTfwd
   {
     assert(N_curr == diploids->size());
 
+    //0.3.3: do not set mutation counts to zero.  Postpone until removal!
     std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
 
     std::vector<double> fitnesses(diploids->size());
@@ -109,6 +110,8 @@ namespace KTfwd
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
+    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
+
     for( unsigned i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -130,8 +133,8 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 
-	NREC += rec_pol(p1g1,p1g2);
-	NREC += rec_pol(p2g1,p2g2);
+	NREC += rec_pol(p1g1,p1g2,gamete_lookup);
+	NREC += rec_pol(p2g1,p2g2,gamete_lookup);
 
 	(dptr+i)->first = p1g1;
 	(dptr+i)->second = p2g1;
@@ -303,6 +306,7 @@ namespace KTfwd
 	      unsigned NREC=0;
 
 	      decltype(metapop->begin()) p1g1,p1g2,p2g1,p2g2;
+	      auto gamete_lookup = fwdpp_internal::gamete_lookup_table(metapop);
 	      for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr,++popindex )
 		{
 		  unsigned demesize =*(N_next+popindex);
@@ -360,8 +364,8 @@ namespace KTfwd
 		      if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
 		      if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 		      
-		      NREC += rec_pol(p1g1,p1g2);
-		      NREC += rec_pol(p2g1,p2g2);
+		      NREC += rec_pol(p1g1,p1g2,gamete_lookup);
+		      NREC += rec_pol(p2g1,p2g2,gamete_lookup);
 
 		      (dptr+i)->first = p1g1;
 		      (dptr+i)->second = p2g1;

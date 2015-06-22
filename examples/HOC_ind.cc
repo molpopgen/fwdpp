@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 					      std::bind(HOChap(),std::placeholders::_1,r.get(),&pop.mut_lookup,sigmu),
 					      // mmodel,
 					      //The recombination policy includes the uniform crossover rate
-					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
 							std::ref(pop.neutral),std::ref(pop.selected),
 							&pop.gametes,
 							littler,
