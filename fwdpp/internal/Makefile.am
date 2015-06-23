@@ -9,5 +9,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	ms_sampling.hpp \
 	diploid_fitness_dispatch.hpp \
 	type_traits.hpp \
-	gamete_lookup_table.hpp
+	gamete_lookup_table.hpp \
+	gamete_cleaner.hpp
 
