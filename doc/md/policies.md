@@ -220,18 +220,25 @@ See the header file __fwdpp/fitness\_models.hpp__ for examples of fitness polici
 
 A recombination policy takes two non-const references to __glist::iterator__, scrambles up those gametes appropriately, and returns an unsigned integer representing the number of crossovers, etc., between the two gametes.  
 
-Typically, recombination would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the former, where the genetic map is uniform on the interval \f$(0,1]\f$:
+Typically, recombination would work via a call to __KTfwd::recombine\_gametes__, or the convenience wrapper __KTfwd::genetics101__.  Here is an example of the latter, taken from the example file diploid_ind.cc:
 
 ~~~{.cpp}
-//These parameters will be captuered by reference ([&] in the lambda 
-//expression below), because their state will be modified
-gsl_rng * r;
-glist gametes;
-std::function<unsigned(glist::iterator &, glist::iterator &)> rec_policy =  [&](glist::iterator & g1,
-				       glist::iterator & g2) { return KTfwd::recombine_gametes(r,littler,&gametes,g1,g2,
-  //This nested lambda is our genetic map: uniform on interval (0,1]
-  [&](){return gsl_rng_uniform(r);}); },	       
+std::bind(KTfwd::genetics101(),
+	//These two placeholders are for  iterators to the two parental gametes
+	std::placeholders::_1,std::placeholders::_2,
+	//This placeholder is for a lookup table
+	std::placeholders::_3,
+	//These two containers should be allocated in main (or via the appropriate sugar type, _e.g._ KTfwd::singlepop_t)
+	//They often need reference wrappers to make the templates compile.
+	//They are used to hold the intermediate results of crossover events
+			std::ref(neutral),std::ref(selected),
+				&pop.gametes,
+					littler,
+						r.get(),
+							recmap)
 ~~~
+
+See @ref md_md_algo for more details about what the lookup table and the "neutral" and "selected" containers do.
 
 For individual-based simulations with migration, returns an unsigned integer and takes on as an argument:
 
