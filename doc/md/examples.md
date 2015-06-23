@@ -245,7 +245,8 @@ where:
 N = diploid population size
 mu = mutation rate to variants affecting fitness
 sigmu = standard deviation of effect sizes.  E ~ N(0,sigmu^2)
-r = recombination rate (per diploid, per generation)
+4Nr = population scaled recombination rate (per diploid, per generation)
+ngens = number of generations to simulate
 nreps = number of replicates to simulate
 seed = random number seed
 ~~~
