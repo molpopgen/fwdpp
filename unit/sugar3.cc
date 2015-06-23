@@ -34,7 +34,7 @@ struct no_selection_multi
   }
 };
 
-BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
+BOOST_AUTO_TEST_CASE( multiloc_sugar_test1 )
 {
   using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
     }
 }
 
-BOOST_AUTO_TEST_CASE( metapop_sugar_gzserialize_test )
+BOOST_AUTO_TEST_CASE( multiloc_sugar_gzserialize_test )
 {
   using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_gzserialize_test )
 	}
     }
 }
-BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct )
+BOOST_AUTO_TEST_CASE( multiloc_sugar_copy_construct )
 {
   using poptype = KTfwd::multiloc_serialized<KTfwd::popgenmut,mwriter,mreader>;
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -433,7 +433,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct )
     }
 }
 
-BOOST_AUTO_TEST_CASE( metapop_sugar_assigment_operator )
+BOOST_AUTO_TEST_CASE( multiloc_sugar_assigment_operator )
 {
   using poptype = KTfwd::multiloc_serialized<KTfwd::popgenmut,mwriter,mreader>;
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
