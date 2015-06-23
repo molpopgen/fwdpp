@@ -155,24 +155,8 @@ namespace KTfwd
 			  const unsigned & generation,const unsigned & twoN )
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
-                   "mutation_type must be derived from KTfwd::mutation_base" );
-    mutations->remove_if( [&fixations,&fixation_times,&lookup,&generation,&twoN](typename list_type<mutation_type,list_type_allocator>::value_type & __m ) {
-	bool fixed = __m.n == twoN;
-	if(fixed) {
-	  fixations->push_back(__m);
-	  fixation_times->push_back(generation);
-	}
-	if(!__m.checked || fixed)
-	  {
-	    lookup->erase(__m.pos);
-	    return true;
-	  }
-	__m.checked=false;
-	return false;
-      });
-    /*
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
-    while(i != mutations->end())
+		   "mutation_type must be derived from KTfwd::mutation_base" );
+    for(auto i=mutations->begin();i!=mutations->end();)
       {
 	assert(i->n <= twoN);
 	//0.3.3
@@ -187,9 +171,10 @@ namespace KTfwd
 	if(!i->checked ||  i->n == twoN )
 	  {
 	    lookup->erase(lookup->find(i->pos));
-	    temp=i;
-	    ++i;
-	    mutations->erase(temp);
+	    //temp=i;
+	    //++i;
+	    i = mutations->erase(i);
+	    //mutations->erase(temp);
 	  }
 	else
 	  {
@@ -198,7 +183,7 @@ namespace KTfwd
 	    ++i;
 	  }
       }
-    */
+    
   }
 
   template<typename iterator_type>
@@ -221,29 +206,6 @@ namespace KTfwd
     std::for_each(g->mutations.begin(),g->mutations.end(),
 		  std::cref(adjuster));
     std::for_each(g->smutations.begin(),g->smutations.end(),
-		  std::cref(adjuster));
-   }
-
-  template<typename gamete_type>
-  void adjust_mutation_counts_object( gamete_type & g , const unsigned & n)
-  /*! \brief used internally
-    \note Will need a specialization if types have other data that need updating
-  */
-  {
-    auto adjuster = [&n](typename gamete_type::mutation_list_type_iterator & __m) {
-      if(!__m->checked)
-	{
-	  __m->n=n;
-	  __m->checked=true;
-	}
-      else
-	{
-	  __m->n += n;
-	}
-    };
-    std::for_each(g.mutations.begin(),g.mutations.end(),
-		  std::cref(adjuster));
-    std::for_each(g.smutations.begin(),g.smutations.end(),
 		  std::cref(adjuster));
    }
 }

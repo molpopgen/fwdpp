@@ -164,12 +164,15 @@ namespace KTfwd
 #endif
     decltype(gametes->begin()) temp;
 
-    //0.3.3: no more hand-written loop
-    gametes->remove_if( [&mp](typename gamete_list_type<gamete_type,gamete_list_type_allocator >::value_type & __g) {
-     	if( !__g.n ) return true;  //remove extinct gametes
-     	adjust_mutation_counts_object(__g,__g.n); //update mutation counts in extant gametes
-     	return false;
-       });
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
+      {
+	if(!itr->n) itr = gametes->erase(itr);
+	else
+	  {
+	    adjust_mutation_counts(itr,itr->n);
+	    ++itr; 
+	  }
+      }
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     /*
     std::for_each( gametes->begin(),
@@ -402,13 +405,16 @@ namespace KTfwd
 		      (dptr+i)->second = mutate_gamete(r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
 		    }
 		}
-	      //0.3.3: no more hand-written loop
-	      metapop->remove_if( [&mp](typename gamete_list_type<gamete_type,gamete_list_type_allocator >::value_type & __g) {
-		  if( !__g.n ) return true;  //remove extinct gametes
-		  adjust_mutation_counts_object(__g,__g.n);
-		  return false;
-		});
-	      
+	      for( auto itr = metapop->begin() ; itr != metapop->end() ; )
+		{
+		  if(!itr->n) itr = metapop->erase(itr);
+		  else
+		    {
+		      adjust_mutation_counts(itr,itr->n);
+		      ++itr; 
+		    }
+		}
+	      fwdpp_internal::gamete_cleaner(metapop,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
 	      //get rid of extinct stuff, etc.
 	      /*
 	      for(auto gptr = metapop->begin(), temp = gptr ; gptr != metapop->end() ; ) 
@@ -426,11 +432,13 @@ namespace KTfwd
 			}
 		}
 	      */
+	      /*
 	      for(auto gptr = metapop->begin() ; gptr != metapop->end() ; ++gptr)
 		  {
 		    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
 		    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
 		  }
+	      */
 	      return wbars;
 	    }
 }
