@@ -572,44 +572,47 @@ The policy looks like this:
 
 
 ~~~{.cpp}
-  struct genetics101
+	  struct genetics101
+  /*! Genetics 101: simple model of recombination.  r is the probability that the two gametes recombine
+   */
   {
-    typedef unsigned result_type;
+    using result_type = unsigned;
     template<typename gamete_iterator_type,
-             typename gamete_list_type_allocator,
-             template<typename,typename> class gamete_list_type,
-             typename rec_pos_generator>
+	     typename gamete_list_type_allocator,
+	     typename glookup_t,
+	     template<typename,typename> class gamete_list_type,
+	     typename rec_pos_generator>
     unsigned operator()( gamete_iterator_type & g1,
-                         gamete_iterator_type & g2,
-                         gamete_list_type< typename gamete_iterator_type::value_type,
-                                           gamete_list_type_allocator > * gametes,
-                                           const double & littler,
-                                           gsl_rng * r,
-                                           const rec_pos_generator & rp) const
-       {
-         typedef gamete_list_type< typename gamete_iterator_type::value_type, 
-                                   gamete_list_type_allocator > glist_t;
-         unsigned NREC = 0;
-         if( g1 != g2 && gsl_rng_uniform(r) <= 0.5 )
-         //then a non-parental type is inherited from p1 and p1 has two different gametes                                    
-         {
-           NREC += recombine_gametes(r,littler,gametes,g1,g2,rp,
-           std::bind(update_if_exists_insert<typename gamete_iterator_type::value_type,glist_t>,
-           std::placeholders::_1,gametes));
-         }
-         return NREC;
-       }
-     };
+			 gamete_iterator_type & g2,
+			 glookup_t & gamete_lookup,
+			 typename gamete_iterator_type::value_type::mutation_container & neutral,
+			 typename gamete_iterator_type::value_type::mutation_container & selected,
+			 gamete_list_type< typename gamete_iterator_type::value_type, gamete_list_type_allocator > * gametes,
+			 const double & littler,
+			 gsl_rng * r,
+			 const rec_pos_generator & rp) const
+    {
+      unsigned NREC = 0;
+      if( g1 != g2 )
+	//then a non-parental type is inherited from p1 and p1 has two different gametes
+	{
+	  NREC += recombine_gametes(r,littler,gametes,g1,g2,gamete_lookup,neutral,selected,rp);
+	}
+      return NREC;
+    }
+  };
 ~~~
 
-The main thing a library user needs to focus on is the argument list for __operator()__.  Specifically, it requires a variable of type __rec\_pos\_generator__ which is stated in the documentation to be a recombination map policy. Thus, a recombination model is a policy that requires another policy.  Further, __a recombination policy is passed non-const references to iterators to two gametes (g1 and g2 in the code above). Those iterators are updated in place.  In the event of no recombination, g1 and g2 remain unchanged.  Otherwise, g1 and g2 are modified to point to the new recombinants, which are new gametes inersted into the population at a count of 1.__
+The main thing a library user needs to focus on is the argument list for __operator()__.  Specifically, it requires a variable of type __rec\_pos\_generator__ which is stated in the documentation to be a recombination map policy. Thus, a recombination model is a policy that requires another policy.  Further, __a recombination policy is passed non-const references to iterators to two gametes (g1 and g2 in the code above). Those iterators point to the parental gametes, and (as of fwdpp 0.3.3), they get "swapped' half to time to represent Mendelian segregation.  Ultimately, g1 represents the chromosome that will be passed on to the offspring, and the data that it points to will be modified by the library's internal functions for recombination.  See @ref md_md_algo for more details on how this works.  (The details of crossing over changed radically in version 0.3.3, resulting in much faster simulations.)
 
 We pass this recombination model in an individual-based simulation to KTfwd::sample_diploid like this:
 
 ~~~{.cpp}
   using std::placeholders; //_1,_2, etc.
   std::bind(KTfwd::genetics101(),  //the rec. model
-             _1,_2,                  //placeholder for iterators to gametes
+  _1,_2,                  //placeholder for iterators to gametes
+  _3, //placeholder for a lookup table
+  std::ref(neutral),std::ref(selected), //containers for intermediate results
              &gametes,               //pointer to gamete list
              littler,                //Avg. # of crossovers b/w two gametes per region per generation
              r,                      //a gsl_rng *
