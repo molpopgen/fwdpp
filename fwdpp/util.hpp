@@ -14,13 +14,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
-#include <boost/container/vector.hpp>
-#else
-#include <vector>
-#endif
-
-
 namespace KTfwd
 {
   /* \brief Sets mutation::checked to false

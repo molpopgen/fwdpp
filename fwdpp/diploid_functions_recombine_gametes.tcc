@@ -110,11 +110,7 @@ namespace KTfwd
     
     if( nbreaks )
       {
-#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
-        boost::container::vector<double> pos;
-#else
         std::vector<double> pos;
-#endif
 	pos.reserve(nbreaks+1);
 	for(unsigned i = 0 ; i < nbreaks ; ++i)
 	  {

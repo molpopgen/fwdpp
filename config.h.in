@@ -1,20 +1,5 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Define if boost/functional/hash.hpp exists */
-#undef HAVE_BOOST_HASH
-
-/* Define if boost/container/list.hpp exists */
-#undef HAVE_BOOST_LIST
-
-/* Define if boost/pool/pool_alloc.hpp exists */
-#undef HAVE_BOOST_POOL_ALLOC
-
-/* Define if boost/unordered_set.hpp exists */
-#undef HAVE_BOOST_UNORDERED_SET
-
-/* Define if boost/container/vector.hpp exists */
-#undef HAVE_BOOST_VECTOR
-
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 
@@ -32,6 +17,9 @@
 
 /* Define to 1 if you have the `sequence' library (-lsequence). */
 #undef HAVE_LIBSEQUENCE
+
+/* Define to 1 if you have the `tcmalloc' library (-ltcmalloc). */
+#undef HAVE_LIBTCMALLOC
 
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
@@ -84,8 +72,8 @@
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
 
-/* Prefer containers from namespace std when compiling */
-#undef USE_STANDARD_CONTAINERS
+/* Use containers from namespace boost when compiling */
+#undef USE_BOOST_CONTAINERS
 
 /* Version number of package */
 #undef VERSION

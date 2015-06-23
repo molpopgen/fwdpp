@@ -8,10 +8,6 @@
 
 #include <gsl/gsl_randist.h>
 
-#if defined(HAVE_BOOST_VECTOR) && !defined(USE_STANDARD_CONTAINERS)
-#include <boost/container/vector.hpp>
-#endif
-
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <vector>
 

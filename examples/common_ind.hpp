@@ -4,7 +4,7 @@
 #include <config.h>
 #include <iostream>
 
-#if defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_UNORDERED_SET) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && !defined(USE_STANDARD_CONTAINERS)
+#if defined(USE_BOOST_CONTAINERS)
 #define FWDPP_SUGAR_USE_BOOST
 #endif
 

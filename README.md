@@ -200,7 +200,7 @@ Currently, the example programs will not get installed via "make install".   If 
 
 __Note:__ if you only wish to compile the example, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
 
-### Using boost containers and the standard C-library malloc
+### Using standard containers and the standard C-library malloc
 
 This is the default:
 
@@ -209,27 +209,21 @@ This is the default:
 make check
 ~~~
 
-### Using the standard C++ containers and the standard C library malloc
+### Using the standard C++ containers and the Google's tcmalloc 
 
-~~~{.sh}
-./configure --enable-standard=yes
-make check
-~~~
-
-### Using boost containers and Google's tcmalloc replacement for malloc
+__This is the recommended method for maximum run-time performance.__
 
 ~~~{.sh}
 ./configure --enable-tcmalloc=yes
 make check
 ~~~
 
-
-### Using the standard C++ library containers and Google's tcmalloc replacement for malloc
+### Using boost containers and Google's tcmalloc replacement for malloc
 
 ~~~{.sh}
-./configure --enable-standard=yes --enable-tcmalloc=yes
+./configure --enable-boost=yes --enable-tcmalloc=yes
 make check
-~~~~
+~~~
 
 Note:  none of these options affect any other programs that you write using fwdpp!  You'll have to manage that on your own for your projects' builds.
 

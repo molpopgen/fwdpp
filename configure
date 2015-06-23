@@ -734,7 +734,7 @@ enable_option_checking
 enable_silent_rules
 enable_dependency_tracking
 enable_maintainer_mode
-enable_standard
+enable_boost
 enable_debug
 enable_tcmalloc
 '
@@ -1373,7 +1373,7 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
-  --enable-standard       Disable use of boost containers when compiling
+  --enable-boost          Enable use of boost containers when compiling
                           examples
   --enable-debug          Compile examples with run-time assert macro enabled.
   --enable-tcmalloc       Enable linking to Google's tcmalloc library, if
@@ -4444,10 +4444,10 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/experimental/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile"
 
 
-# Check whether --enable-standard was given.
-if test "${enable_standard+set}" = set; then :
-  enableval=$enable_standard;
-$as_echo "#define USE_STANDARD_CONTAINERS 1" >>confdefs.h
+# Check whether --enable-boost was given.
+if test "${enable_boost+set}" = set; then :
+  enableval=$enable_boost;
+$as_echo "#define USE_BOOST_CONTAINERS 1" >>confdefs.h
 
 fi
 
@@ -4865,58 +4865,6 @@ fi
 done
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_VECTOR 1" >>confdefs.h
-
-else
-  echo "boost/container/vector.hpp not found.  Will use std::vector for examples."
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_LIST 1" >>confdefs.h
-
-else
-  echo "boost/container/list.hpp not found.  Will use std::list for examples."
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/test/unit_test.hpp" "ac_cv_header_boost_test_unit_test_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_test_unit_test_hpp" = xyes; then :
-  BUNITTEST=1
-else
-  echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_POOL_ALLOC 1" >>confdefs.h
-
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_UNORDERED_SET 1" >>confdefs.h
-
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_HASH 1" >>confdefs.h
-
-fi
-
-
 ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
 
@@ -4946,6 +4894,59 @@ if test "x$ac_cv_header_zlib_h" = xyes; then :
 
 else
   as_fn_error $? "zlib.h not found.  zlib >= 1.2.5 is requred" "$LINENO" 5
+fi
+
+
+
+if test x$enable_boost = xyes
+then
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost containers requested but boost/container/vector.hpp not foun" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost containers requested but boost/container/list.hpp not foun" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost containers requested but boost/container/bool_alloc.hpp not foun" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost containers requested but boost/unordered_set.hpp not foun" "$LINENO" 5
+fi
+
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
+
+else
+  as_fn_error $? "boost containers requested but boost/functional/hash.hpp not foun" "$LINENO" 5
+fi
+
+
+fi
+
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/test/unit_test.hpp" "ac_cv_header_boost_test_unit_test_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_test_unit_test_hpp" = xyes; then :
+  BUNITTEST=1
+else
+  echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."
 fi
 
 
@@ -5201,6 +5202,8 @@ else
   as_fn_error $? "libsequence runtime library does not seem to be here" "$LINENO" 5
 fi
 
+if test x$enable_boost = xyes
+then
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
 $as_echo_n "checking for main in -lboost_system... " >&6; }
 if ${ac_cv_lib_boost_system_main+:} false; then :
@@ -5238,8 +5241,11 @@ _ACEOF
 
   LIBS="-lboost_system $LIBS"
 
+else
+  as_fn_error $? "boost containers requested but the boost_system runtime library does not seem to be here" "$LINENO" 5
 fi
 
+fi
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
