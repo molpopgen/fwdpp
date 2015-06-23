@@ -104,14 +104,24 @@ BOOST_AUTO_TEST_CASE( two_locus_test_1 )
   double r_bw_loci = 1;
 
   bool p1 = true, LO = false;
+
+  //IDEA: This is an argument for streamlining the gamete structures akin to what was done for metapops
+  std::vector< decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&gametes[0])) > lookups( {
+      KTfwd::fwdpp_internal::gamete_lookup_table(&gametes[0]),
+      KTfwd::fwdpp_internal::gamete_lookup_table(&gametes[1])
+	} );
+
   ptr2cdip->first = KTfwd::fwdpp_internal::multilocus_rec(r,
 							  //No rec w/in loci
-							  [](glist::iterator &a,glist::iterator & b) { return 0; },
+							  [](glist::iterator &a,glist::iterator & b,
+							     decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&gametes[0])) & ) { return 0; },
 							  //Rec. b/w loci returns an ODD number
 							  [](gsl_rng * __r, const double & __d) { return 1; },
 							  &r_bw_loci,1,
 							  //the parental gamete types
 							  diploid[1].first,diploid[1].second,
+							  //IDEA: The lookup to this locus' gametes.  Ought to streamline?
+							  lookups[0],
 							  p1,LO);
 
   //Now, there has been a swap

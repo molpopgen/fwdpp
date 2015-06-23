@@ -24,7 +24,8 @@ namespace KTfwd {
      */
     template<typename within_loc_rec_policy,
 	     typename between_loc_rec_policy,
-	     typename gamete_itr_t>
+	     typename gamete_itr_t,
+	     typename glookup_t>
     gamete_itr_t multilocus_rec(gsl_rng * r,
 				const within_loc_rec_policy & rec,
 				const between_loc_rec_policy & bw,
@@ -32,9 +33,14 @@ namespace KTfwd {
 				const unsigned & i,
 				gamete_itr_t & parental_gamete_1,
 				gamete_itr_t & parental_gamete_2,
+				glookup_t & gamete_lookup,
 				bool & g1, bool & LO )
     {
-      unsigned temp = rec( parental_gamete_1,parental_gamete_2 );
+      /*
+	This is the within-locus recombination policy.  It must conform
+	to any single-locus policy.
+       */
+      unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
       if ( i > 0 )
 	{
 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
