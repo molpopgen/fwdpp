@@ -90,5 +90,12 @@ namespace KTfwd
       return i->n == x1 || i->n == x2;
     }
   };
+
+  /* \brief Policy telling library not to remove any mutations from gametes after sampling
+     \note This is an empty struct that functions as a dispatch tag for library internals
+   */
+  struct remove_nothing
+  {
+  };
 }
 #endif /* _FWD_FUNCTIONAL_HPP_ */
