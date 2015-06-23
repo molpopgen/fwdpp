@@ -14,12 +14,7 @@ Minor changes:
 * KTfwd::serialize can now be used to serialize multiple records into a single buffer.  
 
 TODO:
-Document new crossover
-Update policies tutorial
-
-TEST:
-insert at end and sort vs. current method for adding muts during mutation
-streamling crossing-over even further for single-region sims, based on finding "meiosis" that we can ignore/not go through the rigamarole for.
+Fix the multilocus API!
 
 ## 0.3.2
 
