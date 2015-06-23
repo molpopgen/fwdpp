@@ -52,7 +52,8 @@ int main(int argc, char ** argv)
 		<< "N = diploid population size\n"
 		<< "mu = mutation rate to variants affecting fitness\n"
 		<< "sigmu = standard deviation of effect sizes.  E ~ N(0,sigmu^2)\n"
-		<< "r = recombination rate (per diploid, per generation)\n"
+		<< "4Nr = population scaledrecombination rate (per diploid, per generation)\n"
+		<< "ngens = number of generations to simulate\n"
 		<< "nreps = number of replicates to simulate\n"
 		<< "seed = random number seed\n";	
       exit(10);
@@ -146,12 +147,7 @@ int main(int argc, char ** argv)
 						models are very common in population genetics
 					      */
 					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
-					      /*
-						For each gamete still extant after sampling,
-						remove the pointers to any mutations that have 
-						been lost from the population.
-					      */
-					      std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0));
+					      KTfwd::remove_nothing());
       	  KTfwd::remove_lost(&pop.mutations,&pop.mut_lookup);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}    
