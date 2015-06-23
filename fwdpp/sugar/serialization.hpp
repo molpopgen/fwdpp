@@ -169,6 +169,15 @@ namespace KTfwd
   {
     using result_type = void;
     mutable std::stringstream buffer;
+
+    //!Default constructor
+    serialize() : buffer(std::string()) {}
+
+    //! Move constructor.  Req'd for this to be a member type of another class
+    serialize( serialize && __s) : buffer(__s.buffer.str())
+    {
+    }
+    
     /*!
       \brief Overload for single population simulations
      */
@@ -182,7 +191,6 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.str(std::string());
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
       write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
@@ -208,7 +216,6 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.str(std::string());
       unsigned npops = pop.Ns.size();
       buffer.write(reinterpret_cast<char *>(&npops),sizeof(unsigned));
       buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(unsigned) );
