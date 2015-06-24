@@ -34,22 +34,29 @@ namespace KTfwd {
 				gamete_itr_t & parental_gamete_1,
 				gamete_itr_t & parental_gamete_2,
 				glookup_t & gamete_lookup,
-				bool & g1, bool & LO )
+				bool & g1, bool & LO,
+				bool & swapped )
     {
       /*
 	This is the within-locus recombination policy.  It must conform
 	to any single-locus policy.
        */
       //IDEA: last # of xovers was "odd" in total.
-
       if ( i > 0 )
 	{
-	  if(!g1) std::swap(parental_gamete_1,parental_gamete_2);
+	  // std::cerr << "g1 and LO = " << g1 << ' ' << LO << ' ' << swapped << '\n';
 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
+	  //std::cerr << "nrbw =" << nrbw << ' ';
 	  bool obw = (nrbw%2!=0) ? true : false;
 	  g1 = (LO) ? !g1 : g1;
 	  g1 = (obw) ? !g1 : g1;
+	  //WARNING. IDEA: These swaps are wrong for > 2 loci.
+	  if(!g1&&!swapped) {
+	    std::swap(parental_gamete_1,parental_gamete_2);
+	    swapped = true;
+	  } else swapped = false;
 	}
+      //std::cerr << ", g1 = " << g1 << '\n';
       unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
       LO = (temp % 2 != 0.) ? true : false;
       //return (g1) ? parental_gamete_1 : parental_gamete_2;

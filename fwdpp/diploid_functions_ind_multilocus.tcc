@@ -178,7 +178,7 @@ namespace KTfwd
 	//bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
 	//p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
 	//IDEA:
-	bool p1g1=true,p2g1=true,LO1=true,LO2=true;
+	bool p1g1=true,p2g1=true,LO1=true,LO2=true,swapped1=false,swapped2=false;
 	auto ptr2cdip = (dptr+curr_dip)->begin();
 	//bool LO1 = true, LO2 = true;
 	for ( unsigned i = 0 ; i < p1c.size() ; ++i )
@@ -188,12 +188,25 @@ namespace KTfwd
 								  r_between_loci,i,
 								  p1c[i].first,p1c[i].second,
 								  gamete_lookup,
-								  p1g1,LO1 );
+								  p1g1,LO1,swapped1 );
+
+	    if ( swapped1 ) {
+	      for( auto itr = p1c.begin() + i + 1 ; itr < p1c.end() ; ++itr )
+		{
+		  std::swap( itr->first, itr->second );
+		}
+	    }
 	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
 								   r_between_loci,i,
 								   p2c[i].first,p2c[i].second,
 								   gamete_lookup,
-								   p2g1,LO2 );
+								   p2g1,LO2,swapped2 );
+	    if ( swapped2 ) {
+	      for( auto itr = p2c.begin() + i + 1 ; itr < p2c.end() ; ++itr )
+		{
+		  std::swap( itr->first, itr->second );
+		}
+	    }
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
 
