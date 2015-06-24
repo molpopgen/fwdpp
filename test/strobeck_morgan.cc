@@ -125,9 +125,11 @@ int main(int argc, char ** argv)
 
   const double rbw[2] = {1./4e3,1./4e3}; //rho b/w each locus pair = 1
   ostringstream buffer;
+  gtype::mutation_container neutral,selected;
+  neutral.reserve(100);
+  selected.reserve(100);
   while(nreps--)
     {
-      std::cerr << nreps << '\n';
       //std::vector< glist > gametes (3, glist(1,gtype(twoN) ));
       glist gametes(1,gtype(twoN));
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(3,std::make_pair(gametes.begin(),gametes.begin()));
@@ -137,7 +139,6 @@ int main(int argc, char ** argv)
 
       std::vector< std::vector< std::pair< glist::iterator, glist::iterator > > > diploids(N,idip);
 
-      gtype::mutation_container neutral,selected;
       mlist mutations;  
       std::vector<mtype> fixations;  
       std::vector<unsigned> fixation_times;
