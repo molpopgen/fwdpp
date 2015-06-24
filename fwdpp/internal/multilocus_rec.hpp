@@ -10,6 +10,38 @@
 
 namespace KTfwd {
   namespace fwdpp_internal {
+
+    //0.3.3 test version
+    /*
+      Should take the following as args:
+      1. the w/in locus rec policies
+      2. the b/w locus rec policies
+      3. non-const reference to offspring
+      4. non-const copy of parent (temporary)
+
+      It should:
+      1. pre-compute all w/in locus breaks
+      2. pre-compute all b/w locus crossover #s
+      3. pre-count # of swaps everybody needs.
+
+      return:
+      void?
+     */
+    template<typename diploid_type,
+	     typename recombination_policy_container,
+	     typename bw_locus_rec_fxn
+	     >
+    void multilocus_rec(gsl_rng * r,
+			diploid_type parent, //Copy--this is intentional
+			diploid_type & offspring, //non-const ref, again intentional
+			const recombination_policy_container & rec_pols,
+			const bw_locus_rec_fxn & blrf,
+			double * r_bw_loci
+			)
+    {
+      //I see the problem: how to get the positions ahead of time...
+    }
+    
     /*! \brief The mechanics of recombination for multilocus simulations
       The mechanics of recombination for multilocus simulations
       \param r A GSL random number generator
