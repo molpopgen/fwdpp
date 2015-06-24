@@ -38,21 +38,23 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
-      temp;
+    //typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
+    //temp;
     
-    while(i != mutations->end())
+    //while(i != mutations->end())
+    for(auto i = mutations->begin(); i != mutations->end() ; )
       {
-	i->checked = false;
-	if( i->n == 0 )
+	//0.3.3
+	//i->checked = false;
+	//if( i->n == 0 )
+	if(!i->checked)
 	  {
-	    temp = i;
-	    ++i;
-	    mutations->erase(temp);
+	    i = mutations->erase(i);
 	    //i=mutations->begin();
 	  }
-	else
+	  else
 	  {
+	    i->checked = false;
 	    ++i;
 	  }
       }
@@ -70,21 +72,25 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
-      temp;
+    //typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
+    //temp;
     
-    while(i != mutations->end())
+    //while(i != mutations->end())
+    for(auto i = mutations->begin() ; i != mutations->end() ; )
       {
-	i->checked = false;
-	if( i->n == 0 )
+	//i->checked = false;
+	//if( i->n == 0 )
+	if(!i->checked)
 	  {
 	    lookup->erase(lookup->find(i->pos));
-	    temp=i;
-	    ++i;
-	    mutations->erase(temp);
+	    i=mutations->erase(i);
+	    //temp=i;
+	    //++i;
+	    //mutations->erase(temp);
 	  }
 	else
 	  {
+	    i->checked=false;
 	    ++i;
 	  }
       }
@@ -106,25 +112,28 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
 		   "mutation_type must be derived from KTfwd::mutation_base" );
-    typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
+    // typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
     
-    while(i != mutations->end())
+    //while(i != mutations->end())
+    for(auto i = mutations->begin() ; i != mutations->end() ; )
       {
 	assert(i->n <= twoN);			
-	i->checked = false;
+	//i->checked = false;
 	if(i->n==twoN )
 	  {
 	    fixations->push_back(*i);
 	    fixation_times->push_back(generation);
 	  }
-	if( i->n == 0 || i->n == twoN )
+	//if( i->n == 0 || i->n == twoN )
+	if( !i->checked || i->n == twoN )
 	  {
-	    temp=i;
-	    ++i;
-	    mutations->erase(temp);
+	    //temp=i;
+	    //++i;
+	    i=mutations->erase(i);
 	  }
 	else
 	  {
+	    i->checked=false;
 	    ++i;
 	  }
       }
