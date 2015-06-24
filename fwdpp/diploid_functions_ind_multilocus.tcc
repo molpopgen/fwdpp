@@ -157,16 +157,16 @@ namespace KTfwd
 	  boost::container::vector< std::pairs of iterators to gametes >.
 	*/
 #ifndef NDEBUG
-	for(unsigned i = 0 ; i < p1c.size() ; ++i )
-	  {
-	    assert( (p1c.begin()+i)->first == ((pptr+p1)->begin()+i)->first );
-	    assert( (p1c.begin()+i)->second == ((pptr+p1)->begin()+i)->second );
-	  }
-	for(unsigned i = 0 ; i < p2c.size() ; ++i )
-	  {
-	    assert( (p2c.begin()+i)->first == ((pptr+p2)->begin()+i)->first );
-	    assert( (p2c.begin()+i)->second == ((pptr+p2)->begin()+i)->second );
-	  }
+	// for(unsigned i = 0 ; i < p1c.size() ; ++i )
+	//   {
+	//     assert( (p1c.begin()+i)->first == ((pptr+p1)->begin()+i)->first );
+	//     assert( (p1c.begin()+i)->second == ((pptr+p1)->begin()+i)->second );
+	//   }
+	// for(unsigned i = 0 ; i < p2c.size() ; ++i )
+	//   {
+	//     assert( (p2c.begin()+i)->first == ((pptr+p2)->begin()+i)->first );
+	//     assert( (p2c.begin()+i)->second == ((pptr+p2)->begin()+i)->second );
+	//   }
 #endif
 
 	//Using just the routines below give correct E[S] for n = 20.
