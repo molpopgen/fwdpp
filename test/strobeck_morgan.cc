@@ -29,7 +29,6 @@ struct mutation_with_age : public KTfwd::mutation_base
   }
 };
 
-//compiling the code with -DUSE_STANDARD_CONTAINERS will use std::vector and std::list instead of the boost alternatives
 typedef mutation_with_age mtype;
 #if defined(USE_BOOST_CONTAINERS)
 typedef boost::pool_allocator<mtype> mut_allocator;
@@ -118,9 +117,6 @@ int main(int argc, char ** argv)
     recmap2 = std::bind(mslike_map,r,1.,L),
     recmap3 = std::bind(mslike_map,r,2.,L);
 
-  //need vectors of recombination maps, mutation policies, and fitness models
-  // std::vector< boost::function<unsigned(glist::iterator &, glist::iterator &,
-  // 					decltype()> > recpols(3);
   std::vector< std::function<mtype(mlist *)> > mmodels(3);
 
   const double rbw[2] = {1./4e3,1./4e3}; //rho b/w each locus pair = 1
@@ -130,13 +126,8 @@ int main(int argc, char ** argv)
   selected.reserve(100);
   while(nreps--)
     {
-      //std::vector< glist > gametes (3, glist(1,gtype(twoN) ));
       glist gametes(1,gtype(twoN));
       std::vector< std::pair< glist::iterator, glist::iterator > > idip(3,std::make_pair(gametes.begin(),gametes.begin()));
-      //idip[0] = std::make_pair( gametes[0].begin(),gametes[0].begin() );
-      //idip[1] = std::make_pair( gametes[1].begin(),gametes[1].begin() );
-      //idip[2] = std::make_pair( gametes[2].begin(),gametes[2].begin() );
-
       std::vector< std::vector< std::pair< glist::iterator, glist::iterator > > > diploids(N,idip);
 
       mlist mutations;  
