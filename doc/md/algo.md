@@ -85,5 +85,23 @@ The down side (quibble):
 
 * We must pass the lookup table on to the recombination policy, and thus we need an API change.   However, we've already changed the API in 0.3.3 because of the changes to how recombination works, so this is a very nit-picking down-side.
 
+### Details on the lookup table
 
+(This section exists in hope that KRT reads it before trying to reinvent the wheel in the future.  Fat chance of that...)
 
+During testing, I tried the following schemes for the lookup tables:
+
+* std::vector< std::pair<std::int32_t, glist::iterator> >, sorted using either std::stable_sort or std::sort.
+* std::multimap< std::int32_t, glist::iterator >
+* std::unordered_multimap< std::int32_t, glist::iterator >
+
+I benchmarked each approach with the following command line: 
+
+~~~{sh}
+#Keep seed the same for all three...
+diploid_ind 10000 4000 4000 100000 10 1 SEED
+~~~
+
+All three lookup tables had very similar run-times and peak RAM use.  However, (my implementation using) the unordered_multimap resulted in simulations with incorrect distributions of summary statistics.
+
+The library currently defaults to using the std::multimap.  Programs may be compiled using "sorted vector of pairs" approach by passing -DFWDPP_VECTOR_GLOOKUP to the compiler/preprocessor.

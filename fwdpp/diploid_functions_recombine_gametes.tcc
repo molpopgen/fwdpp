@@ -32,7 +32,7 @@ namespace KTfwd
 
     typename iterator_type::value_type ng(0u,neutral,selected);
     //0.3.3
-#ifndef VECTOR_GLOOKUP
+#ifndef FWDPP_VECTOR_GLOOKUP
     auto pitr = gamete_lookup.equal_range(neutral.size()+selected.size());
     auto itr = std::find_if(pitr.first,pitr.second,[&ng](const typename glookup_t::value_type & __p) {
 	return *__p.second == ng;
