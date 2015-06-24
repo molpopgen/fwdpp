@@ -2,6 +2,7 @@
   Simple example of a two-locus simulation using the multilocus API in fwdpp.
 */
 
+#include <iostream>
 #include <fwdpp/diploid.hh>
 #include <Sequence/SimData.hpp>
 #include <vector>
