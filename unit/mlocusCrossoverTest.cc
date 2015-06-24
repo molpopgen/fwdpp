@@ -919,7 +919,9 @@ BOOST_AUTO_TEST_CASE( three_locus_test_4 )
   BOOST_CHECK_EQUAL(offspring[0].second->mutations.size(),2);
   BOOST_CHECK_EQUAL(offspring[1].second->mutations.size(),1);
   BOOST_CHECK_EQUAL(offspring[1].second->mutations[0]->pos,0.75);
-  BOOST_CHECK_EQUAL(offspring[2].second->mutations.size(),1);
-  BOOST_CHECK_EQUAL(offspring[2].second->mutations[0]->pos,1.25);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations.size(),2);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations[0]->pos,1.1);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations[1]->pos,1.25);
   //BOOST_CHECK_EQUAL(offspring[2].second->mutations[1]->pos,1.5);
 }
+
