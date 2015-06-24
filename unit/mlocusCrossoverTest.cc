@@ -8,13 +8,13 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
+#include <iostream>
 #include <fwdpp/diploid.hh>
 #include <boost/test/unit_test.hpp>
 #include <unistd.h>
 #include <iterator>
 #include <functional>
 #include <list>
-#include <iostream>
 #include <gsl/gsl_rng.h>
 
 using mut = KTfwd::mutation;
@@ -522,11 +522,14 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 						  std::vector<double>{1.3,MVAL}
   };
   auto rec2 = std::vector< std::vector<double> > { std::vector<double>{ 0.45, MVAL },
-						   std::vector<double>{ MVAL },
+						   //std::vector<double>{ 0.1,0.45, MVAL },
+    //std::vector<double>{ 0.8,MVAL },
+    std::vector<double>{ MVAL },
 						   std::vector<double>{ MVAL }
   };
   //recombinations b/w loci?
-  std::vector<unsigned> bw1 = { 1,0 }, bw2 = {0,1};
+  std::vector<unsigned> bw1 = { 1,0 }, //bw2={1,0};
+    bw2 = {0,1};
   std::vector<double> r_bw_loci = {1.,1.,1.};
   diploid_t offspring(3); 
   bool p1g1 = false,p2g1=true,LO1=false,LO2=false,s1=false,s2=false;
@@ -548,32 +551,83 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 							  diploid[i].first,diploid[i].second,
 							  gamete_lookup,
 							  p1g1,LO1,s1);
+      if ( s1 ) {
+	for( auto itr = diploid.begin() + i + 1 ; itr < diploid.end() ; ++itr )
+	  {
+	    std::swap( itr->first, itr->second );
+	  }
+      }
+      if(i==0)
+	{
+	  BOOST_REQUIRE_EQUAL(p1g1,false);
+	  BOOST_REQUIRE_EQUAL(LO1,true);
+	  //BOOST_REQUIRE_EQUAL(s1,false);
+	}
+      neutral.clear();
+      std::cerr << "before: ";
+      for(auto mitr = diploid2[i].first->mutations.begin();mitr!=diploid2[i].first->mutations.end();++mitr)
+	std::cerr << (*mitr)->pos << ' ';
+      std::cerr << '\n';
+      for(auto mitr = diploid2[i].second->mutations.begin();mitr!=diploid2[i].second->mutations.end();++mitr)
+	std::cerr << (*mitr)->pos << ' ';
+      std::cerr << '\n';
       ptr->second =  KTfwd::fwdpp_internal::multilocus_rec(r,
 							   [&]( glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) &  ) {
 							     //if ( rec1[i].empty() ) return;  
-							    //Make use of overload that takes fixed number of positions instead of genetic map policy
+							     //Make use of overload that takes fixed number of positions instead of genetic map policy
 							     return KTfwd::recombine_gametes(rec2[i],&gametes,g1,g2,gamete_lookup,neutral,selected);
 							   },
 							   //Rec. b/w loci returns an ODD number, which will cause an x-over b/w loci 1 and 2
 							   [&bw2,&i](gsl_rng * __r, const double & __d) { return bw2[i-1]; },
 							   &r_bw_loci[0],i,
-							  //the parental gamete types
+							   //the parental gamete types
 							   diploid2[i].first,diploid2[i].second,
 							   gamete_lookup,
 							   p2g1,LO2,s2);
+      if ( s2 ) {
+	for( auto itr = diploid2.begin() + i + 1 ; itr < diploid2.end() ; ++itr )
+	  {
+	    std::swap( itr->first, itr->second );
+	  }
+      }
+      std::cerr << "after: ";
+      for(auto mitr =ptr->second->mutations.begin();mitr!=ptr->second->mutations.end();++mitr)
+	std::cerr << (*mitr)->pos << ' ';
+      std::cerr << '\n';
     }
   //Properties of the variables, etc., related to what happend with the offspring's FIRST gamete:
   BOOST_CHECK_EQUAL( LO1, true );
-  BOOST_CHECK_EQUAL( offspring[0].first->mutations.size(), 2 );
-  BOOST_CHECK_EQUAL( offspring[1].first->mutations.size(), 2 );
-  BOOST_CHECK_EQUAL( offspring[2].first->mutations.size(), 2 );
-  BOOST_CHECK_EQUAL( offspring[2].first->mutations[0]->pos,1.1 );
-  BOOST_CHECK_EQUAL( offspring[2].first->mutations[1]->pos,1.5 );
+  BOOST_CHECK_EQUAL(offspring[0].first->mutations.size(),0);
+  BOOST_CHECK_EQUAL(offspring[1].first->mutations.size(),0);
+  BOOST_CHECK_EQUAL(offspring[2].first->mutations.size(),1);
+  BOOST_CHECK_EQUAL(offspring[2].first->mutations[0]->pos,1.25);
+
+  /*
+  BOOST_CHECK_EQUAL(offspring[0].second->mutations.size(),2);
+  BOOST_CHECK_EQUAL(offspring[0].second->mutations[0]->pos,0.25);
+  BOOST_CHECK_EQUAL(offspring[0].second->mutations[1]->pos,0.5);
+  BOOST_CHECK_EQUAL(offspring[1].second->mutations.size(),1);
+  BOOST_CHECK_EQUAL(offspring[1].second->mutations[0]->pos,0.9);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations.size(),1);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations[0]->pos,1.1);
+  */
+  
+  BOOST_CHECK_EQUAL(offspring[0].second->mutations.size(),0);
+  BOOST_CHECK_EQUAL(offspring[1].second->mutations.size(),1);
+  BOOST_CHECK_EQUAL(offspring[1].second->mutations[0]->pos,0.75);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations.size(),1);
+  BOOST_CHECK_EQUAL(offspring[2].second->mutations[0]->pos,1.1);
+  
+  // BOOST_CHECK_EQUAL( offspring[0].first->mutations.size(), 2 );
+  // BOOST_CHECK_EQUAL( offspring[1].first->mutations.size(), 2 );
+  // BOOST_CHECK_EQUAL( offspring[2].first->mutations.size(), 2 );
+  // BOOST_CHECK_EQUAL( offspring[2].first->mutations[0]->pos,1.1 );
+  // BOOST_CHECK_EQUAL( offspring[2].first->mutations[1]->pos,1.5 );
   
   //Properties of the variables, etc., related to what happend with the offspring's SECOND gamete:
-  BOOST_CHECK_EQUAL( offspring[0].second->mutations.size(), 0 );
-  BOOST_CHECK_EQUAL( offspring[1].second->mutations.size(), 1 );
-  BOOST_CHECK_EQUAL( offspring[2].second->mutations.size(), 2 );
-  BOOST_CHECK_EQUAL( offspring[2].second->mutations[0]->pos,1.25 );
-  BOOST_CHECK_EQUAL( offspring[2].second->mutations[1]->pos,1.5 );
+  // BOOST_CHECK_EQUAL( offspring[0].second->mutations.size(), 0 );
+  // BOOST_CHECK_EQUAL( offspring[1].second->mutations.size(), 1 );
+  // BOOST_CHECK_EQUAL( offspring[2].second->mutations.size(), 2 );
+  // BOOST_CHECK_EQUAL( offspring[2].second->mutations[0]->pos,1.25 );
+  // BOOST_CHECK_EQUAL( offspring[2].second->mutations[1]->pos,1.5 );
 }

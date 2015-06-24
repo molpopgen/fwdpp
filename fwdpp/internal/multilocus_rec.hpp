@@ -41,26 +41,48 @@ namespace KTfwd {
 	This is the within-locus recombination policy.  It must conform
 	to any single-locus policy.
        */
-      //IDEA: last # of xovers was "odd" in total.
-      if ( i > 0 )
+      if(!i)
 	{
-	  // std::cerr << "g1 and LO = " << g1 << ' ' << LO << ' ' << swapped << '\n';
+	  unsigned temp = rec(parental_gamete_1,parental_gamete_2,gamete_lookup);
+	  LO = (temp%2!=0.);
+	}
+      else
+	{
 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
-	  //std::cerr << "nrbw =" << nrbw << ' ';
-	  bool obw = (nrbw%2!=0) ? true : false;
-	  g1 = (LO) ? !g1 : g1;
-	  g1 = (obw) ? !g1 : g1;
-	  //WARNING. IDEA: These swaps are wrong for > 2 loci.
-	  if(!g1&&!swapped) {
+	  bool obw=(nrbw%2!=0.);
+	  if(obw&&!LO) {
 	    std::swap(parental_gamete_1,parental_gamete_2);
 	    swapped = true;
-	  } else swapped = false;
+	  } else swapped=false;
+	  unsigned temp = rec(parental_gamete_1,parental_gamete_2,gamete_lookup);
+	  LO = (temp%2!=0.);
 	}
-      //std::cerr << ", g1 = " << g1 << '\n';
-      unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
-      LO = (temp % 2 != 0.) ? true : false;
-      //return (g1) ? parental_gamete_1 : parental_gamete_2;
-      //IDEA:
+      //IDEA: last # of xovers was "odd" in total.
+      // if ( i > 0 )
+      // 	{
+      // 	  // std::cerr << "g1 and LO = " << g1 << ' ' << LO << ' ' << swapped << '\n';
+      // 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
+      // 	  //std::cerr << "nrbw =" << nrbw << ' ';
+      // 	  bool obw = (nrbw%2!=0) ? true : false;
+      // 	  g1 = (LO) ? !g1 : g1;
+      // 	  g1 = (obw) ? !g1 : g1;
+      // 	  std::cerr <<i << ' '<< g1 << '\n';
+      // 	  //WARNING. IDEA: These swaps are wrong for > 2 loci.
+      // 	  if(!g1&&!swapped) {
+      // 	    std::swap(parental_gamete_1,parental_gamete_2);
+      // 	    swapped = true;
+      // 	  } else swapped = false;
+      // 	}
+      // else
+      // 	{
+      // 	  std::cerr<< i << ' ' <<g1<<'\n';
+      // 	}
+      // //std::cerr << ", g1 = " << g1 << '\n';
+      // unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
+      // LO = (temp % 2 != 0.) ? true : false;
+      // //return (g1) ? parental_gamete_1 : parental_gamete_2;
+      // //IDEA:
+      // std::cerr << "leaving: " << i << ' ' << g1 << ' ' << LO << ' ' << swapped << '\n';
       return parental_gamete_1;
     }
   }

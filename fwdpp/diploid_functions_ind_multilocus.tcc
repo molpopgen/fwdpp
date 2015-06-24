@@ -192,9 +192,9 @@ namespace KTfwd
 
 	    if ( swapped1 ) {
 	      for( auto itr = p1c.begin() + i + 1 ; itr < p1c.end() ; ++itr )
-		{
-		  std::swap( itr->first, itr->second );
-		}
+	    	{
+	    	  std::swap( itr->first, itr->second );
+	    	}
 	    }
 	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
 								   r_between_loci,i,
@@ -203,9 +203,9 @@ namespace KTfwd
 								   p2g1,LO2,swapped2 );
 	    if ( swapped2 ) {
 	      for( auto itr = p2c.begin() + i + 1 ; itr < p2c.end() ; ++itr )
-		{
-		  std::swap( itr->first, itr->second );
-		}
+	    	{
+	    	  std::swap( itr->first, itr->second );
+	    	}
 	    }
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
