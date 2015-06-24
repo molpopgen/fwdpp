@@ -57,11 +57,11 @@ namespace KTfwd
 #endif
 
     //Adjust all mutation frequencies down to 0
-    for( auto itr = mutations->begin() ;
-	 itr != mutations->end() ; ++itr )
-      {
-	itr->n = 0;
-      }
+    // for( auto itr = mutations->begin() ;
+    // 	 itr != mutations->end() ; ++itr )
+    //   {
+    // 	itr->n = 0;
+    //   }
   
     //Vector of parental fitnesses
     std::vector<double> fitnesses(N_curr);
@@ -92,10 +92,10 @@ namespace KTfwd
     */
     for ( auto i = gametes->cbegin() ; i != gametes->cend() ; ++i )
       {
-	for (auto gptr = i->cbegin() ; gptr != i->cend() ; ++gptr )
-	  {
-	    assert( ! gptr->n );
-	  }
+	//for (auto gptr = i->cbegin() ; gptr != i->cend() ; ++gptr )
+	//{
+	    assert( ! i->n );
+	    //}
       }
 #endif
 
@@ -243,26 +243,26 @@ namespace KTfwd
     // 				  });
     // 		  });
 #ifndef NDEBUG
-    for ( auto i = gametes->begin() ; i != gametes->end() ; ++i )
-      {
-	unsigned sum = 0;
-	for (auto gptr = i->begin() ; gptr != i->end() ; ++gptr )
-	  {
-	    //make sure that mutation frequencies are >= gamete frequencies
-	    for( decltype(gptr->mutations.size()) j = 0 ; j < gptr->mutations.size() ; ++j )
-	      {
-		assert( gptr->mutations[j]->n >= gptr->n );
-	      }
-	    for( decltype(gptr->smutations.size()) j = 0 ; j < gptr->smutations.size() ; ++j )
-	      {
-		assert( gptr->smutations[j]->n >= gptr->n );
-	      }
+    // for ( auto i = gametes->begin() ; i != gametes->end() ; ++i )
+    //   {
+    // 	unsigned sum = 0;
+    // 	for (auto gptr = i->begin() ; gptr != i->end() ; ++gptr )
+    // 	  {
+    // 	    //make sure that mutation frequencies are >= gamete frequencies
+    // 	    for( decltype(gptr->mutations.size()) j = 0 ; j < gptr->mutations.size() ; ++j )
+    // 	      {
+    // 		assert( gptr->mutations[j]->n >= gptr->n );
+    // 	      }
+    // 	    for( decltype(gptr->smutations.size()) j = 0 ; j < gptr->smutations.size() ; ++j )
+    // 	      {
+    // 		assert( gptr->smutations[j]->n >= gptr->n );
+    // 	      }
 	    
-	    sum += gptr->n;
-	    assert( sum && sum <= 2*N_next );
-	  }
-	assert(sum == 2*N_next);
-      }
+    // 	    sum += gptr->n;
+    // 	    assert( sum && sum <= 2*N_next );
+    // 	  }
+    // 	assert(sum == 2*N_next);
+    //   }
 #endif
     return wbar;
   }
