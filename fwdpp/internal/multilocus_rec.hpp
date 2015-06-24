@@ -40,6 +40,7 @@ namespace KTfwd {
 			)
     {
       //I see the problem: how to get the positions ahead of time...
+      //Maybe we can simply increment all downstream values by 1 if a swap is needed, and do so if odd?
     }
     
     /*! \brief The mechanics of recombination for multilocus simulations
