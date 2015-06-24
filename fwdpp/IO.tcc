@@ -90,8 +90,8 @@ namespace KTfwd
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
-	    typename mlocus_vector_type_allocator,
-	    template<typename,typename> class mlocus_vector_type,
+	    //typename mlocus_vector_type_allocator,
+	    //template<typename,typename> class mlocus_vector_type,
 	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    template<typename,typename> class mutation_list_type,
@@ -102,42 +102,60 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t>
-  void  write_binary_pop ( const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-			   const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			   const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
-			   const mutation_writer_type & mw,
-			   ostreamtype & buffer,
-			   const diploid_writer_t & dw )
+  void  write_binary_pop ( //const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			  const gamete_list_type<gamete_type, gamete_list_type_allocator > * mlocus_gametes,
+			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			  const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
+			  const mutation_writer_type & mw,
+			  ostreamtype & buffer,
+			  const diploid_writer_t & dw )
   {
     unsigned nloci = mlocus_gametes->size();
     buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
     //write mutations
     auto mutdata = fwdpp_internal::write_mutations()(mutations,mw,buffer);
-    //write haplotypes
-    using gmap_t = std::vector< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::const_iterator >;
-    std::vector< std::pair<gmap_t, std::vector<unsigned> > > gamdata_vec;
-    std::for_each( mlocus_gametes->cbegin(), mlocus_gametes->cend(),
-		   [&gamdata_vec,&mutdata,&buffer](const gamete_list_type< gamete_type, gamete_list_type_allocator > & gametes ) {
-		     gamdata_vec.emplace_back( std::move( fwdpp_internal::write_haplotypes()(&gametes, mutdata.first,mutdata.second,buffer) ) );
-		   }
-		   );
-    //Write the diploids
-    unsigned ndips = diploids->size();
+    auto gamdata = fwdpp_internal::write_haplotypes()( mlocus_gametes, mutdata.first, mutdata.second, buffer );
+    unsigned ndips=diploids->size();
     buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
     using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator >::value_type;
     std::for_each( diploids->cbegin(), diploids->cend(),
-		   [&gamdata_vec,&buffer,&dw]( const mloc_diploid_geno_t & diploid ) {
-		     unsigned i = 0;
-		     for( auto genotype = diploid.cbegin() ; genotype != diploid.cend(); ++genotype,++i )
-		       {
-			 unsigned c = gamdata_vec[i].second[ std::vector<unsigned>::size_type(std::find( gamdata_vec[i].first.begin(),gamdata_vec[i].first.end(),genotype->first ) - gamdata_vec[i].first.begin()) ];
-			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
-			 c = gamdata_vec[i].second[ std::vector<unsigned>::size_type(std::find( gamdata_vec[i].first.begin(),gamdata_vec[i].first.end(),genotype->second ) - gamdata_vec[i].first.begin()) ];
-			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
-			 dw(genotype,buffer);
-		       }
-		   } 
-		   );
+    		   [&gamdata,&buffer,&dw]( const mloc_diploid_geno_t & diploid ) {
+    		     unsigned i = 0;
+    		     for( auto genotype = diploid.cbegin() ; genotype != diploid.cend(); ++genotype,++i )
+    		       {
+    			 unsigned c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),genotype->first ) - gamdata.first.begin()) ];
+    			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
+    			 c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(),gamdata.first.end(),genotype->second ) - gamdata.first.begin()) ];
+    			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
+    			 dw(genotype,buffer);
+    		       }
+    		   } 
+    		   );
+    // //write haplotypes
+    // using gmap_t = std::vector< typename gamete_list_type< gamete_type, gamete_list_type_allocator >::const_iterator >;
+    // std::vector< std::pair<gmap_t, std::vector<unsigned> > > gamdata_vec;
+    // std::for_each( mlocus_gametes->cbegin(), mlocus_gametes->cend(),
+    // 		   [&gamdata_vec,&mutdata,&buffer](const gamete_list_type< gamete_type, gamete_list_type_allocator > & gametes ) {
+    // 		     gamdata_vec.emplace_back( std::move( fwdpp_internal::write_haplotypes()(&gametes, mutdata.first,mutdata.second,buffer) ) );
+    // 		   }
+    // 		   );
+    // //Write the diploids
+    // unsigned ndips = diploids->size();
+    // buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
+    // using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator >::value_type;
+    // std::for_each( diploids->cbegin(), diploids->cend(),
+    // 		   [&gamdata_vec,&buffer,&dw]( const mloc_diploid_geno_t & diploid ) {
+    // 		     unsigned i = 0;
+    // 		     for( auto genotype = diploid.cbegin() ; genotype != diploid.cend(); ++genotype,++i )
+    // 		       {
+    // 			 unsigned c = gamdata_vec[i].second[ std::vector<unsigned>::size_type(std::find( gamdata_vec[i].first.begin(),gamdata_vec[i].first.end(),genotype->first ) - gamdata_vec[i].first.begin()) ];
+    // 			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
+    // 			 c = gamdata_vec[i].second[ std::vector<unsigned>::size_type(std::find( gamdata_vec[i].first.begin(),gamdata_vec[i].first.end(),genotype->second ) - gamdata_vec[i].first.begin()) ];
+    // 			 buffer.write( reinterpret_cast<char*>(&c),sizeof(unsigned) );
+    // 			 dw(genotype,buffer);
+    // 		       }
+    // 		   } 
+    // 		   );
   }
   
   //Multilocus, single-population, istream
@@ -145,8 +163,8 @@ namespace KTfwd
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
-	    typename mlocus_vector_type_allocator,
-	    template<typename,typename> class mlocus_vector_type,
+	    //typename mlocus_vector_type_allocator,
+	    //template<typename,typename> class mlocus_vector_type,
 	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    template<typename,typename> class mutation_list_type,
@@ -157,7 +175,8 @@ namespace KTfwd
 	    typename mutation_reader_type,
 	    typename istreamtype,
 	    typename diploid_reader_t>
-  void read_binary_pop ( mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+  void read_binary_pop ( //mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			gamete_list_type< gamete_type, gamete_list_type_allocator> * mlocus_gametes,
 			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			 diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			 const mutation_reader_type & mr,
@@ -170,36 +189,56 @@ namespace KTfwd
 
     unsigned nloci;
     fwdpp_internal::scalar_reader<unsigned>()(in,&nloci);
-    //Write the mutations to the buffer
+    //Read the mutations from the buffer
     auto mutdata = fwdpp_internal::read_mutations()( mutations,mr,in);
-    using gam_info_t = std::map<unsigned,typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator>;
-    std::vector< gam_info_t > gam_info_vec;
-    mlocus_gametes->resize(nloci);
-    //Read the haplotypes
-    for( auto l = mlocus_gametes->begin();l != mlocus_gametes->end(); ++l )
-      {
-	gam_info_vec.emplace_back( std::move( fwdpp_internal::read_haplotypes()(&*l,mutdata,in) ) );
-      }
-    //read diploids
+    auto gam_info_vec = fwdpp_internal::read_haplotypes()(mlocus_gametes,mutdata,in);
     using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator >::value_type;
-    
     unsigned ndips;
     fwdpp_internal::scalar_reader<unsigned>()(in,&ndips);
     diploids->resize(ndips, mloc_diploid_geno_t(nloci,diploid_geno_t()) );
     std::for_each( diploids->begin(), diploids->end(),
 		   [&gam_info_vec,&in,&dr]( mloc_diploid_geno_t & diploid ) {
 		     unsigned i = 0;
-		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
-		       {
-			 unsigned c;
-			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-			 l->first = gam_info_vec[i][c];
-			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-			 l->second = gam_info_vec[i][c];
-			 dr(l,in);
-		       }
-		   }
-		   );
+     		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
+     		       {
+     			 unsigned c;
+     			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
+     			 l->first = gam_info_vec[c];
+     			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
+     			 l->second = gam_info_vec[c];
+     			 dr(l,in);
+     		       }
+     		   }
+     		   );
+
+    // using gam_info_t = std::map<unsigned,typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator>;
+    // std::vector< gam_info_t > gam_info_vec;
+    // mlocus_gametes->resize(nloci);
+    // //Read the haplotypes
+    // for( auto l = mlocus_gametes->begin();l != mlocus_gametes->end(); ++l )
+    //   {
+    // 	gam_info_vec.emplace_back( std::move( fwdpp_internal::read_haplotypes()(&*l,mutdata,in) ) );
+    //   }
+    // //read diploids
+    // using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator >::value_type;
+    
+    // unsigned ndips;
+    // fwdpp_internal::scalar_reader<unsigned>()(in,&ndips);
+    // diploids->resize(ndips, mloc_diploid_geno_t(nloci,diploid_geno_t()) );
+    // std::for_each( diploids->begin(), diploids->end(),
+    // 		   [&gam_info_vec,&in,&dr]( mloc_diploid_geno_t & diploid ) {
+    // 		     unsigned i = 0;
+    // 		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
+    // 		       {
+    // 			 unsigned c;
+    // 			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
+    // 			 l->first = gam_info_vec[i][c];
+    // 			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
+    // 			 l->second = gam_info_vec[i][c];
+    // 			 dr(l,in);
+    // 		       }
+    // 		   }
+    // 		   );
   }
 
   template< typename diploid_geno_t,

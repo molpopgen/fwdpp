@@ -6,13 +6,14 @@
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
 #include <fwdpp/internal/gamete_lookup_table.hpp>
+#include <fwdpp/internal/gamete_cleaner.hpp>
 
 namespace KTfwd
 {
   //single deme, N changing
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    typename glist_vector_type_allocator,
+	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -25,15 +26,17 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    template<typename,typename> class glist_vector_type,
+	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 glist_vector_type< gamete_list_type<gamete_type,
-		 gamete_list_type_allocator> ,
-		 glist_vector_type_allocator > * gametes,
+		 // IDEA:
+		 // glist_vector_type< gamete_list_type<gamete_type,
+		 // gamete_list_type_allocator> ,
+		 // glist_vector_type_allocator > * gametes,
+		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned & N_curr, 
@@ -114,10 +117,12 @@ namespace KTfwd
     assert(diploids->size()==N_next);
 
     //0.3.3: need lookup tables for gametes
-    std::vector<decltype(fwdpp_internal::gamete_lookup_table(&*gametes->begin()))> gamete_lookups;
-    for(auto itr = gametes->begin(); itr != gametes->end() ; ++itr )
-      gamete_lookups.emplace_back( fwdpp_internal::gamete_lookup_table(&*itr) );
-    
+    // std::vector<decltype(fwdpp_internal::gamete_lookup_table(&*gametes->begin()))> gamete_lookups;
+    // for(auto itr = gametes->begin(); itr != gametes->end() ; ++itr )
+    //   gamete_lookups.emplace_back( fwdpp_internal::gamete_lookup_table(&*itr) );
+
+    //0.3.3: requires change!
+    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
       {
 	assert(dptr==diploids->begin());
@@ -137,6 +142,15 @@ namespace KTfwd
 	//This is a trivial copying of iterators, so not that expensive
 	auto p1c = *(pptr+p1),
 	  p2c( *(pptr+p2) );
+	//IDEA: we must "Mendel" up here 0.3.3
+	if( gsl_rng_uniform(r) <= 0.5 )
+	  {
+	    for( auto i = p1c.begin() ; i != p1c.end() ; ++i ) std::swap(i->first,i->second);
+	  }
+	if( gsl_rng_uniform(r) <= 0.5 )
+	  {
+	    for( auto i = p2c.begin() ; i != p2c.end() ; ++i ) std::swap(i->first,i->second);
+	  }
 	/*
 	  Through 0.2.9, we just said assert(p1c == *(pptr+p1)) here.
 	  Oddly, that assert always fails if the type of a diploid is
@@ -161,57 +175,73 @@ namespace KTfwd
 
 	//For 3 locus (test/strobeck_morgan.cc), the dist. of 
 	//summary stats looks great vis-a-vis ms for N=20,theta=20,rho=1, N=1e3,10N gens
-	bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
-	  p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
+	//bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
+	//p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
+	//IDEA:
+	bool p1g1=true,p2g1=true,LO1=true,LO2=true;
 	auto ptr2cdip = (dptr+curr_dip)->begin();
-	bool LO1 = true, LO2 = true;
+	//bool LO1 = true, LO2 = true;
 	for ( unsigned i = 0 ; i < p1c.size() ; ++i )
 	  {
 	    //This entire bit from here...
 	    (ptr2cdip+i)->first = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
 								  r_between_loci,i,
 								  p1c[i].first,p1c[i].second,
+								  gamete_lookup,
 								  p1g1,LO1 );
 	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
 								   r_between_loci,i,
 								   p2c[i].first,p2c[i].second,
+								   gamete_lookup,
 								   p2g1,LO2 );
 	    (ptr2cdip+i)->first->n++;
 	    (ptr2cdip+i)->second->n++;
 
-	    (ptr2cdip+i)->first = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	    (ptr2cdip+i)->second = mutate_gamete( r,mu[i],&*(gametes->begin()+i),mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
+	    (ptr2cdip+i)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	    (ptr2cdip+i)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
 	  }
       }
 
+    //0.3.3: simpler!
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
+      {
+	if(!itr->n) itr = gametes->erase(itr);
+	else
+	  {
+	    adjust_mutation_counts(itr,itr->n);
+	    ++itr; 
+	  }
+      }
+    fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
+    //0.3.2 code:
     //update mutation counts in gametes
-    auto glist_updater = []( decltype( *(gametes->begin()) ) & __g) {
-      auto __first=__g.begin(),__last=__g.end();
-      decltype(__first) __temp;
-      while(__first!=__last)
-	{
-	  if(! __first->n)
-	    {
-	      __temp=__first;
-	      ++__first;
-	      __g.erase(__temp);
-	    }
-	  else
-	    {
-	      adjust_mutation_counts(__first,__first->n);
-	      ++__first;
-	    }
-	}
-    };
-    std::for_each( gametes->begin(), gametes->end(), std::cref(glist_updater) );
-    std::for_each(gametes->begin(),gametes->end(),
-		  [&mp](decltype( *(gametes->begin()) ) & g) {
-		    std::for_each(g.begin(),g.end(),
-				  [&mp](decltype( *(g.begin()) ) & __g) {
-				    __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
-				    __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
-				  });
-		  });
+    // auto glist_updater = []( decltype( *(gametes->begin()) ) & __g) {
+    //   auto __first=__g.begin(),__last=__g.end();
+    //   decltype(__first) __temp;
+    //   while(__first!=__last)
+    // 	{
+    // 	  if(! __first->n)
+    // 	    {
+    // 	      __temp=__first;
+    // 	      ++__first;
+    // 	      __g.erase(__temp);
+    // 	    }
+    // 	  else
+    // 	    {
+    // 	      adjust_mutation_counts(__first,__first->n);
+    // 	      ++__first;
+    // 	    }
+    // 	}
+    // };
+    // std::for_each( gametes->begin(), gametes->end(), std::cref(glist_updater) );
+    // std::for_each(gametes->begin(),gametes->end(),
+    // 		  [&mp](decltype( *(gametes->begin()) ) & g) {
+    // 		    std::for_each(g.begin(),g.end(),
+    // 				  [&mp](decltype( *(g.begin()) ) & __g) {
+    // 				    __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
+    // 				    __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
+    // 				  });
+    // 		  });
 #ifndef NDEBUG
     for ( auto i = gametes->begin() ; i != gametes->end() ; ++i )
       {
@@ -240,7 +270,7 @@ namespace KTfwd
   //single deme, constant N
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    typename glist_vector_type_allocator,
+	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -253,15 +283,17 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    template<typename,typename> class glist_vector_type,
+	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 glist_vector_type< gamete_list_type<gamete_type,
-		 gamete_list_type_allocator> ,
-		 glist_vector_type_allocator > * gametes,
+		 //IDEA:
+		 //glist_vector_type< gamete_list_type<gamete_type,
+		 //gamete_list_type_allocator> ,
+		 //glist_vector_type_allocator > * gametes,
+		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
 		 const unsigned & N,

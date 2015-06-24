@@ -40,16 +40,21 @@ namespace KTfwd {
 	This is the within-locus recombination policy.  It must conform
 	to any single-locus policy.
        */
-      unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
+      //IDEA: last # of xovers was "odd" in total.
+
       if ( i > 0 )
 	{
+	  if(!g1) std::swap(parental_gamete_1,parental_gamete_2);
 	  unsigned nrbw = bw(r,r_between_loci[i-1]);
 	  bool obw = (nrbw%2!=0) ? true : false;
 	  g1 = (LO) ? !g1 : g1;
 	  g1 = (obw) ? !g1 : g1;
 	}
+      unsigned temp = rec( parental_gamete_1,parental_gamete_2,gamete_lookup );
       LO = (temp % 2 != 0.) ? true : false;
-      return (g1) ? parental_gamete_1 : parental_gamete_2;
+      //return (g1) ? parental_gamete_1 : parental_gamete_2;
+      //IDEA:
+      return parental_gamete_1;
     }
   }
 }
