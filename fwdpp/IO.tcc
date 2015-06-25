@@ -15,7 +15,7 @@ namespace KTfwd
   //Binary I/O for individual-based simulation
 
   //Single-locus sims, single pop
-  template< typename diploid_geno_t,
+  template< template<typename,typename> class diploid_geno_t,
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
@@ -26,13 +26,13 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
-	    typename diploid_writer_t>
+	    typename diploid_writer_t = diploidIOplaceholder>
   void write_binary_pop ( const gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  const diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+			  const diploid_vector_type< diploid_geno_t<typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator>,vector_type_allocator > * diploids,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer,
-			  const diploid_writer_t & dw )
+			  const diploid_writer_t & dw = diploid_writer_t() )
   {
     auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer ); 
     auto gamdata = fwdpp_internal::write_haplotypes()( gametes, mutdata.first, mutdata.second, buffer );
@@ -48,7 +48,7 @@ namespace KTfwd
       }
   }
   
-  template< typename diploid_geno_t,
+  template< template<typename,typename> class diploid_geno_t,
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
@@ -59,13 +59,13 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type,
 	    typename mutation_reader_type,
 	    typename istreamtype,
-	    typename diploid_reader_t>
+	    typename diploid_reader_t=diploidIOplaceholder>
   void read_binary_pop (  gamete_list_type< gamete_type, gamete_list_type_allocator > * gametes,
 			  mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  diploid_vector_type< diploid_geno_t,vector_type_allocator > * diploids,
+			  diploid_vector_type< diploid_geno_t<typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator,typename gamete_list_type< gamete_type, gamete_list_type_allocator >::iterator>,vector_type_allocator > * diploids,
 			  const mutation_reader_type & mr,
 			  istreamtype & in,
-			  const diploid_reader_t & dr)
+			  const diploid_reader_t & dr = diploid_reader_t())
   {
     gametes->clear();
     mutations->clear();
@@ -86,12 +86,10 @@ namespace KTfwd
   }
 
   //multi-locus, single pop, ostream
-  template< typename diploid_geno_t,
+  template< template<typename,typename> class diploid_geno_t,
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
-	    //typename mlocus_vector_type_allocator,
-	    //template<typename,typename> class mlocus_vector_type,
 	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    template<typename,typename> class mutation_list_type,
@@ -101,14 +99,14 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
-	    typename diploid_writer_t>
+	    typename diploid_writer_t= diploidIOplaceholder>
   void  write_binary_pop ( //const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			  const gamete_list_type<gamete_type, gamete_list_type_allocator > * mlocus_gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			  const diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
+			  const diploid_vv_type <diploid_vector_type<diploid_geno_t<typename gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator,typename gamete_list_type<gamete_type,gamete_list_type_allocator>::iterator>, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer,
-			  const diploid_writer_t & dw )
+			  const diploid_writer_t & dw = diploid_writer_t() )
   {
     unsigned nloci = mlocus_gametes->size();
     buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
@@ -117,7 +115,7 @@ namespace KTfwd
     auto gamdata = fwdpp_internal::write_haplotypes()( mlocus_gametes, mutdata.first, mutdata.second, buffer );
     unsigned ndips=diploids->size();
     buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
-    using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator >::value_type;
+    using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t<typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator,typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator>, vector_type_allocator >,  diploid_vv_type_allocator >::value_type;
     std::for_each( diploids->cbegin(), diploids->cend(),
     		   [&gamdata,&buffer,&dw]( const mloc_diploid_geno_t & diploid ) {
     		     unsigned i = 0;
@@ -159,7 +157,7 @@ namespace KTfwd
   }
   
   //Multilocus, single-population, istream
-  template< typename diploid_geno_t,
+  template< template<typename,typename> class diploid_geno_t,
 	    typename gamete_type,
 	    typename gamete_list_type_allocator,
 	    template<typename,typename> class gamete_list_type,
@@ -174,14 +172,14 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_reader_type,
 	    typename istreamtype,
-	    typename diploid_reader_t>
+	    typename diploid_reader_t= diploidIOplaceholder>
   void read_binary_pop ( //mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			gamete_list_type< gamete_type, gamete_list_type_allocator> * mlocus_gametes,
 			 mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			 diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			diploid_vv_type < diploid_vector_type< diploid_geno_t<typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator,typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator> , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			 const mutation_reader_type & mr,
 			 istreamtype & in,
-			 const diploid_reader_t & dr )
+			const diploid_reader_t & dr = diploid_reader_t() )
   {
     mlocus_gametes->clear();
     mutations->clear();
@@ -192,10 +190,10 @@ namespace KTfwd
     //Read the mutations from the buffer
     auto mutdata = fwdpp_internal::read_mutations()( mutations,mr,in);
     auto gam_info_vec = fwdpp_internal::read_haplotypes()(mlocus_gametes,mutdata,in);
-    using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator >::value_type;
+    using mloc_diploid_geno_t = typename diploid_vv_type < diploid_vector_type< diploid_geno_t<typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator,typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator> , vector_type_allocator >, diploid_vv_type_allocator >::value_type;
     unsigned ndips;
     fwdpp_internal::scalar_reader<unsigned>()(in,&ndips);
-    diploids->resize(ndips, mloc_diploid_geno_t(nloci,diploid_geno_t()) );
+    diploids->resize(ndips, mloc_diploid_geno_t(nloci,diploid_geno_t<typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator,typename  gamete_list_type<gamete_type, gamete_list_type_allocator >::iterator>()) );
     std::for_each( diploids->begin(), diploids->end(),
 		   [&gam_info_vec,&in,&dr]( mloc_diploid_geno_t & diploid ) {
 		     unsigned i = 0;
@@ -254,13 +252,13 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vv_type,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
-	    typename diploid_writer_t>
+	    typename diploid_writer_t= diploidIOplaceholder>
   void write_binary_metapop (const gamete_list_type< gamete_type, gamete_list_type_allocator > * metapop,
 			     const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			     const diploid_vv_type < diploid_vector_type< diploid_geno_t , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			     const mutation_writer_type & mw,
 			     ostreamtype & buffer,
-			     const diploid_writer_t & dw )
+			     const diploid_writer_t & dw = diploid_writer_t())
   {
     unsigned NPOP = unsigned(diploids->size());
     buffer.write( reinterpret_cast<char *>(&NPOP), sizeof(unsigned) );
@@ -296,13 +294,13 @@ namespace KTfwd
   	    template<typename,typename> class diploid_vv_type,
   	    typename mutation_reader_type,
   	    typename istreamtype,
-	    typename diploid_reader_t>
+	    typename diploid_reader_t= diploidIOplaceholder>
   void read_binary_metapop (gamete_list_type< gamete_type, gamete_list_type_allocator > * metapop,
 			    mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			    diploid_vv_type < diploid_vector_type<diploid_geno_t ,vector_type_allocator >, diploid_vv_type_allocator > * diploids,
 			    const mutation_reader_type & mr,
 			    istreamtype & in,
-			    const diploid_reader_t & dr )
+			    const diploid_reader_t & dr = diploid_reader_t() )
   {
     metapop->clear();
     mutations->clear();
