@@ -8,6 +8,7 @@ Major changes:
 * The library internals now use different insertion methods during recombination.  We swtiched from copy(beg,end,back_inserter(x)) to x.insert(x.end(),beg,end), which results in less memory usage, and some run-time improvement for large simulations.
 * API change: the simplification of metapopulation containers in 0.3.2 means that we can make the recombination policies required for such simulations the same as for single-deme simulations.
 * The build system has been streamlined, with fewer dependencies and a greater emphasis on standard containers + Google's perftools.
+* The various read/write functions for serializations have been renamed--I simply couldn't get the template declarations to auto-deduce the types.  I gave up on this one, and so there's an API change.  On the plus side, IO.hpp/IO.tcc are more readable now.
 
 Minor changes:
 
