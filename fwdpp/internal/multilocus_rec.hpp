@@ -5,7 +5,8 @@
   The mechanics of crossing over for a multilocus
   simulation
  */
-
+#include <vector>
+#include <algorithm>
 #include <gsl/gsl_rng.h>
 
 namespace KTfwd {
@@ -28,19 +29,58 @@ namespace KTfwd {
       void?
      */
     template<typename diploid_type,
+	     typename diploid_type_itr,
+	     typename gamete_lookup_t,
 	     typename recombination_policy_container,
 	     typename bw_locus_rec_fxn
 	     >
     void multilocus_rec(gsl_rng * r,
-			diploid_type parent, //Copy--this is intentional
-			diploid_type & offspring, //non-const ref, again intentional
+			diploid_type parent1, //Copy--this is intentional
+			diploid_type parent2, //Copy--this is intentional
+			diploid_type_itr offspring, //non-const ref, again intentional
+			gamete_lookup_t & gamete_lookup,
 			const recombination_policy_container & rec_pols,
 			const bw_locus_rec_fxn & blrf,
-			double * r_bw_loci
+			const double * r_bw_loci,
+			const int iswitch1,
+			const int iswitch2
 			)
     {
       //I see the problem: how to get the positions ahead of time...
       //Maybe we can simply increment all downstream values by 1 if a swap is needed, and do so if odd?
+
+      std::vector<int> nswaps1(parent1.size(),iswitch1),nswaps2(parent2.size(),iswitch2);
+      std::vector<int>::iterator s1 = nswaps1.begin(),s2=nswaps2.begin();
+      typename diploid_type_itr::value_type::iterator optr = offspring->begin();
+      for( unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2,++optr )
+	{
+	  if(i)
+	    {
+	      // between-locus rec, parent 1
+	      unsigned nrbw = blrf(r,r_bw_loci[i-1]);
+	      //only modify if odd
+	      if(nrbw%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
+
+	      // between-locus rec, parent 2
+	      nrbw = blrf(r,r_bw_loci[i-1]);
+	      //only modify if odd
+	      if(nrbw%2!=0.) std::transform( s2,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
+	    }
+	  //if ttl # recs before now is odd, swap parental pointers
+	  if( *s1 % 2 != 0.) std::swap(parent1[i].first,parent1[i].second);
+	  if( *s2 % 2 != 0.) std::swap(parent2[i].first,parent2[i].second);
+
+	  //Assign pointers to offspring
+	  optr->first = parent1[i].first;
+	  optr->second = parent2[i].first;
+
+	  //mechanics of recombination
+	  unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup);
+	  if(nrec%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+
+	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup);
+	  if(nrec%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	}
     }
     
     /*! \brief The mechanics of recombination for multilocus simulations
