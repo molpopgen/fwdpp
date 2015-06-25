@@ -137,6 +137,7 @@ namespace KTfwd {
       unsigned NREC=0;
       assert(diploids->size()==N_next);
       decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
+      auto lookup = fwdpp_internal::gamete_lookup_table(gametes);
       for( unsigned i = 0 ; i < N_next ; ++i )
 	{
 	  assert(dptr==diploids->begin());
@@ -157,8 +158,8 @@ namespace KTfwd {
 	  if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
 	  if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
 	  
-	  NREC += rec_pol(p1g1,p1g2);
-	  NREC += rec_pol(p2g1,p2g2);
+	  NREC += rec_pol(p1g1,p1g2,lookup);
+	  NREC += rec_pol(p2g1,p2g2,lookup);
 	
 	  // (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
 	  // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
@@ -185,14 +186,11 @@ namespace KTfwd {
 	  assert( (dptr+i)->second->n <= 2*N_next );
 	}
 #endif
-      decltype(gametes->begin()) temp;
       for( auto itr = gametes->begin() ; itr != gametes->end() ;  )
 	{
 	  if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
 	    {
-	      temp = itr;
-	      ++itr;
-	      gametes->erase(temp);
+	      itr =gametes->erase(itr);
 	    }
 	  else //gamete remains extant and we adjust mut counts
 	    {
@@ -200,12 +198,7 @@ namespace KTfwd {
 	      ++itr;
 	    }
 	}
-      std::for_each( gametes->begin(),
-		     gametes->end(),
-		     [&mp](decltype( *(gametes->begin()) ) & __g ) {
-		       __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
-		       __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
-		     });
+      fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
       assert(check_sum(gametes,2*N_next));
       return pmr.wbar;
     }
