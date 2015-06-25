@@ -145,20 +145,22 @@ namespace KTfwd
 	//Segregation and crossing over done separately so that we can unit test it
 
 	auto cdip = (dptr+curr_dip);
-	fwdpp_internal::multilocus_rec(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
-				       rec_policies,blrf,r_between_loci,
-				       ((gsl_rng_uniform(r)<=0.5)?1:0),
-				       ((gsl_rng_uniform(r)<=0.5)?1:0));
+	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
+					   rec_policies,blrf,r_between_loci,
+					   ((gsl_rng_uniform(r)<=0.5)?1:0),
+					   ((gsl_rng_uniform(r)<=0.5)?1:0),
+					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
+					   );
 
 	//mutation -- this is no longer efficient as we go over data 2x.
-	unsigned i=0;
-	for( auto ptr2cdip = (dptr+curr_dip)->begin() ; ptr2cdip != (dptr+curr_dip)->end() ; ++ptr2cdip,++i )
-	  {
-	    (ptr2cdip)->first->n++;
-	    (ptr2cdip)->second->n++;
-	    (ptr2cdip)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->first,mmodel[i],mpolicy,gpolicy_mut);
-	    (ptr2cdip)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->second,mmodel[i],mpolicy,gpolicy_mut);
-	  }
+	// unsigned i=0;
+	// for( auto ptr2cdip = (dptr+curr_dip)->begin() ; ptr2cdip != (dptr+curr_dip)->end() ; ++ptr2cdip,++i )
+	//   {
+	//     (ptr2cdip)->first->n++;
+	//     (ptr2cdip)->second->n++;
+	//     (ptr2cdip)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->first,mmodel[i],mpolicy,gpolicy_mut);
+	//     (ptr2cdip)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->second,mmodel[i],mpolicy,gpolicy_mut);
+	//   }
 	//IDEA: we must "Mendel" up here 0.3.3
 	// if( gsl_rng_uniform(r) <= 0.5 )
 	//   {
