@@ -83,7 +83,7 @@ namespace KTfwd {
 										      mutations(mlist_t()),
 										      //gametes(vglist_t(__nloci,glist_t(1,gamete_t(2*__N)))),
 										      //IDEA:
-										      gametes(__nloci,glist_t(1,gamete_t(2*__N))),
+										      gametes(glist_t(1,gamete_t(2*__N))),
 										      diploids(dipvector_t()),
 										      mut_lookup(lookup_table_t()),
 										      fixations(mvector()),
