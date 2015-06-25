@@ -37,7 +37,7 @@ namespace KTfwd {
     void multilocus_rec(gsl_rng * r,
 			diploid_type parent1, //Copy--this is intentional
 			diploid_type parent2, //Copy--this is intentional
-			diploid_type_itr offspring, //non-const ref, again intentional
+			diploid_type_itr & offspring, //non-const ref, again intentional
 			gamete_lookup_t & gamete_lookup,
 			const recombination_policy_container & rec_pols,
 			const bw_locus_rec_fxn & blrf,
@@ -79,7 +79,7 @@ namespace KTfwd {
 	  if(nrec%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
 	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup);
-	  if(nrec%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	  if(nrec%2!=0.) std::transform( s2,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 	}
     }
     
