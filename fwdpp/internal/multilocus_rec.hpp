@@ -40,7 +40,7 @@ namespace KTfwd {
 	     typename mutation_insertion_policy,
 	     typename gamete_insertion_policy
 #else
-	     typename bw_locus_rec_fxn>
+	     typename bw_locus_rec_fxn
 #endif
     >
     void multilocus_rec_mut(gsl_rng * r,
