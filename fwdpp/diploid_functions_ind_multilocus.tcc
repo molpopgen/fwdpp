@@ -140,17 +140,34 @@ namespace KTfwd
      
 	//Need to store a vector of the equivalent of p1g1,p1g2 out to p1gn,p2gn
 	//This is a trivial copying of iterators, so not that expensive
-	auto p1c = *(pptr+p1),
-	  p2c( *(pptr+p2) );
+	//auto p1c = *(pptr+p1),
+	//	  p2c( *(pptr+p2) );
+	//Segregation and crossing over done separately so that we can unit test it
+
+	auto cdip = (dptr+curr_dip);
+	fwdpp_internal::multilocus_rec(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
+				       rec_policies,blrf,r_between_loci,
+				       ((gsl_rng_uniform(r)<=0.5)?1:0),
+				       ((gsl_rng_uniform(r)<=0.5)?1:0));
+
+	//mutation -- this is no longer efficient as we go over data 2x.
+	unsigned i=0;
+	for( auto ptr2cdip = (dptr+curr_dip)->begin() ; ptr2cdip != (dptr+curr_dip)->end() ; ++ptr2cdip,++i )
+	  {
+	    (ptr2cdip)->first->n++;
+	    (ptr2cdip)->second->n++;
+	    (ptr2cdip)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->first,mmodel[i],mpolicy,gpolicy_mut);
+	    (ptr2cdip)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->second,mmodel[i],mpolicy,gpolicy_mut);
+	  }
 	//IDEA: we must "Mendel" up here 0.3.3
-	if( gsl_rng_uniform(r) <= 0.5 )
-	  {
-	    for( auto i = p1c.begin() ; i != p1c.end() ; ++i ) std::swap(i->first,i->second);
-	  }
-	if( gsl_rng_uniform(r) <= 0.5 )
-	  {
-	    for( auto i = p2c.begin() ; i != p2c.end() ; ++i ) std::swap(i->first,i->second);
-	  }
+	// if( gsl_rng_uniform(r) <= 0.5 )
+	//   {
+	//     for( auto i = p1c.begin() ; i != p1c.end() ; ++i ) std::swap(i->first,i->second);
+	//   }
+	// if( gsl_rng_uniform(r) <= 0.5 )
+	//   {
+	//     for( auto i = p2c.begin() ; i != p2c.end() ; ++i ) std::swap(i->first,i->second);
+	//   }
 	/*
 	  Through 0.2.9, we just said assert(p1c == *(pptr+p1)) here.
 	  Oddly, that assert always fails if the type of a diploid is
@@ -178,41 +195,41 @@ namespace KTfwd
 	//bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
 	//p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
 	//IDEA:
-	bool p1g1=true,p2g1=true,LO1=true,LO2=true,swapped1=false,swapped2=false;
-	auto ptr2cdip = (dptr+curr_dip)->begin();
+	//bool p1g1=true,p2g1=true,LO1=true,LO2=true,swapped1=false,swapped2=false;
+	//auto ptr2cdip = (dptr+curr_dip)->begin();
 	//bool LO1 = true, LO2 = true;
-	for ( unsigned i = 0 ; i < p1c.size() ; ++i )
-	  {
-	    //This entire bit from here...
-	    (ptr2cdip+i)->first = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
-								  r_between_loci,i,
-								  p1c[i].first,p1c[i].second,
-								  gamete_lookup,
-								  p1g1,LO1,swapped1 );
+	// for ( unsigned i = 0 ; i < p1c.size() ; ++i )
+	//   {
+	//     //This entire bit from here...
+	//     (ptr2cdip+i)->first = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
+	// 							  r_between_loci,i,
+	// 							  p1c[i].first,p1c[i].second,
+	// 							  gamete_lookup,
+	// 							  p1g1,LO1,swapped1 );
 
-	    if ( swapped1 ) {
-	      for( auto itr = p1c.begin() + i + 1 ; itr < p1c.end() ; ++itr )
-	    	{
-	    	  std::swap( itr->first, itr->second );
-	    	}
-	    }
-	    (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
-								   r_between_loci,i,
-								   p2c[i].first,p2c[i].second,
-								   gamete_lookup,
-								   p2g1,LO2,swapped2 );
-	    if ( swapped2 ) {
-	      for( auto itr = p2c.begin() + i + 1 ; itr < p2c.end() ; ++itr )
-	    	{
-	    	  std::swap( itr->first, itr->second );
-	    	}
-	    }
-	    (ptr2cdip+i)->first->n++;
-	    (ptr2cdip+i)->second->n++;
+	//     if ( swapped1 ) {
+	//       for( auto itr = p1c.begin() + i + 1 ; itr < p1c.end() ; ++itr )
+	//     	{
+	//     	  std::swap( itr->first, itr->second );
+	//     	}
+	//     }
+	//     (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
+	// 							   r_between_loci,i,
+	// 							   p2c[i].first,p2c[i].second,
+	// 							   gamete_lookup,
+	// 							   p2g1,LO2,swapped2 );
+	//     if ( swapped2 ) {
+	//       for( auto itr = p2c.begin() + i + 1 ; itr < p2c.end() ; ++itr )
+	//     	{
+	//     	  std::swap( itr->first, itr->second );
+	//     	}
+	//     }
+	//     (ptr2cdip+i)->first->n++;
+	//     (ptr2cdip+i)->second->n++;
 
-	    (ptr2cdip+i)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	    (ptr2cdip+i)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
-	  }
+	//     (ptr2cdip+i)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
+	//     (ptr2cdip+i)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
+	//   }
       }
 
     //0.3.3: simpler!
