@@ -59,12 +59,12 @@ namespace KTfwd {
 	      // between-locus rec, parent 1
 	      unsigned nrbw = blrf(r,r_bw_loci[i-1]);
 	      //only modify if odd
-	      if(nrbw%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
+	      if(nrbw%2!=0.) std::transform( s1,nswaps1.end(),s1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
 
 	      // between-locus rec, parent 2
 	      nrbw = blrf(r,r_bw_loci[i-1]);
 	      //only modify if odd
-	      if(nrbw%2!=0.) std::transform( s2,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
+	      if(nrbw%2!=0.) std::transform( s2,nswaps2.end(),s2,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
 	    }
 	  //if ttl # recs before now is odd, swap parental pointers
 	  if( *s1 % 2 != 0.) std::swap(parent1[i].first,parent1[i].second);
@@ -76,10 +76,10 @@ namespace KTfwd {
 
 	  //mechanics of recombination
 	  unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup);
-	  if(nrec%2!=0.) std::transform( s1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	  if(nrec%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
 	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup);
-	  if(nrec%2!=0.) std::transform( s2,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	  if(nrec%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 	}
     }
     
