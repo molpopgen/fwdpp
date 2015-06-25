@@ -5202,8 +5202,6 @@ else
   as_fn_error $? "libsequence runtime library does not seem to be here" "$LINENO" 5
 fi
 
-if test x$enable_boost = xyes
-then
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
 $as_echo_n "checking for main in -lboost_system... " >&6; }
 if ${ac_cv_lib_boost_system_main+:} false; then :
@@ -5242,10 +5240,10 @@ _ACEOF
   LIBS="-lboost_system $LIBS"
 
 else
-  as_fn_error $? "boost containers requested but the boost_system runtime library does not seem to be here" "$LINENO" 5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&5
+$as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
 fi
 
-fi
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'

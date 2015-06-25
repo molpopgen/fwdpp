@@ -65,10 +65,7 @@ AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
           AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([libsequence runtime library does not seem to be here])])
-if test x$enable_boost = xyes
-then
-	  AC_CHECK_LIB(boost_system,main,,[AC_MSG_ERROR([boost containers requested but the boost_system runtime library does not seem to be here])])
-fi
+	  AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
 AC_LANG_RESTORE
 
 dnl AC_CONFIG_HEADER(config.h)
