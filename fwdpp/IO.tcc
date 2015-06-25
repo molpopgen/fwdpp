@@ -100,7 +100,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t= diploidIOplaceholder>
-  void  write_binary_pop ( //const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+  void  write_binary_pop_mloc ( //const mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
 			  const gamete_list_type<gamete_type, gamete_list_type_allocator > * mlocus_gametes,
 			  const mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
 			  const diploid_vv_type <diploid_vector_type<diploid_geno_t, vector_type_allocator >,  diploid_vv_type_allocator > * diploids,
@@ -173,13 +173,13 @@ namespace KTfwd
 	    typename mutation_reader_type,
 	    typename istreamtype,
 	    typename diploid_reader_t= diploidIOplaceholder>
-  void read_binary_pop ( //mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
-			gamete_list_type< gamete_type, gamete_list_type_allocator> * mlocus_gametes,
-			mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
-			diploid_vv_type < diploid_vector_type< diploid_geno_t  , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
-			const mutation_reader_type & mr,
-			istreamtype & in,
-			const diploid_reader_t & dr = diploid_reader_t() )
+  void read_binary_pop_mloc ( //mlocus_vector_type< gamete_list_type< gamete_type, gamete_list_type_allocator >, mlocus_vector_type_allocator> * mlocus_gametes,
+			     gamete_list_type< gamete_type, gamete_list_type_allocator> * mlocus_gametes,
+			     mutation_list_type< mutation_type, mutation_list_type_allocator > * mutations,
+			     diploid_vv_type < diploid_vector_type< diploid_geno_t  , vector_type_allocator >, diploid_vv_type_allocator > * diploids,
+			     const mutation_reader_type & mr,
+			     istreamtype & in,
+			     const diploid_reader_t & dr = diploid_reader_t() )
   {
     mlocus_gametes->clear();
     mutations->clear();
