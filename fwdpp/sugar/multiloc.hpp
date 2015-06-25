@@ -32,10 +32,10 @@ namespace KTfwd
 				   boost::container::vector<boost::container::vector<diploid_t>>,
 				   //IDEA:
 				   //boost::container::vector<multiloc_glist_t<mtype>>,
-				   boost::container::list<multiloc_gamete_t<mtype>, boost::fast_pool_allocator<multiloc_gamete_t<mtype>>>,
+				   //boost::container::list<multiloc_gamete_t<mtype>, boost::fast_pool_allocator<multiloc_gamete_t<mtype>>>,
 				   boost::container::vector<mtype>,
 				   boost::container::vector<unsigned>,
-				   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>>;
+				   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps> >;
 
   /*!
     \brief Single population, multilocus simulation with serialization.  Can be copied, etc.
