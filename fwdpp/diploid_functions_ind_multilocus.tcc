@@ -13,7 +13,6 @@ namespace KTfwd
   //single deme, N changing
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -26,16 +25,11 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 // IDEA:
-		 // glist_vector_type< gamete_list_type<gamete_type,
-		 // gamete_list_type_allocator> ,
-		 // glist_vector_type_allocator > * gametes,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
@@ -54,15 +48,7 @@ namespace KTfwd
   {
 #ifndef NDEBUG
     assert(diploids->size()==N_curr);
-#endif
-
-    //Adjust all mutation frequencies down to 0
-    // for( auto itr = mutations->begin() ;
-    // 	 itr != mutations->end() ; ++itr )
-    //   {
-    // 	itr->n = 0;
-    //   }
-  
+#endif  
     //Vector of parental fitnesses
     std::vector<double> fitnesses(N_curr);
     double wbar = 0.;
@@ -92,10 +78,7 @@ namespace KTfwd
     */
     for ( auto i = gametes->cbegin() ; i != gametes->cend() ; ++i )
       {
-	//for (auto gptr = i->cbegin() ; gptr != i->cend() ; ++gptr )
-	//{
 	    assert( ! i->n );
-	    //}
       }
 #endif
 
@@ -116,12 +99,6 @@ namespace KTfwd
   
     assert(diploids->size()==N_next);
 
-    //0.3.3: need lookup tables for gametes
-    // std::vector<decltype(fwdpp_internal::gamete_lookup_table(&*gametes->begin()))> gamete_lookups;
-    // for(auto itr = gametes->begin(); itr != gametes->end() ; ++itr )
-    //   gamete_lookups.emplace_back( fwdpp_internal::gamete_lookup_table(&*itr) );
-
-    //0.3.3: requires change!
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     for( unsigned curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
       {
@@ -138,12 +115,6 @@ namespace KTfwd
 	assert(p1<N_curr);
 	assert(p2<N_curr);
      
-	//Need to store a vector of the equivalent of p1g1,p1g2 out to p1gn,p2gn
-	//This is a trivial copying of iterators, so not that expensive
-	//auto p1c = *(pptr+p1),
-	//	  p2c( *(pptr+p2) );
-	//Segregation and crossing over done separately so that we can unit test it
-
 	auto cdip = (dptr+curr_dip);
 	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
 					   rec_policies,blrf,r_between_loci,
@@ -151,87 +122,6 @@ namespace KTfwd
 					   ((gsl_rng_uniform(r)<=0.5)?1:0),
 					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
 					   );
-
-	//mutation -- this is no longer efficient as we go over data 2x.
-	// unsigned i=0;
-	// for( auto ptr2cdip = (dptr+curr_dip)->begin() ; ptr2cdip != (dptr+curr_dip)->end() ; ++ptr2cdip,++i )
-	//   {
-	//     (ptr2cdip)->first->n++;
-	//     (ptr2cdip)->second->n++;
-	//     (ptr2cdip)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->first,mmodel[i],mpolicy,gpolicy_mut);
-	//     (ptr2cdip)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip)->second,mmodel[i],mpolicy,gpolicy_mut);
-	//   }
-	//IDEA: we must "Mendel" up here 0.3.3
-	// if( gsl_rng_uniform(r) <= 0.5 )
-	//   {
-	//     for( auto i = p1c.begin() ; i != p1c.end() ; ++i ) std::swap(i->first,i->second);
-	//   }
-	// if( gsl_rng_uniform(r) <= 0.5 )
-	//   {
-	//     for( auto i = p2c.begin() ; i != p2c.end() ; ++i ) std::swap(i->first,i->second);
-	//   }
-	/*
-	  Through 0.2.9, we just said assert(p1c == *(pptr+p1)) here.
-	  Oddly, that assert always fails if the type of a diploid is
-	  boost::container::vector< std::pairs of iterators to gametes >.
-	*/
-#ifndef NDEBUG
-	// for(unsigned i = 0 ; i < p1c.size() ; ++i )
-	//   {
-	//     assert( (p1c.begin()+i)->first == ((pptr+p1)->begin()+i)->first );
-	//     assert( (p1c.begin()+i)->second == ((pptr+p1)->begin()+i)->second );
-	//   }
-	// for(unsigned i = 0 ; i < p2c.size() ; ++i )
-	//   {
-	//     assert( (p2c.begin()+i)->first == ((pptr+p2)->begin()+i)->first );
-	//     assert( (p2c.begin()+i)->second == ((pptr+p2)->begin()+i)->second );
-	//   }
-#endif
-
-	//Using just the routines below give correct E[S] for n = 20.
-	//recombination, too! OK--this seems good based on some limited testing.
-	//All testing so far based on n=2 using strobeck_morgan.cc
-
-	//For 3 locus (test/strobeck_morgan.cc), the dist. of 
-	//summary stats looks great vis-a-vis ms for N=20,theta=20,rho=1, N=1e3,10N gens
-	//bool p1g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false,
-	//p2g1 = (gsl_rng_uniform(r) <= 0.5) ? true : false;
-	//IDEA:
-	//bool p1g1=true,p2g1=true,LO1=true,LO2=true,swapped1=false,swapped2=false;
-	//auto ptr2cdip = (dptr+curr_dip)->begin();
-	//bool LO1 = true, LO2 = true;
-	// for ( unsigned i = 0 ; i < p1c.size() ; ++i )
-	//   {
-	//     //This entire bit from here...
-	//     (ptr2cdip+i)->first = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
-	// 							  r_between_loci,i,
-	// 							  p1c[i].first,p1c[i].second,
-	// 							  gamete_lookup,
-	// 							  p1g1,LO1,swapped1 );
-
-	//     if ( swapped1 ) {
-	//       for( auto itr = p1c.begin() + i + 1 ; itr < p1c.end() ; ++itr )
-	//     	{
-	//     	  std::swap( itr->first, itr->second );
-	//     	}
-	//     }
-	//     (ptr2cdip+i)->second = fwdpp_internal::multilocus_rec( r,rec_policies[i],blrf,
-	// 							   r_between_loci,i,
-	// 							   p2c[i].first,p2c[i].second,
-	// 							   gamete_lookup,
-	// 							   p2g1,LO2,swapped2 );
-	//     if ( swapped2 ) {
-	//       for( auto itr = p2c.begin() + i + 1 ; itr < p2c.end() ; ++itr )
-	//     	{
-	//     	  std::swap( itr->first, itr->second );
-	//     	}
-	//     }
-	//     (ptr2cdip+i)->first->n++;
-	//     (ptr2cdip+i)->second->n++;
-
-	//     (ptr2cdip+i)->first = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->first,mmodel[i],mpolicy,gpolicy_mut);
-	//     (ptr2cdip+i)->second = mutate_gamete( r,mu[i],gametes,mutations,(ptr2cdip+i)->second,mmodel[i],mpolicy,gpolicy_mut);	 
-	//   }
       }
 
     //0.3.3: simpler!
@@ -245,57 +135,6 @@ namespace KTfwd
 	  }
       }
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
-    //0.3.2 code:
-    //update mutation counts in gametes
-    // auto glist_updater = []( decltype( *(gametes->begin()) ) & __g) {
-    //   auto __first=__g.begin(),__last=__g.end();
-    //   decltype(__first) __temp;
-    //   while(__first!=__last)
-    // 	{
-    // 	  if(! __first->n)
-    // 	    {
-    // 	      __temp=__first;
-    // 	      ++__first;
-    // 	      __g.erase(__temp);
-    // 	    }
-    // 	  else
-    // 	    {
-    // 	      adjust_mutation_counts(__first,__first->n);
-    // 	      ++__first;
-    // 	    }
-    // 	}
-    // };
-    // std::for_each( gametes->begin(), gametes->end(), std::cref(glist_updater) );
-    // std::for_each(gametes->begin(),gametes->end(),
-    // 		  [&mp](decltype( *(gametes->begin()) ) & g) {
-    // 		    std::for_each(g.begin(),g.end(),
-    // 				  [&mp](decltype( *(g.begin()) ) & __g) {
-    // 				    __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
-    // 				    __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
-    // 				  });
-    // 		  });
-#ifndef NDEBUG
-    // for ( auto i = gametes->begin() ; i != gametes->end() ; ++i )
-    //   {
-    // 	unsigned sum = 0;
-    // 	for (auto gptr = i->begin() ; gptr != i->end() ; ++gptr )
-    // 	  {
-    // 	    //make sure that mutation frequencies are >= gamete frequencies
-    // 	    for( decltype(gptr->mutations.size()) j = 0 ; j < gptr->mutations.size() ; ++j )
-    // 	      {
-    // 		assert( gptr->mutations[j]->n >= gptr->n );
-    // 	      }
-    // 	    for( decltype(gptr->smutations.size()) j = 0 ; j < gptr->smutations.size() ; ++j )
-    // 	      {
-    // 		assert( gptr->smutations[j]->n >= gptr->n );
-    // 	      }
-	    
-    // 	    sum += gptr->n;
-    // 	    assert( sum && sum <= 2*N_next );
-    // 	  }
-    // 	assert(sum == 2*N_next);
-    //   }
-#endif
     return wbar;
   }
 

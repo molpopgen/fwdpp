@@ -38,19 +38,11 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    //typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
-    //temp;
-    
-    //while(i != mutations->end())
     for(auto i = mutations->begin(); i != mutations->end() ; )
       {
-	//0.3.3
-	//i->checked = false;
-	//if( i->n == 0 )
 	if(!i->checked)
 	  {
 	    i = mutations->erase(i);
-	    //i=mutations->begin();
 	  }
 	  else
 	  {
@@ -112,23 +104,16 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
 		   "mutation_type must be derived from KTfwd::mutation_base" );
-    // typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),temp;
-    
-    //while(i != mutations->end())
     for(auto i = mutations->begin() ; i != mutations->end() ; )
       {
 	assert(i->n <= twoN);			
-	//i->checked = false;
 	if(i->n==twoN )
 	  {
 	    fixations->push_back(*i);
 	    fixation_times->push_back(generation);
 	  }
-	//if( i->n == 0 || i->n == twoN )
 	if( !i->checked || i->n == twoN )
 	  {
-	    //temp=i;
-	    //++i;
 	    i=mutations->erase(i);
 	  }
 	else
@@ -161,26 +146,18 @@ namespace KTfwd
     for(auto i=mutations->begin();i!=mutations->end();)
       {
 	assert(i->n <= twoN);
-	//0.3.3
-	//i->checked = false;
 	if(i->n==twoN )
 	  {
 	    fixations->push_back(*i);
 	    fixation_times->push_back(generation);
 	  }
-	//0.3.3: !checked is logically equivalent to i->n==0
-	//if( i->n == 0 || i->n == twoN )
 	if(!i->checked ||  i->n == twoN )
 	  {
 	    lookup->erase(lookup->find(i->pos));
-	    //temp=i;
-	    //++i;
 	    i = mutations->erase(i);
-	    //mutations->erase(temp);
 	  }
 	else
 	  {
-	    //0.3.3
 	    i->checked=false;
 	    ++i;
 	  }

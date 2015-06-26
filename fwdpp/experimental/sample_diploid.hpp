@@ -68,14 +68,8 @@ namespace KTfwd {
 
       //! \brief Update some property of the offspring based on properties of the parents
       template<typename offspring_itr_t, typename parent_itr_t>
-      void update(gsl_rng * r, offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
+      void update(gsl_rng * , offspring_itr_t , parent_itr_t , parent_itr_t ) const
       {
-	//static asserts suppress hideously-long compiler warnings on GCC
-	static_assert( std::is_pointer<decltype(r)>::value, "r must be a pointer" );
-	static_assert(!std::is_const< typename std::remove_pointer<typename decltype(offspring)::pointer>::type >::value , "offpsring must point to non-const data");
-	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
-	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p2_itr)::pointer>::type >::value , "p2_itr must point to const data");
-	return;
       }
 
     };

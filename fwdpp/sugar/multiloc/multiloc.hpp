@@ -24,7 +24,6 @@ namespace KTfwd {
 	     typename mlist,
 	     typename glist,
 	     typename dipvector,
-	     //typename vglist,
 	     typename mvector,
 	     typename ftvector,
 	     typename lookup_table_type>
@@ -40,7 +39,7 @@ namespace KTfwd {
       //! Vector of vector of diploids
       // using vdipvector_t = vdipvector;
       //! Vector of diploids
-      using dipvector_t = dipvector;//typename vdipvector_t::value_type;
+      using dipvector_t = dipvector;
       //! Diploid type (vector<std::pair<glist_t::iterator,glist_t::iterator>)
       using diploid_t = typename dipvector_t::value_type;
       //! Linked list of mutations
@@ -59,8 +58,6 @@ namespace KTfwd {
       //! Population size
       unsigned N;
       mlist_t mutations;
-      //IDEA:
-      //vglist_t gametes;
       glist_t gametes;
       dipvector_t diploids;
       //! Vectors for recombination intermediates
@@ -81,8 +78,6 @@ namespace KTfwd {
       multiloc(const unsigned & __N, const unsigned & __nloci,
 	       typename gamete_t::mutation_container::size_type reserve_size = 100) : N(__N),
 										      mutations(mlist_t()),
-										      //gametes(vglist_t(__nloci,glist_t(1,gamete_t(2*__N)))),
-										      //IDEA:
 										      gametes(glist_t(1,gamete_t(2*__N))),
 										      diploids(dipvector_t()),
 										      mut_lookup(lookup_table_t()),
@@ -93,14 +88,6 @@ namespace KTfwd {
 	diploids = dipvector_t(N,diploid_t(__nloci,typename diploid_t::value_type(gitr,gitr)));
 	neutral.reserve(reserve_size);
 	selected.reserve(reserve_size);
-	/*
-	diploid_t idip;
-	for( auto gitr = gametes.begin() ; gitr != gametes.end() ; ++gitr )
-	  {
-	    idip.emplace_back(typename diploid_t::value_type(gitr->begin(),gitr->begin()));
-	  }
-	diploids = dipvector_t(N,idip);
-	*/
       }
 
       //! Move constructor
@@ -186,8 +173,6 @@ namespace KTfwd {
       //! Population size
       unsigned N;
       mlist_t mutations;
-      //IDEA:
-      //vglist_t gametes;
       glist_t gametes;
       dipvector_t diploids;
       //! Vectors for recombination intermediates
@@ -209,8 +194,6 @@ namespace KTfwd {
       multiloc_serialized(const unsigned & __N, const unsigned & __nloci,
 			  typename gamete_t::mutation_container::size_type reserve_size = 100) : N(__N),
 												 mutations(mlist_t()),
-												 //IDEA:
-												 //gametes(vglist_t(__nloci,glist_t(1,gamete_t(2*__N)))),
 												 gametes(glist_t(1,gamete_t(2*__N))),
 												 diploids(dipvector_t()),
 												 mut_lookup(lookup_table_t()),
@@ -221,12 +204,6 @@ namespace KTfwd {
 	diploids = dipvector_t(N,diploid_t(__nloci,typename diploid_t::value_type(gitr,gitr)));
 	neutral.reserve(reserve_size);
 	selected.reserve(reserve_size);
-	// diploid_t idip;
-	// for( auto gitr = gametes.begin() ; gitr != gametes.end() ; ++gitr )
-	//   {
-	//     idip.emplace_back(typename diploid_t::value_type(gitr->begin(),gitr->begin()));
-	//   }
-	// diploids = dipvector_t(N,idip);
       }
 
       //! Move constructor

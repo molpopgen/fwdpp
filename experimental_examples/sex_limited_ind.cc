@@ -206,9 +206,8 @@ struct sexSpecificRules
 
   //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
   template<typename diploid_itr_t>
-  inline size_t pick2(gsl_rng * r, const size_t & p1, const diploid_itr_t & p1_itr, const double & f ) const
+  inline size_t pick2(gsl_rng * r, const size_t & , const diploid_itr_t & , const double & ) const
   {
-    static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
     return female_indexes[gsl_ran_discrete(r,female_lookup.get())];
   }
   

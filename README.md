@@ -52,7 +52,7 @@ Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when 
 
 ##Which C++?
 
-As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC (4.8 or greater) and clang (3.4 or greater, but I've not checked earlier versions) both support this option, which covers most Linux and OS X users.
+As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC  and clang both support this option, which covers most Linux and OS X users.
 
 ##Citation
 
@@ -109,8 +109,23 @@ The examples can be read in html form via the online reference manual linked to 
 
 You must have the following on your system:
 
-1. A C++ compiler equivalent to gcc 4.6 or greater.  On OS X, this likely means that you should be running OS X Mavericks with Xcode installed, and have then installed the command line tools (which is done from within Xcode.)
+1. A C++ compiler that supports the C++11 language standard.
 2. Ideally, one should have the [git](http://git-scm.com/book/en/Getting-Started-Installing-Git) command line tools installed.  These are likely already installed on many systems.
+
+I have tested the library on my development machine (64-bit Intel processor, Ubuntu 14.04) with the following compilers:
+
+| Compiler | Version | Compatible? | Notes |
+|:-----:|:-----:|:-----:|:-----:|
+| GCC | 4.6.4 | __NO__ | Does not support the -std=c++11 flag|
+| GCC | 4.7.3 | __NO__ | Does not like one of the [libsequence](http://github.com/molpopgen/libsequence) headers.  Fails at ./configure |
+| GCC | 4.8.2 | __YES__ | |
+| GCC | 4.9.2 | __YES__ | |
+| GCC | 5.1 | __YES__ | |
+| clang++  | 3.5  | __YES__ | |
+| clang++  | 3.6  | __YES__ | |
+
+Please note that one unit test (policyTests) will show some test failures on GCC.  This is known, and fine.  That unit test basically shows that GCC sometimes chooses to copy an objects instead of move it, even when a move is requested.  Clang++, however, moves.  This has no effect on simulation correctness.  Rather, this unit test helps me understand some of the nuances that distinguish clang++ from g++.
+
 
 ##Library dependencies
 

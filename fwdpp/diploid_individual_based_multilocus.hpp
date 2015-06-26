@@ -10,7 +10,6 @@ namespace KTfwd
    */
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -23,16 +22,11 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 //IDEA:
-		 //glist_vector_type< gamete_list_type<gamete_type,
-		 //gamete_list_type_allocator> ,
-		 //glist_vector_type_allocator > * gametes,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
@@ -55,7 +49,6 @@ namespace KTfwd
   //single deme, constant N
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -68,16 +61,11 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 //IDEA:
-		 //glist_vector_type< gamete_list_type<gamete_type,
-		 //gamete_list_type_allocator> ,
-		 //glist_vector_type_allocator > * gametes,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 

@@ -77,9 +77,6 @@ namespace KTfwd
   {
     assert(N_curr == diploids->size());
 
-    //0.3.3: do not set mutation counts to zero.  Postpone until removal!
-    //std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
-
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
     
@@ -174,35 +171,6 @@ namespace KTfwd
 	  }
       }
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
-    /*
-    std::for_each( gametes->begin(),
-		   gametes->end(),
-		   [&mp](decltype( *(gametes->begin()) ) & __g ) {
-		     __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
-		     __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
-		   });
-    */
-    //<= 0.3.2:
-    // for( auto itr = gametes->begin() ; itr != gametes->end() ;  )
-    //   {
-    // 	if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
-    // 	  {
-    // 	    temp = itr;
-    // 	    ++itr;
-    // 	    gametes->erase(temp);
-    // 	  }
-    // 	else //gamete remains extant and we adjust mut counts
-    // 	  {
-    // 	    adjust_mutation_counts(itr,itr->n);
-    // 	    ++itr;
-    // 	  }
-    //   }
-    // std::for_each( gametes->begin(),
-    // 		    gametes->end(),
-    // 		    [&mp](decltype( *(gametes->begin()) ) & __g ) {
-    // 		      __g.mutations.erase( std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end() );
-    // 		      __g.smutations.erase( std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end() );
-    // 		    });
     assert(check_sum(gametes,2*N_next));
     return wbar;
   }
@@ -281,10 +249,6 @@ namespace KTfwd
 		 const migration_policy & mig,
 		 const double * f)
 	    {
-
-	      //0.3.3: don't set n to 0 any more
-	      //std::for_each(mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){ __m.n=0; });
-
 	      //get the fitnesses for each diploid in each deme and make the lookup table of parental fitnesses
 	      using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
 	      std::vector<lookup_t> lookups;
@@ -393,8 +357,6 @@ namespace KTfwd
 
 		      (dptr+i)->first = p1g1;
 		      (dptr+i)->second = p2g1;
-		      //(dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-		      //(dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
 		      assert( std::find( (metapop)->begin(), (metapop)->end(), *( (dptr+i)->second ) )
 			      != (metapop)->end() );
 
@@ -415,30 +377,6 @@ namespace KTfwd
 		    }
 		}
 	      fwdpp_internal::gamete_cleaner(metapop,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
-	      //get rid of extinct stuff, etc.
-	      /*
-	      for(auto gptr = metapop->begin(), temp = gptr ; gptr != metapop->end() ; ) 
-		{
-		      if( gptr->n == 0 )//extinct gamete, remove it
-			{
-			  temp = gptr;
-			  ++gptr;
-			  metapop->erase(temp);
-			}
-		      else
-			{
-			  adjust_mutation_counts(gptr,gptr->n);
-			  ++gptr;
-			}
-		}
-	      */
-	      /*
-	      for(auto gptr = metapop->begin() ; gptr != metapop->end() ; ++gptr)
-		  {
-		    gptr->mutations.erase( std::remove_if(gptr->mutations.begin(),gptr->mutations.end(),mp), gptr->mutations.end() );
-		    gptr->smutations.erase( std::remove_if(gptr->smutations.begin(),gptr->smutations.end(),mp), gptr->smutations.end() );
-		  }
-	      */
 	      return wbars;
 	    }
 }
