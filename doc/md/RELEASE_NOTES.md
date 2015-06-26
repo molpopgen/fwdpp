@@ -2,6 +2,15 @@
 
 ##0.3.3
 
+This release of __fwdpp__ includes major performance improvements.  The short version of the story is:
+
+* Linked lists are traversed less often each generation compared to previous versions.
+* An (extremely) expensive linear-time search of a linked list that previously occurred after _every_ recombination event has been eliminated, and replaced with a very fast log-time search of a lookup table.
+* The containers required for storing the intermediate steps of recombination are now allocated at most once per replicate, and their capacity is adjusted as needed during the simulation.  Previously, these containers were allocated for every crossover event.
+* The way that mutations are copied during recombination has been changed from a call to std::copy to the vector's insert member function, resulting in fewer reallocations during copying.
+
+The result is much better scaling with large population size and recombination rates.
+
 Major changes:
 
 * Crossing over has been streamlined.  Unfortunately, this changes the library API.  However, run times improve substantially.
@@ -15,9 +24,6 @@ Minor changes:
 * KTfwd::serialize now has a default constructor and a move constructor defined, allowing it to be a member of another class, which helps things in [foRward](http://github.com/molpopgen/foRward).
 * KTfwd::serialize can now be used to serialize multiple records into a single buffer.  
 * A "validation suite" has been added.  This is mostly for the developer to have an automatic way to check for problems.
-
-TODO:
-Fix the multilocus API!
 
 ## 0.3.2
 
