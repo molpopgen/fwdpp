@@ -128,8 +128,8 @@ std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r),
 We use the above genetic maps to synthesize recombination policies:
 
 ~~~{.cpp}
-auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[0],littler,r,recmap);
-auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,&gametes[1],littler,r,recmap2);
+auto recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,&gametes,littler,r,recmap);
+auto recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,&gametes,littler,r,recmap2);
 std::vector< decltype(recpol0) > recpols{ recpol0 , recpol1 };
 ~~~
 
