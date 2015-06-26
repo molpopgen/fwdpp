@@ -182,6 +182,29 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 
 # Installation
 
+##What does fwdpp install?
+
+Two things:
+
+* The library itself, which is simply a set of C++ header files
+* A single binary called fwdppConfig, which you may use to check what version you have installed on your system.
+
+~~~{sh}
+fwdppConfig --version
+~~~
+
+fwdppConfig was introduced in version 0.3.3.  Its main raison d'etre is in helping other configure scripts test for what version is on their system.  For example, which may go into a configure.ac file for your project:
+
+~~~{sh}
+dnl Check that fwdpp version is sufficient
+if test "$FWDPPVERSION" \> "0.3.2"
+then
+	echo "fwdpp version $FWDPPVERSION detected"
+else
+	AC_MSG_ERROR([fwdpp >= 0.3.3 required, please install from http://github.com/molpopgen/fwdpp])
+fi
+~~~
+
 ##The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
