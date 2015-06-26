@@ -113,6 +113,10 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test1 )
   poptype pop2(0,0);
   KTfwd::deserialize()(pop2,s,mreader());
 
+  BOOST_REQUIRE_EQUAL( pop.mutations.size(),pop2.mutations.size() );
+  BOOST_REQUIRE_EQUAL( pop.gametes.size(),pop2.gametes.size() );
+  BOOST_REQUIRE_EQUAL( pop.diploids.size(),pop2.diploids.size() );
+  for( unsigned i=0;i<pop.diploids.size();++i) BOOST_REQUIRE_EQUAL( pop.diploids[i].size(),pop2.diploids[i].size() );
   //Compare the mutations
   for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
     {
@@ -139,11 +143,11 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test1 )
   //Compare the diploids
   for( auto d1 = pop.diploids.begin(), d2 = pop2.diploids.begin() ; d1 != pop.diploids.end() ; ++d1,++d2 )
     {
-      auto gloc1 = pop.gametes.begin();
-      auto gloc2 = pop2.gametes.begin();
       //Iterate over loci w/in diploid
       for (auto l1 = d1->begin(), l2 = d2->begin() ; l1 != d1->end() ; ++l1,++l2)
 	{
+	  BOOST_REQUIRE_EQUAL(l1->first->mutations.size(),l2->first->mutations.size());
+	  BOOST_REQUIRE_EQUAL(l1->second->mutations.size(),l2->second->mutations.size());
 	  for( auto m1 = l1->first->mutations.begin(),m2=l2->first->mutations.begin() ; m1 != l1->first->mutations.end() ; ++m1,++m2 )
 	    {
 	      BOOST_CHECK( m1 != m2 );
