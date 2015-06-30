@@ -83,7 +83,7 @@ using poptype = KTfwd::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
 mtype sex_specific_mut_model( gsl_rng * r,
-			      poptype::mlist_t * mutations,
+			      poptype::mlist_t *,
 			      poptype::lookup_table_t * lookup,
 			      const double & mu_total,
 			      const double & mu_male,
@@ -213,12 +213,9 @@ struct sexSpecificRules
   
   //! \brief Update some property of the offspring based on properties of the parents
   template<typename offspring_itr_t, typename parent_itr_t>
-  void update(gsl_rng * r,offspring_itr_t offspring, parent_itr_t p1_itr, parent_itr_t p2_itr ) const
+  void update(gsl_rng * r,offspring_itr_t offspring, parent_itr_t, parent_itr_t ) const
   {
     offspring->sex = (gsl_rng_uniform(r) <= 0.5);
-    static_assert(!std::is_const<decltype(offspring)>::value, "offspring_itr_t must not be const");
-    static_assert(!std::is_const<decltype(*p1_itr)>::value, "parent_itr_t must not be const");
-    static_assert(!std::is_const<decltype(*p2_itr)>::value, "parent_itr_t must not be const");
     return;
   }  
 };
