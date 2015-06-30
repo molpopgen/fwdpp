@@ -63,7 +63,7 @@ namespace KTfwd {
       {
 	//static asserts suppress hideously-long compiler warnings on GCC
 	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
-	return (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
+	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) <= f)) ? p1 : gsl_ran_discrete(r,lookup.get());
       }
 
       //! \brief Update some property of the offspring based on properties of the parents
@@ -111,7 +111,7 @@ namespace KTfwd {
     {
       assert(N_curr == diploids->size());
 
-      std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
+      //std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
 
       pmr.w(diploids,ff);
 
@@ -155,9 +155,9 @@ namespace KTfwd {
 	  NREC += rec_pol(p1g1,p1g2,lookup);
 	  NREC += rec_pol(p2g1,p2g2,lookup);
 	
-	  // (dptr+i)->first = (gsl_rng_uniform(r) <= 0.5) ? p1g1 : p1g2;
-	  // (dptr+i)->second = (gsl_rng_uniform(r) <= 0.5) ? p2g1 : p2g2;
-	
+	  (dptr+i)->first = p1g1;
+	  (dptr+i)->second = p2g1;
+
 	  (dptr+i)->first->n++;
 	  assert( (dptr+i)->first->n > 0 );
 	  assert( (dptr+i)->first->n <= 2*N_next );
@@ -182,10 +182,8 @@ namespace KTfwd {
 #endif
       for( auto itr = gametes->begin() ; itr != gametes->end() ;  )
 	{
-	  if( itr->n == 0 ) //this gamete is extinct and need erasing from the list
-	    {
-	      itr =gametes->erase(itr);
-	    }
+	  if(!itr->n) //this gamete is extinct and need erasing from the list
+	      itr=gametes->erase(itr);
 	  else //gamete remains extant and we adjust mut counts
 	    {
 	      adjust_mutation_counts(itr,itr->n);
