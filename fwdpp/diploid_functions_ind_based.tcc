@@ -159,8 +159,6 @@ namespace KTfwd
       }
     for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
 #endif
-    decltype(gametes->begin()) temp;
-
     for( auto itr = gametes->begin() ; itr != gametes->end() ; )
       {
 	if(!itr->n) itr = gametes->erase(itr);
