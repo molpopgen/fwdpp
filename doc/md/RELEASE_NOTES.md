@@ -24,6 +24,12 @@ Minor changes:
 * KTfwd::serialize now has a default constructor and a move constructor defined, allowing it to be a member of another class, which helps things in [foRward](http://github.com/molpopgen/foRward).
 * KTfwd::serialize can now be used to serialize multiple records into a single buffer.  
 * A "validation suite" has been added.  This is mostly for the developer to have an automatic way to check for problems.
+* The package now installs a single binary called fwdppConfig.  This program is intended to be used in configure scripts to make checking for fwdpp's existence and/or version easier.  It takes a single option:
+
+~~~{sh}
+#Get the version of fwdpp installed on your system (or at least the one most readily visible in your user's environment).
+fwdppConfig --version
+~~~
 
 ## 0.3.2
 
