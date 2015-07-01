@@ -5,6 +5,23 @@ AC_CONFIG_SRCDIR([src/FWDPPPACKAGE.cc])
 AM_INIT_AUTOMAKE
 AC_CONFIG_HEADERS([config.h])
 
+FWDPPVERSION=`fwdppConfig --version`
+
+dnl Check that fwdpp version is sufficient
+dnl fwdpp versions >= 0.3.3 install a binary called fwdppConfig
+dnl This program can be used to enable testing for specific versions of 
+dnl the library.
+dnl This if/else block is a simple method for doing that check.
+dnl It will fail if:
+dnl 1. fwdppConfig is not found in a user's $PATH
+dnl 2. The return value of fwdppConfig --version fails the lexical string comparison done by "test"
+if test "$FWDPPVERSION" \> "0.3.2"
+then
+	echo "fwdpp version $FWDPPVERSION detected"
+else
+	AC_MSG_ERROR([fwdpp >= 0.3.3 required, please install from http://github.com/molpopgen/fwdpp])
+fi
+
 AC_CONFIG_MACRO_DIR([m4])
 
 AC_PROG_CC
