@@ -176,13 +176,15 @@ All simulations were compiled with GCC 4.9.2 and using -O3.  The intent is to ch
 
 All fwdpp jobs are based on the example program diploid_ind that comes with the library.
 
-The parameters for the small-N simulations were \f$N=1,000\f$, \f$\theta = \rho = 5,000\f$, and evolved for \f$10N\f$ generations.  I performed 12 replicates of each of the above combinations, running 4 at a time using GNU parallel.  The [run times](http://github.com/molpopgen/fwdpp/performance/time_0_3_3.pdf) and [peak memory use](http://github.com/molpopgen/fwdpp/performance/mem_0_3_3.pdf) show that:
+__Links to pdfs only show up on github.  I'll try to fix this later for the doxygen reference manual page.__
+
+The parameters for the small-N simulations were \f$N=1,000\f$, \f$\theta = \rho = 5,000\f$, and evolved for \f$10N\f$ generations.  I performed 12 replicates of each of the above combinations, running 4 at a time using GNU parallel.  The [run times](performance/time_0_3_3.pdf) and [peak memory use](performance/mem_0_3_3.pdf) show that:
 
 * fwdpp 0.3.3 is about 40% faster than 0.3.2
 * fwdpp 0.3.3 is more memory efficient than previous versions
 * fwdpp 0.3.3 outperforms SLiM for this case (which is a change from the fwdpp paper, where SLiM was faster for small-N simulations with large mutation/recombination rates).
 
-The parameters for the large-N simulations wer \f$N=10,000\f$, \f$\theta = \rho = 4,000\f$, and evolved for \f$10N\f$ generations.   I performed 4 replicates of each of the above combinations, running 4 at a time using GNU parallel, imposing a 36-hour wall clock limit, at which point a simulation was killed.  For these parameters, SLiM did not complete a single replicated.  The [run time](http://github.com/molpopgen/fwdpp/performance/bigtime_0_3_3.pdf) and [peak memory use](http://github.com/molpopgen/fwdpp/bigmem_0_3_3.pdf) results for fwdpp show that:
+The parameters for the large-N simulations wer \f$N=10,000\f$, \f$\theta = \rho = 4,000\f$, and evolved for \f$10N\f$ generations.   I performed 4 replicates of each of the above combinations, running 4 at a time using GNU parallel, imposing a 36-hour wall clock limit, at which point a simulation was killed.  For these parameters, SLiM did not complete a single replicated.  The [run time](performance/bigtime_0_3_3.pdf) and [peak memory use](performance/bigmem_0_3_3.pdf) results for fwdpp show that:
 
 * fwdpp 0.3.2 took ~19.5 hours to complete a replicate
 * fwdpp 0.3.3 takes ~9.5 hours and uses less memory than 0.3.2.
