@@ -57,7 +57,12 @@ namespace KTfwd {
       assert(rv);
     }
       
-    GSLrng_t( GSLrng_t & ) = delete;
+    //! Copy constructor
+    GSLrng_t( GSLrng_t & rng) : r(setup(T())) {
+      int rv = gsl_rng_memcpy(r.get(),rng.get());
+      assert(rv);
+    }
+
     GSLrng_t & operator=(GSLrng_t &) = delete;
     
     //! Return underlying pointer
