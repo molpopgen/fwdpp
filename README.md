@@ -176,7 +176,7 @@ All simulations were compiled with GCC 4.9.2 and using -O3.  The intent is to ch
 
 All fwdpp jobs are based on the example program diploid_ind that comes with the library.
 
-The parameters for the small-N simulations were \f$N=1,000\f$, \f$\theta = \rho = 5,000\f$, and evolved for \f$10N\f$ generations.  I performed 12 replicates of each of the above combinations, running 4 at a time using GNU parallel.  The [run times](performance/time_0_3_3_.pdf) and [peak memory use](performance/mem_0_3_3.pdf) show that:
+The parameters for the small-N simulations were \f$N=1,000\f$, \f$\theta = \rho = 5,000\f$, and evolved for \f$10N\f$ generations.  I performed 12 replicates of each of the above combinations, running 4 at a time using GNU parallel.  The [run times](performance/time_0_3_3.pdf) and [peak memory use](performance/mem_0_3_3.pdf) show that:
 
 * fwdpp 0.3.3 is about 40% faster than 0.3.2
 * fwdpp 0.3.3 is more memory efficient than previous versions
