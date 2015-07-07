@@ -54,13 +54,13 @@ namespace KTfwd {
     //! Copy constructor
     GSLrng_t( const GSLrng_t & rng) : r(setup(T())) {
       int rv = gsl_rng_memcpy(r.get(),rng.get());
-      assert(rv);
+      assert(rv==GSL_SUCCESS);
     }
       
     //! Copy constructor
     GSLrng_t( GSLrng_t & rng) : r(setup(T())) {
       int rv = gsl_rng_memcpy(r.get(),rng.get());
-      assert(rv);
+      assert(rv==GSL_SUCCESS);
     }
 
     GSLrng_t & operator=(GSLrng_t &) = delete;
