@@ -157,7 +157,6 @@ namespace KTfwd
 	assert( (dptr+i)->second->n > 0 );
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
-    for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
 #endif
     for( auto itr = gametes->begin() ; itr != gametes->end() ; )
       {
@@ -168,6 +167,9 @@ namespace KTfwd
 	    ++itr; 
 	  }
       }
+#ifndef NDEBUG
+    for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
+#endif
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     assert(check_sum(gametes,2*N_next));
     return wbar;
