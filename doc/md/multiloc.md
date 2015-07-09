@@ -87,6 +87,24 @@ We need to store these policies in a vector.  The easiest way to do that is to u
 std::vector<decltype(mmodel0)> mmodels { mmodel0, mmodel1 };
 ~~~
 
+### Caveat: vectors of policies containing values captured in lambda expressions.
+
+The above examples all consider a fixed number of loci.  However, if the number of loci is to be determined at run-time, then your mutation models, etc., will need to be created dynamically.  When using _lambda expressions_, be sure to capture _by value_ and not _by reference_.  For example, this loop results in a vector of mutation policies where mutation positions at the \f$i^{th}\f$ locus are continuous on the interval \f$[i,i+1)\f$:
+
+~~~{.cpp}
+std::vector< std::function<mtype(multiloc_t::mlist_t *)> > mmodels;
+for(unsigned i = 0 ; i < nloci ; ++i)
+	{
+	//Establish the range of positions for this locus
+	  double a=i,b=i+1;
+	  mmodels.push_back(std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,&generation,
+	//Capture a,b by VALUE!  Otherwise, they go out of scope and bad things can happen!
+		mu[i],0.,[&r,a,b](){ return gsl_ran_flat(r.get(),a,b);},[](){return 0.;},[](){return 0.;}));
+	}
+~~~
+
+Keep this in mind for all containers of policies (in addition to this  mutation example).
+
 ### Digression: type signatures for for policies
 
 The multilocus API requires that the user pass a vector of policies.  A vector's interface further requires that all elements contained by a vector are of the same type.  In the previous section, we used C++11's [auto](http://en.cppreference.com/w/cpp/language/auto) keyword to force the compiler to figure out the type of mmodel0 and mmodel1.  It just so happens that they are of the same type, which I think should be obvious if we consider that both are calls to std::bind with the same number of arguments, all of which are the same type.
