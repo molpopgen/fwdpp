@@ -215,7 +215,7 @@ struct sexSpecificRules
   template<typename offspring_itr_t, typename parent_itr_t>
   void update(gsl_rng * r,offspring_itr_t offspring, parent_itr_t, parent_itr_t ) const
   {
-    offspring->sex = (gsl_rng_uniform(r) <= 0.5);
+    offspring->sex = (gsl_rng_uniform(r) < 0.5);
     return;
   }  
 };
@@ -271,7 +271,7 @@ int main(int argc, char ** argv)
       //Assign "sex"
       for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
 	{
-	  dip->sex = (gsl_rng_uniform(rng.get()) <= 0.5); //false = male, true = female.
+	  dip->sex = (gsl_rng_uniform(rng.get()) < 0.5); //false = male, true = female.
 	}
       for( unsigned generation = 0 ; generation < ngens ; ++generation )
 	{

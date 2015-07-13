@@ -48,7 +48,7 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
-      if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
+      if( gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
 	  return popgenmut(pos,smaker(),hmaker(),generation,1);
 	}
@@ -86,7 +86,7 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
-      bool selected = gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
+      bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if( selected )
 	{
 	  double pos = sposmaker();
@@ -141,7 +141,7 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
-      if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
+      if( gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
 	  return popgenmut(pos,smaker(),hmaker(),*generation,1);
 	}
@@ -180,7 +180,7 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //Is mutation selected or not?
-      if( gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
+      if( gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
 	{
 	  return mutation(pos,smaker(),1,hmaker());
 	}
@@ -216,7 +216,7 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
-      bool selected = gsl_rng_uniform(r) <= selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
+      bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if ( selected )
 	{
 	  double pos = sposmaker();

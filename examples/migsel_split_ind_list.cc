@@ -40,7 +40,7 @@ using diploid_bucket_vec = poptype::vdipvector_t;
 
 size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 {
-  if( gsl_rng_uniform(r) <= mig_prob )
+  if( gsl_rng_uniform(r) < mig_prob )
     {
       return ! source_pop;
     }

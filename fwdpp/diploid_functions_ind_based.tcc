@@ -117,9 +117,9 @@ namespace KTfwd
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
 #ifdef FWDPP_COMPAT_0_3_0
-	size_t p2 = (gsl_rng_uniform(r) <= f) ? p1 : gsl_ran_discrete(r,lookup.get());
+	size_t p2 = (gsl_rng_uniform(r) < f) ? p1 : gsl_ran_discrete(r,lookup.get());
 #else
-	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<=f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 #endif
 	assert(p1<parents.size());
 	assert(p2<parents.size());
@@ -129,8 +129,8 @@ namespace KTfwd
 	p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
 	p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
 
-	if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
-	if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
+	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
+	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
 	NREC += rec_pol(p1g1,p1g2,gamete_lookup);
 	NREC += rec_pol(p2g1,p2g2,gamete_lookup);
@@ -326,9 +326,9 @@ namespace KTfwd
 		      */
 		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
 #ifdef FWDPP_COMPAT_0_3_0
-		      if( f != nullptr && gsl_rng_uniform(r) <= *(f + popindex ) ) //individual is inbred
+		      if( f != nullptr && gsl_rng_uniform(r) < *(f + popindex ) ) //individual is inbred
 #else
-			if( f != nullptr && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) <= *(f + popindex)) ) ) //individual is inbred
+			if( f != nullptr && ( *(f + popindex)==1. || (*(f + popindex)>0. && gsl_rng_uniform(r) < *(f + popindex)) ) ) //individual is inbred
 #endif
 			  {
 			    pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(popindex))->begin();
@@ -349,8 +349,8 @@ namespace KTfwd
 		      p2g2 = (pptr2+p2)->second;
 
 		      //0.3.3: Do "Mendel" now...
-		      if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
-		      if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
+		      if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
+		      if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 		      
 		      NREC += rec_pol(p1g1,p1g2,gamete_lookup);
 		      NREC += rec_pol(p2g1,p2g2,gamete_lookup);

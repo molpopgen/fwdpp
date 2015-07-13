@@ -248,7 +248,7 @@ Simple migration policy for two-deme simulation
 */
 size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 {
-  if( gsl_rng_uniform(r) <= mig_prob )
+  if( gsl_rng_uniform(r) < mig_prob )
     {
       return ! source_pop;
     }
@@ -433,7 +433,7 @@ We can now completely define our mutation model as a function (we could do it as
       lookup->insert(pos);
 
       //law of TTL prob
-      bool neutral = (gsl_rng_uniform(r) <= (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
+      bool neutral = (gsl_rng_uniform(r) < (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
 
       //return neutral mutation
       if ( neutral ) { return mtype(pos,0,1,0); }
@@ -514,7 +514,7 @@ OK, our mutation model is going to be the following.  It is infinitely-many site
       lookup->insert(pos);
 
       //law of TTL prob
-      bool neutral = (gsl_rng_uniform(r) <= (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
+      bool neutral = (gsl_rng_uniform(r) < (mu_neutral)/(mu_neutral+mu_selected)) ? true : false;
 
       //return neutral mutation
       if ( neutral ) { return mtype(pos,1,true,0); }
@@ -549,7 +549,7 @@ Let us write a recombination map function that models a strong hotspot of crossi
                      const double & a,
                      const double & b)
       {
-        return (gsl_rng_uniform(r) <= p) ? gsl_rng_uniform(r) : gsl_ran_beta(r,a,b);
+        return (gsl_rng_uniform(r) < p) ? gsl_rng_uniform(r) : gsl_ran_beta(r,a,b);
       }
   /*
      This is a hot hotspot.  say hist( c(runif(1e3),rbeta(9e3,100,100) ) ) in R 
@@ -632,7 +632,7 @@ For example, let's assume two demes with migration rate \f$m\f$.  Here, \f$m\f$ 
   size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
   {
     //if parent is a migrant
-    if( gsl_rng_uniform(r) <= mig_prob )
+    if( gsl_rng_uniform(r) < mig_prob )
     {
       //return other population
       return ! source_pop;

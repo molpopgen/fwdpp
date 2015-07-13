@@ -63,7 +63,7 @@ namespace KTfwd {
       {
 	//static asserts suppress hideously-long compiler warnings on GCC
 	static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
-	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) <= f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
       }
 
       //! \brief Update some property of the offspring based on properties of the parents
@@ -149,8 +149,8 @@ namespace KTfwd {
 	  p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
 
 	  //0.3.3 change:
-	  if(gsl_rng_uniform(r)<=0.5) std::swap(p1g1,p1g2);
-	  if(gsl_rng_uniform(r)<=0.5) std::swap(p2g1,p2g2);
+	  if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
+	  if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 	  
 	  NREC += rec_pol(p1g1,p1g2,lookup);
 	  NREC += rec_pol(p2g1,p2g2,lookup);

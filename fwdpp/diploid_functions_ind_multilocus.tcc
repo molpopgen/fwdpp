@@ -108,9 +108,9 @@ namespace KTfwd
 	//Choose the two parents
 	typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup.get()));
 #ifdef FWDPP_COMPAT_0_3_0
-	decltype(p1) p2  = (gsl_rng_uniform(r) <= f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+	decltype(p1) p2  = (gsl_rng_uniform(r) < f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
 #else
-	decltype(p1) p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<=f)) ? p1 :  decltype(p1)(gsl_ran_discrete(r,lookup.get()));
+	decltype(p1) p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<f)) ? p1 :  decltype(p1)(gsl_ran_discrete(r,lookup.get()));
 #endif
 	assert(p1<N_curr);
 	assert(p2<N_curr);
@@ -118,8 +118,8 @@ namespace KTfwd
 	auto cdip = (dptr+curr_dip);
 	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
 					   rec_policies,blrf,r_between_loci,
-					   ((gsl_rng_uniform(r)<=0.5)?1:0),
-					   ((gsl_rng_uniform(r)<=0.5)?1:0),
+					   ((gsl_rng_uniform(r)<0.5)?1:0),
+					   ((gsl_rng_uniform(r)<0.5)?1:0),
 					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
 					   );
       }
