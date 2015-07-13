@@ -2,7 +2,7 @@
 
 ## 0.3.4
 
-* License updated to GPLv3
+* LICENSE/COPYING files updated
 * Tutorial improved for multi-locus simulations
 * Issue #20 addressed throughout the library + examples + unit tests
 
