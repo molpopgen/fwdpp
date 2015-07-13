@@ -4,6 +4,7 @@
 
 * License updated to GPLv3
 * Tutorial improved for multi-locus simulations
+* Issue #20 addressed throughout the library + examples + unit tests
 
 ##0.3.3
 
