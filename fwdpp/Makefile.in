@@ -293,28 +293,25 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = internal tags sugar experimental
 pkginclude_HEADERS = debug.hpp \
-	diploid_functions.hpp \
-	diploid_individual_based.hpp \
-	diploid_individual_based_multilocus.hpp \
-	diploid_functions.tcc \
-	diploid_functions_ind_based.tcc \
-	diploid_functions_ind_multilocus.tcc \
-	diploid_functions_recombine_gametes.tcc \
 	diploid.hh \
 	fitness_models.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
+	genetics101.hpp \
 	initms.hpp \
 	insertion_policies.hpp \
 	IO.hpp \
 	IO.tcc \
 	mutation.hpp \
 	mutation.tcc \
+	recombination.hpp \
+	recombination.tcc \
+	sample_diploid.hpp \
+	sample_diploid.tcc \
 	sampling_functions.hpp \
 	sampling_functions.tcc \
-	util.hpp \
-	recombination_methods_ind.hpp \
-	type_traits.hpp
+	type_traits.hpp \
+	util.hpp
 
 all: all-recursive
 

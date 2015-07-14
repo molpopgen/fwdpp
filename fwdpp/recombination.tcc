@@ -1,6 +1,6 @@
 //  -*- C++ -*- 
-#ifndef __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
-#define __DIPLOID_FUNCTIONS_REC_GAMS_TCC__
+#ifndef __FWDPP_RECOMBINATION_TCC__
+#define __FWDPP_RECOMBINATION_TCC__
 
 #include <fwdpp/internal/recombination_common.hpp>
 

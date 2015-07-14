@@ -1,5 +1,5 @@
-#ifndef _DIPLOID_FUNCTIONS_HPP_
-#define _DIPLOID_FUNCTIONS_HPP_
+#ifndef __FWDPP_RECOMBINATION_HPP__
+#define __FWDPP_RECOMBINATION_HPP__
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -9,8 +9,8 @@
 */ 
 
 //There are too many variants of sample_diploid to list here, so they are spawned off into other headers
-#include <fwdpp/diploid_individual_based.hpp>
-#include <fwdpp/diploid_individual_based_multilocus.hpp>
+//#include <fwdpp/diploid_individual_based.hpp>
+//#include <fwdpp/diploid_individual_based_multilocus.hpp>
 
 namespace KTfwd
 {
@@ -74,7 +74,7 @@ namespace KTfwd
   //Multilocus models
 
 }
-#endif /* _DIPLOID_FUNCTIONS_HPP_ */
-#include <fwdpp/diploid_functions.tcc>
+#endif // __FWDPP_RECOMBINATION_HPP__ 
+#include <fwdpp/recombination.tcc>
 
 

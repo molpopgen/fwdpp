@@ -1,5 +1,5 @@
-#ifndef __RECOMBINATION_METHODS_IND_HPP__
-#define __RECOMBINATION_METHODS_IND_HPP__
+#ifndef __FWDPP_GENETICS101_HPP__
+#define __FWDPP_GENETICS101_HPP__
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -37,4 +37,4 @@ namespace KTfwd
   };
 }
 
-#endif //__RECOMBINATION_METHODS_IND_HPP__
+#endif //__FWDPP_GENETICS101_HPP__

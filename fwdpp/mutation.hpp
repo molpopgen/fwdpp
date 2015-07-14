@@ -1,5 +1,5 @@
-#ifndef _MUTATION_HPP_
-#define _MUTATION_HPP_
+#ifndef _FWDPP_MUTATION_HPP_
+#define _FWDPP_MUTATION_HPP_
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
@@ -43,7 +43,7 @@ namespace KTfwd
 			       const mutation_insertion_policy & mpolicy,
 			       const gamete_insertion_policy & gpolicy);
 }
-#endif /* _MUTATION_HPP_ */
+#endif /* _FWDPP_MUTATION_HPP_ */
 #include <fwdpp/mutation.tcc>
 
 

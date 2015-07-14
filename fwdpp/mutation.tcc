@@ -1,6 +1,6 @@
 //  -*- C++ -*- 
-#ifndef _MUTATION_TCC_
-#define _MUTATION_TCC_
+#ifndef _FWDPP_MUTATION_TCC_
+#define _FWDPP_MUTATION_TCC_
 
 #include <type_traits>
 #include <algorithm>
@@ -42,4 +42,4 @@ namespace KTfwd
     return g;
   }
 }
-#endif /* _MUTATION_TCC_ */
+#endif /* _FWDPP_MUTATION_TCC_ */
