@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.5
+
+* Source code reorganization -- Issue #21
+
 ## 0.3.4
 
 * LICENSE/COPYING files updated
