@@ -20,7 +20,8 @@ pkginclude_HEADERS=debug.hpp \
 	sampling_functions.hpp \
 	sampling_functions.tcc \
 	type_traits.hpp \
-	util.hpp
+	util.hpp \
+	sugar.hpp
 
 
 
