@@ -4,14 +4,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-/*! \file diploid_functions.hpp
-  \brief Wright-Fisher sampling in a finite population and recombination 
-*/ 
-
-//There are too many variants of sample_diploid to list here, so they are spawned off into other headers
-//#include <fwdpp/diploid_individual_based.hpp>
-//#include <fwdpp/diploid_individual_based_multilocus.hpp>
-
 namespace KTfwd
 {
   /*! \brief recombination for individual-based forward simulations
@@ -70,8 +62,6 @@ namespace KTfwd
 			      iterator_type & g2,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected );
-
-  //Multilocus models
 
 }
 #endif // __FWDPP_RECOMBINATION_HPP__ 
