@@ -3,6 +3,11 @@
 ## 0.3.5
 
 * Source code reorganization -- Issue #21
+* Sugar code can now be included all at once via
+
+~~~{cpp}
+#include <fwdpp/sugar.hpp>
+~~~
 
 ## 0.3.4
 
