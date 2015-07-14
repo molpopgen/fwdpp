@@ -3,7 +3,7 @@
 ## 0.3.5
 
 * Source code reorganization -- Issue #21
-* Sugar code can now be included all at once via
+* Sugar code can now be included all at once.  This resolves Issue #23.  The convenience header is:
 
 ~~~{cpp}
 #include <fwdpp/sugar.hpp>
