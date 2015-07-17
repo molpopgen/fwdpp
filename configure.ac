@@ -29,6 +29,8 @@ AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
 
 dnl do we want tcmalloc?
 AC_ARG_ENABLE([tcmalloc],AS_HELP_STRING([--enable-tcmalloc],[Enable linking to Google's tcmalloc library, if present.]))
+dnl do we want jemalloc?
+AC_ARG_ENABLE([jemalloc],AS_HELP_STRING([--enable-jemalloc],[Enable linking to the jemalloc library, if present.]))
 
 dnl check for things that are required to compile all examples and/or use library at all
 AC_CHECK_HEADER(Sequence/SimDataIO.hpp, , [AC_MSG_ERROR([Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required.])])
