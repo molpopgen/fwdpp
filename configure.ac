@@ -62,6 +62,11 @@ if test "x$enable_tcmalloc" = xyes
 then
 AC_CHECK_LIB([tcmalloc],[tc_cfree],,[AC_MSG_WARN([tcmalloc not found])])
 fi
+dnl check for jemalloc if desired
+if test "x$enable_jemalloc" = xyes
+then
+AC_CHECK_LIB([jemalloc],[je_free],,[AC_MSG_WARN([jemalloc not found])])
+fi
 dnl check for C++ run-time libraries
 AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
