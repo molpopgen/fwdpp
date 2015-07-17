@@ -9,6 +9,12 @@
 #include <fwdpp/sugar.hpp>
 ~~~
 
+* configure script now allows linking to the jemalloc library.  Preliminary benchmarks suggest that linking to tcmalloc gives better performance, but users may test for themselves:
+
+~~~~{sh}
+./configure --enable-jemalloc=yes
+~~~~
+
 ## 0.3.4
 
 * LICENSE/COPYING files updated
