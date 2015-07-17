@@ -67,17 +67,6 @@ namespace KTfwd
 	g1 = itr->second;
       }
 #endif
-    // std::cerr << std::distance(pitr.first,pitr.second) << ' ' << gamete_lookup.size() << ' '
-    // 	      << (std::find_if(pitr.first,pitr.second,[&ng](typename glookup_t::value_type & __p) {
-    // 		    return *__p.second == ng;
-    // 		  }) == pitr.second)
-    // 	      << '\n';
-    /*
-    //NOTE: backwards searches have little effect on speed, apparently...
-    auto itr=std::find(gametes->begin(),gametes->end(),ng);
-    if(itr!=gametes->end())g1=itr;
-    else g1 = gametes->emplace(gametes->end(),std::move(ng));
-    */
     return pos.size()-1;
   }
 
