@@ -37,7 +37,7 @@ namespace KTfwd
     auto itr = std::find_if(pitr.first,pitr.second,[&ng](const typename glookup_t::value_type & __p) {
 	return *__p.second == ng;
       });
-        if(itr == pitr.second)
+    if(itr == pitr.second)
       {
 	g1 = gametes->emplace(gametes->end(),std::move(ng));
 	gamete_lookup.insert(std::make_pair(g1->mutations.size()+g1->smutations.size(),g1));
