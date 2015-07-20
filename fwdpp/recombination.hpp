@@ -13,8 +13,8 @@ namespace KTfwd
     \param g1 Iterator to the first gamete involved in the recombination event
     \param g2 Iterator to the second gamete involved in the recombination event
     \param mf Recombination policy which generates crossover positions
-
-    \note g1 and g2 will be changed
+    \param gamete_lookup The return value of KTfwd::fwdpp_internal::gamete_lookup_table, which gets passed in via sample_diploid
+    \note g1 will be changed
     \note The type of g1 and g2 is gamete_list_type<gamete_type,list_type_allocator >::iterator
     \note The return value may be 0 even if littler is large.  The code recognizes when crossovers could not modify the gametes, and the function returns when such cases are found
     \return The number of crossovers that happened between g1 and g2 (which is Poisson with mean littler)
@@ -22,6 +22,7 @@ namespace KTfwd
   template< typename iterator_type,
 	    typename recombination_map,
 	    typename list_type_allocator,
+	    typename glookup_t,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( gsl_rng * r,
 			      const double & littler,
@@ -29,6 +30,7 @@ namespace KTfwd
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      const recombination_map & mf,
+			      glookup_t & gamete_lookup,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected );
 
@@ -48,18 +50,21 @@ namespace KTfwd
     \param gametes A container of the gametes segregating in the population
     \param g1 An iterator, derived from gametes, representing one parental gamete.
     \param g2 An iterator, derived from gametes, representing the other parental gamete.
+    \param gamete_lookup The return value of KTfwd::fwdpp_internal::gamete_lookup_table, which gets passed in via sample_diploid
     \return The number of breakpoints, which equals pos.size() - 1, as that is fixed in this case.
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
   */
   template< typename iterator_type,
 	    typename list_type_allocator,
 	    typename vector_type_allocator,
+	    typename glookup_t,
 	    template<typename,typename> class vector_type,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( const vector_type< double, vector_type_allocator > & pos,
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
+			      glookup_t & gamete_lookup,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected );
 
