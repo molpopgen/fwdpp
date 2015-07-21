@@ -9,6 +9,8 @@
   3. House of cards model of additive fitness effects and then stabilizing selection on trait according to a unit Gaussian
 */
 
+#include <config.h>
+
 #include <limits>
 #include <algorithm>
 
@@ -22,7 +24,9 @@
 #include <fwdpp/diploid.hh>
 //Include the necessary "sugar" components
 //We need to get the 'deep' version of singlepop, as we need to make a custom singlepop_serialized_t for our sim
+#if defined(USE_BOOST_CONTAINERS) && defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && defined(HAVE_LIBBOOST_SYSTEM)
 #define FWDPP_SUGAR_USE_BOOST
+#endif
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
@@ -44,9 +48,15 @@ struct sex_specific_mutation : public KTfwd::mutation_base
 };
 
 using mtype = sex_specific_mutation;
+#if defined(USE_BOOST_CONTAINERS) && defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && defined(HAVE_LIBBOOST_SYSTEM)
 using mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
 using gamete_t = KTfwd::gamete_base<mtype,mlist_t>;
 using glist_t = boost::container::list<gamete_t, boost::fast_pool_allocator<gamete_t>>;
+#else
+using mlist_t = std::list<mtype>;
+using gamete_t = KTfwd::gamete_base<mtype,mlist_t>;
+using glist_t = std::list<gamete_t>;
+#endif
 
 //We need to define a custom diploid genotype for our model
 struct diploid_t : public KTfwd::tags::custom_diploid_t
