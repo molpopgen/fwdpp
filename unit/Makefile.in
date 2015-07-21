@@ -75,17 +75,17 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-@BUNIT_TEST_PRESENT_TRUE@check_PROGRAMS = mutateTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	gameteTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	mutationTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	policyTests$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	sugar3$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	sugar1_custom$(EXEEXT)
-@BUNIT_TEST_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
+@BUNIT_TEST_LIB_PRESENT_TRUE@check_PROGRAMS = mutateTest$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	gameteTest$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	policyTests$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp $(top_srcdir)/test-driver
@@ -99,53 +99,55 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__crossoverTest_SOURCES_DIST = crossoverTest.cc
-@BUNIT_TEST_PRESENT_TRUE@am_crossoverTest_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_crossoverTest_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
 crossoverTest_OBJECTS = $(am_crossoverTest_OBJECTS)
 crossoverTest_LDADD = $(LDADD)
 am__gameteTest_SOURCES_DIST = gameteTest.cc
-@BUNIT_TEST_PRESENT_TRUE@am_gameteTest_OBJECTS = gameteTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_gameteTest_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	gameteTest.$(OBJEXT)
 gameteTest_OBJECTS = $(am_gameteTest_OBJECTS)
 gameteTest_LDADD = $(LDADD)
 am__mlocusCrossoverTest_SOURCES_DIST = mlocusCrossoverTest.cc
-@BUNIT_TEST_PRESENT_TRUE@am_mlocusCrossoverTest_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	mlocusCrossoverTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_mlocusCrossoverTest_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest.$(OBJEXT)
 mlocusCrossoverTest_OBJECTS = $(am_mlocusCrossoverTest_OBJECTS)
 mlocusCrossoverTest_LDADD = $(LDADD)
 am__mutateTest_SOURCES_DIST = mutateTest.cc
-@BUNIT_TEST_PRESENT_TRUE@am_mutateTest_OBJECTS = mutateTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_mutateTest_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	mutateTest.$(OBJEXT)
 mutateTest_OBJECTS = $(am_mutateTest_OBJECTS)
 mutateTest_LDADD = $(LDADD)
 am__mutationTest_SOURCES_DIST = mutationTest.cc
-@BUNIT_TEST_PRESENT_TRUE@am_mutationTest_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	mutationTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_mutationTest_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest.$(OBJEXT)
 mutationTest_OBJECTS = $(am_mutationTest_OBJECTS)
 mutationTest_LDADD = $(LDADD)
 am__policyTests_SOURCES_DIST = policyTests.cc
-@BUNIT_TEST_PRESENT_TRUE@am_policyTests_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	policyTests.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_policyTests_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	policyTests.$(OBJEXT)
 policyTests_OBJECTS = $(am_policyTests_OBJECTS)
 policyTests_LDADD = $(LDADD)
 am__siteDepFitness_SOURCES_DIST = siteDepFitness.cc
-@BUNIT_TEST_PRESENT_TRUE@am_siteDepFitness_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_siteDepFitness_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
 siteDepFitness_OBJECTS = $(am_siteDepFitness_OBJECTS)
 siteDepFitness_LDADD = $(LDADD)
 am__sugar1_SOURCES_DIST = sugar1.cc
-@BUNIT_TEST_PRESENT_TRUE@am_sugar1_OBJECTS = sugar1.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar1_OBJECTS = sugar1.$(OBJEXT)
 sugar1_OBJECTS = $(am_sugar1_OBJECTS)
 sugar1_LDADD = $(LDADD)
 am__sugar1_custom_SOURCES_DIST = sugar1_custom.cc
-@BUNIT_TEST_PRESENT_TRUE@am_sugar1_custom_OBJECTS =  \
-@BUNIT_TEST_PRESENT_TRUE@	sugar1_custom.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar1_custom_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom.$(OBJEXT)
 sugar1_custom_OBJECTS = $(am_sugar1_custom_OBJECTS)
 sugar1_custom_LDADD = $(LDADD)
 am__sugar2_SOURCES_DIST = sugar2.cc
-@BUNIT_TEST_PRESENT_TRUE@am_sugar2_OBJECTS = sugar2.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar2_OBJECTS = sugar2.$(OBJEXT)
 sugar2_OBJECTS = $(am_sugar2_OBJECTS)
 sugar2_LDADD = $(LDADD)
 am__sugar3_SOURCES_DIST = sugar3.cc
-@BUNIT_TEST_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
 sugar3_OBJECTS = $(am_sugar3_OBJECTS)
 sugar3_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -513,20 +515,20 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUNIT_TEST_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
-@BUNIT_TEST_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc 
-@BUNIT_TEST_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
-@BUNIT_TEST_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
-@BUNIT_TEST_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
-@BUNIT_TEST_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
-@BUNIT_TEST_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
-@BUNIT_TEST_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
-@BUNIT_TEST_PRESENT_TRUE@sugar1_SOURCES = sugar1.cc
-@BUNIT_TEST_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
-@BUNIT_TEST_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
-@BUNIT_TEST_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
-@BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
-@BUNIT_TEST_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
+@BUNIT_TEST_LIB_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
+@BUNIT_TEST_LIB_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc 
+@BUNIT_TEST_LIB_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_SOURCES = sugar1.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
+@BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
 
 .SUFFIXES:

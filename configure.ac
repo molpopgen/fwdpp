@@ -73,6 +73,8 @@ AC_LANG_SAVE
           AC_REQUIRE_CPP
           AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([libsequence runtime library does not seem to be here])])
 	  AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
+	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
+	  AM_CONDITIONAL([BUNIT_TEST_LIB_PRESENT], test x$BUNITTESTLIB = x1)
 AC_LANG_RESTORE
 
 dnl AC_CONFIG_HEADER(config.h)

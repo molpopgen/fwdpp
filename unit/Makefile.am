@@ -1,4 +1,4 @@
-if BUNIT_TEST_PRESENT
+if BUNIT_TEST_LIB_PRESENT
 
 check_PROGRAMS=mutateTest \
 	crossoverTest \

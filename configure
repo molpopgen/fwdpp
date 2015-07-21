@@ -629,6 +629,8 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+BUNIT_TEST_LIB_PRESENT_FALSE
+BUNIT_TEST_LIB_PRESENT_TRUE
 BUNIT_TEST_PRESENT_FALSE
 BUNIT_TEST_PRESENT_TRUE
 EGREP
@@ -5302,6 +5304,51 @@ else
 $as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
 fi
 
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_unit_test_framework" >&5
+$as_echo_n "checking for main in -lboost_unit_test_framework... " >&6; }
+if ${ac_cv_lib_boost_unit_test_framework_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_unit_test_framework  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_boost_unit_test_framework_main=yes
+else
+  ac_cv_lib_boost_unit_test_framework_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_unit_test_framework_main" >&5
+$as_echo "$ac_cv_lib_boost_unit_test_framework_main" >&6; }
+if test "x$ac_cv_lib_boost_unit_test_framework_main" = xyes; then :
+  BUNITTESTLIB=1
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&5
+$as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
+fi
+
+	   if test x$BUNITTESTLIB = x1; then
+  BUNIT_TEST_LIB_PRESENT_TRUE=
+  BUNIT_TEST_LIB_PRESENT_FALSE='#'
+else
+  BUNIT_TEST_LIB_PRESENT_TRUE='#'
+  BUNIT_TEST_LIB_PRESENT_FALSE=
+fi
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5457,6 +5504,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"; then
   as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BUNIT_TEST_LIB_PRESENT_TRUE}" && test -z "${BUNIT_TEST_LIB_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BUNIT_TEST_LIB_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
