@@ -28,8 +28,8 @@ This README is the main page of the fwdpp documentation.  It may display some th
 
 # Build status
 
-* Status of master branch: https://travis-ci.org/molpopgen/fwdpp.svg?branch=master
-* Status of dev branch: https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev
+* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp) 
+* Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp)
 
 Currently, the Travis-CI setup uses the following tools:
 
