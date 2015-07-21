@@ -21,8 +21,8 @@ before_install:
 
 install:
   # g++4.8.1
-  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8"; fi
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.9; fi
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9"; fi
 
   # clang 3.5
   - if [ "$CXX" == "clang++" ]; then sudo apt-get --allow-unauthenticated -qq install build-essential libstdc++-${LIBSTDC_VERSION}-dev clang-${CLANG_VERSION}; fi
