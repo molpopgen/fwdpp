@@ -26,6 +26,20 @@ Comments are welcome.
 
 This README is the main page of the fwdpp documentation.  It may display some things oddly when viewed on GitHub and/or links to other documentation pages may be broken.  These issues are not bugs -- please see the Reference Manual at the [fwdpp home page](http://molpopgen.github.io/fwdpp/) for a fully-formatted version of this document.
 
+# Build status
+
+* Status of master branch: https://travis-ci.org/molpopgen/fwdpp.svg?branch=master
+* Status of dev branch: https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev
+
+Currently, the Travis-CI setup uses the following tools:
+
+* Linux
+* gcc 4.9
+* GSL 1.15
+* boost 1.48
+
+It is currently difficult (impossible?) to test multiple GCC on the Travis Linux setup, and checking clang++ on Linux with support for C++11 has proven beyond me for the moment.  Further, the Travis GCC 4.8 (which is 4.8.1) fails to build the examples, when the 4.8.2/4.8.4 that I've tested on my Ubuntu workstation compile it fine.  Please see the table below for the results of my own "test matrix", as it may be more representative of what a user will experience.
+
 # Introduction
 
 fwdpp is a C++ template library that abstracts the basic operations required to implement forward-time simulations of population- and quantitative-genetic models.  The library allows the simulation of single populations or metapopulations evolving under the standard evolutionary forces of drift, recombination, migration, and natural selection.  Arbitrary population size changes are also allowed. Different populations in a metapopulation may evolve under different fitness schemes.
