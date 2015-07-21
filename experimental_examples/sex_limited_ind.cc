@@ -13,6 +13,7 @@
 
 #include <limits>
 #include <algorithm>
+#include <iostream>
 
 //Main fwdpp library header
 #include <fwdpp/diploid.hh>
