@@ -26,7 +26,9 @@ struct mut : public KTfwd::mutation_base
     KTfwd::mutation_base(position,count,isneutral)
   {
   }
-  mut( mut && rhs ) : mutation_base(std::move(rhs)), stuff(std::move(rhs.stuff)) {
+  mut( mut && rhs ) : mutation_base(std::forward<mut>(rhs)), 
+		      stuff(std::forward<std::vector<int>>(rhs.stuff))
+  {
     std::cout << "X: move construct\n";
   }
   mut & operator=(mut && rhs) {
@@ -122,7 +124,8 @@ template<typename list_type,
 {
   mut m1(0.123,1,1);
   m1.stuff = std::vector<int>( {2,3,4,5} );
-  return(std::make_pair(mpolicy(std::move(m1),mlist),m1.stuff.empty()));
+  auto x = mpolicy(std::move(m1),mlist);
+  return std::make_pair(x,m1.stuff.empty());
 }
 
 //A "fake" mutation function that passes std::move to
@@ -184,7 +187,7 @@ BOOST_AUTO_TEST_CASE( policy_test_7 )
   std::list<mut> mlist;
   auto rv = faux_mutate( &mlist,
 			 []( mut && m, std::list<mut> * __mlist ) {
-			   return __mlist->insert(__mlist->end(),std::move(m));
+			   return __mlist->insert(__mlist->end(),std::forward<mut>(m));
 			 });
   BOOST_CHECK_EQUAL(rv.first->stuff.size(),4);
   BOOST_CHECK_EQUAL(rv.second,true);
