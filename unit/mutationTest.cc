@@ -15,10 +15,7 @@
 #include <iostream>
 #include <utility>
 #include <list>
-#if defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC)
-#include <boost/container/list.hpp>
-#include <boost/pool/pool_alloc.hpp>
-#endif
+
 /*
   Testing move semantics with mutations is tricky.
   The typical data elements are trivial types (double, int, etc.),

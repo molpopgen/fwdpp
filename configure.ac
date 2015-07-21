@@ -41,11 +41,11 @@ AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requr
 dnl check for optional depdendencies
 if test x$enable_boost = xyes
 then
-AC_CHECK_HEADER(boost/container/vector.hpp,,[AC_MSG_ERROR([boost containers requested but boost/container/vector.hpp not foun])])
-AC_CHECK_HEADER(boost/container/list.hpp,,[AC_MSG_ERROR([boost containers requested but boost/container/list.hpp not foun])])
-AC_CHECK_HEADER(boost/pool/pool_alloc.hpp,,[AC_MSG_ERROR([boost containers requested but boost/container/bool_alloc.hpp not foun])])
-AC_CHECK_HEADER(boost/unordered_set.hpp,,[AC_MSG_ERROR([boost containers requested but boost/unordered_set.hpp not foun])])
-AC_CHECK_HEADER(boost/functional/hash.hpp,,[AC_MSG_ERROR([boost containers requested but boost/functional/hash.hpp not foun])])
+AC_CHECK_HEADER(boost/container/vector.hpp,[AC_DEFINE([HAVE_BOOST_VECTOR],[1],[Is boost vector header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/vector.hpp not foun])])
+AC_CHECK_HEADER(boost/container/list.hpp,[AC_DEFINE([HAVE_BOOST_LIST],[1],[Is boost list header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/list.hpp not foun])])
+AC_CHECK_HEADER(boost/pool/pool_alloc.hpp,[AC_DEFINE([HAVE_BOOST_POOL_ALLOC],[1],[Is boost pool alloc header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/bool_alloc.hpp not foun])])
+AC_CHECK_HEADER(boost/unordered_set.hpp,[AC_DEFINE([HAVE_BOOST_UNORDERED_SET],[1],[Is boost unordered set header found>])],[AC_MSG_ERROR([boost containers requested but boost/unordered_set.hpp not foun])])
+AC_CHECK_HEADER(boost/functional/hash.hpp,[AC_DEFINE([HAVE_BOOST_HASH],[1],[Is boost hash header found?])],[AC_MSG_ERROR([boost containers requested but boost/functional/hash.hpp not foun])])
 fi
 
 AC_CHECK_HEADER(boost/test/unit_test.hpp, BUNITTEST=1,[echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."])

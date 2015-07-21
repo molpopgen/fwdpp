@@ -9,9 +9,6 @@
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
-#ifndef USE_STANDARD_CONTAINERS //from config.h
-#define FWDPP_SUGAR_USE_BOOST
-#endif
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>

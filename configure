@@ -4912,6 +4912,8 @@ then
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
 
+$as_echo "#define HAVE_BOOST_VECTOR 1" >>confdefs.h
+
 else
   as_fn_error $? "boost containers requested but boost/container/vector.hpp not foun" "$LINENO" 5
 fi
@@ -4919,6 +4921,8 @@ fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
+
+$as_echo "#define HAVE_BOOST_LIST 1" >>confdefs.h
 
 else
   as_fn_error $? "boost containers requested but boost/container/list.hpp not foun" "$LINENO" 5
@@ -4928,6 +4932,8 @@ fi
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
 
+$as_echo "#define HAVE_BOOST_POOL_ALLOC 1" >>confdefs.h
+
 else
   as_fn_error $? "boost containers requested but boost/container/bool_alloc.hpp not foun" "$LINENO" 5
 fi
@@ -4936,6 +4942,8 @@ fi
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
 
+$as_echo "#define HAVE_BOOST_UNORDERED_SET 1" >>confdefs.h
+
 else
   as_fn_error $? "boost containers requested but boost/unordered_set.hpp not foun" "$LINENO" 5
 fi
@@ -4943,6 +4951,8 @@ fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
+
+$as_echo "#define HAVE_BOOST_HASH 1" >>confdefs.h
 
 else
   as_fn_error $? "boost containers requested but boost/functional/hash.hpp not foun" "$LINENO" 5

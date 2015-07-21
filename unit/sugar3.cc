@@ -13,9 +13,6 @@
 #include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
-#ifndef USE_STANDARD_CONTAINERS //from config.h
-#define FWDPP_SUGAR_USE_BOOST
-#endif
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>

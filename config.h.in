@@ -1,5 +1,20 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Is boost hash header found? */
+#undef HAVE_BOOST_HASH
+
+/* Is boost list header found? */
+#undef HAVE_BOOST_LIST
+
+/* Is boost pool alloc header found? */
+#undef HAVE_BOOST_POOL_ALLOC
+
+/* Is boost unordered set header found> */
+#undef HAVE_BOOST_UNORDERED_SET
+
+/* Is boost vector header found? */
+#undef HAVE_BOOST_VECTOR
+
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 
