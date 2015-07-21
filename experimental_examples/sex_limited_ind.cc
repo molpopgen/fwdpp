@@ -14,17 +14,16 @@
 #include <limits>
 #include <algorithm>
 
-#include <boost/container/list.hpp>
-#include <boost/container/vector.hpp>
-#include <boost/pool/pool_alloc.hpp>
-#include <boost/unordered_set.hpp>
-#include <boost/functional/hash.hpp>
-
 //Main fwdpp library header
 #include <fwdpp/diploid.hh>
 //Include the necessary "sugar" components
 //We need to get the 'deep' version of singlepop, as we need to make a custom singlepop_serialized_t for our sim
 #if defined(USE_BOOST_CONTAINERS) && defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && defined(HAVE_LIBBOOST_SYSTEM)
+#include <boost/container/list.hpp>
+#include <boost/container/vector.hpp>
+#include <boost/pool/pool_alloc.hpp>
+#include <boost/unordered_set.hpp>
+#include <boost/functional/hash.hpp>
 #define FWDPP_SUGAR_USE_BOOST
 #endif
 #include <fwdpp/sugar/singlepop.hpp>
