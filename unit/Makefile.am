@@ -12,6 +12,8 @@ check_PROGRAMS=mutateTest \
 	sugar3 \
 	sugar1_custom
 
+TESTS=$(check_PROGRAMS)
+
 mutateTest_SOURCES=mutateTest.cc 
 crossoverTest_SOURCES=crossoverTest.cc
 gameteTest_SOURCES=gameteTest.cc
