@@ -36,6 +36,7 @@ before_script:
  ./install_libseq.sh
 
 script:
- - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check && make install
+# The LD_LIBRARY_PATH seems to be needed to get the clang linker to find libsequence b/c it is installed in $HOME
+ - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make &&  LD_LIBRARY_PATH=$HOME/lib make check && make install
  - LD_LIBRARY_PATH=$HOME/lib ./unit/mutateTest
  - $HOME/bin/fwdppConfig --version
