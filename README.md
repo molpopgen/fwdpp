@@ -35,10 +35,9 @@ Currently, the Travis-CI setup uses the following tools:
 
 * Linux
 * gcc 4.9
+* clang 3.6
 * GSL 1.15
 * boost 1.48
-
-It is currently difficult (impossible?) to test multiple GCC on the Travis Linux setup, and checking clang++ on Linux with support for C++11 has proven beyond me for the moment.  Further, the Travis GCC 4.8 (which is 4.8.1) fails to build the examples, when the 4.8.2/4.8.4 that I've tested on my Ubuntu workstation compile it fine.  Please see the table below for the results of my own "test matrix", as it may be more representative of what a user will experience.
 
 # Introduction
 
