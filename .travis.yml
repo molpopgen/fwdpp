@@ -34,4 +34,5 @@ before_script:
  ./install_libseq.sh
 
 script:
- ./configure CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check
+ ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check
+ $HOME/bin/fwdppConfig --version
