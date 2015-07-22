@@ -34,4 +34,4 @@ before_script:
  ./install_libseq.sh
 
 script:
- ./configure CXXFLAGS=-"-O2 -I$HOMEinclude" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check
+ ./configure CXXFLAGS="-O2 -I$HOMEinclude" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check
