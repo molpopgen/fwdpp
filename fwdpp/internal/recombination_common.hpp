@@ -67,12 +67,10 @@ namespace KTfwd {
 	  SWITCH=!SWITCH;
 	}
 #ifndef NDEBUG
-      // using mlist_itr = typename gamete_type::mutation_list_type_iterator;
-      // auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
-      // assert( std::is_sorted(new_gamete1.mutations.begin(),new_gamete1.mutations.end(),std::cref(am_I_sorted)) );
-      // assert( std::is_sorted(new_gamete1.smutations.begin(),new_gamete1.smutations.end(),std::cref(am_I_sorted)) );
-      // assert( std::is_sorted(new_gamete2.mutations.begin(),new_gamete2.mutations.end(),std::cref(am_I_sorted)) );
-      // assert( std::is_sorted(new_gamete2.smutations.begin(),new_gamete2.smutations.end(),std::cref(am_I_sorted)) );
+      using mlist_itr = typename gamete_cont_iterator::value_type::mutation_container::iterator::value_type;
+      auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
+      assert(std::is_sorted(neutral.begin(),neutral.end(),std::cref(am_I_sorted)));
+      assert(std::is_sorted(selected.begin(),selected.end(),std::cref(am_I_sorted)));
 #endif
     }
     
