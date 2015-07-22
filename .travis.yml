@@ -37,6 +37,7 @@ before_script:
 
 script:
 # The LD_LIBRARY_PATH seems to be needed to get the clang linker to find libsequence b/c it is installed in $HOME
- - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make &&  LD_LIBRARY_PATH=$HOME/lib make check && make install
- - LD_LIBRARY_PATH=$HOME/lib ./unit/mutateTest
+ - export LD_LIBRARY_PATH=$HOME/lib
+ - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && $HOME/lib make check && make install
+ - ./unit/mutateTest
  - $HOME/bin/fwdppConfig --version
