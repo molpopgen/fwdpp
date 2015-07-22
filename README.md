@@ -320,7 +320,7 @@ For example, if libsequence is in /opt:
 
 ~~~{.sh}
 #Note, you need to add in the desired optimization (-OXX) level:
-./configure CXXFLAGS=-"-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
+./configure CXXFLAGS="-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
 make check
 make install
 ~~~
