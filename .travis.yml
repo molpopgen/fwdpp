@@ -37,4 +37,5 @@ before_script:
 
 script:
  - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check && make install
+ - ./unit/mutateTest
  - $HOME/bin/fwdppConfig --version
