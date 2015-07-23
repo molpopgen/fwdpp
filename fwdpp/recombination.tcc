@@ -34,6 +34,14 @@ namespace KTfwd
     //0.3.3
 #ifndef FWDPP_VECTOR_GLOOKUP
     auto pitr = gamete_lookup.equal_range(neutral.size()+selected.size());
+#else
+    typename std::pair<std::int32_t,iterator_type> dummy(neutral.size()+selected.size(),g1);
+    auto pitr = std::equal_range(gamete_lookup.begin(),gamete_lookup.end(),dummy,
+     				 [](const typename std::pair<std::int32_t,iterator_type> & __p1, const typename std::pair<std::int32_t,iterator_type> & __p2 )
+     				 {
+     				   return __p1.first < __p2.first;
+     				 });
+#endif
     auto itr = std::find_if(pitr.first,pitr.second,[&ng](const typename glookup_t::value_type & __p) {
 	return *__p.second == ng;
       });
@@ -46,27 +54,6 @@ namespace KTfwd
       {
 	g1 = itr->second;
       }
-#else
-    typename std::pair<std::int32_t,iterator_type> dummy(neutral.size()+selected.size(),g1);
-    auto pitr = std::equal_range(gamete_lookup.begin(),gamete_lookup.end(),dummy,
-     				 [](const typename std::pair<std::int32_t,iterator_type> & __p1, const typename std::pair<std::int32_t,iterator_type> & __p2 )
-     				 {
-     				   return __p1.first < __p2.first;
-     				 });
-    auto itr = std::find_if(pitr.first,pitr.second,[&ng](const typename glookup_t::value_type & __p) {
-	return *__p.second == ng;
-      });
-    if(itr == pitr.second)
-      {
-	g1 = gametes->emplace(gametes->end(),std::move(ng));
-	//By def'n, pitr.second is the place to insert...
-	gamete_lookup.insert(pitr.second,std::make_pair(g1->mutations.size()+g1->smutations.size(),g1));
-      }
-    else
-      {
-	g1 = itr->second;
-      }
-#endif
     return pos.size()-1;
   }
 
