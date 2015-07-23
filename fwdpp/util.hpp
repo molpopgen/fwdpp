@@ -64,21 +64,12 @@ namespace KTfwd
   {
     static_assert( std::is_base_of<mutation_base,mutation_type>::value,
                    "mutation_type must be derived from KTfwd::mutation_base" );
-    //typename list_type<mutation_type,list_type_allocator>::iterator i = mutations->begin(),
-    //temp;
-    
-    //while(i != mutations->end())
     for(auto i = mutations->begin() ; i != mutations->end() ; )
       {
-	//i->checked = false;
-	//if( i->n == 0 )
 	if(!i->checked)
 	  {
 	    lookup->erase(lookup->find(i->pos));
 	    i=mutations->erase(i);
-	    //temp=i;
-	    //++i;
-	    //mutations->erase(temp);
 	  }
 	else
 	  {
