@@ -18,6 +18,7 @@
 * Travis-CI integration was added for the Git repo.
 * Getting the Travis-CI integration to work resulted in changes to the unit tests and the experimental examples to improve their handling of boost-related things.
 * unit/policyTests.cc was modified.  Previously, it was failing on GCC for the "wrong" reason.  The moves were actually happening, but the return value was being set at the wrong time.
+* Various code cleanup
 
 ## 0.3.4
 
