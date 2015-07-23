@@ -2,17 +2,16 @@
 #ifndef __FWDPP_RECOMBINATION_TCC__
 #define __FWDPP_RECOMBINATION_TCC__
 
+#include <vector>
 #include <fwdpp/internal/recombination_common.hpp>
 
 namespace KTfwd
 {
   template< typename iterator_type,
 	    typename list_type_allocator,
-	    typename vector_type_allocator,
 	    typename glookup_t,
-	    template<typename,typename> class vector_type,
 	    template<typename,typename> class list_type>
-  unsigned recombine_gametes( const vector_type< double, vector_type_allocator > & pos,
+  unsigned recombine_gametes( std::vector<double> & pos,
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
