@@ -2,6 +2,8 @@
 
 ## 0.3.5
 
+* Faster simulations with selection due to new data structure.  The gamete lookup tables introduced in 0.3.3 have been reworked.  This is not an API change, but rather an internal change that will be transparent to programmers using the library.
+* "make check" now executes all unit tests, if and only if the boost unit testing library is present.
 * Source code reorganization -- Issue #21
 * Sugar code can now be included all at once.  This resolves Issue #23.  The convenience header is:
 

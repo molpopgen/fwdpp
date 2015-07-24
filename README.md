@@ -274,7 +274,7 @@ make
 make install
 ~~~
 
-To compile examples and unit tests:
+To compile examples and unit tests, and to execute unit tests:
 
 ~~~
 make check
