@@ -16,22 +16,22 @@ namespace KTfwd {
     */
     template< typename gamete_type,
 	      typename mutation_iterator>
-    void add_new_mutation( mutation_iterator & mitr,
+    void add_new_mutation( mutation_iterator mitr,
 			   gamete_type & new_gamete )
     {
       if(mitr->neutral)
 	{
-	  new_gamete.mutations.insert(std::lower_bound(new_gamete.mutations.begin(),
-						       new_gamete.mutations.end(),mitr->pos,
-						       [](const mutation_iterator & __mut,const double & __value){ return __mut->pos < __value;}),
-				      mitr );
+	  new_gamete.mutations.emplace(std::lower_bound(new_gamete.mutations.begin(),
+							new_gamete.mutations.end(),mitr->pos,
+							[](const mutation_iterator & __mut,const double & __value){ return __mut->pos < __value;}),
+				       std::move(mitr) );
 	}
       else
 	{
-	  new_gamete.smutations.insert(std::lower_bound(new_gamete.smutations.begin(),
-							new_gamete.smutations.end(),mitr->pos,
-							[](const mutation_iterator & __mut,const double & __value){ return __mut->pos < __value;}),
-					mitr );
+	  new_gamete.smutations.emplace(std::lower_bound(new_gamete.smutations.begin(),
+							 new_gamete.smutations.end(),mitr->pos,
+							 [](const mutation_iterator & __mut,const double & __value){ return __mut->pos < __value;}),
+					std::move(mitr) );
 	}
     }
 
