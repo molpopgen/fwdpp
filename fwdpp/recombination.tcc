@@ -32,7 +32,7 @@ namespace KTfwd
     typename iterator_type::value_type ng(0u,neutral,selected);
 
     //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
-    auto lookup = gamete_lookup.lookup(neutral.size(),selected.size());
+    auto lookup = gamete_lookup.lookup(ng);
     if( lookup.first ) 
       {
 	//Then we have to search through lookup.second

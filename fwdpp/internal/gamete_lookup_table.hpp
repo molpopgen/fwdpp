@@ -50,14 +50,14 @@ namespace KTfwd {
 	  }
       }
 
-      result_type lookup( const uint_t & nm, const uint_t & sm ) 
+      result_type lookup( const typename gcont_t::value_type & g ) 
       {
-	auto itr = lookup_table.find(nm);
+	auto itr = lookup_table.find(g.mutations.size());
 	if(itr == lookup_table.end())
 	  {
 	    return std::make_pair(false,std::make_pair(typename mmap_t::iterator(),typename mmap_t::iterator()));
 	  }
-	return std::make_pair(true, itr->second.equal_range(sm));
+	return std::make_pair(true, itr->second.equal_range(g.smutations.size()));
       }
 
       void update( gcont_t_itr g ) 
