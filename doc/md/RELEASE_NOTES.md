@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.6
+
+* The internal lookup table has been further refined, resulting in much faster simulations with selection.
+
 ## 0.3.5
 
 * Faster simulations with selection due to new data structure.  The gamete lookup tables introduced in 0.3.3 have been reworked.  This is not an API change, but rather an internal change that will be transparent to programmers using the library.
