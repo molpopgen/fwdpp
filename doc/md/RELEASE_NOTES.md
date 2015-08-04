@@ -3,6 +3,7 @@
 ## 0.3.6
 
 * The internal lookup table has been further refined, resulting in much faster simulations with selection.
+* KTfwd::additive_diploid and KTfwd::multiplicative_diploid now have checks to prevent returning fitnesses < 0.
 
 ## 0.3.5
 
