@@ -15,37 +15,24 @@ namespace KTfwd {
       introduced in 0.3.3 that simply associated iterators
       to gametes with the number of mutations.
       
-      The new lookup separates out the number of neutral
-      and selected mutations, which speeds up simulations
-      with selection.
+      fwdpp 0.3.6 further changed the lookup scheme to have a
+      friendlier API as well as a much faster lookup for the case of 
+      simulations involving selected mutations
     */
     template<typename gcont_t>
     struct gamete_lookup {
       using uint_t = std::uint32_t;
       using gcont_t_itr = typename gcont_t::iterator;
-      using mmap_t = std::multimap<std::pair<double,double>,gcont_t_itr>;
-      using inner_t = typename mmap_t::value_type;
-      using lookup_table_t = std::map<std::pair<unsigned,unsigned>,mmap_t>;
-
-      using map_t = std::map<unsigned,mmap_t>;
-      using result_type = std::pair<bool,std::pair<typename mmap_t::iterator,typename mmap_t::iterator> >;
+      using lookup_table_t = std::multimap<double,gcont_t_itr>;
+      using result_type = std::pair<typename lookup_table_t::iterator,typename lookup_table_t::iterator>;
+      using inner_t = typename lookup_table_t::value_type;
       lookup_table_t lookup_table;
-      
-      void update_details( gcont_t_itr g ) 
+
+      inline void update_details( gcont_t_itr g ) 
       {
 	double npos0 = ((g->mutations.empty()) ? -std::numeric_limits<double>::max() : g->mutations[0]->pos);
 	double spos0 = ((g->smutations.empty()) ? -std::numeric_limits<double>::max() : g->smutations[0]->pos);
-	const auto pospair = std::make_pair(spos0,npos0);
-	const auto nmpair = std::make_pair(g->smutations.size(),g->mutations.size());
-	auto __outer = lookup_table.find(nmpair);
-	if(__outer==lookup_table.end())
-	  {
-	    lookup_table[nmpair] = mmap_t( {std::make_pair(pospair,g)} );
-	  }
-	else {
-	  __outer->second.insert( std::make_pair( pospair,g ) );
-	}
-
+	lookup_table.insert( std::make_pair( npos0*double(g->mutations.size()) + spos0*double(g->smutations.size()), g ) );
       }
 
       explicit gamete_lookup(gcont_t * gametes) : lookup_table( lookup_table_t() )
@@ -56,32 +43,14 @@ namespace KTfwd {
 	  }
       }
 
-      result_type lookup( const typename gcont_t::value_type & g ) 
+      inline result_type lookup( const typename gcont_t::value_type & g ) 
       {
-	auto itr = lookup_table.find(std::make_pair(g.smutations.size(),g.mutations.size()));
-	if( itr == lookup_table.end() )
-	  {
-	    return std::make_pair(false,std::make_pair(typename mmap_t::iterator(),typename mmap_t::iterator()));
-	  }
 	double npos0 = ((g.mutations.empty()) ? -std::numeric_limits<double>::max() : g.mutations[0]->pos);
 	double spos0 = ((g.smutations.empty()) ? -std::numeric_limits<double>::max() : g.smutations[0]->pos);
-	return std::make_pair(true,itr->second.equal_range(std::make_pair(spos0,npos0)));
-	 
-	// if(itr == lookup_table.end())
-	//   {
-	//     return std::make_pair(false,std::make_pair(typename mmap_t::iterator(),typename mmap_t::iterator()));
-	//   }
-	// auto jtr = itr->second.find(g.mutations.size());
-	// if( jtr == itr->second.end() )
-	//   {
-	//     return std::make_pair(false,std::make_pair(typename mmap_t::iterator(),typename mmap_t::iterator()));
-	//   }
-	// double npos0 = ((g.mutations.empty()) ? -std::numeric_limits<double>::max() : g.mutations[0]->pos);
-	// double spos0 = ((g.smutations.empty()) ? -std::numeric_limits<double>::max() : g.smutations[0]->pos);
-	// return std::make_pair(true,jtr->second.equal_range(std::make_pair(spos0,npos0)));
+	return lookup_table.equal_range(  npos0*double(g.mutations.size()) + spos0*double(g.smutations.size()) );
       }
 
-      void update( gcont_t_itr g ) 
+      inline void update( gcont_t_itr g ) 
       {
 	update_details(g);
       }

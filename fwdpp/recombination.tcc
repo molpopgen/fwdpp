@@ -33,15 +33,15 @@ namespace KTfwd
 
     //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
     auto lookup = gamete_lookup.lookup(ng);
-    if( lookup.first ) 
+    if( lookup.first != lookup.second ) 
       {
 	//Then we have to search through lookup.second
-	auto itr = std::find_if(lookup.second.first,
-				lookup.second.second,
+	auto itr = std::find_if(lookup.first,
+				lookup.second,
 				[&ng]( typename glookup_t::inner_t & __p) {
 				  return *__p.second==ng;
 				});
-      if( itr == lookup.second.second ) 
+      if( itr == lookup.second ) 
 	{
 	  g1 = gametes->emplace(gametes->end(),std::move(ng));
 	  gamete_lookup.update(g1);
