@@ -146,49 +146,6 @@ namespace KTfwd
     inline bool operator==(const gamete_base<mut_type,list_type> & rhs) const
     {
       return(this->mutations == rhs.mutations && this->smutations == rhs.smutations);
-      /*
-      //0.3.6: an improved (?) comparison method
-       if( this->mutations.size() != rhs.mutations.size()
-       	  || this->smutations.size() != rhs.smutations.size() ) return false;
-       // return std::equal(this->mutations.begin(),this->mutations.end(),rhs.mutations.begin()) &&
-       // 	 std::equal(this->smutations.begin(),this->smutations.end(),rhs.smutations.begin());
-        auto nm = this->mutations.size(),ns=this->smutations.size();
-       // return ( nm < ns ) ? (std::equal(this->mutations.begin(),this->mutations.end(),rhs.mutations.begin()) &&
-       // 			     std::equal(this->smutations.begin(),this->smutations.end(),rhs.smutations.begin()) ) :
-       // 	 (std::equal(this->smutations.begin(),this->smutations.end(),rhs.smutations.begin()) &&
-       // 	  std::equal(this->mutations.begin(),this->mutations.end(),rhs.mutations.begin()) ) ;
-
-      if(!ns) return std::equal(this->mutations.begin(),this->mutations.end(),rhs.mutations.begin());
-      else if(!nm) return std::equal(this->smutations.begin(),this->smutations.end(),rhs.smutations.begin());
-
-      auto b1 = this->mutations.begin(),
-      	b2 = this->smutations.begin(),
-      	e1 = this->mutations.end(),
-      	e2 = this->smutations.end(),
-      	b1a = rhs.mutations.begin(),
-      	b2a = rhs.smutations.begin(),
-      	e1a = rhs.mutations.end(),
-      	e2a = rhs.smutations.end();
-      if( ns < nm )
-      	{
-      	  std::swap(b1,b2);
-      	  std::swap(e1,e2);
-      	  std::swap(b1a,b2a);
-      	  std::swap(e1a,e2a);
-      	}
-      for( ; (b1<e1||b2<e2) ; ++b1,++b2,++b1a,++b2a)
-      	{
-      	  if(b1<e1&& *b1!=*b1a) return false;
-      	  if(b2<e2) {
-      	    if(*b2!=*b2a) return false;
-      	  } else {
-      	    return std::equal(b1,e1,b1a);
-      	  }
-      	}
-      return true;
-      */
-      //Older/naive approach:
-      //return(this->mutations == rhs.mutations && this->smutations == rhs.smutations);
     }
   };
 
