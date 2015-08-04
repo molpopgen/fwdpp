@@ -203,16 +203,16 @@ namespace KTfwd
 			     const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
-      return site_dependent_fitness()(g1,g2,
-				      [&](double & fitness,const __mtype & mut)
-				      {
-					fitness *= (1. + scaling*mut->s);
-				      },
-				      [](double & fitness,const __mtype & mut)
-				      {
-					fitness *= (1. + mut->h*mut->s);
-				      },
-				      1.);
+      return std::max(0.,site_dependent_fitness()(g1,g2,
+						  [&](double & fitness,const __mtype & mut)
+						  {
+						    fitness *= (1. + scaling*mut->s);
+						  },
+						  [](double & fitness,const __mtype & mut)
+						  {
+						    fitness *= (1. + mut->h*mut->s);
+						  },
+						  1.));
     }
     /*!
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
@@ -243,7 +243,7 @@ namespace KTfwd
 				  const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
-      return 1. + site_dependent_fitness()(g1,g2,
+      return std::max(0.,1. + site_dependent_fitness()(g1,g2,
 					   [=](double & fitness,const __mtype & mut)
 					   {
 					     fitness += (scaling*mut->s);
@@ -252,7 +252,8 @@ namespace KTfwd
 					   {
 					     fitness += (mut->h*mut->s);
 					   },
-					   0.);
+					   0.)
+		      );
     }
 
     /*!
