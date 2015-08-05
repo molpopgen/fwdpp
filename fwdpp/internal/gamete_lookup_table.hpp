@@ -21,7 +21,6 @@ namespace KTfwd {
     */
     template<typename gcont_t>
     struct gamete_lookup {
-      using uint_t = std::uint32_t;
       using gcont_t_itr = typename gcont_t::iterator;
       using lookup_table_t = std::multimap<double,gcont_t_itr>;
       using result_type = std::pair<typename lookup_table_t::iterator,typename lookup_table_t::iterator>;
