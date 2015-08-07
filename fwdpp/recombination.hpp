@@ -29,10 +29,10 @@ namespace KTfwd
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
-			      const recombination_map & mf,
 			      glookup_t & gamete_lookup,
 			      typename iterator_type::value_type::mutation_container & neutral,
-			      typename iterator_type::value_type::mutation_container & selected );
+			      typename iterator_type::value_type::mutation_container & selected,
+			      const recombination_map & mf);
 
   /*!
     Overload for fixed xover positions.
