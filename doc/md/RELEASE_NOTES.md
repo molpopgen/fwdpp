@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.7
+
+* An declaration of KTfwd::recombine_gametes was fixed to match the implementation
+
 ## 0.3.6
 
 * The internal lookup table has been further refined, resulting in much faster simulations with selection.
