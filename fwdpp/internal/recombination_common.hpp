@@ -18,7 +18,6 @@ namespace KTfwd {
       assert( std::is_sorted(pos.cbegin(),pos.cend()) );
       short SWITCH = 0;
 
-      using itr_t = typename gamete_cont_iterator::value_type::mutation_container::iterator;
       auto itr = ibeg->mutations.cbegin(),
 	jtr = jbeg->mutations.cbegin(),
 	itr_s = ibeg->smutations.cbegin(),
