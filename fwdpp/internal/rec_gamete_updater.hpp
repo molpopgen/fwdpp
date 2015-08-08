@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
-#include <iostream>
+
 namespace KTfwd
 {
   namespace fwdpp_internal
