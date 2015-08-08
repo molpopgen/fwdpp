@@ -13,13 +13,16 @@ namespace KTfwd
 				    itr_type __last,
 				    const double & val)
     {
-     const auto comp = [](const typename itr_type::value_type & __mut,
-			  const double & __val)
-       {
-	 return __mut->pos < __val;
-       };
-     return std::lower_bound(__first,__last,val,comp);
+      if(__first==__last) return __first;
+      const auto comp = [](const typename itr_type::value_type & __mut,
+			   const double & __val)
+	{
+	  return __mut->pos < __val;
+	};
+      if(!comp(*__first,val)) return __first;
+      return std::lower_bound(__first+1,__last,val,comp);
     }
+    
     template< typename itr_type,
 	      typename cont_type >
     itr_type rec_gam_updater( itr_type __first, itr_type __last,
