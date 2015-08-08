@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iterator>
 #include <functional>
+#include <iostream>
 namespace KTfwd
 {
   namespace fwdpp_internal
@@ -14,13 +15,15 @@ namespace KTfwd
 				    const double & val)
     {
       if(__first==__last) return __first;
-      const auto comp = [](const typename itr_type::value_type & __mut,
-			   const double & __val)
-	{
-	  return __mut->pos < __val;
-	};
-      if(!comp(*__first,val)) return __first;
-      return std::lower_bound(__first+1,__last,val,comp);
+      if(!((*__first)->pos<val)) {
+	return __first;
+      }
+      return std::lower_bound(__first+1,__last,val,
+			      [](const typename itr_type::value_type & __mut,
+				 const double & __val)
+			      {
+				return __mut->pos < __val;
+			      });
     }
     
     template< typename itr_type,
