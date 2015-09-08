@@ -45,7 +45,7 @@ namespace KTfwd {
     struct exponential
     {
       double mean;
-      exps(const double & m) : mean(m)
+      exponential(const double & m) : mean(m)
       {
 	if(!std::isfinite(mean))
 	  {
@@ -65,8 +65,8 @@ namespace KTfwd {
     struct uniform
     {
       double mn,mx;
-      uniformsh(const double & __mn,
-		const double & __mx) : mn(__mn),mx(__mx)
+      uniform(const double & __mn,
+	      const double & __mx) : mn(__mn),mx(__mx)
       {
 	if(!std::isfinite(mn) || !std::isfinite(mx))
 	  {
@@ -86,9 +86,9 @@ namespace KTfwd {
     struct beta
     {
       double a,b,factor;
-      betash(const double & __a,
-	     const double & __b,
-	     const double & __f) : a(__a),b(__b),factor(__f)
+      beta(const double & __a,
+	   const double & __b,
+	   const double & __f) : a(__a),b(__b),factor(__f)
       {
 	if(!std::isfinite(a) || a <= 0.)
 	  {
@@ -112,7 +112,7 @@ namespace KTfwd {
     struct gaussian
     {
       double sd;
-      gaussiansh(const double & __sd) : sd(__sd)
+      gaussian(const double & __sd) : sd(__sd)
       {
 	if(sd == 0.) throw std::runtime_error("sd must not equal 0");
 	if(!std::isfinite(sd)) throw std::runtime_error("sd must be finite");
@@ -126,8 +126,8 @@ namespace KTfwd {
     struct gamma
     {
       double mean,shape;
-      gammas(const double & __m,
-	     const double & __s ) : mean(__m),shape(__s)
+      gamma(const double & __m,
+	    const double & __s ) : mean(__m),shape(__s)
       {
 	if(!std::isfinite(mean))
 	  {
