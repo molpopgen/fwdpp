@@ -15,6 +15,7 @@
 
 #include <gsl/gsl_randist.h>
 #include <functional>
+#include <exception>
 #include <cmath>
 
 namespace KTfwd {
@@ -32,7 +33,7 @@ namespace KTfwd {
       constant(const double & __x) : x(__x)
       {
 	if(!std::isfinite(x)) {
-	  Rcpp::stop("value must be finite");
+	  throw std::runtime_error("value must be finite");
 	}
       }
       inline double operator()(gsl_rng *) const
@@ -48,11 +49,11 @@ namespace KTfwd {
       {
 	if(!std::isfinite(mean))
 	  {
-	    Rcpp::stop("mean must be finite");
+	    throw std::runtime_error("mean must be finite");
 	  }
 	if(mean==0.)
 	  {
-	    Rcpp::stop("mean must not equal 0");
+	    throw std::runtime_error("mean must not equal 0");
 	  }
       }
       inline double operator()(gsl_rng * r) const
@@ -69,11 +70,11 @@ namespace KTfwd {
       {
 	if(!std::isfinite(mn) || !std::isfinite(mx))
 	  {
-	    Rcpp::stop("min and max of range must both be finite");
+	    throw std::runtime_error("min and max of range must both be finite");
 	  }
 	if(mn>mx)
 	  {
-	    Rcpp::stop("min must be <= max");
+	    throw std::runtime_error("min must be <= max");
 	  }
       }
       inline double operator()(gsl_rng * r) const
@@ -91,15 +92,15 @@ namespace KTfwd {
       {
 	if(!std::isfinite(a) || a <= 0.)
 	  {
-	    Rcpp::stop("a must be > 0.");
+	    throw std::runtime_error("a must be > 0.");
 	  }
 	if(!std::isfinite(b) || b <= 0.)
 	  {
-	    Rcpp::stop("b must be > 0.");
+	    throw std::runtime_error("b must be > 0.");
 	  }
 	if(!std::isfinite(factor) || !(factor>0.))
 	  {
-	    Rcpp::stop("scaling factor must be finite and > 0");
+	    throw std::runtime_error("scaling factor must be finite and > 0");
 	  }
       }
       inline double operator()(gsl_rng * r) const
@@ -113,8 +114,8 @@ namespace KTfwd {
       double sd;
       gaussiansh(const double & __sd) : sd(__sd)
       {
-	if(sd == 0.) Rcpp::stop("sd must not equal 0");
-	if(!std::isfinite(sd)) Rcpp::stop("sd must be finite");
+	if(sd == 0.) throw std::runtime_error("sd must not equal 0");
+	if(!std::isfinite(sd)) throw std::runtime_error("sd must be finite");
       }
       inline double operator()(const gsl_rng * r) const
       {
@@ -130,11 +131,11 @@ namespace KTfwd {
       {
 	if(!std::isfinite(mean))
 	  {
-	    Rcpp::stop("mean and sign must both be finite");
+	    throw std::runtime_error("mean and sign must both be finite");
 	  }
 	if(shape <= 0)
 	  {
-	    Rcpp::stop("shape must be >= 0");
+	    throw std::runtime_error("shape must be >= 0");
 	  }
       }
       inline double operator()(const gsl_rng * r) const
