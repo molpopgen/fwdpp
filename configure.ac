@@ -19,7 +19,7 @@ AM_MAINTAINER_MODE([disable])
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
-AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/experimental/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile src/Makefile])
+AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile src/Makefile])
 
 dnl AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]),[AC_DEFINE([USE_STANDARD_CONTAINERS],[1],[Prefer containers from namespace std when compiling])])
 AC_ARG_ENABLE([boost],AS_HELP_STRING([--enable-boost],[Enable use of boost containers when compiling examples]),[AC_DEFINE([USE_BOOST_CONTAINERS],[1],[Use containers from namespace boost when compiling])])
