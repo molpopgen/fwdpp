@@ -14,6 +14,7 @@
 #define __FWDPP_EXTENSIONS_CALLBACKS_HPP__
 
 #include <gsl/gsl_randist.h>
+#include <functional>
 #include <cmath>
 
 namespace KTfwd {
