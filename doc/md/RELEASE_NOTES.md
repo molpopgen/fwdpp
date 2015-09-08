@@ -3,6 +3,7 @@
 ## 0.3.7
 
 * An declaration of KTfwd::recombine_gametes was fixed to match the implementation
+* Minor re-organization of recombination code
 
 ## 0.3.6
 
