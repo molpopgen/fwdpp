@@ -23,7 +23,7 @@ namespace KTfwd
 			  const std::vector<double> & sweights, //the weights
 			  const std::vector<shmodel> &__shmodels) : nbeg(__nbeg),nend(__nend),
 								   sbeg(__sbeg),send(__send),
-								   shmodels(shmodels)
+								   shmodels(__shmodels)
       {
 	std::cerr << "fwdpp here1\n";
 	std::cerr << nbeg.size() << ' ' << nend.size() << ' ' << nweights.size() << '\n';
