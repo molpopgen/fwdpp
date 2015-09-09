@@ -4,7 +4,7 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
-#include <iostream>
+
 namespace KTfwd
 {
   namespace extensions
@@ -25,11 +25,8 @@ namespace KTfwd
 								   sbeg(__sbeg),send(__send),
 								   shmodels(__shmodels)
       {
-	std::cerr << "fwdpp here1\n";
-	std::cerr << nbeg.size() << ' ' << nend.size() << ' ' << nweights.size() << '\n';
 	if(nweights.size())
 	  nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(nweights.size(),&nweights[0]));
-	std::cerr << "fwdpp here2\n";
 	if(sweights.size())
 	  slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(sweights.size(),&sweights[0]));
       }
