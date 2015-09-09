@@ -4,6 +4,7 @@
 
 * An declaration of KTfwd::recombine_gametes was fixed to match the implementation
 * Minor re-organization of recombination code
+* The details of KTfwd::ms_sample_separate were moved into KTfwd::internal.  This move allows access to functions that sample a specific set of diploids, which is handy in a lot of cases.
 
 ## 0.3.6
 
