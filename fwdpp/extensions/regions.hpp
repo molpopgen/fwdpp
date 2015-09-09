@@ -1,3 +1,4 @@
+///! \file regions.hpp
 #ifndef __FWDPP_EXTENSIONS_REGIONS_HPP__
 #define __FWDPP_EXTENSIONS_REGIONS_HPP__
 
@@ -10,11 +11,29 @@ namespace KTfwd
   namespace extensions
   {
     struct discrete_mut_model
+    /*!
+      Class allowing the simulation of discrete variation
+      in mutation models along a region.
+
+      Implemented in terms of KTfwd::popgenmut.
+
+      Intended to be used with the callbacks in fwdpp/extensions/callbacks.hpp
+     */
     {
       using result_type = KTfwd::popgenmut;
       std::vector<double> nbeg,nend,sbeg,send;
       std::vector< shmodel > shmodels;
       KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup,slookup;
+
+      /*!
+	\param __nbeg Positions of beginnings of 'neutral' regions
+	\param __nend Positions of ends of 'neutral' regions
+	\param nweights Weights on 'neutra'l regions
+	\param __sbeg Positions of beginnings of 'selected' regions
+	\param __send Positions of ends of 'selected' regions
+	\param sweights Weights on 'selected' regions
+	\param __shmodels Vector of KTfwd::experimenta::shmodel
+       */
       discrete_mut_model( const std::vector<double> &__nbeg,
 			  const std::vector<double> &__nend,
 			  const std::vector<double> & nweights, //the weights
@@ -31,7 +50,9 @@ namespace KTfwd
 	  slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(sweights.size(),&sweights[0]));
       }
 
-      //Helper fnx
+      /*!
+	Helper function.  Not to be called externally.
+       */
       template<typename lookup_table_t>
       inline double posmaker( gsl_rng * r,
 			      const double & beg,
@@ -47,6 +68,14 @@ namespace KTfwd
 	return pos;
       }
 
+      /*!
+	Return a KTfwd::popgenmut
+
+	\param r A gsl_rng
+	\param nmu Neutral mutation rate (per gamete, per generation)
+	\param smu Selected mutation rate (per gamete, per generation)
+	\param lookup Lookup table for mutations
+       */
       template<typename lookup_table_t>
       inline result_type make_mut(gsl_rng * r,
 				  const double & nmu,
@@ -68,16 +97,28 @@ namespace KTfwd
     };
 
     struct discrete_rec_model
+    /*!
+      Class allowing the simulation of discrete variation
+      in recombination rates along a region.
+     */
     {
       using result_type = double;
       std::vector<double> beg,end;
       KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+      /*!
+	\param __beg Region beginnings
+	\param __end Region ends
+	\param __weight Region weights
+       */
       discrete_rec_model( const std::vector<double> & __beg,
 			  const std::vector<double> & __end,
 			  const std::vector<double> & __weight ) : beg(__beg),end(__end)
       {
 	lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(__weight.size(),&__weight[0]));
       }
+      /*!
+	Returns a position from a region that is chosen based on region weights.
+       */
       inline result_type operator()(gsl_rng * r) const
       {
 	size_t region = gsl_ran_discrete(r,lookup.get());

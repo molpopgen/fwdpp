@@ -1,4 +1,6 @@
-/*
+/*!
+  \file callbacks.hpp
+
   This file provides lightweight wrappers
   around calls to GSL.
 
@@ -20,14 +22,36 @@
 
 namespace KTfwd {
 
+  /*!
+    Useful types for implementing fwdpp-based simulations in 
+    enviroments like R, Python, etc.
+
+    Unlike the rest of fwdpp, functions in this namespace
+    are allowed to throw exceptions, and it is up to the programmer
+    to catch them and handle them appropriately.  Both Rcpp and 
+    Cython/boost.python
+
+    Examples of using this namespace are:
+
+    1. http://github.com/molpopgen/fwdpy
+    2. http://github.com/molpopgen/foRward
+   */
   namespace extensions {
 
     struct shmodel
+    /*!
+      Callback wrapper.  Used to model
+      distributions on effect sizes/selection coefficients (s)
+      and dominance (h)
+    */
     {
       std::function<double(gsl_rng*)> s,h;
     };
   
     struct constant
+    /*!
+      Callback for fixed s and/or h
+     */
     {
       double x;
       constant(const double & __x) : x(__x)
@@ -43,6 +67,9 @@ namespace KTfwd {
     };
 
     struct exponential
+    /*!
+      Exponential s or h
+     */
     {
       double mean;
       exponential(const double & m) : mean(m)
@@ -63,6 +90,9 @@ namespace KTfwd {
     };
 
     struct uniform
+    /*!
+      Uniform s or h
+     */
     {
       double mn,mx;
       uniform(const double & __mn,
@@ -84,6 +114,9 @@ namespace KTfwd {
     };
 
     struct beta
+    /*!
+      Beta-distributed s or h
+    */
     {
       double a,b,factor;
       beta(const double & __a,
@@ -110,6 +143,9 @@ namespace KTfwd {
     };
 
     struct gaussian
+    /*!
+      Gaussian s or h
+    */
     {
       double sd;
       gaussian(const double & __sd) : sd(__sd)
@@ -124,6 +160,9 @@ namespace KTfwd {
     };
 
     struct gamma
+    /*!
+      Gamma distributed s or h
+    */
     {
       double mean,shape;
       gamma(const double & __m,
