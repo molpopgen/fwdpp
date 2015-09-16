@@ -17,7 +17,7 @@
 
 #include <gsl/gsl_randist.h>
 #include <functional>
-#include <exception>
+#include <stdexcept>
 #include <cmath>
 
 namespace KTfwd {

@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <vector>
+#include <numeric>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
