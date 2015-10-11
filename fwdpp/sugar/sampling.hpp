@@ -44,7 +44,7 @@ namespace KTfwd
 				const unsigned nsam,
 				const bool removeFixed)
   /*!
-    Take a random sample of nsam diploids from a population
+    Take a random sample of nsam chromosomes from a population
 
     \param r A random-number generator
     \param p A population
