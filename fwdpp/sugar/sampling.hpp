@@ -1,11 +1,18 @@
 #ifndef __FWDPP_SUGAR_SAMPLING_HPP__
 #define __FWDPP_SUGAR_SAMPLING_HPP__
 
+#include <fwdpp/forward_types.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 
+/*
+  TODO:
+
+  1.  fxns to sample specific diploids
+  2.  Move implementation details into subfolder or .tcc file
+*/
 namespace KTfwd
 {
   using sample_t = std::vector< std::pair<double,std::string> >;
