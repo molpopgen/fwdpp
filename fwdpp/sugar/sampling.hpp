@@ -13,6 +13,28 @@ namespace KTfwd
 
   //Single-region, single-deme
   template<typename poptype>
+  sample_t sample_details( gsl_rng * r,
+				   const poptype & p,
+				   const unsigned nsam,
+				   const bool removeFixed,
+				   std::true_type)
+  {
+    return ms_sample(r,&p.diploids,nsam,removeFixed);
+  }
+
+  //Multi-locus, single-deme
+  template<typename poptype>
+  sample_t sample_details( gsl_rng * r,
+				   const poptype & p,
+				   const unsigned nsam,
+				   const bool removeFixed,
+				   std::false_type)
+  {
+    return ms_sample(r,&p.diploids,nsam,removeFixed);
+  }
+
+  //Single-region, single-deme
+  template<typename poptype>
   sep_sample_t sample_sep_details( gsl_rng * r,
 				   const poptype & p,
 				   const unsigned nsam,
@@ -31,6 +53,19 @@ namespace KTfwd
 				   std::false_type)
   {
     return ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+  }
+
+  template<typename poptype>
+  sample_t sample( gsl_rng * r,
+		   const poptype & p,
+		   const unsigned nsam,
+		   const bool removeFixed)
+  {
+    static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
+		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
+		   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG"
+		   );
+    return sample_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
   template<typename poptype>
