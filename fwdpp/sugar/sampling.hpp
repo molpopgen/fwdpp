@@ -9,12 +9,7 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/sampling/sampling_details.hpp>
-/*
-  TODO:
 
-  1.  fxns to sample specific diploids
-  2.  Move implementation details into subfolder or .tcc file
-*/
 namespace KTfwd
 {
   template<typename poptype>
