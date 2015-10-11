@@ -79,12 +79,54 @@ namespace KTfwd
   }
 
   template<typename poptype>
+  sample_t sample_details( const poptype & p,
+			   const std::vector<unsigned> & individuals,
+			   const bool removeFixed,
+			   std::true_type)
+  {
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    if(! removeFixed)
+      {
+	add_fixations(&temp.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(&temp.second,p.fixations,individuals.size(),sugar::treat_neutral::SELECTED);
+      }
+    auto rv = std::move(temp.first);
+    std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
+    std::sort(rv.begin(),rv.end(),[](const std::pair<double,std::string> & a,
+				     const std::pair<double,std::string> & b){
+		return a.first<b.first;
+	      });
+    return rv;
+  }
+
+  template<typename poptype>
+  sample_t sample_details( const poptype & p,
+			   const std::vector<unsigned> & individuals,
+			   const bool removeFixed,
+			   std::false_type)
+  {
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    if(! removeFixed)
+      {
+	add_fixations(&temp.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(&temp.second,p.fixations,individuals.size(),sugar::treat_neutral::SELECTED);
+      }
+    auto rv = std::move(temp.first);
+    std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
+    std::sort(rv.begin(),rv.end(),[](const std::pair<double,std::string> & a,
+				     const std::pair<double,std::string> & b){
+		return a.first<b.first;
+	      });
+    return rv;
+  }
+  
+  template<typename poptype>
   sep_sample_t sample_sep_details( const poptype & p,
 				   const std::vector<unsigned> & individuals,
 				   const bool removeFixed,
 				   std::true_type)
   {
-    sep_sample_t rv = ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&rv.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
