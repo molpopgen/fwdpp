@@ -11,26 +11,57 @@ namespace KTfwd
   using sample_t = std::vector< std::pair<double,std::string> >;
   using sep_sample_t = std::pair<sample_t,sample_t>;
 
+  enum class treat_neutral {ALL,NEUTRAL,SELECTED};
+
+  template<typename vec_mutation_t>
+  void add_fixations( sample_t * sample,
+		      const vec_mutation_t & fixations,
+		      const unsigned nsam,
+		      const treat_neutral treat )
+  {
+    for( const auto & f : fixations)
+      {
+	if( treat == treat_neutral::ALL )
+	  {
+	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	  }
+	else if (treat == treat_neutral::NEUTRAL && f.neutral ) //only add neutral mutations
+	  {
+	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	  }
+	else if (treat == treat_neutral::SELECTED && !f.neutral ) //only add selected mutations
+	  {
+	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	  }
+      }
+  }
+
   //Single-region, single-deme
   template<typename poptype>
   sample_t sample_details( gsl_rng * r,
-				   const poptype & p,
-				   const unsigned nsam,
-				   const bool removeFixed,
-				   std::true_type)
+			   const poptype & p,
+			   const unsigned nsam,
+			   const bool removeFixed,
+			   std::true_type)
   {
-    return ms_sample(r,&p.diploids,nsam,removeFixed);
+    sample_t rv =  ms_sample(r,&p.diploids,nsam,removeFixed);
+    if(!removeFixed)
+      add_fixations(&rv,p.fixations,nsam,treat_neutral::ALL);
+    return rv;
   }
 
   //Multi-locus, single-deme
   template<typename poptype>
   sample_t sample_details( gsl_rng * r,
 				   const poptype & p,
-				   const unsigned nsam,
-				   const bool removeFixed,
-				   std::false_type)
+			   const unsigned nsam,
+			   const bool removeFixed,
+			   std::false_type)
   {
-    return ms_sample(r,&p.diploids,nsam,removeFixed);
+    sample_t rv = ms_sample(r,&p.diploids,nsam,removeFixed);
+    if(!removeFixed)
+      add_fixations(&rv,p.fixations,nsam,treat_neutral::ALL);
+    return rv;
   }
 
   //Single-region, single-deme
@@ -41,7 +72,13 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::true_type)
   {
-    return ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    sep_sample_t rv = ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    if(! removeFixed)
+      {
+	add_fixations(&rv.first,p.fixations,nsam,treat_neutral::NEUTRAL);
+	add_fixations(&rv.second,p.fixations,nsam,treat_neutral::SELECTED);
+      }
+    return rv;
   }
 
   //Multi-locus, single-deme
@@ -52,7 +89,13 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::false_type)
   {
-    return ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    sep_sample_t rv =  ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    if(! removeFixed)
+      {
+	add_fixations(&rv.first,p.fixations,nsam,treat_neutral::NEUTRAL);
+	add_fixations(&rv.second,p.fixations,nsam,treat_neutral::SELECTED);
+      }
+    return rv;
   }
 
   template<typename poptype>
