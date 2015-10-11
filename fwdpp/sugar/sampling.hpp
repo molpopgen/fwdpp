@@ -42,6 +42,25 @@ namespace KTfwd
   }
 
   template<typename poptype>
+  sample_t sample(const poptype & p,
+		  const std::vector<unsigned> & individuals,
+		  const bool removeFixed)
+  {
+    static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
+		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
+		   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG"
+		   );
+    if (individuals.empty())return sample_t();
+    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+	  return u >= p.diploids.size();
+	}) != individuals.end() )
+      {
+	throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
+      }
+    return sample_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
+  }
+  
+  template<typename poptype>
   sep_sample_t sample_separate(const poptype & p,
 			       const std::vector<unsigned> & individuals,
 			       const bool removeFixed)
