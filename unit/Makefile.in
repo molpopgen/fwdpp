@@ -84,7 +84,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -150,6 +151,11 @@ am__sugar3_SOURCES_DIST = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
 sugar3_OBJECTS = $(am_sugar3_OBJECTS)
 sugar3_LDADD = $(LDADD)
+am__sugar_sampling_SOURCES_DIST = sugar_sampling.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_sampling_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling.$(OBJEXT)
+sugar_sampling_OBJECTS = $(am_sugar_sampling_OBJECTS)
+sugar_sampling_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -183,7 +189,8 @@ SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
 	$(mlocusCrossoverTest_SOURCES) $(mutateTest_SOURCES) \
 	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
 	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
-	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) $(sugar3_SOURCES)
+	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) $(sugar3_SOURCES) \
+	$(sugar_sampling_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
@@ -192,7 +199,7 @@ DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__policyTests_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
 	$(am__sugar1_custom_SOURCES_DIST) $(am__sugar2_SOURCES_DIST) \
-	$(am__sugar3_SOURCES_DIST)
+	$(am__sugar3_SOURCES_DIST) $(am__sugar_sampling_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -527,6 +534,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -611,6 +619,10 @@ sugar3$(EXEEXT): $(sugar3_OBJECTS) $(sugar3_DEPENDENCIES) $(EXTRA_sugar3_DEPENDE
 	@rm -f sugar3$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sugar3_OBJECTS) $(sugar3_LDADD) $(LIBS)
 
+sugar_sampling$(EXEEXT): $(sugar_sampling_OBJECTS) $(sugar_sampling_DEPENDENCIES) $(EXTRA_sugar_sampling_DEPENDENCIES) 
+	@rm -f sugar_sampling$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_sampling_OBJECTS) $(sugar_sampling_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -628,6 +640,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1_custom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_sampling.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -909,6 +922,13 @@ sugar3.log: sugar3$(EXEEXT)
 sugar1_custom.log: sugar1_custom$(EXEEXT)
 	@p='sugar1_custom$(EXEEXT)'; \
 	b='sugar1_custom'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+sugar_sampling.log: sugar_sampling$(EXEEXT)
+	@p='sugar_sampling$(EXEEXT)'; \
+	b='sugar_sampling'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
