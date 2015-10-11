@@ -1,6 +1,7 @@
 #ifndef __FWDPP_SUGAR_SAMPLING_HPP__
 #define __FWDPP_SUGAR_SAMPLING_HPP__
 
+#include <algorithm>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sampling_functions.hpp>
@@ -89,6 +90,22 @@ namespace KTfwd
     return rv;
   }
 
+  template<typename poptype>
+  sep_sample_t sample_sep_details( gsl_rng * r,
+				   const poptype & p,
+				   const std::vector<unsigned> & individuals,
+				   const bool removeFixed,
+				   std::true_type)
+  {
+    sep_sample_t rv = ms_sample_separate_single_deme(r,&p.diploids,individuals,individuals.size(),removeFixed);
+    if(! removeFixed)
+      {
+	add_fixations(&rv.first,p.fixations,individuals.size(),treat_neutral::NEUTRAL);
+	add_fixations(&rv.second,p.fixations,individuals.size(),treat_neutral::SELECTED);
+      }
+    return rv;
+  }
+
   //Multi-locus, single-deme
   template<typename poptype>
   sep_sample_t sample_sep_details( gsl_rng * r,
@@ -132,6 +149,26 @@ namespace KTfwd
     return sample_sep_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
+  template<typename poptype>
+  sep_sample_t sample_separate(gsl_rng * r,
+			       const poptype & p,
+			       const std::vector<unsigned> & individuals,
+			       const bool removeFixed)
+  {
+    static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
+		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
+		   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG"
+		   );
+    if (individuals.empty())return sep_sample_t();
+    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+	  return u >= p.diploids.size();
+	}) != individuals.end() )
+      {
+	throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
+      }
+    return sample_sep_details(r,p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
+  }
+  
   template<typename poptype>
   sep_sample_t sample_separate( gsl_rng * r,
 				const poptype & p,
