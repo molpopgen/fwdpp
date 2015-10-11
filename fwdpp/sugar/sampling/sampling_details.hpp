@@ -79,13 +79,12 @@ namespace KTfwd
   }
 
   template<typename poptype>
-  sep_sample_t sample_sep_details( gsl_rng * r,
-				   const poptype & p,
+  sep_sample_t sample_sep_details( const poptype & p,
 				   const std::vector<unsigned> & individuals,
 				   const bool removeFixed,
 				   std::true_type)
   {
-    sep_sample_t rv = ms_sample_separate_single_deme(r,&p.diploids,individuals,individuals.size(),removeFixed);
+    sep_sample_t rv = ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&rv.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);

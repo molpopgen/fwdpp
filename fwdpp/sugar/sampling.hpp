@@ -12,6 +12,9 @@
 
 namespace KTfwd
 {
+  /*!
+    Take a random sample of size 'nsam' from a population
+   */
   template<typename poptype>
   sample_t sample( gsl_rng * r,
 		   const poptype & p,
@@ -39,8 +42,7 @@ namespace KTfwd
   }
 
   template<typename poptype>
-  sep_sample_t sample_separate(gsl_rng * r,
-			       const poptype & p,
+  sep_sample_t sample_separate(const poptype & p,
 			       const std::vector<unsigned> & individuals,
 			       const bool removeFixed)
   {
@@ -55,7 +57,7 @@ namespace KTfwd
       {
 	throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
       }
-    return sample_sep_details(r,p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
+    return sample_sep_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
   }
   
   template<typename poptype>
