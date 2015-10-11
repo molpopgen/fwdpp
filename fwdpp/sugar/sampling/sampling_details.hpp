@@ -84,11 +84,11 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::true_type)
   {
-    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&temp.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&temp.second,p.fixations,individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(&temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
@@ -97,7 +97,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
 
@@ -107,11 +107,11 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::false_type)
   {
-    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&temp.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&temp.second,p.fixations,individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(&temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
@@ -120,7 +120,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
   
@@ -130,11 +130,11 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::true_type)
   {
-    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,individuals.size(),removeFixed);
+    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&rv.first,p.fixations,individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&rv.second,p.fixations,individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(&rv.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(&rv.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     return rv;
   }

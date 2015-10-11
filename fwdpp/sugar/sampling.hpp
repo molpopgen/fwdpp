@@ -20,6 +20,16 @@ namespace KTfwd
 		   const poptype & p,
 		   const unsigned nsam,
 		   const bool removeFixed)
+  /*!
+    Take a random sample of nsam chromosomes from a population
+
+    \param r A random-number generator
+    \param p A population
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A vector of both neutral and non-neutral variants
+  */
   {
     static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
@@ -33,6 +43,16 @@ namespace KTfwd
 				const poptype & p,
 				const unsigned nsam,
 				const bool removeFixed)
+  /*!
+    Take a random sample of nsam diploids from a population
+
+    \param r A random-number generator
+    \param p A population
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
+  */
   {
     static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
@@ -45,6 +65,15 @@ namespace KTfwd
   sample_t sample(const poptype & p,
 		  const std::vector<unsigned> & individuals,
 		  const bool removeFixed)
+  /*!
+    Take a non-random sample of diploids from a population
+
+    \param p A population
+    \param individuals The indexes of the diploids to sample
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A vector of both neutral and non-neutral variants
+  */
   {
     static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
@@ -140,7 +169,7 @@ namespace KTfwd
 	    throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
 	  }
       }
-    auto temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,individuals.size(),removeFixed);
+    auto temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,2*individuals.size(),removeFixed);
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     std::sort(rv.begin(),rv.end(),[](const std::pair<double,std::string> & a,
@@ -148,7 +177,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
   
@@ -172,7 +201,7 @@ namespace KTfwd
 	    throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
 	  }
       }
-    return fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,individuals.size(),removeFixed);
+    return fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,2*individuals.size(),removeFixed);
   }
 }
 
