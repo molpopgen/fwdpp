@@ -1,6 +1,7 @@
 #ifndef __FWDPP_SUGAR_SAMPLING_HPP__
 #define __FWDPP_SUGAR_SAMPLING_HPP__
 
+#include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
@@ -140,6 +141,10 @@ namespace KTfwd
   {
     static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
 		   "METAPOP_TAG required");
+    if(deme >= p.diploids.size())
+      {
+	throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
+      }
     return ms_sample_separate(r,&p.diploids[deme],nsam,removeFixed);
   }
 
