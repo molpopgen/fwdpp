@@ -96,6 +96,8 @@ namespace KTfwd
 				     const std::pair<double,std::string> & b){
 		return a.first<b.first;
 	      });
+    if(!removeFixed)
+      add_fixations(&rv,p.fixations,individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
 
@@ -117,6 +119,8 @@ namespace KTfwd
 				     const std::pair<double,std::string> & b){
 		return a.first<b.first;
 	      });
+    if(!removeFixed)
+      add_fixations(&rv,p.fixations,individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
   
