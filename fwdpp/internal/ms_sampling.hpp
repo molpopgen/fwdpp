@@ -5,6 +5,19 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
+    //Used when nsam is odd.  We just clip off the last individual
+    inline void trim_last( std::vector<std::pair<double,std::string> > * block )
+    {
+      std::for_each( block->begin(),block->end(),
+		     []( std::pair<double,std::string> & p ) {
+		       if(!p.second.empty()) 
+			 {
+			   //remove last character
+			   p.second.erase(p.second.end()-1);
+			 }
+		     } );
+    }
+    
     template< typename mcont_t,
 	      typename pos_finder>
     void update_sample_block(std::vector< std::pair<double,std::string> > & block,
@@ -55,15 +68,15 @@ namespace KTfwd
 	  unsigned ind = diplist[i];
 	  assert(ind>=0);
 	  assert( unsigned(ind) < diploids->size() );
-	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->first->mutations,i,n,sitefinder);
-	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->second->mutations,i,n,sitefinder,1);
-	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->first->smutations,i,n,sitefinder);
-	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->second->smutations,i,n,sitefinder,1);
+	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->first->mutations,i,2*diplist.size(),sitefinder);
+	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->second->mutations,i,2*diplist.size(),sitefinder,1);
+	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->first->smutations,i,2*diplist.size(),sitefinder);
+	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->second->smutations,i,2*diplist.size(),sitefinder,1);
 	}
       if(remove_fixed&&!rv.first.empty())
 	{
-	  rv.first.erase( std::remove_if(rv.first.begin(),rv.first.end(),[&n]( const std::pair<double,std::string> & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
+	  rv.first.erase( std::remove_if(rv.first.begin(),rv.first.end(),[&diplist]( const std::pair<double,std::string> & site ) {
+		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == diplist.size(); 
 	      } ),
 	    rv.first.end() );
 	}
@@ -75,8 +88,8 @@ namespace KTfwd
 	}
       if(remove_fixed&&!rv.second.empty())
 	{
-	  rv.second.erase( std::remove_if(rv.second.begin(),rv.second.end(),[&n]( const std::pair<double,std::string> & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
+	  rv.second.erase( std::remove_if(rv.second.begin(),rv.second.end(),[&diplist]( const std::pair<double,std::string> & site ) {
+		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size(); 
 	      } ),
 	    rv.second.end() );
 	}
@@ -85,6 +98,12 @@ namespace KTfwd
 	  std::sort(rv.second.begin(),rv.second.end(),
 		    [](std::pair<double,std::string> lhs,
 		       std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+	}
+      //Deal w/odd sample sizes
+      if(n%2 != 0.) 
+	{
+	  trim_last(&rv.first);
+	  trim_last(&rv.second);
 	}
       return rv;
     }
@@ -120,10 +139,10 @@ namespace KTfwd
 	       locus < (dbegin+ind)->end() ; ++locus, ++rv_count )
 	    {
 	      //finally, we can go over mutations
-	      fwdpp_internal::update_sample_block(rv[rv_count].first,locus->first->mutations,ind,n,sitefinder);
-	      fwdpp_internal::update_sample_block(rv[rv_count].second,locus->first->smutations,ind,n,sitefinder);
-	      fwdpp_internal::update_sample_block(rv[rv_count].first,locus->second->mutations,ind,n,sitefinder,1);
-	      fwdpp_internal::update_sample_block(rv[rv_count].second,locus->second->smutations,ind,n,sitefinder,1);
+	      fwdpp_internal::update_sample_block(rv[rv_count].first,locus->first->mutations,ind,2*diplist.size(),sitefinder);
+	      fwdpp_internal::update_sample_block(rv[rv_count].second,locus->first->smutations,ind,2*diplist.size(),sitefinder);
+	      fwdpp_internal::update_sample_block(rv[rv_count].first,locus->second->mutations,ind,2*diplist.size(),sitefinder,1);
+	      fwdpp_internal::update_sample_block(rv[rv_count].second,locus->second->smutations,ind,2*diplist.size(),sitefinder,1);
 	    }
 	}
   
@@ -131,12 +150,12 @@ namespace KTfwd
 	{
 	  for( unsigned i = 0 ; i < rv.size() ; ++i )
 	    {
-	      rv[i].first.erase( std::remove_if(rv[i].first.begin(),rv[i].first.end(),[&n]( const std::pair<double,std::string> & site ) {
-		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
+	      rv[i].first.erase( std::remove_if(rv[i].first.begin(),rv[i].first.end(),[&diplist]( const std::pair<double,std::string> & site ) {
+		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size(); 
 		  } ),
 		rv[i].first.end() );
-	      rv[i].second.erase( std::remove_if(rv[i].second.begin(),rv[i].second.end(),[&n]( const std::pair<double,std::string> & site ) {
-		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == n; 
+	      rv[i].second.erase( std::remove_if(rv[i].second.begin(),rv[i].second.end(),[&diplist]( const std::pair<double,std::string> & site ) {
+		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size(); 
 		  } ),
 		rv[i].second.end() );
 	    }
@@ -150,7 +169,15 @@ namespace KTfwd
 	  std::sort(rv[i].second.begin(),rv[i].second.end(),
 		    [](std::pair<double,std::string> lhs,
 		       std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+	  //Deal w/odd sample sizes
+	  if(n%2!=0.)
+	    {
+	      
+	      trim_last(&rv[i].first);
+	      trim_last(&rv[i].second);
+	    }
 	}
+
       return rv;
     }
   }

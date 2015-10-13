@@ -105,7 +105,8 @@ namespace KTfwd
 		      const bool & remove_fixed)
   {
     std::vector<unsigned> diplist;
-    for( unsigned i = 0 ; i < n/2 ; ++i )
+    unsigned isodd = (n%2 != 0.) ? 1u : 0u;
+    for( unsigned i = 0 ; i < n/2+isodd ; ++i )
       {
 	diplist.push_back(gsl_ran_flat(r,0.,double(diploids->size())));
       }
@@ -127,7 +128,8 @@ namespace KTfwd
 		      const bool & remove_fixed)
   {
     std::vector<unsigned> diplist;
-    for( unsigned i = 0 ; i < n/2 ; ++i )
+    unsigned isodd = (n%2 != 0.) ? 1u : 0u;
+    for( unsigned i = 0 ; i < n/2+isodd ; ++i )
       {
 	diplist.push_back(gsl_ran_flat(r,0.,double(diploids->size())));
       }
