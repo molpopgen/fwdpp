@@ -11,7 +11,8 @@ check_PROGRAMS=mutateTest \
 	sugar2 \
 	sugar3 \
 	sugar1_custom \
-	ms_sampling
+	ms_sampling \
+	sugar_sampling
 
 TESTS=$(check_PROGRAMS)
 
@@ -27,6 +28,7 @@ sugar2_SOURCES=sugar2.cc
 sugar3_SOURCES=sugar3.cc
 sugar1_custom_SOURCES=sugar1_custom.cc
 ms_sampling_SOURCES=ms_sampling.cc
+sugar_sampling_SOURCES=sugar_sampling.cc
 
 AM_CXXFLAGS=
 

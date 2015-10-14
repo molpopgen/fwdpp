@@ -85,7 +85,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -195,7 +196,7 @@ SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
 	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
 	$(policyTests_SOURCES) $(siteDepFitness_SOURCES) \
 	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
-	$(sugar3_SOURCES)
+	$(sugar3_SOURCES) $(sugar_sampling_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
@@ -540,6 +541,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@ms_sampling_SOURCES = ms_sampling.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -939,6 +941,13 @@ sugar1_custom.log: sugar1_custom$(EXEEXT)
 ms_sampling.log: ms_sampling$(EXEEXT)
 	@p='ms_sampling$(EXEEXT)'; \
 	b='ms_sampling'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+sugar_sampling.log: sugar_sampling$(EXEEXT)
+	@p='sugar_sampling$(EXEEXT)'; \
+	b='sugar_sampling'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
