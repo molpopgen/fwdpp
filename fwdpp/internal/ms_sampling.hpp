@@ -5,6 +5,14 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
+
+    inline void remove_no_derived( std::vector<std::pair<double,std::string> > * block )
+    {
+      block->erase( std::remove_if(block->begin(),block->end(),
+				   [](std::pair<double,std::string> & p) {
+				     return std::count(p.second.begin(),p.second.end(),'0') == p.second.size();
+				   }), block->end() );
+    }
     //Used when nsam is odd.  We just clip off the last individual
     inline void trim_last( std::vector<std::pair<double,std::string> > * block )
     {
@@ -16,6 +24,7 @@ namespace KTfwd
 			   p.second.erase(p.second.end()-1);
 			 }
 		     } );
+      remove_no_derived(block);
     }
     
     template< typename mcont_t,
