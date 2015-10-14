@@ -84,7 +84,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -113,6 +114,11 @@ am__mlocusCrossoverTest_SOURCES_DIST = mlocusCrossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest.$(OBJEXT)
 mlocusCrossoverTest_OBJECTS = $(am_mlocusCrossoverTest_OBJECTS)
 mlocusCrossoverTest_LDADD = $(LDADD)
+am__ms_sampling_SOURCES_DIST = ms_sampling.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_ms_sampling_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling.$(OBJEXT)
+ms_sampling_OBJECTS = $(am_ms_sampling_OBJECTS)
+ms_sampling_LDADD = $(LDADD)
 am__mutateTest_SOURCES_DIST = mutateTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_mutateTest_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutateTest.$(OBJEXT)
@@ -180,14 +186,15 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
-	$(mlocusCrossoverTest_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
-	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
-	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) $(sugar3_SOURCES)
+	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
+	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
+	$(policyTests_SOURCES) $(siteDepFitness_SOURCES) \
+	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
+	$(sugar3_SOURCES)
 DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
-	$(am__mutateTest_SOURCES_DIST) \
+	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
 	$(am__policyTests_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
@@ -527,6 +534,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@ms_sampling_SOURCES = ms_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -579,6 +587,10 @@ mlocusCrossoverTest$(EXEEXT): $(mlocusCrossoverTest_OBJECTS) $(mlocusCrossoverTe
 	@rm -f mlocusCrossoverTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mlocusCrossoverTest_OBJECTS) $(mlocusCrossoverTest_LDADD) $(LIBS)
 
+ms_sampling$(EXEEXT): $(ms_sampling_OBJECTS) $(ms_sampling_DEPENDENCIES) $(EXTRA_ms_sampling_DEPENDENCIES) 
+	@rm -f ms_sampling$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(ms_sampling_OBJECTS) $(ms_sampling_LDADD) $(LIBS)
+
 mutateTest$(EXEEXT): $(mutateTest_OBJECTS) $(mutateTest_DEPENDENCIES) $(EXTRA_mutateTest_DEPENDENCIES) 
 	@rm -f mutateTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutateTest_OBJECTS) $(mutateTest_LDADD) $(LIBS)
@@ -620,6 +632,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ms_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policyTests.Po@am__quote@
@@ -909,6 +922,13 @@ sugar3.log: sugar3$(EXEEXT)
 sugar1_custom.log: sugar1_custom$(EXEEXT)
 	@p='sugar1_custom$(EXEEXT)'; \
 	b='sugar1_custom'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+ms_sampling.log: ms_sampling$(EXEEXT)
+	@p='ms_sampling$(EXEEXT)'; \
+	b='ms_sampling'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
