@@ -5,6 +5,10 @@
 * fwdpp/sugar/sampling.hpp added.  This streamlines taking samples from populations
 * Unit test unit/sugar_sampling.cc added
 
+TODO before release:
+
+* Unit test of issue leading to Issue #26
+
 ## 0.3.9
 
 This release fixes a minor bug for very high mutation rates.  Upgrading to this version is recommended!
