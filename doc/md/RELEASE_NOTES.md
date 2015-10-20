@@ -3,6 +3,7 @@
 ## 0.4.0
 
 * fwdpp/sugar/sampling.hpp added.  This streamlines taking samples from populations
+* Unit test unit/sugar_sampling.cc added
 
 ## 0.3.9
 
