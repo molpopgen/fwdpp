@@ -1,5 +1,11 @@
 # FWDPP RELEASE NOTES
 
+## 0.3.9
+
+This release fixes a minor bug for very high mutation rates.  Upgrading to this version is recommended!
+
+* Fixed issues 26 and 27.
+
 ## 0.3.8
 
 * Added some include directives whose omission resulted in failure to compile on clang.
