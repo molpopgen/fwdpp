@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.0
+
+* fwdpp/sugar/sampling.hpp added.  This streamlines taking samples from populations
+
 ## 0.3.9
 
 This release fixes a minor bug for very high mutation rates.  Upgrading to this version is recommended!
