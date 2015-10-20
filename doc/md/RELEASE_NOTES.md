@@ -5,6 +5,7 @@
 This release fixes a minor bug for very high mutation rates.  Upgrading to this version is recommended!
 
 * Fixed issues 26 and 27.
+* New unit tests added to check sampling from populations
 
 ## 0.3.8
 
