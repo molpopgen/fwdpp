@@ -161,3 +161,66 @@ BOOST_AUTO_TEST_CASE( three_point_cross_1 )
 
     }
 }
+
+/*
+  A unit test to ensure that issue #26 can't happen again
+*/
+BOOST_AUTO_TEST_CASE( three_point_cross_2 )
+{
+  //g1: neutral muts at 0.1,0.5
+  //g2: neutral muts at 0.9
+  gtype g1(1),g2(1);
+  std::list<mut> mlist;
+
+  auto mitr = mlist.insert(mlist.end(),mut(0.1,0.,1));
+  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mitr = mlist.insert(mlist.end(),mut(0.5,0.,1));
+  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mitr = mlist.insert(mlist.end(),mut(0.9,0.,1));
+  KTfwd::fwdpp_internal::add_new_mutation(mitr,g2);
+
+  BOOST_CHECK_EQUAL( g1.mutations.size(), 2 );
+  BOOST_CHECK_EQUAL( g2.mutations.size(), 1 );
+
+  /*
+    Here, we differ from above test in that an x-over position equals a mutation position.
+    This tests the sanity of our upper_bound search in rec_gamete_updater
+   */
+  std::vector<double> rec_positions = {0.25, 0.5, std::numeric_limits<double>::max()};
+
+  //We need a "gamete pool"
+  std::vector<gtype> gametes = { g1, g2 };
+
+  //get pointers/iterators to our two existing gametes
+  auto g1_itr = gametes.begin(),
+    g2_itr = g1_itr+1;
+
+  //gtype ng1(1),ng2(1);
+
+  //Needed as of 0.3.3
+  gtype::mutation_container neutral,selected;
+  KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
+					    g1_itr, g2_itr,
+					    neutral,selected );
+
+
+  /*
+    This was a double x-over.
+    Neutral must therefore only contain 0.1
+  */
+  BOOST_CHECK( std::find_if( neutral.begin(),
+			     neutral.end(),
+			     []( std::list<mut>::iterator __m ) {
+			       return __m->pos == 0.1;
+			     } ) != neutral.end());
+
+  for( auto d : {0.5,0.9} )
+    {
+      BOOST_CHECK( std::find_if( neutral.begin(),
+				 neutral.end(),
+				 [d]( std::list<mut>::iterator __m ) {
+				   return __m->pos == d;
+				 } ) == neutral.end() );
+
+    }
+}
