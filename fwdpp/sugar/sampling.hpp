@@ -93,6 +93,16 @@ namespace KTfwd
   sep_sample_t sample_separate(const poptype & p,
 			       const std::vector<unsigned> & individuals,
 			       const bool removeFixed)
+  /*!
+    Take a non-random sample of nsam chromosomes from a population
+    
+    \param p A population
+    \param individuals The indexes of the diploids to 'view' from the population
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+    
+    \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
+  */
   {
     static_assert( (std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value ||
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
@@ -114,6 +124,17 @@ namespace KTfwd
 		   const unsigned deme,
 		   const unsigned nsam,
 		   const bool removeFixed )
+  /*!
+    Take a random sample of nsam chromosomes from a meta-population
+
+    \param r A random-number generator
+    \param p A population
+    \param p the index of the deme to sample
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A vector of both neutral and non-neutral variants
+  */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
 		   "METAPOP_TAG required");
@@ -139,6 +160,17 @@ namespace KTfwd
 				const unsigned deme,
 				const unsigned nsam,
 				const bool removeFixed )
+  /*!
+    Take a random sample of nsam chromosomes from a meta-population
+
+    \param r A random-number generator
+    \param p A population
+    \param deme the index of the deme to sample
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
+  */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
 		   "METAPOP_TAG required");
@@ -154,6 +186,16 @@ namespace KTfwd
 		  const unsigned deme,
 		  const std::vector<unsigned> & individuals,
 		  const bool removeFixed )
+  /*!
+    Take a non-random sample of nsam chromosomes from a meta-population
+    
+    \param p A population
+    \param p the index of the deme to sample
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+    
+    \return A vector of both neutral and non-neutral variants
+  */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
 		   "METAPOP_TAG required");
@@ -186,6 +228,16 @@ namespace KTfwd
 			       const unsigned deme,
 			       const std::vector<unsigned> & individuals,
 			       const bool removeFixed )
+  /*!
+    Take a non-random sample of nsam chromosomes from a meta-population
+
+    \param p A population
+    \param deme the index of the deme to sample
+    \param nsam The sample size
+    \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+
+    \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
+  */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
 		   "METAPOP_TAG required");
