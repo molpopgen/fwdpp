@@ -3,6 +3,7 @@
 ## 0.4.1
 
 * fwdppConfig no longer attempts linkage to dependent libraries
+* fixed errors in fwdpp/initms.hpp caught by clang++
 
 ## 0.4.0
 
