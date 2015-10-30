@@ -287,7 +287,9 @@ Currently, the example programs will not get installed via "make install".   If 
 
 ##To compile examples and unit tests
 
-__Note:__ if you only wish to compile the example, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
+__Note:__ if you only wish to compile the example programgs, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
+
+You will need [libsequence](http://github.com/molpopgen/libsequence) installed on your system in order to compile the example programs.
 
 ### Using standard containers and the standard C-library malloc
 
