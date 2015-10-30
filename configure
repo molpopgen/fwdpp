@@ -631,8 +631,12 @@ LTLIBOBJS
 LIBOBJS
 BUNIT_TEST_LIB_PRESENT_FALSE
 BUNIT_TEST_LIB_PRESENT_TRUE
+HAVE_LIBSEQ_RUNTIME_FALSE
+HAVE_LIBSEQ_RUNTIME_TRUE
 BUNIT_TEST_PRESENT_FALSE
 BUNIT_TEST_PRESENT_TRUE
+HAVE_SIMDATA_HPP_FALSE
+HAVE_SIMDATA_HPP_TRUE
 EGREP
 GREP
 CXXCPP
@@ -2153,7 +2157,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-am__api_version='1.14'
+am__api_version='1.15'
 
 ac_aux_dir=
 for ac_dir in "$srcdir" "$srcdir/.." "$srcdir/../.."; do
@@ -2354,8 +2358,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -2374,7 +2378,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -2702,8 +2706,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -2760,6 +2764,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 ac_config_headers="$ac_config_headers config.h"
 
 
@@ -4874,11 +4879,12 @@ fi
 done
 
 
-ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimDataIO.hpp" "ac_cv_header_Sequence_SimDataIO_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_Sequence_SimDataIO_hpp" = xyes; then :
-
+ac_fn_cxx_check_header_mongrel "$LINENO" "Sequence/SimData.hpp" "ac_cv_header_Sequence_SimData_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_Sequence_SimData_hpp" = xyes; then :
+  SIMDATAFOUND=1
 else
-  as_fn_error $? "Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required." "$LINENO" 5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Sequence/SimData.hpp not found. Example programs will not be compiled." >&5
+$as_echo "$as_me: WARNING: Sequence/SimData.hpp not found. Example programs will not be compiled." >&2;}
 fi
 
 
@@ -4905,6 +4911,15 @@ else
   as_fn_error $? "zlib.h not found.  zlib >= 1.2.5 is requred" "$LINENO" 5
 fi
 
+
+
+ if test x$SIMDATAFOUND=x1; then
+  HAVE_SIMDATA_HPP_TRUE=
+  HAVE_SIMDATA_HPP_FALSE='#'
+else
+  HAVE_SIMDATA_HPP_TRUE='#'
+  HAVE_SIMDATA_HPP_FALSE=
+fi
 
 
 if test x$enable_boost = xyes
@@ -5262,14 +5277,10 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_sequence_main" >&5
 $as_echo "$ac_cv_lib_sequence_main" >&6; }
 if test "x$ac_cv_lib_sequence_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBSEQUENCE 1
-_ACEOF
-
-  LIBS="-lsequence $LIBS"
-
+  HAVELIBSEQ=1
 else
-  as_fn_error $? "libsequence runtime library does not seem to be here" "$LINENO" 5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: libsequence runtime library does not seem to be here.  Example programs will not be compiled" >&5
+$as_echo "$as_me: WARNING: libsequence runtime library does not seem to be here.  Example programs will not be compiled" >&2;}
 fi
 
 	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
@@ -5349,6 +5360,14 @@ if test "x$ac_cv_lib_boost_unit_test_framework_main" = xyes; then :
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&5
 $as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
+fi
+
+	   if test x$HAVELIBSEQ = x1; then
+  HAVE_LIBSEQ_RUNTIME_TRUE=
+  HAVE_LIBSEQ_RUNTIME_FALSE='#'
+else
+  HAVE_LIBSEQ_RUNTIME_TRUE='#'
+  HAVE_LIBSEQ_RUNTIME_FALSE=
 fi
 
 	   if test x$BUNITTESTLIB = x1; then
@@ -5512,8 +5531,16 @@ if test -z "${DEBUG_TRUE}" && test -z "${DEBUG_FALSE}"; then
   as_fn_error $? "conditional \"DEBUG\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${HAVE_SIMDATA_HPP_TRUE}" && test -z "${HAVE_SIMDATA_HPP_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_SIMDATA_HPP\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"; then
   as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_LIBSEQ_RUNTIME_TRUE}" && test -z "${HAVE_LIBSEQ_RUNTIME_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_LIBSEQ_RUNTIME\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${BUNIT_TEST_LIB_PRESENT_TRUE}" && test -z "${BUNIT_TEST_LIB_PRESENT_FALSE}"; then

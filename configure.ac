@@ -33,10 +33,12 @@ dnl do we want jemalloc?
 AC_ARG_ENABLE([jemalloc],AS_HELP_STRING([--enable-jemalloc],[Enable linking to the jemalloc library, if present.]))
 
 dnl check for things that are required to compile all examples and/or use library at all
-AC_CHECK_HEADER(Sequence/SimDataIO.hpp, , [AC_MSG_ERROR([Sequence/SimDataIO.hpp not found. libsequence (www.molpopgen.org) >= 1.7.8 required.])])
+AC_CHECK_HEADER(Sequence/SimData.hpp, SIMDATAFOUND=1 , [AC_MSG_WARN([Sequence/SimData.hpp not found. Example programs will not be compiled.])])
 AC_CHECK_HEADER(gsl/gsl_rng.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(gsl/gsl_randist.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requred])])
+
+AM_CONDITIONAL([HAVE_SIMDATA_HPP],test x$SIMDATAFOUND=x1)
 
 dnl check for optional depdendencies
 if test x$enable_boost = xyes
@@ -71,9 +73,10 @@ dnl check for C++ run-time libraries
 AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
-          AC_CHECK_LIB(sequence, main,,[AC_MSG_ERROR([libsequence runtime library does not seem to be here])])
+          AC_CHECK_LIB(sequence, main,HAVELIBSEQ=1,[AC_MSG_WARN([libsequence runtime library does not seem to be here.  Example programs will not be compiled])])
 	  AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
 	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
+	  AM_CONDITIONAL([HAVE_LIBSEQ_RUNTIME], test x$HAVELIBSEQ = x1)
 	  AM_CONDITIONAL([BUNIT_TEST_LIB_PRESENT], test x$BUNITTESTLIB = x1)
 AC_LANG_RESTORE
 
