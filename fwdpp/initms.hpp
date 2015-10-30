@@ -31,7 +31,7 @@ namespace KTfwd
 	    typename list_allocator_type,
 	    template<typename,typename> class vector_type,
 	    template<typename,typename> class list_type >
-  void init_deme( const std::vector<double> & positions,
+  void init_deme( const std::vector<double> & _positions,
 		  const std::vector<std::string> & genotypes,
 		  vector_type<gamete_type,vector_allocator_type> * gametes,
 		  list_type<mutation_type,list_allocator_type> * mutations,
@@ -47,7 +47,8 @@ namespace KTfwd
     std::map<double,typename  MLIST_TYPE::iterator> mutlookup;
     
     unsigned site=0;
-    for( auto i = positions.cbegin() ; i != positions.end() ; ++i,++site )
+    std::vector<double> positions(_positions);
+    for( auto i = positions.begin() ; i != positions.end() ; ++i,++site )
       {
 	//is it a seg site in the first max_chroms?
 	unsigned c=0;
@@ -82,7 +83,7 @@ namespace KTfwd
 	  {
 	    if( *j == '1' )//is a derived mutation
 	      {
-		double pos = *(genotypes.begin() + (j-i->begin()));
+		double pos = *(positions.begin() + (j-i->begin()));
 		//find the mutation in the mutations list
 		if( mutlookup.find(pos) != mutlookup.end() )
 		  {
