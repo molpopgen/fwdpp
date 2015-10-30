@@ -4912,7 +4912,7 @@ fi
 
 
 
- if test x$SIMDATAFOUND=x1; then
+ if test x$SIMDATAFOUND = x1; then
   HAVE_SIMDATA_HPP_TRUE=
   HAVE_SIMDATA_HPP_FALSE='#'
 else

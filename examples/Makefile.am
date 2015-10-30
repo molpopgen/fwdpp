@@ -1,5 +1,5 @@
-if HAVE_LIBSEQ_RUNTIME
 if HAVE_SIMDATA_HPP
+if HAVE_LIBSEQ_RUNTIME
 
 check_PROGRAMS=	diploid_ind \
 	diploid_binaryIO_ind \

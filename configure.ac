@@ -38,7 +38,7 @@ AC_CHECK_HEADER(gsl/gsl_rng.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.
 AC_CHECK_HEADER(gsl/gsl_randist.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requred])])
 
-AM_CONDITIONAL([HAVE_SIMDATA_HPP],test x$SIMDATAFOUND=x1)
+AM_CONDITIONAL([HAVE_SIMDATA_HPP],test x$SIMDATAFOUND = x1)
 
 dnl check for optional depdendencies
 if test x$enable_boost = xyes
