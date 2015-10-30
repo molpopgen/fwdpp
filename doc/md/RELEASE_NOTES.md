@@ -5,6 +5,7 @@
 * fwdpp/sugar/sampling.hpp added.  This streamlines taking samples from populations
 * Unit test unit/sugar_sampling.cc added
 * New test added to unit/crossoverTest.cc
+* libsequence is no longer an installation dependency
 
 ## 0.3.9
 
