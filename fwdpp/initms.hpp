@@ -9,15 +9,13 @@
 #include <cassert>
 #include <limits>
 #include <string>
-#include <Sequence/SimData.hpp>
 
 namespace KTfwd
 {
-  /*! \brief Initialize a population with results from a coalescent simulation
-    Takes an object of type Sequence::SimData from libsequence
-    and initialized a population
+  /*! \brief Initialize a population with a list of mutation positions and genotypes.
 
-    \param d  A Sequence::SimData object
+    \param positions A vector of mutation positions
+    \param genotypes A vector of strings representing genotypes.  The genotype data must be coded as 0 = ancestral, 1 = derived
     \param gametes Destination for gametes
     \param mutations Destination for mutations
     \param max_chroms The max number of gametes to read from d.  Default is std::numeric_limits<unsigned>::max()
@@ -33,10 +31,11 @@ namespace KTfwd
 	    typename list_allocator_type,
 	    template<typename,typename> class vector_type,
 	    template<typename,typename> class list_type >
-  void init_with_ms( Sequence::SimData & d,
-		     vector_type<gamete_type,vector_allocator_type> * gametes,
-		     list_type<mutation_type,list_allocator_type> * mutations,
-		     const unsigned & max_chroms = std::numeric_limits<unsigned>::max())
+  void init_deme( const std::vector<double> & positions,
+		  const std::vector<std::string> & genotypes,
+		  vector_type<gamete_type,vector_allocator_type> * gametes,
+		  list_type<mutation_type,list_allocator_type> * mutations,
+		  const unsigned & max_chroms = std::numeric_limits<unsigned>::max())
   {
     using MLIST_TYPE = list_type<mutation_type,list_allocator_type>;
     /*
@@ -48,8 +47,7 @@ namespace KTfwd
     std::map<double,typename  MLIST_TYPE::iterator> mutlookup;
     
     unsigned site=0;
-    for( Sequence::SimData::pos_iterator i = d.pbegin() ; 
-	 i != d.pend() ; ++i,++site )
+    for( auto i = d.cbegin() ; i != d.end() ; ++i,++site )
       {
 	//is it a seg site in the first max_chroms?
 	unsigned c=0;
@@ -74,7 +72,7 @@ namespace KTfwd
 	  }
       }
     //Figure out the unique set of gametes, and how frequent they are
-    std::set<std::string> ugams(d.begin(),std::min(d.begin()+max_chroms+1,d.end()));
+    std::set<std::string> ugams(d.begin(),std::min(genotypes.begin()+max_chroms+1,genotypes.end()));
     for(std::set<std::string>::const_iterator i = ugams.begin(); i != ugams.end() ; ++i )
       {
 	unsigned c = std::count(d.begin(),std::min(d.begin()+max_chroms,d.end()),*i);
