@@ -75,9 +75,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = sex_limited_ind$(EXEEXT) \
-	diploid_fixed_sh_ind$(EXEEXT)
-@DEBUG_FALSE@am__append_1 = -DNDEBUG
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@check_PROGRAMS = sex_limited_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_fixed_sh_ind$(EXEEXT)
+@DEBUG_FALSE@@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DNDEBUG
 subdir = experimental_examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -90,11 +90,13 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
+am__diploid_fixed_sh_ind_SOURCES_DIST = diploid_fixed_sh_ind.cc
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
 diploid_fixed_sh_ind_DEPENDENCIES =
-am_sex_limited_ind_OBJECTS = sex_limited_ind.$(OBJEXT)
+am__sex_limited_ind_SOURCES_DIST = sex_limited_ind.cc
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_sex_limited_ind_OBJECTS = sex_limited_ind.$(OBJEXT)
 sex_limited_ind_OBJECTS = $(am_sex_limited_ind_OBJECTS)
 sex_limited_ind_LDADD = $(LDADD)
 sex_limited_ind_DEPENDENCIES =
@@ -128,8 +130,8 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(diploid_fixed_sh_ind_SOURCES) $(sex_limited_ind_SOURCES)
-DIST_SOURCES = $(diploid_fixed_sh_ind_SOURCES) \
-	$(sex_limited_ind_SOURCES)
+DIST_SOURCES = $(am__diploid_fixed_sh_ind_SOURCES_DIST) \
+	$(am__sex_limited_ind_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -248,10 +250,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-sex_limited_ind_SOURCES = sex_limited_ind.cc 
-diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc
-AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
-LDADD = 
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@sex_limited_ind_SOURCES = sex_limited_ind.cc 
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_CPPFLAGS = -Wall \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	-W -I. \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	$(am__append_1)
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@LDADD = 
 all: all-am
 
 .SUFFIXES:
