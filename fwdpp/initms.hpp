@@ -47,15 +47,15 @@ namespace KTfwd
     std::map<double,typename  MLIST_TYPE::iterator> mutlookup;
     
     unsigned site=0;
-    for( auto i = d.cbegin() ; i != d.end() ; ++i,++site )
+    for( auto i = positions.cbegin() ; i != positions.end() ; ++i,++site )
       {
 	//is it a seg site in the first max_chroms?
 	unsigned c=0;
-	for(unsigned ind=0;ind<std::min(max_chroms,unsigned(d.size()));++ind)
+	for(unsigned ind=0;ind<std::min(max_chroms,unsigned(genotypes.size()));++ind)
 	  {
-	    if((d)[ind][site]=='1')++c;
+	    if(genotypes[ind][site]=='1')++c;
 	  }
-	if(i < d.pend()-2)
+	if(i < positions.cend()-2)
 	  {
 	    if(*(i+1) == *(i+2))
 	      {
@@ -72,17 +72,17 @@ namespace KTfwd
 	  }
       }
     //Figure out the unique set of gametes, and how frequent they are
-    std::set<std::string> ugams(d.begin(),std::min(genotypes.begin()+max_chroms+1,genotypes.end()));
+    std::set<std::string> ugams(genotypes.begin(),std::min(genotypes.begin()+max_chroms+1,genotypes.end()));
     for(std::set<std::string>::const_iterator i = ugams.begin(); i != ugams.end() ; ++i )
       {
-	unsigned c = std::count(d.begin(),std::min(d.begin()+max_chroms,d.end()),*i);
+	unsigned c = std::count(genotypes.begin(),std::min(genotypes.begin()+max_chroms,genotypes.end()),*i);
 	//now, create this gamete and fill its neutral mutations list
 	gamete_type g(c);
 	for( std::string::const_iterator j = i->begin() ; j != i->end() ; ++j )
 	  {
 	    if( *j == '1' )//is a derived mutation
 	      {
-		double pos = *(d.pbegin() + (j-i->begin()));
+		double pos = *(genotypes.begin() + (j-i->begin()));
 		//find the mutation in the mutations list
 		if( mutlookup.find(pos) != mutlookup.end() )
 		  {
