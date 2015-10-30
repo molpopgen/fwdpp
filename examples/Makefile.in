@@ -75,12 +75,17 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-check_PROGRAMS = diploid_ind$(EXEEXT) diploid_binaryIO_ind$(EXEEXT) \
-	diploid_gzbinaryIO_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
-	diploid_fixed_sh_ind_lambda$(EXEEXT) migsel_ind$(EXEEXT) \
-	migsel_split_ind_list$(EXEEXT) bneck_selection_ind$(EXEEXT) \
-	diploid_ind_2locus$(EXEEXT) HOC_ind$(EXEEXT)
-@DEBUG_FALSE@am__append_1 = -DNDEBUG
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@check_PROGRAMS = diploid_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_binaryIO_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_gzbinaryIO_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_fixed_sh_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_fixed_sh_ind_lambda$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	migsel_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	migsel_split_ind_list$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	bneck_selection_ind$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_ind_2locus$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	HOC_ind$(EXEEXT)
+@DEBUG_FALSE@@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DNDEBUG
 subdir = examples
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/depcomp
@@ -93,45 +98,61 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am_HOC_ind_OBJECTS = HOC_ind.$(OBJEXT)
+am__HOC_ind_SOURCES_DIST = HOC_ind.cc
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_HOC_ind_OBJECTS = HOC_ind.$(OBJEXT)
 HOC_ind_OBJECTS = $(am_HOC_ind_OBJECTS)
 HOC_ind_LDADD = $(LDADD)
 HOC_ind_DEPENDENCIES =
-am_bneck_selection_ind_OBJECTS = bneck_selection_ind.$(OBJEXT)
+am__bneck_selection_ind_SOURCES_DIST = bneck_selection_ind.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_bneck_selection_ind_OBJECTS = bneck_selection_ind.$(OBJEXT)
 bneck_selection_ind_OBJECTS = $(am_bneck_selection_ind_OBJECTS)
 bneck_selection_ind_LDADD = $(LDADD)
 bneck_selection_ind_DEPENDENCIES =
-am_diploid_binaryIO_ind_OBJECTS = diploid_binaryIO_ind.$(OBJEXT)
+am__diploid_binaryIO_ind_SOURCES_DIST = diploid_binaryIO_ind.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_binaryIO_ind_OBJECTS = diploid_binaryIO_ind.$(OBJEXT)
 diploid_binaryIO_ind_OBJECTS = $(am_diploid_binaryIO_ind_OBJECTS)
 diploid_binaryIO_ind_LDADD = $(LDADD)
 diploid_binaryIO_ind_DEPENDENCIES =
-am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
+am__diploid_fixed_sh_ind_SOURCES_DIST = diploid_fixed_sh_ind.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
 diploid_fixed_sh_ind_DEPENDENCIES =
-am_diploid_fixed_sh_ind_lambda_OBJECTS =  \
-	diploid_fixed_sh_ind_lambda.$(OBJEXT)
+am__diploid_fixed_sh_ind_lambda_SOURCES_DIST =  \
+	diploid_fixed_sh_ind_lambda.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_fixed_sh_ind_lambda_OBJECTS = diploid_fixed_sh_ind_lambda.$(OBJEXT)
 diploid_fixed_sh_ind_lambda_OBJECTS =  \
 	$(am_diploid_fixed_sh_ind_lambda_OBJECTS)
 diploid_fixed_sh_ind_lambda_LDADD = $(LDADD)
 diploid_fixed_sh_ind_lambda_DEPENDENCIES =
-am_diploid_gzbinaryIO_ind_OBJECTS = diploid_gzbinaryIO_ind.$(OBJEXT)
+am__diploid_gzbinaryIO_ind_SOURCES_DIST = diploid_gzbinaryIO_ind.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_gzbinaryIO_ind_OBJECTS = diploid_gzbinaryIO_ind.$(OBJEXT)
 diploid_gzbinaryIO_ind_OBJECTS = $(am_diploid_gzbinaryIO_ind_OBJECTS)
 diploid_gzbinaryIO_ind_LDADD = $(LDADD)
 diploid_gzbinaryIO_ind_DEPENDENCIES =
-am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
+am__diploid_ind_SOURCES_DIST = diploid_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
 diploid_ind_OBJECTS = $(am_diploid_ind_OBJECTS)
 diploid_ind_LDADD = $(LDADD)
 diploid_ind_DEPENDENCIES =
-am_diploid_ind_2locus_OBJECTS = diploid_ind_2locus.$(OBJEXT)
+am__diploid_ind_2locus_SOURCES_DIST = diploid_ind_2locus.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_ind_2locus_OBJECTS = diploid_ind_2locus.$(OBJEXT)
 diploid_ind_2locus_OBJECTS = $(am_diploid_ind_2locus_OBJECTS)
 diploid_ind_2locus_LDADD = $(LDADD)
 diploid_ind_2locus_DEPENDENCIES =
-am_migsel_ind_OBJECTS = migsel_ind.$(OBJEXT)
+am__migsel_ind_SOURCES_DIST = migsel_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_migsel_ind_OBJECTS = migsel_ind.$(OBJEXT)
 migsel_ind_OBJECTS = $(am_migsel_ind_OBJECTS)
 migsel_ind_LDADD = $(LDADD)
 migsel_ind_DEPENDENCIES =
-am_migsel_split_ind_list_OBJECTS = migsel_split_ind_list.$(OBJEXT)
+am__migsel_split_ind_list_SOURCES_DIST = migsel_split_ind_list.cc \
+	common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_migsel_split_ind_list_OBJECTS = migsel_split_ind_list.$(OBJEXT)
 migsel_split_ind_list_OBJECTS = $(am_migsel_split_ind_list_OBJECTS)
 migsel_split_ind_list_LDADD = $(LDADD)
 migsel_split_ind_list_DEPENDENCIES =
@@ -183,13 +204,16 @@ SOURCES = $(HOC_ind_SOURCES) $(bneck_selection_ind_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(migsel_ind_SOURCES) \
 	$(migsel_split_ind_list_SOURCES)
-DIST_SOURCES = $(HOC_ind_SOURCES) $(bneck_selection_ind_SOURCES) \
-	$(diploid_binaryIO_ind_SOURCES) \
-	$(diploid_fixed_sh_ind_SOURCES) \
-	$(diploid_fixed_sh_ind_lambda_SOURCES) \
-	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(diploid_ind_2locus_SOURCES) $(migsel_ind_SOURCES) \
-	$(migsel_split_ind_list_SOURCES)
+DIST_SOURCES = $(am__HOC_ind_SOURCES_DIST) \
+	$(am__bneck_selection_ind_SOURCES_DIST) \
+	$(am__diploid_binaryIO_ind_SOURCES_DIST) \
+	$(am__diploid_fixed_sh_ind_SOURCES_DIST) \
+	$(am__diploid_fixed_sh_ind_lambda_SOURCES_DIST) \
+	$(am__diploid_gzbinaryIO_ind_SOURCES_DIST) \
+	$(am__diploid_ind_SOURCES_DIST) \
+	$(am__diploid_ind_2locus_SOURCES_DIST) \
+	$(am__migsel_ind_SOURCES_DIST) \
+	$(am__migsel_split_ind_list_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -310,18 +334,20 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 #	migsel_split_ind 
-diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
-diploid_binaryIO_ind_SOURCES = diploid_binaryIO_ind.cc common_ind.hpp
-diploid_gzbinaryIO_ind_SOURCES = diploid_gzbinaryIO_ind.cc common_ind.hpp
-diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
-diploid_fixed_sh_ind_lambda_SOURCES = diploid_fixed_sh_ind_lambda.cc common_ind.hpp
-migsel_ind_SOURCES = migsel_ind.cc common_ind.hpp
-migsel_split_ind_list_SOURCES = migsel_split_ind_list.cc common_ind.hpp
-bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
-diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
-HOC_ind_SOURCES = HOC_ind.cc
-AM_CPPFLAGS = -Wall -W -I. $(am__append_1)
-LDADD = 
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_binaryIO_ind_SOURCES = diploid_binaryIO_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_gzbinaryIO_ind_SOURCES = diploid_gzbinaryIO_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_fixed_sh_ind_lambda_SOURCES = diploid_fixed_sh_ind_lambda.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@migsel_ind_SOURCES = migsel_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@migsel_split_ind_list_SOURCES = migsel_split_ind_list.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@HOC_ind_SOURCES = HOC_ind.cc
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_CPPFLAGS = -Wall \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	-W -I. \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	$(am__append_1)
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@LDADD = 
 all: all-am
 
 .SUFFIXES:
