@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.1
+
+* fwdppConfig no longer attempts linkage to dependent libraries
+
 ## 0.4.0
 
 * fwdpp/sugar/sampling.hpp added.  This streamlines taking samples from populations
