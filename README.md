@@ -146,7 +146,10 @@ The minimal dependencies required to use the library to develop simulations are:
 
 1.  [GSL](http://gnu.org/software/gsl) 
 2.  [zlib](http://zlib.net) 
-3.  [libsequence](http://github.com/molpopgen/libsequence).
+
+In order to compile the example programs, you will also need:
+
+1.  [libsequence](http://github.com/molpopgen/libsequence). 
 
 In order to compile the unit tests, you also need:
 
