@@ -13,6 +13,7 @@ else !DEBUG
 AM_CPPFLAGS+=-DNDEBUG
 endif
 LDADD=
-
+AM_LIBS=-lsequence
+LIBS+=$(AM_LIBS)
 endif
 endif
