@@ -17,6 +17,7 @@
 
 //Main fwdpp library header
 #include <fwdpp/diploid.hh>
+#include <Sequence/SimData.hpp>
 //Include the necessary "sugar" components
 //We need to get the 'deep' version of singlepop, as we need to make a custom singlepop_serialized_t for our sim
 #if defined(USE_BOOST_CONTAINERS) && defined(HAVE_BOOST_VECTOR) && defined(HAVE_BOOST_LIST) && defined(HAVE_BOOST_POOL_ALLOC) && defined(HAVE_BOOST_HASH) && defined(HAVE_LIBBOOST_SYSTEM)
