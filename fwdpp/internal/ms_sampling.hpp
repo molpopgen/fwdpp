@@ -129,7 +129,6 @@ namespace KTfwd
       using rvtype = std::vector< std::pair<std::vector< std::pair<double,std::string> > ,
 					    std::vector< std::pair<double,std::string> > > >;
       using genotype = typename dipvector_t::value_type;
-      //using dipvector_t = outer_vector_type< genotype, outer_allocator >;
 
       rvtype rv( diploids->size() );
 
