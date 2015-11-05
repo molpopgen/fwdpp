@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.2
+
+* Fixed error in definition of KTfwd::metapop_serialized and KTfwd::multiloc_serialized.
+
 ## 0.4.1
 
 * fwdppConfig no longer attempts linkage to dependent libraries
