@@ -25,7 +25,7 @@ namespace KTfwd
   struct mutation_base
   {
     /// Mutation position
-    mutable double pos;
+    const double pos;
     /// Count of mutation in the population
     unsigned n;
     /// Is the mutation neutral or not?
@@ -52,9 +52,9 @@ namespace KTfwd
   */
   {
     /// selection coefficient
-    mutable double s;
+    const double s;
     /// dominance coefficient
-    mutable double h;
+    const double h;
     mutation( const double & position, const double & sel_coeff,const unsigned & count,
 	      const double & dominance = 0.5) 
       : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)

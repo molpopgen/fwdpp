@@ -31,32 +31,11 @@ struct mut : public KTfwd::mutation_base
   {
     std::cout << "X: move construct\n";
   }
-  mut & operator=(mut && rhs) {
-    std::cout << "X: move assign\n";
-    if( this == &rhs ) return *this;
-    pos = rhs.pos;
-    n = rhs.n;
-    neutral = rhs.neutral;
-    checked = rhs.checked;
-    stuff = std::move( rhs.stuff );
-    return *this;
-  }
   mut(const mut & rhs) : KTfwd::mutation_base(rhs), stuff(rhs.stuff) {
     std::cout << "X: const ref assign\n";
   }
   mut(mut & rhs) : KTfwd::mutation_base(rhs), stuff(rhs.stuff) {
     std::cout << "X: ref assign\n";
-  }
-	      
-  mut & operator=(mut & rhs) {
-    std::cout << "X: ref assign\n";
-    if( this == &rhs ) return *this;
-    pos = rhs.pos;
-    n = rhs.n;
-    neutral = rhs.neutral;
-    checked = rhs.checked;
-    stuff = std::move( rhs.stuff );
-    return *this;
   }
 };
 
