@@ -53,7 +53,7 @@ namespace KTfwd {
       Callback for fixed s and/or h
      */
     {
-      double x;
+      const double x;
       constant(const double & __x) : x(__x)
       {
 	if(!std::isfinite(x)) {
@@ -71,7 +71,7 @@ namespace KTfwd {
       Exponential s or h
      */
     {
-      double mean;
+      const double mean;
       exponential(const double & m) : mean(m)
       {
 	if(!std::isfinite(mean))
@@ -94,7 +94,7 @@ namespace KTfwd {
       Uniform s or h
      */
     {
-      double mn,mx;
+      const double mn,mx;
       uniform(const double & __mn,
 	      const double & __mx) : mn(__mn),mx(__mx)
       {
@@ -118,7 +118,7 @@ namespace KTfwd {
       Beta-distributed s or h
     */
     {
-      double a,b,factor;
+      const double a,b,factor;
       beta(const double & __a,
 	   const double & __b,
 	   const double & __f) : a(__a),b(__b),factor(__f)
@@ -147,7 +147,7 @@ namespace KTfwd {
       Gaussian s or h
     */
     {
-      double sd;
+      const double sd;
       gaussian(const double & __sd) : sd(__sd)
       {
 	if(sd == 0.) throw std::runtime_error("sd must not equal 0");
@@ -164,7 +164,7 @@ namespace KTfwd {
       Gamma distributed s or h
     */
     {
-      double mean,shape;
+      const double mean,shape;
       gamma(const double & __m,
 	    const double & __s ) : mean(__m),shape(__s)
       {
