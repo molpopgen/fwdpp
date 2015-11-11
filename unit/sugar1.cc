@@ -13,14 +13,14 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 
-using mutation_with_age = KTfwd::popgenmut;
+using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_with_age>;
+using mreader = KTfwd::mutation_reader<mutation_t>;
 
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 {
-  using poptype = KTfwd::singlepop<mutation_with_age>;
+  using poptype = KTfwd::singlepop<mutation_t>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 
 BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader>;
+  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader>;
+  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);

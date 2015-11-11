@@ -13,9 +13,9 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 
-using mutation_with_age = KTfwd::popgenmut;
+using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_with_age>;
+using mreader = KTfwd::mutation_reader<mutation_t>;
 
 size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 {
@@ -28,7 +28,7 @@ size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 
 BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 {
-  using poptype = KTfwd::metapop<mutation_with_age>;
+  using poptype = KTfwd::metapop<mutation_t>;
   poptype pop({1000,1000});
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 
 BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct_test )
 {
-  using poptype = KTfwd::metapop_serialized<mutation_with_age,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
+  using poptype = KTfwd::metapop_serialized<mutation_t,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
   poptype pop({1000,1000});
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct_test )
 
 BOOST_AUTO_TEST_CASE( metapop_sugar_assign_test )
 {
-  using poptype = KTfwd::metapop_serialized<mutation_with_age,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
+  using poptype = KTfwd::metapop_serialized<mutation_t,KTfwd::mutation_writer,KTfwd::mutation_reader<KTfwd::popgenmut>>;
   poptype pop({1000,1000});
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);

@@ -13,15 +13,15 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 
-using mutation_with_age = KTfwd::popgenmut;
+using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_with_age>;
+using mreader = KTfwd::mutation_reader<mutation_t>;
 
 //Custom diploid type.
 struct diploid_t : public KTfwd::tags::custom_diploid_t
 {
-  using first_type = KTfwd::singlepop_glist_t<mutation_with_age>::iterator;
-  using second_type = KTfwd::singlepop_glist_t<mutation_with_age>::iterator;
+  using first_type = KTfwd::singlepop_glist_t<mutation_t>::iterator;
+  using second_type = KTfwd::singlepop_glist_t<mutation_t>::iterator;
   first_type first;
   second_type second;
   unsigned i;
@@ -51,7 +51,7 @@ struct diploid_reader
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 {
-  using poptype = KTfwd::singlepop<mutation_with_age,diploid_t>;
+  using poptype = KTfwd::singlepop<mutation_t,diploid_t>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
 {
-  using poptype = KTfwd::singlepop<mutation_with_age,diploid_t>;
+  using poptype = KTfwd::singlepop<mutation_t,diploid_t>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
 
 BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader,diploid_t,diploid_writer,diploid_reader>;
+  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader,diploid_t,diploid_writer,diploid_reader>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_with_age,mwriter,mreader,diploid_t,diploid_writer,diploid_reader>;
+  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader,diploid_t,diploid_writer,diploid_reader>;
   poptype pop(1000);
 
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
