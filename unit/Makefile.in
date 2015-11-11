@@ -87,7 +87,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -159,6 +160,11 @@ am__sugar2_SOURCES_DIST = sugar2.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar2_OBJECTS = sugar2.$(OBJEXT)
 sugar2_OBJECTS = $(am_sugar2_OBJECTS)
 sugar2_LDADD = $(LDADD)
+am__sugar2_custom_SOURCES_DIST = sugar2_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar2_custom_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom.$(OBJEXT)
+sugar2_custom_OBJECTS = $(am_sugar2_custom_OBJECTS)
+sugar2_custom_LDADD = $(LDADD)
 am__sugar3_SOURCES_DIST = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
 sugar3_OBJECTS = $(am_sugar3_OBJECTS)
@@ -202,7 +208,8 @@ SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
 	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
 	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
 	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
-	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) $(sugar3_SOURCES) \
+	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
+	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
 	$(sugar_sampling_SOURCES)
 DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
@@ -213,7 +220,8 @@ DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__policyTests_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
 	$(am__sugar1_custom_SOURCES_DIST) $(am__sugar2_SOURCES_DIST) \
-	$(am__sugar3_SOURCES_DIST) $(am__sugar_sampling_SOURCES_DIST)
+	$(am__sugar2_custom_SOURCES_DIST) $(am__sugar3_SOURCES_DIST) \
+	$(am__sugar_sampling_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -548,6 +556,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_custom_SOURCES = sugar2_custom.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@ms_sampling_SOURCES = ms_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@callbacks_SOURCES = callbacks.cc
@@ -639,6 +648,10 @@ sugar2$(EXEEXT): $(sugar2_OBJECTS) $(sugar2_DEPENDENCIES) $(EXTRA_sugar2_DEPENDE
 	@rm -f sugar2$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sugar2_OBJECTS) $(sugar2_LDADD) $(LIBS)
 
+sugar2_custom$(EXEEXT): $(sugar2_custom_OBJECTS) $(sugar2_custom_DEPENDENCIES) $(EXTRA_sugar2_custom_DEPENDENCIES) 
+	@rm -f sugar2_custom$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar2_custom_OBJECTS) $(sugar2_custom_LDADD) $(LIBS)
+
 sugar3$(EXEEXT): $(sugar3_OBJECTS) $(sugar3_DEPENDENCIES) $(EXTRA_sugar3_DEPENDENCIES) 
 	@rm -f sugar3$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sugar3_OBJECTS) $(sugar3_LDADD) $(LIBS)
@@ -665,6 +678,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1_custom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2_custom.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_sampling.Po@am__quote@
 
@@ -969,6 +983,13 @@ sugar_sampling.log: sugar_sampling$(EXEEXT)
 callbacks.log: callbacks$(EXEEXT)
 	@p='callbacks$(EXEEXT)'; \
 	b='callbacks'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+sugar2_custom.log: sugar2_custom$(EXEEXT)
+	@p='sugar2_custom$(EXEEXT)'; \
+	b='sugar2_custom'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
