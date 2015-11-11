@@ -4,6 +4,7 @@
 
 * Keyword 'mutable' replaced with 'const' throughout library
 * KTfwd::extensions::gaussian now uses ziggurat method
+* Types declared in fwdpp/extensions/callbacks.hpp now have const member data.
 
 ## 0.4.2
 
