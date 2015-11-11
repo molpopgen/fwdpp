@@ -1,5 +1,10 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.3
+
+* Keyword 'mutable' replaced with 'const' throughout library
+* KTfwd::extensions::gaussian now uses ziggurat method
+
 ## 0.4.2
 
 * Fixed error in definition of KTfwd::metapop_serialized and KTfwd::multiloc_serialized.
