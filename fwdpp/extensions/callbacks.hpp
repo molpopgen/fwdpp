@@ -155,7 +155,7 @@ namespace KTfwd {
       }
       inline double operator()(const gsl_rng * r) const
       {
-	return gsl_ran_gaussian(r,sd);
+	return gsl_ran_gaussian_ziggurat(r,sd);
       }
     };
 
