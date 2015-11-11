@@ -86,7 +86,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -100,6 +101,11 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__callbacks_SOURCES_DIST = callbacks.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_callbacks_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks.$(OBJEXT)
+callbacks_OBJECTS = $(am_callbacks_OBJECTS)
+callbacks_LDADD = $(LDADD)
 am__crossoverTest_SOURCES_DIST = crossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_crossoverTest_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
@@ -191,13 +197,15 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(crossoverTest_SOURCES) $(gameteTest_SOURCES) \
-	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
-	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
-	$(policyTests_SOURCES) $(siteDepFitness_SOURCES) \
-	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
-	$(sugar3_SOURCES) $(sugar_sampling_SOURCES)
-DIST_SOURCES = $(am__crossoverTest_SOURCES_DIST) \
+SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
+	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
+	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
+	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
+	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
+	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) $(sugar3_SOURCES) \
+	$(sugar_sampling_SOURCES)
+DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
+	$(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
@@ -542,6 +550,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@ms_sampling_SOURCES = ms_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@callbacks_SOURCES = callbacks.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -581,6 +590,10 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+
+callbacks$(EXEEXT): $(callbacks_OBJECTS) $(callbacks_DEPENDENCIES) $(EXTRA_callbacks_DEPENDENCIES) 
+	@rm -f callbacks$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(callbacks_OBJECTS) $(callbacks_LDADD) $(LIBS)
 
 crossoverTest$(EXEEXT): $(crossoverTest_OBJECTS) $(crossoverTest_DEPENDENCIES) $(EXTRA_crossoverTest_DEPENDENCIES) 
 	@rm -f crossoverTest$(EXEEXT)
@@ -640,6 +653,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
@@ -948,6 +962,13 @@ ms_sampling.log: ms_sampling$(EXEEXT)
 sugar_sampling.log: sugar_sampling$(EXEEXT)
 	@p='sugar_sampling$(EXEEXT)'; \
 	b='sugar_sampling'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+callbacks.log: callbacks$(EXEEXT)
+	@p='callbacks$(EXEEXT)'; \
+	b='callbacks'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
