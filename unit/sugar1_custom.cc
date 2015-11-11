@@ -3,7 +3,7 @@
   \ingroup unit 
   \brief Testing single-deme sugar functionality with custom diploids
 */
-#define BOOST_TEST_MODULE sugarTest1
+#define BOOST_TEST_MODULE sugarTest1_custom
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
