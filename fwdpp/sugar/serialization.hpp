@@ -5,10 +5,12 @@
 #include <sstream>
 #include <algorithm>
 #include <type_traits>
+#include <utility>
 #include <functional>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/sugar/generalmut.hpp>
 
 namespace KTfwd
 {
@@ -76,6 +78,34 @@ namespace KTfwd
       gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
+    }
+
+    //! \brief overload for KTfwd::generalmut and ostream
+    template<typename mutation_t,
+	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
+    inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
+    operator()(const mutation_t & t, std::ostream & buffer)
+    {
+      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
+      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
+      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      //Write mutation types
+      buffer.write( reinterpret_cast<const char *>(&t.s[0]),N*sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&t.h[0]),N*sizeof(double));
+    }
+
+    //! \brief overload for KTfwd::generalmut and zlib/gzFile
+    template<typename mutation_t,
+	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
+    inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
+    operator()(const mutation_t & t, gzFile gzout)
+    {
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      //Write mutation types
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.s[0]),N*sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.h[0]),N*sizeof(double));
     }
   };
 
@@ -158,6 +188,40 @@ namespace KTfwd
       gzread(in,&s,sizeof(double));
       gzread(in,&h,sizeof(double));
       return result_type(pos,s,n,h);
+    }
+
+    //! \brief overalod for KTfwd::genericmut and std::istream
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
+    operator()(std::istream & buffer)
+    {
+      unsigned n,g;
+      double pos;
+      std::array<double,std::tuple_size<typename U::array_t>::value> s,h;
+      buffer.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
+      buffer.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
+      buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      //Write mutation types
+      buffer.read( reinterpret_cast<char *>(&s[0]),std::tuple_size<typename U::array_t>::value*sizeof(double));
+      buffer.read( reinterpret_cast<char *>(&h[0]),std::tuple_size<typename U::array_t>::value*sizeof(double));
+      return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
+    }
+
+    //! \brief overalod for KTfwd::genericmut and zlib/gzFile
+    template<typename U = mutation_t>
+    inline typename std::enable_if<std::is_same<mutation_t,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
+    operator()(gzFile in)
+    {
+      unsigned n,g;
+      double pos;
+      std::array<double,std::tuple_size<typename U::array_t>::value> s,h;
+      gzread(in, &n,sizeof(unsigned));
+      gzread(in, &g,sizeof(unsigned));
+      gzread(in, &pos,sizeof(double));
+      //Write mutation types
+      gzread(in,&s[0],std::tuple_size<typename U::array_t>::value*sizeof(double));
+      gzread(in,&h[0],std::tuple_size<typename U::array_t>::value*sizeof(double));
+      return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
     }
   };
 
