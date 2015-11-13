@@ -8,6 +8,7 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <iostream>
+#include <unistd.h>
 #include <config.h>
 #include <functional>
 #include <algorithm>
@@ -289,6 +290,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_gzserialize_test )
 	    }
 	}
     }
+  unlink("sugar3_test.gz");
 }
 BOOST_AUTO_TEST_CASE( multiloc_sugar_copy_construct )
 {
