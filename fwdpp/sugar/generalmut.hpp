@@ -21,30 +21,50 @@ namespace KTfwd
     Other example use cases could be generalmut<N> representing fitness/dominance value pairs in 
     different 'patches' of an environment.
 
-    The advanatage of this type is that std::array<double,N> is a very fast type (often faster
-    than a std::vector<double> of the same size).  Further, this type can be filled via compile-time 
+    The advanatage of this type is that std::array<floating_t,N> is a very fast type (often faster
+    than a std::vector<floating_t> of the same size).  Further, this type can be filled via compile-time 
     meta-programming techniques.
 
     The disadvantage of this type is that it is not easy to have the number of 's,h' pairs be flexible
-    at run-time.  For that use case, see KTfwd::generalmut_vec, which uses std::vector<double> instead of
+    at run-time.  For that use case, see KTfwd::generalmut_vec, which uses std::vector<floating_t> instead of
     std::array to store the 's,h' values.
   */
   template<std::size_t N>
-  struct generalmut : public KTfwd::mutation_base
+  struct generalmut : public mutation_base
   {
-    using array_t = std::array<double,N>;
+    using array_t = std::array<floating_t,N>;
     //! Selection coefficients and/or effect sizes
     array_t s;
     //! Dominances associated w/values in 's'.
     array_t h;
     //! Generation when mutation arose
-    unsigned g;
+    uint_t g;
     //! Constructor
     generalmut( array_t __s,
 		array_t __h,
-		double pos,unsigned n,unsigned gen ) : KTfwd::mutation_base(std::move(pos),std::move(n),
+		floating_t pos,uint_t n,uint_t gen ) : KTfwd::mutation_base(std::move(pos),std::move(n),
 									    //Mutation is neutral i.f.f. all values in __s == 0.
-									    (std::find_if(std::begin(__s),std::end(__s),[](const double d) { return d != 0.; }) == std::end(__s))),
+									    (std::find_if(std::begin(__s),std::end(__s),[](const floating_t d) { return d != 0.; }) == std::end(__s))),
+						       s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
+    {
+    }
+  };
+
+  struct generalmut_vec : public mutation_base
+  {
+    using array_t = std::vector<floating_t>;
+    //! Selection coefficients and/or effect sizes
+    array_t s;
+    //! Dominances associated w/values in 's'.
+    array_t h;
+    //! Generation when mutation arose
+    uint_t g;
+    //! Constructor
+    generalmut_vec( array_t && __s,
+		    array_t && __h,
+		    floating_t pos,uint_t n,uint_t gen ) : KTfwd::mutation_base(std::move(pos),std::move(n),
+										//Mutation is neutral i.f.f. all values in __s == 0.
+										(std::find_if(std::begin(__s),std::end(__s),[](const floating_t d) { return d != 0.; }) == std::end(__s))),
 						       s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
     {
     }
