@@ -90,8 +90,9 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
       buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Write mutation types
-      buffer.write( reinterpret_cast<const char *>(&t.s[0]),N*sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&t.h[0]),N*sizeof(double));
+      using value_t = typename generalmut<N>::array_t::value_type;
+      buffer.write( reinterpret_cast<const char *>(&t.s[0]),N*sizeof(value_t));
+      buffer.write( reinterpret_cast<const char *>(&t.h[0]),N*sizeof(value_t));
     }
 
     //! \brief overload for KTfwd::generalmut and zlib/gzFile
@@ -104,8 +105,9 @@ namespace KTfwd
       gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
       gzwrite(gzout, reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Write mutation types
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.s[0]),N*sizeof(double));
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.h[0]),N*sizeof(double));
+      using value_t = typename generalmut<N>::array_t::value_type;
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.s[0]),N*sizeof(value_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.h[0]),N*sizeof(value_t));
     }
   };
 
@@ -197,13 +199,14 @@ namespace KTfwd
     {
       unsigned n,g;
       double pos;
-      std::array<double,std::tuple_size<typename U::array_t>::value> s,h;
+      using value_t = typename U::array_t::value_type;
+      std::array<value_t,std::tuple_size<typename U::array_t>::value> s,h;
       buffer.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
       buffer.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
       buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
       //Write mutation types
-      buffer.read( reinterpret_cast<char *>(&s[0]),std::tuple_size<typename U::array_t>::value*sizeof(double));
-      buffer.read( reinterpret_cast<char *>(&h[0]),std::tuple_size<typename U::array_t>::value*sizeof(double));
+      buffer.read( reinterpret_cast<char *>(&s[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
+      buffer.read( reinterpret_cast<char *>(&h[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
       return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
     }
 
