@@ -15,7 +15,9 @@ check_PROGRAMS=mutateTest \
 	sugar_sampling \
 	callbacks \
 	sugar2_custom \
-	test_generalmut
+	test_generalmut \
+	test_generalmut_vec
+
 
 TESTS=$(check_PROGRAMS)
 
@@ -35,6 +37,7 @@ ms_sampling_SOURCES=ms_sampling.cc
 sugar_sampling_SOURCES=sugar_sampling.cc
 callbacks_SOURCES=callbacks.cc
 test_generalmut_SOURCES=test_generalmut.cc
+test_generalmut_vec_SOURCES=test_generalmut_vec.cc
 
 AM_CXXFLAGS=
 

@@ -89,7 +89,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -180,6 +181,11 @@ am__test_generalmut_SOURCES_DIST = test_generalmut.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut.$(OBJEXT)
 test_generalmut_OBJECTS = $(am_test_generalmut_OBJECTS)
 test_generalmut_LDADD = $(LDADD)
+am__test_generalmut_vec_SOURCES_DIST = test_generalmut_vec.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_test_generalmut_vec_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec.$(OBJEXT)
+test_generalmut_vec_OBJECTS = $(am_test_generalmut_vec_OBJECTS)
+test_generalmut_vec_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -216,7 +222,8 @@ SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
 	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
 	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
 	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
-	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES)
+	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES) \
+	$(test_generalmut_vec_SOURCES)
 DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
@@ -228,7 +235,8 @@ DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__sugar1_custom_SOURCES_DIST) $(am__sugar2_SOURCES_DIST) \
 	$(am__sugar2_custom_SOURCES_DIST) $(am__sugar3_SOURCES_DIST) \
 	$(am__sugar_sampling_SOURCES_DIST) \
-	$(am__test_generalmut_SOURCES_DIST)
+	$(am__test_generalmut_SOURCES_DIST) \
+	$(am__test_generalmut_vec_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -568,6 +576,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@callbacks_SOURCES = callbacks.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_SOURCES = test_generalmut.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_vec_SOURCES = test_generalmut_vec.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -672,6 +681,10 @@ test_generalmut$(EXEEXT): $(test_generalmut_OBJECTS) $(test_generalmut_DEPENDENC
 	@rm -f test_generalmut$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(test_generalmut_OBJECTS) $(test_generalmut_LDADD) $(LIBS)
 
+test_generalmut_vec$(EXEEXT): $(test_generalmut_vec_OBJECTS) $(test_generalmut_vec_DEPENDENCIES) $(EXTRA_test_generalmut_vec_DEPENDENCIES) 
+	@rm -f test_generalmut_vec$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_generalmut_vec_OBJECTS) $(test_generalmut_vec_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -694,6 +707,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar3.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut_vec.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -1010,6 +1024,13 @@ sugar2_custom.log: sugar2_custom$(EXEEXT)
 test_generalmut.log: test_generalmut$(EXEEXT)
 	@p='test_generalmut$(EXEEXT)'; \
 	b='test_generalmut'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_generalmut_vec.log: test_generalmut_vec$(EXEEXT)
+	@p='test_generalmut_vec$(EXEEXT)'; \
+	b='test_generalmut_vec'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
