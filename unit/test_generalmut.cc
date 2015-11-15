@@ -1,7 +1,7 @@
 /*! 
   \file test_generalmut.cc 
   \ingroup unit 
-  \brief Testing KTfwd::singlepop and KTfwd::generalmut
+  \brief Testing KTfwd::generalmut
 */
 #define BOOST_TEST_MODULE generalmutTest
 #define BOOST_TEST_DYN_LINK 
