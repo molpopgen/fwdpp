@@ -22,19 +22,19 @@ namespace KTfwd {
     template<typename gcont_t>
     struct gamete_lookup {
       using gcont_t_itr = typename gcont_t::iterator;
-      using lookup_table_t = std::multimap<double,gcont_t_itr>;
+      using lookup_table_t = std::multimap<floating_t,gcont_t_itr>;
       using result_type = std::pair<typename lookup_table_t::iterator,typename lookup_table_t::iterator>;
       using inner_t = typename lookup_table_t::value_type;
       lookup_table_t lookup_table;
 
-      inline double keyit( const typename gcont_t_itr::value_type::mutation_container & mc ) const
+      inline floating_t keyit( const typename gcont_t_itr::value_type::mutation_container & mc ) const
       {
-	return (mc.empty()) ? -std::numeric_limits<double>::max() : mc[0]->pos;
+	return (mc.empty()) ? -std::numeric_limits<floating_t>::max() : mc[0]->pos;
       }
       
       inline void update_details( const gcont_t_itr & g ) 
       {
-	lookup_table.emplace( std::make_pair( keyit(g->mutations)*double(g->mutations.size()) + keyit(g->smutations)*double(g->smutations.size()), g) );
+	lookup_table.emplace( std::make_pair( keyit(g->mutations)*floating_t(g->mutations.size()) + keyit(g->smutations)*floating_t(g->smutations.size()), g) );
       }
 
       explicit gamete_lookup(gcont_t * gametes) : lookup_table( lookup_table_t() )
@@ -47,7 +47,7 @@ namespace KTfwd {
 
       inline result_type lookup( const typename gcont_t::value_type & g ) 
       {
-	return lookup_table.equal_range(  keyit(g.mutations)*double(g.mutations.size()) + keyit(g.smutations)*double(g.smutations.size()) );
+	return lookup_table.equal_range(  keyit(g.mutations)*floating_t(g.mutations.size()) + keyit(g.smutations)*floating_t(g.smutations.size()) );
       }
 
       inline void update( const gcont_t_itr & g ) 

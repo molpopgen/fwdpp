@@ -7,9 +7,9 @@ namespace KTfwd {
 
   namespace fwdpp_internal {
 
-    template<typename double_vec_type,
+    template<typename floating_t_vec_type,
 	     typename gamete_cont_iterator >
-    void recombine_gametes( const double_vec_type & pos,
+    void recombine_gametes( const floating_t_vec_type & pos,
 			    gamete_cont_iterator & ibeg,
 			    gamete_cont_iterator & jbeg,
 			    typename gamete_cont_iterator::value_type::mutation_container & neutral,
@@ -27,7 +27,7 @@ namespace KTfwd {
 	jtr_e = jbeg->mutations.cend(),
 	jtr_s_e = jbeg->smutations.cend();
 
-      for(const double dummy : pos )
+      for(const floating_t dummy : pos )
 	{
 	  if(!SWITCH)
 	    {

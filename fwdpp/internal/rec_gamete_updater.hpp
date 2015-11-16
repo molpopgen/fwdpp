@@ -12,12 +12,12 @@ namespace KTfwd
     template<typename itr_type>
     inline itr_type rec_update_itr( itr_type __first,
 				    itr_type __last,
-				    const double & val)
+				    const floating_t & val)
     {
       if(__first==__last) return __first;
       return std::upper_bound(__first,__last,
 				std::cref(val),
-			      [](const double __val,const typename itr_type::value_type __mut) {
+			      [](const floating_t __val,const typename itr_type::value_type __mut) {
 				return __val < __mut->pos;
 			      });
     }
@@ -26,9 +26,9 @@ namespace KTfwd
 	      typename cont_type >
     itr_type rec_gam_updater( itr_type __first, itr_type __last,
 			      cont_type & muts,
-			      const double & val )
+			      const floating_t & val )
     {
-      //O(log_2) comparisons of double plus at most __last - __first copies
+      //O(log_2) comparisons of floating_t plus at most __last - __first copies
       itr_type __ub = rec_update_itr(__first,__last,val);
       /*
 	NOTE: the use of insert here

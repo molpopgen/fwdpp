@@ -24,21 +24,21 @@ namespace KTfwd
     }
   };
 
-  /*! \brief Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
-    Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
+  /*! \brief Returns true if std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon()
+    Returns true if std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon()
    */
   struct mutation_at_pos
   {
     using result_type = bool;
     template<typename mutation_type>
-    inline bool operator()(const mutation_type & m, const double & d) const
+    inline bool operator()(const mutation_type & m, const floating_t & d) const
     {
-      return( std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon() );
+      return( std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon() );
     }
   };
   
-  /*!\brief Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
-    Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
+  /*!\brief Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon()
+    Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon()
   */
   struct same_pos
   {
@@ -46,7 +46,7 @@ namespace KTfwd
     template<typename mutation_type>
     inline bool operator()(const mutation_type & m1, const mutation_type & m2) const
     {
-      return( std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon() );
+      return( std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon() );
     }
   };
 
@@ -78,14 +78,14 @@ namespace KTfwd
     using result_type = bool;
     template<typename iterator_type> 
     inline result_type operator()(const iterator_type & i,
-				  const unsigned & x1 ) const
+				  const uint_t & x1 ) const
     {
       return i->n == x1;
     }
     template<typename iterator_type>
     inline result_type operator()(const iterator_type & i,
-				  const unsigned & x1,
-				  const unsigned & x2) const
+				  const uint_t & x1,
+				  const uint_t & x2) const
     {
       return i->n == x1 || i->n == x2;
     }
