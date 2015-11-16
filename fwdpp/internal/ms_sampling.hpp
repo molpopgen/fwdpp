@@ -30,11 +30,11 @@ namespace KTfwd
 	      typename pos_finder>
     void update_sample_block(sample_t & block,
 			     const mcont_t & mutations,
-			     const unsigned i,
-			     const unsigned n,
+			     const unsigned & i,
+			     const unsigned & n,
 			     const pos_finder & pf,
-			     const unsigned offset = 0,
-			     const unsigned scalar = 2)
+			     const unsigned & offset = 0,
+			     const unsigned & scalar = 2)
     {
       for( auto mptr = mutations.cbegin() ; mptr != mutations.cend() ; ++mptr )
 	{
@@ -56,8 +56,8 @@ namespace KTfwd
     sep_sample_t
     ms_sample_separate_single_deme( const dipvector_t * diploids,
 				    const std::vector<unsigned> & diplist,
-				    const unsigned n,
-				    const bool remove_fixed )
+				    const unsigned & n,
+				    const bool & remove_fixed )
     {
       sep_sample_t rv;
       sample_t::iterator itr;
@@ -119,8 +119,8 @@ namespace KTfwd
     std::vector<sep_sample_t >
     ms_sample_separate_mlocus( const dipvector_t * diploids,
 			       const std::vector<unsigned> & diplist,
-			       const unsigned n,
-			       const bool remove_fixed)
+			       const unsigned & n,
+			       const bool & remove_fixed)
     {
       using rvtype = std::vector<sep_sample_t>;
       using genotype = typename dipvector_t::value_type;

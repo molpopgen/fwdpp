@@ -15,7 +15,7 @@ namespace KTfwd
 	    template<typename,typename> class container_type>
   std::vector<unsigned> sample(gsl_rng * r,
 			       const container_type<gamete_type,allocator_t > & gametes,
-			       const unsigned n, const unsigned N)
+			       const unsigned & n, const unsigned & N)
   {
     std::vector<double> freqs;
     std::vector<unsigned> counts(gametes.size(),0);
@@ -31,7 +31,7 @@ namespace KTfwd
 	    template<typename,typename> class container_type>
   std::vector<unsigned> sample_sfs(gsl_rng * r, 
 				   const container_type<gamete_type,allocator_t > & gametes,
-				   const unsigned n, const unsigned N)
+				   const unsigned & n, const unsigned & N)
   {
     std::vector<unsigned> counts = sample(r,gametes,n,N);
     std::map<double,unsigned> samplemuts;
@@ -82,8 +82,8 @@ namespace KTfwd
 			   sample_t >::type
   ms_sample( gsl_rng * r,
 	     const vector_type< diploid_geno_t, allocator > * diploids,
-	     const unsigned n,
-	     const bool remove_fixed)
+	     const unsigned & n,
+	     const bool & remove_fixed)
   {
     auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
     std::move( separate.second.begin(), separate.second.end(), std::back_inserter(separate.first) );
@@ -100,8 +100,8 @@ namespace KTfwd
 			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
 		      const vector_type< diploid_geno_t, allocator > * diploids,
-		      const unsigned n,
-		      const bool remove_fixed)
+		      const unsigned & n,
+		      const bool & remove_fixed)
   {
     std::vector<unsigned> diplist;
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
@@ -122,8 +122,8 @@ namespace KTfwd
 			   std::vector<sep_sample_t > >::type
   ms_sample_separate( gsl_rng * r,
 		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-		      const unsigned n,
-		      const bool remove_fixed)
+		      const unsigned & n,
+		      const bool & remove_fixed)
   {
     std::vector<unsigned> diplist;
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
@@ -143,8 +143,8 @@ namespace KTfwd
 			   std::vector< sample_t > >::type
   ms_sample( gsl_rng * r,
 	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-	     const unsigned n,
-	     const bool remove_fixed)
+	     const unsigned & n,
+	     const bool & remove_fixed)
   {
     auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
     std::vector<sample_t> rv;

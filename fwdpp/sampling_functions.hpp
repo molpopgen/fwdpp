@@ -122,7 +122,7 @@ namespace KTfwd
   template<typename iterator_type>
   std::vector<unsigned> population_sfs( iterator_type beg,
 					iterator_type end,
-					const unsigned N)
+					const unsigned & N)
   {
     std::vector<unsigned> psfs(N-1,0);
     while(beg != end)
@@ -139,7 +139,7 @@ namespace KTfwd
 	    template<typename,typename> class container_t>
   std::vector<unsigned> sample_sfs(gsl_rng * r, 
 				   const container_t<gamete_type,allocator_t > & gametes,
-				   const unsigned n, const unsigned N);
+				   const unsigned & n, const unsigned & N);
 
   /*!
     \brief Sampling from a population in an individual-based simulation
@@ -153,8 +153,8 @@ namespace KTfwd
 			   sample_t >::type
   ms_sample( gsl_rng * r,
 	     const vector_type< diploid_geno_t, allocator > * diploids,
-	     const unsigned n,
-	     const bool remove_fixed = true);
+	     const unsigned & n,
+	     const bool & remove_fixed = true);
 
   /*!
     \brief Sampling from a population in an individual-based simulation.  Selected and neutral mutations returned separately
@@ -168,8 +168,8 @@ namespace KTfwd
 			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
 		      const vector_type< diploid_geno_t, allocator > * diploids,
-		      const unsigned n,
-		      const bool remove_fixed = true);
+		      const unsigned & n,
+		      const bool & remove_fixed = true);
 
   /*!
     \brief Sample from an individual-based, multi-locus simulation.
@@ -186,8 +186,8 @@ namespace KTfwd
 			   std::vector<sample_t> >::type
   ms_sample( gsl_rng * r,
 	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-	     const unsigned n,
-	     const bool remove_fixed);
+	     const unsigned & n,
+	     const bool & remove_fixed);
 
   /*!
     \brief Sample from an individual-based, multi-locus simulation.
@@ -204,8 +204,8 @@ namespace KTfwd
 			   std::vector<sep_sample_t> >::type
   ms_sample_separate( gsl_rng * r,
 		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-		      const unsigned n,
-		      const bool remove_fixed);
+		      const unsigned & n,
+		      const bool & remove_fixed);
 }
 #endif 
 #include <fwdpp/sampling_functions.tcc>
