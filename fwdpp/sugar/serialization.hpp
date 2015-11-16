@@ -230,7 +230,7 @@ namespace KTfwd
 
     //! \brief overalod for KTfwd::generalmut and std::istream
     template<typename U = mutation_t>
-    inline typename std::enable_if<std::is_same<mutation_t,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
+    inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
     operator()(std::istream & buffer)
     {
       unsigned n,g;
@@ -246,14 +246,13 @@ namespace KTfwd
       return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
     }
 
-    //! \brief overalod for KTfwd::generalmut and std::istream
+    //! \brief overalod for KTfwd::generalmut_vec and std::istream
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
     operator()(std::istream & buffer)
     {
       unsigned n,g;
       double pos;
-      using value_t = typename U::array_t::value_type;
       buffer.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
       buffer.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
       buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
@@ -275,7 +274,7 @@ namespace KTfwd
 
     //! \brief overalod for KTfwd::generalmut and zlib/gzFile
     template<typename U = mutation_t>
-    inline typename std::enable_if<std::is_same<mutation_t,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
+    inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
     operator()(gzFile in)
     {
       unsigned n,g;
@@ -290,14 +289,13 @@ namespace KTfwd
       return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
     }
 
-    //! \brief overalod for KTfwd::generalmut and gzFile
+    //! \brief overalod for KTfwd::generalmut_vec and gzFile
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
     operator()(gzFile in)
     {
       unsigned n,g;
       double pos;
-      using value_t = typename U::array_t::value_type;
       gzread( in, reinterpret_cast<char *>(&n),sizeof(unsigned));
       gzread( in, reinterpret_cast<char *>(&g),sizeof(unsigned));
       gzread( in, reinterpret_cast<char *>(&pos),sizeof(double));
