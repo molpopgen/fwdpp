@@ -30,11 +30,11 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&m.g),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&m.g),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(floating_t));
+      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(floating_t));
+      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(floating_t));
     }
 
     /*!
@@ -45,11 +45,11 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		gzFile gzout) const
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.g),sizeof(unsigned));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.g),sizeof(uint_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(floating_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(floating_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(floating_t));
     }
     
     /*!
@@ -60,10 +60,10 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(floating_t));
+      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(floating_t));
+      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(floating_t));
     }
 
     /*!
@@ -74,10 +74,10 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		gzFile gzout) const
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(unsigned));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(floating_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(floating_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(floating_t));
     }
 
     //! \brief overload for KTfwd::generalmut and ostream
@@ -86,9 +86,9 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, std::ostream & buffer)
     {
-      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(floating_t));
       //Write mutation types
       using value_t = typename generalmut<N>::array_t::value_type;
       buffer.write( reinterpret_cast<const char *>(&t.s[0]),N*sizeof(value_t));
@@ -100,9 +100,9 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
     operator()(const mutation_t & t, std::ostream & buffer)
     {
-      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(floating_t));
       //Write mutation types
       using value_t = typename generalmut_vec::array_t::value_type;
       using array_t_size_t = typename generalmut_vec::array_t::size_type;
@@ -119,9 +119,9 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, gzFile gzout)
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
+      gzwrite(gzout, reinterpret_cast<const char *>(&t.pos),sizeof(floating_t));
       //Write mutation types
       using value_t = typename generalmut<N>::array_t::value_type;
       gzwrite(gzout, reinterpret_cast<const char *>(&t.s[0]),N*sizeof(value_t));
@@ -133,9 +133,9 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
     operator()(const mutation_t & t, gzFile out)
     {
-      gzwrite( out, reinterpret_cast<const char *>(&t.n),sizeof(unsigned));
-      gzwrite( out, reinterpret_cast<const char *>(&t.g),sizeof(unsigned));
-      gzwrite( out, reinterpret_cast<const char *>(&t.pos),sizeof(double));
+      gzwrite( out, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
+      gzwrite( out, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
+      gzwrite( out, reinterpret_cast<const char *>(&t.pos),sizeof(floating_t));
       //Grite mutation types
       using value_t = typename generalmut_vec::array_t::value_type;
       using array_t_size_t = typename generalmut_vec::array_t::size_type;
@@ -168,13 +168,13 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
     operator()( std::istream & in ) const
     {
-      unsigned n,g;
-      double pos,s,h;
-      in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
-      in.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
-      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
-      in.read( reinterpret_cast<char *>(&s),sizeof(double));
-      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+      uint_t n,g;
+      floating_t pos,s,h;
+      in.read( reinterpret_cast<char *>(&n),sizeof(uint_t));
+      in.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
+      in.read( reinterpret_cast<char *>(&pos),sizeof(floating_t));
+      in.read( reinterpret_cast<char *>(&s),sizeof(floating_t));
+      in.read( reinterpret_cast<char *>(&h),sizeof(floating_t));
       return result_type(pos,s,h,g,n);
     }
 
@@ -185,13 +185,13 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
     operator()( gzFile in ) const
     {
-      unsigned n,g;
-      double pos,s,h;
-      gzread(in,&n,sizeof(unsigned));
-      gzread(in,&g,sizeof(unsigned));
-      gzread(in,&pos,sizeof(double));
-      gzread(in,&s,sizeof(double));
-      gzread(in,&h,sizeof(double));
+      uint_t n,g;
+      floating_t pos,s,h;
+      gzread(in,&n,sizeof(uint_t));
+      gzread(in,&g,sizeof(uint_t));
+      gzread(in,&pos,sizeof(floating_t));
+      gzread(in,&s,sizeof(floating_t));
+      gzread(in,&h,sizeof(floating_t));
       return result_type(pos,s,h,g,n);
     }
     
@@ -202,12 +202,12 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
     operator()( std::istream & in ) const
     {
-      unsigned n;
-      double pos,s,h;
-      in.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
-      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
-      in.read( reinterpret_cast<char *>(&s),sizeof(double));
-      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+      uint_t n;
+      floating_t pos,s,h;
+      in.read( reinterpret_cast<char *>(&n),sizeof(uint_t));
+      in.read( reinterpret_cast<char *>(&pos),sizeof(floating_t));
+      in.read( reinterpret_cast<char *>(&s),sizeof(floating_t));
+      in.read( reinterpret_cast<char *>(&h),sizeof(floating_t));
       return result_type(pos,s,n,h);
     }
 
@@ -219,12 +219,12 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
     operator()( gzFile in ) const
     {
-      unsigned n;
-      double pos,s,h;
-      gzread(in,&n,sizeof(unsigned));
-      gzread(in,&pos,sizeof(double));
-      gzread(in,&s,sizeof(double));
-      gzread(in,&h,sizeof(double));
+      uint_t n;
+      floating_t pos,s,h;
+      gzread(in,&n,sizeof(uint_t));
+      gzread(in,&pos,sizeof(floating_t));
+      gzread(in,&s,sizeof(floating_t));
+      gzread(in,&h,sizeof(floating_t));
       return result_type(pos,s,n,h);
     }
 
@@ -233,13 +233,13 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
     operator()(std::istream & buffer)
     {
-      unsigned n,g;
-      double pos;
+      uint_t n,g;
+      floating_t pos;
       using value_t = typename U::array_t::value_type;
       std::array<value_t,std::tuple_size<typename U::array_t>::value> s,h;
-      buffer.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
-      buffer.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
-      buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      buffer.read( reinterpret_cast<char *>(&n),sizeof(uint_t));
+      buffer.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
+      buffer.read( reinterpret_cast<char *>(&pos),sizeof(floating_t));
       //Write mutation types
       buffer.read( reinterpret_cast<char *>(&s[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
       buffer.read( reinterpret_cast<char *>(&h[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
@@ -251,11 +251,11 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
     operator()(std::istream & buffer)
     {
-      unsigned n,g;
-      double pos;
-      buffer.read( reinterpret_cast<char *>(&n),sizeof(unsigned));
-      buffer.read( reinterpret_cast<char *>(&g),sizeof(unsigned));
-      buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      uint_t n,g;
+      floating_t pos;
+      buffer.read( reinterpret_cast<char *>(&n),sizeof(uint_t));
+      buffer.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
+      buffer.read( reinterpret_cast<char *>(&pos),sizeof(floating_t));
       typename U::array_t::size_type ns,nh;
       buffer.read(reinterpret_cast<char*>(&ns),sizeof(typename U::array_t::size_type));
       buffer.read(reinterpret_cast<char*>(&nh),sizeof(typename U::array_t::size_type));
@@ -277,15 +277,15 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
     operator()(gzFile in)
     {
-      unsigned n,g;
-      double pos;
-      std::array<double,std::tuple_size<typename U::array_t>::value> s,h;
-      gzread(in, &n,sizeof(unsigned));
-      gzread(in, &g,sizeof(unsigned));
-      gzread(in, &pos,sizeof(double));
+      uint_t n,g;
+      floating_t pos;
+      std::array<floating_t,std::tuple_size<typename U::array_t>::value> s,h;
+      gzread(in, &n,sizeof(uint_t));
+      gzread(in, &g,sizeof(uint_t));
+      gzread(in, &pos,sizeof(floating_t));
       //Write mutation types
-      gzread(in,&s[0],std::tuple_size<typename U::array_t>::value*sizeof(double));
-      gzread(in,&h[0],std::tuple_size<typename U::array_t>::value*sizeof(double));
+      gzread(in,&s[0],std::tuple_size<typename U::array_t>::value*sizeof(floating_t));
+      gzread(in,&h[0],std::tuple_size<typename U::array_t>::value*sizeof(floating_t));
       return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,n,g);
     }
 
@@ -294,11 +294,11 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
     operator()(gzFile in)
     {
-      unsigned n,g;
-      double pos;
-      gzread( in, reinterpret_cast<char *>(&n),sizeof(unsigned));
-      gzread( in, reinterpret_cast<char *>(&g),sizeof(unsigned));
-      gzread( in, reinterpret_cast<char *>(&pos),sizeof(double));
+      uint_t n,g;
+      floating_t pos;
+      gzread( in, reinterpret_cast<char *>(&n),sizeof(uint_t));
+      gzread( in, reinterpret_cast<char *>(&g),sizeof(uint_t));
+      gzread( in, reinterpret_cast<char *>(&pos),sizeof(floating_t));
       typename U::array_t::size_type ns,nh;
       gzread(in, reinterpret_cast<char*>(&ns),sizeof(typename U::array_t::size_type));
       gzread(in, reinterpret_cast<char*>(&nh),sizeof(typename U::array_t::size_type));
@@ -344,17 +344,17 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
+      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
       write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      unsigned temp = pop.fixations.size();
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
+      uint_t temp = pop.fixations.size();
+      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
 	}
     }
 
@@ -366,17 +366,17 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(unsigned) );
+      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
       write_binary_pop_mloc(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      unsigned temp = pop.fixations.size();
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
+      uint_t temp = pop.fixations.size();
+      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
 	}
     }
 
@@ -391,19 +391,19 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      unsigned npops = pop.Ns.size();
-      buffer.write(reinterpret_cast<char *>(&npops),sizeof(unsigned));
-      buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(unsigned) );
+      uint_t npops = pop.Ns.size();
+      buffer.write(reinterpret_cast<char *>(&npops),sizeof(uint_t));
+      buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(uint_t) );
       write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      unsigned temp = pop.fixations.size();
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(unsigned) );
+      uint_t temp = pop.fixations.size();
+      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(unsigned) );
+	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
 	}
     }
   };
@@ -431,11 +431,11 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
-      unsigned temp;
-      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(s.buffer);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -443,7 +443,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
@@ -463,11 +463,11 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
-      unsigned temp;
-      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(s.buffer);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -475,7 +475,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
@@ -498,15 +498,15 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      unsigned numNs;
-      s.buffer.read( reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
+      uint_t numNs;
+      s.buffer.read( reinterpret_cast<char*>(&numNs),sizeof(uint_t) );
       pop.Ns.resize(numNs);
-      s.buffer.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
+      s.buffer.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(uint_t) );
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
-      unsigned temp;
-      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(s.buffer);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -514,7 +514,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
@@ -568,11 +568,11 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
-      unsigned temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -580,7 +580,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
@@ -598,11 +598,11 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(unsigned) );
+      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
-      unsigned temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -610,7 +610,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
@@ -632,15 +632,15 @@ namespace KTfwd
     {
       pop.clear();
       //Step 0: read N
-      unsigned numNs;
-      gzread( gzin, reinterpret_cast<char*>(&numNs),sizeof(unsigned) );
+      uint_t numNs;
+      gzread( gzin, reinterpret_cast<char*>(&numNs),sizeof(uint_t) );
       pop.Ns.resize(numNs);
-      gzread( gzin, reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(unsigned) );
+      gzread( gzin, reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(uint_t) );
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
-      unsigned temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(unsigned) );
-      for( unsigned m=0;m<temp ;++m )
+      uint_t temp;
+      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
     	  pop.fixations.emplace_back( std::move(mm) );
@@ -648,7 +648,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(unsigned) );
+	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
