@@ -50,6 +50,17 @@ namespace KTfwd
     }
   };
 
+  /*!
+    \brief Mutation type allowing arbitray number of "s,h" pairs representing effect sizes,dominance.
+    \ingroup sugar
+
+    This type represents a mutation with a number of 's' and 'h' parameters that are determined at run time.
+
+    This type complements generalmut.  The use cases will be similar.  This type will show better performance
+    for large numbers of categories (e.g., large sizes of member variables s and h).
+
+    This type differs from generalmut in that the sizes of the s and h vectors do not have to be the same.
+   */
   struct generalmut_vec : public mutation_base
   {
     using array_t = std::vector<double>;
