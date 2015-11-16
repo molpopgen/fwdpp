@@ -38,10 +38,10 @@ namespace KTfwd {
     private:
       void init_vectors()
       {
-	unsigned metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
+	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
 	gametes.emplace_back( gamete_t(2*metapopsize) );
 	auto gam = gametes.begin();
-	for(unsigned i = 0 ; i < Ns.size() ; ++i )
+	for(uint_t i = 0 ; i < Ns.size() ; ++i )
 	  {
 	    diploids.emplace_back( dipvector_t(Ns[i],typename dipvector::value_type(gam,gam)) );
 	  }
@@ -74,7 +74,7 @@ namespace KTfwd {
       using ftvector_t = ftvector;
 
       //! Deme sizes
-      std::vector<unsigned> Ns;
+      std::vector<uint_t> Ns;
       mlist_t mutations;
       glist_t gametes;
       vdipvector_t diploids;
@@ -105,13 +105,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
       
       //! Construct with a list of deme sizes
-      metapop( std::initializer_list<unsigned> __Ns,
+      metapop( std::initializer_list<uint_t> __Ns,
 	       typename gamete_t::mutation_container::size_type reserve_size = 100) :
 	Ns(__Ns),
 	mutations(mlist_t()),
@@ -129,9 +129,9 @@ namespace KTfwd {
       }
 
       //! Construct with array of deme sizes
-      metapop(const unsigned * __Ns, const size_t num_Ns,
+      metapop(const uint_t * __Ns, const size_t num_Ns,
 	      typename gamete_t::mutation_container::size_type reserve_size = 100) :
-	Ns(std::vector<unsigned>(__Ns,__Ns+num_Ns)),
+	Ns(std::vector<uint_t>(__Ns,__Ns+num_Ns)),
 	mutations(mlist_t()),
 	gametes(glist_t()),
 	diploids(vdipvector_t()),
@@ -201,10 +201,10 @@ namespace KTfwd {
     private:
       void init_vectors()
       {
-	unsigned metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
+	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
 	gametes.emplace_back( gamete_t(2*metapopsize) );
 	auto gam = gametes.begin();
-	for(unsigned i = 0 ; i < Ns.size() ; ++i )
+	for(uint_t i = 0 ; i < Ns.size() ; ++i )
 	  {
 	    diploids.emplace_back( dipvector_t(Ns[i],typename dipvector::value_type(gam,gam)) );
 	  }
@@ -244,7 +244,7 @@ namespace KTfwd {
       using ftvector_t = ftvector;
 
       //! Deme sizes
-      std::vector<unsigned> Ns;
+      std::vector<uint_t> Ns;
       mlist_t mutations;
       glist_t gametes;
       vdipvector_t diploids;
@@ -275,13 +275,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
       
       //! Construct with a list of population sizes
-      metapop_serialized( std::initializer_list<unsigned> __Ns,
+      metapop_serialized( std::initializer_list<uint_t> __Ns,
 			  typename gamete_t::mutation_container::size_type reserve_size = 100) : Ns(__Ns),
 												 mutations(mlist_t()),
 												 gametes(glist_t()),
@@ -297,9 +297,9 @@ namespace KTfwd {
 	selected.reserve(reserve_size);
       }
 
-      metapop_serialized(const unsigned * __Ns, const size_t num_Ns,
+      metapop_serialized(const uint_t * __Ns, const size_t num_Ns,
 			 typename gamete_t::mutation_container::size_type reserve_size = 100) :
-	Ns(std::vector<unsigned>(__Ns,__Ns+num_Ns)),
+	Ns(std::vector<uint_t>(__Ns,__Ns+num_Ns)),
 	mutations(mlist_t()),
 	gametes(glist_t()),
 	diploids(vdipvector_t()),
@@ -319,7 +319,7 @@ namespace KTfwd {
       metapop_serialized( metapop_serialized && ) = default;
 
       //! Copy constructor
-      metapop_serialized( const metapop_serialized & __m) : Ns(std::vector<unsigned>()),
+      metapop_serialized( const metapop_serialized & __m) : Ns(std::vector<uint_t>()),
 							    mutations(mlist_t()),
 							    gametes(glist_t()),
 							    diploids(vdipvector_t()),

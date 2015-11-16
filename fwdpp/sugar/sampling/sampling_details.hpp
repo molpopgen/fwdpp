@@ -90,8 +90,8 @@ namespace KTfwd
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
-    std::sort(rv.begin(),rv.end(),[](const std::pair<double,std::string> & a,
-				     const std::pair<double,std::string> & b){
+    std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
+				     const sample_site_t & b){
 		return a.first<b.first;
 	      });
     if(!removeFixed)
@@ -113,8 +113,8 @@ namespace KTfwd
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
-    std::sort(rv.begin(),rv.end(),[](const std::pair<double,std::string> & a,
-				     const std::pair<double,std::string> & b){
+    std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
+				     const sample_site_t & b){
 		return a.first<b.first;
 	      });
     if(!removeFixed)

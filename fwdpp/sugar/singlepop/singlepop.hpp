@@ -38,7 +38,7 @@ namespace KTfwd {
 		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
 		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
     public:
-      unsigned N;
+      uint_t N;
 
       //! Dispatch tag for other parts of sugar layer
       using popmodel_t = sugar::SINGLEPOP_TAG;
@@ -91,13 +91,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
 
       //! Constructor
-      singlepop( const unsigned & popsize,
+      singlepop( const uint_t & popsize,
 		 typename gamete_t::mutation_container::size_type reserve_size = 100) : N(popsize),
 											//No muts in the population
 											mutations(mlist()),
@@ -167,7 +167,7 @@ namespace KTfwd {
 		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
 		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
     public:
-      unsigned N;
+      uint_t N;
 
       //! Dispatch tag for other parts of sugar layer
       using popmodel_t = sugar::SINGLEPOP_TAG;
@@ -230,13 +230,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
       
       //! Constructor
-      singlepop_serialized( const unsigned & popsize,
+      singlepop_serialized( const uint_t & popsize,
 			    typename gamete_t::mutation_container::size_type reserve_size = 100) : N(popsize),
 												   //No muts in the population
 												   mutations(mlist()),

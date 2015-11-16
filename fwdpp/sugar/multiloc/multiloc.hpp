@@ -56,7 +56,7 @@ namespace KTfwd {
       using ftvector_t = ftvector;
 
       //! Population size
-      unsigned N;
+      uint_t N;
       mlist_t mutations;
       glist_t gametes;
       dipvector_t diploids;
@@ -69,13 +69,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
 
       //! Construct with population size and number of loci
-      multiloc(const unsigned & __N, const unsigned & __nloci,
+      multiloc(const uint_t & __N, const uint_t & __nloci,
 	       typename gamete_t::mutation_container::size_type reserve_size = 100) : N(__N),
 										      mutations(mlist_t()),
 										      gametes(glist_t(1,gamete_t(2*__N))),
@@ -170,7 +170,7 @@ namespace KTfwd {
       using ftvector_t = ftvector;
 
       //! Population size
-      unsigned N;
+      uint_t N;
       mlist_t mutations;
       glist_t gametes;
       dipvector_t diploids;
@@ -184,13 +184,13 @@ namespace KTfwd {
       lookup_table_type mut_lookup;
       //! Vector of mutation_t to track fixations
       mvector fixations;
-      /*! \brief vector<unsigned> records times when mutation_ts 
+      /*! \brief vector<uint_t> records times when mutation_ts 
 	were added to mut_lookup
       */
       ftvector fixation_times;
      
       //! Construct with population size and number of loci
-      multiloc_serialized(const unsigned & __N, const unsigned & __nloci,
+      multiloc_serialized(const uint_t & __N, const uint_t & __nloci,
 			  typename gamete_t::mutation_container::size_type reserve_size = 100) : N(__N),
 												 mutations(mlist_t()),
 												 gametes(glist_t(1,gamete_t(2*__N))),

@@ -15,11 +15,11 @@ namespace KTfwd
   struct popgenmut : public mutation_base
   {
     //! The generation when the mutation arose
-    unsigned g;
+    uint_t g;
     //! Selection coefficient
-    double s;
+    floating_t s;
     //! Dominance of the mutation
-    double h;
+    floating_t h;
     /*!
       \brief Constructor
       \param __pos Mutation position
