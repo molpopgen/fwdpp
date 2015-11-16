@@ -16,8 +16,8 @@
 
 namespace KTfwd
 {
+  //! The unsigned integer type is 32 bits
   using uint_t = std::uint32_t;
-  using int_t = std::int32_t;
   
   /*! \brief Base class for mutations
     At minimum, a mutation must contain a position and a count in the population.	
