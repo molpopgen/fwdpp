@@ -46,6 +46,13 @@ namespace KTfwd {
     */
     {
       std::function<double(gsl_rng*)> s,h;
+      //! Default constructor useful in extension situations that don't understand std::function
+      shmodel() = default;
+      //! More efficient constructor for c++11-aware situations
+      shmodel( std::function<double(gsl_rng*)> sfxn,
+	       std::function<double(gsl_rng*)> hfxn ) : s(std::move(sfxn)),h(std::move(hfxn))
+      {
+      }
     };
   
     struct constant

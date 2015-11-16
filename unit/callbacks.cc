@@ -53,11 +53,22 @@ BOOST_AUTO_TEST_CASE(gaussian)
 BOOST_AUTO_TEST_CASE(shmodel)
 {
   gsl_rng_set(r,101);
+  //default construct
   KTfwd::extensions::shmodel x;
   //These both eval to the "right thing";
   x.s = std::bind(KTfwd::extensions::gamma(1,2),std::placeholders::_1);
   x.h = KTfwd::extensions::gamma(1,2);
 
+  auto __s = x.s(r);
+  auto __h = x.h(r);
+}
+
+BOOST_AUTO_TEST_CASE(shmodel2)
+{
+  gsl_rng_set(r,101);
+  //Construct and consume the input arguments
+  KTfwd::extensions::shmodel x(std::bind(KTfwd::extensions::gamma(1,2),std::placeholders::_1),
+			       KTfwd::extensions::gamma(1,2));
   auto __s = x.s(r);
   auto __h = x.h(r);
 }
