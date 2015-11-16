@@ -15,7 +15,7 @@ namespace KTfwd
 	    template<typename,typename> class container_type>
   std::vector<unsigned> sample(gsl_rng * r,
 			       const container_type<gamete_type,allocator_t > & gametes,
-			       const unsigned & n, const unsigned & N)
+			       const unsigned n, const unsigned N)
   {
     std::vector<double> freqs;
     std::vector<unsigned> counts(gametes.size(),0);
@@ -31,7 +31,7 @@ namespace KTfwd
 	    template<typename,typename> class container_type>
   std::vector<unsigned> sample_sfs(gsl_rng * r, 
 				   const container_type<gamete_type,allocator_t > & gametes,
-				   const unsigned & n, const unsigned & N)
+				   const unsigned n, const unsigned N)
   {
     std::vector<unsigned> counts = sample(r,gametes,n,N);
     std::map<double,unsigned> samplemuts;
@@ -79,17 +79,17 @@ namespace KTfwd
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector< std::pair<double,std::string> > >::type
+			   sample_t >::type
   ms_sample( gsl_rng * r,
 	     const vector_type< diploid_geno_t, allocator > * diploids,
-	     const unsigned & n,
-	     const bool & remove_fixed)
+	     const unsigned n,
+	     const bool remove_fixed)
   {
     auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
     std::move( separate.second.begin(), separate.second.end(), std::back_inserter(separate.first) );
     std::sort(separate.first.begin(),separate.first.end(),
-	      [](std::pair<double,std::string> lhs,
-			   std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+	      [](const sample_site_t & lhs,
+		 const sample_site_t & rhs) { return lhs.first < rhs.first; });
     return separate.first;
   }
 
@@ -97,12 +97,11 @@ namespace KTfwd
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::pair<std::vector< std::pair<double,std::string> >,
-				     std::vector< std::pair<double,std::string> > > >::type
+			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
 		      const vector_type< diploid_geno_t, allocator > * diploids,
-		      const unsigned & n,
-		      const bool & remove_fixed)
+		      const unsigned n,
+		      const bool remove_fixed)
   {
     std::vector<unsigned> diplist;
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
@@ -120,12 +119,11 @@ namespace KTfwd
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector<std::pair<std::vector< std::pair<double,std::string> >,
-						 std::vector< std::pair<double,std::string> > > > >::type
+			   std::vector<sep_sample_t > >::type
   ms_sample_separate( gsl_rng * r,
 		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-		      const unsigned & n,
-		      const bool & remove_fixed)
+		      const unsigned n,
+		      const bool remove_fixed)
   {
     std::vector<unsigned> diplist;
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
@@ -142,21 +140,21 @@ namespace KTfwd
 	  template<typename,typename> class vector_type,
 	  template<typename,typename> class outer_vector_type>
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector< std::vector< std::pair<double,std::string> > > >::type
+			   std::vector< sample_t > >::type
   ms_sample( gsl_rng * r,
 	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
-	     const unsigned & n,
-	     const bool & remove_fixed)
+	     const unsigned n,
+	     const bool remove_fixed)
   {
     auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
-    std::vector< std::vector< std::pair<double,std::string> > > rv;
+    std::vector<sample_t> rv;
     for( unsigned i = 0 ; i < separate.size() ; ++i )
       {
 	std::move( separate[i].second.begin(), separate[i].second.end(),
 		   std::back_inserter(separate[i].first) );
 	std::sort(separate[i].first.begin(),separate[i].first.end(),
-		  [](std::pair<double,std::string> lhs,
-		     std::pair<double,std::string> rhs) { return lhs.first < rhs.first; });
+		  [](const sample_site_t & lhs,
+		     const sample_site_t & rhs) { return lhs.first < rhs.first; });
 	rv.emplace_back(std::move(separate[i].first));
       }
     return rv;
