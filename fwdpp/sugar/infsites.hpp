@@ -33,15 +33,15 @@ namespace KTfwd
 	     typename hdist_t>
     inline popgenmut 
     operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const unsigned & generation,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
+	       const uint_t & generation,
+	       const floating_t & neutral_mutation_rate,
+	       const floating_t & selected_mutation_rate,
 	       const position_t & posmaker,
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker();
+      floating_t pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
 	  pos = posmaker();
@@ -78,9 +78,9 @@ namespace KTfwd
 	     typename hdist_t>
     inline popgenmut
     operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const unsigned & generation,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
+	       const uint_t & generation,
+	       const floating_t & neutral_mutation_rate,
+	       const floating_t & selected_mutation_rate,
 	       const nposition_t & nposmaker,
 	       const sposition_t & sposmaker,
 	       const sdist_t & smaker,
@@ -89,7 +89,7 @@ namespace KTfwd
       bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if( selected )
 	{
-	  double pos = sposmaker();
+	  floating_t pos = sposmaker();
 	  while(lookup->find(pos) != lookup->end())
 	    {
 	      pos = sposmaker();
@@ -98,7 +98,7 @@ namespace KTfwd
 	  return popgenmut(pos,smaker(),hmaker(),generation,1);
 	}
       //Establish position of new mutation
-      double pos = nposmaker();
+      floating_t pos = nposmaker();
       while(lookup->find(pos) != lookup->end())
 	{
 	  pos = nposmaker();
@@ -126,15 +126,15 @@ namespace KTfwd
 	     typename hdist_t>
     inline popgenmut
     operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const unsigned * generation,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
+	       const uint_t * generation,
+	       const floating_t & neutral_mutation_rate,
+	       const floating_t & selected_mutation_rate,
 	       const position_t & posmaker,
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker();
+      floating_t pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
 	  pos = posmaker();
@@ -166,14 +166,14 @@ namespace KTfwd
 	     typename hdist_t>
     inline mutation
     operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
+	       const floating_t & neutral_mutation_rate,
+	       const floating_t & selected_mutation_rate,
 	       const position_t & posmaker,
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
       //Establish position of new mutation
-      double pos = posmaker();
+      floating_t pos = posmaker();
       while(lookup->find(pos) != lookup->end())
 	{
 	  pos = posmaker();
@@ -209,8 +209,8 @@ namespace KTfwd
 	     typename hdist_t>
     inline mutation
     operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
+	       const floating_t & neutral_mutation_rate,
+	       const floating_t & selected_mutation_rate,
 	       const nposition_t & nposmaker,
 	       const sposition_t & sposmaker,
 	       const sdist_t & smaker,
@@ -219,7 +219,7 @@ namespace KTfwd
       bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if ( selected )
 	{
-	  double pos = sposmaker();
+	  floating_t pos = sposmaker();
 	  while(lookup->find(pos) != lookup->end())
 	    {
 	      pos = sposmaker();
@@ -227,7 +227,7 @@ namespace KTfwd
 	  lookup->insert(pos);
 	  return mutation(pos,smaker(),1,hmaker());
 	}
-      double pos = nposmaker();
+      floating_t pos = nposmaker();
       while(lookup->find(pos) != lookup->end())
 	{
 	  pos = nposmaker();
