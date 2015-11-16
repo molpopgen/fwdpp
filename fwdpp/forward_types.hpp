@@ -16,7 +16,6 @@
 
 namespace KTfwd
 {
-  using floating_t = double;
   using uint_t = std::uint32_t;
   using int_t = std::int32_t;
   
@@ -30,14 +29,14 @@ namespace KTfwd
   struct mutation_base
   {
     /// Mutation position
-    const floating_t pos;
+    const double pos;
     /// Count of mutation in the population
     uint_t n;
     /// Is the mutation neutral or not?
     bool neutral;
     /// Used internally (don't worry about it for now...)
     bool checked;
-    mutation_base(const floating_t & position, const uint_t & count, const bool & isneutral = true) noexcept
+    mutation_base(const double & position, const uint_t & count, const bool & isneutral = true) noexcept
       : pos(position),n(count),neutral(isneutral),checked(false)
     {	
     }
@@ -57,17 +56,17 @@ namespace KTfwd
   */
   {
     /// selection coefficient
-    const floating_t s;
+    const double s;
     /// dominance coefficient
-    const floating_t h;
-    mutation( const floating_t & position, const floating_t & sel_coeff,const uint_t & count,
-	      const floating_t & dominance = 0.5) 
+    const double h;
+    mutation( const double & position, const double & sel_coeff,const uint_t & count,
+	      const double & dominance = 0.5) 
       : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)
     {
     }
     bool operator==(const mutation & rhs) const
     {
-      return( std::fabs(this->pos-rhs.pos) <= std::numeric_limits<floating_t>::epsilon() &&
+      return( std::fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
 	      this->s == rhs.s );
     }
   };

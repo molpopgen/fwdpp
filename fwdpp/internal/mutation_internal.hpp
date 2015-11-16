@@ -23,14 +23,14 @@ namespace KTfwd {
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
 							new_gamete.mutations.end(),mitr->pos,
-							[](const floating_t & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
+							[](const double & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
 				       mitr );
 	}
       else
 	{
 	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
 							 new_gamete.smutations.end(),mitr->pos,
-							 [](const floating_t & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
+							 [](const double & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
 					mitr );
 	}
     }

@@ -24,21 +24,21 @@ namespace KTfwd
     }
   };
 
-  /*! \brief Returns true if std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon()
-    Returns true if std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon()
+  /*! \brief Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
+    Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
    */
   struct mutation_at_pos
   {
     using result_type = bool;
     template<typename mutation_type>
-    inline bool operator()(const mutation_type & m, const floating_t & d) const
+    inline bool operator()(const mutation_type & m, const double & d) const
     {
-      return( std::fabs(m.pos-d) <= std::numeric_limits<floating_t>::epsilon() );
+      return( std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon() );
     }
   };
   
-  /*!\brief Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon()
-    Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon()
+  /*!\brief Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
+    Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
   */
   struct same_pos
   {
@@ -46,7 +46,7 @@ namespace KTfwd
     template<typename mutation_type>
     inline bool operator()(const mutation_type & m1, const mutation_type & m2) const
     {
-      return( std::fabs(m1.pos-m2.pos) <= std::numeric_limits<floating_t>::epsilon() );
+      return( std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon() );
     }
   };
 

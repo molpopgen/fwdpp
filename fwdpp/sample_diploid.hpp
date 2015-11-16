@@ -40,7 +40,7 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
 		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
@@ -89,7 +89,7 @@ template< typename gamete_type,
 	  template<typename,typename> class gamete_list_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
 		 diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator> * diploids,
@@ -144,7 +144,7 @@ template< typename gamete_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
 	  template<typename,typename> class metapop_diploid_vector_type>
-std::vector< floating_t >
+std::vector< double >
 sample_diploid(gsl_rng * r,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
@@ -198,7 +198,7 @@ template< typename gamete_type,
 	  template<typename,typename> class mutation_list_type,
 	  template<typename,typename> class diploid_vector_type,
 	  template<typename,typename> class metapop_diploid_vector_type>
-std::vector< floating_t >
+std::vector< double >
 sample_diploid(gsl_rng * r,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>, metapop_diploid_vector_type_allocator > * diploids,
@@ -234,7 +234,7 @@ sample_diploid(gsl_rng * r,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
@@ -273,7 +273,7 @@ sample_diploid(gsl_rng * r,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,

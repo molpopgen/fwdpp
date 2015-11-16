@@ -17,9 +17,9 @@ namespace KTfwd
     //! The generation when the mutation arose
     uint_t g;
     //! Selection coefficient
-    floating_t s;
+    double s;
     //! Dominance of the mutation
-    floating_t h;
+    double h;
     /*!
       \brief Constructor
       \param __pos Mutation position

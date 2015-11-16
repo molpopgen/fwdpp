@@ -25,7 +25,7 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
 		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
@@ -60,7 +60,7 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
 		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
@@ -78,8 +78,8 @@ namespace KTfwd
   {
     assert(N_curr == diploids->size());
 
-    std::vector<floating_t> fitnesses(diploids->size());
-    floating_t wbar = 0.;
+    std::vector<double> fitnesses(diploids->size());
+    double wbar = 0.;
     
     auto dptr = diploids->begin();
     for( uint_t i = 0 ; i < N_curr ; ++i )
@@ -90,7 +90,7 @@ namespace KTfwd
 								typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	wbar += fitnesses[i];
       }
-    wbar /= floating_t(diploids->size());
+    wbar /= double(diploids->size());
 
 #ifndef NDEBUG
     std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
@@ -194,7 +194,7 @@ namespace KTfwd
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class metapop_diploid_vector_type>
-  std::vector< floating_t >
+  std::vector< double >
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
@@ -253,7 +253,7 @@ namespace KTfwd
 	      //get the fitnesses for each diploid in each deme and make the lookup table of parental fitnesses
 	      using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
 	      std::vector<lookup_t> lookups;
-	      std::vector<floating_t> wbars(diploids->size(),0);
+	      std::vector<double> wbars(diploids->size(),0);
 	      typename decltype(diploids->begin())::difference_type popindex = 0;
 
 	      //get max N
@@ -265,7 +265,7 @@ namespace KTfwd
 		      mN = *(N_curr+i);
 		    }
 		}
-	      floating_t * fitnesses = new floating_t[mN];
+	      double * fitnesses = new double[mN];
 	      
 	      for( auto dptr = diploids->begin() ; dptr != diploids->end() ; ++dptr, ++popindex )
 		{
@@ -277,11 +277,11 @@ namespace KTfwd
 		    {
 		      fitnesses[ith_dip] = fwdpp_internal::diploid_fitness_dispatch(ffs[typename diploid_fitness_function_container::size_type(popindex)],gptr,
 										    typename traits::is_custom_diploid_t<diploid_geno_t>::type());
-		      wbars[std::vector<floating_t>::size_type(popindex)]+=fitnesses[ith_dip];
+		      wbars[std::vector<double>::size_type(popindex)]+=fitnesses[ith_dip];
 		      gptr->first->n = 0;
 		      gptr->second->n = 0;
 		    }
-		  wbars[std::vector<floating_t>::size_type(popindex)] /= floating_t( demesize );
+		  wbars[std::vector<double>::size_type(popindex)] /= double( demesize );
 		  lookups.emplace_back( lookup_t(gsl_ran_discrete_preproc(demesize,fitnesses)) );
 		}
 	      delete [] fitnesses;
@@ -398,7 +398,7 @@ namespace KTfwd
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
@@ -420,8 +420,8 @@ namespace KTfwd
     assert(diploids->size()==N_curr);
 #endif  
     //Vector of parental fitnesses
-    std::vector<floating_t> fitnesses(N_curr);
-    floating_t wbar = 0.;
+    std::vector<double> fitnesses(N_curr);
+    double wbar = 0.;
   
     //Go over parents
     auto dptr = diploids->begin();
@@ -452,7 +452,7 @@ namespace KTfwd
       }
 #endif
 
-    wbar /= floating_t(diploids->size());
+    wbar /= double(diploids->size());
     dptr = diploids->begin();  //reset to beginning of diploids
   
     fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
@@ -528,7 +528,7 @@ namespace KTfwd
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
-  floating_t
+  double
   sample_diploid(gsl_rng * r,
 		 //IDEA:
 		 //glist_vector_type< gamete_list_type<gamete_type,

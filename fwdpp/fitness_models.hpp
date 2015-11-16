@@ -40,7 +40,7 @@ namespace KTfwd
     /*!
       \brief Method for standard diploid simulations of a single locus.
     */
-    using result_type = floating_t;
+    using result_type = double;
     template<typename iterator_type >
     inline result_type operator()(const iterator_type &, const iterator_type &) const
     {
@@ -66,13 +66,13 @@ namespace KTfwd
     \param fpol_het Policy for updating fitness for the case of heterozygosity for a mutant
     \param starting_fitness The value to which the function will initialize the return value
     \return The fitness of a diploid with genotype g1 and g2
-    \note The updating policies must take a non-const reference to a floating_t as the first argument and
+    \note The updating policies must take a non-const reference to a double as the first argument and
     an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
     \ingroup fitness
    */
   struct site_dependent_fitness
   {
-    using result_type = floating_t;
+    using result_type = double;
     ///\example diploid_fixed_sh_ind.cc
     template<typename iterator_type,
 	     typename fitness_updating_policy_hom,
@@ -81,7 +81,7 @@ namespace KTfwd
 				   const iterator_type & g2,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
-				   const floating_t & starting_fitness  = 1. ) const
+				   const double & starting_fitness  = 1. ) const
     {
       static_assert( std::is_base_of<mutation_base,
                                      typename iterator_type::value_type::mutation_type>::value,
@@ -153,7 +153,7 @@ namespace KTfwd
     inline result_type operator()( const diploid2dispatch & dip,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
-				   const floating_t & starting_fitness = 1. ) const
+				   const double & starting_fitness = 1. ) const
     {
       return this->operator()(dip->first,dip->second,fpol_hom,fpol_het,starting_fitness);
     }
@@ -163,15 +163,15 @@ namespace KTfwd
 
     \param g1 An iterator to a gamete
     \param g2 An iterator to a gamete
-    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a floating_t representing the effect of this haplotype on fitness
-    \param dpol A policy whose first two arguments are floating_ts, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a floating_t representing the fitness of a diploid genotype g1/g2
+    \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
+    \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
     \return dpol( hpol(g1), hpol(g2) )
     \note This really is just a convenience function. Depending on the specifics of the model, this function may be totally unnecessary.
     \ingroup fitness
   */
   struct haplotype_dependent_fitness
   {
-    using result_type = floating_t;
+    using result_type = double;
     template< typename iterator_type,
 	      typename haplotype_policy,
 	      typename diploid_policy >
@@ -197,18 +197,18 @@ namespace KTfwd
   */
   struct multiplicative_diploid
   {
-    using result_type = floating_t;
+    using result_type = double;
     template< typename iterator_type>
-    inline floating_t operator()(const iterator_type & g1, const iterator_type & g2, 
-			     const floating_t & scaling = 1.) const
+    inline double operator()(const iterator_type & g1, const iterator_type & g2, 
+			     const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return std::max(0.,site_dependent_fitness()(g1,g2,
-						  [&](floating_t & fitness,const __mtype & mut)
+						  [&](double & fitness,const __mtype & mut)
 						  {
 						    fitness *= (1. + scaling*mut->s);
 						  },
-						  [](floating_t & fitness,const __mtype & mut)
+						  [](double & fitness,const __mtype & mut)
 						  {
 						    fitness *= (1. + mut->h*mut->s);
 						  },
@@ -220,7 +220,7 @@ namespace KTfwd
     */
     template< typename diploid2dispatch>
     inline result_type operator()( const diploid2dispatch & dip,
-				   const floating_t & scaling = 1. ) const
+				   const double & scaling = 1. ) const
     {
       return this->operator()(dip->first,dip->second,scaling);
     }
@@ -237,18 +237,18 @@ namespace KTfwd
   */
   struct additive_diploid
   {
-    using result_type = floating_t;
+    using result_type = double;
     template< typename iterator_type>
     inline result_type operator()(const iterator_type & g1, const iterator_type & g2, 
-				  const floating_t & scaling = 1.) const
+				  const double & scaling = 1.) const
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return std::max(0.,1. + site_dependent_fitness()(g1,g2,
-					   [=](floating_t & fitness,const __mtype & mut)
+					   [=](double & fitness,const __mtype & mut)
 					   {
 					     fitness += (scaling*mut->s);
 					   },
-					   [](floating_t & fitness,const __mtype & mut)
+					   [](double & fitness,const __mtype & mut)
 					   {
 					     fitness += (mut->h*mut->s);
 					   },
@@ -262,7 +262,7 @@ namespace KTfwd
     */
     template< typename diploid2dispatch >
     inline result_type operator()( const diploid2dispatch & dip,
-				   const floating_t & scaling = 1. ) const
+				   const double & scaling = 1. ) const
     {
       return this->operator()(dip->first,dip->second,scaling);
     }
