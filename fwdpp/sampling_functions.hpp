@@ -95,6 +95,27 @@
 
 namespace KTfwd
 {
+  /*!
+    A variable site in a sample is a pair (pos,genotypes).
+    
+    This is equivalent to libsequence's Sequence::polymorphicSite
+  */
+  using sample_site_t = std::pair<double,std::string>;
+  /*!
+    A sample is a vector of variable sites.
+
+    This is equivalent to libsequence's Sequence::polySiteVector.
+
+    For this type, 'neutral' and 'selected' variants are intermingled.
+  */
+  using sample_t = std::vector< sample_site_t >;
+  /*!
+    A sample where 'neutral' and 'selected' variants are separated.
+
+    'first' contains the 'neutral' variants, and 'second' contains the 'selected' variants.
+   */
+  using sep_sample_t = std::pair<sample_t,sample_t>;
+  
   /* \brief Site frequency spectrum
      \return Site frequency spectrum
   */
@@ -129,7 +150,7 @@ namespace KTfwd
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector< std::pair<double,std::string> > >::type
+			   sample_t >::type
   ms_sample( gsl_rng * r,
 	     const vector_type< diploid_geno_t, allocator > * diploids,
 	     const unsigned & n,
@@ -144,8 +165,7 @@ namespace KTfwd
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::pair<std::vector< std::pair<double,std::string> >,
-				     std::vector< std::pair<double,std::string> > > >::type
+			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
 		      const vector_type< diploid_geno_t, allocator > * diploids,
 		      const unsigned & n,
@@ -163,7 +183,7 @@ namespace KTfwd
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector< std::vector< std::pair<double,std::string> > > >::type
+			   std::vector<sample_t> >::type
   ms_sample( gsl_rng * r,
 	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 	     const unsigned & n,
@@ -181,8 +201,7 @@ namespace KTfwd
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
   typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
-			   std::vector<std::pair<std::vector< std::pair<double,std::string> >,
-						 std::vector< std::pair<double,std::string> > > > >::type
+			   std::vector<sep_sample_t> >::type
   ms_sample_separate( gsl_rng * r,
 		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
 		      const unsigned & n,

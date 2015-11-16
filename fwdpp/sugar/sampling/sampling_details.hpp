@@ -7,8 +7,6 @@ namespace KTfwd
   {
     enum class treat_neutral {ALL,NEUTRAL,SELECTED};
   }
-  using sample_t = std::vector< std::pair<double,std::string> >;
-  using sep_sample_t = std::pair<sample_t,sample_t>;
 
   template<typename vec_mutation_t>
   void add_fixations( sample_t * sample,
