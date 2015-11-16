@@ -2,6 +2,7 @@
 #define FWDPP_SUGAR_GENERALMUT_HPP
 
 #include <array>
+#include <algorithm>
 #include <memory>
 
 #include <fwdpp/forward_types.hpp>
