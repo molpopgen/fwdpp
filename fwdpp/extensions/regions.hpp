@@ -39,7 +39,7 @@ namespace KTfwd
 			 std::vector<double>  nweights, //the weights
 			 std::vector<double> __sbeg,
 			 std::vector<double> __send,
-			 const std::vector<double> & sweights, //the weights
+			 std::vector<double> sweights, //the weights
 			 std::vector<shmodel> __shmodels) : nbeg(std::move(__nbeg)),nend(std::move(__nend)),
 							    sbeg(std::move(__sbeg)),send(std::move(__send)),
 							    shmodels(std::move(__shmodels))
