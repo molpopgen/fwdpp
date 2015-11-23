@@ -34,15 +34,15 @@ namespace KTfwd
 	\param sweights Weights on 'selected' regions
 	\param __shmodels Vector of KTfwd::experimenta::shmodel
        */
-      discrete_mut_model( const std::vector<double> &__nbeg,
-			  const std::vector<double> &__nend,
-			  const std::vector<double> & nweights, //the weights
-			  const std::vector<double> &__sbeg,
-			  const std::vector<double> &__send,
-			  const std::vector<double> & sweights, //the weights
-			  const std::vector<shmodel> &__shmodels) : nbeg(__nbeg),nend(__nend),
-								   sbeg(__sbeg),send(__send),
-								   shmodels(__shmodels)
+      discrete_mut_model(std::vector<double> __nbeg,
+			 std::vector<double> __nend,
+			 std::vector<double>  nweights, //the weights
+			 std::vector<double> __sbeg,
+			 std::vector<double> __send,
+			 const std::vector<double> & sweights, //the weights
+			 std::vector<shmodel> __shmodels) : nbeg(std::move(__nbeg)),nend(std::move(__nend)),
+							    sbeg(std::move(__sbeg)),send(std::move(__send)),
+							    shmodels(std::move(__shmodels))
       {
 	if(nweights.size())
 	  nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(nweights.size(),&nweights[0]));
@@ -80,7 +80,7 @@ namespace KTfwd
       inline result_type make_mut(gsl_rng * r,
 				  const double & nmu,
 				  const double & smu,
-				  const unsigned & generation,
+				  unsigned generation,
 				  lookup_table_t * lookup) const
       {
 	bool is_neutral = (gsl_rng_uniform(r) < nmu/(nmu+smu)) ? true : false;
