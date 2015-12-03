@@ -16,14 +16,15 @@ namespace KTfwd {
     */
     template< typename gamete_type,
 	      typename mutation_iterator>
-    void add_new_mutation( mutation_iterator & mitr,
+    void add_new_mutation( mutation_iterator mitr,
 			   gamete_type & new_gamete )
     {
       if(mitr->neutral)
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
 							new_gamete.mutations.end(),mitr->pos,
-							[](const double & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
+							[](const double & __value,const mutation_iterator & __mut){
+							  return __value < __mut->pos;}),
 				       mitr );
 	}
       else
@@ -100,6 +101,30 @@ namespace KTfwd {
 	  auto m = mmodel_dispatcher(mmodel,g,mutations);
     	  auto mitr = mpolicy(std::move(m),mutations);
     	  add_new_mutation(mitr,g);
+    	}
+    }
+
+        /*!
+      Apply mutation model N times to a new gamete.
+      Updates mutation list
+    */
+    template<typename queue_type,
+	     typename mutation_model,
+    	     typename mutation_insertion_policy,
+    	     typename mlist_type,
+    	     typename gamete_type>
+    void add_N_mutations_recycle( queue_type & recycling_bin,
+				  const mutation_model & mmodel,
+				  const mutation_insertion_policy & mpolicy,
+				  const unsigned & n,
+				  mlist_type * mutations,
+				  gamete_type & g)
+    {
+      for( unsigned i = 0 ; i < n ; ++i )
+    	{
+	  //auto m = mmodel_dispatcher(mmodel,g,mutations);
+    	  //auto mitr = mpolicy(std::move(m),mutations);
+    	  add_new_mutation(mmodel(recycling_bin,mutations),g);
     	}
     }
   }

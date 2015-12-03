@@ -2,6 +2,7 @@
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
 
+#include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
 #include <fwdpp/internal/gamete_lookup_table.hpp>
@@ -91,7 +92,8 @@ namespace KTfwd
 	wbar += fitnesses[i];
       }
     wbar /= double(diploids->size());
-
+    //std::for_each(mutations->begin(),mutations->end(),[](typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::value_type & m) {m.n=0;});
+    //std::for_each(mutations->begin(),mutations->end(),[](typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::value_type & m) {std::cerr << m.n <<'\n';});
 #ifndef NDEBUG
     std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	assert( !__g.n ); } );
@@ -111,7 +113,14 @@ namespace KTfwd
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
-
+    /*
+    std::queue<typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator> recycling_bin;
+    for(auto mitr = mutations->begin();mitr!=mutations->end();++mitr)
+      {
+	if(!mitr->n && !mitr->checked) recycling_bin.push(mitr);
+      }
+    */
+    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
     for( uint_t i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -147,8 +156,8 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
 
 	//now, add new mutations
-	(dptr+i)->first = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete(r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
 #ifndef NDEBUG
     for( uint_t i = 0 ; i < diploids->size() ; ++i )
@@ -159,7 +168,7 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
       {
 	if(!itr->n) itr = gametes->erase(itr);
 	else
