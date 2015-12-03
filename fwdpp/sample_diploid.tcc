@@ -168,7 +168,7 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
       {
 	if(!itr->n) itr = gametes->erase(itr);
 	else
