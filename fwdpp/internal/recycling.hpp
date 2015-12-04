@@ -69,9 +69,9 @@ namespace KTfwd
     template<typename queue_t,
 	     typename mlist_t,
 	     class ... Args >
-    typename mlist_t::iterator mutation_helper( queue_t & mutation_recycling_bin,
-						mlist_t * mutations,
-						Args ... args )
+    typename mlist_t::iterator recycle_mutation_helper( queue_t & mutation_recycling_bin,
+							mlist_t * mutations,
+							Args ... args )
     {
       if(!mutation_recycling_bin.empty())
 	{

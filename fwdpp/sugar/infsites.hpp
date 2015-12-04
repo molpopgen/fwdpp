@@ -13,7 +13,7 @@ namespace KTfwd
     the infinitely-many sites mutation model for 
     "standard" population-genetic scenarios
     \ingroup sugar
-   */
+  */
   struct infsites
   {
     /*!
@@ -27,7 +27,7 @@ namespace KTfwd
       \param hmaker A policy generating the dominance associated with non-neutral variants
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
-     */
+    */
     template<typename queue_t,
 	     typename mlist_t,
 	     typename lookup_table_t,
@@ -56,12 +56,12 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      return fwdpp_internal::mutation_helper(recycling_bin,mutations,
-					     pos,
-					     (selected) ? smaker() : 0.,
-					     (selected) ? hmaker() : 0.,
-					     generation,
-					     1u);
+      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
+						     pos,
+						     (selected) ? smaker() : 0.,
+						     (selected) ? hmaker() : 0.,
+						     generation,
+						     1u);
     }
 
     /*!
@@ -78,7 +78,7 @@ namespace KTfwd
       \param hmaker A policy generating the dominance associated with non-neutral variants
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
-     */
+    */
     template<typename queue_t,
 	     typename mlist_t,
 	     typename lookup_table_t,
@@ -108,8 +108,8 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,
-						 smaker(),hmaker(),generation,1u);
+	  return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
+							 smaker(),hmaker(),generation,1u);
 	}
       //Establish position of new mutation
       double pos = nposmaker();
@@ -118,8 +118,8 @@ namespace KTfwd
 	  pos = nposmaker();
 	}
       lookup->insert(pos);
-      return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,
-					     0.,0.,generation,1u);
+      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
+						     0.,0.,generation,1u);
     }
 
     /*!
@@ -133,7 +133,7 @@ namespace KTfwd
       \param hmaker A policy generating the dominance associated with non-neutral variants
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
-     */
+    */
     template<typename queue_t,
 	     typename mlist_t,
 	     typename lookup_table_t,
@@ -162,7 +162,7 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
+      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
     }
 
     /*!
@@ -175,7 +175,7 @@ namespace KTfwd
       \param hmaker A policy generating the dominance associated with non-neutral variants
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
-     */
+    */
     template<typename queue_t,
 	     typename mlist_t,
 	     typename lookup_table_t,
@@ -203,8 +203,8 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      return fwdpp_internal::mutation_helper(mutation_recycling_bin,mutations,
-					     pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
+      return fwdpp_internal::recycle_mutation_helper(mutation_recycling_bin,mutations,
+						     pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
     }
 
     /*!
@@ -249,8 +249,8 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  return fwdpp_internal::mutation_helper(recycling_bin,mutations,
-						 pos,smaker(),1u,hmaker());
+	  return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
+							 pos,smaker(),1u,hmaker());
 	}
       double pos = nposmaker();
       while(lookup->find(pos) != lookup->end())
@@ -259,8 +259,8 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //return a neutral mutation
-      return fwdpp_internal::mutation_helper(recycling_bin,mutations,
-					     pos,0.,1,0.);
+      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
+						     pos,0.,1,0.);
     }
   };
 }
