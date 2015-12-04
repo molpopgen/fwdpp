@@ -3,8 +3,6 @@
 
 #include <algorithm>
 #include <type_traits>
-//#include <fwdpp/tags/mutation_tags.hpp>
-//#include <fwdpp/type_traits.hpp>
 
 namespace KTfwd {
   namespace fwdpp_internal
@@ -36,55 +34,6 @@ namespace KTfwd {
 					mitr );
 	}
     }
-
-    // template<typename mmodel,
-    // 	     typename gamete_type,
-    // 	     typename mlist_type,
-    // 	     typename queue_t>
-    // inline
-    // typename std::enable_if< KTfwd::traits::is_nullary_t<mmodel>::value,
-    // 			     typename std::result_of<mmodel()>::type >::type
-    // mmodel_dispatcher( const mmodel & m, gamete_type &, mlist_type * ,queue_t &) 
-    // {
-    //   return m();
-    // }
-    
-    // template<typename mmodel,
-    // 	     typename gamete_type,
-    // 	     typename mlist_type,
-    // 	     typename queue_t>
-    // inline
-    // typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,gamete_type&>::value,
-    // 			     typename std::result_of<mmodel(gamete_type &)>::type >::type
-    // mmodel_dispatcher( mmodel & m, gamete_type & g, mlist_type * ,queue_t & ) 
-    // {
-    //   return m(g);
-    // }
-    
-    // template<typename mmodel,
-    // 	     typename gamete_type,
-    // 	     typename mlist_type,
-    // 	     typename queue_t>
-    // inline
-    // typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value,
-    // 			     typename std::result_of<mmodel(mlist_type *)>::type >::type
-    // mmodel_dispatcher( mmodel & m, gamete_type & , mlist_type * mutations, queue_t & ) 
-    // {
-    //   return m(mutations);
-    // }
-    
-    // template<typename mmodel,
-    // 	     typename gamete_type,
-    // 	     typename mlist_type,
-    // 	     typename queue_t>
-    // inline
-    // typename std::enable_if< (KTfwd::traits::is_binary_t<mmodel,queue_t &, mlist_type *>::value &&
-    //  			      !(KTfwd::traits::is_unary_t<mmodel,gamete_type &>::value || KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value)),
-    // 			     typename std::result_of<mmodel(queue_t &,mlist_type*)>::type >::type
-    // mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
-    // {
-    //   return m(g,mutations);
-    // }
     
     template<typename mmodel,
     	     typename gamete_type,
