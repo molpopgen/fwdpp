@@ -274,7 +274,9 @@ namespace KTfwd
 	      std::vector<lookup_t> lookups;
 	      std::vector<double> wbars(diploids->size(),0);
 	      typename decltype(diploids->begin())::difference_type popindex = 0;
-
+	      auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
+	      auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(metapop);
+	      auto gamete_lookup = fwdpp_internal::gamete_lookup_table(metapop);
 	      //get max N
 	      uint_t mN=0;
 	      for( uint_t i=0;i<diploids->size();++i )
@@ -314,7 +316,6 @@ namespace KTfwd
 	      uint_t NREC=0;
 
 	      decltype(metapop->begin()) p1g1,p1g2,p2g1,p2g2;
-	      auto gamete_lookup = fwdpp_internal::gamete_lookup_table(metapop);
 	      for( auto ptr = diploids->begin() ; ptr != diploids->end() ; ++ptr,++popindex )
 		{
 		  uint_t demesize =*(N_next+popindex);
@@ -372,8 +373,8 @@ namespace KTfwd
 		      if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 		      if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 		      
-		      NREC += rec_pol(p1g1,p1g2,gamete_lookup);
-		      NREC += rec_pol(p2g1,p2g2,gamete_lookup);
+		      NREC += rec_pol(p1g1,p1g2,gamete_lookup,gamete_recycling_bin);
+		      NREC += rec_pol(p2g1,p2g2,gamete_lookup,gamete_recycling_bin);
 
 		      (dptr+i)->first = p1g1;
 		      (dptr+i)->second = p2g1;
@@ -383,18 +384,21 @@ namespace KTfwd
 		      (dptr+i)->first->n++;
 		      (dptr+i)->second->n++;
 
-		      (dptr+i)->first = mutate_gamete(r,mu,metapop,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-		      (dptr+i)->second = mutate_gamete(r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		      (dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+		      (dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
 		    }
 		}
-	      for( auto itr = metapop->begin() ; itr != metapop->end() ; )
+	      for( auto itr = metapop->begin() ; itr != metapop->end() ; ++itr)
 		{
+		  if(itr->n) adjust_mutation_counts(itr,itr->n);
+		  /*
 		  if(!itr->n) itr = metapop->erase(itr);
 		  else
 		    {
 		      adjust_mutation_counts(itr,itr->n);
 		      ++itr; 
 		    }
+		  */
 		}
 	      fwdpp_internal::gamete_cleaner(metapop,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
 	      return wbars;
@@ -441,7 +445,9 @@ namespace KTfwd
     //Vector of parental fitnesses
     std::vector<double> fitnesses(N_curr);
     double wbar = 0.;
-  
+    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
+    auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     //Go over parents
     auto dptr = diploids->begin();
     for( uint_t i = 0 ; i < N_curr ; ++i,++dptr )
@@ -488,7 +494,7 @@ namespace KTfwd
   
     assert(diploids->size()==N_next);
 
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
+    //auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     for( uint_t curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
       {
 	assert(dptr==diploids->begin());
@@ -505,7 +511,8 @@ namespace KTfwd
 	assert(p2<N_curr);
      
 	auto cdip = (dptr+curr_dip);
-	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,gamete_lookup,
+	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,
+					   mut_recycling_bin,gamete_recycling_bin,gamete_lookup,
 					   rec_policies,blrf,r_between_loci,
 					   ((gsl_rng_uniform(r)<0.5)?1:0),
 					   ((gsl_rng_uniform(r)<0.5)?1:0),
@@ -514,14 +521,17 @@ namespace KTfwd
       }
 
     //0.3.3: simpler!
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
       {
+	if(itr->n) adjust_mutation_counts(itr,itr->n);
+	/*
 	if(!itr->n) itr = gametes->erase(itr);
 	else
 	  {
 	    adjust_mutation_counts(itr,itr->n);
 	    ++itr; 
 	  }
+	*/
       }
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     return wbar;

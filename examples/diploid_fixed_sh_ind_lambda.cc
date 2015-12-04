@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
       					 The mutation model (KTfwd::infsites) will be applied by
 					 sample_diploid in order to add mutations to gametes each generation.
       				       */
-				       std::bind(KTfwd::infsites(),r.get(),&pop.mut_lookup,
+				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
 				       //The recombination policy must take two non-const iterators from the glist
 				       [&](singlepop_t::glist_t::iterator & g1,
@@ -85,8 +85,9 @@ int main(int argc, char ** argv)
 					     to determine what this type is, or rely on decltype, which in this case is asking about the
 					     return type of the function creating the lookup table.
 					   */
-					   decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&pop.gametes)) & gamete_lookup) {
-					 return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,gamete_lookup,
+					   decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&pop.gametes)) & gamete_lookup,
+					   decltype(KTfwd::fwdpp_internal::make_gamete_queue(&pop.gametes)) & gamete_recycling_bin) {
+					 return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,gamete_lookup,gamete_recycling_bin,
 									 std::ref(pop.neutral),std::ref(pop.selected),
 									 //This nested lambda is our genetic map: uniform on interval (0,1]
 									 [&](){return gsl_rng_uniform(r.get());}); },

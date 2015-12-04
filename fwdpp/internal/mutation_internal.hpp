@@ -36,51 +36,78 @@ namespace KTfwd {
 	}
     }
 
-    template<typename mmodel,
-	     typename gamete_type,
-	     typename mlist_type>
-    inline
-    typename std::enable_if< KTfwd::traits::is_nullary_t<mmodel>::value,
-			     typename std::result_of<mmodel()>::type >::type
-    mmodel_dispatcher( const mmodel & m, gamete_type &, mlist_type * ) 
-    {
-      return m();
-    }
+    // template<typename mmodel,
+    // 	     typename gamete_type,
+    // 	     typename mlist_type,
+    // 	     typename queue_t>
+    // inline
+    // typename std::enable_if< KTfwd::traits::is_nullary_t<mmodel>::value,
+    // 			     typename std::result_of<mmodel()>::type >::type
+    // mmodel_dispatcher( const mmodel & m, gamete_type &, mlist_type * ,queue_t &) 
+    // {
+    //   return m();
+    // }
     
-    template<typename mmodel,
-	     typename gamete_type,
-	     typename mlist_type>
-    inline
-    typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,gamete_type&>::value,
-			     typename std::result_of<mmodel(gamete_type &)>::type >::type
-    mmodel_dispatcher( mmodel & m, gamete_type & g, mlist_type * ) 
-    {
-      return m(g);
-    }
+    // template<typename mmodel,
+    // 	     typename gamete_type,
+    // 	     typename mlist_type,
+    // 	     typename queue_t>
+    // inline
+    // typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,gamete_type&>::value,
+    // 			     typename std::result_of<mmodel(gamete_type &)>::type >::type
+    // mmodel_dispatcher( mmodel & m, gamete_type & g, mlist_type * ,queue_t & ) 
+    // {
+    //   return m(g);
+    // }
     
-    template<typename mmodel,
-	     typename gamete_type,
-	     typename mlist_type>
-    inline
-    typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value,
-			     typename std::result_of<mmodel(mlist_type *)>::type >::type
-    mmodel_dispatcher( mmodel & m, gamete_type & , mlist_type * mutations) 
-    {
-      return m(mutations);
-    }
+    // template<typename mmodel,
+    // 	     typename gamete_type,
+    // 	     typename mlist_type,
+    // 	     typename queue_t>
+    // inline
+    // typename std::enable_if< KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value,
+    // 			     typename std::result_of<mmodel(mlist_type *)>::type >::type
+    // mmodel_dispatcher( mmodel & m, gamete_type & , mlist_type * mutations, queue_t & ) 
+    // {
+    //   return m(mutations);
+    // }
+    
+    // template<typename mmodel,
+    // 	     typename gamete_type,
+    // 	     typename mlist_type,
+    // 	     typename queue_t>
+    // inline
+    // typename std::enable_if< (KTfwd::traits::is_binary_t<mmodel,queue_t &, mlist_type *>::value &&
+    //  			      !(KTfwd::traits::is_unary_t<mmodel,gamete_type &>::value || KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value)),
+    // 			     typename std::result_of<mmodel(queue_t &,mlist_type*)>::type >::type
+    // mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
+    // {
+    //   return m(g,mutations);
+    // }
     
     template<typename mmodel,
     	     typename gamete_type,
-    	     typename mlist_type>
+    	     typename mlist_type,
+    	     typename queue_t>
     inline
-    typename std::enable_if< (KTfwd::traits::is_binary_t<mmodel,gamete_type &, mlist_type *>::value &&
-     			      !(KTfwd::traits::is_unary_t<mmodel,gamete_type &>::value || KTfwd::traits::is_unary_t<mmodel,mlist_type *>::value)),
-			     typename std::result_of<mmodel(gamete_type&,mlist_type*)>::type >::type
-    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations)
+    typename std::enable_if< std::is_same< typename std::result_of<mmodel(queue_t &,mlist_type *)>::type , typename mlist_type::iterator >::value,
+     			     typename mlist_type::iterator >::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
     {
-      return m(g,mutations);
+      return m(recycling_bin,mutations);
     }
-    
+
+    template<typename mmodel,
+	     typename gamete_type,
+    	     typename mlist_type,
+    	     typename queue_t>
+    inline
+    typename std::enable_if< std::is_same< typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type *)>::type , typename mlist_type::iterator >::value,
+     			     typename mlist_type::iterator >::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
+    {
+      return m(recycling_bin,g,mutations);
+    }
     
     /*!
       Apply mutation model N times to a new gamete.
@@ -124,7 +151,9 @@ namespace KTfwd {
     	{
 	  //auto m = mmodel_dispatcher(mmodel,g,mutations);
     	  //auto mitr = mpolicy(std::move(m),mutations);
-    	  add_new_mutation(mmodel(recycling_bin,mutations),g);
+	  //auto mm = mmodel_dispatcher(mmodel,g,mutations,recycling_bin);
+    	  //add_new_mutation(mmodel(recycling_bin,mutations),g);
+	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),g);
     	}
     }
   }

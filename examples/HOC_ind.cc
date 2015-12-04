@@ -17,19 +17,34 @@ using poptype = singlepop_t;
 
 struct HOChap
 {
-  inline mtype operator()(poptype::gamete_t & g,gsl_rng * r, poptype::lookup_table_t * lookup, const double & sigmu) const
+  template<typename mqueue_t>
+  inline singlepop_t::mlist_t::iterator
+  operator()( mqueue_t & mut_recycling_bin,
+	      poptype::gamete_t & g,
+	      singlepop_t::mlist_t * mutations,
+	      gsl_rng * r, poptype::lookup_table_t * lookup, const double & sigmu) const
   {
     double pos = gsl_rng_uniform(r);
     while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
       { 
-  	pos = gsl_rng_uniform(r);  //if it does, generate a new one
+    	pos = gsl_rng_uniform(r);  //if it does, generate a new one
       }
     lookup->insert(pos);
     double E = gsl_ran_gaussian(r,sigmu); //effect size of hap, after mutation
     double sum = std::accumulate(g.smutations.begin(),g.smutations.end(),0.,
-    				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
+     				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
     double esize = (E > sum) ? std::fabs(E-sum) : -1.*std::fabs(E-sum);
-    return mtype(pos,esize,1);
+    if(!mut_recycling_bin.empty())
+      {
+	auto rv = mut_recycling_bin.front();
+	mut_recycling_bin.pop();
+	rv->pos=pos;
+	rv->s=esize;
+	rv->n=1u;
+	return rv;
+      }
+    return mutations->emplace(mutations->end(),pos,esize,1);
+    // return mtype(pos,esize,1);
   }
 };
 
@@ -108,10 +123,11 @@ int main(int argc, char ** argv)
 						The _1 is a placeholder for a non-const reference to a gamete (see defn'
 						of HOChap above).
 					      */
-					      std::bind(HOChap(),std::placeholders::_1,r.get(),&pop.mut_lookup,sigmu),
+					      std::bind(HOChap(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
+							r.get(),&pop.mut_lookup,sigmu),
 					      // mmodel,
 					      //The recombination policy includes the uniform crossover rate
-					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
+					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 							std::ref(pop.neutral),std::ref(pop.selected),
 							&pop.gametes,
 							littler,

@@ -26,6 +26,8 @@ namespace KTfwd {
 	     typename diploid_type_itr,
 	     typename gamete_lookup_t,
 	     typename recombination_policy_container,
+	     typename mqueue_t,
+	     typename gqueue_t,
 #ifndef FWDPP_UNIT_TESTING
 	     typename bw_locus_rec_fxn,
 	     typename mlist_t,
@@ -41,6 +43,8 @@ namespace KTfwd {
 			    diploid_type parent1, //Copy--this is intentional
 			    diploid_type parent2, //Copy--this is intentional
 			    diploid_type_itr & offspring, //non-const ref, again intentional
+			    mqueue_t & mutation_recycling_bin,
+			    gqueue_t & gamete_recycling_bin,
 			    gamete_lookup_t & gamete_lookup,
 			    const recombination_policy_container & rec_pols,
 			    const bw_locus_rec_fxn & blrf,
@@ -88,17 +92,17 @@ namespace KTfwd {
 	  optr->second = parent2[i].first;
 
 	  //mechanics of recombination
-	  unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup);
+	  unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup,gamete_recycling_bin);
 	  if(nrec%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
-	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup);
+	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup,gamete_recycling_bin);
 	  if(nrec%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
 #ifndef FWDPP_UNIT_TESTING
 	  optr->first->n++;
 	  optr->second->n++;
-	  optr->first = mutate_gamete( r,mu[i],gametes,mutations,optr->first,mmodel[i],mpolicy,gpolicy_mut);
-	  optr->second = mutate_gamete( r,mu[i],gametes,mutations,optr->second,mmodel[i],mpolicy,gpolicy_mut);
+	  optr->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->first,mmodel[i],mpolicy,gpolicy_mut);
+	  optr->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->second,mmodel[i],mpolicy,gpolicy_mut);
 #endif
 	}
     }
