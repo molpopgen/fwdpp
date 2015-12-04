@@ -99,10 +99,6 @@ namespace KTfwd {
     {
       for( unsigned i = 0 ; i < n ; ++i )
     	{
-	  //auto m = mmodel_dispatcher(mmodel,g,mutations);
-    	  //auto mitr = mpolicy(std::move(m),mutations);
-	  //auto mm = mmodel_dispatcher(mmodel,g,mutations,recycling_bin);
-    	  //add_new_mutation(mmodel(recycling_bin,mutations),g);
 	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),g);
     	}
     }
