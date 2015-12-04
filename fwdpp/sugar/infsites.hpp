@@ -7,6 +7,7 @@
 
 namespace KTfwd
 {
+  
   /*!
     \brief Generic function object implementing 
     the infinitely-many sites mutation model for 
@@ -55,18 +56,12 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      if (!recycling_bin.empty())
-	{
-	  auto i = recycling_bin.front();
-	  i->pos=pos;
-	  i->s=(selected) ? smaker() : 0.;
-	  i->h=(selected) ? hmaker() : 0.;
-	  i->g=generation;
-	  i->n=1u;
-	  recycling_bin.pop();
-	  return i;
-	}
-      return mutations->emplace(mutations->end(),pos,(selected)?smaker():0.,(selected)?hmaker():0.,generation,1u);
+      return fwdpp_internal::mutation_helper(recycling_bin,mutations,
+					     pos,
+					     (selected) ? smaker() : 0.,
+					     (selected) ? hmaker() : 0.,
+					     generation,
+					     1u);
     }
 
     /*!
@@ -113,18 +108,8 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  if(!recycling_bin.empty())
-	    {
-	      auto rv = recycling_bin.front();
-	      recycling_bin.pop();
-	      rv->pos=pos;
-	      rv->s = smaker();
-	      rv->h = hmaker();
-	      rv->n = 1u;
-	      rv->g = generation;
-	      return rv;
-	    }
-	  return mutations->emplace(mutations->end(),pos,smaker(),hmaker(),generation,1);
+	  return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,
+						 smaker(),hmaker(),generation,1u);
 	}
       //Establish position of new mutation
       double pos = nposmaker();
@@ -133,18 +118,8 @@ namespace KTfwd
 	  pos = nposmaker();
 	}
       lookup->insert(pos);
-      if(!recycling_bin.empty())
-	{
-	  auto rv = recycling_bin.front();
-	  recycling_bin.pop();
-	  rv->pos=pos;
-	  rv->s=0.;
-	  rv->h=0.;
-	  rv->g=generation;
-	  rv->n=1;
-	  return rv;
-	}
-      return mutations->emplace(mutations->end(),pos,0.,0.,generation,1);
+      return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,
+					     0.,0.,generation,1u);
     }
 
     /*!
@@ -187,18 +162,7 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      if (!recycling_bin.empty())
-	{
-	  auto i = recycling_bin.front();
-	  i->pos=pos;
-	  i->s=(selected) ? smaker() : 0.;
-	  i->h=(selected) ? hmaker() : 0.;
-	  i->g=*generation;
-	  i->n=1u;
-	  recycling_bin.pop();
-	  return i;
-	}
-      return mutations->emplace(mutations->end(),pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
+      return fwdpp_internal::mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
     }
 
     /*!
@@ -239,17 +203,8 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      if (!mutation_recycling_bin.empty())
-	{
-	  auto i = mutation_recycling_bin.front();
-	  i->pos=pos;
-	  i->s=(selected) ? smaker() : 0.;
-	  i->h=(selected) ? hmaker() : 0.;
-	  i->n=1u;
-	  mutation_recycling_bin.pop();
-	  return i;
-	}
-      return mutations->emplace(mutations->end(),pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
+      return fwdpp_internal::mutation_helper(mutation_recycling_bin,mutations,
+					     pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
     }
 
     /*!
@@ -294,17 +249,8 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  if(!recycling_bin.empty())
-	    {
-	      auto rv = recycling_bin.front();
-	      recycling_bin.pop();
-	      rv->pos=pos;
-	      rv->s=smaker();
-	      rv->h=hmaker();
-	      rv->n=1u;
-	      return rv;
-	    }
-	  return mutations->emplace(mutations->end(),pos,smaker(),1,hmaker());
+	  return fwdpp_internal::mutation_helper(recycling_bin,mutations,
+						 pos,smaker(),1u,hmaker());
 	}
       double pos = nposmaker();
       while(lookup->find(pos) != lookup->end())
@@ -313,17 +259,8 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //return a neutral mutation
-      if(!recycling_bin.empty())
-	{
-	  auto rv = recycling_bin.front();
-	  recycling_bin.pop();
-	  rv->pos=pos;
-	  rv->s=0.;
-	  rv->h=0.;
-	  rv->n=1u;
-	  return rv;
-	}
-      return mutations->emplace(mutations->end(),pos,0.,1,0.);
+      return fwdpp_internal::mutation_helper(recycling_bin,mutations,
+					     pos,0.,1,0.);
     }
   };
 }
