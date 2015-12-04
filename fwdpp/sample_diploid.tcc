@@ -94,8 +94,6 @@ namespace KTfwd
 	wbar += fitnesses[i];
       }
     wbar /= double(diploids->size());
-    //std::for_each(mutations->begin(),mutations->end(),[](typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::value_type & m) {m.n=0;});
-    //std::for_each(mutations->begin(),mutations->end(),[](typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::value_type & m) {std::cerr << m.n <<'\n';});
 #ifndef NDEBUG
     std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
 	assert( !__g.n ); } );
@@ -114,14 +112,6 @@ namespace KTfwd
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
-    /*
-    std::queue<typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator> recycling_bin;
-    for(auto mitr = mutations->begin();mitr!=mutations->end();++mitr)
-      {
-	if(!mitr->n && !mitr->checked) recycling_bin.push(mitr);
-      }
-    */
-    //std::cerr << "gam bin size = " << gam_recycling_bin.size() << '\n';
     for( uint_t i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -143,11 +133,9 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
-	//std::cerr << gam_recycling_bin.size() << ' ';
 	NREC += rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
-	//std::cerr << gam_recycling_bin.size() << ' ';
 	NREC += rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
-	//std::cerr << gam_recycling_bin.size() << '\n';
+
 	(dptr+i)->first = p1g1;
 	(dptr+i)->second = p2g1;
 	
@@ -171,21 +159,9 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    //std::cerr << gametes->size() << '\n';
     for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
       {
-	if(itr->n)
-	  {
-	    adjust_mutation_counts(itr,itr->n);
-	  }
-	/*
-	if(!itr->n) itr = gametes->erase(itr);
-	else
-	  {
-	    adjust_mutation_counts(itr,itr->n);
-	    ++itr; 
-	  }
-	*/
+	if(itr->n) adjust_mutation_counts(itr,itr->n);
       }
 #ifndef NDEBUG
     for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
@@ -391,14 +367,6 @@ namespace KTfwd
 	      for( auto itr = metapop->begin() ; itr != metapop->end() ; ++itr)
 		{
 		  if(itr->n) adjust_mutation_counts(itr,itr->n);
-		  /*
-		  if(!itr->n) itr = metapop->erase(itr);
-		  else
-		    {
-		      adjust_mutation_counts(itr,itr->n);
-		      ++itr; 
-		    }
-		  */
 		}
 	      fwdpp_internal::gamete_cleaner(metapop,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
 	      return wbars;
@@ -494,7 +462,6 @@ namespace KTfwd
   
     assert(diploids->size()==N_next);
 
-    //auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     for( uint_t curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
       {
 	assert(dptr==diploids->begin());
@@ -519,19 +486,9 @@ namespace KTfwd
 					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
 					   );
       }
-
-    //0.3.3: simpler!
     for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
       {
 	if(itr->n) adjust_mutation_counts(itr,itr->n);
-	/*
-	if(!itr->n) itr = gametes->erase(itr);
-	else
-	  {
-	    adjust_mutation_counts(itr,itr->n);
-	    ++itr; 
-	  }
-	*/
       }
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     return wbar;
@@ -540,7 +497,6 @@ namespace KTfwd
   //single deme, constant N
   template< typename diploid_geno_t,
 	    typename gamete_type,
-	    //typename glist_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_vector_type_allocator,
@@ -553,16 +509,11 @@ namespace KTfwd
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
-	    //template<typename,typename> class glist_vector_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class locus_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 //IDEA:
-		 //glist_vector_type< gamete_list_type<gamete_type,
-		 //gamete_list_type_allocator> ,
-		 //glist_vector_type_allocator > * gametes,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
 		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
