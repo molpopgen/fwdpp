@@ -63,6 +63,7 @@ BOOST_AUTO_TEST_CASE( add_mutation_1 )
 
   //create a neutral mutation and add it to the "mutation pool"
   std::list<mut> mlist;
+
   auto mitr = mlist.insert(mlist.end(),mut(0.1,0.,1));
 
   KTfwd::fwdpp_internal::add_new_mutation(mitr,g);
@@ -94,23 +95,25 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_1 )
 
   std::list<mut> mlist;
 
+  auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
   //This is the mutation model.  Return a mutation at the next position
   //Positions are deterministic for the sake of testing.
-  auto mmodel = [&next_mut_pos,&i]( std::list<mut> * __mlist )
+  auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) & rbin,std::list<mut> * __mlist )
     {
       //mutations are all neutral
-      return mut( next_mut_pos[i++], 0., 1 );
+      return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mlist,next_mut_pos[i++], 0., 1 );
     };
 
-  KTfwd::fwdpp_internal::add_N_mutations(mmodel,
-					 /*
-					   The policy below is equivalent to:
-					   [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
-					  */
-					 std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
-					 next_mut_pos.size(),
-					 &mlist,
-					 g);
+  KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
+						 mmodel,
+						 /*
+						   The policy below is equivalent to:
+						   [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
+						 */
+						 std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
+						 next_mut_pos.size(),
+						 &mlist,
+						 g);
   BOOST_CHECK_EQUAL( mlist.size(), next_mut_pos.size() );
   //neutral mutations should contain 5 things
   BOOST_CHECK_EQUAL( g.mutations.size(), next_mut_pos.size() );
@@ -157,24 +160,25 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_2 )
   decltype(next_mut_pos)::size_type i = 0;
 
   std::list<mut> mlist;
-
+  auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
+  
   //This is the mutation model.  Return a mutation at the next position
   //Positions are deterministic for the sake of testing.
-  auto mmodel = [&next_mut_pos,&i]( std::list<mut> * __mlist )
+  auto mmodel = [&next_mut_pos,&i](decltype(mut_recycling_bin) & rbin, std::list<mut> * __mlist )
     {
       //mutations are all neutral
-      return mut( next_mut_pos[i++], 0., 1 );
+      return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mlist,next_mut_pos[i++], 0., 1 );
     };
 
-  KTfwd::fwdpp_internal::add_N_mutations(mmodel,
-					 /*
-					   The policy below is equivalent to:
-					   [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
-					  */
-					 std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
-					 next_mut_pos.size(),
-					 &mlist,
-					 g );
+  KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,mmodel,
+						   /*
+						     The policy below is equivalent to:
+						     [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
+						   */
+						   std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
+						   next_mut_pos.size(),
+						   &mlist,
+						   g );
 
   BOOST_CHECK_EQUAL( mlist.size(), next_mut_pos.size() );
   //neutral mutations should contain 5 things
