@@ -27,34 +27,34 @@ namespace KTfwd
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
      */
-    template<typename lookup_table_t,
-	     typename position_t,
-	     typename sdist_t,
-	     typename hdist_t>
-    inline popgenmut 
-    operator()(gsl_rng * r, lookup_table_t * lookup,
-	       const uint_t & generation,
-	       const double & neutral_mutation_rate,
-	       const double & selected_mutation_rate,
-	       const position_t & posmaker,
-	       const sdist_t & smaker,
-	       const hdist_t & hmaker) const
-    {
-      //Establish position of new mutation
-      double pos = posmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = posmaker();
-	}
-      lookup->insert(pos);
-      //Is mutation selected or not?
-      if( gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
-	{
-	  return popgenmut(pos,smaker(),hmaker(),generation,1);
-	}
-      //return a neutral mutation
-      return popgenmut(pos,0.,0.,generation,1);
-    }
+    // template<typename lookup_table_t,
+    // 	     typename position_t,
+    // 	     typename sdist_t,
+    // 	     typename hdist_t>
+    // inline popgenmut 
+    // operator()(gsl_rng * r, lookup_table_t * lookup,
+    // 	       const uint_t & generation,
+    // 	       const double & neutral_mutation_rate,
+    // 	       const double & selected_mutation_rate,
+    // 	       const position_t & posmaker,
+    // 	       const sdist_t & smaker,
+    // 	       const hdist_t & hmaker) const
+    // {
+    //   //Establish position of new mutation
+    //   double pos = posmaker();
+    //   while(lookup->find(pos) != lookup->end())
+    // 	{
+    // 	  pos = posmaker();
+    // 	}
+    //   lookup->insert(pos);
+    //   //Is mutation selected or not?
+    //   if( gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate) )
+    // 	{
+    // 	  return popgenmut(pos,smaker(),hmaker(),generation,1);
+    // 	}
+    //   //return a neutral mutation
+    //   return popgenmut(pos,0.,0.,generation,1);
+    // }
 
     template<typename queue_t,
 	     typename mlist_t,
@@ -125,13 +125,20 @@ namespace KTfwd
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
      */
-    template<typename lookup_table_t,
+    template<typename queue_t,
+	     typename mlist_t,
+	     typename lookup_table_t,
 	     typename nposition_t,
 	     typename sposition_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline popgenmut
-    operator()(gsl_rng * r, lookup_table_t * lookup,
+    //inline popgenmut
+    //inline typename mlist_t::iterator
+    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
+				   typename mlist_t::iterator>::type
+    operator()(queue_t & recycling_bin,
+	       mlist_t * mutations,
+	       gsl_rng * r, lookup_table_t * lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -149,7 +156,19 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  return popgenmut(pos,smaker(),hmaker(),generation,1);
+	  //return popgenmut(pos,smaker(),hmaker(),generation,1);
+	  if(!recycling_bin.empty())
+	    {
+	      auto rv = recycling_bin.front();
+	      recycling_bin.pop();
+	      rv->pos=pos;
+	      rv->s = smaker();
+	      rv->h = hmaker();
+	      rv->n = 1u;
+	      rv->g = generation;
+	      return rv;
+	    }
+	  return mutations->emplace(mutations->end(),pos,smaker(),hmaker(),generation,1);
 	}
       //Establish position of new mutation
       double pos = nposmaker();
@@ -158,8 +177,20 @@ namespace KTfwd
 	  pos = nposmaker();
 	}
       lookup->insert(pos);
+      if(!recycling_bin.empty())
+	{
+	  auto rv = recycling_bin.front();
+	  recycling_bin.pop();
+	  rv->pos=pos;
+	  rv->s=0.;
+	  rv->h=0.;
+	  rv->g=generation;
+	  rv->n=1;
+	  return rv;
+	}
+      return mutations->emplace(mutations->end(),pos,0.,0.,generation,1);
       //return a neutral mutation
-      return popgenmut(pos,0.,0.,generation,1);
+      //return popgenmut(pos,0.,0.,generation,1);
     }
 
     /*!
@@ -292,13 +323,20 @@ namespace KTfwd
 
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
-    template<typename lookup_table_t,
+    template<typename queue_t,
+	     typename mlist_t,
+	     typename lookup_table_t,
 	     typename nposition_t,
 	     typename sposition_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline mutation
-    operator()(gsl_rng * r, lookup_table_t * lookup,
+    //inline mutation
+    //inline typename mlist_t::iterator
+    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,mutation>::value,
+				   typename mlist_t::iterator>::type
+    operator()(queue_t & recycling_bin,
+	       mlist_t * mutations,
+	       gsl_rng * r, lookup_table_t * lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
 	       const nposition_t & nposmaker,
@@ -315,7 +353,18 @@ namespace KTfwd
 	      pos = sposmaker();
 	    }
 	  lookup->insert(pos);
-	  return mutation(pos,smaker(),1,hmaker());
+	  //return mutation(pos,smaker(),1,hmaker());
+	  if(!recycling_bin.empty())
+	    {
+	      auto rv = recycling_bin.front();
+	      recycling_bin.pop();
+	      rv->pos=pos;
+	      rv->s=smaker();
+	      rv->h=hmaker();
+	      rv->n=1u;
+	      return rv;
+	    }
+	  return mutations->emplace(mutations->end(),pos,smaker(),1,hmaker());
 	}
       double pos = nposmaker();
       while(lookup->find(pos) != lookup->end())
@@ -324,7 +373,18 @@ namespace KTfwd
 	}
       lookup->insert(pos);
       //return a neutral mutation
-      return mutation(pos,0.,1,0.);
+      if(!recycling_bin.empty())
+	{
+	  auto rv = recycling_bin.front();
+	  recycling_bin.pop();
+	  rv->pos=pos;
+	  rv->s=0.;
+	  rv->h=0.;
+	  rv->n=1u;
+	  return rv;
+	}
+      return mutations->emplace(mutations->end(),pos,0.,1,0.);
+      //return mutation(pos,0.,1,0.);
     }
   };
 }
