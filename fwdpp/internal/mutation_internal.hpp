@@ -2,8 +2,9 @@
 #define __FWDPP_INTERNAL_MUTATION_HPP__
 
 #include <algorithm>
+#include <type_traits>
 //#include <fwdpp/tags/mutation_tags.hpp>
-#include <fwdpp/type_traits.hpp>
+//#include <fwdpp/type_traits.hpp>
 
 namespace KTfwd {
   namespace fwdpp_internal
