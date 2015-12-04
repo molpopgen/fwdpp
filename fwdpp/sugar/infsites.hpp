@@ -46,7 +46,7 @@ namespace KTfwd
 	       const hdist_t & hmaker) const
     {
       static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
-		    "mlist_t::value_type must be KTfwd::mutation");
+		    "mlist_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
@@ -178,7 +178,7 @@ namespace KTfwd
 	       const hdist_t & hmaker) const
     {
       static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
-		    "mlist_t::value_type must be KTfwd::mutation");
+		    "mlist_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
       double pos = posmaker();
       while(lookup->find(pos) != lookup->end())
