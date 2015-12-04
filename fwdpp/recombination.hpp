@@ -23,6 +23,7 @@ namespace KTfwd
 	    typename recombination_map,
 	    typename list_type_allocator,
 	    typename glookup_t,
+	    typename queue_t,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( gsl_rng * r,
 			      const double & littler,
@@ -30,6 +31,7 @@ namespace KTfwd
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
+			      queue_t & gamete_recycling_bin,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected,
 			      const recombination_map & mf);
@@ -58,6 +60,7 @@ namespace KTfwd
 	    typename list_type_allocator,
 	    typename vector_type_allocator,
 	    typename glookup_t,
+	    typename queue_t,
 	    template<typename,typename> class vector_type,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( const vector_type< double, vector_type_allocator > & pos,
@@ -65,6 +68,7 @@ namespace KTfwd
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
+			      queue_t & gamete_recycling_bin,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected );
 

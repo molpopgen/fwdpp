@@ -41,13 +41,22 @@ namespace KTfwd {
       {
 	for( auto g = gametes->begin() ; g != gametes->end() ; ++g )
 	  {
-	    update_details(g);
+	    if(g->n)
+	      update_details(g);
 	  }
       }
 
-      inline result_type lookup( const typename gcont_t::value_type & g ) 
+
+      // inline result_type lookup( const typename gcont_t::value_type & g ) 
+      // {
+      // 	return lookup_table.equal_range(  keyit(g.mutations)*double(g.mutations.size()) + keyit(g.smutations)*double(g.smutations.size()) );
+      // }
+
+
+      inline result_type lookup( const typename gcont_t::value_type::mutation_container & n,
+				 const typename gcont_t::value_type::mutation_container & s ) 
       {
-	return lookup_table.equal_range(  keyit(g.mutations)*double(g.mutations.size()) + keyit(g.smutations)*double(g.smutations.size()) );
+	return lookup_table.equal_range(  keyit(n)*double(n.size()) + keyit(s)*double(s.size()) );
       }
 
       inline void update( const gcont_t_itr & g ) 

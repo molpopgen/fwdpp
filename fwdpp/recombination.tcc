@@ -7,15 +7,47 @@
 
 namespace KTfwd
 {
+  namespace fwdpp_internal
+  {
+    template<typename iterator_type,
+	     typename glist_t,
+	     typename queue_t,
+	     typename lookup_type>
+    inline void recycle_gamete( iterator_type & g1,
+				glist_t * gametes,
+				queue_t & gamete_recycling_bin, lookup_type & gamete_lookup,
+				typename iterator_type::value_type::mutation_container & neutral,
+				typename iterator_type::value_type::mutation_container & selected )
+    {
+      //Try to recycle
+      if( ! gamete_recycling_bin.empty() )
+	{
+	  g1 = gamete_recycling_bin.front();
+	  assert(!g1->n);
+	  g1->n=0u;
+	  std::swap(g1->mutations,neutral);
+	  std::swap(g1->smutations,selected);
+	  gamete_recycling_bin.pop();
+	}
+      else
+	{
+	  g1 = gametes->emplace(gametes->end(),0u,std::move(neutral),std::move(selected));
+	}
+      gamete_lookup.update(g1);
+    }
+  }
+  
   template< typename iterator_type,
 	    typename list_type_allocator,
 	    typename glookup_t,
+	    typename queue_t,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( std::vector<double> & pos,
 			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
+			      queue_t & gamete_recycling_bin,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected )
   {    
@@ -29,24 +61,25 @@ namespace KTfwd
     selected.clear();
     fwdpp_internal::recombine_gametes(pos,g1,g2,neutral,selected);
 
-    typename iterator_type::value_type ng(0u,neutral,selected);
+    //typename iterator_type::value_type ng(0u,neutral,selected);
 
     //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
-    auto lookup = gamete_lookup.lookup(ng);
+    //auto lookup = gamete_lookup.lookup(ng);
+    auto lookup = gamete_lookup.lookup(neutral,selected);
     if( lookup.first != lookup.second ) 
       {
 	//Then we have to search through lookup.second
 	auto itr = std::find_if(lookup.first,
 				lookup.second,
-				[&ng]( typename glookup_t::inner_t & __p) {
-				  return *__p.second==ng;
+				[&neutral,&selected]( typename glookup_t::inner_t & __p) {
+				  return (__p.second->mutations == neutral &&
+				  __p.second->smutations == selected);
 				});
-      if( itr == lookup.second ) 
-	{
-	  g1 = gametes->emplace(gametes->end(),std::move(ng));
-	  gamete_lookup.update(g1);
-	} 
-      else 
+       if( itr == lookup.second )
+	 {
+	   fwdpp_internal::recycle_gamete(g1,gametes,gamete_recycling_bin,gamete_lookup,neutral,selected);
+	 } 
+	else 
 	{
 	  g1 = itr->second;
 	}
@@ -57,8 +90,7 @@ namespace KTfwd
 	  There is no gamete in gametes with the number of neutral AND selected mutations,
 	  and therefore the gamete is novel
 	*/
-	g1 = gametes->emplace(gametes->end(),std::move(ng));
-	gamete_lookup.update(g1);
+	fwdpp_internal::recycle_gamete(g1,gametes,gamete_recycling_bin,gamete_lookup,neutral,selected);
       }
     return pos.size()-1;
   }
@@ -68,6 +100,7 @@ namespace KTfwd
 	    typename recombination_map,
 	    typename list_type_allocator,
 	    typename glookup_t,
+	    typename queue_t,
 	    template<typename,typename> class list_type>
   unsigned recombine_gametes( gsl_rng * r,
 			      const double & littler,
@@ -75,6 +108,7 @@ namespace KTfwd
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
+			      queue_t & gamete_recycling_bin,
 			      typename iterator_type::value_type::mutation_container & neutral,
 			      typename iterator_type::value_type::mutation_container & selected,
 			      const recombination_map & mf)
@@ -100,7 +134,7 @@ namespace KTfwd
 	  }
 	std::sort(pos.begin(),pos.end());
 	pos.emplace_back(std::numeric_limits<double>::max());
-	return recombine_gametes(pos,gametes,g1,g2,gamete_lookup,neutral,selected);
+	return recombine_gametes(pos,gametes,g1,g2,gamete_lookup,gamete_recycling_bin,neutral,selected);
       }
     return 0;
   }

@@ -81,7 +81,9 @@ namespace KTfwd
 
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
-    
+    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
+    auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     auto dptr = diploids->begin();
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
@@ -112,7 +114,6 @@ namespace KTfwd
     assert(diploids->size()==N_next);
     decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
 
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
     /*
     std::queue<typename mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >::iterator> recycling_bin;
     for(auto mitr = mutations->begin();mitr!=mutations->end();++mitr)
@@ -120,7 +121,7 @@ namespace KTfwd
 	if(!mitr->n && !mitr->checked) recycling_bin.push(mitr);
       }
     */
-    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
+    //std::cerr << "gam bin size = " << gam_recycling_bin.size() << '\n';
     for( uint_t i = 0 ; i < N_next ; ++i )
       {
 	assert(dptr==diploids->begin());
@@ -142,9 +143,11 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
-	NREC += rec_pol(p1g1,p1g2,gamete_lookup);
-	NREC += rec_pol(p2g1,p2g2,gamete_lookup);
-
+	//std::cerr << gam_recycling_bin.size() << ' ';
+	NREC += rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
+	//std::cerr << gam_recycling_bin.size() << ' ';
+	NREC += rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
+	//std::cerr << gam_recycling_bin.size() << '\n';
 	(dptr+i)->first = p1g1;
 	(dptr+i)->second = p2g1;
 	
@@ -156,8 +159,8 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
 
 	//now, add new mutations
-	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
+	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
       }
 #ifndef NDEBUG
     for( uint_t i = 0 ; i < diploids->size() ; ++i )
@@ -168,14 +171,21 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; )
+    //std::cerr << gametes->size() << '\n';
+    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
       {
+	if(itr->n)
+	  {
+	    adjust_mutation_counts(itr,itr->n);
+	  }
+	/*
 	if(!itr->n) itr = gametes->erase(itr);
 	else
 	  {
 	    adjust_mutation_counts(itr,itr->n);
 	    ++itr; 
 	  }
+	*/
       }
 #ifndef NDEBUG
     for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
