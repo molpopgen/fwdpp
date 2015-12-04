@@ -56,6 +56,16 @@ namespace KTfwd
       gamete_lookup.update(g1);
     }
 
+    /*!
+      \brief Helper function for mutation policies
+
+      This function minimizes code duplication when writing mutation models.  It abstracts
+      the operations needed to recycle an extinct mutation.
+
+      \param mutation_recycling_bin  A FIFO queue of iterators pointing to extinct mutations.
+      \param mutations A list of mutation objects
+      \param args Parameter pack to be passed to constructor of an mlist_t::value_type
+     */
     template<typename queue_t,
 	     typename mlist_t,
 	     class ... Args >
