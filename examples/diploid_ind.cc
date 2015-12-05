@@ -204,12 +204,6 @@ int main(int argc, char ** argv)
       				       */
       				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
       	  remove_fixed(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
-	  /*
-	  for(const auto & m : pop.mutations )
-	    {
-	      std::cout << generation << ' ' << m.pos << ' ' << m.n << '\n';
-	    }
-	  */
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;
