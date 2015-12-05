@@ -52,10 +52,7 @@ void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations,
 	    if(!i->checked)
 	      {
 		i->n=0;
-		//std::cerr << "unchecked mutation at position " << i->pos << ' ' << i->n << ' ';
 		auto I = lookup->find(i->pos);
-		//std::cerr.precision(10);
-		//std::cerr << (I==lookup->end()) << '\n';
 		if(I!=lookup->end())
 		  lookup->erase(I);
 	      };
