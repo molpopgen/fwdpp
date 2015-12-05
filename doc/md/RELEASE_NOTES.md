@@ -12,7 +12,10 @@
       * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
   * Mutation type data members (objects inheriting from KTfwd::mutation_base) are no longer const.  This is required in order to enable the "recycling".
   * In order to take advantage of this feature, extinct mutations must not be removed each generation.  TODO: describe new fxns to aid in proper updating.
+* Behavior changes:
+  * As a result of object recycling, data structures (mutation and gamete lists, specifically) at the end of a simulation contain both extant and extinct objects.
 * Implementation changes:
+  * Serialized populations may contain extinct mutations. 
   * Serialization routines now only write gametes that are not extinct.  Otherwise, we risk attempting to serialize objects with invalid pointers to extinct mutations.  A future version of the library may serialize such gametes as empty, making them eligible for recycling when read back in.
 * Keyword 'mutable' replaced with 'const' throughout library
 * KTfwd::extensions::gaussian now uses ziggurat method
