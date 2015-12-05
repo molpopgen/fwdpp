@@ -93,13 +93,14 @@ using poptype = KTfwd::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::
 */
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
-mtype sex_specific_mut_model( gsl_rng * r,
-			      poptype::mlist_t *,
-			      poptype::lookup_table_t * lookup,
-			      const double & mu_total,
-			      const double & mu_male,
-			      const double & mu_female,
-			      const double & sigma )
+poptype::mlist_t::iterator sex_specific_mut_model(std::queue<poptype::mlist_t::iterator> & mut_recycling_bin,
+						  poptype::mlist_t * mutations,
+						  gsl_rng * r,
+						  poptype::lookup_table_t * lookup,
+						  const double & mu_total,
+						  const double & mu_male,
+						  const double & mu_female,
+						  const double & sigma )
 {
   double pos = gsl_rng_uniform(r);
   while(lookup->find(pos) != lookup->end())
@@ -110,18 +111,21 @@ mtype sex_specific_mut_model( gsl_rng * r,
   double u = gsl_rng_uniform(r);
   if(u <= mu_male/mu_total)
     {
-      return mtype(pos,gsl_ran_gaussian(r,sigma),false,1,false);
+      return KTfwd::fwdpp_internal::recycle_mutation_helper(mut_recycling_bin,mutations,pos,gsl_ran_gaussian(r,sigma),false,1,false);
+      //return mtype(pos,gsl_ran_gaussian(r,sigma),false,1,false);
     }
   else if (u <= (mu_male+mu_female)/mu_total)
     {
-      return mtype(pos,gsl_ran_gaussian(r,sigma),true,1,false);
+      return KTfwd::fwdpp_internal::recycle_mutation_helper(mut_recycling_bin,mutations,pos,gsl_ran_gaussian(r,sigma),true,1,false);
+      //return mtype(pos,gsl_ran_gaussian(r,sigma),true,1,false);
     }
   //Otherwise, neutral mutation
   //We "hack" this and assign the mutation a "male" type,
   //As they'll never be used in a fitness calc,
   //as they'll be stored in mutations rather than
   //smutations
-  return mtype(pos,0.,false,1,true);
+  //return mtype(pos,0.,false,1,true);
+  return KTfwd::fwdpp_internal::recycle_mutation_helper(mut_recycling_bin,mutations,pos,gsl_ran_gaussian(r,sigma),false,1,true);
 }
 
 //Now, we need our own "rules"
@@ -293,9 +297,9 @@ int main(int argc, char ** argv)
 							    &pop.mutations,
 							    N,
 							    mu_total,
-							    std::bind(sex_specific_mut_model,rng.get(),std::placeholders::_1,
+							    std::bind(sex_specific_mut_model,std::placeholders::_1,std::placeholders::_2,rng.get(),
 								      &pop.mut_lookup,mu_total,mu_male,mu_female,sigma),
-							    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
+							    std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 								      std::ref(pop.neutral),std::ref(pop.selected),
 								      &pop.gametes,
 								      recrate, 
