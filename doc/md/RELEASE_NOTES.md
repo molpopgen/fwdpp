@@ -2,6 +2,18 @@
 
 ## 0.4.3
 
+* API changes:
+  * Vastly improved management of object lifetimes:
+    * Extinct mutations/gametes are no longer removed each generation.
+    * FIFO queues are constructed each generation in order to "recycle" those objects as new mutations/gametes.
+      * The queue is implemented as std::queue<mlist::iterator> or std::queue<glist::iterator> for mutations and gametes, respectively.      
+      * These queues result in big performance improvements for "big" simulations, at the cost of breaking API compatibility.  The performance improvement is both reduced run time and reduced memory usage.
+    * In order to accomodate the "recycling", mutation models must now return iterators derived from the mutation list, rather than mutation types themselves.
+      * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
+  * Mutation type data members (objects inheriting from KTfwd::mutation_base) are no longer const.  This is required in order to enable the "recycling".
+  * In order to take advantage of this feature, extinct mutations must not be removed each generation.  TODO: describe new fxns to aid in proper updating.
+* Implementation changes:
+  * Serialization routines now only write gametes that are not extinct.  Otherwise, we risk attempting to serialize objects with invalid pointers to extinct mutations.  A future version of the library may serialize such gametes as empty, making them eligible for recycling when read back in.
 * Keyword 'mutable' replaced with 'const' throughout library
 * KTfwd::extensions::gaussian now uses ziggurat method
 * Types declared in fwdpp/extensions/callbacks.hpp now have const member data.  A unit test was added as a check on the API of this file.
