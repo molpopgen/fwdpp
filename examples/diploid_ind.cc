@@ -36,30 +36,30 @@ void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations,
 		   const unsigned & generation,const unsigned & twoN )
 {
   static_assert( std::is_base_of<KTfwd::mutation_base,mutation_type>::value,
-		   "mutation_type must be derived from KTfwd::mutation_base" );
-    for(auto i=mutations->begin();i!=mutations->end();)
-      {
-	assert(i->n <= twoN);
-	if(i->n==twoN )
-	  {
-	    fixations->push_back(*i);
-	    fixation_times->push_back(generation);
-	    lookup->erase(lookup->find(i->pos));
-	    i = mutations->erase(i);
-	  }
-	else
-	  {
-	    if(!i->checked)
-	      {
-		i->n=0;
-		auto I = lookup->find(i->pos);
-		if(I!=lookup->end())
-		  lookup->erase(I);
-	      };
-	    i->checked=false;
-	    ++i;
-	  }
-      }
+		 "mutation_type must be derived from KTfwd::mutation_base" );
+  for(auto i=mutations->begin();i!=mutations->end();)
+    {
+      assert(i->n <= twoN);
+      if(i->n==twoN )
+	{
+	  fixations->push_back(*i);
+	  fixation_times->push_back(generation);
+	  lookup->erase(lookup->find(i->pos));
+	  i = mutations->erase(i);
+	}
+      else
+	{
+	  if(!i->checked)
+	    {
+	      i->n=0;
+	      auto I = lookup->find(i->pos);
+	      if(I!=lookup->end())
+		lookup->erase(I);
+	    };
+	  i->checked=false;
+	  ++i;
+	}
+    }
 }
 
 int main(int argc, char ** argv)
