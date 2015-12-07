@@ -70,10 +70,10 @@ namespace KTfwd
      */
     template<typename queue_t,
 	     typename mlist_t,
-	     class ... Args >
+	     class... Args >
     typename mlist_t::iterator recycle_mutation_helper( queue_t & mutation_recycling_bin,
 							mlist_t * mutations,
-							Args ... args )
+							Args&&... args )
     {
       if(!mutation_recycling_bin.empty())
 	{
@@ -82,7 +82,7 @@ namespace KTfwd
 	  *rv = typename mlist_t::value_type(args...);
 	  return rv;
 	}
-      return mutations->emplace(mutations->end(),args...);
+      return mutations->emplace(mutations->end(),std::forward<Args>(args)...);
     }
   }
 }
