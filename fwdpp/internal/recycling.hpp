@@ -7,10 +7,12 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
+    template<class T> using recycling_bin_t = std::queue<T>;
+    
     template<typename mlist_t>
-    typename std::queue<typename mlist_t::iterator> make_mut_queue( mlist_t * mutations )
+    recycling_bin_t<typename mlist_t::iterator> make_mut_queue( mlist_t * mutations )
     {
-      std::queue<typename mlist_t::iterator> rv;
+      recycling_bin_t<typename mlist_t::iterator> rv;
       for(auto mitr = mutations->begin();mitr!=mutations->end();++mitr)
 	{
 	  if(!mitr->n && !mitr->checked) rv.push(mitr);
@@ -19,9 +21,9 @@ namespace KTfwd
     }
 
     template<typename glist_t>
-    typename std::queue<typename glist_t::iterator> make_gamete_queue( glist_t * gametes )
+    recycling_bin_t<typename glist_t::iterator> make_gamete_queue( glist_t * gametes )
     {
-      std::queue<typename glist_t::iterator> rv;
+      recycling_bin_t<typename glist_t::iterator> rv;
       for(auto gitr = gametes->begin();gitr!=gametes->end();++gitr)
 	{
 	  if(!gitr->n) rv.push(gitr);
