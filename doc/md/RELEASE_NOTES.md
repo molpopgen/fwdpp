@@ -2,7 +2,7 @@
 
 ## 0.4.3
 
-* API changes:
+* Fix for issue #29
   * Vastly improved management of object lifetimes:
     * Extinct mutations/gametes are no longer removed each generation.
     * FIFO queues are constructed each generation in order to "recycle" those objects as new mutations/gametes.

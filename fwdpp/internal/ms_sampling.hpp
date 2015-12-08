@@ -59,6 +59,7 @@ namespace KTfwd
 				    const unsigned & n,
 				    const bool & remove_fixed )
     {
+      std::cerr << diplist.size() << '\n';
       sep_sample_t rv;
       sample_t::iterator itr;
 
@@ -82,7 +83,7 @@ namespace KTfwd
       if(remove_fixed&&!rv.first.empty())
 	{
 	  rv.first.erase( std::remove_if(rv.first.begin(),rv.first.end(),[&diplist]( const sample_site_t & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == diplist.size();
+		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
 	      } ),
 	    rv.first.end() );
 	}
