@@ -43,10 +43,12 @@ namespace KTfwd
 	  if( itr == block.end() )
 	    {
 	      block.push_back( std::make_pair(mutpos,std::string(n,'0')) );
+	      std::cerr << "block 1: " << mutpos << ' ' << scalar << ' ' << i << ' ' << offset << '\n';
 	      block[block.size()-1].second[scalar*i+offset] = '1';
 	    }
 	  else
 	    {
+	      std::cerr << "block 2: "<< mutpos << ' ' << scalar << ' ' << i << ' ' << offset << '\n';
 	      itr->second[scalar*i+offset]='1';
 	    }
 	}
@@ -59,6 +61,7 @@ namespace KTfwd
 				    const unsigned & n,
 				    const bool & remove_fixed )
     {
+      std::cerr << diplist.size() << '\n';
       sep_sample_t rv;
       sample_t::iterator itr;
 
@@ -82,7 +85,7 @@ namespace KTfwd
       if(remove_fixed&&!rv.first.empty())
 	{
 	  rv.first.erase( std::remove_if(rv.first.begin(),rv.first.end(),[&diplist]( const sample_site_t & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == diplist.size();
+		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
 	      } ),
 	    rv.first.end() );
 	}
