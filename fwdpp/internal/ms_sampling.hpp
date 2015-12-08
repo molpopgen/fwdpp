@@ -52,6 +52,15 @@ namespace KTfwd
 	}
     }
 
+    inline void remove_fixed_variants_from_sample( std::vector<sample_site_t >& sample,
+						   const unsigned nsam )
+    {
+      sample.erase( std::remove_if( sample.begin(),sample.end(),[nsam](const sample_site_t & site) {
+	    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == nsam;
+	  }),
+	sample.end());
+    }
+
     template<typename dipvector_t>
     sep_sample_t
     ms_sample_separate_single_deme( const dipvector_t * diploids,
@@ -81,10 +90,7 @@ namespace KTfwd
 	}
       if(remove_fixed&&!rv.first.empty())
 	{
-	  rv.first.erase( std::remove_if(rv.first.begin(),rv.first.end(),[&diplist]( const sample_site_t & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
-	      } ),
-	    rv.first.end() );
+	  remove_fixed_variants_from_sample(rv.first,2*diplist.size());
 	}
       if(!rv.first.empty())
 	{
@@ -94,10 +100,7 @@ namespace KTfwd
 	}
       if(remove_fixed&&!rv.second.empty())
 	{
-	  rv.second.erase( std::remove_if(rv.second.begin(),rv.second.end(),[&diplist]( const std::pair<double,std::string> & site ) {
-		return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
-	      } ),
-	    rv.second.end() );
+	  remove_fixed_variants_from_sample(rv.second,2*diplist.size());
 	}
       if(!rv.second.empty())
 	{
@@ -153,14 +156,8 @@ namespace KTfwd
 	{
 	  for( unsigned i = 0 ; i < rv.size() ; ++i )
 	    {
-	      rv[i].first.erase( std::remove_if(rv[i].first.begin(),rv[i].first.end(),[&diplist]( const sample_site_t & site ) {
-		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
-		  } ),
-		rv[i].first.end() );
-	      rv[i].second.erase( std::remove_if(rv[i].second.begin(),rv[i].second.end(),[&diplist]( const sample_site_t & site ) {
-		    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == 2*diplist.size();
-		  } ),
-		rv[i].second.end() );
+	      remove_fixed_variants_from_sample(rv[i].first,2*diplist.size());
+	      remove_fixed_variants_from_sample(rv[i].second,2*diplist.size());
 	    }
 	}
       //sort on position
@@ -175,7 +172,6 @@ namespace KTfwd
 	  //Deal w/odd sample sizes
 	  if(n%2!=0.)
 	    {
-
 	      trim_last(&rv[i].first);
 	      trim_last(&rv[i].second);
 	    }
