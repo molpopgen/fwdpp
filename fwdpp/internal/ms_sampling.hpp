@@ -59,7 +59,6 @@ namespace KTfwd
 				    const unsigned & n,
 				    const bool & remove_fixed )
     {
-      std::cerr << diplist.size() << '\n';
       sep_sample_t rv;
       sample_t::iterator itr;
 
