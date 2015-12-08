@@ -43,12 +43,10 @@ namespace KTfwd
 	  if( itr == block.end() )
 	    {
 	      block.push_back( std::make_pair(mutpos,std::string(n,'0')) );
-	      std::cerr << "block 1: " << mutpos << ' ' << scalar << ' ' << i << ' ' << offset << '\n';
 	      block[block.size()-1].second[scalar*i+offset] = '1';
 	    }
 	  else
 	    {
-	      std::cerr << "block 2: "<< mutpos << ' ' << scalar << ' ' << i << ' ' << offset << '\n';
 	      itr->second[scalar*i+offset]='1';
 	    }
 	}
