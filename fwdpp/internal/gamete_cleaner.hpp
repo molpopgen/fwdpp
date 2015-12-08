@@ -25,8 +25,10 @@ namespace KTfwd {
       std::for_each( gametes->begin(),
 		     gametes->end(),
 		     [&mp]( typename gamete_list_type::value_type & __g ) {
-		       __g.mutations.erase(std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
-		       __g.smutations.erase(std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
+		       if(__g.n) {
+			 __g.mutations.erase(std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
+			 __g.smutations.erase(std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
+		       }
 		     });
     }
   }
