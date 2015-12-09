@@ -106,11 +106,6 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_1 )
 
   KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
 						 mmodel,
-						 /*
-						   The policy below is equivalent to:
-						   [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
-						 */
-						 std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
 						 next_mut_pos.size(),
 						 &mlist,
 						 g);
@@ -171,14 +166,9 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_2 )
     };
 
   KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,mmodel,
-						   /*
-						     The policy below is equivalent to:
-						     [](const mut & __mut, std::list<mut> * __mlist){ return __mlist->insert(__mlist->end(),__mut); }
-						   */
-						   std::bind(KTfwd::insert_at_end<mut,std::list<mut> >,std::placeholders::_1,std::placeholders::_2),
-						   next_mut_pos.size(),
-						   &mlist,
-						   g );
+						 next_mut_pos.size(),
+						 &mlist,
+						 g );
 
   BOOST_CHECK_EQUAL( mlist.size(), next_mut_pos.size() );
   //neutral mutations should contain 5 things

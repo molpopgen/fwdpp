@@ -22,7 +22,6 @@ namespace KTfwd
 	    typename mutation_removal_policy,
 	    typename mutation_model,
 	    typename recombination_policy,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
@@ -36,14 +35,13 @@ namespace KTfwd
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
     //run changing N version with N_next == N_curr
-    return sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,
+    return sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,
 			  gpolicy_mut,ff,mp,f);
   }
 
@@ -57,7 +55,6 @@ namespace KTfwd
 	    typename mutation_removal_policy,
 	    typename mutation_model,
 	    typename recombination_policy,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
@@ -72,7 +69,6 @@ namespace KTfwd
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
@@ -148,8 +144,8 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
 
 	//now, add new mutations
-	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
+	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
       }
 #ifndef NDEBUG
     for( uint_t i = 0 ; i < diploids->size() ; ++i )
@@ -181,7 +177,6 @@ namespace KTfwd
 	    typename mutation_model,
 	    typename recombination_policy,
 	    typename migration_policy,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
@@ -196,7 +191,6 @@ namespace KTfwd
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function_container & ffs,
 		 const mutation_removal_policy & mp,
@@ -204,7 +198,7 @@ namespace KTfwd
 		 const double * f)
   {
     //run changing-N version with no change in N
-    return sample_diploid(r,metapop,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,
+    return sample_diploid(r,metapop,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,
 			  gpolicy_mut,ffs,mp,mig,f);
   }
   
@@ -220,7 +214,6 @@ namespace KTfwd
 	    typename mutation_model,
 	    typename recombination_policy,
 	    typename migration_policy,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
@@ -236,7 +229,6 @@ namespace KTfwd
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function_container & ffs,
 		 const mutation_removal_policy & mp,
@@ -358,8 +350,8 @@ namespace KTfwd
 		      (dptr+i)->first->n++;
 		      (dptr+i)->second->n++;
 
-		      (dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-		      (dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+		      (dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
+		      (dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
 		    }
 		}
 	      fwdpp_internal::process_glist(metapop);
@@ -377,7 +369,6 @@ namespace KTfwd
 	    typename mutation_removal_policy,
 	    typename mutation_model_container,
 	    typename recombination_policy_container,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
@@ -396,7 +387,6 @@ namespace KTfwd
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
 		 const bw_locus_rec_fxn & blrf,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
@@ -478,7 +468,7 @@ namespace KTfwd
 					   rec_policies,blrf,r_between_loci,
 					   ((gsl_rng_uniform(r)<0.5)?1:0),
 					   ((gsl_rng_uniform(r)<0.5)?1:0),
-					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
+					   gametes,mutations,mu,mmodel,gpolicy_mut
 					   );
       }
     fwdpp_internal::process_glist(gametes);
@@ -497,7 +487,6 @@ namespace KTfwd
 	    typename mutation_removal_policy,
 	    typename mutation_model_container,
 	    typename recombination_policy_container,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    typename bw_locus_rec_fxn,
 	    template<typename,typename> class gamete_list_type,
@@ -515,13 +504,12 @@ namespace KTfwd
 		 const recombination_policy_container & rec_policies,
 		 const double * r_between_loci,
 		 const bw_locus_rec_fxn & blrf,
-		 const mutation_insertion_policy & mpolicy,
 		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
-    return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,blrf,mpolicy,gpolicy_mut,ff,mp,f);
+    return sample_diploid(r,gametes,diploids,mutations,N,N,mu,mmodel,rec_policies,r_between_loci,blrf,gpolicy_mut,ff,mp,f);
   }
 }
 

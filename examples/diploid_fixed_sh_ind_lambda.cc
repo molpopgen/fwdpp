@@ -91,8 +91,6 @@ int main(int argc, char ** argv)
 									 std::ref(pop.neutral),std::ref(pop.selected),
 									 //This nested lambda is our genetic map: uniform on interval (0,1]
 									 [&](){return gsl_rng_uniform(r.get());}); },
-				       //The mutation insertion policy takes a const singlepop_t::mutation_t and a non-const pointer to an singlepop_t::mlist_t
-				       [](const singlepop_t::mutation_t & m,singlepop_t::mlist_t * __mutations) { return __mutations->insert(__mutations->end(),m); },
 				       //The gamete insertion policy takes a const singlepop_t::gamete_t and a non-const pointer to a glist
 				       []( const singlepop_t::gamete_t & g,singlepop_t::glist_t * __gametes) { return __gametes->insert(__gametes->end(),g); },
 				       //Our fitness model takes two const singlepop_t::glist_t::const_iterators  and two policies as arguments

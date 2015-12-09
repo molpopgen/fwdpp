@@ -142,7 +142,6 @@ int main( int argc, char ** argv )
 						    littler,
 						    r,
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
@@ -176,7 +175,6 @@ int main( int argc, char ** argv )
 							   littler,
 							   r,
 							   recmap),
-						 std::bind(insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
 						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation

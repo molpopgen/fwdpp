@@ -129,7 +129,6 @@ int main(int argc, char ** argv)
 	  			 recpols,
 	  			 &rbw,
 				 [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
-	  			 std::bind(KTfwd::insert_at_end<multiloc_t::mutation_t,multiloc_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(KTfwd::insert_at_end<multiloc_t::gamete_t,multiloc_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
 	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));

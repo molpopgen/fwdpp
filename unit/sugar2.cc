@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 								 0., //no rec
 								 rng.get(),
 								 recmap),
-						       std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 						       std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 						       fitness_funcs,
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
@@ -156,7 +155,6 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct_test )
 								 0., //no rec
 								 rng.get(),
 								 recmap),
-						       std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 						       std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 						       fitness_funcs,
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
@@ -252,7 +250,6 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assign_test )
 								 0., //no rec
 								 rng.get(),
 								 recmap),
-						       std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 						       std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 						       fitness_funcs,
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),

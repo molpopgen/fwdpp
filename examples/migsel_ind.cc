@@ -142,7 +142,6 @@ int main( int argc, char ** argv )
 							   littler,
 							   r.get(),
 							   recmap),
-						 std::bind(insert_at_end<mtype,mlist>,std::placeholders::_1,std::placeholders::_2),
 						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation

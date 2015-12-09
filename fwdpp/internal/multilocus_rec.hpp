@@ -33,7 +33,6 @@ namespace KTfwd {
 	     typename mlist_t,
 	     typename glist_t,
 	     typename mutation_model_container,
-	     typename mutation_insertion_policy,
 	     typename gamete_insertion_policy
 #else
 	     typename bw_locus_rec_fxn
@@ -56,7 +55,6 @@ namespace KTfwd {
 			    mlist_t * mutations,
 			    const double * mu,
 			    const mutation_model_container & mmodel,
-			    const mutation_insertion_policy & mpolicy,
 			    const gamete_insertion_policy & gpolicy_mut
 #else
 			    const int iswitch2
@@ -101,8 +99,8 @@ namespace KTfwd {
 #ifndef FWDPP_UNIT_TESTING
 	  optr->first->n++;
 	  optr->second->n++;
-	  optr->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->first,mmodel[i],mpolicy,gpolicy_mut);
-	  optr->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->second,mmodel[i],mpolicy,gpolicy_mut);
+	  optr->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->first,mmodel[i],gpolicy_mut);
+	  optr->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->second,mmodel[i],gpolicy_mut);
 #endif
 	}
     }

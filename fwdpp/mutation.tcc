@@ -45,7 +45,6 @@ namespace KTfwd
 	    typename queue_type2,
 	    typename iterator_type,
 	    typename mutation_model,
-	    typename mutation_insertion_policy,
 	    typename gamete_insertion_policy,
 	    typename list_type_allocator,
 	    typename list_type_allocator2,
@@ -58,7 +57,6 @@ namespace KTfwd
 				       list_type2<typename iterator_type::value_type::mutation_type,list_type_allocator2 > * mutations, 
 				       iterator_type &g,
 				       const mutation_model &mmodel,
-				       const mutation_insertion_policy & mpolicy,
 				       const gamete_insertion_policy & gpolicy)
   {
     assert( g != gametes->end() );
@@ -74,12 +72,12 @@ namespace KTfwd
 	    __g->mutations=g->mutations;
 	    __g->smutations=g->smutations;
 	    __g->n=1;
-	    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,mpolicy,nm,mutations,*__g);
+	    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,*__g);
 	    gamete_recycling_bin.pop();
 	    return __g;
 	  }
 	typename iterator_type::value_type ng( 1, g->mutations,g->smutations);
-	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,mpolicy,nm,mutations,ng);
+	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
 	return gpolicy(std::move(ng),gametes);
       }
     return g;

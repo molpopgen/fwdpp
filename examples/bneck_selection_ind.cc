@@ -101,7 +101,6 @@ int main(int argc, char ** argv)
 						 littler,
 						 r.get(),
 						 recmap),
-				       std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
@@ -125,7 +124,6 @@ int main(int argc, char ** argv)
 					     littler,
 					     r.get(),
 					     recmap),
-				   std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N2));
@@ -157,7 +155,6 @@ int main(int argc, char ** argv)
 						 littler,
 						 r.get(),
 						 recmap),
-				       std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*nextN));

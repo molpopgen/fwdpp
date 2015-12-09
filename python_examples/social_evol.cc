@@ -145,7 +145,6 @@ poptype evolve( GSLrng & rng,
 						    recrate, 
 						    rng.get(),
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));

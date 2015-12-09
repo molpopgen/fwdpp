@@ -157,10 +157,6 @@ int main(int argc, char ** argv)
 						 r.get(),
 						 recmap),
 				       /*
-					 Policy to insert new mutations at the end of the mutations list
-				       */
-      				       std::bind(KTfwd::insert_at_end<singlepop_t::mutation_t,singlepop_t::mlist_t>,std::placeholders::_1,std::placeholders::_2),
-				       /*
 					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					 If mutation results in a new gamete, add that gamete to the 
 					 end of gametes. This is always the case under infinitely-many sites,

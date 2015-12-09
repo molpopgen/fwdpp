@@ -86,7 +86,6 @@ namespace KTfwd {
 	      typename mutation_removal_policy,
 	      typename mutation_model,
 	      typename recombination_policy,
-	      typename mutation_insertion_policy,
 	      typename gamete_insertion_policy,
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
@@ -102,7 +101,6 @@ namespace KTfwd {
 		   const double & mu,
 		   const mutation_model & mmodel,
 		   const recombination_policy & rec_pol,
-		   const mutation_insertion_policy & mpolicy,
 		   const gamete_insertion_policy & gpolicy_mut,
 		   const diploid_fitness_function & ff,
 		   const mutation_removal_policy & mp,
@@ -168,8 +166,8 @@ namespace KTfwd {
 	  assert( (dptr+i)->second->n <= 2*N_next );
 
 	  //now, add new mutations
-	  (dptr+i)->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,mpolicy,gpolicy_mut);
-	  (dptr+i)->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
+	  (dptr+i)->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
+	  (dptr+i)->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
 
 	  pmr.update(r,(dptr+i),pptr+typename decltype(pptr)::difference_type(p1),pptr+typename decltype(pptr)::difference_type(p2));
 	}
@@ -200,7 +198,6 @@ namespace KTfwd {
 	      typename mutation_removal_policy,
 	      typename mutation_model,
 	      typename recombination_policy,
-	      typename mutation_insertion_policy,
 	      typename gamete_insertion_policy,
 	      template<typename,typename> class gamete_list_type,
 	      template<typename,typename> class mutation_list_type,
@@ -215,14 +212,13 @@ namespace KTfwd {
 		   const double & mu,
 		   const mutation_model & mmodel,
 		   const recombination_policy & rec_pol,
-		   const mutation_insertion_policy & mpolicy,
 		   const gamete_insertion_policy & gpolicy_mut,
 		   const diploid_fitness_function & ff,
 		   const mutation_removal_policy & mp,
 		   const double & f = 0.,
 		   const popmodel_rules & pmr = popmodel_rules())
     {
-      return experimental::sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,mpolicy,gpolicy_mut,ff,mp,f,pmr);
+      return experimental::sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,gpolicy_mut,ff,mp,f,pmr);
     }
   }
 }

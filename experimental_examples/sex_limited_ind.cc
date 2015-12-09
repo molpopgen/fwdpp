@@ -305,7 +305,6 @@ int main(int argc, char ** argv)
 								      recrate, 
 								      rng.get(),
 								      recmap),
-							    std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(sex_specific_fitness,std::placeholders::_1,rng.get(),sigmaE),
 							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N),

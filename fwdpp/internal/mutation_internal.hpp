@@ -83,12 +83,10 @@ namespace KTfwd {
     */
     template<typename queue_type,
 	     typename mutation_model,
-    	     typename mutation_insertion_policy,
     	     typename mlist_type,
     	     typename gamete_type>
     void add_N_mutations_recycle( queue_type & recycling_bin,
 				  const mutation_model & mmodel,
-				  const mutation_insertion_policy & mpolicy,
 				  const unsigned & n,
 				  mlist_type * mutations,
 				  gamete_type & g)
