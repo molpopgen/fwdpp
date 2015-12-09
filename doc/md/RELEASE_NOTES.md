@@ -17,6 +17,10 @@
   * Serialized populations may contain extinct mutations. 
   * Serialization routines now only write gametes that are not extinct.  Otherwise, we risk attempting to serialize objects with invalid pointers to extinct mutations.  A future version of the library may serialize such gametes as empty, making them eligible for recycling when read back in.
 
+* Implementation changes:
+  * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
+  * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
+
 ## 0.4.3
 
 * Fix for issue #29
