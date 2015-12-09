@@ -39,9 +39,7 @@ namespace KTfwd {
     	     typename gamete_type,
     	     typename mlist_type,
     	     typename queue_t>
-    inline
-    typename std::enable_if< std::is_same< typename std::result_of<mmodel(queue_t &,mlist_type *)>::type , typename mlist_type::iterator >::value,
-     			     typename mlist_type::iterator >::type
+    inline typename std::result_of<mmodel(queue_t &,mlist_type *)>::type
     mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
     {
       return m(recycling_bin,mutations);
@@ -51,9 +49,7 @@ namespace KTfwd {
 	     typename gamete_type,
     	     typename mlist_type,
     	     typename queue_t>
-    inline
-    typename std::enable_if< std::is_same< typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type *)>::type , typename mlist_type::iterator >::value,
-     			     typename mlist_type::iterator >::type
+    inline typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type *)>::type
     mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
     {
       return m(recycling_bin,g,mutations);
