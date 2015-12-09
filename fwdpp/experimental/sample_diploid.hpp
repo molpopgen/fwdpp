@@ -182,10 +182,7 @@ namespace KTfwd {
 	  assert( (dptr+i)->second->n <= 2*N_next );
 	}
 #endif
-      for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr )
-	{
-	  if(itr->n)adjust_mutation_counts(itr,itr->n);
-	}
+      fwdpp_internal::process_glist(gametes);
       fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
       assert(check_sum(gametes,2*N_next));
       return pmr.wbar;
