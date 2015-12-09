@@ -19,10 +19,7 @@
 * Behavior changes:
   * As a result of object recycling, data structures (mutation and gamete lists, specifically) at the end of a simulation contain both extant and extinct objects.
 * Implementation changes:
-  * Serialized populations may contain extinct mutations. 
-  * Serialization routines now only write gametes that are not extinct.  Otherwise, we risk attempting to serialize objects with invalid pointers to extinct mutations.  A future version of the library may serialize such gametes as empty, making them eligible for recycling when read back in.
-
-* Implementation changes:
+  * Serialized populations may contain extinct mutations and gametes.   In the case of extinct gametes, the mutation containers are written as if they are empty.
   * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
   * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
 

@@ -92,13 +92,13 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
   poptype pop2(0);
   KTfwd::deserialize()(pop2,s,mreader(),diploid_reader());
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  unsigned NN=0;
-  for(const auto & g : pop.gametes)
-    {
-      if(g.n)++NN;
-    }
-  BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
+  // unsigned NN=0;
+  // for(const auto & g : pop.gametes)
+  //   {
+  //     if(g.n)++NN;
+  //   }
+  // BOOST_REQUIRE(NN == pop2.gametes.size());
+  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
   //Compare the mutations
   for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
@@ -108,17 +108,19 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
     }
   
   //Compare the gametes
-  // for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-  //   {
-  //     BOOST_CHECK( g1 != g2 );
-  //     for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
+    {
+      BOOST_CHECK( g1 != g2 );
+      if(g1->n) {
+      for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
+  	{
+  	  BOOST_CHECK( m1 != m2 );
+  	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+  	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+  	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+  	}
+      }
+    }
   
   //Compare the diploids
   i=0;
@@ -128,8 +130,8 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
       BOOST_CHECK(d2->i==i);
       BOOST_CHECK(d1->first != d2->first);
       BOOST_CHECK(d1->second != d2->second);
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
       for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
 	{
 	  BOOST_CHECK( m1 != m2 );
@@ -200,13 +202,13 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
   poptype pop2(0);
   KTfwd::deserialize()(pop2,s2,mreader(),diploid_reader());
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-    unsigned NN=0;
-  for(const auto & g : pop.gametes)
-    {
-      if(g.n)++NN;
-    }
-  BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
+  //   unsigned NN=0;
+  // for(const auto & g : pop.gametes)
+  //   {
+  //     if(g.n)++NN;
+  //   }
+  // BOOST_REQUIRE(NN == pop2.gametes.size());
+  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
   //Compare the mutations
   for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
@@ -216,17 +218,19 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
     }
   
   //Compare the gametes
-  // for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-  //   {
-  //     BOOST_CHECK( g1 != g2 );
-  //     for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
+    {
+      BOOST_CHECK( g1 != g2 );
+      if(g1->n) {
+      for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
+  	{
+  	  BOOST_CHECK( m1 != m2 );
+  	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+  	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+  	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+  	}
+      }
+    }
   
   //Compare the diploids
   i=0;
@@ -236,8 +240,8 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
       BOOST_CHECK(d2->i==i);
       BOOST_CHECK(d1->first != d2->first);
       BOOST_CHECK(d1->second != d2->second);
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
       for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
 	{
 	  BOOST_CHECK( m1 != m2 );
@@ -296,13 +300,7 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
   poptype pop2(pop);
 
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-    unsigned NN=0;
-  for(const auto & g : pop.gametes)
-    {
-      if(g.n)++NN;
-    }
-  BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
+  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
   BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
   //Compare the mutations
@@ -313,17 +311,19 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
     }
   
   //Compare the gametes
-  // for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-  //   {
-  //     BOOST_CHECK( g1 != g2 );
-  //     for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
+    {
+      BOOST_CHECK( g1 != g2 );
+      if(g1->n) {
+      for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
+  	{
+  	  BOOST_CHECK( m1 != m2 );
+  	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+  	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+  	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+  	}
+      }
+    }
   
   //Compare the diploids
   i=0;
@@ -333,8 +333,8 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
       BOOST_CHECK(d2->i==i);
       BOOST_CHECK(d1->first != d2->first);
       BOOST_CHECK(d1->second != d2->second);
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
       for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
 	{
 	  BOOST_CHECK( m1 != m2 );
@@ -393,13 +393,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
   poptype pop2 = pop;
 
   BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  unsigned NN=0;
-  for(const auto & g : pop.gametes)
-    {
-      if(g.n)++NN;
-    }
-  BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
+  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
   BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
   BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
   //Compare the mutations
@@ -410,17 +404,19 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
     }
   
   //Compare the gametes
-  // for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-  //   {
-  //     BOOST_CHECK( g1 != g2 );
-  //     for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-  // 	{
-  // 	  BOOST_CHECK( m1 != m2 );
-  // 	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-  // 	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-  // 	}
-  //   }
+  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
+    {
+      BOOST_CHECK( g1 != g2 );
+      if(g1->n) {
+      for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
+  	{
+  	  BOOST_CHECK( m1 != m2 );
+  	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
+  	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
+  	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
+  	}
+      }
+    }
   
   //Compare the diploids
   i=0;
@@ -430,8 +426,8 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
       BOOST_CHECK(d2->i == i);
       BOOST_CHECK(d1->first != d2->first);
       BOOST_CHECK(d1->second != d2->second);
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      //BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
+      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
       for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
 	{
 	  BOOST_CHECK( m1 != m2 );

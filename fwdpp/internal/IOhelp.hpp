@@ -80,30 +80,27 @@ namespace KTfwd {
 		  ostreamtype & buffer) const
       {
 	using glist_iterator = typename gamete_cont_t< gamete_type, gamete_cont_t_details...>::const_iterator;
-	uint_t N = 0;
-	std::for_each(gametes->begin(),gametes->end(),[&N](const typename gamete_cont_t< gamete_type, gamete_cont_t_details... >::value_type & g) {
-	    if(g.n)++N;
-	  });
+	uint_t N = gametes->size();
 	buffer.write( reinterpret_cast< char * >(&N), sizeof(uint_t) );
 	std::vector< glist_iterator > gam_info;
 	std::vector<uint_t> gam_indexes;
 	uint_t index = 0;
 	for( glist_iterator gptr = gametes->begin() ; gptr != gametes->end() ; ++gptr,++index )
 	  {
-	    if(gptr->n)
+	    gam_info.push_back( gptr );
+	    gam_indexes.push_back(index);
+	    buffer.write( reinterpret_cast< char * >(&index),sizeof(uint_t) );
+	    N = gptr->n;
+	    if(N) //gamete not extinct: write out its mutation info
 	      {
-		gam_info.push_back( gptr );
-		gam_indexes.push_back(index);
-		buffer.write( reinterpret_cast< char * >(&index),sizeof(uint_t) );
-		N = gptr->n;
 		buffer.write( reinterpret_cast< char * >(&N),sizeof(uint_t) );
 		N = uint_t(gptr->mutations.size());
 		buffer.write( reinterpret_cast<char *>(&N), sizeof(uint_t) );
 		for( uint_t i = 0 ; i < N ; ++i )
 		  {
-		    assert( std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) != mut_info.end() );
-		    uint_t INDEX = indexes[ std::vector<uint_t>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin()) ];
-		    buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(uint_t) );
+		assert( std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) != mut_info.end() );
+		uint_t INDEX = indexes[ std::vector<uint_t>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->mutations[i])) - mut_info.begin()) ];
+		buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(uint_t) );
 		  }
 		N = uint_t(gptr->smutations.size());
 		buffer.write( reinterpret_cast<char *>(&N), sizeof(uint_t) );
@@ -113,6 +110,14 @@ namespace KTfwd {
 		    uint_t INDEX = indexes[ std::vector<uint_t>::size_type(std::find(mut_info.begin(),mut_info.end(),(gptr->smutations[i])) - mut_info.begin()) ];
 		    buffer.write( reinterpret_cast< char * >(&INDEX), sizeof(uint_t) );
 		  }
+	      }
+	    else //gamete is extinct.  its mutation info may be invalid (iterators to extinct/recycled variants). 
+	      {
+		//write it out as if gamete has two empty mutation containers.
+		N=0;
+		buffer.write( reinterpret_cast< char * >(&N),sizeof(uint_t) );
+		buffer.write( reinterpret_cast< char * >(&N),sizeof(uint_t) );
+		buffer.write( reinterpret_cast< char * >(&N),sizeof(uint_t) );
 	      }
 	  }
 	return std::make_pair( gam_info, gam_indexes );
