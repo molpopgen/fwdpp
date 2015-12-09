@@ -3,6 +3,7 @@
 
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <type_traits>
 #include <fwdpp/sugar/popgenmut.hpp>
 
 namespace KTfwd
@@ -16,6 +17,26 @@ namespace KTfwd
   */
   struct infsites
   {
+    /*!
+      Helper function.
+
+      Generate a new mutation position and update the lookup table w/that position.
+     */
+    template<typename position_t,
+	     typename lookup_table_t>
+    inline typename std::result_of<position_t()>::type generate_mut_pos( const position_t & posmaker, lookup_table_t * lookup ) const
+    {
+      static_assert( std::is_convertible<typename std::result_of<position_t()>::type,double>::value,
+		     "The return type of posmaker must be convertible to double." );
+      auto pos = posmaker();
+      while(lookup->find(pos) != lookup->end())
+	{
+	  pos = posmaker();
+	}
+      lookup->insert(pos);
+      return pos;
+    }
+    
     /*!
       \param r A gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
@@ -49,12 +70,7 @@ namespace KTfwd
       static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
 		    "mlist_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
-      double pos = posmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = posmaker();
-	}
-      lookup->insert(pos);
+      auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
       return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
 						     pos,
@@ -102,22 +118,12 @@ namespace KTfwd
       bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if( selected )
 	{
-	  double pos = sposmaker();
-	  while(lookup->find(pos) != lookup->end())
-	    {
-	      pos = sposmaker();
-	    }
-	  lookup->insert(pos);
+	  auto pos = this->generate_mut_pos(sposmaker,lookup);
 	  return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
 							 smaker(),hmaker(),generation,1u);
 	}
       //Establish position of new mutation
-      double pos = nposmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = nposmaker();
-	}
-      lookup->insert(pos);
+      auto pos = this->generate_mut_pos(nposmaker,lookup);
       return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
 						     0.,0.,generation,1u);
     }
@@ -155,12 +161,7 @@ namespace KTfwd
       static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
 		    "mlist_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
-      double pos = posmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = posmaker();
-	}
-      lookup->insert(pos);
+      auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
       return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
     }
@@ -196,12 +197,7 @@ namespace KTfwd
       static_assert(std::is_same<typename mlist_t::value_type,KTfwd::mutation>::value,
 		    "mlist_t::value_type must be KTfwd::mutation");
       //Establish position of new mutation
-      double pos = posmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = posmaker();
-	}
-      lookup->insert(pos);
+      auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
       return fwdpp_internal::recycle_mutation_helper(mutation_recycling_bin,mutations,
 						     pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
@@ -243,21 +239,11 @@ namespace KTfwd
       bool selected = gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate);
       if ( selected )
 	{
-	  double pos = sposmaker();
-	  while(lookup->find(pos) != lookup->end())
-	    {
-	      pos = sposmaker();
-	    }
-	  lookup->insert(pos);
+	  auto pos = this->generate_mut_pos(sposmaker,lookup);
 	  return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
 							 pos,smaker(),1u,hmaker());
 	}
-      double pos = nposmaker();
-      while(lookup->find(pos) != lookup->end())
-	{
-	  pos = nposmaker();
-	}
-      lookup->insert(pos);
+      auto pos = this->generate_mut_pos(nposmaker,lookup);
       //return a neutral mutation
       return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
 						     pos,0.,1,0.);
