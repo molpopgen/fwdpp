@@ -11,6 +11,11 @@
     * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
   * Mutation type data members (objects inheriting from KTfwd::mutation_base) are no longer const.  This is required in order to enable the "recycling".
   * In order to take advantage of this feature, extinct mutations must not be removed each generation.  TODO: describe new fxns to aid in proper updating.
+
+* Other API changes:
+  * As a result of the changes described above, mutation models must now take a pointer to a list of mutations as an argument.
+  * The change to mutation model requirements means that the notion of a "mutation insertion policy" is no longer needed.  KTfwd::sample_diploid has been updated accordingly.
+
 * Behavior changes:
   * As a result of object recycling, data structures (mutation and gamete lists, specifically) at the end of a simulation contain both extant and extinct objects.
 * Implementation changes:
