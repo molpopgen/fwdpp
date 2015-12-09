@@ -155,28 +155,5 @@ namespace KTfwd
       }
     
   }
-
-  template<typename iterator_type>
-  void adjust_mutation_counts( iterator_type & g , const unsigned & n)
-  /*! \brief used internally
-    \note Will need a specialization if types have other data that need updating
-  */
-  {
-    auto adjuster = [&n](typename iterator_type::value_type::mutation_list_type_iterator & __m) {
-      if(!__m->checked)
-	{
-	  __m->n=n;
-	  __m->checked=true;
-	}
-      else
-	{
-	  __m->n += n;
-	}
-    };
-    std::for_each(g->mutations.begin(),g->mutations.end(),
-		  std::cref(adjuster));
-    std::for_each(g->smutations.begin(),g->smutations.end(),
-		  std::cref(adjuster));
-   }
 }
 #endif /* _UTIL_HPP_ */
