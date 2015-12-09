@@ -1,6 +1,8 @@
 #ifndef __FWDPP_INTERNAL_MS_SAMPLING_HPP__
 #define __FWDPP_INTERNAL_MS_SAMPLING_HPP__
 
+#include <cassert>
+
 namespace KTfwd
 {
   namespace fwdpp_internal
@@ -56,6 +58,7 @@ namespace KTfwd
 						   const unsigned nsam )
     {
       sample.erase( std::remove_if( sample.begin(),sample.end(),[nsam](const sample_site_t & site) {
+	    assert(site.second.size()==nsam);
 	    return unsigned(std::count(site.second.begin(),site.second.end(),'1')) == nsam;
 	  }),
 	sample.end());
@@ -72,7 +75,7 @@ namespace KTfwd
       sample_t::iterator itr;
 
       std::function<bool(const sample_site_t &, const double &)> sitefinder = [](const sample_site_t & site,
-												 const double & d )
+										 const double & d )
 	{
 	  return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
 	};
