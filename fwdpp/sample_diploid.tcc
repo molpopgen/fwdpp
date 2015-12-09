@@ -8,6 +8,7 @@
 #include <fwdpp/internal/gamete_lookup_table.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
+#include <fwdpp/internal/sample_diploid_helpers.hpp>
 
 namespace KTfwd
 {
@@ -159,10 +160,7 @@ namespace KTfwd
 	assert( (dptr+i)->second->n <= 2*N_next );
       }
 #endif
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
-      {
-	if(itr->n) adjust_mutation_counts(itr,itr->n);
-      }
+    fwdpp_internal::process_glist(gametes);
 #ifndef NDEBUG
     for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
 #endif
@@ -364,10 +362,7 @@ namespace KTfwd
 		      (dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,metapop,mutations,(dptr+i)->second,mmodel,mpolicy,gpolicy_mut);
 		    }
 		}
-	      for( auto itr = metapop->begin() ; itr != metapop->end() ; ++itr)
-		{
-		  if(itr->n) adjust_mutation_counts(itr,itr->n);
-		}
+	      fwdpp_internal::process_glist(metapop);
 	      fwdpp_internal::gamete_cleaner(metapop,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
 	      return wbars;
 	    }
@@ -486,10 +481,7 @@ namespace KTfwd
 					   gametes,mutations,mu,mmodel,mpolicy,gpolicy_mut
 					   );
       }
-    for( auto itr = gametes->begin() ; itr != gametes->end() ; ++itr)
-      {
-	if(itr->n) adjust_mutation_counts(itr,itr->n);
-      }
+    fwdpp_internal::process_glist(gametes);
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     return wbar;
   }
