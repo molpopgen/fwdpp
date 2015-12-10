@@ -9,8 +9,10 @@ namespace KTfwd
   {
     template<typename iterator_type>
     void adjust_mutation_counts( iterator_type & g , const unsigned & n)
-    /*! \brief used internally
-      \note Will need a specialization if types have other data that need updating
+    /*! 
+      Update the counts of each mutation.
+
+      This function is called by KTfwd::fwdpp_internal::adjust_mutation_counts
     */
     {
       auto adjuster = [&n](typename iterator_type::value_type::mutation_list_type_iterator & __m) {
@@ -32,6 +34,10 @@ namespace KTfwd
     
     template<typename glist_t>
     inline void process_glist( glist_t * gametes )
+    /*!
+      For every non-extinct gamete, increment the counts of its mutations
+      via a call to KTfwd::fwdpp_internal::adjust_mutation_counts.
+    */
     {
       for(auto itr = gametes->begin() ; itr != gametes->end() ; ++itr )
 	{
