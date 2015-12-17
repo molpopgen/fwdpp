@@ -37,7 +37,7 @@ void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations,
 {
   static_assert( std::is_base_of<KTfwd::mutation_base,mutation_type>::value,
 		 "mutation_type must be derived from KTfwd::mutation_base" );
-  for(auto i=mutations->begin();i!=mutations->end();)
+  for(auto i=mutations->begin();i!=mutations->end();++i)
     {
       assert(i->n <= twoN);
       if(i->n==twoN )
@@ -45,7 +45,8 @@ void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations,
 	  fixations->push_back(*i);
 	  fixation_times->push_back(generation);
 	  lookup->erase(lookup->find(i->pos));
-	  i = mutations->erase(i);
+	  i->n=i->checked=0;
+	  //i = mutations->erase(i);
 	}
       else
 	{
@@ -57,7 +58,7 @@ void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations,
 		lookup->erase(I);
 	    };
 	  i->checked=false;
-	  ++i;
+	  //++i;
 	}
     }
 }
@@ -128,6 +129,14 @@ int main(int argc, char ** argv)
 	 simulations, so we use the call to std::max to select something better.
       */
       singlepop_t pop(N);//,std::max(100u,unsigned(std::round(theta))));
+      unsigned ES = ceil( log(double(twoN))*theta + 0.667*double(theta)  );
+      for(unsigned i=0;i<ES;++i) pop.mutations.emplace_back( 0,0,0,0,0 );
+      for(unsigned i=0;i<2*N;++i)
+	{
+
+	  pop.gametes.emplace_back( singlepop_t::gamete_t(0) );
+	}
+      std::cerr << pop.mutations.size() << ' ' << pop.gametes.size() << '\n';
       unsigned generation;
       double wbar;
       //lookup_table_type lookup;  //this is our lookup table for the mutation model
@@ -204,7 +213,7 @@ int main(int argc, char ** argv)
 	}
       Sequence::SimData sdata;
 
-      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
+      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,false);
 
       if(!mslike.empty())
 	{
