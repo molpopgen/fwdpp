@@ -191,11 +191,10 @@ using glist = std::list<gtype>;
 
 A minimal mutation policy returns an __mtype__ and takes one of the following sets of arguments:
 
-* Nothing
-* A non-const reference to a __gtype__.  This allows you to have mutation models where the outcome depends on the current state of the gamete being mutated
-* A non-cont pointer to an __mlist__.  This allows you to have mutation models where the outcome depends on all the mutations currently in the population.  (This was also the minimally-sufficient policy through __fwdpp__ 0.3.0, and it exists to maintain source code compatibiltiy with existing simulations.)
-* A non-const referenct to a __gtype__ _and_ and non-const pointer to an __mlist__. This allows you to mix the previous two.
+* A non-const reference to a "recycling bin" and a pointer to a mutation list
+* A non-const reference to a "recycling bin", a non-const reference to an iterator to a gemete and a pointer to a mutation list.
 
+See KTfwd::infsites for examples of mutation policies.
 
 When a gamete is mutated, we need to decide how to insert it into the __glist__.  This "gamete insertion policy'' takes a const reference to an __gtype__ and a non-const pointer to an __glist__ as arguments, and returns an __glist::iterator__.  Again, under the infinitely-many sites model, a gamete with a new mutation is guaranteed to be unique, so we can simply insert it:
 
@@ -227,6 +226,8 @@ std::bind(KTfwd::genetics101(),
 	std::placeholders::_1,std::placeholders::_2,
 	//This placeholder is for a lookup table
 	std::placeholders::_3,
+	//This placeholder is for a "recycling bin"
+	std::placeholders::_4,
 	//These two containers should be allocated in main (or via the appropriate sugar type, _e.g._ KTfwd::singlepop_t)
 	//They often need reference wrappers to make the templates compile.
 	//They are used to hold the intermediate results of crossover events
