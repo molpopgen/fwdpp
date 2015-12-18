@@ -98,7 +98,7 @@ namespace KTfwd
     //! \brief overload for KTfwd::generalmut_vec and ostream
     template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
-    operator()(const mutation_t & t, std::ostream & buffer)
+    operator()(const mutation_t & t, std::ostream & buffer) const
     {
       buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));

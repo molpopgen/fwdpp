@@ -99,3 +99,15 @@ BOOST_AUTO_TEST_CASE( serialize_gz )
 
   unlink("test_generalmut_vec_file.gz");
 }
+
+BOOST_AUTO_TEST_CASE( serialize_pop1 )
+{
+  using mtype = KTfwd::generalmut_vec;
+  using singlepop_serialized_t = KTfwd::singlepop_serialized<mtype,
+							     KTfwd::mutation_writer,
+							     KTfwd::mutation_reader<mtype>>;
+
+  singlepop_serialized_t pop1(100);
+  singlepop_serialized_t pop2(pop1);
+  
+}
