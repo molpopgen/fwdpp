@@ -187,18 +187,18 @@ int main(int argc, char ** argv)
 					  &pop.mutations,
 					  1000,
 					  0.005,
-					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,&pop.mut_lookup,generation,
+					  std::bind(KTfwd::infsites(),rng,std::placeholders::_1,std::placeholders::_2,&pop.mut_lookup,generation,
 						    0.005,0.,[](gsl_rng * r){return gsl_rng_uniform(r);},[](gsl_rng * r){return 0.;},[](gsl_rng * r){return 0.;}),
 					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
+					            std::placeholders::_3,std::placeholders::_4,
 						    &pop.gametes,
 						    0., //no rec
 						    rng,
 						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::mutation_t,poptype::mlist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
   }
 ~~~
 
