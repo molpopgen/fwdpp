@@ -160,7 +160,7 @@ int main(int argc, char ** argv)
 					      */
 					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
 					      KTfwd::remove_nothing());
-      	  KTfwd::remove_lost(&pop.mutations,&pop.mut_lookup);
+      	  KTfwd::update_mutations(&pop.mutations,&pop.mut_lookup);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}    
       //Get VG for this replicate

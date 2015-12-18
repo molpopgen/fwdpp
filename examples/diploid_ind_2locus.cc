@@ -133,7 +133,7 @@ int main(int argc, char ** argv)
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
 	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
 	  assert( check_sum(pop.gametes,2*twoN) );
-      	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+      	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	}
       //For giggles, make sure that the pop. is copy-constructible...
       multiloc_serialized_t pop2(pop);

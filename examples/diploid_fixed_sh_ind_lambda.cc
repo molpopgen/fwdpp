@@ -110,7 +110,7 @@ int main(int argc, char ** argv)
 									 });},
 				       //Finally, mutations will be removed from gametes if they are extinct or fixed
 				       [&N](const singlepop_t::mlist_t::iterator & i){ return (!i->n || i->n == 2*N); });
-	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}
       Sequence::SimData neutral_muts,selected_muts;

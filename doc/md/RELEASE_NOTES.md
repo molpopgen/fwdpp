@@ -10,7 +10,7 @@
     * In order to accomodate the "recycling", mutation models must now return iterators derived from the mutation list, rather than mutation types themselves.
     * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
   * Mutation type data members (objects inheriting from KTfwd::mutation_base) are no longer const.  This is required in order to enable the "recycling".
-  * In order to take advantage of this feature, extinct mutations must not be removed each generation.  TODO: describe new fxns to aid in proper updating.
+  * In order to take advantage of this feature, extinct mutations must not be removed each generation.  The function KTfwd::update_mutations should be removed instead of KTfwd::remove_lost, KTfwd::remove_fixed_lost, etc.  The latter functions are marked as deprecated.
   * The details of recycling are handled by KTfwd::fwdpp_internal::make_mut_queue, KTfwd::fwdpp_internal::make_gamete_queue, KTfwd::fwdpp_internal::recycle_gamete, and the very cool variadic template function KTfwd::fwdpp_internal::recycle_mutation_helper.  These types/functions are found in fwdpp/internal/recycling.hpp.
 
 * Other API changes:

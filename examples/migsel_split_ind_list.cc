@@ -145,7 +145,7 @@ int main( int argc, char ** argv )
 					  std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
     }
 
   //Make an exact copy of the diploids
@@ -182,7 +182,7 @@ int main( int argc, char ** argv )
 						 std::bind(migpop,std::placeholders::_1,r,m),
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation
-      remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4*N);
+      update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4*N);
     }
   std::pair< std::vector< std::pair<double,std::string> >,
 	     std::vector< std::pair<double,std::string> > > sample1 = ms_sample_separate(r,&pop.diploids[0],n),

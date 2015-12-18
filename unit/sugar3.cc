@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test1 )
 					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
     }
   KTfwd::serialize s;
   s(pop,mwriter());
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_gzserialize_test )
 					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
     }
   KTfwd::gzserialize s;
   gzFile gzf = gzopen("sugar3_test.gz","wb");
@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_copy_construct )
 					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
     }
 
   poptype pop2(pop);
@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_assigment_operator )
 					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
     }
 
   poptype pop2 = pop;

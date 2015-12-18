@@ -16,52 +16,11 @@
 #include <fwdpp/diploid.hh>
 //Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/sugar.hpp>
+#include <fwdpp/sugar/populate_lists.hpp>
 //typedef mutation_with_age mtype;
 using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
-
-template<typename mutation_type,
-	 typename vector_type_allocator1,
-	 typename vector_type_allocator2,
-	 typename list_type_allocator,
-	 template <typename,typename> class vector_type,
-	 template <typename,typename> class list_type,
-	 typename mutation_lookup_table>
-void remove_fixed( list_type<mutation_type,list_type_allocator> * mutations, 
-		   vector_type<mutation_type,vector_type_allocator1> * fixations, 
-		   vector_type<unsigned,vector_type_allocator2> * fixation_times,
-		   mutation_lookup_table * lookup,
-		   const unsigned & generation,const unsigned & twoN )
-{
-  static_assert( std::is_base_of<KTfwd::mutation_base,mutation_type>::value,
-		 "mutation_type must be derived from KTfwd::mutation_base" );
-  for(auto i=mutations->begin();i!=mutations->end();++i)
-    {
-      assert(i->n <= twoN);
-      if(i->n==twoN )
-	{
-	  fixations->push_back(*i);
-	  fixation_times->push_back(generation);
-	  lookup->erase(lookup->find(i->pos));
-	  i->n=i->checked=0;
-	  //i = mutations->erase(i);
-	}
-      else
-	{
-	  if(!i->checked)
-	    {
-	      i->n=0;
-	      auto I = lookup->find(i->pos);
-	      if(I!=lookup->end())
-		lookup->erase(I);
-	    };
-	  i->checked=false;
-	  //++i;
-	}
-    }
-}
 
 int main(int argc, char ** argv)
 {
@@ -201,7 +160,7 @@ int main(int argc, char ** argv)
       					 can remove them, making the simulation faster, etc.
       				       */
       				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
-      	  remove_fixed(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;

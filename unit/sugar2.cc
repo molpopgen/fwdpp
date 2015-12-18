@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test1 )
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
 						       std::bind(migpop,std::placeholders::_1,rng.get(),0.001)
 						       );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
     }
   //attempt to copy
   KTfwd::serialize s;
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_copy_construct_test )
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
 						       std::bind(migpop,std::placeholders::_1,rng.get(),0.001)
 						       );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
     }
   //attempt to copy construct
   poptype pop2(pop);
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_assign_test )
 						       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,4000),
 						       std::bind(migpop,std::placeholders::_1,rng.get(),0.001)
 						       );
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4000);
     }
   //attempt to copy construct
   poptype pop2 = pop;
