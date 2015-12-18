@@ -213,7 +213,7 @@ int main(int argc, char ** argv)
 	}
       Sequence::SimData sdata;
 
-      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,false);
+      std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
 
       if(!mslike.empty())
 	{
