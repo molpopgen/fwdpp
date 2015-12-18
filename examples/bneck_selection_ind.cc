@@ -75,6 +75,7 @@ int main(int argc, char ** argv)
     {
       //Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
       singlepop_t pop(N);
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
       unsigned generation =  0;
       double wbar=1;
       for( generation = 0; generation < ngens; ++generation )

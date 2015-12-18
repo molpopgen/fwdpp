@@ -16,7 +16,6 @@
 #include <fwdpp/diploid.hh>
 //Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/populate_lists.hpp>
 //typedef mutation_with_age mtype;
 using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM

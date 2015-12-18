@@ -54,7 +54,8 @@ int main(int argc, char ** argv)
 
   while(nreps--)
     {
-      singlepop_t pop(N);      
+      singlepop_t pop(N);
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
       unsigned generation;
 
       double wbar=1;

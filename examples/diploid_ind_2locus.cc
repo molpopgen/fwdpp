@@ -81,6 +81,7 @@ int main(int argc, char ** argv)
   while(nreps--)
     {
       multiloc_serialized_t pop(N,2);
+      KTfwd::add_recyclable(pop,4*N,2*std::ceil(std::log(2*N)*(theta)+0.667*(theta)));
       unsigned generation=0;
       double wbar;
 

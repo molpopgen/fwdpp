@@ -105,7 +105,7 @@ int main(int argc, char ** argv)
   while(nreps--)
     {
       poptype pop(N);
-
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*mu)+0.667*(4.*double(N)*mu)));
       //HOChap mmodel(r,sigmu,&pop.mut_lookup);
       for( unsigned generation = 0; generation < ngens; ++generation )
       	{

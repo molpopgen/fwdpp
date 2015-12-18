@@ -20,7 +20,6 @@
 #include <fstream>
 #include <fcntl.h>
 #include <fwdpp/sugar/infsites.hpp>
-
 using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
@@ -53,6 +52,7 @@ int main(int argc, char ** argv)
   unsigned twoN = 2*N;
 
   singlepop_t pop(N);
+  KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*theta+0.667*theta));
   unsigned generation;
   double wbar;
 
