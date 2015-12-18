@@ -132,7 +132,7 @@ The find_if algorithm takes each value in the range and evaluates it via the pol
 
 \section TutAlgo Algorithms in fwdpp
 
-For individual-based simulations, the primary algorithms are __KTfwd::sample\_diploid__ and __KTfwd::remove\_lost__ and/or __KTfwd::remove\_fixed\_lost__.  All of these functions are in the name space __KTfwd__ and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
+For individual-based simulations, the primary algorithms are __KTfwd::sample\_diploid__ and __KTfwd::update\_mutations__.  All of these functions are in the name space __KTfwd__ and are documented both in the source code, via the doxygen output based on the source code, and finally in the example code that comes with the library.
 
 Some of the code in some of these algorithms is quite complex, largely because generic templates can have hideous syntax.  You should't have to worry about that unless you like seeing how the sausage is made.  Most users of __fwdpp__ will be writing custom policies to stick into these algorithms and will likely be starting from the examples in order to get oriented.  For them, the necessary information is to understand what is required of a policy.  That is the subject of the remainder of this document.
 
@@ -196,7 +196,6 @@ A minimal mutation policy returns an __mtype__ and takes one of the following se
 * A non-cont pointer to an __mlist__.  This allows you to have mutation models where the outcome depends on all the mutations currently in the population.  (This was also the minimally-sufficient policy through __fwdpp__ 0.3.0, and it exists to maintain source code compatibiltiy with existing simulations.)
 * A non-const referenct to a __gtype__ _and_ and non-const pointer to an __mlist__. This allows you to mix the previous two.
 
-Having defined our mutation policies, we then need to decide how to add a new mutation (the return value of the mutation policy) to the list of mutations.  This "mutation insertion policy'' takes a const reference to an __mtype__ and a non-const pointer to an __mlist__ as arguments, and returns an __mlist::iterator__.  This is an example for the infinite-sites model.  Under this model, we know that a new mutation is at a new position, therefore we simply insert it at the end of the mlist:
 
 When a gamete is mutated, we need to decide how to insert it into the __glist__.  This "gamete insertion policy'' takes a const reference to an __gtype__ and a non-const pointer to an __glist__ as arguments, and returns an __glist::iterator__.  Again, under the infinitely-many sites model, a gamete with a new mutation is guaranteed to be unique, so we can simply insert it:
 
@@ -763,7 +762,7 @@ During the course of a simulation, new mutation and gamete types come and go.  N
 2. If it is new, add it to the end of the gamete container.
 3. It it is not new, do something intelligent, such as return the iterator to the pre-existing version of that gamete in the container.
 
-These types of policies are simple.  See the header files __fwdpp/insertion\_policies.hpp__ and __fwdpp/fwd\_functional.hpp__.  The latter contains the functions passed to __KTfwd::remove\_lost__ and __KTfwd::remove\_fixed\_lost__--see the example programs (and the next section here) for concrete examples.
+These types of policies are simple.  See the header files __fwdpp/insertion\_policies.hpp__ and __fwdpp/fwd\_functional.hpp__. 
 
 \section TutTieItup Putting it all togeter (kinda)
 
@@ -784,15 +783,11 @@ Ok, once we have defined our mutation types, our containers, and our policies, a
       				       */
       				       std::bind(mutmodel_Qtrait,r,_1,mu_neutral,mu_selected,sigma_e,&lookup),
 				       //The recombination policy includes the recombination map policy
-      				       std::bind(KTfwd::genetics101(),_1,_2,
+      				       std::bind(KTfwd::genetics101(),_1,_2,_3,_4,
 						   &gametes,
       						   littler,
       						   r,
       						   recmap),
-				       /*
-					 Policy to insert new mutations at the end of the mutations list
-				       */
-      				       std::bind(KTfwd::insert_at_end<mtype,mlist>,_1,_2),
 				       /*
 					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
 					 If mutation results in a new gamete, add that gamete to the 
@@ -811,6 +806,5 @@ Ok, once we have defined our mutation types, our containers, and our policies, a
       				       std::bind(KTfwd::mutation_remover(),_1,0));
           //Clean up the mutations list.  This also resets "checked'' in each mutation to zero,
           //which is that "internal detail'' referred to above
-          //We don't removed fixed mutations b/c this is a quantitative trait simulation
-      	  KTfwd::remove_lost(&mutations,&lookup,generation);
+      	  KTfwd::update_mutations(&mutations,&lookup);
 ~~~
