@@ -84,7 +84,7 @@ namespace KTfwd
     template<typename mutation_t,
 	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
-    operator()(const mutation_t & t, std::ostream & buffer)
+    operator()(const mutation_t & t, std::ostream & buffer) const
     {
       buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
@@ -117,7 +117,7 @@ namespace KTfwd
     template<typename mutation_t,
 	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
-    operator()(const mutation_t & t, gzFile gzout)
+    operator()(const mutation_t & t, gzFile gzout) const
     {
       gzwrite(gzout, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
@@ -131,7 +131,7 @@ namespace KTfwd
     //! \brief overload for KTfwd::generalmut_vec and gzFile
     template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
-    operator()(const mutation_t & t, gzFile out)
+    operator()(const mutation_t & t, gzFile out) const
     {
       gzwrite( out, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       gzwrite( out, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
@@ -231,7 +231,7 @@ namespace KTfwd
     //! \brief overalod for KTfwd::generalmut and std::istream
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
-    operator()(std::istream & buffer)
+    operator()(std::istream & buffer) const
     {
       uint_t n,g;
       double pos;
@@ -249,7 +249,7 @@ namespace KTfwd
     //! \brief overalod for KTfwd::generalmut_vec and std::istream
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
-    operator()(std::istream & buffer)
+    operator()(std::istream & buffer) const
     {
       uint_t n,g;
       double pos;
@@ -275,7 +275,7 @@ namespace KTfwd
     //! \brief overalod for KTfwd::generalmut and zlib/gzFile
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
-    operator()(gzFile in)
+    operator()(gzFile in) const
     {
       uint_t n,g;
       double pos;
@@ -292,7 +292,7 @@ namespace KTfwd
     //! \brief overalod for KTfwd::generalmut_vec and gzFile
     template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
-    operator()(gzFile in)
+    operator()(gzFile in) const
     {
       uint_t n,g;
       double pos;
