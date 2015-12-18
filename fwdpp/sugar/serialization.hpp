@@ -448,7 +448,7 @@ namespace KTfwd
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
 
     }
 
@@ -480,7 +480,7 @@ namespace KTfwd
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
 
     }
 
@@ -519,7 +519,7 @@ namespace KTfwd
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
     }
   };
 
@@ -584,7 +584,7 @@ namespace KTfwd
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
     }
 
     template<typename sugarpop_t,
@@ -614,7 +614,7 @@ namespace KTfwd
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
     }
 
     /*!
@@ -652,7 +652,7 @@ namespace KTfwd
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { pop.mut_lookup.insert(__m.pos); } );
+    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
     }
   };
 }
