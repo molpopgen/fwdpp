@@ -11,6 +11,7 @@
     * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
   * Mutation type data members (objects inheriting from KTfwd::mutation_base) are no longer const.  This is required in order to enable the "recycling".
   * In order to take advantage of this feature, extinct mutations must not be removed each generation.  TODO: describe new fxns to aid in proper updating.
+  * The details of recycling are handled by KTfwd::fwdpp_internal::make_mut_queue, KTfwd::fwdpp_internal::make_gamete_queue, KTfwd::fwdpp_internal::recycle_gamete, and the very cool variadic template function KTfwd::fwdpp_internal::recycle_mutation_helper.  These types/functions are found in fwdpp/internal/recycling.hpp.
 
 * Other API changes:
   * As a result of the changes described above, mutation models must now take a pointer to a list of mutations as an argument.
@@ -22,6 +23,9 @@
   * Serialized populations may contain extinct mutations and gametes.   In the case of extinct gametes, the mutation containers are written as if they are empty.
   * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
   * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
+
+* Bug fixes:
+  * Issue #30 fixed regarding serialization of KTfwd::generalmut and KTfwd::generalmut_vec
 
 ## 0.4.3
 
