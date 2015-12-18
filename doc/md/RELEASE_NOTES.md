@@ -2,6 +2,8 @@
 
 ## 0.4.4
 
+TL;DR Big performance improvements due to better handling of objects in memory. Yay!  API changes. Boo!
+
 * Vastly improved management of object lifetimes:
   * Extinct mutations/gametes are no longer removed each generation.
   * FIFO queues are constructed each generation in order to "recycle" those objects as new mutations/gametes.
