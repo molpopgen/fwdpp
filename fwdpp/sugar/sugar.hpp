@@ -9,6 +9,6 @@
 #include<fwdpp/sugar/generalmut.hpp>
 #include<fwdpp/sugar/serialization.hpp>
 #include<fwdpp/sugar/singlepop.hpp>
-#include<fwdpp/sugar/sugar.hpp>
+#include<fwdpp/sugar/populate_lists.hpp>
 
 #endif

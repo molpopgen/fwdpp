@@ -16,7 +16,7 @@
 #include <fwdpp/diploid.hh>
 //Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
-
+#include <fwdpp/sugar/sugar.hpp>
 //typedef mutation_with_age mtype;
 using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
@@ -128,15 +128,8 @@ int main(int argc, char ** argv)
 	 recombination events.  The default is 100, which is probably too small for large-4Nu 
 	 simulations, so we use the call to std::max to select something better.
       */
-      singlepop_t pop(N);//,std::max(100u,unsigned(std::round(theta))));
-      unsigned ES = ceil( log(double(twoN))*theta + 0.667*double(theta)  );
-      for(unsigned i=0;i<ES;++i) pop.mutations.emplace_back( 0,0,0,0,0 );
-      for(unsigned i=0;i<2*N;++i)
-	{
-
-	  pop.gametes.emplace_back( singlepop_t::gamete_t(0) );
-	}
-      std::cerr << pop.mutations.size() << ' ' << pop.gametes.size() << '\n';
+      singlepop_t pop(N);
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*theta+0.667*theta));
       unsigned generation;
       double wbar;
       //lookup_table_type lookup;  //this is our lookup table for the mutation model

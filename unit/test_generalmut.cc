@@ -116,3 +116,10 @@ BOOST_AUTO_TEST_CASE( serialize_pop1 )
   singlepop_serialized_t pop2(pop1);
   
 }
+
+BOOST_AUTO_TEST_CASE( construct_extinct )
+{
+  auto x = KTfwd::generalmut<2>(KTfwd::tags::extinct());
+  BOOST_CHECK_EQUAL(x.n,0);
+  BOOST_CHECK_EQUAL(x.g,std::numeric_limits<unsigned>::max());
+}

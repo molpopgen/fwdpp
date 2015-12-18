@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <fwdpp/tags/gamete_tags.hpp>
+#include <fwdpp/tags/tags.hpp>
 
 namespace KTfwd
 {
@@ -62,6 +63,13 @@ namespace KTfwd
     mutation( const double & position, const double & sel_coeff,const uint_t & count,
 	      const double & dominance = 0.5) 
       : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)
+    {
+    }
+    /// Contruct an extint mutation (n=0)
+    mutation( tags::extinct ) :
+      mutation_base(std::numeric_limits<double>::quiet_NaN(),0,true),
+      s(std::numeric_limits<double>::quiet_NaN()),
+      h(std::numeric_limits<double>::quiet_NaN())
     {
     }
     bool operator==(const mutation & rhs) const
@@ -116,6 +124,13 @@ namespace KTfwd
       \param icount The number of occurrences of this gamete in the population
     */
     gamete_base(const uint_t & icount) noexcept : n(icount),mutations( mutation_container() ),smutations(mutation_container())
+    {
+    }
+
+    /*!
+      Construct an extinct gamete (n=0).
+    */
+    gamete_base( tags::extinct ) noexcept : n(0),mutations( mutation_container() ),smutations(mutation_container())
     {
     }
 
