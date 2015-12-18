@@ -13,6 +13,10 @@
   * In order to take advantage of this feature, extinct mutations must not be removed each generation.  The function KTfwd::update_mutations should be removed instead of KTfwd::remove_lost, KTfwd::remove_fixed_lost, etc.  The latter functions are marked as deprecated.
   * The details of recycling are handled by KTfwd::fwdpp_internal::make_mut_queue, KTfwd::fwdpp_internal::make_gamete_queue, KTfwd::fwdpp_internal::recycle_gamete, and the very cool variadic template function KTfwd::fwdpp_internal::recycle_mutation_helper.  These types/functions are found in fwdpp/internal/recycling.hpp.
 
+* Improved memory managament:
+  * "Recycling" means that the linked lists used are much more constant in memory with respect to allocations.  Thus, it makes sense to allocate objects prior to simulation.
+  * The functions KTfwd::add_elements in the main library and KTfwd::add_recyclable in the sugar sub-library allow the addition of recylable objects.  See example programs for how to use these functions.
+
 * Other API changes:
   * As a result of the changes described above, mutation models must now take a pointer to a list of mutations as an argument.
   * The change to mutation model requirements means that the notion of a "mutation insertion policy" is no longer needed.  KTfwd::sample_diploid has been updated accordingly.
