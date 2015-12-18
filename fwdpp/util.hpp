@@ -152,8 +152,7 @@ namespace KTfwd
 	    i->checked=false;
 	    ++i;
 	  }
-      }
-    
+      }    
   }
 }
 #endif /* _UTIL_HPP_ */
