@@ -55,7 +55,7 @@ namespace KTfwd
     }
 
     inline void remove_fixed_variants_from_sample( std::vector<sample_site_t >& sample,
-						   const unsigned nsam )
+						   const std::vector<sample_site_t>::size_type nsam )
     {
       sample.erase( std::remove_if( sample.begin(),sample.end(),[nsam](const sample_site_t & site) {
 	    assert(site.second.size()==nsam);
