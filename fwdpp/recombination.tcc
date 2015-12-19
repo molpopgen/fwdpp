@@ -62,7 +62,7 @@ namespace KTfwd
 	*/
 	fwdpp_internal::recycle_gamete(g1,gametes,gamete_recycling_bin,gamete_lookup,neutral,selected);
       }
-    return pos.size()-1;
+    return unsigned(pos.size()-1);
   }
 
   //recombination for individual-based simulation
