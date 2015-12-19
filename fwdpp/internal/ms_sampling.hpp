@@ -32,11 +32,11 @@ namespace KTfwd
 	      typename pos_finder>
     void update_sample_block(sample_t & block,
 			     const mcont_t & mutations,
-			     const unsigned & i,
-			     const unsigned & n,
+			     const size_t & i,
+			     const size_t & n,
 			     const pos_finder & pf,
-			     const unsigned & offset = 0,
-			     const unsigned & scalar = 2)
+			     const size_t & offset = 0,
+			     const size_t & scalar = 2)
     {
       for( auto mptr = mutations.cbegin() ; mptr != mutations.cend() ; ++mptr )
 	{
@@ -81,9 +81,9 @@ namespace KTfwd
 	};
 
       const auto dptr = diploids->cbegin();
-      for( unsigned i = 0 ; i < diplist.size() ; ++i )
+      for( size_t i = 0 ; i < diplist.size() ; ++i )
 	{
-	  unsigned ind = diplist[i];
+	  size_t ind = diplist[i];
 	  assert(ind>=0);
 	  assert( unsigned(ind) < diploids->size() );
 	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->first->mutations,i,2*diplist.size(),sitefinder);
