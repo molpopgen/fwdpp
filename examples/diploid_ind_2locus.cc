@@ -30,26 +30,6 @@ struct posmaker
   inline double operator()(gsl_rng * r, double a,double b) const { return gsl_ran_flat(r,a,b); }
 };
 
-template<typename list_t>
-struct deduce_recycling_bin_t
-{
-  using type = KTfwd::fwdpp_internal::recycling_bin_t<typename list_t::iterator>;
-};
-
-template<typename mlist_t>
-struct deduce_mmodel_t
-{
-  using type = std::function<typename mlist_t::iterator(typename deduce_recycling_bin_t<mlist_t>::type &,mlist_t *)>;
-};
-
-template<typename glist_t>
-struct deduce_recmodel_t
-{
-  using type = std::function<unsigned(typename glist_t::iterator &,typename glist_t::iterator &,
-				      typename KTfwd::fwdpp_internal::gamete_lookup<glist_t> &,
-				      typename deduce_recycling_bin_t<glist_t>::type &) >;
-};
-
 int main(int argc, char ** argv)
 {
   int argument=1;
@@ -110,14 +90,14 @@ int main(int argc, char ** argv)
       // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap);
       // deduce_recmodel_t<multiloc_serialized_t::glist_t>::type recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
       // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2);
-      std::vector< deduce_recmodel_t<multiloc_serialized_t::glist_t>::type > recpols{
+      std::vector< KTfwd::traits::recmodel_t<multiloc_serialized_t::glist_t>::type > recpols{
 	std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 		  std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap),
 	  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 		    std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2)
 	  };
 
-      std::vector< deduce_mmodel_t<multiloc_serialized_t::mlist_t>::type  > mmodels {
+      std::vector< KTfwd::traits::mmodel_t<multiloc_serialized_t::mlist_t>::type  > mmodels {
       	//Locus 0: positions Uniform [0,1)
       	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
       		  mu[0],0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}) ,
