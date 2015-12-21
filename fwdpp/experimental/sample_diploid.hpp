@@ -109,7 +109,6 @@ namespace KTfwd {
     {
       assert(N_curr == diploids->size());
 
-      //std::for_each( mutations->begin(),mutations->end(),[](typename gamete_type::mutation_type & __m){__m.n=0;});
       auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
       auto mutation_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
       auto lookup = fwdpp_internal::gamete_lookup_table(gametes);
