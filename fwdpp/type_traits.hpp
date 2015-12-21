@@ -30,7 +30,7 @@ namespace KTfwd {
     template<typename list_t>
     struct gamete_lookup_t
     {
-      using type = KTfwd::fwdpp_internal::gamete_lookup<list_t>;
+      using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
     };
 
     /*! 
