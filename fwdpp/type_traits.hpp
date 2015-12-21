@@ -51,7 +51,7 @@ namespace KTfwd {
       Gives mutation model function signature for models requiring gametes as arguments
     */
     template<typename mlist_t,typename glist_t>
-    struct mmodel_custom_gamete_t
+    struct mmodel_gamete_t
     {
       using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,
 							    typename glist_t::value_type &,
