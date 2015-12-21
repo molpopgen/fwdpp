@@ -14,7 +14,7 @@ namespace KTfwd {
     //! Evaluates to std::true_type if T inherits from KTfwd::mutation_base
     template<typename T>
     using is_mutation_t = typename std::is_base_of<KTfwd::mutation_base,T>::type;
-    
+
     //! Evaluates to std::true_type if T publicly inherits from KTfwd::tags::custom_diploid_t
     template<typename T>
     using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
@@ -47,6 +47,9 @@ namespace KTfwd {
       using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t *)>;
     };
 
+    /*!
+      Gives mutation model function signature for models requiring gametes as arguments
+    */
     template<typename mlist_t,typename glist_t>
     struct mmodel_custom_gamete_t
     {
