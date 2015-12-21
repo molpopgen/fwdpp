@@ -54,28 +54,6 @@ namespace KTfwd {
     {
       return m(recycling_bin,g,mutations);
     }
-    
-    /*!
-      Apply mutation model N times to a new gamete.
-      Updates mutation list
-    */
-    template<typename mutation_model,
-    	     typename mutation_insertion_policy,
-    	     typename mlist_type,
-    	     typename gamete_type>
-    void add_N_mutations( const mutation_model & mmodel,
-    			  const mutation_insertion_policy & mpolicy,
-    			  const unsigned & n,
-    			  mlist_type * mutations,
-    			  gamete_type & g)
-    {
-      for( unsigned i = 0 ; i < n ; ++i )
-    	{
-	  auto m = mmodel_dispatcher(mmodel,g,mutations);
-    	  auto mitr = mpolicy(std::move(m),mutations);
-    	  add_new_mutation(mitr,g);
-    	}
-    }
 
     /*!
       Apply mutation model N times to a new gamete.
