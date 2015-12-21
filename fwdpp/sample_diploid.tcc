@@ -74,10 +74,12 @@ namespace KTfwd
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
-    static_assert( std::is_convertible<mutation_model,typename traits::mmodel_t<mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > >::type>::value,
-		   "mutation_model must be convertible to KTwfd::traits:mmodel_t<mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > >::type" );
-    static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<gamete_list_type<gamete_type,gamete_list_type_allocator > >::type>::value,
-		   "recombnation_policy must be convertible to KTwfd::traits:recmodel_t<gamete_list_type<gamete_type,gamete_list_type_allocator > >::type" );
+    using glist_t = gamete_list_type<gamete_type,gamete_list_type_allocator >;
+    using mlist_t = mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >;
+    static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
+		   "error: mmodel is not a dispatchable mutation model type!" );
+    static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t >::type>::value,
+		   "recombnation_policy type invalid" );
     assert(N_curr == diploids->size());
 
     std::vector<double> fitnesses(diploids->size());
