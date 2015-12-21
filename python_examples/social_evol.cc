@@ -25,6 +25,7 @@ python test_boost_python.py
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/populate_lists.hpp>
 
 //FWDPP-related stuff
 using mtype = KTfwd::mutation;
@@ -116,6 +117,7 @@ poptype evolve( GSLrng & rng,
 		const double & b1, const double & b2, const double & c1, const double & c2)
 {
   poptype pop(N);
+  KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*(mu+mu_del))+0.667*(4.*double(N)*(mu+mu_del))));
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   std::vector<double> phenotypes(N);
   for( unsigned generation = 0 ; generation < generations ; ++generation )
@@ -148,7 +150,7 @@ poptype evolve( GSLrng & rng,
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
   return pop;
 }

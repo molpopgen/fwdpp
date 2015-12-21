@@ -10,6 +10,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/populate_lists.hpp>
 /*
   We will use a gsl_rng_mt19937 as our RNG.
   This type is implicitly convertible to gsl_rng *,
@@ -37,6 +38,7 @@ poptype evolve( GSLrng & rng,
 		const double & recrate)
 {
   poptype pop(N);
+  KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*(mu))+0.667*(4.*double(N)*(mu))));
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   for( unsigned generation = 0 ; generation < generations ; ++generation )
     {
@@ -57,7 +59,7 @@ poptype evolve( GSLrng & rng,
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
-      KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
   return pop;
 }

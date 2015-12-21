@@ -58,7 +58,8 @@ int main(int argc, char ** argv)
   auto rules = KTfwd::experimental::standardWFrules();
   while(nreps--)
     {
-      singlepop_t pop(N);      
+      singlepop_t pop(N);
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
       unsigned generation;
 
       double wbar=1;
@@ -91,7 +92,7 @@ int main(int argc, char ** argv)
 						     std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N),
 						     0.,
 						     rules);
-	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}
       Sequence::SimData neutral_muts,selected_muts;

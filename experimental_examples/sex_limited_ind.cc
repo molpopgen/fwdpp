@@ -32,6 +32,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/populate_lists.hpp>
 #include <fwdpp/experimental/sample_diploid.hpp>
 //FWDPP-related stuff
 
@@ -41,6 +42,10 @@ struct sex_specific_mutation : public KTfwd::mutation_base
   double s;
   //The effect size applies to this sex, is 0 otherwise
   bool sex;
+  sex_specific_mutation( KTfwd::tags::extinct ) : KTfwd::mutation_base(std::numeric_limits<double>::quiet_NaN(),0u,true),
+						  s(std::numeric_limits<double>::quiet_NaN()),sex(false)
+  {
+  }
   sex_specific_mutation(const double & __pos, const double & __s, const bool & __sex,
 			const unsigned & __n, const bool & __neutral)
     : KTfwd::mutation_base(__pos,__n,__neutral),s(__s),sex(__sex)
@@ -283,6 +288,7 @@ int main(int argc, char ** argv)
   for( unsigned rep = 0 ; rep < nreps ; ++rep )
     {
       poptype pop(N);
+      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*mu_total)+0.667*(4.*double(N)*mu_total)));
       //Assign "sex"
       for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
 	{
@@ -311,7 +317,7 @@ int main(int argc, char ** argv)
 							    0., //Gotta pass the "selfing" rate, even though it makes no sense for this model.  API tradeoff for flexibility...
 							    rules
 							    );
-	  KTfwd::remove_fixed_lost(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
+	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
 	}
       Sequence::SimData neutral_muts,selected_muts;
       
