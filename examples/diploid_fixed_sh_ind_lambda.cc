@@ -82,12 +82,11 @@ int main(int argc, char ** argv)
 				       [&](singlepop_t::glist_t::iterator & g1,
 					   singlepop_t::glist_t::iterator & g2,
 					   /*
-					     This is an oddity of lambdas: the user will either have to dig into fwdpp's internals
-					     to determine what this type is, or rely on decltype, which in this case is asking about the
-					     return type of the function creating the lookup table.
+					     Lambdas need to know their types.  We can use fwdpp's traits namespace
+					     to deduce those types for us:
 					   */
-					   decltype(KTfwd::fwdpp_internal::gamete_lookup_table(&pop.gametes)) & gamete_lookup,
-					   decltype(KTfwd::fwdpp_internal::make_gamete_queue(&pop.gametes)) & gamete_recycling_bin) {
+					   KTfwd::traits::gamete_lookup_t<decltype(pop.gametes)>::type & gamete_lookup,
+					   KTfwd::traits::recycling_bin_t<decltype(pop.gametes)>::type & gamete_recycling_bin) {
 					 return KTfwd::recombine_gametes(r.get(),littler,&pop.gametes,g1,g2,gamete_lookup,gamete_recycling_bin,
 									 std::ref(pop.neutral),std::ref(pop.selected),
 									 //This nested lambda is our genetic map: uniform on interval (0,1]
