@@ -1,11 +1,14 @@
 #ifndef __FWDPP_TYPE_TRAITS_HPP__
 #define __FWDPP_TYPE_TRAITS_HPP__
 
+#include <type_traits>
 #include <functional>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gamete_lookup_table.hpp>
+#include <fwdpp/internal/mutation_internal.hpp>
+
 namespace KTfwd {
   namespace traits {
     //! Evaluates to std::true_type if T inherits from KTfwd::mutation_base
@@ -23,7 +26,19 @@ namespace KTfwd {
       using type = KTfwd::fwdpp_internal::recycling_bin_t<typename list_t::iterator>;
     };
 
-    //! Gives the mutation model function signature corresponding to mlist_t
+    //! Gives the "gamete lookup table" type corresponding to list_t
+    template<typename list_t>
+    struct gamete_lookup_t
+    {
+      using type = KTfwd::fwdpp_internal::gamete_lookup<list_t>;
+    };
+
+    /*! 
+      Gives the mutation model function signature corresponding to mlist_t.
+
+      Applies to mutation policies that only take recycling bins and  mlist_t *
+      as arguments
+    */
     template<typename mlist_t>
     struct mmodel_t
     {
@@ -32,12 +47,32 @@ namespace KTfwd {
       using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t *)>;
     };
 
+    template<typename mlist_t,typename glist_t>
+    struct mmodel_custom_gamete_t
+    {
+      using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,
+							    typename glist_t::value_type &,
+							    mlist_t *)>;
+    };
+
+    //! Check that a mutation model type is valid.
+    template<typename mmodel_t,typename mlist_t,typename glist_t>
+    struct valid_mutation_model
+    {
+      using queue_t = typename recycling_bin_t<mlist_t>::type;
+      using gamete_t = typename glist_t::value_type;
+      //http://stackoverflow.com/questions/11470802/stdresult-of-simple-function
+      //http://stackoverflow.com/questions/2763824/decltype-result-of-or-typeof
+      using result_type = typename std::result_of<decltype(&fwdpp_internal::mmodel_dispatcher<mmodel_t,gamete_t,mlist_t,queue_t>)(mmodel_t &,gamete_t &,mlist_t *,queue_t &)>::type;
+      using type = typename std::is_same<result_type,typename mlist_t::iterator>::type;
+    };
+      
     //! Gives the recombination model function signature corresponding to glist_t
     template<typename glist_t>
     struct recmodel_t
     {
       using type = std::function<unsigned(typename glist_t::iterator &,typename glist_t::iterator &,
-					  typename KTfwd::fwdpp_internal::gamete_lookup<glist_t> &,
+					  typename gamete_lookup_t<glist_t>::type &,
 					  typename recycling_bin_t<glist_t>::type &) >;
     };
 
