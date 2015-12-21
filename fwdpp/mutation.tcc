@@ -18,15 +18,14 @@ namespace KTfwd
 	    typename iterator_type,
 	    typename mutation_model,
 	    typename gamete_insertion_policy,
-	    typename list_type_allocator,
-	    typename list_type_allocator2,
-	    template<typename,typename> class list_type,
-	    template<typename,typename> class list_type2>
+	    typename glist_t,
+	    typename mlist_t>
   iterator_type mutate_gamete_recycle( queue_type & recycling_bin,
 				       queue_type2 & gamete_recycling_bin,
 				       gsl_rng * r,
-				       const double & mu, list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
-				       list_type2<typename iterator_type::value_type::mutation_type,list_type_allocator2 > * mutations, 
+				       const double & mu,
+				       glist_t * gametes,
+				       mlist_t * mutations,
 				       iterator_type &g,
 				       const mutation_model &mmodel,
 				       const gamete_insertion_policy & gpolicy)

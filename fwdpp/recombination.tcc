@@ -8,12 +8,12 @@
 namespace KTfwd
 {  
   template< typename iterator_type,
-	    typename list_type_allocator,
+	    typename vec_t,
+	    typename glist_t,
 	    typename glookup_t,
-	    typename queue_t,
-	    template<typename,typename> class list_type>
-  unsigned recombine_gametes( std::vector<double> & pos,
-			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
+	    typename queue_t>
+  unsigned recombine_gametes( const vec_t & pos,
+			      glist_t * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
@@ -34,7 +34,6 @@ namespace KTfwd
     //typename iterator_type::value_type ng(0u,neutral,selected);
 
     //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
-    //auto lookup = gamete_lookup.lookup(ng);
     auto lookup = gamete_lookup.lookup(neutral,selected);
     if( lookup.first != lookup.second ) 
       {
@@ -68,13 +67,12 @@ namespace KTfwd
   //recombination for individual-based simulation
   template< typename iterator_type,
 	    typename recombination_map,
-	    typename list_type_allocator,
+	    typename glist_t,
 	    typename glookup_t,
-	    typename queue_t,
-	    template<typename,typename> class list_type>
+	    typename queue_t>
   unsigned recombine_gametes( gsl_rng * r,
 			      const double & littler,
-			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
+			      glist_t * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,

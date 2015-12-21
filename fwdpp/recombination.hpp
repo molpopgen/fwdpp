@@ -21,13 +21,12 @@ namespace KTfwd
    */
   template< typename iterator_type,
 	    typename recombination_map,
-	    typename list_type_allocator,
+	    typename glist_t,
 	    typename glookup_t,
-	    typename queue_t,
-	    template<typename,typename> class list_type>
+	    typename queue_t>
   unsigned recombine_gametes( gsl_rng * r,
 			      const double & littler,
-			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
+			      glist_t * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
@@ -57,14 +56,12 @@ namespace KTfwd
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
   */
   template< typename iterator_type,
-	    typename list_type_allocator,
-	    typename vector_type_allocator,
+	    typename vec_t,
+	    typename glist_t,
 	    typename glookup_t,
-	    typename queue_t,
-	    template<typename,typename> class vector_type,
-	    template<typename,typename> class list_type>
-  unsigned recombine_gametes( const vector_type< double, vector_type_allocator > & pos,
-			      list_type< typename iterator_type::value_type,list_type_allocator > * gametes,
+	    typename queue_t>
+  unsigned recombine_gametes( const vec_t & pos,
+			      glist_t * gametes,
 			      iterator_type & g1,
 			      iterator_type & g2,
 			      glookup_t & gamete_lookup,
