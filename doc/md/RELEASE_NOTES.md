@@ -30,6 +30,8 @@ TL;DR Big performance improvements due to better handling of objects in memory. 
   * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
   * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
 
+* Improved "type traits" sub-library (namespace KTfwd::traits)
+
 * Bug fixes:
   * Issue #30 fixed regarding serialization of KTfwd::generalmut and KTfwd::generalmut_vec
 
