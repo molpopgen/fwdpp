@@ -20,6 +20,7 @@ namespace KTfwd {
     template<typename T>
     using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
 
+    //! Determine if T is/is derived from KTfwd::gamete_base
     template<typename T>
     struct is_gamete_t
     {
