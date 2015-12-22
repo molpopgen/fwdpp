@@ -69,8 +69,7 @@ namespace KTfwd
 
     Typical usage is to pass to KTfwd::sample_diploid as follows:
     \code
-    std::bind( KTfwd::mutation_remover(), 0 ); //If a mutation is at frequency zero after sampling, remove pointers to it from all gametes
-    std::bind( KWfwd::mutation_remover(), 0 ,twoN); //If a mutation is at frequency zero or 2N after sampling, remove pointers to it from all gametes
+    std::bind( KTfwd::mutation_remover(), twoN ); //If a mutation is at frequency 2N after sampling, remove pointers to it from all gametes
     \endcode
    */
   struct mutation_remover
@@ -81,13 +80,6 @@ namespace KTfwd
 				  const uint_t & x1 ) const
     {
       return i->n == x1;
-    }
-    template<typename iterator_type>
-    inline result_type operator()(const iterator_type & i,
-				  const uint_t & x1,
-				  const uint_t & x2) const
-    {
-      return i->n == x1 || i->n == x2;
     }
   };
 
