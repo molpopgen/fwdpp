@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test1 )
 					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 					   std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					   std::bind(no_selection_multi(),std::placeholders::_1),
-					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
+					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_gzserialize_test )
 					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 					   std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					   std::bind(no_selection_multi(),std::placeholders::_1),
-					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
+					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_copy_construct )
 					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 					   std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					   std::bind(no_selection_multi(),std::placeholders::_1),
-					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
+					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);
@@ -500,7 +500,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_assigment_operator )
 					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 					   std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					   std::bind(no_selection_multi(),std::placeholders::_1),
-					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2000),
+					   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2000),
 					   0.);
       assert( check_sum(pop.gametes,8000) );
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2000);

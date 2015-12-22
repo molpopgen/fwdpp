@@ -136,7 +136,7 @@ int main(int argc, char ** argv)
 				 [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 	  			 std::bind(KTfwd::insert_at_end<multiloc_t::gamete_t,multiloc_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 	  			 std::bind(no_selection_multi(),std::placeholders::_1),
-	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
+	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
 	  assert( check_sum(pop.gametes,2*twoN) );
       	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	}

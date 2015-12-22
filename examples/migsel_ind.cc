@@ -145,7 +145,7 @@ int main( int argc, char ** argv )
 						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation
-						 std::bind(mutation_remover(),std::placeholders::_1,0,4*N),
+						 std::bind(mutation_remover(),std::placeholders::_1,4*N),
 						 std::bind(migpop,std::placeholders::_1,r.get(),m),
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation

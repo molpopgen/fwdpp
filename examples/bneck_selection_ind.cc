@@ -104,7 +104,7 @@ int main(int argc, char ** argv)
 						 recmap),
 				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
 	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}
@@ -127,7 +127,7 @@ int main(int argc, char ** argv)
 					     recmap),
 				   std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N2));
+				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N2));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N2);
       generation++;
       
@@ -158,7 +158,7 @@ int main(int argc, char ** argv)
 						 recmap),
 				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*nextN));
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*nextN));
 	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*nextN);
 	  currentN=nextN;
 	}

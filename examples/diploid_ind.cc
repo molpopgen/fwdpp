@@ -158,7 +158,8 @@ int main(int argc, char ** argv)
       					 are just a constant applied to everyone's fitness, so we 
       					 can remove them, making the simulation faster, etc.
       				       */
-      				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
+				       //[&twoN]( singlepop_t::mlist_t::iterator & m ) { return m->n==(twoN); });
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
 	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}

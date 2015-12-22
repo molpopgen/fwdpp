@@ -76,7 +76,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  []( poptype::dipvector_t::const_iterator dip ) { return KTfwd::multiplicative_diploid()(dip->first,dip->second,2.); },
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_serialize_in_memory )
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  []( poptype::dipvector_t::const_iterator dip ) { return KTfwd::multiplicative_diploid()(dip->first,dip->second,2.); },
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
 
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  []( poptype::dipvector_t::const_iterator dip ) { return KTfwd::multiplicative_diploid()(dip->first,dip->second,2.); },
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
 
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 					  []( poptype::dipvector_t::const_iterator dip ) { return KTfwd::multiplicative_diploid()(dip->first,dip->second,2.); },
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N));
+					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
     }
 

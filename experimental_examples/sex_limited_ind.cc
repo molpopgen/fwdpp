@@ -313,7 +313,7 @@ int main(int argc, char ** argv)
 								      recmap),
 							    std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
 							    std::bind(sex_specific_fitness,std::placeholders::_1,rng.get(),sigmaE),
-							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*pop.N),
+							    std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N),
 							    0., //Gotta pass the "selfing" rate, even though it makes no sense for this model.  API tradeoff for flexibility...
 							    rules
 							    );

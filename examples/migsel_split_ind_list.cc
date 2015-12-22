@@ -145,7 +145,7 @@ int main( int argc, char ** argv )
 						    recmap),
 					  std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,0,2*N));
+					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
       KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
     }
 
@@ -179,7 +179,7 @@ int main( int argc, char ** argv )
 						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
 						 vbf,
 						 //4*N b/c it needs to be fixed in the metapopulation
-						 std::bind(mutation_remover(),std::placeholders::_1,0,4*N),
+						 std::bind(mutation_remover(),std::placeholders::_1,4*N),
 						 std::bind(migpop,std::placeholders::_1,r,m),
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation
