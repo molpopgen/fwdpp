@@ -19,18 +19,18 @@ namespace KTfwd {
     template<typename T>
     using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
 
-    template<typename T>
-    struct has_gamete_tag
-    {
-    private:
-      typedef char                      yes;
-      typedef struct { char array[2]; } no;
+    // template<typename T>
+    // struct has_gamete_tag
+    // {
+    // private:
+    //   typedef char                      yes;
+    //   typedef struct { char array[2]; } no;
       
-      template<typename C> static yes test(typename C::gamete_tag*);
-      template<typename C> static no  test(...);
-    public:
-      static const bool value = sizeof(test<T>(0)) == sizeof(yes);
-    };
+    //   template<typename C> static yes test(typename C::gamete_tag*);
+    //   template<typename C> static no  test(...);
+    // public:
+    //   static const bool value = sizeof(test<T>(0)) == sizeof(yes);
+    // };
 
     template<class T>
     struct void_t {
@@ -45,6 +45,15 @@ namespace KTfwd {
     struct has_gamete_tag2<T, typename void_t<typename T::gamete_tag>::type > : std::true_type
     {
     };
+
+#define HAS_TYPE(NAME) \
+    template<typename,typename = void> \
+    struct has_##NAME: std::false_type \
+    {};\
+    template<typename T> \
+    struct has_##NAME<T,typename void_t<typename T::NAME>::type >: std::true_type {}; 
+
+    HAS_TYPE(gamete_tag)
     
     //! Gives the "recycling bin" type corresponding to list_t
     template<typename list_t>
