@@ -83,7 +83,7 @@ namespace KTfwd
       const auto dptr = diploids->cbegin();
       for( size_t i = 0 ; i < diplist.size() ; ++i )
 	{
-	  size_t ind = diplist[i];
+	  typename dipvector_t::difference_type ind = diplist[i];
 	  assert(ind>=0);
 	  assert( unsigned(ind) < diploids->size() );
 	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->first->mutations,i,2*diplist.size(),sitefinder);

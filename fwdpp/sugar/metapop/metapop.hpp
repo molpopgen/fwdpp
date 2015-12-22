@@ -41,7 +41,7 @@ namespace KTfwd {
     private:
       void init_vectors()
       {
-	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
+	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0u);
 	gametes.emplace_back( gamete_t(2*metapopsize) );
 	auto gam = gametes.begin();
 	for(uint_t i = 0 ; i < Ns.size() ; ++i )
@@ -205,7 +205,7 @@ namespace KTfwd {
     private:
       void init_vectors()
       {
-	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0);
+	uint_t metapopsize = std::accumulate(Ns.begin(),Ns.end(),0u);
 	gametes.emplace_back( gamete_t(2*metapopsize) );
 	auto gam = gametes.begin();
 	for(uint_t i = 0 ; i < Ns.size() ; ++i )

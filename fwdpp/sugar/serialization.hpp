@@ -1,6 +1,7 @@
 #ifndef __FWDPP_SUGAR_SINGLEPOP_SERIALIZATON_HPP__
 #define __FWDPP_SUGAR_SINGLEPOP_SERIALIZATON_HPP__
 
+#include <ios>
 #include <iosfwd>
 #include <sstream>
 #include <algorithm>
@@ -354,7 +355,7 @@ namespace KTfwd
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
+	  buffer.write(reinterpret_cast<const char *>(&pop.fixation_times[0]), std::streamsize(pop.fixation_times.size()*sizeof(uint_t)));
 	}
     }
 
@@ -376,7 +377,7 @@ namespace KTfwd
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
+	  buffer.write(reinterpret_cast<const char *>(&pop.fixation_times[0]), std::streamsize(pop.fixation_times.size()*sizeof(uint_t)));
 	}
     }
 

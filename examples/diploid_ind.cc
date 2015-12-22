@@ -30,13 +30,13 @@ int main(int argc, char ** argv)
       exit(10);
     } 
   int argument=1;
-  const unsigned N = atoi(argv[argument++]);           //Number of diploids
+  const unsigned N = unsigned(atoi(argv[argument++]));           //Number of diploids
   const double theta = atof(argv[argument++]);         //4*n*mutation rate.  Note: mutation rate is per REGION, not SITE!!
   const double rho = atof(argv[argument++]);           //4*n*recombination rate.  Note: recombination rate is per REGION, not SITE!!
-  const unsigned ngens = atoi(argv[argument++]);       //Number of generations to simulate
-  const unsigned samplesize1 = atoi(argv[argument++]); //Sample size to draw from the population
+  const unsigned ngens = unsigned(atoi(argv[argument++]));       //Number of generations to simulate
+  const unsigned samplesize1 = unsigned(atoi(argv[argument++])); //Sample size to draw from the population
   int nreps = atoi(argv[argument++]);                  //Number of replicates to simulate
-  const unsigned seed = atoi(argv[argument++]);        //Random number seed
+  const unsigned seed = unsigned(atoi(argv[argument++]));        //Random number seed
 
   const double mu = theta/double(4*N);                 //per-gamete mutation rate
   
