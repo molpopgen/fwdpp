@@ -84,7 +84,10 @@ namespace KTfwd {
       using gamete_t = typename glist_t::value_type;
       //http://stackoverflow.com/questions/11470802/stdresult-of-simple-function
       //http://stackoverflow.com/questions/2763824/decltype-result-of-or-typeof
-      using result_type = typename std::result_of<decltype(&fwdpp_internal::mmodel_dispatcher<mmodel_t,gamete_t,mlist_t,queue_t>)(mmodel_t &,gamete_t &,mlist_t *,queue_t &)>::type;
+      using result_type = typename std::result_of<
+	decltype(&fwdpp_internal::mmodel_dispatcher<mmodel_t,gamete_t,mlist_t,queue_t>)
+	(mmodel_t &,gamete_t &,mlist_t *,queue_t &)
+	>::type;
       using type = typename std::is_same<result_type,typename mlist_t::iterator>::type;
     };
       
@@ -92,7 +95,8 @@ namespace KTfwd {
     template<typename glist_t>
     struct recmodel_t
     {
-      using type = std::function<unsigned(typename glist_t::iterator &,typename glist_t::iterator &,
+      using type = std::function<unsigned(typename glist_t::iterator &,
+					  typename glist_t::iterator &,
 					  typename gamete_lookup_t<glist_t>::type &,
 					  typename recycling_bin_t<glist_t>::type &) >;
     };
