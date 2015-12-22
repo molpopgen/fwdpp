@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
 	 simulations, so we use the call to std::max to select something better.
       */
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*theta+0.667*theta));
+      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
       unsigned generation;
       double wbar;
       //lookup_table_type lookup;  //this is our lookup table for the mutation model
@@ -145,7 +145,7 @@ int main(int argc, char ** argv)
       				       /*
       					 For each gamete still extant after sampling,
       					 remove the pointers to any mutations that have 
-      					 been fixed or lost from the population.
+      					 been fixed in the population.
 					 
       					 For more complex models such as quantitative
       					 traits evolving towards an optimum, one may not
@@ -158,9 +158,8 @@ int main(int argc, char ** argv)
       					 are just a constant applied to everyone's fitness, so we 
       					 can remove them, making the simulation faster, etc.
       				       */
-				       //[&twoN]( singlepop_t::mlist_t::iterator & m ) { return m->n==(twoN); });
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
-	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,twoN));
+	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;
