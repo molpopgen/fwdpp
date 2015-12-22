@@ -18,6 +18,33 @@ namespace KTfwd {
     //! Evaluates to std::true_type if T publicly inherits from KTfwd::tags::custom_diploid_t
     template<typename T>
     using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
+
+    template<typename T>
+    struct has_gamete_tag
+    {
+    private:
+      typedef char                      yes;
+      typedef struct { char array[2]; } no;
+      
+      template<typename C> static yes test(typename C::gamete_tag*);
+      template<typename C> static no  test(...);
+    public:
+      static const bool value = sizeof(test<T>(0)) == sizeof(yes);
+    };
+
+    template<class T>
+    struct void_t {
+      typedef void type;
+    };
+
+    template<class T, class U = void>
+    struct has_gamete_tag2 : std::false_type {
+    };
+
+    template<class T>
+    struct has_gamete_tag2<T, typename void_t<typename T::gamete_tag>::type > : std::true_type
+    {
+    };
     
     //! Gives the "recycling bin" type corresponding to list_t
     template<typename list_t>
@@ -30,6 +57,8 @@ namespace KTfwd {
     template<typename list_t>
     struct gamete_lookup_t
     {
+      static_assert( has_gamete_tag<typename list_t::value_type>::value , "foo" );
+      static_assert( has_gamete_tag2<typename list_t::value_type>::value , "foo" );
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
     };
 
