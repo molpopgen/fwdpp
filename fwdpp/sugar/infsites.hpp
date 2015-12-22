@@ -200,7 +200,7 @@ namespace KTfwd
       auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
       return fwdpp_internal::recycle_mutation_helper(mutation_recycling_bin,mutations,
-						     pos,(selected)?smaker():0.,(selected)?hmaker():0.,1u);
+						     pos,(selected)?smaker():0.,1u,(selected)?hmaker():0.);
     }
 
     /*!
