@@ -60,23 +60,6 @@ int main(int argc, char ** argv)
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
-  /*
-    Vectors for holding copies of pointers to mutations during recombination.
-    The requirement to declare these was introduced in fwdpp 0.3.3.
-
-    In previous versions of the library, vectors like this had to be allocated
-    for every crossover event for every generation.  The result was an excessive 
-    number of requests for memory allocation.
-
-    Now, we create the vector once per simulation.  Further, we will reserve memory
-    here, to minimize reallocs, etc., within fwdpp.
-
-    Internally, fwdpp's job is to make sure that this vector is appropriately 
-    and efficiently cleared, but only when needed.
-
-    Should this move into sugar struct?  Probably
-  */
-  //singlepop_t::gamete_t::mutation_container neutral,selected;
   while(nreps--)
     {
       /* 
@@ -90,7 +73,6 @@ int main(int argc, char ** argv)
       KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
       unsigned generation;
       double wbar;
-      //lookup_table_type lookup;  //this is our lookup table for the mutation model
 
       for( generation = 0; generation < ngens; ++generation )
       	{
