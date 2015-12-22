@@ -5,6 +5,7 @@
 #include <functional>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
+#include <fwdpp/internal/type_traits.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gamete_lookup_table.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
@@ -19,42 +20,20 @@ namespace KTfwd {
     template<typename T>
     using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
 
-    // template<typename T>
-    // struct has_gamete_tag
-    // {
-    // private:
-    //   typedef char                      yes;
-    //   typedef struct { char array[2]; } no;
-      
-    //   template<typename C> static yes test(typename C::gamete_tag*);
-    //   template<typename C> static no  test(...);
-    // public:
-    //   static const bool value = sizeof(test<T>(0)) == sizeof(yes);
-    // };
-
-    //Based on // // http://stackoverflow.com/questions/11813940/possible-to-use-type-traits-sfinae-to-find-if-a-class-defines-a-member-typec
-    template<class T>
-    struct void_t {
-      typedef void type;
-    };
-
-    template<class T, class U = void>
-    struct has_gamete_tag2 : std::false_type {
-    };
-
-    template<class T>
-    struct has_gamete_tag2<T, typename void_t<typename T::gamete_tag>::type > : std::true_type
+    template<typename T>
+    struct is_gamete_t
     {
+      static_assert(KTfwd::traits::internal::has_gamete_tag<T>::value ,
+		    "A gamete must contain type gamete_tag");
+      static_assert(KTfwd::traits::internal::has_mutation_type<T>::value ,
+		    "A gamete must contain type mutation_type");
+      static_assert(KTfwd::traits::internal::has_mutation_list_type<T>::value ,
+		    "A gamete must contain type mutation_list_type");
+      using mutation_t = typename T::mutation_type;
+      using mlist_t = typename T::mutation_list_type;
+      using tag_t = typename T::gamete_tag;
+      using type =  typename std::is_base_of< KTfwd::gamete_base<mutation_t,mlist_t,tag_t>, T>::type;
     };
-
-#define HAS_TYPE(NAME) \
-    template<typename,typename = void> \
-    struct has_##NAME: std::false_type \
-    {};\
-    template<typename T> \
-    struct has_##NAME<T,typename void_t<typename T::NAME>::type >: std::true_type {}; 
-
-    HAS_TYPE(gamete_tag)
     
     //! Gives the "recycling bin" type corresponding to list_t
     template<typename list_t>
@@ -67,8 +46,7 @@ namespace KTfwd {
     template<typename list_t>
     struct gamete_lookup_t
     {
-      static_assert( has_gamete_tag<typename list_t::value_type>::value , "foo" );
-      static_assert( has_gamete_tag2<typename list_t::value_type>::value , "foo" );
+      static_assert( typename is_gamete_t<typename list_t::value_type>::type(),"foo" );
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
     };
 
