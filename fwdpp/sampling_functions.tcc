@@ -129,7 +129,7 @@ namespace KTfwd
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
     for( unsigned i = 0 ; i < n/2+isodd ; ++i )
       {
-	diplist.push_back(gsl_ran_flat(r,0.,double(diploids->size())));
+	diplist.push_back(unsigned(gsl_ran_flat(r,0.,double(diploids->size()))));
       }
     return fwdpp_internal::ms_sample_separate_mlocus(diploids,diplist,n,remove_fixed);
   }

@@ -116,7 +116,7 @@ int main( int argc, char ** argv )
   unsigned Ns[2] = {N,N};
   double fs[2] = {f1,f2};
   poptype pop({N,N});
-  KTfwd::add_recyclable(pop,4*N,2*std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del)));
+  KTfwd::add_recyclable(pop,4*N,2*size_t(std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del))));
   //create a vector of fitness functions for each population
   std::vector<std::function<double (glist::const_iterator,
 				    glist::const_iterator)> > vbf;

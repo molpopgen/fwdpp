@@ -347,7 +347,7 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
       write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      uint_t temp = pop.fixations.size();
+      uint_t temp = uint_t(pop.fixations.size());
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
@@ -369,7 +369,7 @@ namespace KTfwd
       buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
       write_binary_pop_mloc(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      uint_t temp = pop.fixations.size();
+      uint_t temp = uint_t(pop.fixations.size());
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
@@ -391,12 +391,12 @@ namespace KTfwd
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      uint_t npops = pop.Ns.size();
+      uint_t npops = uint_t(pop.Ns.size());
       buffer.write(reinterpret_cast<char *>(&npops),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(uint_t) );
       write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
-      uint_t temp = pop.fixations.size();
+      uint_t temp = uint_t(pop.fixations.size());
       buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
       if( temp )
 	{
@@ -528,7 +528,7 @@ namespace KTfwd
   */
   struct gzserialize
   {
-    using result_type = long long;
+    using result_type = std::result_of<decltype(&gzwrite)(gzFile,void *,unsigned)>::type;
     /*
       \brief Call operator
       \note gzout must already be opened, and with a mode involving 'b'
@@ -536,14 +536,14 @@ namespace KTfwd
     template<typename sugarpop_t,
 	     typename writer_t,
 	     typename diploid_writer_t = diploidIOplaceholder>
-    inline long long operator()( gzFile gzout,
+    inline result_type operator()( gzFile gzout,
 				 const sugarpop_t & pop,
 				 const writer_t & wt,
 				 const diploid_writer_t & dw = diploid_writer_t() ) const
     {
       serialize s;
       s(pop,wt,dw);
-      return gzwrite(gzout,s.buffer.str().c_str(),s.buffer.str().size());
+      return gzwrite(gzout,s.buffer.str().c_str(),unsigned(s.buffer.str().size()));
     }
   };
 
@@ -570,7 +570,7 @@ namespace KTfwd
       //Step 0: read N
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
-      uint_t temp;
+      size_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
     	{
@@ -580,7 +580,7 @@ namespace KTfwd
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
+	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), unsigned(temp*sizeof(uint_t)) );
 	}
       //Finally, fill the lookup table:
       std::for_each( pop.mutations.begin(), pop.mutations.end(),

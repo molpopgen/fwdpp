@@ -70,12 +70,11 @@ int main(int argc, char ** argv)
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
-  unsigned twoN = 2*N;
   while(nreps--)
     {
       //Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
+      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del))));
       unsigned generation =  0;
       double wbar=1;
       for( generation = 0; generation < ngens; ++generation )
@@ -139,7 +138,7 @@ int main(int argc, char ** argv)
       unsigned gens_since_bneck = 0;
       for( ; generation < ngens + ngens2 ; ++generation,++gens_since_bneck )
 	{
-	  nextN = round( N2*std::pow(G,gens_since_bneck+1) );
+	  nextN = unsigned(round( N2*std::pow(G,gens_since_bneck+1) ));
 	  assert(nextN > 0);
 	  wbar = KTfwd::sample_diploid(r.get(),
 				       &pop.gametes,

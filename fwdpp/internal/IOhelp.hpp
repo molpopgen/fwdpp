@@ -80,7 +80,7 @@ namespace KTfwd {
 		  ostreamtype & buffer) const
       {
 	using glist_iterator = typename gamete_cont_t< gamete_type, gamete_cont_t_details...>::const_iterator;
-	uint_t N = gametes->size();
+	uint_t N = uint_t(gametes->size());
 	buffer.write( reinterpret_cast< char * >(&N), sizeof(uint_t) );
 	std::vector< glist_iterator > gam_info;
 	std::vector<uint_t> gam_indexes;

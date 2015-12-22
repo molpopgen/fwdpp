@@ -76,12 +76,11 @@ int main(int argc, char ** argv)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get()),
     recmap2 = std::bind(gsl_ran_flat,r.get(),1.,2.);
 
-  auto shmaker = [](){return 0.;};
   //auto posmaker = [](gsl_rng * r,double a,double b){return gsl_ran_flat(r,a,b);};
   while(nreps--)
     {
       multiloc_serialized_t pop(N,2);
-      KTfwd::add_recyclable(pop,4*N,2*std::ceil(std::log(2*N)*(theta)+0.667*(theta)));
+      KTfwd::add_recyclable(pop,4*N,size_t(2*std::ceil(std::log(2*N)*(theta)+0.667*(theta))));
       unsigned generation=0;
       double wbar;
 

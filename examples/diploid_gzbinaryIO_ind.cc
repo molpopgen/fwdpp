@@ -49,10 +49,8 @@ int main(int argc, char ** argv)
   std::cerr << '\n';
   
   GSLrng r(seed);
-  unsigned twoN = 2*N;
-
   singlepop_t pop(N);
-  KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*theta+0.667*theta));
+  KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
   unsigned generation;
   double wbar;
 
@@ -79,7 +77,7 @@ int main(int argc, char ** argv)
 				   std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
+      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
     }
 
   /*
@@ -114,7 +112,7 @@ int main(int argc, char ** argv)
   gzFile gzout = gzopen( hapfile, "ab" ); //open in append mode.  The b = binary mode.  Not required on all systems, but never hurts.
   long long written = KTfwd::gzserialize()(gzout,pop,KTfwd::mutation_writer());
   //write info to index file
-  fprintf( index_fh, "%u %lld\n",replicate_no,gztell( gzout ) );
+  fprintf( index_fh, "%u %ld\n",replicate_no,gztell( gzout ) );
   gzclose(gzout);
 
   //We can now release close the index file, release the lock, etc.

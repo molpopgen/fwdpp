@@ -87,12 +87,12 @@ namespace KTfwd
 				ostreamtype & buffer,
 				const diploid_writer_t & dw )
   {
-    unsigned nloci = diploids->begin()->size();
+    unsigned nloci = unsigned(diploids->begin()->size());
     buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
     //write mutations
     auto mutdata = fwdpp_internal::write_mutations()(mutations,mw,buffer);
     auto gamdata = fwdpp_internal::write_haplotypes()( mlocus_gametes, mutdata.first, mutdata.second, buffer );
-    unsigned ndips=diploids->size();
+    unsigned ndips=unsigned(diploids->size());
     buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
     std::for_each( diploids->cbegin(), diploids->cend(),
     		   [&gamdata,&buffer,&dw]( const typename dipvector_t::value_type & diploid ) {

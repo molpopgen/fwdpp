@@ -124,7 +124,7 @@ int main( int argc, char ** argv )
   gsl_rng_set(r,seed);
 
   poptype pop({N}); //Initialize a SINGLE population in the metapop sim!
-  KTfwd::add_recyclable(pop,4*N,2*std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del)));
+  KTfwd::add_recyclable(pop,4*N,2*size_t(std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del))));
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r);
   unsigned generation = 0;
   for( unsigned i = 0 ; i < ngens ; ++i,++generation )

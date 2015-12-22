@@ -47,13 +47,11 @@ int main(int argc, char ** argv)
 
   GSLrng r(seed);
 
-  unsigned twoN = 2*N;
-
   KTfwd::site_dependent_fitness fitness_model;
   while(nreps--)
     {
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
+      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del))));
       unsigned generation;
       double wbar=1;
       for( generation = 0; generation < ngens; ++generation )

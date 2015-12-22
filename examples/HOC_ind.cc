@@ -97,15 +97,13 @@ int main(int argc, char ** argv)
   //Initiate random number generation system from sugar layer
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> r(seed);
 
-  unsigned twoN = 2*N;
-
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
   while(nreps--)
     {
       poptype pop(N);
-      KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*mu)+0.667*(4.*double(N)*mu)));
+      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*(4.*double(N)*mu)+0.667*(4.*double(N)*mu))));
       //HOChap mmodel(r,sigmu,&pop.mut_lookup);
       for( unsigned generation = 0; generation < ngens; ++generation )
       	{
@@ -161,7 +159,7 @@ int main(int argc, char ** argv)
 					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
 					      KTfwd::remove_nothing());
       	  KTfwd::update_mutations(&pop.mutations,&pop.mut_lookup);
-	  assert(KTfwd::check_sum(pop.gametes,twoN));
+	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}    
       //Get VG for this replicate
       //Note: this can be done more efficiently via the boost accumulator library, which
