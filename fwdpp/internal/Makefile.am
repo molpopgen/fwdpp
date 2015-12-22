@@ -11,5 +11,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	gamete_lookup_table.hpp \
 	gamete_cleaner.hpp \
 	recycling.hpp \
-	sample_diploid_helpers.hpp
+	sample_diploid_helpers.hpp \
+	type_traits.hpp
 
