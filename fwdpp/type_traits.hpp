@@ -47,7 +47,8 @@ namespace KTfwd {
     template<typename list_t>
     struct gamete_lookup_t
     {
-      static_assert( typename is_gamete_t<typename list_t::value_type>::type(),"foo" );
+      static_assert( typename is_gamete_t<typename list_t::value_type>::type(),
+		     "list_t::value_type must be a gamete type");
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
     };
 

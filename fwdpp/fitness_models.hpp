@@ -4,6 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
+#include <fwdpp/type_traits.hpp>
 #include <cassert>
 #include <type_traits>
 #include <algorithm>
@@ -44,9 +45,8 @@ namespace KTfwd
     template<typename iterator_type >
     inline result_type operator()(const iterator_type &, const iterator_type &) const
     {
-      static_assert( std::is_base_of<mutation_base,
-		     typename iterator_type::value_type::mutation_type>::value,
-                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
+      static_assert( typename traits::is_gamete_t<typename iterator_type::value_type>::type(),
+                     "iterator_type::value_type must be a gamete type" );
       return 1.;
     }
     //! \brief Naive implementation for non-standard cases
@@ -83,9 +83,8 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness  = 1. ) const
     {
-      static_assert( std::is_base_of<mutation_base,
-                                     typename iterator_type::value_type::mutation_type>::value,
-                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
+      static_assert( typename traits::is_gamete_t<typename iterator_type::value_type>::type(),
+                     "iterator_type::value_type must be a gamete type" );
       result_type fitness=starting_fitness;
       if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
       if( !g1->smutations.empty() && g2->smutations.empty() ) 
@@ -180,9 +179,8 @@ namespace KTfwd
 				  const haplotype_policy & hpol,
 				  const diploid_policy & dpol) const
     {
-      static_assert( std::is_base_of<mutation_base,
-                                     typename iterator_type::value_type::mutation_type>::value,
-                     "iterator_type::value_type::mutation_type must be derived from KTfwd::mutation_base" );
+      static_assert( typename traits::is_gamete_t<typename iterator_type::value_type>::type(),
+                     "iterator_type::value_type must be a gamete type" );
       return dpol( hpol(g1), hpol(g2) );
     }
   };

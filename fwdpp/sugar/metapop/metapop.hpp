@@ -5,6 +5,7 @@
 #include <vector>
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
@@ -32,9 +33,11 @@ namespace KTfwd {
 	     typename lookup_table_type>
     class metapop
     {
-      static_assert( std::is_same< typename glist::value_type,
-		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
-		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
+      static_assert(typename KTfwd::traits::is_gamete_t<typename glist::value_type>::type(),
+		    "glist::value_type must be a gamete type" );
+      static_assert(typename KTfwd::traits::is_mutation_t<typename mlist::value_type>::type(),
+		    "mlist::value_type must be a mutation type" );
+
     private:
       void init_vectors()
       {
@@ -195,9 +198,10 @@ namespace KTfwd {
 	     typename dip_reader_t = KTfwd::diploidIOplaceholder>
     class metapop_serialized
     {
-      static_assert( std::is_same< typename glist::value_type,
-		     KTfwd::gamete_base< typename mlist::value_type, mlist > >::value,
-		     "glist::value_type must be same as KTfwd::gamete_base< typename mlist::value_type, mlist >" );
+      static_assert(typename KTfwd::traits::is_gamete_t<typename glist::value_type>::type(),
+		    "glist::value_type must be a gamete type" );
+      static_assert(typename KTfwd::traits::is_mutation_t<typename mlist::value_type>::type(),
+		    "mlist::value_type must be a mutation type" );
     private:
       void init_vectors()
       {
