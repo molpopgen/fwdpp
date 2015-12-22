@@ -32,6 +32,7 @@ namespace KTfwd {
     //   static const bool value = sizeof(test<T>(0)) == sizeof(yes);
     // };
 
+    //Based on // // http://stackoverflow.com/questions/11813940/possible-to-use-type-traits-sfinae-to-find-if-a-class-defines-a-member-typec
     template<class T>
     struct void_t {
       typedef void type;
