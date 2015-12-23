@@ -61,12 +61,12 @@ namespace KTfwd
     /// dominance coefficient
     double h;
     mutation( const double & position, const double & sel_coeff,const uint_t & count,
-	      const double & dominance = 0.5) 
+	      const double & dominance = 0.5) noexcept
       : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)
     {
     }
     /// Contruct an extint mutation (n=0)
-    mutation( tags::extinct ) :
+    mutation( tags::extinct ) noexcept :
       mutation_base(std::numeric_limits<double>::quiet_NaN(),0,true),
       s(std::numeric_limits<double>::quiet_NaN()),
       h(std::numeric_limits<double>::quiet_NaN())
