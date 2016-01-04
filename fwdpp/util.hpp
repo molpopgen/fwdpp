@@ -46,9 +46,7 @@ namespace KTfwd
 	if(!i->checked)
 	  {
 	    i->n=0;
-	    auto I = lookup->find(i->pos);
-	    if(I!=lookup->end())
-	      lookup->erase(I);
+	    lookup->erase(i->pos);
 	  }
 	i->checked=false;
       }
@@ -72,7 +70,7 @@ namespace KTfwd
 	assert(i->n <= twoN);
 	if(i->n==twoN )
 	  {
-	    lookup->erase(lookup->find(i->pos));
+	    lookup->erase(i->pos);
 	    i->n=i->checked=0;
 	  }
 	else
@@ -80,9 +78,7 @@ namespace KTfwd
 	    if(!i->checked)
 	      {
 		i->n=0;
-		auto I = lookup->find(i->pos);
-		if(I!=lookup->end())
-		  lookup->erase(I);
+		lookup->erase(i->pos);
 	      }
 	  }
 	i->checked=false;
@@ -120,7 +116,7 @@ namespace KTfwd
 	  {
 	    fixations->push_back(*i);
 	    fixation_times->push_back(generation);
-	    lookup->erase(lookup->find(i->pos));
+	    lookup->erase(i->pos);
 	    i->n=i->checked=0;
 	  }
 	else
@@ -128,9 +124,7 @@ namespace KTfwd
 	    if(!i->checked)
 	      {
 		i->n=0;
-		auto I = lookup->find(i->pos);
-		if(I!=lookup->end())
-		  lookup->erase(I);
+		lookup->erase(i->pos);
 	      };
 	    i->checked=false;
 	  }
