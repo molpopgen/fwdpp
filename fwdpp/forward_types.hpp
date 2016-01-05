@@ -19,9 +19,9 @@ namespace KTfwd
 {
   //! The unsigned integer type is 32 bits
   using uint_t = std::uint32_t;
-  
+
   /*! \brief Base class for mutations
-    At minimum, a mutation must contain a position and a count in the population.	
+    At minimum, a mutation must contain a position and a count in the population.
     You can derive from this class, for instance to add selection coefficients,
     counts in different sexes, etc.
     \ingroup basicTypes
@@ -32,14 +32,14 @@ namespace KTfwd
     /// Mutation position
     double pos;
     /// Count of mutation in the population
-    uint_t n;
+    //uint_t n;
     /// Is the mutation neutral or not?
     bool neutral;
     /// Used internally (don't worry about it for now...)
-    bool checked;
-    mutation_base(const double & position, const uint_t & count, const bool & isneutral = true) noexcept
-      : pos(position),n(count),neutral(isneutral),checked(false)
-    {	
+    //bool checked;
+    mutation_base(const double & position, const bool & isneutral = true) noexcept
+      : pos(position),neutral(isneutral)
+    {
     }
     virtual ~mutation_base() noexcept {}
     mutation_base( mutation_base & ) = default;
@@ -60,14 +60,14 @@ namespace KTfwd
     double s;
     /// dominance coefficient
     double h;
-    mutation( const double & position, const double & sel_coeff,const uint_t & count,
+    mutation( const double & position, const double & sel_coeff,
 	      const double & dominance = 0.5) noexcept
-      : mutation_base(position,count,(sel_coeff==0)),s(sel_coeff),h(dominance)
+      : mutation_base(position,(sel_coeff==0)),s(sel_coeff),h(dominance)
     {
     }
     /// Contruct an extint mutation (n=0)
     mutation( tags::extinct ) noexcept :
-      mutation_base(std::numeric_limits<double>::quiet_NaN(),0,true),
+      mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
       s(std::numeric_limits<double>::quiet_NaN()),
       h(std::numeric_limits<double>::quiet_NaN())
     {
@@ -98,26 +98,18 @@ namespace KTfwd
     See @ref md_md_policies for examples of this.
     \ingroup basicTypes
   */
-  template<typename mut_type,
-	   typename list_type = std::list<mut_type>,
-	   typename tag_type = tags::standard_gamete>
+  template<typename TAG = void>
   struct gamete_base
   {
-    static_assert( std::is_base_of<mutation_base,mut_type>::value,
-		   "mut_type must be derived from KTfwd::mutation_base" );
     //! Count in population
     uint_t n;
-    using mutation_type = mut_type;
-    using mutation_list_type = list_type;
-    using mutation_list_type_iterator = typename list_type::iterator;
-    using mutation_container = std::vector< mutation_list_type_iterator >;
-    using mcont_iterator = typename mutation_container::iterator;
-    using mcont_const_iterator = typename mutation_container::const_iterator;
     //! Dispatch tag type
-    using gamete_tag = tag_type;
+    using gamete_tag = TAG;
+    using index_t = std::size_t;
+    using mutation_container = std::vector<index_t>;
     //! Container of mutations not affecting trait value/fitness ("neutral mutations")
     mutation_container mutations;
-    //! Container of mutations affecting trait value/fitness ("neutral mutations")
+    //! Container of mutations affecting trait value/fitness ("selected" mutations")
     mutation_container smutations;
 
     /*! @brief Constructor
@@ -159,19 +151,12 @@ namespace KTfwd
     //! Move assignment operator
     gamete_base & operator=(gamete_base &&) = default;
     /*! \brief Equality operation
-      \note Given that mutations and smutations contains ITERATORS to actual mutations,
-      operator== does not need to be defined for the corresponding mutation type
     */
-    inline bool operator==(const gamete_base<mut_type,list_type> & rhs) const
+    inline bool operator==(const gamete_base<TAG> & rhs) const
     {
       return(this->mutations == rhs.mutations && this->smutations == rhs.smutations);
     }
   };
-
-  /*! The simplest gamete adds nothing to the interface of the base class.
-    \ingroup basicTypes
-  */
-  using gamete = gamete_base<mutation>;
 
 }
 #endif /* _FORWARD_TYPES_HPP_ */
