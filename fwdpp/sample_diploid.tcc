@@ -83,7 +83,7 @@ namespace KTfwd
     static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
 		   "error: mmodel is not a dispatchable mutation model type!" );
     static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
-		   "recombnation_policy type invalid" );
+		   "recombination_policy type invalid" );
     assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
     std::vector<double> fitnesses(diploids.size());
