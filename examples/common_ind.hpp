@@ -8,7 +8,7 @@
 #define FWDPP_SUGAR_USE_BOOST
 #endif
 
-/* 
+/*
    The various examples will define the appropriate symbol,
    so that the minimum stuff is included
 
@@ -20,7 +20,6 @@
 #ifdef SINGLEPOP_SIM
 #include <fwdpp/sugar/singlepop.hpp>
 using singlepop_t = KTfwd::singlepop<mtype>;
-using singlepop_serialized_t = KTfwd::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>>;
 #elif defined(METAPOP_SIM)
 #include <fwdpp/sugar/metapop.hpp>
 using metapop_t = KTfwd::metapop<mtype>;
