@@ -1,4 +1,4 @@
-//  -*- C++ -*- 
+//  -*- C++ -*-
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
 
@@ -15,6 +15,7 @@ namespace KTfwd
   //single deme, constant N
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
+	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    typename diploid_geno_t,
 	    typename diploid_vector_type_allocator,
@@ -28,10 +29,10 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
-		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
+		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 const uint_t & N_curr,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -48,6 +49,7 @@ namespace KTfwd
   //single deme, N changing
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
+	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    typename diploid_geno_t,
 	    typename diploid_vector_type_allocator,
@@ -61,11 +63,11 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
-		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
-		 const uint_t & N_next, 
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
+		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 const uint_t & N_curr,
+		 const uint_t & N_next,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -104,7 +106,7 @@ namespace KTfwd
     fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
     auto parents(*diploids); //copy the parents
     auto pptr = parents.begin();
-    
+
     //Change the population size
     if( diploids->size() != N_next)
       {
@@ -127,7 +129,7 @@ namespace KTfwd
 #endif
 	assert(p1<parents.size());
 	assert(p2<parents.size());
-	
+
 	p1g1 = (pptr+typename decltype(pptr)::difference_type(p1))->first;
 	p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
 	p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
@@ -141,7 +143,7 @@ namespace KTfwd
 
 	(dptr+i)->first = p1g1;
 	(dptr+i)->second = p2g1;
-	
+
 	(dptr+i)->first->n++;
 	assert( (dptr+i)->first->n > 0 );
 	assert( (dptr+i)->first->n <= 2*N_next );
@@ -170,7 +172,7 @@ namespace KTfwd
     assert(check_sum(gametes,2*N_next));
     return wbar;
   }
-  
+
   //Metapopulation version of sample_diploid for individual-based simulations and constant N
   template< typename gamete_type,
 	    typename metapop_diploid_vector_type_allocator,
@@ -192,8 +194,8 @@ namespace KTfwd
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t * N_curr, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 const uint_t * N_curr,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -207,7 +209,7 @@ namespace KTfwd
     return sample_diploid(r,metapop,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,
 			  gpolicy_mut,ffs,mp,mig,f);
   }
-  
+
   //Metapopulation version of sample_diploid for individual-based simulations with changing population size
   template< typename gamete_type,
 	    typename metapop_diploid_vector_type_allocator,
@@ -229,9 +231,9 @@ namespace KTfwd
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t * N_curr, 
-		 const uint_t * N_next, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 const uint_t * N_curr,
+		 const uint_t * N_next,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -259,13 +261,13 @@ namespace KTfwd
 		    }
 		}
 	      double * fitnesses = new double[mN];
-	      
+
 	      for( auto dptr = diploids->begin() ; dptr != diploids->end() ; ++dptr, ++popindex )
 		{
 		  uint_t demesize = *(N_curr+popindex);
 		  assert( demesize == dptr->size() );
 		  size_t ith_dip = 0;
-		  for( auto gptr = dptr->begin() ; 
+		  for( auto gptr = dptr->begin() ;
 		       gptr != dptr->end() ; ++gptr,++ith_dip )
 		    {
 		      fitnesses[ith_dip] = fwdpp_internal::diploid_fitness_dispatch(ffs[typename diploid_fitness_function_container::size_type(popindex)],gptr,
@@ -278,11 +280,11 @@ namespace KTfwd
 		  lookups.emplace_back( lookup_t(gsl_ran_discrete_preproc(demesize,fitnesses)) );
 		}
 	      delete [] fitnesses;
-	      
+
 	      assert(lookups.size() == diploids->size());
 	      //copy diploids into temporary parents
 	      auto parents(*diploids);
-	      
+
 	      //Update the diploids
 	      popindex = 0;
 	      uint_t NREC=0;
@@ -307,14 +309,14 @@ namespace KTfwd
 		      */
 		      decltype(popindex) deme_first_parent = decltype(popindex)(mig(size_t(popindex))),deme_other_parent=popindex;
 		      auto pptr=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_first_parent))->begin();
-		      typename decltype(pptr)::difference_type p1 = 
+		      typename decltype(pptr)::difference_type p1 =
 			typename decltype(pptr)::difference_type(gsl_ran_discrete(r,lookups[std::vector<lookup_t>::size_type(deme_first_parent)].get())),p2;
 
 		      p1g1 = (pptr+p1)->first;
 		      p1g2 = (pptr+p1)->second;
 
 		      /*
-			If the individual is not inbred, then we pick a 
+			If the individual is not inbred, then we pick a
 			deme from the migration policy for parent 2
 		      */
 		      auto pptr2=(parents.begin()+typename decltype(parents.begin())::difference_type(deme_other_parent))->end();
@@ -344,7 +346,7 @@ namespace KTfwd
 		      //0.3.3: Do "Mendel" now...
 		      if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 		      if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
-		      
+
 		      NREC += rec_pol(p1g1,p1g2,gamete_lookup,gamete_recycling_bin);
 		      NREC += rec_pol(p2g1,p2g2,gamete_lookup,gamete_recycling_bin);
 
@@ -385,9 +387,9 @@ namespace KTfwd
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
-		 const uint_t & N_next, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 const uint_t & N_curr,
+		 const uint_t & N_next,
 		 const double * mu,
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
@@ -400,7 +402,7 @@ namespace KTfwd
   {
 #ifndef NDEBUG
     assert(diploids->size()==N_curr);
-#endif  
+#endif
     //Vector of parental fitnesses
     std::vector<double> fitnesses(N_curr);
     double wbar = 0.;
@@ -438,19 +440,19 @@ namespace KTfwd
 
     wbar /= double(diploids->size());
     dptr = diploids->begin();  //reset to beginning of diploids
-  
+
     fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
- 
+
     auto parents(*diploids); //Copy the parents.  Exact copy of diploids--same fitnesses, etc.
     const auto pptr = parents.cbegin();
- 
+
     //Change the population size and reset dptr to avoid iterator invalidation
     if( diploids->size() != N_next)
       {
 	diploids->resize(N_next);
 	dptr = diploids->begin();
       }
-  
+
     assert(diploids->size()==N_next);
 
     for( uint_t curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
@@ -467,7 +469,7 @@ namespace KTfwd
 #endif
 	assert(p1<N_curr);
 	assert(p2<N_curr);
-     
+
 	auto cdip = (dptr+curr_dip);
 	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,
 					   mut_recycling_bin,gamete_recycling_bin,gamete_lookup,
@@ -503,7 +505,7 @@ namespace KTfwd
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type<diploid_geno_t,locus_vector_type_allocator>,diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
 		 const uint_t & N,
 		 const double * mu,
 		 const mutation_model_container & mmodel,
@@ -520,4 +522,4 @@ namespace KTfwd
 }
 
 #endif
-  
+

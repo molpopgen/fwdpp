@@ -22,12 +22,13 @@ namespace KTfwd
      \param f Probability that a mating is a selfing event
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
-     \example diploid_ind.cc 
+     \example diploid_ind.cc
      \example pfix.cc
      \example diploid_fixed_sh_ind_lambda.cc
    */
   template< typename gamete_type,
 	    typename gamete_list_type_allocator,
+	    typename mutation_type,
 	    typename mutation_list_type_allocator,
 	    typename diploid_geno_t,
 	    typename diploid_vector_type_allocator,
@@ -41,10 +42,10 @@ namespace KTfwd
 	    template<typename,typename> class diploid_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
-		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
+		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 const uint_t & N_curr,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -52,7 +53,7 @@ namespace KTfwd
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f = 0);
- 
+
   /*! \brief Sample the next generation of dipliods in an individual-based simulation.  Changing population size case.
     \param r GSL random number generator
     \param gametes Pointer to list of gametes currently in population
@@ -68,13 +69,14 @@ namespace KTfwd
     \param ff Policy calculating the fitness of a diploid
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param f Probability that a mating is a selfing event
-    
+
      \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
      \return The mean fitness of the parental generation
      \example bneck_selection_ind.cc
    */
 template< typename gamete_type,
 	  typename gamete_list_type_allocator,
+	  typename mutation_type,
 	  typename mutation_list_type_allocator,
 	  typename diploid_geno_t,
 	  typename diploid_vector_type_allocator,
@@ -88,11 +90,11 @@ template< typename gamete_type,
 	  template<typename,typename> class diploid_vector_type>
   double
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator > * gametes,
-		 diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
-		 const uint_t & N_next, 
+		 gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
+		 diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator> & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 const uint_t & N_curr,
+		 const uint_t & N_next,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
@@ -143,8 +145,8 @@ std::vector< double >
 sample_diploid(gsl_rng * r,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
-	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-	       const uint_t * N_curr, 
+	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+	       const uint_t * N_curr,
 	       const double & mu,
 	       const mutation_model & mmodel,
 	       const recombination_policy & rec_pol,
@@ -171,7 +173,7 @@ sample_diploid(gsl_rng * r,
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param mig Migration policy.  This function/function object must take a single size_t (values 0 to metapop->size()-1).  If no migration event occurs, the passed value is returned.  Otherwise, a size_t representing the index of the deme from which the other parent comes (aka the migrant) is returned.
     \param f Probability that a mating is a selfing event.  This is an array, with 1 f per deme.
-    
+
     \note diploids will be updated to reflect the new diploid genotypes post-sampling (the descedants).  Gametes will be changed by mutation, recombination, and sampling.  Mutations will be changed by mutation and sampling.
     \return The mean fitness of the parental generation
   */
@@ -195,9 +197,9 @@ std::vector< double >
 sample_diploid(gsl_rng * r,
 	       gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
 	       metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>, metapop_diploid_vector_type_allocator > * diploids,
-	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-	       const uint_t * N_curr, 
-	       const uint_t * N_next, 
+	       mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+	       const uint_t * N_curr,
+	       const uint_t * N_next,
 	       const double & mu,
 	       const mutation_model & mmodel,
 	       const recombination_policy & rec_pol,
@@ -229,9 +231,9 @@ sample_diploid(gsl_rng * r,
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
-		 const uint_t & N_curr, 
-		 const uint_t & N_next, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 const uint_t & N_curr,
+		 const uint_t & N_next,
 		 const double * mu,
 		 const mutation_model_container & mmodel,
 		 const recombination_policy_container & rec_policies,
@@ -241,7 +243,7 @@ sample_diploid(gsl_rng * r,
 		 const diploid_fitness_function & ff,
 		 const mutation_removal_policy & mp,
 		 const double & f = 0);
-  
+
   /*! \brief Single deme, multilocus model, constant population size
     \example diploid_ind_2locus.cc
   */
@@ -266,7 +268,7 @@ sample_diploid(gsl_rng * r,
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type, gamete_list_type_allocator> * gametes,
 		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations, 
+		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
 		 const uint_t & N,
 		 const double * mu,
 		 const mutation_model_container & mmodel,
