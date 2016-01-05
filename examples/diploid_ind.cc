@@ -69,7 +69,7 @@ int main(int argc, char ** argv)
 	 simulations, so we use the call to std::max to select something better.
       */
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
+      pop.mutations.reserve(size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
       unsigned generation;
       double wbar;
 
