@@ -59,29 +59,21 @@ namespace KTfwd
   */
   template<typename mutation_list_type,
 	   typename mutation_lookup_table>
-  void update_mutations( mutation_list_type * mutations, 
-			 mutation_lookup_table * lookup,
+  void update_mutations( mutation_list_type & mutations, 
+			 mutation_lookup_table & lookup,
+			 const std::vector<uint_t> & mcounts,
 			 const unsigned twoN)
   {
     static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
-    for(auto i=mutations->begin();i!=mutations->end();++i)
+    for(std::size_t i = 0 ; i < mcounts.size() ; ++i)
       {
-	assert(i->n <= twoN);
-	if(i->n==twoN )
+	assert(mcounts[i] <= twoN);
+	if(mcounts[i]==twoN || !mcounts[i] )
 	  {
-	    lookup->erase(i->pos);
-	    i->n=i->checked=0;
+	    lookup.erase(mutations[i].pos);
+	    mcounts[i]=0;
 	  }
-	else
-	  {
-	    if(!i->checked)
-	      {
-		i->n=0;
-		lookup->erase(i->pos);
-	      }
-	  }
-	i->checked=false;
       }
   }
 
@@ -101,32 +93,23 @@ namespace KTfwd
 	   //template <typename,typename> class vector_type,
 	   //template <typename,typename> class list_type,
 	   typename mutation_lookup_table>
-  void update_mutations( mutation_list_type * mutations, 
-			 fixation_container_t * fixations, 
-			 fixation_time_container_t * fixation_times,
-			 mutation_lookup_table * lookup,
+  void update_mutations( mutation_list_type & mutations, 
+			 fixation_container_t & fixations, 
+			 fixation_time_container_t & fixation_times,
+			 mutation_lookup_table & lookup,
+			 const std::vector<uint_t> & mcounts,
 			 const unsigned & generation,const unsigned & twoN )
   {
     static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
-    for(auto i=mutations->begin();i!=mutations->end();++i)
+    for(unsigned i=0;i<mcounts.size();++i)
       {
-	assert(i->n <= twoN);
-	if(i->n==twoN )
+	assert(mcounts[i] <= twoN);
+	if(mcounts[i]==twoN )
 	  {
-	    fixations->push_back(*i);
-	    fixation_times->push_back(generation);
-	    lookup->erase(i->pos);
-	    i->n=i->checked=0;
-	  }
-	else
-	  {
-	    if(!i->checked)
-	      {
-		i->n=0;
-		lookup->erase(i->pos);
-	      };
-	    i->checked=false;
+	    fixations.push_back(mutations[i]);
+	    fixation_times.push_back(generation);
+	    lookup.erase(mutations[i].pos);
 	  }
       }
   }

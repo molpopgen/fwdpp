@@ -141,7 +141,7 @@ int main(int argc, char ** argv)
       					 can remove them, making the simulation faster, etc.
       				       */
 				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,twoN));
-	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
+	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       // Sequence::SimData sdata;
