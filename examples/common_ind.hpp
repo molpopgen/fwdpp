@@ -23,11 +23,9 @@ using singlepop_t = KTfwd::singlepop<mtype>;
 #elif defined(METAPOP_SIM)
 #include <fwdpp/sugar/metapop.hpp>
 using metapop_t = KTfwd::metapop<mtype>;
-using metapop_serialized_t = KTfwd::metapop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>>;
 #elif defined(MULTILOCUS_SIM)
 #include <fwdpp/sugar/multiloc.hpp>
 using multiloc_t = KTfwd::multiloc<mtype>;
-using multiloc_serialized_t = KTfwd::multiloc_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>>;
 #endif
 
 //RNG type
