@@ -158,5 +158,7 @@ namespace KTfwd
     }
   };
 
+  /// Default gamete type
+  using gamete = gamete_base<void>;
 }
 #endif /* _FORWARD_TYPES_HPP_ */
