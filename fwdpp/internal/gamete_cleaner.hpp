@@ -9,8 +9,8 @@ namespace KTfwd {
       Intended use is when std::is_same< mutation_removal_policy, KTfwd::remove_nothing >::type is true.
       Called by KTfwd::sample_diploid via dispatch.
     */
-    template<typename gamete_list_type, typename mutation_removal_policy>
-    inline void gamete_cleaner(gamete_list_type *, const mutation_removal_policy &, std::true_type) 
+    template<typename gcont_t, typename mutation_removal_policy>
+    inline void gamete_cleaner(gcont_t &, const mutation_removal_policy &, std::true_type)
     {
       return;
     }
@@ -19,17 +19,23 @@ namespace KTfwd {
       Intended use is when std::is_same< mutation_removal_policy, KTfwd::remove_nothing >::type is false.
       Called by KTfwd::sample_diploid via dispatch.
     */
-    template<typename gamete_list_type, typename mutation_removal_policy>
-    inline void gamete_cleaner(gamete_list_type * gametes, const mutation_removal_policy & mp, std::false_type) 
+    template<typename gcont_t, typename mutation_removal_policy>
+    inline void gamete_cleaner(gcont_t & gametes, const mutation_removal_policy & mp, std::false_type)
     {
-      std::for_each( gametes->begin(),
-		     gametes->end(),
-		     [&mp]( typename gamete_list_type::value_type & __g ) {
-		       if(__g.n) {
-			 __g.mutations.erase(std::remove_if(__g.mutations.begin(),__g.mutations.end(),std::cref(mp)),__g.mutations.end());
-			 __g.smutations.erase(std::remove_if(__g.smutations.begin(),__g.smutations.end(),std::cref(mp)),__g.smutations.end());
-		       }
-		     });
+      for( auto & g : gametes )
+	{
+	  if(g.n)
+	    {
+	      g.mutations.erase(std::remove_if(g.mutations.begin(),
+					       g.mutations.end(),
+					       std::cref(mp)),
+				g.mutations.end());
+	      g.smutations.erase(std::remove_if(g.smutations.begin(),
+						g.smutations.end(),
+						std::cref(mp)),
+				 g.smutations.end());
+	    }
+	}
     }
   }
 }
