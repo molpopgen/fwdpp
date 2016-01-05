@@ -17,8 +17,8 @@ namespace KTfwd
 	     typename queue_t,
 	     template<typename,typename> class gamete_list_type,
 	     typename rec_pos_generator>
-    unsigned operator()( gamete_iterator_type & g1,
-			 gamete_iterator_type & g2,
+    unsigned operator()( const size_t g1,
+			 const size_t g2,
 			 glookup_t & gamete_lookup,
 			 queue_t & gamete_recycling_bin,
 			 typename gamete_iterator_type::value_type::mutation_container & neutral,
