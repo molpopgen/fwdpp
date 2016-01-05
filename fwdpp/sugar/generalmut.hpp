@@ -81,9 +81,9 @@ namespace KTfwd
     generalmut_vec( array_t && __s,
 		    array_t && __h,
 		    double pos,uint_t gen ) : KTfwd::mutation_base(std::move(pos),
-									    //Mutation is neutral i.f.f. all values in __s == 0.
-									    (std::find_if(std::begin(__s),std::end(__s),[](const double d) { return d != 0.; }) == std::end(__s))),
-						       s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
+								   //Mutation is neutral i.f.f. all values in __s == 0.
+								   (std::find_if(std::begin(__s),std::end(__s),[](const double d) { return d != 0.; }) == std::end(__s))),
+					      s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
     {
     }
     //! Contructor for extinct gamete
