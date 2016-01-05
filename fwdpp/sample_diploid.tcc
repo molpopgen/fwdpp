@@ -84,7 +84,7 @@ namespace KTfwd
 		   "error: mmodel is not a dispatchable mutation model type!" );
     static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
 		   "recombnation_policy type invalid" );
-    assert(N_curr == diploids->size());
+    assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
     std::vector<double> fitnesses(diploids.size());
     double wbar = 0.;
@@ -112,14 +112,12 @@ namespace KTfwd
 	diploids.resize(N_next);
       }
     uint_t NREC=0;
-    assert(diploids->size()==N_next);
+    assert(diploids.size()==N_next);
     //std::size_t p1g1,p1g2,p2g1,p2g2;
 
     //for( uint_t i = 0 ; i < N_next ; ++i )
     for(auto & dip : diploids)
       {
-	assert(dptr==diploids->begin());
-	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
 	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p1<parents.size());
@@ -129,10 +127,6 @@ namespace KTfwd
 	size_t p1g2 = parents[p1].second;
 	size_t p2g1 = parents[p2].first;
 	size_t p2g2 = parents[p2].second;
-	//p1g1 = (pptr+typename decltype(pptr)::difference_type(p1))->first;
-	//p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
-	//p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
-	//p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
 
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
@@ -142,22 +136,13 @@ namespace KTfwd
 
 	dip.first=p1g1;
 	dip.second=p2g1;
-	//(dptr+i)->first = p1g1;
-	//(dptr+i)->second = p2g1;
+
 	gametes[dip.first].n++;
 	gametes[dip.second].n++;
-	//(dptr+i)->first->n++;
-	//assert( (dptr+i)->first->n > 0 );
-	//assert( (dptr+i)->first->n <= 2*N_next );
-	//(dptr+i)->second->n++;
-	//assert( (dptr+i)->second->n > 0 );
-	//assert( (dptr+i)->second->n <= 2*N_next );
 
 	//now, add new mutations
 	dip.first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	dip.second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
-	//(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
-	//(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
       }
 #ifndef NDEBUG
     for(const auto & dip : diploids)
