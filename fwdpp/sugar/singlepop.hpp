@@ -6,7 +6,6 @@
 #include <fwdpp/fwd_functional.hpp>
 
 #ifdef FWDPP_SUGAR_USE_BOOST
-#include <boost/container/list.hpp>
 #include <boost/container/vector.hpp>
 #include <boost/pool/pool_alloc.hpp>
 #include <boost/unordered_set.hpp>
@@ -14,10 +13,10 @@
 
 namespace KTfwd
 {
-  template<typename mtype> using singlepop_mlist_t = boost::container::list<mtype,boost::fast_pool_allocator<mtype> >;
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype>>;
-  template<typename mtype> using singlepop_glist_t = boost::container::list<singlepop_gamete_t<mtype>,
-									    boost::fast_pool_allocator<singlepop_gamete_t<mtype>>>;
+  template<typename mtype> using singlepop_mvec_t = boost::container::vector<mtype,boost::fast_pool_allocator<mtype> >;
+  using singlepop_gamete_t = gamete;
+  template<typename mtype> using singlepop_gvec_t = boost::container::vector<singlepop_gamete_t,
+									      boost::fast_pool_allocator<singlepop_gamete_t>>;
 
   /*!
     \brief Single locus, single population without serialization.  Cannot be copied, etc.
@@ -25,12 +24,11 @@ namespace KTfwd
     \ingroup sugar
   */
   template<typename mtype,
-	   typename diploid_t = std::pair<typename singlepop_glist_t<mtype>::iterator,
-					  typename singlepop_glist_t<mtype>::iterator> >
+	   typename diploid_t = std::pair<std::size_t,std::size_t> >
   using singlepop = sugar::singlepop<mtype,
-				     singlepop_mlist_t<mtype>,
-				     singlepop_glist_t<mtype>,
-				     boost::container::vector< diploid_t >,
+				     singlepop_mvec_t<mtype>,
+				     singlepop_gvec_t<mtype>,
+				     boost::container::vector<diploid_t>,
 				     boost::container::vector<mtype>,
 				     boost::container::vector<unsigned>,
 				     boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
@@ -38,7 +36,6 @@ namespace KTfwd
 }
 #else
 
-#include <list>
 #include <vector>
 #include <unordered_set>
 #include <fwdpp/fwd_functional.hpp>
@@ -47,21 +44,20 @@ namespace KTfwd
 
 namespace KTfwd
 {
-  template<typename mtype> using singlepop_mlist_t = std::list<mtype,std::allocator<mtype> >;
-  template<typename mtype> using singlepop_gamete_t = gamete_base<mtype,singlepop_mlist_t<mtype>>;
-  template<typename mtype> using singlepop_glist_t = std::list<singlepop_gamete_t<mtype>, std::allocator<singlepop_gamete_t<mtype>>>;
+  template<typename mtype> using singlepop_mvec_t = std::vector<mtype,std::allocator<mtype> >;
+  using singlepop_gamete_t = gamete;
+  template<typename mtype> using singlepop_gvec_t = std::vector<singlepop_gamete_t, std::allocator<singlepop_gamete_t>>;
   /*!
     \brief Single locus, single population without serialization.  Cannot be copied, etc.
     See @ref md_md_sugar for rationale, etc.
     \ingroup sugar
   */
   template<typename mtype,
-	   typename diploid_t = std::pair<typename singlepop_glist_t<mtype>::iterator,
-					  typename singlepop_glist_t<mtype>::iterator> >
+	   typename diploid_t = std::pair<std::size_t,std::size_t> >
     using singlepop = sugar::singlepop<mtype,
-				       singlepop_mlist_t<mtype>,
-				       singlepop_glist_t<mtype>,
-				       std::vector< diploid_t >,
+				       singlepop_mvec_t<mtype>,
+				       singlepop_gvec_t<mtype>,
+				       std::vector<diploid_t>,
 				       std::vector<mtype>,
 				       std::vector<uint_t>,
 				       std::unordered_set<double,std::hash<double>,KTfwd::equal_eps>

@@ -27,18 +27,18 @@ namespace KTfwd {
       \ingroup sugar
     */
     template<typename mutation_type,
-	     typename mlist,
-	     typename glist,
+	     typename mvec,
+	     typename gvec,
 	     typename dipvector,
 	     typename mvector,
 	     typename ftvector,
 	     typename lookup_table_type>
     class singlepop
     {
-      static_assert(typename KTfwd::traits::is_gamete_t<typename glist::value_type>::type(),
-		    "glist::value_type must be a gamete type" );
-      static_assert(typename KTfwd::traits::is_mutation_t<typename mlist::value_type>::type(),
-		    "mlist::value_type must be a mutation type" );
+      static_assert(typename KTfwd::traits::is_gamete_t<typename gvec::value_type>::type(),
+		    "gvec::value_type must be a gamete type" );
+      static_assert(typename KTfwd::traits::is_mutation_t<typename mvec::value_type>::type(),
+		    "mvec::value_type must be a mutation type" );
 
     public:
       uint_t N;
@@ -48,15 +48,17 @@ namespace KTfwd {
       //! Mutation type
       using mutation_t = mutation_type;
       //! Gamete type
-      using gamete_t = typename glist::value_type;
+      using gamete_t = typename gvec::value_type;
       //! Diploid vector type
       using dipvector_t = dipvector;
-      //! Diploid type (std::pair<glist_t::iterator,glist_t::iterator>)
+      //! Diploid type (std::pair<std::size_t,std::size_t>)
       using diploid_t = typename dipvector_t::value_type;
-      //! Mutation list type
-      using mlist_t = mlist;
-      //! Gamete list type
-      using glist_t = glist;
+      //! Mutation vec type
+      using mvec_t = mvec;
+      //! Mutation count vector type
+      using mcount_t = std::vector<uint_t>;
+      //! Gamete vec type
+      using gvec_t = gvec;
       //! Lookup table type for recording mutation positions, etc.
       using lookup_table_t = lookup_table_type;
       //! container type for fixations
@@ -64,8 +66,15 @@ namespace KTfwd {
       //! container type for fixation times
       using ftvector_t = ftvector;
 
-      mlist mutations;
-      glist gametes;
+      mvec mutations;
+      /*!
+	Used to keep track of mutation frequencies.
+
+	Should have memory reserved externally,
+	based on some good guess.
+      */
+      mcount_t mcounts;
+      gvec gametes;
       dipvector_t diploids;
 
       /*!
@@ -103,17 +112,21 @@ namespace KTfwd {
       singlepop( const uint_t & popsize,
 		 typename gamete_t::mutation_container::size_type reserve_size = 100) : N(popsize),
 											//No muts in the population
-											mutations(mlist()),
+											mutations(mvec()),
+											mcounts(mcount_t()),
 											//The population contains a single gamete in 2N copies
-											gametes(glist(1,gamete_t(2*popsize))),
+											gametes(gvec(1,gamete_t(2*popsize))),
 											//All N diploids contain the only gamete in the pop
-											diploids(dipvector_t(popsize,diploid_t(gametes.begin(),gametes.begin()))),
+											diploids(dipvector_t(popsize,diploid_t(0,0))),
 											neutral(typename gamete_t::mutation_container()),
 											selected(typename gamete_t::mutation_container()),
 											mut_lookup(lookup_table_type()),
 											fixations(mvector()),
 											fixation_times(ftvector())
       {
+	//This is a good number for reserving,
+	//allowing for extra allocations when recycling is doing its thing
+	gametes.reserve(4*N);
 	//Reserve memory
 	neutral.reserve(reserve_size);
 	selected.reserve(reserve_size);
