@@ -98,8 +98,8 @@ namespace KTfwd {
     template<typename gcont_t,typename mcont_t>
     struct recmodel_t
     {
-      using type = std::function<unsigned(typename glist_t::iterator &,
-					  typename glist_t::iterator &,
+      using type = std::function<unsigned(const std::size_t,
+					  const std::size_t,
 					  typename gamete_lookup_t<gcont_t,mcont_t>::type &,
 					  typename recycling_bin_t<gcont_t>::type &) >;
     };

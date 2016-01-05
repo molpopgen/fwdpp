@@ -79,63 +79,60 @@ namespace KTfwd
 		 const double & f)
   {
     using glist_t = gamete_list_type<gamete_type,gamete_list_type_allocator >;
-    using mlist_t = mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >;
+    using mlist_t = mutation_list_type<mutation_type,mutation_list_type_allocator >;
     static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
 		   "error: mmodel is not a dispatchable mutation model type!" );
     static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
 		   "recombnation_policy type invalid" );
     assert(N_curr == diploids->size());
-    asssert(mcounts.size()==mutations.size());
-    std::vector<double> fitnesses(diploids->size());
+    assert(mcounts.size()==mutations.size());
+    std::vector<double> fitnesses(diploids.size());
     double wbar = 0.;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto dptr = diploids->begin();
+
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
-	(dptr+i)->first->n = 0;
-	(dptr+i)->second->n = 0;
-	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
+	gametes[diploids[i].first].n=gametes[diploids[i].second].n=0;
+	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],
 								typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	wbar += fitnesses[i];
       }
-    wbar /= double(diploids->size());
+    wbar /= double(diploids.size());
 #ifndef NDEBUG
-    std::for_each(gametes->cbegin(),gametes->cend(),[](decltype((*gametes->cbegin())) __g) {
-	assert( !__g.n ); } );
+    for(const auto & g : gametes) assert(!g.n);
 #endif
     fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
-    auto parents(*diploids); //copy the parents
-    auto pptr = parents.begin();
+    const auto parents(diploids); //copy the parents
 
     //Change the population size
-    if( diploids->size() != N_next)
+    if( diploids.size() != N_next)
       {
-	diploids->resize(N_next);
-	dptr = diploids->begin();
+	diploids.resize(N_next);
       }
     uint_t NREC=0;
     assert(diploids->size()==N_next);
-    decltype( gametes->begin() ) p1g1,p1g2,p2g1,p2g2;
+    //std::size_t p1g1,p1g2,p2g1,p2g2;
 
-    for( uint_t i = 0 ; i < N_next ; ++i )
+    //for( uint_t i = 0 ; i < N_next ; ++i )
+    for(auto & dip : diploids)
       {
 	assert(dptr==diploids->begin());
 	assert( (dptr+i) < diploids->end() );
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
-#ifdef FWDPP_COMPAT_0_3_0
-	size_t p2 = (gsl_rng_uniform(r) < f) ? p1 : gsl_ran_discrete(r,lookup.get());
-#else
 	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
-#endif
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 
-	p1g1 = (pptr+typename decltype(pptr)::difference_type(p1))->first;
-	p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
-	p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
-	p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
+	size_t p1g1 = parents[p1].first;
+	size_t p1g2 = parents[p1].second;
+	size_t p2g1 = parents[p2].first;
+	size_t p2g2 = parents[p2].second;
+	//p1g1 = (pptr+typename decltype(pptr)::difference_type(p1))->first;
+	//p1g2 = (pptr+typename decltype(pptr)::difference_type(p1))->second;
+	//p2g1 = (pptr+typename decltype(pptr)::difference_type(p2))->first;
+	//p2g2 = (pptr+typename decltype(pptr)::difference_type(p2))->second;
 
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
@@ -143,33 +140,35 @@ namespace KTfwd
 	NREC += rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
 	NREC += rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
 
-	(dptr+i)->first = p1g1;
-	(dptr+i)->second = p2g1;
-
-	(dptr+i)->first->n++;
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_next );
-	(dptr+i)->second->n++;
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_next );
+	dip.first=p1g1;
+	dip.second=p2g1;
+	//(dptr+i)->first = p1g1;
+	//(dptr+i)->second = p2g1;
+	gametes[dip.first].n++;
+	gametes[dip.second].n++;
+	//(dptr+i)->first->n++;
+	//assert( (dptr+i)->first->n > 0 );
+	//assert( (dptr+i)->first->n <= 2*N_next );
+	//(dptr+i)->second->n++;
+	//assert( (dptr+i)->second->n > 0 );
+	//assert( (dptr+i)->second->n <= 2*N_next );
 
 	//now, add new mutations
-	(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
-	(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
+	dip.first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
+	dip.second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
+	//(dptr+i)->first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->first,mmodel,gpolicy_mut);
+	//(dptr+i)->second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,(dptr+i)->second,mmodel,gpolicy_mut);
       }
 #ifndef NDEBUG
-    for( uint_t i = 0 ; i < diploids->size() ; ++i )
+    for(const auto & dip : diploids)
       {
-	assert( (dptr+i)->first->n > 0 );
-	assert( (dptr+i)->first->n <= 2*N_next );
-	assert( (dptr+i)->second->n > 0 );
-	assert( (dptr+i)->second->n <= 2*N_next );
+	assert(gametes[dip.first].n>0);
+	assert(gametes[dip.first].n<=2*N_next);
+	assert(gametes[dip.second].n>0);
+	assert(gametes[dip.second].n<=2*N_next);
       }
 #endif
-    fwdpp_internal::process_glist(gametes);
-#ifndef NDEBUG
-    for( auto itr = mutations->begin() ; itr != mutations->end() ; ++itr ) assert( itr->n <= 2*N_next );
-#endif
+    fwdpp_internal::process_glist(gametes,mutations,mcounts);
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     assert(check_sum(gametes,2*N_next));
     return wbar;

@@ -9,7 +9,7 @@ namespace KTfwd
   {
     template<typename iterator_type>
     void adjust_mutation_counts( iterator_type & g , const unsigned & n)
-    /*! 
+    /*!
       Update the counts of each mutation.
 
       This function is called by KTfwd::fwdpp_internal::adjust_mutation_counts
@@ -31,18 +31,36 @@ namespace KTfwd
       std::for_each(g->smutations.begin(),g->smutations.end(),
 		    std::cref(adjuster));
     }
-    
-    template<typename glist_t>
-    inline void process_glist( glist_t * gametes )
+
+    template<typename gcont_t,
+	     typename mcont_t>
+    inline void process_glist( const gcont_t & gametes,
+			       const mcont_t & mutations,
+			       std::vector<size_t> & mcounts)
     /*!
       For every non-extinct gamete, increment the counts of its mutations
       via a call to KTfwd::fwdpp_internal::adjust_mutation_counts.
     */
     {
-      for(auto itr = gametes->begin() ; itr != gametes->end() ; ++itr )
+      if(mutations.size()>mcounts.size())
 	{
-	  if(itr->n) adjust_mutation_counts(itr,itr->n);
+	  mcounts.resize(mutations.size(),0);
 	}
+      //zero out mcounts
+      for(auto & mc : mcounts) mc=0;
+      //update mutation counts
+      for(const auto & g : gametes)
+	{
+	  if(g.n)
+	    {
+	      for(const auto & m : g.mutations) mcounts[m]+=g.n;
+	      for(const auto & m : g.smutations) mcounts[m]+=g.n;
+	    }
+	}
+      // for(auto itr = gametes->begin() ; itr != gametes->end() ; ++itr )
+      // 	{
+      // 	  if(itr->n) adjust_mutation_counts(itr,itr->n);
+      // 	}
     }
   }
 }
