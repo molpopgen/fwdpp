@@ -40,7 +40,7 @@ namespace KTfwd {
     template<typename list_t>
     struct recycling_bin_t
     {
-      using type = KTfwd::fwdpp_internal::recycling_bin_t<typename list_t::iterator>;
+      using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
     };
 
     //! Gives the "gamete lookup table" type corresponding to gcont_t and mcont_t
