@@ -43,13 +43,15 @@ namespace KTfwd {
       using type = KTfwd::fwdpp_internal::recycling_bin_t<typename list_t::iterator>;
     };
 
-    //! Gives the "gamete lookup table" type corresponding to list_t
-    template<typename list_t>
+    //! Gives the "gamete lookup table" type corresponding to gcont_t and mcont_t
+    template<typename gcont_t,typename mcont_t>
     struct gamete_lookup_t
     {
-      static_assert( typename is_gamete_t<typename list_t::value_type>::type(),
-		     "list_t::value_type must be a gamete type");
-      using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
+      static_assert( typename is_gamete_t<typename gcont_t::value_type>::type(),
+		     "gcont__t::value_type must be a gamete type");
+      static_assert( typename is_mutation_t<typename mcont_t::value_type>::type(),
+		     "gcont__t::value_type must be a gamete type");
+      using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<gcont_t,mcont_t>)(gcont_t &,mcont_t &)>::type;
     };
 
     /*!
@@ -92,14 +94,14 @@ namespace KTfwd {
       using type = typename std::is_same<result_type,typename mlist_t::iterator>::type;
     };
 
-    //! Gives the recombination model function signature corresponding to glist_t
-    template<typename glist_t>
+    //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
+    template<typename gcont_t,typename mcont_t>
     struct recmodel_t
     {
       using type = std::function<unsigned(typename glist_t::iterator &,
 					  typename glist_t::iterator &,
-					  typename gamete_lookup_t<glist_t>::type &,
-					  typename recycling_bin_t<glist_t>::type &) >;
+					  typename gamete_lookup_t<gcont_t,mcont_t>::type &,
+					  typename recycling_bin_t<gcont_t>::type &) >;
     };
 
   }

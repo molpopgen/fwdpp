@@ -43,7 +43,7 @@ namespace KTfwd
 		 const double & f)
   {
     //run changing N version with N_next == N_curr
-    return sample_diploid(r,gametes,diploids,mutations,N_curr,N_curr,mu,mmodel,rec_pol,
+    return sample_diploid(r,gametes,diploids,mutations,mcounts,N_curr,N_curr,mu,mmodel,rec_pol,
 			  gpolicy_mut,ff,mp,f);
   }
 
@@ -82,15 +82,15 @@ namespace KTfwd
     using mlist_t = mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator >;
     static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
 		   "error: mmodel is not a dispatchable mutation model type!" );
-    static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t >::type>::value,
+    static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
 		   "recombnation_policy type invalid" );
     assert(N_curr == diploids->size());
     asssert(mcounts.size()==mutations.size());
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
-    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
+    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes);
+    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
     auto dptr = diploids->begin();
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
