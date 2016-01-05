@@ -80,6 +80,7 @@ int main(int argc, char ** argv)
       				       pop.gametes,  //non-const pointer to gametes
       				       pop.diploids, //non-const pointer to diploids
       				       pop.mutations, //non-const pointer to mutations
+				       pop.mcounts,
       				       N,     //current pop size, remains constant
       				       mu,    //mutation rate per gamete
       				       /*
