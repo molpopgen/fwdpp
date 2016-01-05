@@ -7,7 +7,7 @@
 namespace KTfwd
 {
   /*!
-    \brief Mutations with selection, dominance, and tracking age of origin 
+    \brief Mutations with selection, dominance, and tracking age of origin
     The "standard" mutation type for population genetic simulation.
     A mutation has its own selection and dominance coefficients.
 
@@ -30,18 +30,17 @@ namespace KTfwd
       \param __n Number of copies of mutation in population
     */
     popgenmut(const double & __pos, const double & __s, const double & __h,
-	      const unsigned & __g,const unsigned & __n) noexcept
-      : mutation_base(__pos,__n,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
-    {	
+	      const unsigned & __g) noexcept
+      : mutation_base(__pos,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
+    {
     }
     popgenmut( tags::extinct ) noexcept
-    : mutation_base(std::numeric_limits<double>::quiet_NaN(),0.,true),
+    : mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
       g(std::numeric_limits<unsigned>::max()),
       s(std::numeric_limits<double>::quiet_NaN()),
       h(std::numeric_limits<double>::quiet_NaN())
     {
     }
-	       
   };
 }
 #endif
