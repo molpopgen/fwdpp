@@ -26,16 +26,16 @@ namespace KTfwd {
     {
       static_assert(KTfwd::traits::internal::has_gamete_tag<T>::value ,
 		    "A gamete must contain type gamete_tag");
-      static_assert(KTfwd::traits::internal::has_mutation_type<T>::value ,
-		    "A gamete must contain type mutation_type");
-      static_assert(KTfwd::traits::internal::has_mutation_list_type<T>::value ,
-		    "A gamete must contain type mutation_list_type");
-      using mutation_t = typename T::mutation_type;
-      using mlist_t = typename T::mutation_list_type;
+      //static_assert(KTfwd::traits::internal::has_mutation_type<T>::value ,
+      //		    "A gamete must contain type mutation_type");
+      //static_assert(KTfwd::traits::internal::has_mutation_list_type<T>::value ,
+      //		    "A gamete must contain type mutation_list_type");
+      //using mutation_t = typename T::mutation_type;
+      //using mlist_t = typename T::mutation_list_type;
       using tag_t = typename T::gamete_tag;
-      using type =  typename std::is_base_of< KTfwd::gamete_base<mutation_t,mlist_t,tag_t>, T>::type;
+      using type =  typename std::is_base_of< KTfwd::gamete_base<tag_t>, T>::type;
     };
-    
+
     //! Gives the "recycling bin" type corresponding to list_t
     template<typename list_t>
     struct recycling_bin_t
@@ -52,7 +52,7 @@ namespace KTfwd {
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<list_t>)(list_t *)>::type;
     };
 
-    /*! 
+    /*!
       Gives the mutation model function signature corresponding to mlist_t.
 
       Applies to mutation policies that only take recycling bins and  mlist_t *
@@ -91,7 +91,7 @@ namespace KTfwd {
 	>::type;
       using type = typename std::is_same<result_type,typename mlist_t::iterator>::type;
     };
-      
+
     //! Gives the recombination model function signature corresponding to glist_t
     template<typename glist_t>
     struct recmodel_t
@@ -103,5 +103,5 @@ namespace KTfwd {
     };
 
   }
-} 
+}
 #endif
