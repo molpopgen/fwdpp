@@ -85,7 +85,7 @@ namespace KTfwd
     static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t >::type>::value,
 		   "recombnation_policy type invalid" );
     assert(N_curr == diploids->size());
-
+    asssert(mcounts.size()==mutations.size());
     std::vector<double> fitnesses(diploids->size());
     double wbar = 0.;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mutations);
