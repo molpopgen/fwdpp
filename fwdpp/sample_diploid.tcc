@@ -131,11 +131,8 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
-	NREC += rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
-	NREC += rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
-
-	dip.first=p1g1;
-	dip.second=p2g1;
+	dip.first=rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
+	dip.second=rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
 
 	gametes[dip.first].n++;
 	gametes[dip.second].n++;

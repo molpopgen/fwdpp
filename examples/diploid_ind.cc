@@ -94,7 +94,7 @@ int main(int argc, char ** argv)
 						 std::placeholders::_3,std::placeholders::_4,
 						 //Pass as reference
 						 std::ref(pop.neutral),std::ref(pop.selected),
-						 &pop.gametes,
+						 pop.gametes,pop.mutations,
 						 littler,
 						 r.get(),
 						 recmap),

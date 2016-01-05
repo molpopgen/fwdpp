@@ -31,31 +31,30 @@ namespace KTfwd
       return rv;
     }
 
-    template<typename iterator_type,
-	     typename glist_t,
+    template<typename gcont_t,
+	     typename mcont_t,
 	     typename queue_t,
 	     typename lookup_type>
-    inline void recycle_gamete( iterator_type & g1,
-				glist_t * gametes,
-				queue_t & gamete_recycling_bin, lookup_type & gamete_lookup,
-				typename iterator_type::value_type::mutation_container & neutral,
-				typename iterator_type::value_type::mutation_container & selected )
+    inline std::size_t recycle_gamete(	gcont_t & gametes,
+					const mcont_t & mutations,
+					queue_t & gamete_recycling_bin, lookup_type & gamete_lookup,
+					std::vector<std::size_t> & neutral,
+					std::vector<std::size_t> & selected )
     {
       //Try to recycle
       if( ! gamete_recycling_bin.empty() )
 	{
-	  g1 = gamete_recycling_bin.front();
-	  assert(!g1->n);
-	  g1->n=0u;
-	  std::swap(g1->mutations,neutral);
-	  std::swap(g1->smutations,selected);
+	  auto idx = gamete_recycling_bin.front();
 	  gamete_recycling_bin.pop();
+	  assert(!gametes[idx].n);
+	  gametes[idx].n=0u;
+	  gametes[idx].mutations.swap(neutral);
+	  gametes[idx].smutations.swap(selected);
+	  gamete_lookup.update(idx,gametes,mutations);
+	  return idx;
 	}
-      else
-	{
-	  g1 = gametes->emplace(gametes->end(),0u,std::move(neutral),std::move(selected));
-	}
-      gamete_lookup.update(g1);
+      gametes.emplace(gametes->end(),0u,std::move(neutral),std::move(selected));
+      return gametes.size()-1;
     }
 
     /*!
