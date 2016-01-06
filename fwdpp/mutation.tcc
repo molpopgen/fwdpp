@@ -32,37 +32,32 @@ namespace KTfwd
     assert(g<gametes.size());
     assert( gamete_is_sorted_n(gametes[g],mutations) );
     assert( gamete_is_sorted_s(gametes[g],mutations) );
-    //assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
-    if ( nm )
+    if(!nm) return g;
+    
+    assert(gametes[g].n);
+    gametes[g].n--;
+    //Recycle an already-allocated gamete, if possible
+    if (!gamete_recycling_bin.empty())
       {
-	assert(gametes[g].n);
-	//assert( g->n > 0 );
-	gametes[g].n--;
-	//g->n--;
-	//Recycle an already-allocated gamete, if possible
-	if (!gamete_recycling_bin.empty())
-	  {
-	    auto __g = gamete_recycling_bin.front();
-	    assert(!gametes[__g].n);
-	    gametes[__g].mutations=gametes[g].mutations;
-	    gametes[__g].smutations=gametes[g].smutations;
-	    gametes[__g].n=1;
-
-	    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[__g]);
-	    assert( gamete_is_sorted_n(gametes[__g],mutations) );
-	    assert( gamete_is_sorted_s(gametes[__g],mutations) );
-	    gamete_recycling_bin.pop();
-	    return __g;
-	  }
-	typename gcont_t::value_type ng( 1, gametes[g].mutations,gametes[g].smutations);
-
-	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
-	assert( gamete_is_sorted_n(ng,mutations) );
-	assert( gamete_is_sorted_s(ng,mutations) );
-	return gpolicy(std::move(ng),gametes);
+	auto idx = gamete_recycling_bin.front();
+	assert(!gametes[idx].n);
+	gametes[idx].mutations=gametes[g].mutations;
+	gametes[idx].smutations=gametes[g].smutations;
+	gametes[idx].n=1;
+	
+	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[idx]);
+	assert( gamete_is_sorted_n(gametes[idx],mutations) );
+	assert( gamete_is_sorted_s(gametes[idx],mutations) );
+	gamete_recycling_bin.pop();
+	return idx;
       }
-    return g;
+    //If not, create a new gamete that we'll add to the gamete container
+    typename gcont_t::value_type ng( 1, gametes[g].mutations,gametes[g].smutations);
+    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
+    assert( gamete_is_sorted_n(ng,mutations) );
+    assert( gamete_is_sorted_s(ng,mutations) );
+    return gpolicy(std::move(ng),gametes);
   }
 }
 #endif /* _FWDPP_MUTATION_TCC_ */
