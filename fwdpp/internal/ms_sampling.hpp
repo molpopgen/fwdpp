@@ -28,9 +28,11 @@ namespace KTfwd
       remove_no_derived(block);
     }
 
-    template< typename mcont_t,
+    template< typename gamete_mcont_t,
+	      typename mcont_t,
 	      typename pos_finder>
     void update_sample_block(sample_t & block,
+			     const gamete_mcont_t & variants,
 			     const mcont_t & mutations,
 			     const size_t & i,
 			     const size_t & n,
@@ -38,11 +40,11 @@ namespace KTfwd
 			     const size_t & offset = 0,
 			     const size_t & scalar = 2)
     {
-      for( auto mptr = mutations.cbegin() ; mptr != mutations.cend() ; ++mptr )
+      for( const auto & m : variants )
 	{
-	  double mutpos = (*mptr)->pos;
+	  auto mutpos = mutations[m].pos;
 	  auto itr = std::find_if(block.begin(),block.end(),std::bind(pf,std::placeholders::_1,mutpos));
-	  if( itr == block.end() )
+	  	  if( itr == block.end() )
 	    {
 	      block.push_back( std::make_pair(mutpos,std::string(n,'0')) );
 	      block[block.size()-1].second[scalar*i+offset] = '1';
@@ -64,9 +66,13 @@ namespace KTfwd
 	sample.end());
     }
 
-    template<typename dipvector_t>
+    template<typename mcont_t,
+	     typename gcont_t,
+	     typename dipvector_t>
     sep_sample_t
-    ms_sample_separate_single_deme( const dipvector_t * diploids,
+    ms_sample_separate_single_deme( const mcont_t & mutations,
+				    const gcont_t & gametes,
+				    const dipvector_t & diploids,
 				    const std::vector<unsigned> & diplist,
 				    const unsigned & n,
 				    const bool & remove_fixed )
@@ -80,16 +86,15 @@ namespace KTfwd
 	  return std::fabs(site.first-d) <= std::numeric_limits<double>::epsilon();
 	};
 
-      const auto dptr = diploids->cbegin();
       for( size_t i = 0 ; i < diplist.size() ; ++i )
 	{
 	  typename dipvector_t::difference_type ind = diplist[i];
 	  assert(ind>=0);
 	  assert( unsigned(ind) < diploids->size() );
-	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->first->mutations,i,2*diplist.size(),sitefinder);
-	  fwdpp_internal::update_sample_block( rv.first,(dptr+ind)->second->mutations,i,2*diplist.size(),sitefinder,1);
-	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->first->smutations,i,2*diplist.size(),sitefinder);
-	  fwdpp_internal::update_sample_block( rv.second,(dptr+ind)->second->smutations,i,2*diplist.size(),sitefinder,1);
+	  fwdpp_internal::update_sample_block( rv.first,gametes[diploids[ind].first].mutations,mutations,i,2*diplist.size(),sitefinder);
+	  fwdpp_internal::update_sample_block( rv.first,gametes[diploids[ind].second].mutations,mutations,i,2*diplist.size(),sitefinder,1);
+	  fwdpp_internal::update_sample_block( rv.second,gametes[diploids[ind].first].smutations,mutations,i,2*diplist.size(),sitefinder);
+	  fwdpp_internal::update_sample_block( rv.second,gametes[diploids[ind].second].smutations,mutations,i,2*diplist.size(),sitefinder,1);
 	}
       if(remove_fixed&&!rv.first.empty())
 	{

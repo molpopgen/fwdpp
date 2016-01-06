@@ -75,17 +75,21 @@ namespace KTfwd
   }
 
   //SAMPLERS FOR INDIVIDUAL-BASED SIMULATIONS
-  template<typename allocator,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   sample_t >::type
   ms_sample( gsl_rng * r,
-	     const vector_type< diploid_geno_t, allocator > * diploids,
+	     const mcont_t & mutations,
+	     const gcont_t & gametes,
+	     const vector_type< diploid_geno_t, allocator > & diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {
-    auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
+    auto separate = ms_sample_separate(r,mutations,gametes,diploids,n,remove_fixed);
     std::move( separate.second.begin(), separate.second.end(), std::back_inserter(separate.first) );
     std::sort(separate.first.begin(),separate.first.end(),
 	      [](const sample_site_t & lhs,
@@ -93,13 +97,17 @@ namespace KTfwd
     return separate.first;
   }
 
-  template<typename allocator,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< diploid_geno_t, allocator > * diploids,
+		      const mcont_t & mutations,
+		      const gcont_t & gametes,
+		      const vector_type< diploid_geno_t, allocator > & diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
@@ -107,9 +115,9 @@ namespace KTfwd
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
     for( unsigned i = 0 ; i < n/2+isodd ; ++i )
       {
-	diplist.push_back(std::vector<unsigned>::value_type(gsl_ran_flat(r,0.,double(diploids->size()))));
+	diplist.push_back(std::vector<unsigned>::value_type(gsl_ran_flat(r,0.,double(diploids.size()))));
       }
-    return fwdpp_internal::ms_sample_separate_single_deme(diploids,diplist,n,remove_fixed);
+    return fwdpp_internal::ms_sample_separate_single_deme(mutations,gametes,diploids,diplist,n,remove_fixed);
   }
 
   //Individual-based sims, multilocus algorithm

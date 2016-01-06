@@ -146,20 +146,22 @@ int main(int argc, char ** argv)
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
-      std::cout << pop.mutations.size() << ' ' << pop.fixations.size() << ' ' << ' ' << pop.gametes.size() << '\n';
-      // Sequence::SimData sdata;
+      unsigned extant=0;
+      for(const auto & m : pop.mcounts) if(m)++extant;
+      std::cerr << pop.mutations.size() << ' ' << extant << ' ' << pop.gametes.size() << ' ' << pop.mut_lookup.size() << '\n';
+       Sequence::SimData sdata;
 
-      // std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
-
-      // if(!mslike.empty())
-      // 	{
-      // 	  sdata.assign(mslike.begin(),mslike.end());
-      // 	  std::cout << sdata << '\n';
-      // 	}
-      // else
-      // 	{
-      // 	  std::cout << "//\nsegsites: 0\n";
-      // 	}
+       std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1,true);
+       
+       if(!mslike.empty())
+	 {
+	   sdata.assign(mslike.begin(),mslike.end());
+	   std::cout << sdata << '\n';
+	 }
+       else
+	 {
+	   std::cout << "//\nsegsites: 0\n";
+	 }
     }
   return 0;
 }
