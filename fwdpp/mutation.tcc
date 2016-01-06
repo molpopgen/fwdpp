@@ -47,11 +47,31 @@ namespace KTfwd
 	    gametes[__g].smutations=gametes[g].smutations;
 	    gametes[__g].n=1;
 	    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[__g]);
+	    assert( std::is_sorted( gametes[__g].mutations.begin(),
+				    gametes[__g].mutations.end(),
+				    [&mutations](const size_t i, const size_t j) {
+				      return mutations[i].pos<mutations[j].pos;
+				    } ) );
+	    assert( std::is_sorted( gametes[__g].smutations.begin(),
+				    gametes[__g].smutations.end(),
+				    [&mutations](const size_t i, const size_t j) {
+				      return mutations[i].pos<mutations[j].pos;
+				    } ) );
 	    gamete_recycling_bin.pop();
 	    return __g;
 	  }
 	typename gcont_t::value_type ng( 1, gametes[g].mutations,gametes[g].smutations);
 	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
+	assert( std::is_sorted( ng.mutations.begin(),
+				ng.mutations.end(),
+				[&mutations](const size_t i, const size_t j) {
+				  return mutations[i].pos<mutations[j].pos;
+				} ) );
+	assert( std::is_sorted( ng.smutations.begin(),
+				ng.smutations.end(),
+				[&mutations](const size_t i, const size_t j) {
+				  return mutations[i].pos<mutations[j].pos;
+				} ) );
 	return gpolicy(std::move(ng),gametes);
       }
     return g;

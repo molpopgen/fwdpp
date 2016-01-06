@@ -52,10 +52,22 @@ namespace KTfwd {
 	    }
 	  SWITCH=!SWITCH;
 	}
-      assert( is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
+#ifndef NDEBUG
+      if( ! std::is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
+	    return mutations[i].pos < mutations[j].pos;
+	  }) )
+	{
+	  for( const auto & m : gametes[ibeg].mutations )
+	    {
+	      std::cerr << mutations[m].pos << '\n';
+	    }
+	}
+#endif
+      
+      assert( std::is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
 	    return mutations[i].pos < mutations[j].pos;
 	  }) );
-      assert( is_sorted( gametes[jbeg].smutations.begin(),gametes[jbeg].smutations.end(),[&mutations](size_t i,size_t j) {
+      assert( std::is_sorted( gametes[jbeg].smutations.begin(),gametes[jbeg].smutations.end(),[&mutations](size_t i,size_t j) {
 	    return mutations[i].pos < mutations[j].pos;
 	  }) );
     }    

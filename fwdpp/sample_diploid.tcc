@@ -78,6 +78,8 @@ namespace KTfwd
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
+    //test preconditions in debugging mode
+    assert(mcounts.size()==mutations.size());
     using glist_t = gamete_list_type<gamete_type,gamete_list_type_allocator >;
     using mlist_t = mutation_list_type<mutation_type,mutation_list_type_allocator >;
     static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
@@ -140,6 +142,7 @@ namespace KTfwd
 	dip.first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	dip.second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
       }
+    assert(check_sum(gametes,2*N_next));
 #ifndef NDEBUG
     for(const auto & dip : diploids)
       {
@@ -150,8 +153,14 @@ namespace KTfwd
       }
 #endif
     fwdpp_internal::process_glist(gametes,mutations,mcounts);
+    assert(mcounts.size()==mutations.size());
+#ifndef NDEBUG
+    for(const auto & mc : mcounts)
+      {
+	assert(mc <= 2*N_next);
+      }
+#endif
     fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
-    assert(check_sum(gametes,2*N_next));
     return wbar;
   }
 
