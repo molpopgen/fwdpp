@@ -91,20 +91,17 @@ namespace KTfwd
     if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return 0;
     
     unsigned nbreaks = (littler > 0) ? gsl_ran_poisson(r,littler) : 0u;
-    
-    if( nbreaks )
+    if(!nbreaks) return g1;
+
+    std::vector<double> pos;
+    pos.reserve(nbreaks+1);
+    for(unsigned i = 0 ; i < nbreaks ; ++i)
       {
-        std::vector<double> pos;
-	pos.reserve(nbreaks+1);
-	for(unsigned i = 0 ; i < nbreaks ; ++i)
-	  {
-	    pos.emplace_back(mf());
-	  }
-	std::sort(pos.begin(),pos.end());
-	pos.emplace_back(std::numeric_limits<double>::max());
-	return recombine_gametes(pos,gametes,mutations,g1,g2,gamete_lookup,gamete_recycling_bin,neutral,selected);
+	pos.emplace_back(mf());
       }
-    return g1;
+    std::sort(pos.begin(),pos.end());
+    pos.emplace_back(std::numeric_limits<double>::max());
+    return recombine_gametes(pos,gametes,mutations,g1,g2,gamete_lookup,gamete_recycling_bin,neutral,selected);
   }
 }
 
