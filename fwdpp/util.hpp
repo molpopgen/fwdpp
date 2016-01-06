@@ -105,13 +105,14 @@ namespace KTfwd
     for(unsigned i=0;i<mcounts.size();++i)
       {
 	assert(mcounts[i] <= twoN);
-	if(mcounts[i]==twoN )
+	if(mcounts[i]==twoN)
 	  {
 	    fixations.push_back(mutations[i]);
 	    fixation_times.push_back(generation);
 	    mcounts[i]=0; //set count to zero to mark mutation as "recyclable"
 	    lookup.erase(mutations[i].pos);
 	  }
+	if(!mcounts[i]) lookup.erase(mutations[i].pos);
       }
   }
   
