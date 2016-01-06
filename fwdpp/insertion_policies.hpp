@@ -21,6 +21,13 @@ namespace KTfwd
     return ct->insert(ct->end(),std::forward<T>(t));
   }
 
+  template<typename T, typename cT>
+  inline std::size_t emplace_back(  T && t,  cT & ct )
+  {
+    ct.emplace_back(std::forward<T>(t));
+    return ct.size()-1;
+  }
+
   /*! \brief     An insertion policy 
     
     Useful when mutation models can give rise to gametes identical to those currently existing in the population. 

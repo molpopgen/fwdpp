@@ -24,16 +24,16 @@ namespace KTfwd
      */
     template<typename position_t,
 	     typename lookup_table_t>
-    inline typename std::result_of<position_t()>::type generate_mut_pos( const position_t & posmaker, lookup_table_t * lookup ) const
+    inline typename std::result_of<position_t()>::type generate_mut_pos( const position_t & posmaker, lookup_table_t & lookup ) const
     {
       static_assert( std::is_convertible<typename std::result_of<position_t()>::type,double>::value,
 		     "The return type of posmaker must be convertible to double." );
       auto pos = posmaker();
-      while(lookup->find(pos) != lookup->end())
+      while(lookup.find(pos) != lookup.end())
 	{
 	  pos = posmaker();
 	}
-      lookup->insert(pos);
+      lookup.insert(pos);
       return pos;
     }
     
@@ -56,10 +56,10 @@ namespace KTfwd
 	     typename sdist_t,
 	     typename hdist_t>
     inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
-				   typename mlist_t::iterator>::type
+				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t * mutations,
-	       gsl_rng * r, lookup_table_t * lookup,
+	       mlist_t & mutations,
+	       gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -103,10 +103,10 @@ namespace KTfwd
 	     typename sdist_t,
 	     typename hdist_t>
     inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
-				   typename mlist_t::iterator>::type
+				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t * mutations,
-	       gsl_rng * r, lookup_table_t * lookup,
+	       mlist_t & mutations,
+	       gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -147,10 +147,10 @@ namespace KTfwd
 	     typename sdist_t,
 	     typename hdist_t>
     inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
-				   typename mlist_t::iterator>::type
+				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t * mutations,
-	       gsl_rng * r, lookup_table_t * lookup,
+	       mlist_t & mutations,
+	       gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t * generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -184,10 +184,10 @@ namespace KTfwd
 	     typename sdist_t,
 	     typename hdist_t>
     inline typename std::enable_if<std::is_same<typename mlist_t::value_type,mutation>::value,
-				   typename mlist_t::iterator>::type
+				   std::size_t>::type
     operator()(queue_t & mutation_recycling_bin,
-	       mlist_t * mutations,
-	       gsl_rng * r, lookup_table_t * lookup,
+	       mlist_t & mutations,
+	       gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
 	       const position_t & posmaker,
@@ -225,10 +225,10 @@ namespace KTfwd
 	     typename sdist_t,
 	     typename hdist_t>
     inline typename std::enable_if<std::is_same<typename mlist_t::value_type,mutation>::value,
-				   typename mlist_t::iterator>::type
+				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t * mutations,
-	       gsl_rng * r, lookup_table_t * lookup,
+	       mlist_t & mutations,
+	       gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
 	       const nposition_t & nposmaker,

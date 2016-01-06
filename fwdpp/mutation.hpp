@@ -29,20 +29,19 @@ namespace KTfwd
     \note Used in invididual-based forward simulations.
     \return An iterator to the newly-created gamete, or to g if no mutation occurs.
    */
-  template< typename queue_type,
+ template< typename queue_type,
 	    typename queue_type2,
-	    typename iterator_type,
 	    typename mutation_model,
 	    typename gamete_insertion_policy,
-	    typename glist_t,
-	    typename mlist_t >
-  iterator_type mutate_gamete_recycle( queue_type & recycling_bin,
+	    typename gcont_t,
+	    typename mcont_t>
+ std::size_t mutate_gamete_recycle( queue_type & recycling_bin,
 				       queue_type2 & gamete_recycling_bin,
 				       gsl_rng * r,
 				       const double & mu,
-				       glist_t * gametes,
-				       mlist_t * mutations,
-				       iterator_type & g,
+				       gcont_t & gametes,
+				       mcont_t & mutations,
+				       const size_t g,
 				       const mutation_model &mmodel,
 				       const gamete_insertion_policy & gpolicy);
 }

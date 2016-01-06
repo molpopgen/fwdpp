@@ -111,7 +111,6 @@ namespace KTfwd
       {
 	diploids.resize(N_next);
       }
-    uint_t NREC=0;
     assert(diploids.size()==N_next);
     //std::size_t p1g1,p1g2,p2g1,p2g2;
 

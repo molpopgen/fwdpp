@@ -13,25 +13,26 @@ namespace KTfwd {
       Ensures that it is always added into a vector
       in less-than-sorted order according to position
     */
-    template< typename gamete_type,
-	      typename mutation_iterator>
-    void add_new_mutation( mutation_iterator mitr,
+    template< typename mcont_t,
+	      typename gamete_type>
+    void add_new_mutation( std::size_t idx,
+			   const mcont_t & mutations,
 			   gamete_type & new_gamete )
     {
-      if(mitr->neutral)
+      if(mutations[idx].neutral)
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
-							new_gamete.mutations.end(),mitr->pos,
-							[](const double & __value,const mutation_iterator & __mut){
-							  return __value < __mut->pos;}),
-				       mitr );
+							new_gamete.mutations.end(),mutations[idx].pos,
+							[&mutations](const double & __value,const std::size_t __mut){
+							  return __value < mutations[__mut].pos;}),
+				       idx );
 	}
       else
 	{
 	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
-							 new_gamete.smutations.end(),mitr->pos,
-							 [](const double & __value,const mutation_iterator & __mut){return __value < __mut->pos;}),
-					mitr );
+							 new_gamete.smutations.end(),mutations[idx].pos,
+							 [&mutations](const double & __value,std::size_t __mut){return __value < mutations[__mut].pos;}),
+					idx );
 	}
     }
     
@@ -39,8 +40,8 @@ namespace KTfwd {
     	     typename gamete_type,
     	     typename mlist_type,
     	     typename queue_t>
-    inline typename std::result_of<mmodel(queue_t &,mlist_type *)>::type
-    mmodel_dispatcher( const mmodel & m, gamete_type & , mlist_type * mutations, queue_t & recycling_bin)
+    inline typename std::result_of<mmodel(queue_t &,mlist_type &)>::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & , mlist_type & mutations, queue_t & recycling_bin)
     {
       return m(recycling_bin,mutations);
     }
@@ -49,8 +50,8 @@ namespace KTfwd {
 	     typename gamete_type,
     	     typename mlist_type,
     	     typename queue_t>
-    inline typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type *)>::type
-    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type * mutations, queue_t & recycling_bin)
+    inline typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type &)>::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type & mutations, queue_t & recycling_bin)
     {
       return m(recycling_bin,g,mutations);
     }
@@ -66,7 +67,7 @@ namespace KTfwd {
     void add_N_mutations_recycle( queue_type & recycling_bin,
 				  const mutation_model & mmodel,
 				  const unsigned & n,
-				  mlist_type * mutations,
+				  mlist_type & mutations,
 				  gamete_type & g)
     {
       for( unsigned i = 0 ; i < n ; ++i )

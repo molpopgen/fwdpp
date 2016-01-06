@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
       					 The mutation model (KTfwd::infsites) will be applied by
 					 sample_diploid in order to add mutations to gametes each generation.
       				       */
-				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,generation,
+				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),pop.mut_lookup,generation,
 						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
@@ -107,7 +107,7 @@ int main(int argc, char ** argv)
 					 copy identical to an existing gamete.  If so,
 					 that gamete's frequency increases by 1.
 				       */
-      				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::gvec_t>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gvec_t>,std::placeholders::_1,std::placeholders::_2),
       				       /*
       					 Fitness is multiplicative over sites.
 
