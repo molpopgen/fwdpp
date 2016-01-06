@@ -49,7 +49,7 @@ namespace KTfwd
 				});
        if( itr == lookup.second )
 	 {
-	   return fwdpp_internal::recycle_gamete(g1,gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
+	   return fwdpp_internal::recycle_gamete(gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
 	 } 
 	else 
 	{
@@ -63,7 +63,7 @@ namespace KTfwd
 	  There is no gamete in gametes with the number of neutral AND selected mutations,
 	  and therefore the gamete is novel
 	*/
-	return fwdpp_internal::recycle_gamete(g1,gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
+	return fwdpp_internal::recycle_gamete(gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
       }
     return g1;
     //return unsigned(pos.size()-1);
