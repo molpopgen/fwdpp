@@ -5,7 +5,7 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <numeric>
-#include <type_traits>
+#include <fwdpp/type_traits.hpp>
 
 namespace KTfwd
 {
@@ -13,21 +13,15 @@ namespace KTfwd
   /*! \brief Returns true if the sum of counts in gametes equals twoN, false otherwise
     Returns true if the sum of counts in gametes equals twoN, false otherwise
    */
-  template<typename vector_type_allocator,
-	   typename gamete_type,
-	   template<typename,typename> class vector_type>
-  bool check_sum(const vector_type<gamete_type,vector_type_allocator> & gametes, const unsigned & twoN)
+  template<typename gcont_t>
+  bool check_sum(const gcont_t & gametes, const unsigned & twoN)
   {
-    using gamete_base_type =
-      gamete_base< typename gamete_type::mutation_type,
-		   typename gamete_type::mutation_list_type >;
-    static_assert( std::is_base_of<gamete_base_type,gamete_type>::value ||
-                   std::is_same<gamete_base_type,gamete_type>::value,
-                   "gamete_type must be, or inherit from, KTfwd::gamete_base<mutation_type,mutation_list_type>" );
+    static_assert( typename traits::is_gamete_t<typename gcont_t::value_type>::type(),
+		   "gcont_t::value_type must be a valid gamete type" );
     return ( std::accumulate( gametes.cbegin(),
 			      gametes.cend(),0u,
 			      [](unsigned & __u,
-				 const gamete_type & __g) { 
+				 const typename gcont_t::value_type & __g) { 
 				return __u + __g.n; 
 			      } ) == twoN );
   }
@@ -35,10 +29,8 @@ namespace KTfwd
   /*! \brief Returns true if the sum of counts in gametes equals twoN, false otherwise
     Returns true if the sum of counts in gametes equals twoN, false otherwise
    */
-  template<typename vector_type_allocator,
-	   typename gamete_type,
-	   template<typename,typename> class vector_type>
-  bool check_sum(const vector_type<gamete_type,vector_type_allocator> * gametes, const unsigned & twoN)
+  template<typename gcont_t>
+  bool check_sum(const gcont_t * gametes, const unsigned & twoN)
   {
     return check_sum(*gametes,twoN);
   }
