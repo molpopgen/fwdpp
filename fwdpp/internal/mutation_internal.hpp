@@ -15,10 +15,11 @@ namespace KTfwd {
     */
     template< typename mcont_t,
 	      typename gamete_type>
-    void add_new_mutation( std::size_t idx,
+    void add_new_mutation( const std::size_t idx,
 			   const mcont_t & mutations,
 			   gamete_type & new_gamete )
     {
+      assert(idx<mutations.size());
       if(mutations[idx].neutral)
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
