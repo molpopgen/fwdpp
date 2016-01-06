@@ -10,7 +10,7 @@ namespace KTfwd {
       Called by KTfwd::sample_diploid via dispatch.
     */
     template<typename gcont_t, typename mutation_removal_policy>
-    inline void gamete_cleaner(gcont_t &, const mutation_removal_policy &, std::true_type)
+    inline void gamete_cleaner(gcont_t &,const std::vector<uint_t> &, const mutation_removal_policy &, std::true_type)
     {
       return;
     }
@@ -20,7 +20,7 @@ namespace KTfwd {
       Called by KTfwd::sample_diploid via dispatch.
     */
     template<typename gcont_t, typename mutation_removal_policy>
-    inline void gamete_cleaner(gcont_t & gametes, const mutation_removal_policy & mp, std::false_type)
+    inline void gamete_cleaner(gcont_t & gametes, const std::vector<uint_t> & mcounts,const mutation_removal_policy & mp, std::false_type)
     {
       for( auto & g : gametes )
 	{
@@ -28,11 +28,17 @@ namespace KTfwd {
 	    {
 	      g.mutations.erase(std::remove_if(g.mutations.begin(),
 					       g.mutations.end(),
-					       std::cref(mp)),
+					       [&mcounts,&mp](const std::size_t & i)
+					       {
+						 return(mp(mcounts[i]));
+					       }),
 				g.mutations.end());
 	      g.smutations.erase(std::remove_if(g.smutations.begin(),
 						g.smutations.end(),
-						std::cref(mp)),
+						[&mcounts,&mp](const std::size_t & i)
+						{
+						  return(mp(mcounts[i]));
+						}),
 				 g.smutations.end());
 	    }
 	}

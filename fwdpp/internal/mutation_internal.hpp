@@ -20,6 +20,18 @@ namespace KTfwd {
 			   gamete_type & new_gamete )
     {
       assert(idx<mutations.size());
+      assert(std::find(new_gamete.mutations.begin(),
+		       new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
+      // if(!gamete_is_sorted_n(new_gamete,mutations))
+      // 	{
+      // 	  std::cout << "new mutation pos = " << mutations[idx].pos << '\n';
+      // 	  std::cout << "new mutation index exists = " << idx <<" -> "<< (std::find(new_gamete.mutations.begin(),
+      // 										   new_gamete.mutations.end(),idx)==new_gamete.mutations.end()) << '\n';
+      // 	  for(const auto & m : new_gamete.mutations)
+      // 	    {
+      // 	      std::cout << m << ' ' << mutations[m].pos << '\n';
+      // 	    }
+      // 	}
       assert(gamete_is_sorted_n(new_gamete,mutations));
       assert(gamete_is_sorted_s(new_gamete,mutations));
       if(mutations[idx].neutral)
@@ -29,15 +41,6 @@ namespace KTfwd {
 							[&mutations](const double & __value,const std::size_t __mut){
 							  return __value < mutations[__mut].pos;}),
 				       idx );
-	  if(!std::is_sorted( new_gamete.mutations.begin(),
-			      new_gamete.mutations.end(),
-			      [&mutations](const size_t i, const size_t j) {
-				return mutations[i].pos<mutations[j].pos;
-			      } ) )
-	    {
-	      std::cerr << idx << ' ' << mutations[idx].pos << '\n';
-	      for(const auto & i : new_gamete.mutations) std::cerr << i << ' ' << mutations[i].pos << '\n';
-	    }
 	  assert(gamete_is_sorted_n(new_gamete,mutations));
 	}
       else

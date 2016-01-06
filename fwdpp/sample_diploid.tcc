@@ -141,6 +141,9 @@ namespace KTfwd
 	//now, add new mutations
 	dip.first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	dip.second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
+
+	assert( gametes[dip.first].n );
+	assert( gametes[dip.second].n );
       }
     assert(check_sum(gametes,2*N_next));
 #ifndef NDEBUG
@@ -160,7 +163,7 @@ namespace KTfwd
 	assert(mc <= 2*N_next);
       }
 #endif
-    fwdpp_internal::gamete_cleaner(gametes,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
+    fwdpp_internal::gamete_cleaner(gametes,mcounts,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     return wbar;
   }
 
