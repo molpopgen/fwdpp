@@ -21,9 +21,7 @@ namespace KTfwd
 				 queue_t & gamete_recycling_bin,
 				 std::vector<std::size_t> & neutral,
 				 std::vector<std::size_t> & selected )
-  {    
-    //assert( g1 != gametes->end() );
-    //assert( g2 != gametes->end() );
+  {
     assert(g1 < gametes.end());
     assert(g2 < gametes.end());
     assert( std::is_sorted(pos.begin(),pos.end()) );
@@ -32,9 +30,7 @@ namespace KTfwd
     //We defer clearing all the way to this point
     neutral.clear();
     selected.clear();
-    fwdpp_internal::recombine_gametes(pos,g1,g2,neutral,selected);
-
-    //typename iterator_type::value_type ng(0u,neutral,selected);
+    fwdpp_internal::recombine_gametes(pos,g1,g2,gametes,mutations,neutral,selected);
 
     //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
     auto lookup = gamete_lookup.lookup(neutral,selected,mutations);
@@ -43,9 +39,9 @@ namespace KTfwd
 	//Then we have to search through lookup.second
 	auto itr = std::find_if(lookup.first,
 				lookup.second,
-				[&neutral,&selected]( typename glookup_t::inner_t & __p) {
-				  return (__p.second->mutations == neutral &&
-				  __p.second->smutations == selected);
+				[&gametes,&neutral,&selected]( typename glookup_t::inner_t & __p) {
+				  return (gametes[__p.second].mutations == neutral &&
+					  gametes[__p.second].smutations == selected);
 				});
        if( itr == lookup.second )
 	 {
@@ -54,7 +50,6 @@ namespace KTfwd
 	else 
 	{
 	  return itr->second;
-	  //g1 = itr->second;
 	}
       } 
     else
@@ -66,7 +61,6 @@ namespace KTfwd
 	return fwdpp_internal::recycle_gamete(gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
       }
     return g1;
-    //return unsigned(pos.size()-1);
   }
 
   //recombination for individual-based simulation

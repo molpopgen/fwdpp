@@ -8,55 +8,57 @@ namespace KTfwd {
   namespace fwdpp_internal {
 
     template<typename double_vec_type,
-	     typename gamete_cont_iterator >
+	     typename gcont_t,
+	     typename mcont_t>
     void recombine_gametes( const double_vec_type & pos,
-			    gamete_cont_iterator & ibeg,
-			    gamete_cont_iterator & jbeg,
-			    typename gamete_cont_iterator::value_type::mutation_container & neutral,
-			    typename gamete_cont_iterator::value_type::mutation_container & selected)
+			    const std::size_t ibeg,
+			    const std::size_t jbeg,
+			    gcont_t & gametes,
+			    const mcont_t & mutations,
+			    std::vector<std::size_t> & neutral,
+			    std::vector<std::size_t> & selected)
     {
       assert( std::is_sorted(pos.cbegin(),pos.cend()) );
       short SWITCH = 0;
 
-      auto itr = ibeg->mutations.cbegin(),
-	jtr = jbeg->mutations.cbegin(),
-	itr_s = ibeg->smutations.cbegin(),
-	jtr_s = jbeg->smutations.cbegin(),
-	itr_e = ibeg->mutations.cend(),
-	itr_s_e = ibeg->smutations.cend(),
-	jtr_e = jbeg->mutations.cend(),
-	jtr_s_e = jbeg->smutations.cend();
-
+      auto itr = gametes[ibeg].mutations.cbegin(),
+	jtr = gametes[jbeg].mutations.cbegin(),
+	itr_s = gametes[ibeg].smutations.cbegin(),
+	jtr_s = gametes[jbeg].smutations.cbegin(),
+	itr_e = gametes[ibeg].mutations.cend(),
+	itr_s_e = gametes[ibeg].smutations.cend(),
+	jtr_e = gametes[jbeg].mutations.cend(),
+	jtr_s_e = gametes[jbeg].smutations.cend();
+      
       for(const double dummy : pos )
 	{
 	  if(!SWITCH)
 	    {
-	      itr = fwdpp_internal::rec_gam_updater(itr,itr_e,
+	      itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
 						    neutral,dummy);
-	      itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,
+	      itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
 						      selected,dummy);
-	      jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,dummy);
-	      jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,dummy);
+	      jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,mutations,dummy);
+	      jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,mutations,dummy);
 	    }
 	  else
 	    {
-	      jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,
+	      jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,mutations,
 						    neutral,dummy);
-	      jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,
+	      jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,mutations,
 						      selected,dummy);
-	      itr = fwdpp_internal::rec_update_itr(itr,itr_e,dummy);
-	      itr_s = fwdpp_internal::rec_update_itr(itr_s,itr_s_e,dummy);
+	      itr = fwdpp_internal::rec_update_itr(itr,itr_e,mutations,dummy);
+	      itr_s = fwdpp_internal::rec_update_itr(itr_s,itr_s_e,mutations,dummy);
 	    }
 	  SWITCH=!SWITCH;
 	}
-#ifndef NDEBUG
-      using mlist_itr = typename gamete_cont_iterator::value_type::mutation_container::iterator::value_type;
-      auto am_I_sorted = [](mlist_itr lhs,mlist_itr rhs){return lhs->pos < rhs->pos;};
-      assert(std::is_sorted(neutral.begin(),neutral.end(),std::cref(am_I_sorted)));
-      assert(std::is_sorted(selected.begin(),selected.end(),std::cref(am_I_sorted)));
-#endif
-    }
-    
+      assert( is_sorted( gametes[ibeg].neutral.begin(),gametes[ibeg].neutral.end(),[&mutations](size_t i,size_t j) {
+	    return mutations[i].pos < mutations[j].pos;
+	  }) );
+      assert( is_sorted( gametes[jbeg].selected.begin(),gametes[jbeg].selected.end(),[&mutations](size_t i,size_t j) {
+	    return mutations[i].pos < mutations[j].pos;
+	  }) );
+    }    
   }
 }
 #endif
