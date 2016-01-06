@@ -41,6 +41,7 @@ namespace KTfwd
     if (!gamete_recycling_bin.empty())
       {
 	auto idx = gamete_recycling_bin.front();
+	gamete_recycling_bin.pop();
 	assert(!gametes[idx].n);
 	gametes[idx].mutations=gametes[g].mutations;
 	gametes[idx].smutations=gametes[g].smutations;
@@ -49,7 +50,6 @@ namespace KTfwd
 	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[idx]);
 	assert( gamete_is_sorted_n(gametes[idx],mutations) );
 	assert( gamete_is_sorted_s(gametes[idx],mutations) );
-	gamete_recycling_bin.pop();
 	return idx;
       }
     //If not, create a new gamete that we'll add to the gamete container
