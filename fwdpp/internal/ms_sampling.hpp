@@ -90,7 +90,7 @@ namespace KTfwd
 	{
 	  typename dipvector_t::difference_type ind = diplist[i];
 	  assert(ind>=0);
-	  assert( unsigned(ind) < diploids->size() );
+	  assert( unsigned(ind) < diploids.size() );
 	  fwdpp_internal::update_sample_block( rv.first,gametes[diploids[ind].first].mutations,mutations,i,2*diplist.size(),sitefinder);
 	  fwdpp_internal::update_sample_block( rv.first,gametes[diploids[ind].second].mutations,mutations,i,2*diplist.size(),sitefinder,1);
 	  fwdpp_internal::update_sample_block( rv.second,gametes[diploids[ind].first].smutations,mutations,i,2*diplist.size(),sitefinder);
