@@ -97,7 +97,7 @@ namespace KTfwd
 			 fixation_container_t & fixations, 
 			 fixation_time_container_t & fixation_times,
 			 mutation_lookup_table & lookup,
-			 const std::vector<uint_t> & mcounts,
+			 std::vector<uint_t> & mcounts,
 			 const unsigned & generation,const unsigned & twoN )
   {
     static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
@@ -109,6 +109,7 @@ namespace KTfwd
 	  {
 	    fixations.push_back(mutations[i]);
 	    fixation_times.push_back(generation);
+	    mcounts[i]=0; //set count to zero to mark mutation as "recyclable"
 	    lookup.erase(mutations[i].pos);
 	  }
       }

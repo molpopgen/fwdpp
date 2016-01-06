@@ -22,8 +22,8 @@ namespace KTfwd
 				 std::vector<std::size_t> & neutral,
 				 std::vector<std::size_t> & selected )
   {
-    assert(g1 < gametes.end());
-    assert(g2 < gametes.end());
+    assert(g1 < gametes.size());
+    assert(g2 < gametes.size());
     assert( std::is_sorted(pos.begin(),pos.end()) );
     assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
 
@@ -81,8 +81,8 @@ namespace KTfwd
 				 std::vector<std::size_t> & selected,
 				 const recombination_map & mf)
   {
-    assert( g1 != gametes->end() );
-    assert( g2 != gametes->end() );
+    assert( g1 < gametes.size() );
+    assert( g2 < gametes.size() );
     
     //Identify cases where recombination cannot result in changed gametes, and get out quick
     if(g1 == g2 ) return g1;

@@ -79,8 +79,8 @@ namespace KTfwd
     inline result_type operator()(const iterator_type & i,
 				  const uint_t & x1 ) const
     {
-      assert(i->n);
-      return i->n == x1;
+      assert(i);
+      return i == x1;
     }
   };
 

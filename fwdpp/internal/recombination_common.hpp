@@ -52,10 +52,10 @@ namespace KTfwd {
 	    }
 	  SWITCH=!SWITCH;
 	}
-      assert( is_sorted( gametes[ibeg].neutral.begin(),gametes[ibeg].neutral.end(),[&mutations](size_t i,size_t j) {
+      assert( is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
 	    return mutations[i].pos < mutations[j].pos;
 	  }) );
-      assert( is_sorted( gametes[jbeg].selected.begin(),gametes[jbeg].selected.end(),[&mutations](size_t i,size_t j) {
+      assert( is_sorted( gametes[jbeg].smutations.begin(),gametes[jbeg].smutations.end(),[&mutations](size_t i,size_t j) {
 	    return mutations[i].pos < mutations[j].pos;
 	  }) );
     }    

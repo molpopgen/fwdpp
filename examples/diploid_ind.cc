@@ -87,7 +87,7 @@ int main(int argc, char ** argv)
       					 The mutation model (KTfwd::infsites) will be applied by
 					 sample_diploid in order to add mutations to gametes each generation.
       				       */
-				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),pop.mut_lookup,generation,
+				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),generation,
 						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				       //The recombination policy includes the uniform crossover rate
       				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
@@ -146,6 +146,7 @@ int main(int argc, char ** argv)
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
+      std::cout << pop.mutations.size() << ' ' << pop.fixations.size() << ' ' << ' ' << pop.gametes.size() << '\n';
       // Sequence::SimData sdata;
 
       // std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);

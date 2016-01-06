@@ -89,9 +89,9 @@ namespace KTfwd {
       //http://stackoverflow.com/questions/2763824/decltype-result-of-or-typeof
       using result_type = typename std::result_of<
 	decltype(&fwdpp_internal::mmodel_dispatcher<mmodel_t,gamete_t,mlist_t,queue_t>)
-	(mmodel_t &,gamete_t &,mlist_t *,queue_t &)
+	(mmodel_t &,gamete_t &,mlist_t &,queue_t &)
 	>::type;
-      using type = typename std::is_same<result_type,typename mlist_t::iterator>::type;
+      using type = typename std::is_same<result_type,std::size_t>::type;
     };
 
     //! Gives the recombination model function signature corresponding to gcont_t,mcont_t

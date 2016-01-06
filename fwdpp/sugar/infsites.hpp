@@ -76,8 +76,7 @@ namespace KTfwd
 						     pos,
 						     (selected) ? smaker() : 0.,
 						     (selected) ? hmaker() : 0.,
-						     generation,
-						     1u);
+						     generation);
     }
 
     /*!
@@ -120,12 +119,12 @@ namespace KTfwd
 	{
 	  auto pos = this->generate_mut_pos(sposmaker,lookup);
 	  return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
-							 smaker(),hmaker(),generation,1u);
+							 smaker(),hmaker(),generation);
 	}
       //Establish position of new mutation
       auto pos = this->generate_mut_pos(nposmaker,lookup);
       return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,
-						     0.,0.,generation,1u);
+						     0.,0.,generation);
     }
 
     /*!
@@ -163,7 +162,7 @@ namespace KTfwd
       //Establish position of new mutation
       auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
-      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation,1u);
+      return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,pos,(selected)?smaker():0.,(selected)?hmaker():0.,*generation);
     }
 
     /*!

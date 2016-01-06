@@ -72,7 +72,7 @@ namespace KTfwd {
     {
       for( unsigned i = 0 ; i < n ; ++i )
     	{
-	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),g);
+	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),mutations,g);
     	}
     }
   }
