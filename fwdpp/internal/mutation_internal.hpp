@@ -20,6 +20,8 @@ namespace KTfwd {
 			   gamete_type & new_gamete )
     {
       assert(idx<mutations.size());
+      assert(gamete_is_sorted_n(new_gamete,mutations));
+      assert(gamete_is_sorted_s(new_gamete,mutations));
       if(mutations[idx].neutral)
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
@@ -27,6 +29,16 @@ namespace KTfwd {
 							[&mutations](const double & __value,const std::size_t __mut){
 							  return __value < mutations[__mut].pos;}),
 				       idx );
+	  if(!std::is_sorted( new_gamete.mutations.begin(),
+			      new_gamete.mutations.end(),
+			      [&mutations](const size_t i, const size_t j) {
+				return mutations[i].pos<mutations[j].pos;
+			      } ) )
+	    {
+	      std::cerr << idx << ' ' << mutations[idx].pos << '\n';
+	      for(const auto & i : new_gamete.mutations) std::cerr << i << ' ' << mutations[i].pos << '\n';
+	    }
+	  assert(gamete_is_sorted_n(new_gamete,mutations));
 	}
       else
 	{
@@ -34,7 +46,9 @@ namespace KTfwd {
 							 new_gamete.smutations.end(),mutations[idx].pos,
 							 [&mutations](const double & __value,std::size_t __mut){return __value < mutations[__mut].pos;}),
 					idx );
+	  assert(gamete_is_sorted_s(new_gamete,mutations));
 	}
+
     }
     
     template<typename mmodel,

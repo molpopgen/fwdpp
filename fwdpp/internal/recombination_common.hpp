@@ -63,13 +63,8 @@ namespace KTfwd {
 	    }
 	}
 #endif
-      
-      assert( std::is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
-	    return mutations[i].pos < mutations[j].pos;
-	  }) );
-      assert( std::is_sorted( gametes[jbeg].smutations.begin(),gametes[jbeg].smutations.end(),[&mutations](size_t i,size_t j) {
-	    return mutations[i].pos < mutations[j].pos;
-	  }) );
+      assert(gamete_is_sorted_n(gametes[ibeg],mutations));
+      assert(gamete_is_sorted_s(gametes[ibeg],mutations));
     }    
   }
 }

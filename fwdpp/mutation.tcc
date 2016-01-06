@@ -30,6 +30,8 @@ namespace KTfwd
 				     const gamete_insertion_policy & gpolicy)
   {
     assert(g<gametes.size());
+    assert( gamete_is_sorted_n(gametes[g],mutations) );
+    assert( gamete_is_sorted_s(gametes[g],mutations) );
     //assert( g != gametes->end() );
     unsigned nm = gsl_ran_poisson(r,mu);
     if ( nm )
@@ -46,32 +48,18 @@ namespace KTfwd
 	    gametes[__g].mutations=gametes[g].mutations;
 	    gametes[__g].smutations=gametes[g].smutations;
 	    gametes[__g].n=1;
+
 	    fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[__g]);
-	    assert( std::is_sorted( gametes[__g].mutations.begin(),
-				    gametes[__g].mutations.end(),
-				    [&mutations](const size_t i, const size_t j) {
-				      return mutations[i].pos<mutations[j].pos;
-				    } ) );
-	    assert( std::is_sorted( gametes[__g].smutations.begin(),
-				    gametes[__g].smutations.end(),
-				    [&mutations](const size_t i, const size_t j) {
-				      return mutations[i].pos<mutations[j].pos;
-				    } ) );
+	    assert( gamete_is_sorted_n(gametes[__g],mutations) );
+	    assert( gamete_is_sorted_s(gametes[__g],mutations) );
 	    gamete_recycling_bin.pop();
 	    return __g;
 	  }
 	typename gcont_t::value_type ng( 1, gametes[g].mutations,gametes[g].smutations);
+
 	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
-	assert( std::is_sorted( ng.mutations.begin(),
-				ng.mutations.end(),
-				[&mutations](const size_t i, const size_t j) {
-				  return mutations[i].pos<mutations[j].pos;
-				} ) );
-	assert( std::is_sorted( ng.smutations.begin(),
-				ng.smutations.end(),
-				[&mutations](const size_t i, const size_t j) {
-				  return mutations[i].pos<mutations[j].pos;
-				} ) );
+	assert( gamete_is_sorted_n(ng,mutations) );
+	assert( gamete_is_sorted_s(ng,mutations) );
 	return gpolicy(std::move(ng),gametes);
       }
     return g;
