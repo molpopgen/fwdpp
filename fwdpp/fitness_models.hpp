@@ -95,7 +95,7 @@ namespace KTfwd
 	return w;
       }
 
-      std::vector<size_t>::size_type b1 = 0, b2 = 0;
+      typename gamete_type::mutation_container::size_type b1 = 0, b2 = 0;
       bool found = false;
       for( ; b1 < g1.smutations.size() ; ++b1 )
 	{
