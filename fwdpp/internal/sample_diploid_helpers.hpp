@@ -36,7 +36,7 @@ namespace KTfwd
 	     typename mcont_t>
     inline void process_glist( const gcont_t & gametes,
 			       const mcont_t & mutations,
-			       std::vector<size_t> & mcounts)
+			       std::vector<uint_t> & mcounts)
     /*!
       For every non-extinct gamete, increment the counts of its mutations
       via a call to KTfwd::fwdpp_internal::adjust_mutation_counts.
