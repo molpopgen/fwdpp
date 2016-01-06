@@ -85,8 +85,12 @@ namespace KTfwd {
 				  mlist_type & mutations,
 				  gamete_type & g)
     {
+      assert(gamete_is_sorted_n(g,mutations));
+      assert(gamete_is_sorted_s(g,mutations));
       for( unsigned i = 0 ; i < n ; ++i )
     	{
+	  assert(gamete_is_sorted_n(g,mutations));
+	  assert(gamete_is_sorted_s(g,mutations));
 	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),mutations,g);
     	}
     }
