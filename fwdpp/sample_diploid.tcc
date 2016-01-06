@@ -95,7 +95,7 @@ namespace KTfwd
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
 	gametes[diploids[i].first].n=gametes[diploids[i].second].n=0;
-	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],
+	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],gametes,mutations,
 								typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	wbar += fitnesses[i];
       }

@@ -69,78 +69,55 @@ namespace KTfwd
     \note The updating policies must take a non-const reference to a double as the first argument and
     an iterator to a gamete as the second.  Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
     \ingroup fitness
-   */
+  */
   struct site_dependent_fitness
   {
     using result_type = double;
     ///\example diploid_fixed_sh_ind.cc
-    template<typename iterator_type,
+    template<typename gamete_type,
+	     typename mcont_t,
 	     typename fitness_updating_policy_hom,
 	     typename fitness_updating_policy_het>
-    inline result_type operator()( const iterator_type & g1,
-				   const iterator_type & g2,
+    inline result_type operator()( const gamete_type & g1,
+				   const gamete_type & g2,
+				   const mcont_t & mutations,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness  = 1. ) const
     {
-      static_assert( typename traits::is_gamete_t<typename iterator_type::value_type>::type(),
-                     "iterator_type::value_type must be a gamete type" );
-      result_type fitness=starting_fitness;
-      if( g1->smutations.empty() && g2->smutations.empty() ) return fitness;
-      if( !g1->smutations.empty() && g2->smutations.empty() ) 
-	{
-	  std::for_each( g1->smutations.begin(),
-			 g1->smutations.end(),
-			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
-	  return fitness;
-	}
-      if( g1->smutations.empty() && !g2->smutations.empty() ) 
-	{
-	  std::for_each( g2->smutations.begin(),
-			 g2->smutations.end(),
-			 std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
-	  return fitness;
-	}
-      typename iterator_type::value_type::mutation_list_type_iterator ib1,ib2;
-      typename iterator_type::value_type::mutation_container::const_iterator b1=g1->smutations.cbegin(),
-	e1=g1->smutations.cend(),
-	b2=g2->smutations.cbegin(),
-	e2=g2->smutations.cend();
-      //This is a fast way to calculate fitnesses,
-      //as it just compares addresses in memory, and 
-      //does little in the way of dereferencing and storing
+      result_type w = starting_fitness;
+      if( g1.smutations.empty() && g2.smutations.empty() ) return w;
+      else if (g1.smutations.empty()) {
+	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
+	return w;
+      } else if (g2.smutations.empty()) {
+	for( const auto & i : g2.smutations ) fpol_het( w,mutations[i] );
+	return w;
+      }
+
+      std::vector<size_t>::size_type b1 = 0, b2 = 0;
       bool found = false;
-      for( ; b1 < e1 ; ++b1 )
+      for( ; b1 < g1.smutations.size() ; ++b1 )
 	{
-	  found = false;
-	  ib1 = *b1;
-	  for( ; !found && b2 < e2 && !((*b2)->pos > (ib1)->pos) ; ++b2 )
+	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[g1.smutations[b1]].pos ) ; ++b2 )
 	    {
-	      ib2 = *b2;
-	      if ( ib2 == ib1 ) //homozygote
+	      if (g1.smutations[b1]==g2.smutations[b2])
 		{
-		  assert(ib1->s == ib2->s); //just making sure
-		  assert(ib1->pos == ib2->pos);
-		  fpol_hom(fitness,ib1);
+		  fpol_hom(w,mutations[g1.smutations[b1]]);
 		  found=true;
 		}
-	      else 
-		//b2 points to a unique mutation that comes before b1
+	      else
 		{
-		  assert(ib2->pos != ib1->pos);
-		  assert(ib2->pos < ib1->pos);
-		  fpol_het(fitness,ib2);
+		  fpol_het(w,mutations[g2.smutations[b2]]);
 		}
 	    }
-	  if(!found) //het
-	    {
-	      fpol_het(fitness,ib1);
-	    }
+	  if(!found) fpol_het(w,mutations[g1.smutations[b1]]);
 	}
-      std::for_each( b2,e2,
-		     std::bind(fpol_het,std::ref(fitness),std::placeholders::_1) );
-      return fitness;
+      for( ; b2 < g2.smutations.size() ; ++b2 ) fpol_het(w,mutations[g2.smutations[b2]]);
+    
+      return w;
     }
+    
     
     /*!
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
@@ -154,7 +131,7 @@ namespace KTfwd
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness = 1. ) const
     {
-      return this->operator()(dip->first,dip->second,fpol_hom,fpol_het,starting_fitness);
+      return this->operator()(dip.first,dip.second,fpol_hom,fpol_het,starting_fitness);
     }
   };
 
@@ -196,19 +173,20 @@ namespace KTfwd
   struct multiplicative_diploid
   {
     using result_type = double;
-    template< typename iterator_type>
-    inline double operator()(const iterator_type & g1, const iterator_type & g2, 
+    template< typename gamete_type, typename mcont_t>
+    inline double operator()(const gamete_type & g1, const gamete_type & g2,
+			     const mcont_t & mutations,
 			     const double & scaling = 1.) const
     {
-      using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
-      return std::max(0.,site_dependent_fitness()(g1,g2,
+      using __mtype =  typename mcont_t::value_type;
+      return std::max(0.,site_dependent_fitness()(g1,g2,mutations,
 						  [&](double & fitness,const __mtype & mut)
 						  {
-						    fitness *= (1. + scaling*mut->s);
+						    fitness *= (1. + scaling*mut.s);
 						  },
 						  [](double & fitness,const __mtype & mut)
 						  {
-						    fitness *= (1. + mut->h*mut->s);
+						    fitness *= (1. + mut.h*mut.s);
 						  },
 						  1.));
     }
@@ -242,15 +220,15 @@ namespace KTfwd
     {
       using __mtype =  typename iterator_type::value_type::mutation_list_type_iterator;
       return std::max(0.,1. + site_dependent_fitness()(g1,g2,
-					   [=](double & fitness,const __mtype & mut)
-					   {
-					     fitness += (scaling*mut->s);
-					   },
-					   [](double & fitness,const __mtype & mut)
-					   {
-					     fitness += (mut->h*mut->s);
-					   },
-					   0.)
+						       [=](double & fitness,const __mtype & mut)
+						       {
+							 fitness += (scaling*mut->s);
+						       },
+						       [](double & fitness,const __mtype & mut)
+						       {
+							 fitness += (mut->h*mut->s);
+						       },
+						       0.)
 		      );
     }
 

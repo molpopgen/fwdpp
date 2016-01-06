@@ -124,7 +124,8 @@ int main(int argc, char ** argv)
       					 function is called anyways to illustrate it as multiplicative
       					 models are very common in population genetics
       				       */
-      				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+      				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+						 std::placeholders::_3,2.),
       				       /*
       					 For each gamete still extant after sampling,
       					 remove the pointers to any mutations that have
