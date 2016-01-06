@@ -26,7 +26,7 @@ namespace KTfwd
       //update mutation counts
       for(const auto & g : gametes)
 	{
-	  if(g.n)
+	  if(g.n) //only do this for extant gametes
 	    {
 	      for(const auto & m : g.mutations) mcounts[m]+=g.n;
 	      for(const auto & m : g.smutations) mcounts[m]+=g.n;
