@@ -37,7 +37,8 @@ namespace KTfwd {
 			   new_gamete.smutations.end(),idx)==new_gamete.smutations.end());
 	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
 							 new_gamete.smutations.end(),mutations[idx].pos,
-							 [&mutations](const double & __value,const std::size_t __mut){return __value < mutations[__mut].pos;}),
+							 [&mutations](const double & __value,const std::size_t __mut){
+							   return __value < mutations[__mut].pos;}),
 					idx );
 	  assert(gamete_is_sorted_s(new_gamete,mutations));
 	}
