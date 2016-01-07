@@ -95,8 +95,8 @@ namespace KTfwd
 	return w;
       }
 
-      typename gamete_type::mutation_container::size_type b1 = 0, b2 = 0;
-      for( ; b1 < g1.smutations.size() ; ++b1 )
+      typename gamete_type::mutation_container::size_type b2 = 0;
+      for(const auto & b1 : g1.smutations)
 	{
 	  bool found = false;
 	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[g1.smutations[b1]].pos ) ; ++b2 )
