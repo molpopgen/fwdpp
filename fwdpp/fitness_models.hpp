@@ -94,26 +94,25 @@ namespace KTfwd
 	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
 	return w;
       }
-
       typename gamete_type::mutation_container::size_type b2 = 0;
       for(const auto & b1 : g1.smutations)
 	{
 	  bool found = false;
-	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[g1.smutations[b1]].pos ) ; ++b2 )
+	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
 	    {
-	      if (g1.smutations[b1]==g2.smutations[b2])
+	      if (b1==g2.smutations[b2])
 		{
-		  assert(mutations[g1.smutations[b1]].pos == mutations[g2.smutations[b2]].pos);
-		  fpol_hom(w,mutations[g1.smutations[b1]]);
+		  assert(mutations[b1].pos == mutations[g2.smutations[b2]].pos);
+		  fpol_hom(w,mutations[b1]);
 		  found=true;
 		}
 	      else
 		{
-		  assert(mutations[g2.smutations[b2]].pos < mutations[g1.smutations[b1]].pos);
+		  assert(mutations[g2.smutations[b2]].pos < mutations[b1].pos);
 		  fpol_het(w,mutations[g2.smutations[b2]]);
 		}
 	    }
-	  if(!found) fpol_het(w,mutations[g1.smutations[b1]]);
+	  if(!found) fpol_het(w,mutations[b1]);
 	}
       for( ; b2 < g2.smutations.size() ; ++b2 ) fpol_het(w,mutations[g2.smutations[b2]]);
       
