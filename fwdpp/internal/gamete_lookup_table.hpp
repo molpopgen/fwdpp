@@ -23,12 +23,13 @@ namespace KTfwd {
 	     typename mcont_t>
     struct gamete_lookup
     {
-      using lookup_table_t = std::multimap<double,size_t>;
+      using key_t = double;
+      using lookup_table_t = std::multimap<key_t,size_t>;
       using result_type = std::pair< lookup_table_t::iterator, lookup_table_t::iterator>;
       using inner_t = typename lookup_table_t::value_type;
       lookup_table_t lookup_table;
 
-      inline double keyit( const std::vector<size_t> & mc,
+      inline key_t keyit( const std::vector<size_t> & mc,
 			   const mcont_t & mutations ) const
       {
 	return (mc.empty()) ? -std::numeric_limits<double>::max() : mutations[mc[0]].pos;
