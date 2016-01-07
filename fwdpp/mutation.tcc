@@ -46,17 +46,12 @@ namespace KTfwd
 	gametes[idx].mutations=gametes[g].mutations;
 	gametes[idx].smutations=gametes[g].smutations;
 	gametes[idx].n=1;
-	
 	fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,gametes[idx]);
-	assert( gamete_is_sorted_n(gametes[idx],mutations) );
-	assert( gamete_is_sorted_s(gametes[idx],mutations) );
 	return idx;
       }
     //If not, create a new gamete that we'll add to the gamete container
     typename gcont_t::value_type ng( 1, gametes[g].mutations,gametes[g].smutations);
     fwdpp_internal::add_N_mutations_recycle(recycling_bin,mmodel,nm,mutations,ng);
-    assert( gamete_is_sorted_n(ng,mutations) );
-    assert( gamete_is_sorted_s(ng,mutations) );
     return gpolicy(std::move(ng),gametes);
   }
 }
