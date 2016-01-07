@@ -22,18 +22,6 @@ namespace KTfwd {
       assert(idx<mutations.size());
       assert(std::find(new_gamete.mutations.begin(),
 		       new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
-      // if(!gamete_is_sorted_n(new_gamete,mutations))
-      // 	{
-      // 	  std::cout << "new mutation pos = " << mutations[idx].pos << '\n';
-      // 	  std::cout << "new mutation index exists = " << idx <<" -> "<< (std::find(new_gamete.mutations.begin(),
-      // 										   new_gamete.mutations.end(),idx)==new_gamete.mutations.end()) << '\n';
-      // 	  for(const auto & m : new_gamete.mutations)
-      // 	    {
-      // 	      std::cout << m << ' ' << mutations[m].pos << '\n';
-      // 	    }
-      // 	}
-      assert(gamete_is_sorted_n(new_gamete,mutations));
-      assert(gamete_is_sorted_s(new_gamete,mutations));
       if(mutations[idx].neutral)
 	{
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
@@ -92,8 +80,6 @@ namespace KTfwd {
       assert(gamete_is_sorted_s(g,mutations));
       for( unsigned i = 0 ; i < n ; ++i )
     	{
-	  assert(gamete_is_sorted_n(g,mutations));
-	  assert(gamete_is_sorted_s(g,mutations));
 	  add_new_mutation(mmodel_dispatcher(mmodel,g,mutations,recycling_bin),mutations,g);
     	}
     }
