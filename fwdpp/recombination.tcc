@@ -49,6 +49,8 @@ namespace KTfwd
 	 } 
 	else 
 	{
+	  assert(gametes[itr->second].mutations==neutral);
+	  assert(gametes[itr->second].smutations==selected);
 	  return itr->second;
 	}
       } 
