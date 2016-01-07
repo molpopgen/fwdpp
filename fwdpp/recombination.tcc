@@ -90,7 +90,7 @@ namespace KTfwd
     if(g1 == g2 ) return g1;
     auto nm1=gametes[g1].mutations.size()+gametes[g1].smutations.size();
     auto nm2=gametes[g2].mutations.size()+gametes[g2].smutations.size();
-    if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return 0;
+    if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) return g1;
     
     unsigned nbreaks = (littler > 0) ? gsl_ran_poisson(r,littler) : 0u;
     if(!nbreaks) return g1;
