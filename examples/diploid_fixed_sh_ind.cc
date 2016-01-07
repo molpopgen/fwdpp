@@ -53,7 +53,7 @@ int main(int argc, char ** argv)
   while(nreps--)
     {
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del))));
+      pop.mutations.reserve(size_t(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del))));
       unsigned generation;
 
       double wbar=1;
@@ -68,30 +68,31 @@ int main(int argc, char ** argv)
 #endif
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	  wbar = KTfwd::sample_diploid(r.get(),
-				       &pop.gametes,
-				       &pop.diploids,
-				       &pop.mutations,
+				       pop.gametes,
+				       pop.diploids,
+				       pop.mutations,
+				       pop.mcounts,
 				       N,
 				       mu_neutral+mu_del,
-				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
+				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
 				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 						 std::ref(pop.neutral),std::ref(pop.selected),
-						 &pop.gametes,
+						 std::ref(pop.gametes),std::ref(pop.mutations),
 						 littler,
 						 r.get(),
 						 recmap),
-				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
-				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gvec_t>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
 				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
-	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}
       Sequence::SimData neutral_muts,selected_muts;
 
       //Take a sample of size samplesize1.  Two data blocks are returned, one for neutral mutations, and one for selected
       std::pair< std::vector< std::pair<double,std::string> >,
-		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r.get(),&pop.diploids,samplesize1);
+		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1);
 
       neutral_muts.assign( sample.first.begin(), sample.first.end() );
       selected_muts.assign( sample.second.begin(), sample.second.end() );
