@@ -61,6 +61,38 @@ namespace KTfwd
 			  });
   }
 
+  template<typename gamete_t>
+  bool gamete_data_sane( const gamete_t & g,
+			 const std::vector<uint_t> & mutcounts)
+  {
+    for( const auto & i : g.mutations )
+      {
+	if(!mutcounts[i]) return false;
+	if(!(g.n <= mutcounts[i])) return false;
+      }
+    for( const auto & i : g.smutations )
+      {
+	if(!mutcounts[i]) return false;
+	if(!(g.n <= mutcounts[i])) return false;
+      }
+    return true;
+  }
+  
+  template<typename dipcont_t,
+	   typename gcont_t>
+  bool popdata_sane(const dipcont_t & diploids,
+		    const gcont_t & gametes,
+		    const std::vector<uint_t> & mutcounts)
+  {
+    for(const auto & d : diploids)
+      {
+	if( !gametes[d.first].n ) return false;
+	if( !gametes[d.second].n ) return false;
+	if( !gamete_data_sane(gametes[d.first],mutcounts) ) return false;
+	if( !gamete_data_sane(gametes[d.second],mutcounts) ) return false;
+      }
+    return true;
+  }
 }
 
 #endif

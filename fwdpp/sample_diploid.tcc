@@ -79,6 +79,7 @@ namespace KTfwd
 		 const double & f)
   {
     //test preconditions in debugging mode
+    assert(popdata_sane(diploids,gametes,mcounts));
     assert(mcounts.size()==mutations.size());
     using glist_t = gamete_list_type<gamete_type,gamete_list_type_allocator >;
     using mlist_t = mutation_list_type<mutation_type,mutation_list_type_allocator >;
@@ -93,7 +94,7 @@ namespace KTfwd
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
-
+    
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
 	gametes[diploids[i].first].n=gametes[diploids[i].second].n=0;
@@ -163,6 +164,7 @@ namespace KTfwd
 	assert(mc <= 2*N_next);
       }
 #endif
+    assert(popdata_sane(diploids,gametes,mcounts));
     fwdpp_internal::gamete_cleaner(gametes,mcounts,mp,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
     return wbar;
   }
