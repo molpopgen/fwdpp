@@ -426,6 +426,9 @@ namespace KTfwd
       //Step 0: read N
       s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
+
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -440,9 +443,10 @@ namespace KTfwd
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
-
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
 
    template<typename sugarpop_t,
@@ -458,6 +462,8 @@ namespace KTfwd
       //Step 0: read N
       s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -472,9 +478,10 @@ namespace KTfwd
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
-
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
 
     /*!
@@ -497,6 +504,8 @@ namespace KTfwd
       s.buffer.read( reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(uint_t) );
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,s.buffer,dr );
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -511,8 +520,10 @@ namespace KTfwd
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
   };
 
@@ -563,6 +574,8 @@ namespace KTfwd
       //Step 0: read N
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       size_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -576,8 +589,10 @@ namespace KTfwd
 	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), unsigned(temp*sizeof(uint_t)) );
 	}
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
 
     template<typename sugarpop_t,
@@ -593,6 +608,8 @@ namespace KTfwd
       //Step 0: read N
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -606,8 +623,10 @@ namespace KTfwd
 	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
 
     /*!
@@ -631,6 +650,8 @@ namespace KTfwd
       gzread( gzin, reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(uint_t) );
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
+      //update the mutation counts
+      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -644,8 +665,10 @@ namespace KTfwd
 	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
 	}
       //Finally, fill the lookup table:
-      std::for_each( pop.mutations.begin(), pop.mutations.end(),
-    		     [&pop]( const typename sugarpop_t::mutation_t & __m ) { if(__m.n) pop.mut_lookup.insert(__m.pos); } );
+      for(unsigned i=0;i<pop.mcounts.size();++i)
+	{
+	  if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
+	}
     }
   };
 }
