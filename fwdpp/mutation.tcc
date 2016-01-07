@@ -25,7 +25,7 @@ namespace KTfwd
 				     const double & mu,
 				     gcont_t & gametes,
 				     mcont_t & mutations,
-				     const size_t g,
+				     const std::size_t g,
 				     const mutation_model &mmodel,
 				     const gamete_insertion_policy & gpolicy)
   {
