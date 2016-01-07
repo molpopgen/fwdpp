@@ -39,15 +39,15 @@ namespace KTfwd {
 				  const gcont_t & gametes,
 				  const mcont_t & mutations)
       {
-	lookup_table.emplace( std::make_pair( keyit(gametes[g].mutations,mutations)*double(gametes[g].mutations.size()) +
-					      keyit(gametes[g].smutations,mutations)*double(gametes[g].smutations.size()), g) );
+	lookup_table.emplace( std::make_pair( keyit(gametes[g].mutations,mutations)*key_t(gametes[g].mutations.size()) +
+					      keyit(gametes[g].smutations,mutations)*key_t(gametes[g].smutations.size()), g) );
       }
 
       inline result_type lookup( const std::vector<size_t> & n,
 				 const std::vector<size_t> & s,
 				 const mcont_t & mutations )
       {
-	return lookup_table.equal_range(  keyit(n,mutations)*double(n.size()) + keyit(s,mutations)*double(s.size()) );
+	return lookup_table.equal_range(  keyit(n,mutations)*key_t(n.size()) + keyit(s,mutations)*key_t(s.size()) );
       }
 
       inline void update(size_t idx,
