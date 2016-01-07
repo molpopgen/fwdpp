@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
 						 littler,
 						 r.get(),
 						 recmap),
-				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gvec_t>,std::placeholders::_1,std::placeholders::_2),
+				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
 				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);

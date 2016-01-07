@@ -107,7 +107,7 @@ int main(int argc, char ** argv)
 					 copy identical to an existing gamete.  If so,
 					 that gamete's frequency increases by 1.
 				       */
-      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gvec_t>,std::placeholders::_1,std::placeholders::_2),
+      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
       				       /*
       					 Fitness is multiplicative over sites.
 
