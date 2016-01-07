@@ -146,13 +146,17 @@ namespace KTfwd
     \return A vector of variable sites
     \ingroup samplingPopsInd
   */
-  template<typename allocator,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   sample_t >::type
   ms_sample( gsl_rng * r,
-	     const vector_type< diploid_geno_t, allocator > * diploids,
+	     const mcont_t & mutations,
+	     const gcont_t & gametes,
+	     const vector_type< diploid_geno_t, allocator > & diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed = true);
 
@@ -161,13 +165,17 @@ namespace KTfwd
     \return A pair of vectors of variable sites.  The first block is neutral variants, the second is non-neutral variants
     \ingroup samplingPopsInd
   */
-  template<typename allocator,
+    template<typename mcont_t,
+	   typename gcont_t,
+	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   sep_sample_t >::type
   ms_sample_separate( gsl_rng * r,
-		      const vector_type< diploid_geno_t, allocator > * diploids,
+		      const mcont_t & mutations,
+		      const gcont_t & gametes,
+		      const vector_type< diploid_geno_t, allocator > & diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed = true);
 
