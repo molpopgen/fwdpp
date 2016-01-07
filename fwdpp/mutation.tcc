@@ -42,6 +42,7 @@ namespace KTfwd
       {
 	auto idx = gamete_recycling_bin.front();
 	gamete_recycling_bin.pop();
+	assert(idx!=g);
 	assert(!gametes[idx].n);
 	gametes[idx].mutations=gametes[g].mutations;
 	gametes[idx].smutations=gametes[g].smutations;
