@@ -31,7 +31,6 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&m.g),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
@@ -46,7 +45,6 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		gzFile gzout) const
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.g),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
@@ -61,7 +59,6 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
       buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
@@ -75,7 +72,6 @@ namespace KTfwd
     operator()( const mutation_t &m,
 		gzFile gzout) const
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&m.n),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.pos),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
@@ -87,7 +83,6 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Write mutation types
@@ -101,7 +96,6 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
     operator()(const mutation_t & t, std::ostream & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
       buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Write mutation types
@@ -120,7 +114,6 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, gzFile gzout) const
     {
-      gzwrite(gzout, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
       gzwrite(gzout, reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Write mutation types
@@ -134,7 +127,6 @@ namespace KTfwd
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
     operator()(const mutation_t & t, gzFile out) const
     {
-      gzwrite( out, reinterpret_cast<const char *>(&t.n),sizeof(uint_t));
       gzwrite( out, reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
       gzwrite( out, reinterpret_cast<const char *>(&t.pos),sizeof(double));
       //Grite mutation types
