@@ -59,13 +59,6 @@ int main(int argc, char ** argv)
       double wbar=1;
       for( generation = 0; generation < ngens; ++generation )
 	{
-#ifndef NDEBUG
-	  for( singlepop_t::glist_t::iterator itr = pop.gametes.begin(); 
-	       itr != pop.gametes.end() ; ++itr )
-	    {
-	      assert( itr->n > 0 );
-	    }
-#endif
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	  wbar = KTfwd::sample_diploid(r.get(),
 				       pop.gametes,
