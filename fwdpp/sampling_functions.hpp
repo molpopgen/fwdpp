@@ -113,7 +113,7 @@ namespace KTfwd
     A sample where 'neutral' and 'selected' variants are separated.
 
     'first' contains the 'neutral' variants, and 'second' contains the 'selected' variants.
-   */
+  */
   using sep_sample_t = std::pair<sample_t,sample_t>;
   
   /* \brief Site frequency spectrum
@@ -165,7 +165,7 @@ namespace KTfwd
     \return A pair of vectors of variable sites.  The first block is neutral variants, the second is non-neutral variants
     \ingroup samplingPopsInd
   */
-    template<typename mcont_t,
+  template<typename mcont_t,
 	   typename gcont_t,
 	   typename allocator,
 	   typename diploid_geno_t,
