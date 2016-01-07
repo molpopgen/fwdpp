@@ -52,17 +52,6 @@ namespace KTfwd {
 	    }
 	  SWITCH=!SWITCH;
 	}
-#ifndef NDEBUG
-      if( ! std::is_sorted( gametes[ibeg].mutations.begin(),gametes[ibeg].mutations.end(),[&mutations](size_t i,size_t j) {
-	    return mutations[i].pos < mutations[j].pos;
-	  }) )
-	{
-	  for( const auto & m : gametes[ibeg].mutations )
-	    {
-	      std::cerr << mutations[m].pos << '\n';
-	    }
-	}
-#endif
       assert(gamete_is_sorted_n(gametes[ibeg],mutations));
       assert(gamete_is_sorted_s(gametes[ibeg],mutations));
     }    
