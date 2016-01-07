@@ -32,7 +32,7 @@ namespace KTfwd {
       inline key_t keyit( const std::vector<size_t> & mc,
 			   const mcont_t & mutations ) const
       {
-	return (mc.empty()) ? -std::numeric_limits<key_t>::max() : mutations[mc[0]].pos;
+	return (mc.empty()) ? -std::numeric_limits<key_t>::max() : mutations[mc.front()].pos;
       }
 
       inline void update_details( size_t g,
