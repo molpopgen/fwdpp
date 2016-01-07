@@ -88,33 +88,35 @@ namespace KTfwd
       result_type w = starting_fitness;
       if( g1.smutations.empty() && g2.smutations.empty() ) return w;
       else if (g1.smutations.empty()) {
-	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
+	for( const auto & i : g2.smutations ) fpol_het( w,mutations[i] );
 	return w;
       } else if (g2.smutations.empty()) {
-	for( const auto & i : g2.smutations ) fpol_het( w,mutations[i] );
+	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
 	return w;
       }
 
       typename gamete_type::mutation_container::size_type b1 = 0, b2 = 0;
-      bool found = false;
       for( ; b1 < g1.smutations.size() ; ++b1 )
 	{
+	  bool found = false;
 	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[g1.smutations[b1]].pos ) ; ++b2 )
 	    {
 	      if (g1.smutations[b1]==g2.smutations[b2])
 		{
+		  assert(mutations[g1.smutations[b1]].pos == mutations[g2.smutations[b2]].pos);
 		  fpol_hom(w,mutations[g1.smutations[b1]]);
 		  found=true;
 		}
 	      else
 		{
+		  assert(mutations[g2.smutations[b2]].pos < mutations[g1.smutations[b1]].pos);
 		  fpol_het(w,mutations[g2.smutations[b2]]);
 		}
 	    }
 	  if(!found) fpol_het(w,mutations[g1.smutations[b1]]);
 	}
       for( ; b2 < g2.smutations.size() ; ++b2 ) fpol_het(w,mutations[g2.smutations[b2]]);
-    
+      
       return w;
     }
     
