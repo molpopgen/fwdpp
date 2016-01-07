@@ -146,9 +146,6 @@ int main(int argc, char ** argv)
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
-      unsigned extant=0;
-      for(const auto & m : pop.mcounts) if(m)++extant;
-      std::cerr << pop.mutations.size() << ' ' << extant << ' ' << pop.gametes.size() << ' ' << pop.mut_lookup.size() << '\n';
       Sequence::SimData sdata;
       
       std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1,true);
