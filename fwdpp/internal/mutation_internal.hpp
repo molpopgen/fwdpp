@@ -20,10 +20,10 @@ namespace KTfwd {
 			   gamete_type & new_gamete )
     {
       assert(idx<mutations.size());
-      assert(std::find(new_gamete.mutations.begin(),
-		       new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
       if(mutations[idx].neutral)
 	{
+	  assert(std::find(new_gamete.mutations.begin(),
+			   new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
 							new_gamete.mutations.end(),mutations[idx].pos,
 							[&mutations](const double & __value,const std::size_t __mut){
@@ -33,6 +33,8 @@ namespace KTfwd {
 	}
       else
 	{
+	  assert(std::find(new_gamete.smutations.begin(),
+			   new_gamete.smutations.end(),idx)==new_gamete.smutations.end());
 	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
 							 new_gamete.smutations.end(),mutations[idx].pos,
 							 [&mutations](const double & __value,std::size_t __mut){return __value < mutations[__mut].pos;}),
