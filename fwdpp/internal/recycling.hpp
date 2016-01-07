@@ -53,11 +53,8 @@ namespace KTfwd
 	  gamete_lookup.update(idx,gametes,mutations);
 	  return idx;
 	}
-      //gametes.emplace_back(0u,std::move(neutral),std::move(selected));
-      gametes.emplace_back(0u,neutral,selected);
+      gametes.emplace_back(0u,std::move(neutral),std::move(selected));
       gamete_lookup.update(gametes.size()-1,gametes,mutations);
-      assert( gametes[gametes.size()-1].mutations==neutral );
-      assert( gametes[gametes.size()-1].smutations==selected );
       return (gametes.size()-1);
     }
 
