@@ -84,6 +84,10 @@ namespace KTfwd
     }
   };
 
+  struct remove_fixed
+  {
+  };
+  
   /* \brief Policy telling library not to remove any mutations from gametes after sampling
      \note This is an empty struct that functions as a dispatch tag for library internals
    */

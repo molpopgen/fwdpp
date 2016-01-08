@@ -81,8 +81,6 @@ int main(int argc, char ** argv)
       				       pop.diploids, //non-const reference to diploids
       				       pop.mutations, //non-const reference to mutations
 				       pop.mcounts,
-				       pop.neutral,
-				       pop.selected,
       				       N,     //current pop size, remains constant
       				       mu,    //mutation rate per gamete
       				       /*
@@ -112,32 +110,13 @@ int main(int argc, char ** argv)
       				       */
       				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
 						 std::placeholders::_3,2.),
-				       /*
-					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
-					 If mutation results in a new gamete, add that gamete to the
-					 end of gametes. This is always the case under infinitely-many sites,
-					 but for other mutation models, mutation may result in a new
-					 copy identical to an existing gamete.  If so,
-					 that gamete's frequency increases by 1.
-				       */
-      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
-      				       /*
-      					 For each gamete still extant after sampling,
-      					 remove the pointers to any mutations that have
-      					 been fixed in the population.
-
-      					 For more complex models such as quantitative
-      					 traits evolving towards an optimum, one may not
-      					 with to remove fixations.  In that case,
-      					 replace the line below with
-      					 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,twoN));
-
-      					 Under multiplicative fitness and Wright-Fisher sampling
-      					 proportional to relative fitness, fixed mutations
-      					 are just a constant applied to everyone's fitness, so we
-      					 can remove them, making the simulation faster, etc.
-      				       */
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,twoN));
+				       pop.neutral,
+				       pop.selected);
+	  /*
+				       0,
+				       std::true_type(),
+				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2));
+	  */
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
