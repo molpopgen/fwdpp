@@ -2,7 +2,6 @@
 #ifndef __FWDPP_IO_TCC__
 #define __FWDPP_IO_TCC__
 
-#include <map>
 #include <vector>
 #include <algorithm>
 #include <cassert>
