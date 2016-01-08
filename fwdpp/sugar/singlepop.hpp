@@ -30,5 +30,3 @@ namespace KTfwd
 }
 #endif
 
-#endif
-
