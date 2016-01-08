@@ -34,13 +34,6 @@ namespace KTfwd
       : mutation_base(__pos,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
     {
     }
-    popgenmut( tags::extinct ) noexcept
-    : mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
-      g(std::numeric_limits<unsigned>::max()),
-      s(std::numeric_limits<double>::quiet_NaN()),
-      h(std::numeric_limits<double>::quiet_NaN())
-    {
-    }
   };
 }
 #endif

@@ -3,7 +3,6 @@
 
 #include <config.h>
 #include <iostream>
-#include <fwdpp/sugar/populate_lists.hpp>
 #if defined(USE_BOOST_CONTAINERS)
 #define FWDPP_SUGAR_USE_BOOST
 #endif

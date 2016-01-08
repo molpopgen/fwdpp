@@ -65,13 +65,6 @@ namespace KTfwd
       : mutation_base(position,(sel_coeff==0)),s(sel_coeff),h(dominance)
     {
     }
-    /// Contruct an extint mutation (n=0)
-    mutation( tags::extinct ) noexcept :
-      mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
-      s(std::numeric_limits<double>::quiet_NaN()),
-      h(std::numeric_limits<double>::quiet_NaN())
-    {
-    }
     bool operator==(const mutation & rhs) const
     {
       return( std::fabs(this->pos-rhs.pos) <= std::numeric_limits<double>::epsilon() &&
@@ -116,13 +109,6 @@ namespace KTfwd
       \param icount The number of occurrences of this gamete in the population
     */
     gamete_base(const uint_t & icount) noexcept : n(icount),mutations( mutation_container() ),smutations(mutation_container())
-    {
-    }
-
-    /*!
-      Construct an extinct gamete (n=0).
-    */
-    gamete_base( tags::extinct ) noexcept : n(0),mutations( mutation_container() ),smutations(mutation_container())
     {
     }
 

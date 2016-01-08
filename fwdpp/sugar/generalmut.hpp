@@ -50,11 +50,6 @@ namespace KTfwd
 					  s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
     {
     }
-    //! Contructor for extinct gamete
-    generalmut( tags::extinct ) : mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
-				  s(array_t()),h(array_t()),g(std::numeric_limits<unsigned>::max())
-    {
-    }
   };
 
   /*!
@@ -84,11 +79,6 @@ namespace KTfwd
 								   //Mutation is neutral i.f.f. all values in __s == 0.
 								   (std::find_if(std::begin(__s),std::end(__s),[](const double d) { return d != 0.; }) == std::end(__s))),
 					      s(std::move(__s)),h(std::move(__h)),g(std::move(gen))
-    {
-    }
-    //! Contructor for extinct gamete
-    generalmut_vec( tags::extinct ) : mutation_base(std::numeric_limits<double>::quiet_NaN(),true),
-				      s(array_t()),h(array_t()),g(std::numeric_limits<unsigned>::max())
     {
     }
   };

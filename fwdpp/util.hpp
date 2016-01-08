@@ -92,26 +92,5 @@ namespace KTfwd
 	if(!mcounts[i]) lookup.erase(mutations[i].pos);
       }
   }
-  
-  /*!
-    Add elements to a container via emplace_back
-    
-    \param c The container
-    \param N final desired size of the container
-    \param args Arguments for the constructor of container_type::value_type
-
-    \note if N <= c.size(), nothing happens.
-  */
-  template<typename container_type,
-	   class... Args>
-  void add_elements( container_type & c,
-		     size_t N,
-		     Args&&... args )
-  {
-    for( size_t i = c.size() ; i < N ; ++i )
-      {
-	c.emplace_back(std::forward<Args>(args)...);
-      }
-  }
 }
 #endif /* _UTIL_HPP_ */
