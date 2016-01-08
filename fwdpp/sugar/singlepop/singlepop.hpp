@@ -136,6 +136,7 @@ namespace KTfwd {
       void clear()
       {
 	mutations.clear();
+	mcounts.clear();
 	gametes.clear();
 	diploids.clear();
 	mut_lookup.clear();
