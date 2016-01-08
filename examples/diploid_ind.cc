@@ -112,11 +112,6 @@ int main(int argc, char ** argv)
 						 std::placeholders::_3,2.),
 				       pop.neutral,
 				       pop.selected);
-	  /*
-				       0,
-				       std::true_type(),
-				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2));
-	  */
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
