@@ -563,9 +563,7 @@ namespace KTfwd
       pop.clear();
       //Step 0: read N
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
-      std::cout << pop.N << '\n';
       KTfwd::read_binary_pop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
-      //std::cout << "here\n";exit(10);
       //update the mutation counts
       fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
       size_t temp;
