@@ -33,18 +33,20 @@ namespace KTfwd
 		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
 		 std::vector<uint_t> & mcounts,
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const uint_t & N_curr,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
+		 const gamete_insertion_policy & gpolicy_mut,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
     //run changing N version with N_next == N_curr
-    return sample_diploid(r,gametes,diploids,mutations,mcounts,N_curr,N_curr,mu,mmodel,rec_pol,
-			  gpolicy_mut,ff,mp,f);
+    return sample_diploid(r,gametes,diploids,mutations,mcounts,neutral,selected,N_curr,N_curr,mu,mmodel,rec_pol,
+			  ff,gpolicy_mut,mp,f);
   }
 
   //single deme, N changing
@@ -68,13 +70,15 @@ namespace KTfwd
 		 diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
 		 std::vector<uint_t> & mcounts,
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const uint_t & N_curr,
 		 const uint_t & N_next,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function & ff,
+		 const gamete_insertion_policy & gpolicy_mut,
 		 const mutation_removal_policy & mp,
 		 const double & f)
   {
@@ -85,8 +89,8 @@ namespace KTfwd
     using mlist_t = mutation_list_type<mutation_type,mutation_list_type_allocator >;
     static_assert( typename traits::valid_mutation_model<mutation_model,mlist_t,glist_t>::type(),
 		   "error: mmodel is not a dispatchable mutation model type!" );
-    static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
-		   "recombination_policy type invalid" );
+    //static_assert( std::is_convertible<recombination_policy,typename traits::recmodel_t<glist_t,mlist_t>::type>::value,
+    //		   "recombination_policy type invalid" );
     assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
     std::vector<double> fitnesses(diploids.size());
@@ -133,8 +137,10 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
-	dip.first=rec_pol(p1g1,p1g2,gamete_lookup,gam_recycling_bin);
-	dip.second=rec_pol(p2g1,p2g2,gamete_lookup,gam_recycling_bin);
+	dip.first = recombination(gametes,gamete_lookup,gam_recycling_bin,
+				  neutral,selected,rec_pol,p1g1,p1g2,mutations);
+	dip.second = recombination(gametes,gamete_lookup,gam_recycling_bin,
+				   neutral,selected,rec_pol,p2g1,p2g2,mutations);
 
 	gametes[dip.first].n++;
 	gametes[dip.second].n++;

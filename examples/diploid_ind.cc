@@ -81,6 +81,8 @@ int main(int argc, char ** argv)
       				       pop.diploids, //non-const reference to diploids
       				       pop.mutations, //non-const reference to mutations
 				       pop.mcounts,
+				       pop.neutral,
+				       pop.selected,
       				       N,     //current pop size, remains constant
       				       mu,    //mutation rate per gamete
       				       /*
@@ -89,26 +91,10 @@ int main(int argc, char ** argv)
       				       */
 				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),generation,
 						 mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
-				       //The recombination policy includes the uniform crossover rate
-      				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,
-						 std::placeholders::_3,std::placeholders::_4,
-						 //Pass as reference
-						 std::ref(pop.neutral),std::ref(pop.selected),
-						 //Bummer--have to add reference wrapper now...
-						 std::ref(pop.gametes),std::ref(pop.mutations),
-						 littler,
-						 r.get(),
-						 recmap),
+				       //The function to generation recombination positions:
+				       std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				       /*
-					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
-					 If mutation results in a new gamete, add that gamete to the
-					 end of gametes. This is always the case under infinitely-many sites,
-					 but for other mutation models, mutation may result in a new
-					 copy identical to an existing gamete.  If so,
-					 that gamete's frequency increases by 1.
-				       */
-      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
-      				       /*
       					 Fitness is multiplicative over sites.
 
       					 The fitness model takes two gametes as arguments.
@@ -126,6 +112,15 @@ int main(int argc, char ** argv)
       				       */
       				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
 						 std::placeholders::_3,2.),
+				       /*
+					 Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
+					 If mutation results in a new gamete, add that gamete to the
+					 end of gametes. This is always the case under infinitely-many sites,
+					 but for other mutation models, mutation may result in a new
+					 copy identical to an existing gamete.  If so,
+					 that gamete's frequency increases by 1.
+				       */
+      				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
       				       /*
       					 For each gamete still extant after sampling,
       					 remove the pointers to any mutations that have

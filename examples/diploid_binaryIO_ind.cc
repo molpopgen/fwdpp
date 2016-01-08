@@ -89,18 +89,17 @@ int main(int argc, char ** argv)
 				   pop.diploids,
 				   pop.mutations,
 				   pop.mcounts,
+				   pop.neutral,
+				   pop.selected,
 				   N,     
 				   mu,   
 				   std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),generation,
 					     mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
-				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-					     std::ref(pop.neutral),std::ref(pop.selected),
-					     std::ref(pop.gametes),std::ref(pop.mutations),
-					     littler,
-					     r.get(),
-					     recmap),
-				   std::bind(KTfwd::emplace_back<gtype,gcont>,std::placeholders::_1,std::placeholders::_2),
+				   //The function to generation recombination positions:
+				   std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+					     std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
+				   std::bind(KTfwd::emplace_back<gtype,gcont>,std::placeholders::_1,std::placeholders::_2),
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
     }

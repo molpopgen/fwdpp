@@ -6,35 +6,51 @@
 
 namespace KTfwd
 {
-  /*! \brief recombination for individual-based forward simulations
-    \param r GSL random number generator
-    \param littler The probability of a single recombination event between g1 and g2
-    \param gametes Pointer to the list of gametes in the population
-    \param g1 Iterator to the first gamete involved in the recombination event
-    \param g2 Iterator to the second gamete involved in the recombination event
-    \param mf Recombination policy which generates crossover positions
-    \param gamete_lookup The return value of KTfwd::fwdpp_internal::gamete_lookup_table, which gets passed in via sample_diploid
-    \note g1 will be changed
-    \note The type of g1 and g2 is gamete_list_type<gamete_type,list_type_allocator >::iterator
-    \note The return value may be 0 even if littler is large.  The code recognizes when crossovers could not modify the gametes, and the function returns when such cases are found
-    \return The number of crossovers that happened between g1 and g2 (which is Poisson with mean littler)
-   */
-  template< typename iterator_type,
-	    typename recombination_map,
-	    typename glist_t,
-	    typename glookup_t,
-	    typename queue_t>
-  unsigned recombine_gametes( gsl_rng * r,
-			      const double & littler,
-			      glist_t * gametes,
-			      iterator_type & g1,
-			      iterator_type & g2,
-			      glookup_t & gamete_lookup,
-			      queue_t & gamete_recycling_bin,
-			      typename iterator_type::value_type::mutation_container & neutral,
-			      typename iterator_type::value_type::mutation_container & selected,
-			      const recombination_map & mf);
+  struct poisson_xover
+  {
+    template<typename gamete_type,
+	     typename mcont_t>
+    std::vector<double> operator()(gsl_rng * r,
+				   const double littler,
+				   const double minpos,
+				   const double maxpos,
+				   //args below will be passed in by sample_diploid,
+				   //but they are not used/needed here
+				   //Replace
+				   const gamete_type & ,
+				   const gamete_type & ,
+				   const mcont_t & ) const
+    {
+      unsigned nbreaks = (littler > 0) ? gsl_ran_poisson(r,littler) : 0u;
+      if(!nbreaks) return {};
 
+      std::vector<double> pos;
+      pos.reserve(nbreaks+1);
+      for(unsigned i = 0 ; i < nbreaks ; ++i)
+	{
+	  pos.emplace_back(gsl_ran_flat(r,minpos,maxpos));
+	}
+      std::sort(pos.begin(),pos.end());
+      pos.emplace_back(std::numeric_limits<double>::max());
+      return pos;
+    }
+  };
+
+  template<typename gcont_t,
+	   typename mcont_t,
+	   typename lookup_t,
+	   typename recbin_t,
+	   typename recpol_t>
+  std::size_t recombination(gcont_t & gametes,
+			    lookup_t & gamete_lookup,
+			    recbin_t & gamete_recycling_bin,
+			    typename gcont_t::value_type::mutation_container & neutral,
+			    typename gcont_t::value_type::mutation_container & selected,
+			    const recpol_t & rec_pol,
+			    const std::size_t g1,
+			    const std::size_t g2,
+			    const mcont_t & mutations);
+    
   /*!
     Overload for fixed xover positions.
     Typically, this is called by the version taking 
@@ -56,18 +72,18 @@ namespace KTfwd
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
   */
   template< typename iterator_type,
-	    typename vec_t,
-	    typename glist_t,
-	    typename glookup_t,
-	    typename queue_t>
+  	    typename vec_t,
+  	    typename glist_t,
+  	    typename glookup_t,
+  	    typename queue_t>
   unsigned recombine_gametes( const vec_t & pos,
-			      glist_t * gametes,
-			      iterator_type & g1,
-			      iterator_type & g2,
-			      glookup_t & gamete_lookup,
-			      queue_t & gamete_recycling_bin,
-			      typename iterator_type::value_type::mutation_container & neutral,
-			      typename iterator_type::value_type::mutation_container & selected );
+  			      glist_t * gametes,
+  			      iterator_type & g1,
+  			      iterator_type & g2,
+  			      glookup_t & gamete_lookup,
+  			      queue_t & gamete_recycling_bin,
+  			      typename iterator_type::value_type::mutation_container & neutral,
+  			      typename iterator_type::value_type::mutation_container & selected );
 
 }
 #endif // __FWDPP_RECOMBINATION_HPP__ 
