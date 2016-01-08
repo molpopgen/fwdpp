@@ -29,29 +29,6 @@ namespace KTfwd
     std::for_each(mutations->begin(),mutations->end(),[](mutation_type & __m){__m.checked=false;});
   }
 
-  /*
-    Label all extinct variants for recycling
-
-    \note: lookup must be compatible with lookup->erase(lookup->find(double))
-  */
-  template<typename mutation_list_type,
-	   typename mutation_lookup_table>
-  void update_mutations( mutation_list_type * mutations, 
-			 mutation_lookup_table * lookup )
-  {
-    static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
-		   "mutation_type must be derived from KTfwd::mutation_base" );
-    for(auto i=mutations->begin();i!=mutations->end();++i)
-      {
-	if(!i->checked)
-	  {
-	    i->n=0;
-	    lookup->erase(i->pos);
-	  }
-	i->checked=false;
-      }
-  }
-
   /*!
     Label all extinct and fixed variants for recycling
 
