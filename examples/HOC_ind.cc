@@ -135,13 +135,6 @@ int main(int argc, char ** argv)
 	  for(const auto & m : pop.gametes[d.second].smutations) sum += pop.mutations[m].s;
 	  G.push_back(sum);
 	}
-      // std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const poptype::diploid_t & dip ) {
-      // 	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
-      // 				       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
-      // 	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
-      // 				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
-      // 	  G.push_back(sum);
-      // 	});
       std::cout << gsl_stats_variance(&G[0],1,G.size()) << std::endl;
     }
   return 0;
