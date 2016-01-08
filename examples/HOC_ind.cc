@@ -18,42 +18,33 @@ using poptype = singlepop_t;
 struct HOChap
 {
   template<typename mqueue_t>
-  inline singlepop_t::mlist_t::iterator
+  std::size_t
   operator()( mqueue_t & mut_recycling_bin,
 	      poptype::gamete_t & g,
-	      singlepop_t::mlist_t * mutations,
-	      gsl_rng * r, poptype::lookup_table_t * lookup, const double & sigmu) const
+	      singlepop_t::mcont_t & mutations,
+	      gsl_rng * r, poptype::lookup_table_t & lookup, const double & sigmu) const
   {
     double pos = gsl_rng_uniform(r);
-    while( lookup->find(pos) != lookup->end() ) //make sure it doesn't exist in the population
+    while( lookup.find(pos) != lookup.end() ) //make sure it doesn't exist in the population
       { 
     	pos = gsl_rng_uniform(r);  //if it does, generate a new one
       }
-    lookup->insert(pos);
+    lookup.insert(pos);
     double E = gsl_ran_gaussian(r,sigmu); //effect size of hap, after mutation
     double sum = std::accumulate(g.smutations.begin(),g.smutations.end(),0.,
-     				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
+     				 [&mutations](double & d, const std::size_t m) { return d + mutations[m].s; });
     double esize = (E > sum) ? std::fabs(E-sum) : -1.*std::fabs(E-sum);
-    if(!mut_recycling_bin.empty())
-      {
-	auto rv = mut_recycling_bin.front();
-	mut_recycling_bin.pop();
-	rv->pos=pos;
-	rv->s=esize;
-	rv->n=1u;
-	return rv;
-      }
-    return mutations->emplace(mutations->end(),pos,esize,1);
-    // return mtype(pos,esize,1);
+    return KTfwd::fwdpp_internal::recycle_mutation_helper(mut_recycling_bin,mutations,pos,esize,1);
   }
 };
 
-double simple_gaussian( const poptype::glist_t::iterator & h1, const poptype::glist_t::iterator & h2 )
+double simple_gaussian( const poptype::gamete_t & h1, const poptype::gamete_t & h2,
+			const poptype::mcont_t & mutations)
 {
-  double sum = std::accumulate(h1->smutations.begin(),h1->smutations.end(),0.,
-			       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
-  sum += std::accumulate(h2->smutations.begin(),h2->smutations.end(),0.,
-			 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; });
+  double sum = std::accumulate(h1.smutations.begin(),h1.smutations.end(),0.,
+			       [&mutations](double & d, const std::size_t & m) { return d + mutations[m].s; });
+  sum += std::accumulate(h2.smutations.begin(),h2.smutations.end(),0.,
+			 [&mutations](double & d, const std::size_t & m) { return d + mutations[m].s; });
   return std::exp(-1.*std::pow(sum,2.)/2.);
 }
 
@@ -109,9 +100,10 @@ int main(int argc, char ** argv)
       	{
       	  //Iterate the population through 1 generation
       	  double wbar = KTfwd::sample_diploid(r.get(),
-					      &pop.gametes,  //non-const pointer to gametes
-					      &pop.diploids, //non-const pointer to diploids
-					      &pop.mutations, //non-const pointer to mutations
+					      pop.gametes,  //non-const pointer to gametes
+					      pop.diploids, //non-const pointer to diploids
+					      pop.mutations, //non-const pointer to mutations
+					      pop.mcounts,
 					      N,     //current pop size, remains constant
 					      mu,    //mutation rate per gamete
 					      /*
@@ -122,56 +114,34 @@ int main(int argc, char ** argv)
 						of HOChap above).
 					      */
 					      std::bind(HOChap(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
-							r.get(),&pop.mut_lookup,sigmu),
-					      // mmodel,
-					      //The recombination policy includes the uniform crossover rate
-					      std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-							std::ref(pop.neutral),std::ref(pop.selected),
-							&pop.gametes,
-							littler,
-							r.get(),
-							recmap),
-					      /*
-						Policy telling KTfwd::mutate how to add mutated gametes into the gamete pool.
-						If mutation results in a new gamete, add that gamete to the 
-						end of gametes. This is always the case under infinitely-many sites,
-						but for other mutation models, mutation may result in a new
-						copy identical to an existing gamete.  If so,
-						that gamete's frequency increases by 1.
-					      */
-					      std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					      /*
-						Fitness is multiplicative over sites.
-						
-						The fitness model takes two gametes as arguments.  
-						The gametes are passed to this function by 
-						KTfwd::sample_diploid, and the _1 and _2 are placeholders for
-						those gametes (see documentation for boost/bind.hpp for details).
-						The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
-						AA, Aa, and aa, respectively, where a is a mutation with
-						selection coefficient s and dominance h, and the fitness of 
-						the diploid is the product of fitness over sites
-						
-						There is no selection in this simulation, but this
-						function is called anyways to illustrate it as multiplicative
-						models are very common in population genetics
-					      */
-					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2),
+							r.get(),std::ref(pop.mut_lookup),sigmu),
+					      std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					      pop.neutral,pop.selected,
+					      0.,
 					      KTfwd::remove_nothing());
-      	  KTfwd::update_mutations(&pop.mutations,&pop.mut_lookup);
+      	  KTfwd::update_mutations(pop.mutations,pop.mut_lookup,pop.mcounts,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}    
       //Get VG for this replicate
       //Note: this can be done more efficiently via the boost accumulator library, which
       //we don't use here to reduce dependencies.
       std::vector<double> G;
-      std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const poptype::diploid_t & dip ) {
-      	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
-      				       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
-      	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
-      				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
+      for(const auto & d : pop.diploids)
+	{
+	  double sum = 0.;
+	  for(const auto & m : pop.gametes[d.first].smutations) sum += pop.mutations[m].s;
+	  for(const auto & m : pop.gametes[d.second].smutations) sum += pop.mutations[m].s;
 	  G.push_back(sum);
-	});
+	}
+      // std::for_each(pop.diploids.cbegin(),pop.diploids.cend(),[&G](const poptype::diploid_t & dip ) {
+      // 	  double sum = std::accumulate(dip.first->smutations.begin(),dip.first->smutations.end(),0.,
+      // 				       [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
+      // 	  sum += std::accumulate(dip.second->smutations.begin(),dip.second->smutations.end(),0.,
+      // 				 [](double & d, const poptype::mlist_t::iterator & m) { return d + m->s; } );
+      // 	  G.push_back(sum);
+      // 	});
       std::cout << gsl_stats_variance(&G[0],1,G.size()) << std::endl;
     }
   return 0;
