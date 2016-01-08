@@ -25,8 +25,8 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    typename gamete_insertion_policy,
-	    typename mutation_removal_policy
+	    typename mutation_removal_policy,
+	    typename gamete_insertion_policy
 	    >
   double
   sample_diploid(gsl_rng * r,
@@ -65,8 +65,8 @@ namespace KTfwd
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    typename gamete_insertion_policy,
-	    typename mutation_removal_policy
+	    typename mutation_removal_policy,
+	    typename gamete_insertion_policy
 	    >
   double
   sample_diploid(gsl_rng * r,
