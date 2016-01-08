@@ -70,102 +70,48 @@ int main(int argc, char ** argv)
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
 
+  std::vector<unsigned> N_over_time(ngens,N+1);
+  N_over_time.push_back(N2);
+  //Figure out the growth rate, etc.
+  double G = std::exp( (std::log(double(N3)) - std::log(double(N2)))/double(ngens2));
+  for(unsigned i = 0 ; i < ngens2 ; ++i )
+    {
+      N_over_time.push_back(unsigned(round( N2*std::pow(G,i+1) )));
+    }
+  
   while(nreps--)
     {
       //Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
       singlepop_t pop(N);
-      KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del))));
+      pop.mutations.reserve(std::ceil(std::log(2*N)*(theta_neutral+theta_del)+0.667*(theta_neutral+theta_del)));
       unsigned generation =  0;
       double wbar=1;
-      for( generation = 0; generation < ngens; ++generation )
+      for(unsigned generation = 0 ; generation < N_over_time.size()-1 ; ++generation )
 	{
-#ifndef NDEBUG
-	  for( singlepop_t::glist_t::iterator itr = pop.gametes.begin(); 
-	       itr != pop.gametes.end() ; ++itr )
-	    {
-	      assert( itr->n > 0 );
-	    }
-#endif
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	  wbar = KTfwd::sample_diploid(r.get(),
-				       &pop.gametes,
-				       &pop.diploids,
-				       &pop.mutations,
-				       N,
+				       pop.gametes,
+				       pop.diploids,
+				       pop.mutations,
+				       pop.mcounts,
+				       N_over_time[generation],
+				       N_over_time[generation+1],
 				       mu_neutral+mu_del,
-				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
+				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),
 						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
-     				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						 std::ref(pop.neutral),std::ref(pop.selected),
-						 &pop.gametes,
-						 littler,
-						 r.get(),
-						 recmap),
-				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
-				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
-	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+				       //The function to generation recombination positions:
+				       std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+     				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
+				       pop.neutral,pop.selected);
+	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
-	}
-
-      //The next generation is the bottleneck
-      wbar = KTfwd::sample_diploid(r.get(),
-				   &pop.gametes,
-				   &pop.diploids,
-				   &pop.mutations,
-				   N,
-				   N2,
-				   mu_neutral+mu_del,
-				   std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
-					     mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
-				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-					     std::ref(pop.neutral),std::ref(pop.selected),
-					     &pop.gametes,
-					     littler,
-					     r.get(),
-					     recmap),
-				   std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
-				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N2));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N2);
-      generation++;
-      
-      //Figure out the growth rate, etc.
-      double G = std::exp( (std::log(double(N3)) - std::log(double(N2)))/double(ngens2)); 
-
-      //Now, grow the population to size N3;
-      unsigned currentN = N2,nextN;
-      unsigned gens_since_bneck = 0;
-      for( ; generation < ngens + ngens2 ; ++generation,++gens_since_bneck )
-	{
-	  nextN = unsigned(round( N2*std::pow(G,gens_since_bneck+1) ));
-	  assert(nextN > 0);
-	  wbar = KTfwd::sample_diploid(r.get(),
-				       &pop.gametes,
-				       &pop.diploids,
-				       &pop.mutations,
-				       currentN,
-				       nextN,
-				       mu_neutral+mu_del,
-				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
-						 mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
-     				       std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						 std::ref(pop.neutral),std::ref(pop.selected),
-						 &pop.gametes,
-						 littler,
-						 r.get(),
-						 recmap),
-				       std::bind(KTfwd::insert_at_end<singlepop_t::gamete_t,singlepop_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
-				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*nextN));
-	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*nextN);
-	  currentN=nextN;
 	}
       Sequence::SimData neutral_muts,selected_muts;
       
       //Take a sample of size samplesize1.  Two data blocks are returned, one for neutral mutations, and one for selected
       std::pair< std::vector< std::pair<double,std::string> >,
-		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r.get(),&pop.diploids,samplesize1);
+		 std::vector< std::pair<double,std::string> > > sample = ms_sample_separate(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1);
       
       neutral_muts.assign( sample.first.begin(), sample.first.end() );
       selected_muts.assign( sample.second.begin(), sample.second.end() );

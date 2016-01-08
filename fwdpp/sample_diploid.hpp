@@ -107,6 +107,7 @@ namespace KTfwd
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
+		 const diploid_fitness_function & ff,
 		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
 		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
 		 const double f = 0.,
