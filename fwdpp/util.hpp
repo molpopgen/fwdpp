@@ -38,7 +38,7 @@ namespace KTfwd
 	   typename mutation_lookup_table>
   void update_mutations( mutation_list_type & mutations, 
 			 mutation_lookup_table & lookup,
-			 const std::vector<uint_t> & mcounts,
+			 std::vector<uint_t> & mcounts,
 			 const unsigned twoN)
   {
     static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
