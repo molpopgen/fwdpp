@@ -9,9 +9,6 @@
 
 namespace KTfwd
 {
-  template<typename mtype> using singlepop_mvec_t = std::vector<mtype,std::allocator<mtype> >;
-  using singlepop_gamete_t = gamete;
-  template<typename mtype> using singlepop_gvec_t = std::vector<singlepop_gamete_t, std::allocator<singlepop_gamete_t>>;
   /*!
     \brief Single locus, single population object
     \ingroup sugar
@@ -19,8 +16,8 @@ namespace KTfwd
   template<typename mtype,
 	   typename diploid_t = std::pair<std::size_t,std::size_t> >
   using singlepop = sugar::singlepop<mtype,
-				     singlepop_mvec_t<mtype>,
-				     singlepop_gvec_t<mtype>,
+				     std::vector<mtype>,
+				     std::vector<gamete>,
 				     std::vector<diploid_t>,
 				     std::vector<mtype>,
 				     std::vector<uint_t>,
