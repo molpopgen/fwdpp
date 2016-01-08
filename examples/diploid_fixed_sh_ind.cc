@@ -65,8 +65,6 @@ int main(int argc, char ** argv)
 				       pop.diploids,
 				       pop.mutations,
 				       pop.mcounts,
-				       pop.neutral,
-				       pop.selected,
 				       N,
 				       mu_neutral+mu_del,
 				       std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),
@@ -75,8 +73,8 @@ int main(int argc, char ** argv)
 				       std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
 						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				       std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
-				       std::bind(KTfwd::emplace_back<singlepop_t::gamete_t,singlepop_t::gcont_t>,std::placeholders::_1,std::placeholders::_2),
-				       std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
+				       pop.neutral,
+				       pop.selected);
 	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
 	  assert(KTfwd::check_sum(pop.gametes,2*N));
 	}
