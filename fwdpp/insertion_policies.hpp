@@ -21,12 +21,15 @@ namespace KTfwd
     return ct->insert(ct->end(),std::forward<T>(t));
   }
 
-  template<typename T, typename cT>
-  inline std::size_t emplace_back(  T && t,  cT & ct )
+  struct emplace_back
   {
-    ct.emplace_back(std::forward<T>(t));
-    return ct.size()-1;
-  }
+    template<typename T,typename cT>
+    inline std::size_t operator()(T && t,cT & ct) const
+    {
+      ct.emplace_back(std::forward<T>(t));
+      return ct.size()-1;
+    }
+  };
 
   /*! \brief     An insertion policy 
     
