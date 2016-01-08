@@ -24,10 +24,10 @@ using mtype = KTfwd::mutation;
 #define METAPOP_SIM
 #include <common_ind.hpp>
 
-using poptype = metapop_serialized_t;
-using mlist = poptype::mlist_t;
+using poptype = metapop_t;
+using mcont = poptype::mcont_t;
 using gtype = poptype::gamete_t;
-using glist = poptype::glist_t;
+using gcont = poptype::gcont_t;
 
 using namespace std;
 using namespace KTfwd;
@@ -48,36 +48,23 @@ SimData merge( const std::vector<std::pair<double,std::string> > & sample1,
 			 const unsigned & nsam);
 
 //fitness model details -- s will be treated as -s in population 2
-struct multiplicative_fitness_updater_hom_minus
-{
-  typedef void result_type;
-  template<typename iterator_type>
-  inline void operator()(double & fitness, const iterator_type & m1,const double & scaling = 2.) const
-  {
-    fitness *= ( 1. - scaling*m1->s );
-  }
-};
-
-struct multiplicative_fitness_updater_het_minus
-{
-  typedef void result_type;
-  template<typename iterator_type>
-  inline void operator()(double & fitness, const iterator_type & m1) const
-  {
-    fitness *= ( 1. - m1->s*m1->h );
-  }
-};
-
 struct multiplicative_diploid_minus
 {
   typedef double result_type;
-  template< typename iterator_type>
-  inline double operator()(const iterator_type & g1, const iterator_type & g2, 
+  inline double operator()(const poptype::gamete_t & g1, const poptype::gamete_t & g2,
+			   const poptype::mcont_t & mutations,
 			   const double scaling = 1.) const
   {
-    return site_dependent_fitness()(g1,g2,
-				    std::bind(multiplicative_fitness_updater_hom_minus(),std::placeholders::_1,std::placeholders::_2,scaling),
-				    std::bind(multiplicative_fitness_updater_het_minus(),std::placeholders::_1,std::placeholders::_2),
+    using mut_t = poptype::mcont_t::value_type;
+    return site_dependent_fitness()(g1,g2,mutations,
+				    [&](double & fitness,const mut_t & mut)
+				    {
+				      fitness *= (1. - scaling*mut.s);
+				    },
+				    [](double & fitness,const mut_t & mut)
+				    {
+				      fitness *= (1. - mut.h*mut.s);
+				    },
 				    1.);
   }
 };
@@ -116,12 +103,13 @@ int main( int argc, char ** argv )
   unsigned Ns[2] = {N,N};
   double fs[2] = {f1,f2};
   poptype pop({N,N});
-  KTfwd::add_recyclable(pop,4*N,2*size_t(std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del))));
+  pop.mutations.reserve(2*size_t(std::ceil(std::log(2*N)*(theta_neut+theta_del)+0.667*(theta_neut+theta_del))));
   //create a vector of fitness functions for each population
-  std::vector<std::function<double (glist::const_iterator,
-				    glist::const_iterator)> > vbf;
-  vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.));
-  vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,2.));
+  std::vector<std::function<double(const poptype::gamete_t &,
+				   const poptype::gamete_t &,
+				   const poptype::mcont_t & )> > vbf;
+  vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.));
+  vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.));
 
   //recombination map is uniform[0,1)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
@@ -129,107 +117,103 @@ int main( int argc, char ** argv )
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {
       std::vector<double> wbars = sample_diploid(r.get(),
-						 &pop.gametes,
-						 &pop.diploids,
-						 &pop.mutations,
+						 pop.gametes,
+						 pop.diploids,
+						 pop.mutations,
+						 pop.mcounts,
 						 &Ns[0],
 						 mu_neutral + mu_del,
-						 std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,
+						 std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),
 							   mu_neutral,mu_del,[&r](){return gsl_rng_uniform(r.get());},[&s](){return s;},[&h](){return h;}),
-						 std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-							   std::ref(pop.neutral),std::ref(pop.selected),
-							   &pop.gametes,
-							   littler,
-							   r.get(),
-							   recmap),
-						 std::bind(insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
+						 std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+							   std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 						 vbf,
-						 //4*N b/c it needs to be fixed in the metapopulation
-						 std::bind(mutation_remover(),std::placeholders::_1,4*N),
 						 std::bind(migpop,std::placeholders::_1,r.get(),m),
+						 pop.neutral,
+						 pop.selected,
 						 &fs[0]);
       //4*N b/c it needs to be fixed in the metapopulation
-      update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,4*N);
+      update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,4*N);
     }
 
-  std::pair< std::vector<std::pair<double,std::string> >,
-	     std::vector<std::pair<double,std::string> > > spop1 = ms_sample_separate(r.get(),&pop.diploids[0],n);
+  // std::pair< std::vector<std::pair<double,std::string> >,
+  // 	     std::vector<std::pair<double,std::string> > > spop1 = ms_sample_separate(r.get(),&pop.diploids[0],n);
 
-  std::pair< std::vector<std::pair<double,std::string> >,
-	     std::vector<std::pair<double,std::string> > > spop2 = ms_sample_separate(r.get(),&pop.diploids[1],n);
+  // std::pair< std::vector<std::pair<double,std::string> >,
+  // 	     std::vector<std::pair<double,std::string> > > spop2 = ms_sample_separate(r.get(),&pop.diploids[1],n);
 
-  SimData neutral = merge( spop1.first,spop2.first,n );
-  SimData selected = merge( spop1.second,spop2.second,n );
+  // SimData neutral = merge( spop1.first,spop2.first,n );
+  // SimData selected = merge( spop1.second,spop2.second,n );
 
-  std::ofstream outstream(outfilename);
+  // std::ofstream outstream(outfilename);
 
-  //Write the metapop in binary format to outstream
-  KTfwd::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
-			      std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),
-			      outstream);
+  // //Write the metapop in binary format to outstream
+  // KTfwd::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
+  // 			      std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),
+  // 			      outstream);
 
-  //Write the "ms" blocks
-  Sequence::write_SimData_binary(outstream,neutral);
-  Sequence::write_SimData_binary(outstream,selected);
-  outstream.close();
+  // //Write the "ms" blocks
+  // Sequence::write_SimData_binary(outstream,neutral);
+  // Sequence::write_SimData_binary(outstream,selected);
+  // outstream.close();
 
-  poptype::glist_t metapop2;
-  poptype::vdipvector_t diploids2;
-  poptype::mlist_t mutations2;
-  Sequence::SimData neutral2,selected2;
+  // poptype::gcont_t metapop2;
+  // poptype::vdipvector_t diploids2;
+  // poptype::mcont_t mutations2;
+  // Sequence::SimData neutral2,selected2;
 
-  ifstream in(outfilename);
+  // ifstream in(outfilename);
   
-  KTfwd::read_binary_metapop(&metapop2,&mutations2,&diploids2,
-			     std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
-			     in);
+  // KTfwd::read_binary_metapop(&metapop2,&mutations2,&diploids2,
+  // 			     std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
+  // 			     in);
   
-  assert( metapop2.size() == pop.gametes.size() );
-  assert( mutations2.size() == pop.mutations.size() );
-  assert( diploids2.size() == pop.diploids.size() );
+  // assert( metapop2.size() == pop.gametes.size() );
+  // assert( mutations2.size() == pop.mutations.size() );
+  // assert( diploids2.size() == pop.diploids.size() );
   
-  neutral2 = Sequence::read_SimData_binary(in);
-  selected2 = Sequence::read_SimData_binary(in);
+  // neutral2 = Sequence::read_SimData_binary(in);
+  // selected2 = Sequence::read_SimData_binary(in);
   
-  in.close();
+  // in.close();
   
-  std::cerr << (neutral == neutral2) << ' ' << (selected == selected2) << '\n';
-  /*
-    At this point, you could go through each deme and each diploid and make 
-    sure that all is cool.  However, if we weren't reading and
-    writing the metapop correctly, there's no way we'd be able
-    to write and then read in the ms blocks correctly, as we'd have
-    run into some binary gibberish along the way.
-  */
+  // std::cerr << (neutral == neutral2) << ' ' << (selected == selected2) << '\n';
+  // /*
+  //   At this point, you could go through each deme and each diploid and make 
+  //   sure that all is cool.  However, if we weren't reading and
+  //   writing the metapop correctly, there's no way we'd be able
+  //   to write and then read in the ms blocks correctly, as we'd have
+  //   run into some binary gibberish along the way.
+  // */
 
-  //For fun, we'll calculate some basic pop subdivision stats
-  unsigned config[2] = {n,n};
-  if(!neutral.empty())
-    {
-      Sequence::FST fst_neut(&neutral,2,config);
-      std::pair< std::set<double>,std::set<double> > pneut = fst_neut.Private(0,1);
-      std::cout << fst_neut.HSM() << '\t'
-		<< fst_neut.shared(0,1).size() << '\t'
-		<< pneut.first.size() << '\t'
-		<< pneut.second.size() << '\t';
-    }
-  else
-    {
-      std::cout << "NA\t0\t0\t0\t0\t";
-    }
-  if(!selected.empty())
-    {
-      Sequence::FST fst_sel(&selected,2,config);
-      std::pair< std::set<double>,std::set<double> > psel = fst_sel.Private(0,1);
-      std::cout << fst_sel.HSM() << '\t'
-		<< fst_sel.shared(0,1).size() << '\t'
-		<< psel.first.size() << '\t'
-		<< psel.second.size() << '\n';    
-    }
-  else
-    {
-      std::cout << "NA\t0\t0\t0\t0\n";
-    }
+  // //For fun, we'll calculate some basic pop subdivision stats
+  // unsigned config[2] = {n,n};
+  // if(!neutral.empty())
+  //   {
+  //     Sequence::FST fst_neut(&neutral,2,config);
+  //     std::pair< std::set<double>,std::set<double> > pneut = fst_neut.Private(0,1);
+  //     std::cout << fst_neut.HSM() << '\t'
+  // 		<< fst_neut.shared(0,1).size() << '\t'
+  // 		<< pneut.first.size() << '\t'
+  // 		<< pneut.second.size() << '\t';
+  //   }
+  // else
+  //   {
+  //     std::cout << "NA\t0\t0\t0\t0\t";
+  //   }
+  // if(!selected.empty())
+  //   {
+  //     Sequence::FST fst_sel(&selected,2,config);
+  //     std::pair< std::set<double>,std::set<double> > psel = fst_sel.Private(0,1);
+  //     std::cout << fst_sel.HSM() << '\t'
+  // 		<< fst_sel.shared(0,1).size() << '\t'
+  // 		<< psel.first.size() << '\t'
+  // 		<< psel.second.size() << '\n';    
+  //   }
+  // else
+  //   {
+  //     std::cout << "NA\t0\t0\t0\t0\n";
+  //   }
 }
 
 SimData merge( const std::vector<std::pair<double,std::string> > & sample1,

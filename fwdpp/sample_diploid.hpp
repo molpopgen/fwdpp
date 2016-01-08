@@ -138,35 +138,41 @@ namespace KTfwd
     \example migsel_ind.cc
   */
   template< typename gamete_type,
+	    typename mutation_type,
 	    typename metapop_diploid_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_geno_t,
 	    typename diploid_vector_type_allocator,
 	    typename diploid_fitness_function_container,
-	    typename mutation_removal_policy,
 	    typename mutation_model,
 	    typename recombination_policy,
 	    typename migration_policy,
-	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_diploid_vector_type>
+	    template<typename,typename> class metapop_diploid_vector_type,
+	    typename mutation_removal_policy = std::true_type,
+	    typename gamete_insertion_policy = emplace_back>
   std::vector< double >
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
-		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator> & metapop,
+		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 std::vector<uint_t> & mcounts,
 		 const uint_t * N_curr,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function_container & ffs,
-		 const mutation_removal_policy & mp,
 		 const migration_policy & mig,
-		 const double * f = nullptr);
+		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 const double * f = nullptr,
+		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
+
+
 
   /*! \brief Evolve a metapopulation where demes may be changing size.  For individual-based sims.
     Evolve a metapopulation where demes may be changing size.  For individual-based sims.
@@ -190,36 +196,40 @@ namespace KTfwd
     \return The mean fitness of the parental generation
   */
   template< typename gamete_type,
+	    typename mutation_type,
 	    typename metapop_diploid_vector_type_allocator,
 	    typename gamete_list_type_allocator,
 	    typename mutation_list_type_allocator,
 	    typename diploid_geno_t,
 	    typename diploid_vector_type_allocator,
 	    typename diploid_fitness_function_container,
-	    typename mutation_removal_policy,
 	    typename mutation_model,
 	    typename recombination_policy,
 	    typename migration_policy,
-	    typename gamete_insertion_policy,
 	    template<typename,typename> class gamete_list_type,
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
-	    template<typename,typename> class metapop_diploid_vector_type>
+	    template<typename,typename> class metapop_diploid_vector_type,
+	    typename mutation_removal_policy = std::true_type,
+	    typename gamete_insertion_policy = emplace_back>
   std::vector< double >
   sample_diploid(gsl_rng * r,
-		 gamete_list_type<gamete_type,gamete_list_type_allocator> * metapop,
-		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>, metapop_diploid_vector_type_allocator > * diploids,
-		 mutation_list_type<typename gamete_type::mutation_type,mutation_list_type_allocator > * mutations,
+		 gamete_list_type<gamete_type,gamete_list_type_allocator> & metapop,
+		 metapop_diploid_vector_type < diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator>,metapop_diploid_vector_type_allocator > & diploids,
+		 mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
+		 std::vector<uint_t> & mcounts,
 		 const uint_t * N_curr,
 		 const uint_t * N_next,
 		 const double & mu,
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
-		 const gamete_insertion_policy & gpolicy_mut,
 		 const diploid_fitness_function_container & ffs,
-		 const mutation_removal_policy & mp,
 		 const migration_policy & mig,
-		 const double * f = nullptr);
+		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 const double * f = nullptr,
+		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
 
   /*! \brief Single deme, multilocus model, changing population size
    */
