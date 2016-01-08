@@ -175,7 +175,7 @@ namespace KTfwd
       }
 #endif
     assert(popdata_sane(diploids,gametes,mcounts));
-    fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,typename std::is_same<mutation_removal_policy,KTfwd::remove_nothing >::type());
+    fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
     return wbar;
   }
 
