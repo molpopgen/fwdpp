@@ -32,15 +32,15 @@ namespace KTfwd
     \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
     in turn allowing file locking which speeds up performance on distributed file systems.
    */
-  template< typename glist_t,
-	    typename mlist_t,
+  template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t = diploidIOplaceholder>
-  void write_binary_pop ( const glist_t * gametes,
-			  const mlist_t * mutations,
-			  const dipvector_t * diploids,
+  void write_binary_pop ( const gcont_t & gametes,
+			  const mcont_t & mutations,
+			  const dipvector_t & diploids,
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer,
 			  const diploid_writer_t & dw = diploid_writer_t() );
@@ -55,15 +55,15 @@ namespace KTfwd
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream. Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
-  template< typename glist_t,
-	    typename mlist_t,
+  template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
 	    typename mutation_reader_type,
 	    typename istreamtype,
 	    typename diploid_reader_t = diploidIOplaceholder>
-  void read_binary_pop (  glist_t * gametes,
-			  mlist_t * mutations,
-			  dipvector_t * diploids,
+  void read_binary_pop (  gcont_t & gametes,
+			  mcont_t & mutations,
+			  dipvector_t & diploids,
 			  const mutation_reader_type & mr,
 			  istreamtype & in,
 			  const diploid_reader_t & dr = diploid_reader_t());
@@ -75,15 +75,15 @@ namespace KTfwd
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An object whose public interface is compatible with std::ostream or is a gzFile
    */
-   template< typename glist_t,
-	    typename mlist_t,
+   template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t = diploidIOplaceholder>
-  void  write_binary_pop_mloc ( const glist_t * mlocus_gametes,
-				const mlist_t * mutations,
-				const dipvector_t * diploids,
+  void  write_binary_pop_mloc ( const gcont_t & mlocus_gametes,
+				const mcont_t & mutations,
+				const dipvector_t & diploids,
 				const mutation_writer_type & mw,
 				ostreamtype & buffer,
 				const diploid_writer_t & dw = diploid_writer_t() );
@@ -95,15 +95,15 @@ namespace KTfwd
     \param mr A function object taking a input stream as argument, and reads a mutation object from the stream. Must be provided by the library user.
     \param in An object whose public interface is compatible with std::ostream or is a gzFile.
    */
-  template< typename glist_t,
-	    typename mlist_t,
+  template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
 	    typename mutation_reader_type,
 	    typename istreamtype,
 	    typename diploid_reader_t = diploidIOplaceholder>
-  void read_binary_pop_mloc (glist_t * mlocus_gametes,
-			     mlist_t * mutations,
-			     dipvector_t * diploids,
+  void read_binary_pop_mloc (gcont_t & mlocus_gametes,
+			     mcont_t & mutations,
+			     dipvector_t & diploids,
 			     const mutation_reader_type & mr,
 			     istreamtype & in,
 			     const diploid_reader_t & dr = diploid_reader_t() );
@@ -122,15 +122,15 @@ namespace KTfwd
     in turn allowing file locking which speeds up performance on distributed file systems.
     \example diploid_binaryIO_ind.cc
    */
-  template< typename glist_t,
-	    typename mlist_t,
+  template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t = diploidIOplaceholder>
-  void write_binary_metapop (const glist_t * metapop,
-			     const mlist_t * mutations,
-			     const dipvector_t * diploids,
+  void write_binary_metapop (const gcont_t & metapop,
+			     const mcont_t & mutations,
+			     const dipvector_t & diploids,
 			     const mutation_writer_type & mw,
 			     ostreamtype & buffer,
 			     const diploid_writer_t & dw = diploid_writer_t());
@@ -143,15 +143,15 @@ namespace KTfwd
     \param mr A function object to read in the mutation information. Takes an istreamtype as argument. Must be provided by library user.
     \param in Input stream.  Must either support .read() in a manner similar to std::istream types or be a gzFile from zlib.
    */
-  template< typename glist_t,
-	    typename mlist_t,
+  template< typename gcont_t,
+	    typename mcont_t,
 	    typename dipvector_t,
   	    typename mutation_reader_type,
   	    typename istreamtype,
 	    typename diploid_reader_t = diploidIOplaceholder>
-  void read_binary_metapop (glist_t * metapop,
-			    mlist_t * mutations,
-			    dipvector_t * diploids,
+  void read_binary_metapop (gcont_t & metapop,
+			    mcont_t & mutations,
+			    dipvector_t & diploids,
 			    const mutation_reader_type & mr,
 			    istreamtype & in,
 			    const diploid_reader_t & dr = diploid_reader_t() );

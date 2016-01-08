@@ -25,10 +25,26 @@ using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
-using mlist = singlepop_serialized_t::mlist_t;
-using glist = singlepop_serialized_t::glist_t;
-using mtype = singlepop_serialized_t::mutation_t;
-using gtype = singlepop_serialized_t::gamete_t;
+using mcont = singlepop_t::mcont_t;
+using gcont = singlepop_t::gcont_t;
+using mtype = singlepop_t::mutation_t;
+using gtype = singlepop_t::gamete_t;
+
+//Pollute namespace std to make some comparisons down below easier...
+namespace std {
+ bool operator==( const KTfwd::popgenmut i,
+			const KTfwd::popgenmut j )
+{
+  return i.pos == j.pos && i.s==j.s && i.h == j.h
+    && i.g == j.g;
+}
+
+ bool operator!=( const KTfwd::popgenmut i,
+			const KTfwd::popgenmut j )
+{
+  return !(i==j);
+}
+}
 
 int main(int argc, char ** argv)
 {
@@ -58,8 +74,8 @@ int main(int argc, char ** argv)
 
   unsigned twoN = 2*N;
 
-  singlepop_serialized_t pop(N);
-  KTfwd::add_recyclable(pop,2*N,size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
+  singlepop_t pop(N);
+  pop.mcounts.reserve(std::ceil(std::log(2*N)*theta+0.667*theta));
   unsigned generation;
   double wbar;
 
@@ -69,27 +85,27 @@ int main(int argc, char ** argv)
   for( generation = 0; generation < ngens; ++generation )
     {
       wbar = KTfwd::sample_diploid(r.get(),
-				   &pop.gametes, 
-				   &pop.diploids,
-				   &pop.mutations,
+				   pop.gametes, 
+				   pop.diploids,
+				   pop.mutations,
+				   pop.mcounts,
 				   N,     
 				   mu,   
-				   std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,generation,
+				   std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),generation,
 					     mu,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}),
 				   std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
 					     std::ref(pop.neutral),std::ref(pop.selected),
-					     &pop.gametes,
+					     std::ref(pop.gametes),std::ref(pop.mutations),
 					     littler,
 					     r.get(),
 					     recmap),
-				   std::bind(KTfwd::insert_at_end<gtype,glist>,std::placeholders::_1,std::placeholders::_2),
-				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
+				   std::bind(KTfwd::emplace_back<gtype,gcont>,std::placeholders::_1,std::placeholders::_2),
+				   std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.),
 				   std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,twoN);
+      KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,twoN);
     }
   std::ostringstream buffer;
-      
-  KTfwd::write_binary_pop(&pop.gametes,&pop.mutations,&pop.diploids,std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),buffer);
+  KTfwd::write_binary_pop(pop.gametes,pop.mutations,pop.diploids,std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),buffer);
 
   //establish POSIX file locks for output
   struct flock index_flock, hapfile_flock;
@@ -159,50 +175,28 @@ int main(int argc, char ** argv)
   fclose(index_fh);
 
   //now, read the data back in...
-  glist gametes2;
-  mlist mutations2;
-  singlepop_serialized_t::dipvector_t diploids2;
+  gcont gametes2;
+  mcont mutations2;
+  singlepop_t::dipvector_t diploids2;
 
   std::ifstream in(hapfile,std::ios_base::in|std::ios_base::binary);
   in.seekg(offset);
-  KTfwd::read_binary_pop(&gametes2,
-			 &mutations2,
-			 &diploids2,
+  KTfwd::read_binary_pop(gametes2,
+			 mutations2,
+			 diploids2,
 			 std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
 			 in);
-
-  //Now, compare what we wrote to what we read
-  std::cout << pop.gametes.size() << ' ' << gametes2.size() << ' ' << pop.mutations.size() << ' ' << mutations2.size() 
-	    << ' ' << pop.diploids.size() << ' ' << diploids2.size() << '\n';
-
-  for( unsigned i = 0 ; i < pop.diploids.size() ; ++i )
+  for( std::size_t i = 0 ; i < pop.diploids.size() ; ++i )
     {
-      std::cout << "Diploid " << i << ":\nWritten:\n";
-      for( unsigned j = 0 ; j < pop.diploids[i].first->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << pop.diploids[i].first->mutations[j]->pos << ','
-		    << pop.diploids[i].first->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
-      for( unsigned j = 0 ; j <pop.diploids[i].second->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << pop.diploids[i].second->mutations[j]->pos << ','
-		    << pop.diploids[i].second->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
-
-      std::cout << "Read:\n";
-      for( unsigned j = 0 ; j < diploids2[i].first->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << diploids2[i].first->mutations[j]->pos << ','
-		    << diploids2[i].first->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
-      for( unsigned j = 0 ; j < diploids2[i].second->mutations.size() ; ++j )
-	{
-	  std::cout << '(' << diploids2[i].second->mutations[j]->pos << ','
-		    << diploids2[i].second->mutations[j]->n << ')';
-	}
-      std::cout << '\n';
+      std::cout << "Diploid no. " << i << ": "
+		<< pop.diploids[i].first << ','
+		<< pop.diploids[i].second << ' '
+		<< diploids2[i].first << ','
+		<< diploids2[i].second << " -> "
+		<< (pop.gametes[pop.diploids[i].first].mutations==gametes2[diploids2[i].first].mutations) << ' '
+		<< (pop.gametes[pop.diploids[i].first].smutations==gametes2[diploids2[i].first].smutations) << ' '
+		<< (pop.gametes[pop.diploids[i].second].mutations==gametes2[diploids2[i].second].mutations) << ' '
+		<< (pop.gametes[pop.diploids[i].second].smutations==gametes2[diploids2[i].second].smutations) << '\n';
     }
+  std::cout << "Are mutation containers the same: " << (pop.mutations==mutations2) << '\n';
 }
