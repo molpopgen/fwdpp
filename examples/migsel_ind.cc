@@ -6,17 +6,17 @@
   Writes the metapop + an "ms"-type sample in binary format to an output file.
 */
 #include <config.h>
-#include <fwdpp/diploid.hh>
-
-#include <Sequence/SimData.hpp>
-#include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
-#include <Sequence/FST.hpp>
 #include <numeric>
 #include <cmath>
 #include <functional>
 #include <cassert>
 #include <iomanip>
 #include <fstream>
+#include <fwdpp/diploid.hh>
+
+#include <Sequence/SimData.hpp>
+#include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
+#include <Sequence/FST.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 //the type of mutation
