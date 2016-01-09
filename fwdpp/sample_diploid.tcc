@@ -260,7 +260,6 @@ namespace KTfwd
     using lookup_t = fwdpp_internal::gsl_ran_discrete_t_ptr;
     std::vector<lookup_t> lookups;
     std::vector<double> wbars(diploids.size(),0);
-    //typename decltype(diploids->begin())::difference_type popindex = 0;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
