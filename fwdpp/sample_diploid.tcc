@@ -194,8 +194,8 @@ namespace KTfwd
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class metapop_diploid_vector_type,
-	    typename mutation_removal_policy = std::true_type,
-	    typename gamete_insertion_policy = emplace_back>
+	    typename mutation_removal_policy,
+	    typename gamete_insertion_policy>
   std::vector< double >
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator> & metapop,
@@ -235,8 +235,8 @@ namespace KTfwd
 	    template<typename,typename> class mutation_list_type,
 	    template<typename,typename> class diploid_vector_type,
 	    template<typename,typename> class metapop_diploid_vector_type,
-	    typename mutation_removal_policy = std::true_type,
-	    typename gamete_insertion_policy = emplace_back>
+	    typename mutation_removal_policy,
+	    typename gamete_insertion_policy>
   std::vector< double >
   sample_diploid(gsl_rng * r,
 		 gamete_list_type<gamete_type,gamete_list_type_allocator> & gametes,
