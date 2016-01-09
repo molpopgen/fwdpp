@@ -175,8 +175,6 @@ int main( int argc, char ** argv )
   
   in.close();
 
-  std::cerr << pop.gametes.size() << '\n';
-  std::cerr << neutral << '\n';
   std::cerr << (neutral == neutral2) << ' ' << (selected == selected2) << '\n';
   /*
     At this point, you could go through each deme and each diploid and make 
