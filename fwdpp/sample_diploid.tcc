@@ -357,6 +357,7 @@ namespace KTfwd
     fwdpp_internal::gamete_cleaner(gametes,mcounts,
 				   2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0)),
 				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
+    assert( check_sum(gametes,2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0))) );
     return wbars;
   }
   //single deme, N changing
