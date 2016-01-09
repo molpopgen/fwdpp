@@ -111,9 +111,6 @@ int main( int argc, char ** argv )
   vbf.push_back(std::bind(multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.));
   vbf.push_back(std::bind(multiplicative_diploid_minus(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,2.));
 
-  //recombination map is uniform[0,1)
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get());
-
   for( unsigned generation = 0 ; generation < ngens ; ++generation )
     {
       std::vector<double> wbars = sample_diploid(r.get(),
