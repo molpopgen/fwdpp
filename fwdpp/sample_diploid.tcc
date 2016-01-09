@@ -354,6 +354,7 @@ namespace KTfwd
 	  }
       }
     fwdpp_internal::process_glist(gametes,mutations,mcounts);
+    assert(mcounts.size()==mutations.size());
     fwdpp_internal::gamete_cleaner(gametes,mcounts,
 				   2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0)),
 				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
