@@ -154,29 +154,25 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t>
-  void write_binary_metapop (const gcont_t & metapop,
+  void write_binary_metapop (const gcont_t & gametes,
 			     const mcont_t & mutations,
 			     const dipvector_t & diploids,
 			     const mutation_writer_type & mw,
 			     ostreamtype & buffer,
 			     const diploid_writer_t & dw)
   {
-    unsigned NPOP = unsigned(diploids->size());
-    buffer.write( reinterpret_cast<char *>(&NPOP), sizeof(unsigned) );
-    auto mutdata = fwdpp_internal::write_mutations()( mutations,mw,buffer );
-    auto gamdata = fwdpp_internal::write_haplotypes()( metapop, mutdata.first, mutdata.second, buffer );
-    auto dip_ptr = diploids->begin();
-    unsigned NDIPS,c;
-    for( unsigned pop = 0 ; pop < NPOP ; ++pop,++dip_ptr )
+    std::size_t i = unsigned(diploids.size());
+    buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
+    fwdpp_internal::write_mutations()( mutations,mw,buffer );
+    fwdpp_internal::write_haplotypes()( gametes, buffer );
+    for(const auto & deme : diploids)
       {
-	NDIPS = unsigned(dip_ptr->size());
-      	buffer.write( reinterpret_cast<char *>(&NDIPS),sizeof(unsigned) );
-	for( auto dip = dip_ptr->cbegin() ; dip != dip_ptr->cend() ; ++dip )
+	i = deme.size();
+	buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
+	for(const auto & dip : deme)
 	  {
-	    c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(), gamdata.first.end(), dip->first ) - gamdata.first.begin()) ];
-	    buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
-	    c = gamdata.second[ std::vector<unsigned>::size_type(std::find( gamdata.first.begin(), gamdata.first.end(), dip->second ) - gamdata.first.begin()) ];
-	    buffer.write( reinterpret_cast<char *>(&c),sizeof(unsigned) );
+	    buffer.write(reinterpret_cast<const char*>(&dip.first),sizeof(decltype(dip.first)));
+	    buffer.write(reinterpret_cast<const char*>(&dip.second),sizeof(decltype(dip.second)));
 	    dw(dip,buffer);
 	  }
       }
@@ -188,36 +184,34 @@ namespace KTfwd
   	    typename mutation_reader_type,
   	    typename istreamtype,
 	    typename diploid_reader_t>
-  void read_binary_metapop (gcont_t & metapop,
+  void read_binary_metapop (gcont_t & gametes,
 			    mcont_t & mutations,
 			    dipvector_t & diploids,
 			    const mutation_reader_type & mr,
 			    istreamtype & in,
 			    const diploid_reader_t & dr)
   {
-    metapop->clear();
-    mutations->clear();
-    diploids->clear();
+    gametes.clear();
+    mutations.clear();
+    diploids.clear();
     
-    unsigned NPOP;
-    fwdpp_internal::scalar_reader<unsigned>()(in,&NPOP);
-    auto m = fwdpp_internal::read_mutations()(mutations,mr,in); 
-    
-    diploids->resize(NPOP);
-    auto dip_ptr = diploids->begin();
-    auto g = fwdpp_internal::read_haplotypes()(metapop,m,in);	
-    unsigned NDIPS,c;
-    for( unsigned pop=0 ; pop < NPOP ; ++pop,++dip_ptr )
+    std::size_t i;
+    fwdpp_internal::scalar_reader<decltype(i)>()(in,&i);
+    diploids.resize(i);
+    fwdpp_internal::read_mutations()(mutations,mr,in); 
+    fwdpp_internal::read_haplotypes()(gametes,in);	
+    for( auto & deme : diploids)
       {
-	fwdpp_internal::scalar_reader<unsigned>()(in,&NDIPS);
-      	dip_ptr->resize(NDIPS);
-	for( auto dip = dip_ptr->begin() ; dip != dip_ptr->end() ; ++dip )
+	fwdpp_internal::scalar_reader<decltype(i)>()(in,&i);
+	if(i)
 	  {
-	    fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-	    dip->first = g[c];
-	    fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-	    dip->second = g[c];
-	    dr(dip,in);
+	    deme.resize(i);
+	    for(auto & dip : deme)
+	      {
+		fwdpp_internal::scalar_reader<decltype(dip.first)>()(in,&dip.first);
+		fwdpp_internal::scalar_reader<decltype(dip.second)>()(in,&dip.second);
+		dr(dip,in);
+	      }
 	  }
       }
   }
