@@ -280,9 +280,10 @@ namespace KTfwd
 	    ++i;
 	  }
 	wbars[popi] /= double(dipvec.size());
-	lookups.emplace_back(lookup_t(gsl_ran_discrete_preproc(diploids.size(),fitnesses)));
+	lookups.emplace_back(lookup_t(gsl_ran_discrete_preproc(dipvec.size(),fitnesses)));
 	++popi;
       }
+    
     delete [] fitnesses;
 
     assert(lookups.size() == diploids.size());
