@@ -1,7 +1,6 @@
 //  -*- C++ -*-
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
-
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
@@ -282,9 +281,10 @@ namespace KTfwd
 	unsigned i=0;
 	for(const auto & dip : dipvec) //...and each diploid
 	  {
-	    fitnesses[i]=fwdpp_internal::diploid_fitness_dispatch(ffs[i],dip,gametes,mutations,typename traits::is_custom_diploid_t<diploid_geno_t>::type());
+	    fitnesses[i]=fwdpp_internal::diploid_fitness_dispatch(ffs[popi],dip,gametes,mutations,typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	    wbars[popi]+=fitnesses[i];
 	    gametes[dip.first].n=gametes[dip.second].n=0;
+	    ++i;
 	  }
 	wbars[popi] /= double(dipvec.size());
 	lookups.emplace_back(lookup_t(gsl_ran_discrete_preproc(diploids.size(),fitnesses)));
