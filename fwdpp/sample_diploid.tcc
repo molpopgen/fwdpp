@@ -264,15 +264,9 @@ namespace KTfwd
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
     auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
+
     //get max N
-    uint_t mN=0;
-    for( uint_t i=0;i<diploids.size();++i )
-      {
-	if( *(N_curr+i) > mN )
-	  {
-	    mN = *(N_curr+i);
-	  }
-      }
+    auto mN = *std::max_element(N_curr,N_curr+diploids.size());
     double * fitnesses = new double[mN];
 
     std::size_t popi=0;
