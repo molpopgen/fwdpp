@@ -32,8 +32,12 @@ namespace KTfwd
 	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
-			   sample_t >::type
+  //typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
+  //			   sample_t >::type
+  //typename std::enable_if<traits::internal::has_first_type<diploid_geno_t>::value,
+  //			  sample_t>::type
+    typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
+			    sample_t>::type
   ms_sample( gsl_rng * r,
 	     const mcont_t & mutations,
 	     const gcont_t & gametes,
@@ -54,8 +58,12 @@ namespace KTfwd
 	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
-			   sep_sample_t >::type
+  //typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
+  //			   sep_sample_t >::type
+  //typename std::enable_if<  traits::internal::has_first_type<diploid_geno_t>::value,
+  //			    sep_sample_t >::type
+  typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
+			  sep_sample_t>::type
   ms_sample_separate( gsl_rng * r,
 		      const mcont_t & mutations,
 		      const gcont_t & gametes,
@@ -75,17 +83,15 @@ namespace KTfwd
   //Individual-based sims, multilocus algorithm
   template<typename mcont_t,
 	   typename gcont_t,
-	   typename diploid_geno_t,
-	   typename allocator,
-	   typename outer_allocator,
-	   template<typename,typename> class vector_type,
-	   template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
-			   std::vector<sep_sample_t > >::type
+	   typename dcont_t>
+  //typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
+  //			   std::vector<sep_sample_t > >::type
+  typename std::enable_if<  traits::is_diploid_like<typename dcont_t::value_type::value_type>::value,
+			    std::vector<sep_sample_t> >::type
   ms_sample_separate( gsl_rng * r,
 		      const mcont_t & mutations,
 		      const gcont_t & gametes,
-		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
+		      const dcont_t & diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
@@ -100,17 +106,13 @@ namespace KTfwd
 
   template<typename mcont_t,
 	   typename gcont_t,
-	   typename diploid_geno_t,
-	   typename allocator,
-	   typename outer_allocator,
-	   template<typename,typename> class vector_type,
-	   template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
-			   std::vector< sample_t > >::type
+	   typename dcont_t>
+  typename std::enable_if< traits::is_diploid_like<typename dcont_t::value_type::value_type>::value,
+			   std::vector<sample_t> >::type
   ms_sample( gsl_rng * r,
 	     const mcont_t & mutations,
 	     const gcont_t & gametes,
-	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
+	     const dcont_t & diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {

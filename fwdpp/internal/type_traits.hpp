@@ -23,9 +23,11 @@ namespace KTfwd {
       template<typename T>						\
       struct has_##NAME<T,typename void_t<typename T::NAME>::type >: std::true_type {}; 
 
-      HAS_TYPE(gamete_tag)
+      HAS_TYPE(gamete_tag);
       HAS_TYPE(mutation_list_type);
       HAS_TYPE(mutation_type);
+      HAS_TYPE(first_type);
+      HAS_TYPE(second_type);
     }
   }
 }

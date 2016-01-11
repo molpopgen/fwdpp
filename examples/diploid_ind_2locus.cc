@@ -78,7 +78,6 @@ int main(int argc, char ** argv)
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,r.get()),
     recmap2 = std::bind(gsl_ran_flat,r.get(),1.,2.);
 
-  //auto posmaker = [](gsl_rng * r,double a,double b){return gsl_ran_flat(r,a,b);};
   while(nreps--)
     {
       multiloc_t pop(N,2);

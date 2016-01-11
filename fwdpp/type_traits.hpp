@@ -22,20 +22,18 @@ namespace KTfwd {
 
     //! Determine if T is/is derived from KTfwd::gamete_base
     template<typename T>
-    struct is_gamete_t
+    struct is_gamete_t : std::integral_constant<bool,
+						traits::internal::has_gamete_tag<T>::value>
     {
-      static_assert(KTfwd::traits::internal::has_gamete_tag<T>::value ,
-		    "A gamete must contain type gamete_tag");
-      //static_assert(KTfwd::traits::internal::has_mutation_type<T>::value ,
-      //		    "A gamete must contain type mutation_type");
-      //static_assert(KTfwd::traits::internal::has_mutation_list_type<T>::value ,
-      //		    "A gamete must contain type mutation_list_type");
-      //using mutation_t = typename T::mutation_type;
-      //using mlist_t = typename T::mutation_list_type;
-      using tag_t = typename T::gamete_tag;
-      using type =  typename std::is_base_of< KTfwd::gamete_base<tag_t>, T>::type;
     };
 
+    template<typename T>
+    struct is_diploid_like : std::integral_constant<bool,
+						    traits::internal::has_first_type<T>::value &&
+						    traits::internal::has_second_type<T>::value>
+    {
+    };
+    
     //! Gives the "recycling bin" type corresponding to list_t
     template<typename list_t>
     struct recycling_bin_t
