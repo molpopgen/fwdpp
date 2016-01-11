@@ -45,9 +45,9 @@ namespace KTfwd {
     template<typename gcont_t,typename mcont_t>
     struct gamete_lookup_t
     {
-      static_assert( typename is_gamete_t<typename gcont_t::value_type>::type(),
+      static_assert( is_gamete_t<typename gcont_t::value_type>::value,
 		     "gcont__t::value_type must be a gamete type");
-      static_assert( typename is_mutation_t<typename mcont_t::value_type>::type(),
+      static_assert( is_mutation_t<typename mcont_t::value_type>::value,
 		     "gcont__t::value_type must be a gamete type");
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<gcont_t,mcont_t>)(gcont_t &,mcont_t &)>::type;
     };
@@ -61,7 +61,7 @@ namespace KTfwd {
     template<typename mlist_t>
     struct mmodel_t
     {
-      static_assert( typename is_mutation_t<typename mlist_t::value_type>::type(),
+      static_assert( is_mutation_t<typename mlist_t::value_type>::value,
 		     "mlist_t::value_type must be derived from KTfwd::mutation_base" );
       using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t &)>;
     };
