@@ -92,6 +92,36 @@ namespace KTfwd
 			     gamete_recycling_bin,
 			     neutral,selected);
   }
+  template<typename gcont_t,
+	   typename mcont_t,
+	   typename lookup_t,
+	   typename recbin_t,
+	   typename recpol_t>
+  std::size_t recombination(gcont_t & gametes,
+			    lookup_t & gamete_lookup,
+			    recbin_t & gamete_recycling_bin,
+			    typename gcont_t::value_type::mutation_container & neutral,
+			    typename gcont_t::value_type::mutation_container & selected,
+			    const recpol_t & rec_pol,
+			    const std::size_t g1,
+			    const std::size_t g2,
+			    const mcont_t & mutations,
+			    unsigned * nrec)
+  {
+    if(g1==g2) {*nrec=0;return g1;}
+    auto nm1=gametes[g1].mutations.size()+gametes[g1].smutations.size();
+    auto nm2=gametes[g2].mutations.size()+gametes[g2].smutations.size();
+    if((std::min(nm1,nm2)==0 && std::max(nm1,nm2)==1)) {*nrec=0;return g1;}
+    auto pos = rec_pol(gametes[g1],gametes[g2],mutations);
+    if(pos.empty()) {*nrec=0;return g1;};
+    assert(pos.back()==std::numeric_limits<double>::max());
+    *nrec = pos.size()-1;
+    return recombine_gametes(pos,
+			     gametes,
+			     mutations,g1,g2,gamete_lookup,
+			     gamete_recycling_bin,
+			     neutral,selected);
+  }
 }
 
 #endif

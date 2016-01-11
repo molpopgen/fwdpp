@@ -121,15 +121,19 @@ namespace KTfwd
   }
 
   //Individual-based sims, multilocus algorithm
-  template<typename diploid_geno_t,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   std::vector<sep_sample_t > >::type
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
+		      const mcont_t & mutations,
+		      const gcont_t & gametes,
+		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed)
   {
@@ -137,24 +141,28 @@ namespace KTfwd
     unsigned isodd = (n%2 != 0.) ? 1u : 0u;
     for( unsigned i = 0 ; i < n/2+isodd ; ++i )
       {
-	diplist.push_back(unsigned(gsl_ran_flat(r,0.,double(diploids->size()))));
+	diplist.push_back(unsigned(gsl_ran_flat(r,0.,double(diploids.size()))));
       }
-    return fwdpp_internal::ms_sample_separate_mlocus(diploids,diplist,n,remove_fixed);
+    return fwdpp_internal::ms_sample_separate_mlocus(mutations,gametes,diploids,diplist,n,remove_fixed);
   }
 
- template<typename diploid_geno_t,
-	  typename allocator,
-	  typename outer_allocator,
-	  template<typename,typename> class vector_type,
-	  template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename diploid_geno_t,
+	   typename allocator,
+	   typename outer_allocator,
+	   template<typename,typename> class vector_type,
+	   template<typename,typename> class outer_vector_type>
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   std::vector< sample_t > >::type
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
+	     const mcont_t & mutations,
+	     const gcont_t & gametes,
+	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed)
   {
-    auto separate = ms_sample_separate(r,diploids,n,remove_fixed);
+    auto separate = ms_sample_separate(r,mutations,gametes,diploids,n,remove_fixed);
     std::vector<sample_t> rv;
     for( unsigned i = 0 ; i < separate.size() ; ++i )
       {

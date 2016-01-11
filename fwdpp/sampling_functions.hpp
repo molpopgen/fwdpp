@@ -185,15 +185,19 @@ namespace KTfwd
     \note Neutral + selected mutations intermixed
     \ingroup samplingPopsInd
   */
-  template<typename diploid_geno_t,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   std::vector<sample_t> >::type
   ms_sample( gsl_rng * r,
-	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
+	     const mcont_t & mutations,
+	     const gcont_t & gametes,
+	     const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
 	     const unsigned & n,
 	     const bool & remove_fixed);
 
@@ -203,15 +207,19 @@ namespace KTfwd
     \note For each locus, the first member of the pair corresponds to neutral sites, the second to selected.
     \ingroup samplingPopsInd
   */
-  template<typename diploid_geno_t,
+  template<typename mcont_t,
+	   typename gcont_t,
+	   typename diploid_geno_t,
 	   typename allocator,
 	   typename outer_allocator,
 	   template<typename,typename> class vector_type,
 	   template<typename,typename> class outer_vector_type>
-  typename std::enable_if< std::is_base_of<mutation_base,typename diploid_geno_t::first_type::value_type::mutation_type>::value,
+  typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
 			   std::vector<sep_sample_t> >::type
   ms_sample_separate( gsl_rng * r,
-		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > * diploids,
+		      const mcont_t & mutations,
+		      const gcont_t & gametes,
+		      const outer_vector_type< vector_type< diploid_geno_t, allocator >, outer_allocator > & diploids,
 		      const unsigned & n,
 		      const bool & remove_fixed);
 }

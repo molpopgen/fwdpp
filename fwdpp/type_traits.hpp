@@ -65,7 +65,7 @@ namespace KTfwd {
     {
       static_assert( typename is_mutation_t<typename mlist_t::value_type>::type(),
 		     "mlist_t::value_type must be derived from KTfwd::mutation_base" );
-      using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t *)>;
+      using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t &)>;
     };
 
     /*!

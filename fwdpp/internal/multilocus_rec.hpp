@@ -23,7 +23,6 @@ namespace KTfwd {
       stuff is skipped during compilation.
     */
     template<typename diploid_type,
-	     typename diploid_type_itr,
 	     typename gamete_lookup_t,
 	     typename recombination_policy_container,
 	     typename mqueue_t,
@@ -38,36 +37,42 @@ namespace KTfwd {
 	     typename bw_locus_rec_fxn
 #endif
     >
-    void multilocus_rec_mut(gsl_rng * r,
-			    diploid_type parent1, //Copy--this is intentional
-			    diploid_type parent2, //Copy--this is intentional
-			    diploid_type_itr & offspring, //non-const ref, again intentional
-			    mqueue_t & mutation_recycling_bin,
-			    gqueue_t & gamete_recycling_bin,
-			    gamete_lookup_t & gamete_lookup,
-			    const recombination_policy_container & rec_pols,
-			    const bw_locus_rec_fxn & blrf,
-			    const double * r_bw_loci,
-			    const int iswitch1,
+    diploid_type multilocus_rec_mut(gsl_rng * r,
+				    //const std::size_t & parent1,
+				    //const std::size_t & parent2,
+				    diploid_type parent1,
+				    diploid_type parent2,
+				    //const diploid_type & parent1,
+				    //const diploid_type & parent2,
+				    //diploid_type & offspring, //non-const ref, this is the offspring whose data gets modified
+				    mqueue_t & mutation_recycling_bin,
+				    gqueue_t & gamete_recycling_bin,
+				    gamete_lookup_t & gamete_lookup,
+				    const recombination_policy_container & rec_pols,
+				    const bw_locus_rec_fxn & blrf,
+				    const double * r_bw_loci,
+				    const int iswitch1,
 #ifndef FWDPP_UNIT_TESTING
-			    const int iswitch2,
-			    glist_t * gametes,
-			    mlist_t * mutations,
-			    const double * mu,
-			    const mutation_model_container & mmodel,
-			    const gamete_insertion_policy & gpolicy_mut
+				    const int iswitch2,
+				    glist_t & gametes,
+				    mlist_t & mutations,
+				    typename glist_t::value_type::mutation_container & neutral,
+				    typename glist_t::value_type::mutation_container & selected,
+				    const double * mu,
+				    const mutation_model_container & mmodel,
+				    const gamete_insertion_policy & gpolicy_mut
 #else
-			    const int iswitch2
+				    const int iswitch2
 #endif			
-			    )
+				    )
     {
       //I see the problem: how to get the positions ahead of time...
       //Maybe we can simply increment all downstream values by 1 if a swap is needed, and do so if odd?
-
+      diploid_type offspring(parent1.size());
       std::vector<int> nswaps1(parent1.size(),iswitch1),nswaps2(parent2.size(),iswitch2);
       std::vector<int>::iterator s1 = nswaps1.begin(),s2=nswaps2.begin();
-      typename diploid_type_itr::value_type::iterator optr = offspring->begin();
-      for( unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2,++optr )
+      unsigned nrec;
+      for(unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2)//,++optr )
 	{
 	  if(i)
 	    {
@@ -86,23 +91,34 @@ namespace KTfwd {
 	  if( *s2 % 2 != 0.) std::swap(parent2[i].first,parent2[i].second);
 
 	  //Assign pointers to offspring
-	  optr->first = parent1[i].first;
-	  optr->second = parent2[i].first;
+	  //optr->first = parent1[i].first;
+	  //optr->second = parent2[i].first;
 
 	  //mechanics of recombination
-	  unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup,gamete_recycling_bin);
+	  //unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup,gamete_recycling_bin);
+	  offspring[i].first = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+					     parent1[i].first,parent1[i].second,mutations,&nrec);
 	  if(nrec%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
-	  nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup,gamete_recycling_bin);
+	  offspring[i].second = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+					      parent2[i].first,parent2[i].second,mutations,&nrec);
+	  //nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup,gamete_recycling_bin);
 	  if(nrec%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
 
 #ifndef FWDPP_UNIT_TESTING
+	  gametes[offspring[i].first].n++;
+	  gametes[offspring[i].second].n++;
+	  offspring[i].first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].first,mmodel[i],gpolicy_mut);
+	  offspring[i].second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].second,mmodel[i],gpolicy_mut);
+	  /*
 	  optr->first->n++;
 	  optr->second->n++;
 	  optr->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->first,mmodel[i],gpolicy_mut);
 	  optr->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->second,mmodel[i],gpolicy_mut);
+	  */
 #endif
 	}
+      return offspring;
     }
   }
 }

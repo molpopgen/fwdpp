@@ -19,16 +19,18 @@ using mtype = KTfwd::popgenmut;
 struct no_selection_multi
 {
   typedef double result_type;
-  inline double operator()( multiloc_t::dipvector_t::const_iterator ) const
+  inline double operator()( const multiloc_t::dipvector_t::value_type & ) const
   {
     return 1.;
   }
 };
 
+/*
 struct posmaker
 {
   inline double operator()(gsl_rng * r, double a,double b) const { return gsl_ran_flat(r,a,b); }
 };
+*/
 
 int main(int argc, char ** argv)
 {
@@ -79,8 +81,8 @@ int main(int argc, char ** argv)
   //auto posmaker = [](gsl_rng * r,double a,double b){return gsl_ran_flat(r,a,b);};
   while(nreps--)
     {
-      multiloc_serialized_t pop(N,2);
-      KTfwd::add_recyclable(pop,4*N,size_t(2*std::ceil(std::log(2*N)*(theta)+0.667*(theta))));
+      multiloc_t pop(N,2);
+      pop.mutations.reserve(size_t(2*std::ceil(std::log(2*N)*(theta)+0.667*(theta))));
       unsigned generation=0;
       double wbar;
 
@@ -89,19 +91,30 @@ int main(int argc, char ** argv)
       // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap);
       // deduce_recmodel_t<multiloc_serialized_t::glist_t>::type recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
       // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2);
-      std::vector< KTfwd::traits::recmodel_t<multiloc_serialized_t::glist_t>::type > recpols{
-	std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-		  std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap),
-	  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-		    std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2)
-	  };
 
-      std::vector< KTfwd::traits::mmodel_t<multiloc_serialized_t::mlist_t>::type  > mmodels {
+      std::vector<std::function<std::vector<double>(const multiloc_t::gamete_t &,
+						    const multiloc_t::gamete_t &,
+						    const multiloc_t::mcont_t &)> > recpols
+      {
+	std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
+		  std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+	  std::bind(KTfwd::poisson_xover(),r.get(),littler,1.,2.,
+						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)
+      };
+      // std::vector< KTfwd::traits::recmodel_t<multiloc_serialized_t::glist_t>::type > recpols{
+      // 	std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
+      // 		  std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap),
+      // 	  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
+      // 		    std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2)
+      // 	  };
+
+      //std::vector< KTfwd::traits::mmodel_t<multiloc_t::mcont_t>::type  > mmodels {
+      std::vector<std::function<std::size_t(std::queue<std::size_t> &,multiloc_t::mcont_t &)> > mmodels {
       	//Locus 0: positions Uniform [0,1)
-      	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
+      	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),&generation,
       		  mu[0],0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}) ,
       	  //Locus 1: positions Uniform [1,2)
-      	  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
+      	  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),&generation,
       		    mu[1],0.,[&r](){return gsl_ran_flat(r.get(),1.,2.);},[](){return 0.;},[](){return 0.;})
       	  };
 
@@ -123,29 +136,40 @@ int main(int argc, char ** argv)
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
-	  KTfwd::sample_diploid( r.get(),
-	  			 &pop.gametes,
-	  			 &pop.diploids,
-	  			 &pop.mutations,
-	  			 N,
-				 &mu[0],
-	  			 mmodels,
-	  			 recpols,
-	  			 &rbw,
-				 [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
-	  			 std::bind(KTfwd::insert_at_end<multiloc_t::gamete_t,multiloc_t::glist_t>,std::placeholders::_1,std::placeholders::_2),
-	  			 std::bind(no_selection_multi(),std::placeholders::_1),
-	  			 std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*N));
+	  KTfwd::sample_diploid(r.get(),
+				pop.gametes,
+				pop.diploids,
+				pop.mutations,
+				pop.mcounts,
+				N,
+				&mu[0],
+				mmodels,
+				recpols,
+				&rbw,
+				[](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
+				std::bind(no_selection_multi(),std::placeholders::_1),
+				pop.neutral,
+				pop.selected);
 	  assert( check_sum(pop.gametes,2*twoN) );
-      	  KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*N);
+      	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
+	}
+      std::cerr << pop.mutations.size() << ' '  << pop.gametes.size() << '\n';
+      for(const auto & m : pop.mutations) std::cerr << m.pos << '\n';
+      for(const auto & g : pop.gametes) std::cerr << g.n << ' ' << g.mutations.size() << '\n';
+      for( const auto & d : pop.diploids )
+	{
+	  for(const auto & l : d)
+	    std::cerr << pop.gametes[l.first].n << ' ' << pop.gametes[l.second].n << ' ';
+	  std::cerr << '\n';
 	}
       //For giggles, make sure that the pop. is copy-constructible...
-      multiloc_serialized_t pop2(pop);
+      multiloc_t pop2(pop);
       //Take a sample and print it to screen.
-      auto x = KTfwd::ms_sample(r.get(),&pop.diploids,samplesize1,true);
+      auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1,true);
       Sequence::SimData l1(x[0].begin(),x[0].end()),
-	l2(x[1].begin(),x[1].end());
-      std::cout << l1 << '\n' << l2 << '\n';	
+       	l2(x[1].begin(),x[1].end());
+      std::cout << l1 << '\n' << l2 << '\n';
+      
     }
   return 0;
 }
