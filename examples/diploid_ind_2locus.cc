@@ -153,15 +153,6 @@ int main(int argc, char ** argv)
 	  assert( check_sum(pop.gametes,2*twoN) );
       	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
 	}
-      std::cerr << pop.mutations.size() << ' '  << pop.gametes.size() << '\n';
-      for(const auto & m : pop.mutations) std::cerr << m.pos << '\n';
-      for(const auto & g : pop.gametes) std::cerr << g.n << ' ' << g.mutations.size() << '\n';
-      for( const auto & d : pop.diploids )
-	{
-	  for(const auto & l : d)
-	    std::cerr << pop.gametes[l.first].n << ' ' << pop.gametes[l.second].n << ' ';
-	  std::cerr << '\n';
-	}
       //For giggles, make sure that the pop. is copy-constructible...
       multiloc_t pop2(pop);
       //Take a sample and print it to screen.
@@ -169,7 +160,6 @@ int main(int argc, char ** argv)
       Sequence::SimData l1(x[0].begin(),x[0].end()),
        	l2(x[1].begin(),x[1].end());
       std::cout << l1 << '\n' << l2 << '\n';
-      
     }
   return 0;
 }

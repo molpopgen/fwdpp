@@ -154,11 +154,8 @@ namespace KTfwd
 	{
 	  unsigned rv_count=0;
 	  for (const auto & locus : diploids[diplist[ind]] )
-	  // for( typename genotype::const_iterator locus = (dbegin+ind)->begin() ;
-	  //      locus < (dbegin+ind)->end() ; ++locus, ++rv_count )
 	    {
 	      //finally, we can go over mutations
-	      //fwdpp_internal::update_sample_block( rv.first,gametes[diploids[ind].first].mutations,mutations,i,2*diplist.size(),sitefinder;)
 	      fwdpp_internal::update_sample_block(rv[rv_count].first,gametes[locus.first].mutations,mutations,ind,2*diplist.size(),sitefinder);
 	      fwdpp_internal::update_sample_block(rv[rv_count].second,gametes[locus.first].smutations,mutations,ind,2*diplist.size(),sitefinder);
 	      fwdpp_internal::update_sample_block(rv[rv_count].first,gametes[locus.second].mutations,mutations,ind,2*diplist.size(),sitefinder,1);
