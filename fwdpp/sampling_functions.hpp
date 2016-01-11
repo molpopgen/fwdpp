@@ -115,31 +115,6 @@ namespace KTfwd
     'first' contains the 'neutral' variants, and 'second' contains the 'selected' variants.
   */
   using sep_sample_t = std::pair<sample_t,sample_t>;
-  
-  /* \brief Site frequency spectrum
-     \return Site frequency spectrum
-  */
-  template<typename iterator_type>
-  std::vector<unsigned> population_sfs( iterator_type beg,
-					iterator_type end,
-					const unsigned & N)
-  {
-    std::vector<unsigned> psfs(N-1,0);
-    while(beg != end)
-      {
-	if(beg->n >0 && beg->n < N) psfs[beg->n-1]++;
-	beg++;
-      }
-    return psfs;
-  }
-
-
-  template< typename gamete_type,
-	    typename allocator_t,
-	    template<typename,typename> class container_t>
-  std::vector<unsigned> sample_sfs(gsl_rng * r, 
-				   const container_t<gamete_type,allocator_t > & gametes,
-				   const unsigned & n, const unsigned & N);
 
   /*!
     \brief Sampling from a population in an individual-based simulation

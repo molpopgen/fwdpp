@@ -26,54 +26,6 @@ namespace KTfwd
     return counts;
   }
 
-  template< typename gamete_type,
-	    typename allocator_t,
-	    template<typename,typename> class container_type>
-  std::vector<unsigned> sample_sfs(gsl_rng * r, 
-				   const container_type<gamete_type,allocator_t > & gametes,
-				   const unsigned & n, const unsigned & N)
-  {
-    std::vector<unsigned> counts = sample(r,gametes,n,N);
-    std::map<double,unsigned> samplemuts;
-    std::map<double,unsigned>::iterator itr;
-    for(unsigned i=0;i<gametes.size();++i)
-      {
-	if(counts[i]>0)
-	  {
-	    for(unsigned j=0;j<gametes[i].mutations.size();++j)
-	      {
-		itr = samplemuts.find(gametes[i].mutations[j]->pos);
-		if( itr == samplemuts.end() )
-		  {
-		    samplemuts[gametes[i].mutations[j]->pos] = counts[i];
-		  }
-		else
-		  {
-		    itr->second += counts[i];
-		  }
-	      }
-	    for(unsigned j=0;j<gametes[i].smutations.size();++j)
-	      {
-		itr = samplemuts.find(gametes[i].smutations[j]->pos);
-		if( itr == samplemuts.end() )
-		  {
-		    samplemuts[gametes[i].smutations[j]->pos] = counts[i];
-		  }
-		else
-		  {
-		    itr->second += counts[i];
-		  }
-	      }
-	  }
-      }
-    std::vector<unsigned> samplesfs(n,0);
-    for(itr=samplemuts.begin();itr!=samplemuts.end();++itr)
-      {
-	samplesfs[itr->second-1]++;
-      }
-    return samplesfs;
-  }
-
   //SAMPLERS FOR INDIVIDUAL-BASED SIMULATIONS
   template<typename mcont_t,
 	   typename gcont_t,
