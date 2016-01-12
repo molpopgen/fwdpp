@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
 namespace KTfwd {
