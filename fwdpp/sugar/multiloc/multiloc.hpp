@@ -100,7 +100,7 @@ namespace KTfwd {
 	selected.reserve(reserve_size);
       }
 
-      bool operator==( const metapop & rhs ) const
+      bool operator==( const multiloc & rhs ) const
       {
 	return this->mutations == rhs.mutations &&
 	  this->mcounts == rhs.mcounts &&
