@@ -1,6 +1,6 @@
 /*! \file sugar2.cc
   \ingroup unit 
-  \brief Testing KTfwd::metapop and KTfwd::metapop_serialized
+  \brief Testing KTfwd::metapop
 */
 #define BOOST_TEST_MODULE sugarTest2
 #define BOOST_TEST_DYN_LINK 
