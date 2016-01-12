@@ -30,21 +30,6 @@ using gcont = singlepop_t::gcont_t;
 using mtype = singlepop_t::mutation_t;
 using gtype = singlepop_t::gamete_t;
 
-//Pollute namespace std to make some comparisons down below easier...
-namespace std {
- bool operator==( const KTfwd::popgenmut i,
-			const KTfwd::popgenmut j )
-{
-  return i.pos == j.pos && i.s==j.s && i.h == j.h
-    && i.g == j.g;
-}
-
- bool operator!=( const KTfwd::popgenmut i,
-			const KTfwd::popgenmut j )
-{
-  return !(i==j);
-}
-}
 
 int main(int argc, char ** argv)
 {

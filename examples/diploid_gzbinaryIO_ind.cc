@@ -24,22 +24,6 @@ using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
-//Pollute namespace std to make some comparisons down below easier...
-namespace std {
-  bool operator==( const KTfwd::popgenmut i,
-		   const KTfwd::popgenmut j )
-  {
-    return i.pos == j.pos && i.s==j.s && i.h == j.h
-      && i.g == j.g;
-  }
-
-  bool operator!=( const KTfwd::popgenmut i,
-		   const KTfwd::popgenmut j )
-  {
-    return !(i==j);
-  }
-}
-
 int main(int argc, char ** argv)
 {
   if (argc != 9)

@@ -25,15 +25,16 @@ boost::python::list sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam)
     {
       //pick a random chrom (w/replacement...)
       unsigned chrom = unsigned(gsl_ran_flat(rng.get(),0.,double(twoN)));
-      //get pointer to that chrom from the individual
-      auto gamete = (chrom%2==0.) ? pop.diploids[chrom/2].first : pop.diploids[chrom/2].second;
+      //get reference to that chrom from the individual
+      auto & gamete = (chrom%2==0.) ? pop.gametes[pop.diploids[chrom/2].first] : pop.gametes[pop.diploids[chrom/2].second];
       //In this example, there are only neutral mutations, so that's what we'll iterate over
-      for( auto m = gamete->mutations.begin() ; m != gamete->mutations.end() ; ++m )
+      for(auto & m : gamete.mutations)
 	{
-	  auto pos_itr = mutfreqs.find( (*m)->pos );
+	  auto pos = pop.mutations[m].pos;
+	  auto pos_itr = mutfreqs.find( pos );
 	  if( pos_itr == mutfreqs.end() )
 	    {
-	      mutfreqs.insert(std::make_pair((*m)->pos,1));
+	      mutfreqs.insert(std::make_pair(pos,1));
 	    }
 	  else
 	    {

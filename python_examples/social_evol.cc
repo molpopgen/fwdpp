@@ -20,24 +20,20 @@ python test_boost_python.py
 //Main fwdpp library header
 #include <fwdpp/diploid.hh>
 //Include the necessary "sugar" components
-//We need to get the 'deep' version of singlepop, as we need to make a custom singlepop_serialized_t for our sim
-#include <fwdpp/sugar/singlepop/singlepop.hpp>
+#include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/populate_lists.hpp>
 
 //FWDPP-related stuff
 using mtype = KTfwd::mutation;
-using mlist_t = boost::container::list<mtype,boost::pool_allocator<mtype> >;
-using gamete_t = KTfwd::gamete_base<mtype,mlist_t>;
-using glist_t = boost::container::list<gamete_t, boost::pool_allocator<gamete_t>>;
+
 
 //We need to define a custom diploid genotype for our model
 struct diploid_t : public KTfwd::tags::custom_diploid_t
 {
-  using first_type = glist_t::iterator;
-  using second_type = glist_t::iterator;
+  using first_type = std::size_t;
+  using second_type = std::size_t;
   first_type first;
   second_type second;
   unsigned i;
@@ -54,14 +50,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
 };
 
 //Define our our population type via KTfwd::sugar 
-using poptype = KTfwd::sugar::singlepop_serialized<mtype,KTfwd::mutation_writer,KTfwd::mutation_reader<mtype>,
-						   mlist_t,
-						   glist_t,
-						   boost::container::vector< diploid_t >,
-						   boost::container::vector<mtype>,
-						   boost::container::vector<unsigned>,
-						   boost::unordered_set<double,boost::hash<double>,KTfwd::equal_eps>
-						   >;
+using poptype = KTfwd::singlepop<mtype,diploid_t>;
 /*
   We will use a gsl_rng_mt19937 as our RNG.
   This type is implicitly convertible to gsl_rng *,
@@ -83,17 +72,19 @@ using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 struct snowdrift_diploid
 {
   using result_type = double;
-  inline result_type operator()( const poptype::dipvector_t::const_iterator dip,
+  inline result_type operator()( const poptype::diploid_t & dip,
+				 const poptype::gcont_t &,
+				 const poptype::mcont_t &,
 				 const std::vector<double> & phenotypes, 
 				 //Pass const refs to avoid copying!
 				 const double & b1, const double & b2, const double & c1, const double & c2) const
   {
     unsigned N = phenotypes.size();
-    double zself = phenotypes[dip->i];
+    double zself = phenotypes[dip.i];
     result_type fitness = 0;
     for (unsigned j = 0; j < N; ++j)	  
       {
-	if (dip->i != j)
+	if (dip.i != j)
 	  {
 	    double zpair = zself+phenotypes[j];
 	    // Payoff function from Fig 1
@@ -117,7 +108,7 @@ poptype evolve( GSLrng & rng,
 		const double & b1, const double & b2, const double & c1, const double & c2)
 {
   poptype pop(N);
-  KTfwd::add_recyclable(pop,2*N,std::ceil(std::log(2*N)*(4.*double(N)*(mu+mu_del))+0.667*(4.*double(N)*(mu+mu_del))));
+  pop.mutations.reserve(std::ceil(std::log(2*N)*(4.*double(N)*(mu+mu_del))+0.667*(4.*double(N)*(mu+mu_del))));
   std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get()); //uniform crossover map
   std::vector<double> phenotypes(N);
   for( unsigned generation = 0 ; generation < generations ; ++generation )
@@ -125,32 +116,30 @@ poptype evolve( GSLrng & rng,
       //Fill phenotypes
       unsigned i = 0;
 
-      for( auto dip = pop.diploids.begin() ; dip != pop.diploids.end() ; ++dip )
+      for(auto & dip : pop.diploids )
 	{ 
-	  dip->i = i; 
-	  phenotypes[i++] = KTfwd::additive_diploid()(dip,2.); 
+	  dip.i = i; 
+	  phenotypes[i++] = KTfwd::additive_diploid()(pop.gametes[dip.first],pop.gametes[dip.second],pop.mutations,2.); 
 	}
 
       double wbar = KTfwd::sample_diploid(rng.get(),
-					  &pop.gametes,
-					  &pop.diploids,
-					  &pop.mutations,
+					  pop.gametes,
+					  pop.diploids,
+					  pop.mutations,
+					  pop.mcounts,
 					  N,
 					  mu+mu_del,
-					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),&pop.mut_lookup,
+					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),std::ref(pop.mut_lookup),
 						    mu,mu_del,[&rng](){return gsl_rng_uniform(rng.get());},
 						    [&rng](){return 0.1*(0.5-gsl_rng_uniform(rng.get()));},
 						    [](){return 2.;}),
-					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						    std::ref(pop.neutral),std::ref(pop.selected),
-						    &pop.gametes,
-						    recrate, 
-						    rng.get(),
-						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(snowdrift_diploid(),std::placeholders::_1,std::cref(phenotypes),b1,b2,c1,c2),
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
+					  std::bind(KTfwd::poisson_xover(),rng.get(),recrate,0.,1.,
+						    std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					  std::bind(snowdrift_diploid(),std::placeholders::_1,std::placeholders::_2,
+						    std::placeholders::_3,std::cref(phenotypes),b1,b2,c1,c2),
+					  pop.neutral,pop.selected);
+
+      KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*pop.N);
     }
   return pop;
 }
@@ -167,14 +156,15 @@ boost::python::list sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam)
     {
       //pick a random chrom (w/replacement...)
       unsigned chrom = unsigned(gsl_ran_flat(rng.get(),0.,double(twoN)));
-      //get pointer to that chrom from the individual
-      auto gamete = (chrom%2==0.) ? pop.diploids[chrom/2].first : pop.diploids[chrom/2].second;
-      for( auto m = gamete->mutations.begin() ; m != gamete->mutations.end() ; ++m )
+      //get reference to that chrom from the individual
+      auto & gamete = (chrom%2==0.) ? pop.gametes[pop.diploids[chrom/2].first] : pop.gametes[pop.diploids[chrom/2].second];
+      for( auto & m : gamete.mutations )
 	{
-	  auto pos_itr = mutfreqs.find( (*m)->pos );
+	  auto pos = pop.mutations[m].pos;
+	  auto pos_itr = mutfreqs.find(pos);
 	  if( pos_itr == mutfreqs.end() )
 	    {
-	      mutfreqs.insert(std::make_pair((*m)->pos,1));
+	      mutfreqs.insert(std::make_pair(pos,1));
 	    }
 	  else
 	    {
