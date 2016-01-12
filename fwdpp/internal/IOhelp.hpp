@@ -57,30 +57,20 @@ namespace KTfwd {
 	buffer.write( reinterpret_cast< char * >(&N), sizeof(std::size_t) );
 	for( const auto & g : gametes )
 	  {
-	    if(g.n)
+	    buffer.write(reinterpret_cast<const char *>(&g.n),sizeof(decltype(g.n)));
+	    std::size_t nm = g.mutations.size();
+	    buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
+	    if(nm)
 	      {
-		buffer.write(reinterpret_cast<const char *>(&g.n),sizeof(decltype(g.n)));
-		std::size_t nm = g.mutations.size();
-		buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
-		if(nm)
-		  {
-		    buffer.write(reinterpret_cast<const char *>(&g.mutations[0]),nm*sizeof(std::size_t));
-		  }
-		nm = g.smutations.size();
-		buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
-		if(nm)
-		  {
-		    buffer.write(reinterpret_cast<const char *>(&g.smutations[0]),nm*sizeof(std::size_t));
-		  }
+		buffer.write(reinterpret_cast<const char *>(&g.mutations[0]),nm*sizeof(std::size_t));
 	      }
-	    else
+	    nm = g.smutations.size();
+	    buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
+	    if(nm)
 	      {
-		std::size_t nm = 0;
-		uint_t n=0;
-		buffer.write(reinterpret_cast<const char *>(&n),sizeof(uint_t));
-		buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
-		buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
+		buffer.write(reinterpret_cast<const char *>(&g.smutations[0]),nm*sizeof(std::size_t));
 	      }
+
 	  }
       }
     };
