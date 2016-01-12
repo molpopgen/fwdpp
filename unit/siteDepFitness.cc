@@ -15,12 +15,12 @@
 #include <functional>
 #include <iostream>
 #include <cmath>
-#include <list>
+#include <vector>
 
 using mut = KTfwd::mutation;
 using gtype = KTfwd::gamete;
-using mlist = std::list<mut>;
-using glist = std::list<gtype>;
+using mvector = std::vector<mut>;
+using gvector = std::vector<gtype>;
 
 /*
   This test creates a situation
@@ -34,27 +34,25 @@ using glist = std::list<gtype>;
 BOOST_AUTO_TEST_CASE( simple_multiplicative1 )
 {
   gtype g1(1),g2(1);
-  mlist mutations;
+  mvector mutations;
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  auto mitr = mutations.insert( mutations.end(), mut(0.1,0.1,1u,0.5) );
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mutations.emplace_back(0.1,0.1,0.5);
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
   BOOST_CHECK_EQUAL(g1.smutations.size(),1);
-
-  glist g;
-  auto gitr1 = g.insert(g.end(),g1);
-  auto gitr2 = g.insert(g.end(),g2);
-
-  double w = KTfwd::site_dependent_fitness()(gitr1,gitr2,
-					     [&](double & fitness,const mlist::iterator & __mut)
+  
+  gvector g{g1,g2};
+  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= std::pow(1. + __mut->s,2.);
+					       fitness *= std::pow(1. + __mut.s,2.);
 					     },
-					     [](double & fitness,const mlist::iterator & __mut)
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= (1. + __mut->s);
+					       fitness *= (1. + __mut.s);
 					     },
 					     1.);
+  
   BOOST_CHECK_EQUAL(w,1.1);
 }
 
@@ -64,26 +62,24 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative1 )
 BOOST_AUTO_TEST_CASE( simple_multiplicative2 )
 {
   gtype g1(1),g2(1);
-  mlist mutations;
+  mvector mutations;
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  auto mitr = mutations.insert( mutations.end(), mut(0.1,0.1,1u,0.5) );
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g2);
+  mutations.emplace_back( 0.1,0.1,0.5 );
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g2);
   BOOST_CHECK_EQUAL(g1.smutations.size(),0);
   BOOST_CHECK_EQUAL(g2.smutations.size(),1);
 
-  glist g;
-  auto gitr1 = g.insert(g.end(),g1);
-  auto gitr2 = g.insert(g.end(),g2);
+  gvector g{g1,g2};
 
-  double w = KTfwd::site_dependent_fitness()(gitr1,gitr2,
-					     [&](double & fitness,const mlist::iterator & __mut)
+  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= std::pow(1. + __mut->s,2.);
+					       fitness *= std::pow(1. + __mut.s,2.);
 					     },
-					     [](double & fitness,const mlist::iterator & __mut)
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= (1. + __mut->s);
+					       fitness *= (1. + __mut.s);
 					     },
 					     1.);
   BOOST_CHECK_EQUAL(w,1.1);
@@ -95,27 +91,25 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative2 )
 BOOST_AUTO_TEST_CASE( simple_multiplicative3 )
 {
   gtype g1(1),g2(1);
-  mlist mutations;
+  mvector mutations;
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  auto mitr = mutations.insert( mutations.end(), mut(0.1,0.1,1u,0.5) );
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g2);
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mutations.emplace_back(0.1,0.1,0.5 );
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g2);
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
   BOOST_CHECK_EQUAL(g1.smutations.size(),1);
   BOOST_CHECK_EQUAL(g2.smutations.size(),1);
 
-  glist g;
-  auto gitr1 = g.insert(g.end(),g1);
-  auto gitr2 = g.insert(g.end(),g2);
+  gvector g{g1,g2};
 
-  double w = KTfwd::site_dependent_fitness()(gitr1,gitr2,
-					     [&](double & fitness,const mlist::iterator & __mut)
+  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= std::pow(1. + __mut->s,2.);
+					       fitness *= std::pow(1. + __mut.s,2.);
 					     },
-					     [](double & fitness,const mlist::iterator & __mut)
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= (1. + __mut->s);
+					       fitness *= (1. + __mut.s);
 					     },
 					     1.);
   BOOST_CHECK_EQUAL(w,1.1*1.1);
@@ -127,27 +121,25 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative3 )
 BOOST_AUTO_TEST_CASE( simple_multiplicative4 )
 {
   gtype g1(1),g2(1);
-  mlist mutations;
+  mvector mutations;
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  auto mitr = mutations.insert( mutations.end(), mut(0.1,0.1,1u,0.5) );
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
-  mitr = mutations.insert( mutations.end(), mut(0.2,0.1,1u,0.5) );
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g1);
+  mutations.emplace_back(0.1,0.1,0.5 );
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
+  mutations.emplace_back(0.2,0.1,0.5);
+  KTfwd::fwdpp_internal::add_new_mutation(1,mutations,g1);
   BOOST_CHECK_EQUAL(g1.smutations.size(),2);
 
-  glist g;
-  auto gitr1 = g.insert(g.end(),g1);
-  auto gitr2 = g.insert(g.end(),g2);
+  gvector g{g1,g2};
 
-  double w = KTfwd::site_dependent_fitness()(gitr1,gitr2,
-					     [&](double & fitness,const mlist::iterator & __mut)
+  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= std::pow(1. + __mut->s,2.);
+					       fitness *= std::pow(1. + __mut.s,2.);
 					     },
-					     [](double & fitness,const mlist::iterator & __mut)
+					     [&](double & fitness,const mut & __mut)
 					     {
-					       fitness *= (1. + __mut->s);
+					       fitness *= (1. + __mut.s);
 					     },
 					     1.);
   BOOST_CHECK_EQUAL(w,1.1*1.1);
