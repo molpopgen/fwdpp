@@ -556,7 +556,6 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@policyTests_SOURCES = policyTests.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_SOURCES = sugar1.cc
