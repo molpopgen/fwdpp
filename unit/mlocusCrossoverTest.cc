@@ -18,7 +18,7 @@
 #include <unistd.h>
 #include <iterator>
 #include <functional>
-#include <list>
+#include <vector>
 #include <gsl/gsl_rng.h>
 
 using mut = KTfwd::mutation;
@@ -33,9 +33,9 @@ using gtype = KTfwd::gamete;
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
 //Set up our basic containers
-using glist = std::list<gtype>;
-using mutlist = std::list<mut>;
-using diploid_t = std::vector< std::pair< glist::iterator, glist::iterator> >;
+using gvector = std::vector<gtype>;
+using mutvector = std::vector<mut>;
+using diploid_t = std::vector< std::pair< std::size_t,std::size_t> >;
 
 // /*
 //   Setup fxn for 3-locus scenario
@@ -48,78 +48,47 @@ using diploid_t = std::vector< std::pair< glist::iterator, glist::iterator> >;
 //   g1,l3 = 1.25, 1.5
 //   g2,l3 = 1.1
 // */
-void setup3locus2( glist & gametes,
-		   mutlist & mlist,
+void setup3locus2( gvector & gametes,
+		   mutvector & mvector,
 		   diploid_t & diploid )
 {
-  gametes = glist(6,gtype(1));
-  mlist = mutlist();
-  
+  gametes = gvector(6,gtype(1));
+  mvector.clear();
+
   //To set this up, let's add the mutations:
-  auto m1 = mlist.insert(mlist.end(),mut(0.5,0.,1));
-  auto m2 = mlist.insert(mlist.end(),mut(0.75,0.,1));
-  auto m3 = mlist.insert(mlist.end(),mut(0.25,0.,1));
-  auto m4 = mlist.insert(mlist.end(),mut(0.9,0.,1));
-  auto m5 = mlist.insert(mlist.end(),mut(1.25,0.1,1));
-  auto m6 = mlist.insert(mlist.end(),mut(1.5,0.1,1));
-  auto m7 = mlist.insert(mlist.end(),mut(1.1,0.1,1));
+  mvector.emplace_back(0.5,0.);
+  mvector.emplace_back(0.75,0.);
+  mvector.emplace_back(0.25,0.);
+  mvector.emplace_back(0.9,0.);
+  mvector.emplace_back(1.25,0.1);
+  mvector.emplace_back(1.5,0.1);
+  mvector.emplace_back(1.1,0.1);
  
   //put the mutations into gametes
-  auto gitr = gametes.begin(); //gamete 1, locus 1
-  gitr->mutations.push_back(m1);
-  ++gitr;                         //gamete 2, locus 1
-  gitr->mutations.push_back(m3);
-  ++gitr;
-  gitr->mutations.push_back(m2);
-  ++gitr;                         //gamete 2, locus 2
-  gitr->mutations.push_back(m4);
-  ++gitr;
-  gitr->mutations.push_back(m5);
-  gitr->mutations.push_back(m6);
-  ++gitr;                         //gamete 2, locus 3
-  gitr->mutations.push_back(m7);
+  gametes[0].mutations.push_back(0);  //gamete 1, locus 1
+  gametes[1].mutations.push_back(2);    //gamete 2, locus 1
+  gametes[2].mutations.push_back(1);
+  gametes[3].mutations.push_back(3);
+  gametes[4].mutations.push_back(4);
+  gametes[4].mutations.push_back(5);
+  gametes[5].mutations.push_back(6);
 
   //Now, make a diploid
-  diploid = diploid_t(3);
-  gitr=gametes.begin();
-  diploid[0].first = gitr;
-  ++gitr;
-  diploid[0].second = gitr;
-  ++gitr;
-  diploid[1].first = gitr;
-  ++gitr;
-  diploid[1].second = gitr;
-  ++gitr;
-  diploid[2].first = gitr;
-  ++gitr;
-  diploid[2].second = gitr;
+  diploid.clear();
+  diploid.emplace_back(std::make_pair(0,1));
+  diploid.emplace_back(std::make_pair(2,3));
+  diploid.emplace_back(std::make_pair(4,5));
+  return;
 }
 
 BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 {
-  glist gametes;
-  mutlist mlist;
+  gvector gametes;
+  mutvector mvector;
   diploid_t diploid;            //parent 1
-  setup3locus2(gametes,mlist,diploid);
+  setup3locus2(gametes,mvector,diploid);
+  std::vector<unsigned> mcounts(mvector.size(),1);
   diploid_t diploid2(diploid); //parent 2
-  // //This block makes sure that setup3locus2 is working as far as gametes/mutations:
-  // std::cerr << "gametes:\n";
-  // for( auto & g : gametes )
-  //   {
-  //     for( auto & m : g.mutations ) std::cerr << m->pos << ' ';
-  //     std::cerr << " | ";
-  //     std::cerr << '\n';
-  //   }
-
-  // //And the diploid:
-  // std::cerr << "diploids:\n";
-  // for( auto & d : diploid )
-  //   {
-  //     for( auto & m : d.first->mutations ) std::cerr << m->pos << ' ';
-  //     std::cerr << " | ";
-  //     for( auto & m : d.second->mutations ) std::cerr << m->pos << ' ';
-  //     std::cerr << '\n';
-  //   }
 
   //positions of x-overs within loci
   auto MVAL=std::numeric_limits<double>::max();
@@ -131,203 +100,206 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
   //We use these to "fake" what we want to happen between loci.
   std::vector<double> r_bw_loci = {1.,0.};
   std::vector<diploid_t> diploids({diploid});
-  auto offspring = diploids.begin(); 
-  auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(&gametes);
-  auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
-  auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(&gametes);
+
+  auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
+  auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+  auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
   gtype::mutation_container neutral,selected; //req'd as of 0.3.3
 
-  std::function<unsigned(glist::iterator &, glist::iterator &, decltype(gamete_lookup) &, decltype(gamete_recycling_bin) &)> recpol1 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-    return KTfwd::recombine_gametes(rec1[0],&gametes,g1,g2,lookup,rbin,neutral,selected);
-    },
-    recpol2 =  [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-      return KTfwd::recombine_gametes(rec1[1],&gametes,g1,g2,lookup,rbin,neutral,selected);
-    },
-    recpol3 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-      return KTfwd::recombine_gametes(rec1[2],&gametes,g1,g2,lookup,rbin,neutral,selected);
-    };
-      
-    std::vector< decltype(recpol1) >  recpols ({ recpol1,recpol2,recpol3 });
-    KTfwd::fwdpp_internal::multilocus_rec_mut(r,
-					      diploid,diploid2,offspring,
-					      mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
-					      recpols,
-					      [](gsl_rng * __r, const double & __d) { return __d; },
-					      &r_bw_loci[0],
-					      0,0);
- 
-    BOOST_CHECK_EQUAL((*offspring)[0].first->mutations.size(),0);
-    BOOST_CHECK_EQUAL((*offspring)[1].first->mutations.size(),0);
-    BOOST_CHECK_EQUAL((*offspring)[2].first->mutations.size(),1);
-    BOOST_CHECK_EQUAL((*offspring)[2].first->mutations[0]->pos,1.25);
-    }
-
-    BOOST_AUTO_TEST_CASE( three_locus_test_2 )
-    {
-      glist gametes;
-      mutlist mlist;
-      diploid_t diploid;            //parent 1
-      setup3locus2(gametes,mlist,diploid);
-      diploid_t diploid2(diploid); //parent 2
-
-
-      /*
-	Make vectors of events regarding what happens withn and between each
-	locus, for each parent.
-      */
-      //positions of x-overs within loci
-      auto MVAL=std::numeric_limits<double>::max();
-
-      auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.45, MVAL },
-						       std::vector<double>{ MVAL },
-						       std::vector<double>{ MVAL }
-      };
- 
-      //We use these to "fake" what we want to happen between loci.
-      std::vector<double> r_bw_loci = {1.,0.};
-      std::vector<diploid_t> diploids({diploid});
-      auto offspring = diploids.begin(); 
-      auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(&gametes);
-      auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
-      auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(&gametes);
-      gtype::mutation_container neutral,selected; //req'd as of 0.3.3
-  
-      std::function<unsigned(glist::iterator &, glist::iterator &, decltype(gamete_lookup) &,decltype(gamete_recycling_bin) &)> recpol1 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	return KTfwd::recombine_gametes(rec1[0],&gametes,g1,g2,lookup,rbin,neutral,selected);
-      },
-	recpol2 =  [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	  return KTfwd::recombine_gametes(rec1[1],&gametes,g1,g2,lookup,rbin,neutral,selected);
-	},
-	  recpol3 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	    return KTfwd::recombine_gametes(rec1[2],&gametes,g1,g2,lookup,rbin,neutral,selected);
-	  };
-      
-	  std::vector< decltype(recpol1) >  recpols ({ recpol1,recpol2,recpol3 });
-	  KTfwd::fwdpp_internal::multilocus_rec_mut(r,
-						    diploid,diploid2,offspring,
-						    mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
-						    recpols,
-						    [](gsl_rng * __r, const double & __d) { return __d; },
-						    &r_bw_loci[0],
-						    0,0);
-
-	  BOOST_CHECK_EQUAL((*offspring)[0].first->mutations.size(),0);
-	  BOOST_CHECK_EQUAL((*offspring)[1].first->mutations.size(),1);
-	  BOOST_CHECK_EQUAL((*offspring)[1].first->mutations[0]->pos,0.75);
-	  BOOST_CHECK_EQUAL((*offspring)[2].first->mutations.size(),2);
-	  BOOST_CHECK_EQUAL((*offspring)[2].first->mutations[0]->pos,1.25);
-	  BOOST_CHECK_EQUAL((*offspring)[2].first->mutations[1]->pos,1.5);
-  
- 
-    }
-
-  BOOST_AUTO_TEST_CASE( three_locus_test_3 )
+  std::vector<std::function<std::vector<double>(const gtype &,
+						const gtype &,
+						const mutvector &)> > recpols
   {
-    glist gametes;
-    mutlist mlist;
-    diploid_t diploid;            //parent 1
-    setup3locus2(gametes,mlist,diploid);
-    diploid_t diploid2(diploid); //parent 2
+    [&rec1](const gtype &,
+	    const gtype &,
+	    const mutvector &) { return rec1[0]; },
+      [&rec1](const gtype &,
+	      const gtype &,
+	      const mutvector &) { return rec1[1]; },
+	[&rec1](const gtype &,
+		const gtype &,
+		const mutvector &) { return rec1[2]; }
+  };
 
+  auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
+							      diploid,diploid2,
+							      mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
+							      recpols,
+							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      &r_bw_loci[0],
+							      0,0,gametes,mvector,neutral,selected);
+ 
+  BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(),0);
+  BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(),0);
+  BOOST_CHECK_EQUAL(gametes[offspring[2].first].mutations.size(),1);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[0]].pos,1.25);
+}
 
-    /*
-      Make vectors of events regarding what happens withn and between each
-      locus, for each parent.
-    */
-    //positions of x-overs within loci
-    auto MVAL=std::numeric_limits<double>::max();
-    auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.1,0.45, MVAL },
-						     std::vector<double>{ MVAL },
-						     std::vector<double>{ MVAL }
-    };
-    //recombinations b/w all loci this time...
-    std::vector<double> r_bw_loci = {1.,1.};
-    std::vector<diploid_t> diploids({diploid});
-    auto offspring = diploids.begin(); 
-    auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(&gametes);
-    auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
-    auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(&gametes);
-    gtype::mutation_container neutral,selected; //req'd as of 0.3.3
-  
-    std::function<unsigned(glist::iterator &, glist::iterator &, decltype(gamete_lookup) &,decltype(gamete_recycling_bin) &)> recpol1 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-      return KTfwd::recombine_gametes(rec1[0],&gametes,g1,g2,lookup,rbin,neutral,selected);
-    },
-      recpol2 =  [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	return KTfwd::recombine_gametes(rec1[1],&gametes,g1,g2,lookup,rbin,neutral,selected);
-      },
-	recpol3 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	  return KTfwd::recombine_gametes(rec1[2],&gametes,g1,g2,lookup,rbin,neutral,selected);
-	};
-      
-	std::vector< decltype(recpol1) >  recpols ({ recpol1,recpol2,recpol3 });
-	KTfwd::fwdpp_internal::multilocus_rec_mut(r,
-						  diploid,diploid2,offspring,
-						  mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
-						  recpols,
-						  [](gsl_rng * __r, const double & __d) { return __d; },
-						  &r_bw_loci[0],
-						  0,0);
+BOOST_AUTO_TEST_CASE( three_locus_test_2 )
+{
+  gvector gametes;
+  mutvector mvector;
+  diploid_t diploid;            //parent 1
+  setup3locus2(gametes,mvector,diploid);
+  std::vector<unsigned> mcounts(mvector.size(),1);
+  diploid_t diploid2(diploid); //parent 2
 
-  
-	BOOST_CHECK_EQUAL((*offspring)[0].first->mutations.size(),2);
-	BOOST_CHECK_EQUAL((*offspring)[1].first->mutations.size(),1);
-	BOOST_CHECK_EQUAL((*offspring)[1].first->mutations[0]->pos,0.9);
-	BOOST_CHECK_EQUAL((*offspring)[2].first->mutations.size(),2);
-	BOOST_CHECK_EQUAL((*offspring)[2].first->mutations[0]->pos,1.25);
-	BOOST_CHECK_EQUAL((*offspring)[2].first->mutations[1]->pos,1.5);
-  }
+  //positions of x-overs within loci
+  auto MVAL=std::numeric_limits<double>::max();
+   auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.45, MVAL },
+						    std::vector<double>{ MVAL },
+						    std::vector<double>{ MVAL }
+   };
 
-  BOOST_AUTO_TEST_CASE( three_locus_test_4 )
+  //We use these to "fake" what we want to happen between loci.
+  std::vector<double> r_bw_loci = {1.,0.};
+  std::vector<diploid_t> diploids({diploid});
+
+  auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
+  auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+  auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+
+  std::vector<std::function<std::vector<double>(const gtype &,
+						const gtype &,
+						const mutvector &)> > recpols
   {
-    glist gametes;
-    mutlist mlist;
-    diploid_t diploid;            //parent 1
-    setup3locus2(gametes,mlist,diploid);
-    diploid_t diploid2(diploid); //parent 2
+    [&rec1](const gtype &,
+	    const gtype &,
+	    const mutvector &) { return rec1[0]; },
+      [&rec1](const gtype &,
+	      const gtype &,
+	      const mutvector &) { return rec1[1]; },
+	[&rec1](const gtype &,
+		const gtype &,
+		const mutvector &) { return rec1[2]; }
+  };
 
-    /*
-      Make vectors of events regarding what happens withn and between each
-      locus, for each parent.
-    */
-    //positions of x-overs within loci
-    auto MVAL=std::numeric_limits<double>::max();
-    auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.1,0.45, 0.51, MVAL },
-						     std::vector<double>{ 0.6,0.7,0.99, MVAL },
-						     std::vector<double>{ 1,1.2,1.3,1.55,MVAL }
-    };
-    //recombinations b/w all loci this time...
-    std::vector<double> r_bw_loci = {1.,1.};
-    std::vector<diploid_t> diploids({diploid});
-    auto offspring = diploids.begin(); 
-    auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(&gametes);
-    auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
-    auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(&gametes);
-    gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+  auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
+							      diploid,diploid2,
+							      mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
+							      recpols,
+							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      &r_bw_loci[0],
+							      0,0,gametes,mvector,neutral,selected);
   
-    std::function<unsigned(glist::iterator &, glist::iterator &, decltype(gamete_lookup) &,decltype(gamete_recycling_bin) &)> recpol1 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-      return KTfwd::recombine_gametes(rec1[0],&gametes,g1,g2,lookup,rbin,neutral,selected);
-    },
-      recpol2 =  [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	return KTfwd::recombine_gametes(rec1[1],&gametes,g1,g2,lookup,rbin,neutral,selected);
-      },
-	recpol3 = [&rec1,&gametes,&neutral,&selected](glist::iterator & g1, glist::iterator & g2, decltype(gamete_lookup) & lookup,decltype(gamete_recycling_bin) & rbin) {
-	  return KTfwd::recombine_gametes(rec1[2],&gametes,g1,g2,lookup,rbin,neutral,selected);
-	};
-      
-	std::vector< decltype(recpol1) >  recpols ({ recpol1,recpol2,recpol3 });
-	KTfwd::fwdpp_internal::multilocus_rec_mut(r,
-						  diploid,diploid2,offspring,
-						  mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
-						  recpols,
-						  [](gsl_rng * __r, const double & __d) { return __d; },
-						  &r_bw_loci[0],
-						  0,0);
-  
-	BOOST_CHECK_EQUAL((*(offspring))[0].first->mutations.size(),2);
-	BOOST_CHECK_EQUAL((*(offspring))[1].first->mutations.size(),1);
-	BOOST_CHECK_EQUAL((*(offspring))[1].first->mutations[0]->pos,0.75);
-	BOOST_CHECK_EQUAL((*(offspring))[2].first->mutations.size(),2);
-	BOOST_CHECK_EQUAL((*(offspring))[2].first->mutations[0]->pos,1.1);
-	BOOST_CHECK_EQUAL((*(offspring))[2].first->mutations[1]->pos,1.25);
-  }
+  BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(),0);
+  BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(),1);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[1].first].mutations[0]].pos,0.75);
+  BOOST_CHECK_EQUAL(gametes[offspring[2].first].mutations.size(),2);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[0]].pos,1.25);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[1]].pos,1.5);
+ 
+}
 
+BOOST_AUTO_TEST_CASE( three_locus_test_3 )
+{
+  gvector gametes;
+  mutvector mvector;
+  diploid_t diploid;            //parent 1
+  setup3locus2(gametes,mvector,diploid);
+  std::vector<unsigned> mcounts(mvector.size(),1);
+  diploid_t diploid2(diploid); //parent 2
+
+  //positions of x-overs within loci
+  auto MVAL=std::numeric_limits<double>::max();
+  auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.1,0.45, MVAL },
+ 						   std::vector<double>{ MVAL },
+ 						   std::vector<double>{ MVAL }
+  };
+
+  //We use these to "fake" what we want to happen between loci.
+  std::vector<double> r_bw_loci = {1.,1.};
+  std::vector<diploid_t> diploids({diploid});
+
+  auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
+  auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+  auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+
+  std::vector<std::function<std::vector<double>(const gtype &,
+						const gtype &,
+						const mutvector &)> > recpols
+  {
+    [&rec1](const gtype &,
+	    const gtype &,
+	    const mutvector &) { return rec1[0]; },
+      [&rec1](const gtype &,
+	      const gtype &,
+	      const mutvector &) { return rec1[1]; },
+	[&rec1](const gtype &,
+		const gtype &,
+		const mutvector &) { return rec1[2]; }
+  };
+
+  auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
+							      diploid,diploid2,
+							      mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
+							      recpols,
+							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      &r_bw_loci[0],
+							      0,0,gametes,mvector,neutral,selected);
+
+  BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(),2);
+  BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(),1);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[1].first].mutations[0]].pos,0.9);
+  BOOST_CHECK_EQUAL(gametes[offspring[2].first].mutations.size(),2);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[0]].pos,1.25);
+  BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[1]].pos,1.5);
+  
+}
+
+BOOST_AUTO_TEST_CASE( three_locus_test_4 )
+{
+  gvector gametes;
+  mutvector mvector;
+  diploid_t diploid;            //parent 1
+  setup3locus2(gametes,mvector,diploid);
+  std::vector<unsigned> mcounts(mvector.size(),1);
+  diploid_t diploid2(diploid); //parent 2
+
+  //positions of x-overs within loci
+  auto MVAL=std::numeric_limits<double>::max();
+  auto rec1 = std::vector< std::vector<double> > { std::vector<double>{ 0.1,0.45, 0.51, MVAL },
+ 						   std::vector<double>{ 0.6,0.7,0.99, MVAL },
+ 						   std::vector<double>{ 1,1.2,1.3,1.55,MVAL }
+  };
+
+  //We use these to "fake" what we want to happen between loci.
+  std::vector<double> r_bw_loci = {1.,1.};
+  std::vector<diploid_t> diploids({diploid});
+
+  auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
+  auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+  auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+
+  std::vector<std::function<std::vector<double>(const gtype &,
+						const gtype &,
+						const mutvector &)> > recpols
+  {
+    [&rec1](const gtype &,
+	    const gtype &,
+	    const mutvector &) { return rec1[0]; },
+      [&rec1](const gtype &,
+	      const gtype &,
+	      const mutvector &) { return rec1[1]; },
+	[&rec1](const gtype &,
+		const gtype &,
+		const mutvector &) { return rec1[2]; }
+  };
+
+  auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
+							      diploid,diploid2,
+							      mutation_recycling_bin,gamete_recycling_bin,gamete_lookup,
+							      recpols,
+							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      &r_bw_loci[0],
+							      0,0,gametes,mvector,neutral,selected);
+       BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(),2);
+       BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(),1);
+       BOOST_CHECK_EQUAL(mvector[gametes[offspring[1].first].mutations[0]].pos,0.75);
+       BOOST_CHECK_EQUAL(gametes[offspring[2].first].mutations.size(),2);
+       BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[0]].pos,1.1);
+       BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[1]].pos,1.25);
+}
