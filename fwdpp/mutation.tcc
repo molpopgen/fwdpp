@@ -3,13 +3,9 @@
 #define _FWDPP_MUTATION_TCC_
 
 #include <type_traits>
-#include <algorithm>
 #include <numeric>
-
 #include <gsl/gsl_randist.h>
-
 #include <fwdpp/internal/mutation_internal.hpp>
-#include <vector>
 
 namespace KTfwd
 {

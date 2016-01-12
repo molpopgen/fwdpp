@@ -2,7 +2,6 @@
 #define __FWDPP_INTERNAL_MUTATION_HPP__
 
 #include <algorithm>
-#include <type_traits>
 
 namespace KTfwd {
   namespace fwdpp_internal
