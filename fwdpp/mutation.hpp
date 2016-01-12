@@ -28,22 +28,22 @@ namespace KTfwd
     \note The type of g is vector_type<gamete_type,vector_type_allocator >::iterator
     \note Used in invididual-based forward simulations.
     \return An iterator to the newly-created gamete, or to g if no mutation occurs.
-   */
- template< typename queue_type,
+  */
+  template< typename queue_type,
 	    typename queue_type2,
 	    typename mutation_model,
 	    typename gamete_insertion_policy,
 	    typename gcont_t,
 	    typename mcont_t>
- std::size_t mutate_gamete_recycle( queue_type & recycling_bin,
-				       queue_type2 & gamete_recycling_bin,
-				       gsl_rng * r,
-				       const double & mu,
-				       gcont_t & gametes,
-				       mcont_t & mutations,
-				       const size_t g,
-				       const mutation_model &mmodel,
-				       const gamete_insertion_policy & gpolicy);
+  std::size_t mutate_gamete_recycle( queue_type & recycling_bin,
+				     queue_type2 & gamete_recycling_bin,
+				     gsl_rng * r,
+				     const double & mu,
+				     gcont_t & gametes,
+				     mcont_t & mutations,
+				     const size_t g,
+				     const mutation_model &mmodel,
+				     const gamete_insertion_policy & gpolicy);
 }
 #endif /* _FWDPP_MUTATION_HPP_ */
 #include <fwdpp/mutation.tcc>
