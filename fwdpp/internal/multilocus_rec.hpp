@@ -34,6 +34,8 @@ namespace KTfwd {
 	     typename mutation_model_container,
 	     typename gamete_insertion_policy
 #else
+	     typename mlist_t,
+	     typename glist_t,
 	     typename bw_locus_rec_fxn
 #endif
     >
@@ -62,7 +64,11 @@ namespace KTfwd {
 				    const mutation_model_container & mmodel,
 				    const gamete_insertion_policy & gpolicy_mut
 #else
-				    const int iswitch2
+				    const int iswitch2,
+				    glist_t & gametes,
+				    mlist_t & mutations,
+				    typename glist_t::value_type::mutation_container & neutral,
+				    typename glist_t::value_type::mutation_container & selected
 #endif			
 				    )
     {
