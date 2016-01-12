@@ -29,6 +29,8 @@ namespace KTfwd
 				     const mutation_model &mmodel,
 				     const gamete_insertion_policy & gpolicy)
   {
+    static_assert( traits::valid_mutation_model<mutation_model,mcont_t,gcont_t>::value,
+		   "error: type mutation_model is not a dispatchable mutation model type!" );
     assert(g<gametes.size());
     assert( gamete_is_sorted_n(gametes[g],mutations) );
     assert( gamete_is_sorted_s(gametes[g],mutations) );

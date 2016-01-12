@@ -108,6 +108,8 @@ namespace KTfwd
 			    const mcont_t & mutations,
 			    unsigned * nrec)
   {
+    static_assert( traits::valid_rec_model<recpol_t,typename gcont_t::value_type,mcont_t>::value,
+		   "type recpol_t is not a valid recombination policy" );
     if(g1==g2) {*nrec=0;return g1;}
     auto nm1=gametes[g1].mutations.size()+gametes[g1].smutations.size();
     auto nm2=gametes[g2].mutations.size()+gametes[g2].smutations.size();
