@@ -1,28 +1,10 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
-/* Is boost hash header found? */
-#undef HAVE_BOOST_HASH
-
-/* Is boost list header found? */
-#undef HAVE_BOOST_LIST
-
-/* Is boost pool alloc header found? */
-#undef HAVE_BOOST_POOL_ALLOC
-
-/* Is boost unordered set header found> */
-#undef HAVE_BOOST_UNORDERED_SET
-
-/* Is boost vector header found? */
-#undef HAVE_BOOST_VECTOR
-
 /* define if the compiler supports basic C++11 syntax */
 #undef HAVE_CXX11
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
-
-/* Define to 1 if you have the `boost_system' library (-lboost_system). */
-#undef HAVE_LIBBOOST_SYSTEM
 
 /* Define to 1 if you have the `gsl' library (-lgsl). */
 #undef HAVE_LIBGSL
@@ -32,9 +14,6 @@
 
 /* Define to 1 if you have the `jemalloc' library (-ljemalloc). */
 #undef HAVE_LIBJEMALLOC
-
-/* Define to 1 if you have the `sequence' library (-lsequence). */
-#undef HAVE_LIBSEQUENCE
 
 /* Define to 1 if you have the `tcmalloc' library (-ltcmalloc). */
 #undef HAVE_LIBTCMALLOC
@@ -89,9 +68,6 @@
 
 /* Define to 1 if you have the ANSI C header files. */
 #undef STDC_HEADERS
-
-/* Use containers from namespace boost when compiling */
-#undef USE_BOOST_CONTAINERS
 
 /* Version number of package */
 #undef VERSION

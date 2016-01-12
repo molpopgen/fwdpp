@@ -740,7 +740,6 @@ enable_option_checking
 enable_silent_rules
 enable_dependency_tracking
 enable_maintainer_mode
-enable_boost
 enable_debug
 enable_tcmalloc
 enable_jemalloc
@@ -1380,8 +1379,6 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
-  --enable-boost          Enable use of boost containers when compiling
-                          examples
   --enable-debug          Compile examples with run-time assert macro enabled.
   --enable-tcmalloc       Enable linking to Google's tcmalloc library, if
                           present.
@@ -4452,13 +4449,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
-# Check whether --enable-boost was given.
-if test "${enable_boost+set}" = set; then :
-  enableval=$enable_boost;
-$as_echo "#define USE_BOOST_CONTAINERS 1" >>confdefs.h
-
-fi
-
 
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
@@ -4921,59 +4911,6 @@ else
 fi
 
 
-if test x$enable_boost = xyes
-then
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/vector.hpp" "ac_cv_header_boost_container_vector_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_container_vector_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_VECTOR 1" >>confdefs.h
-
-else
-  as_fn_error $? "boost containers requested but boost/container/vector.hpp not foun" "$LINENO" 5
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/container/list.hpp" "ac_cv_header_boost_container_list_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_container_list_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_LIST 1" >>confdefs.h
-
-else
-  as_fn_error $? "boost containers requested but boost/container/list.hpp not foun" "$LINENO" 5
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/pool/pool_alloc.hpp" "ac_cv_header_boost_pool_pool_alloc_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_pool_pool_alloc_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_POOL_ALLOC 1" >>confdefs.h
-
-else
-  as_fn_error $? "boost containers requested but boost/container/bool_alloc.hpp not foun" "$LINENO" 5
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/unordered_set.hpp" "ac_cv_header_boost_unordered_set_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_unordered_set_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_UNORDERED_SET 1" >>confdefs.h
-
-else
-  as_fn_error $? "boost containers requested but boost/unordered_set.hpp not foun" "$LINENO" 5
-fi
-
-
-ac_fn_cxx_check_header_mongrel "$LINENO" "boost/functional/hash.hpp" "ac_cv_header_boost_functional_hash_hpp" "$ac_includes_default"
-if test "x$ac_cv_header_boost_functional_hash_hpp" = xyes; then :
-
-$as_echo "#define HAVE_BOOST_HASH 1" >>confdefs.h
-
-else
-  as_fn_error $? "boost containers requested but boost/functional/hash.hpp not foun" "$LINENO" 5
-fi
-
-
-fi
 
 ac_fn_cxx_check_header_mongrel "$LINENO" "boost/test/unit_test.hpp" "ac_cv_header_boost_test_unit_test_hpp" "$ac_includes_default"
 if test "x$ac_cv_header_boost_test_unit_test_hpp" = xyes; then :
@@ -5282,49 +5219,7 @@ else
 $as_echo "$as_me: WARNING: libsequence runtime library does not seem to be here.  Example programs will not be compiled" >&2;}
 fi
 
-	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
-$as_echo_n "checking for main in -lboost_system... " >&6; }
-if ${ac_cv_lib_boost_system_main+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lboost_system  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-
-int
-main ()
-{
-return main ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_boost_system_main=yes
-else
-  ac_cv_lib_boost_system_main=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_system_main" >&5
-$as_echo "$ac_cv_lib_boost_system_main" >&6; }
-if test "x$ac_cv_lib_boost_system_main" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBBOOST_SYSTEM 1
-_ACEOF
-
-  LIBS="-lboost_system $LIBS"
-
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&5
-$as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
-fi
-
-	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_unit_test_framework" >&5
+	  	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_unit_test_framework" >&5
 $as_echo_n "checking for main in -lboost_unit_test_framework... " >&6; }
 if ${ac_cv_lib_boost_unit_test_framework_main+:} false; then :
   $as_echo_n "(cached) " >&6

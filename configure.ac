@@ -22,7 +22,8 @@ AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile unit/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen])
 
 dnl AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]),[AC_DEFINE([USE_STANDARD_CONTAINERS],[1],[Prefer containers from namespace std when compiling])])
-AC_ARG_ENABLE([boost],AS_HELP_STRING([--enable-boost],[Enable use of boost containers when compiling examples]),[AC_DEFINE([USE_BOOST_CONTAINERS],[1],[Use containers from namespace boost when compiling])])
+dnl Disabled as of 0.4.4
+dnl AC_ARG_ENABLE([boost],AS_HELP_STRING([--enable-boost],[Enable use of boost containers when compiling examples]),[AC_DEFINE([USE_BOOST_CONTAINERS],[1],[Use containers from namespace boost when compiling])])
 
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
@@ -40,15 +41,16 @@ AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requr
 
 AM_CONDITIONAL([HAVE_SIMDATA_HPP],test x$SIMDATAFOUND = x1)
 
+dnl disabled in 0.4.4
 dnl check for optional depdendencies
-if test x$enable_boost = xyes
-then
-AC_CHECK_HEADER(boost/container/vector.hpp,[AC_DEFINE([HAVE_BOOST_VECTOR],[1],[Is boost vector header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/vector.hpp not foun])])
-AC_CHECK_HEADER(boost/container/list.hpp,[AC_DEFINE([HAVE_BOOST_LIST],[1],[Is boost list header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/list.hpp not foun])])
-AC_CHECK_HEADER(boost/pool/pool_alloc.hpp,[AC_DEFINE([HAVE_BOOST_POOL_ALLOC],[1],[Is boost pool alloc header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/bool_alloc.hpp not foun])])
-AC_CHECK_HEADER(boost/unordered_set.hpp,[AC_DEFINE([HAVE_BOOST_UNORDERED_SET],[1],[Is boost unordered set header found>])],[AC_MSG_ERROR([boost containers requested but boost/unordered_set.hpp not foun])])
-AC_CHECK_HEADER(boost/functional/hash.hpp,[AC_DEFINE([HAVE_BOOST_HASH],[1],[Is boost hash header found?])],[AC_MSG_ERROR([boost containers requested but boost/functional/hash.hpp not foun])])
-fi
+dnl if test x$enable_boost = xyes
+dnl then
+dnl AC_CHECK_HEADER(boost/container/vector.hpp,[AC_DEFINE([HAVE_BOOST_VECTOR],[1],[Is boost vector header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/vector.hpp not foun])])
+dnl AC_CHECK_HEADER(boost/container/list.hpp,[AC_DEFINE([HAVE_BOOST_LIST],[1],[Is boost list header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/list.hpp not foun])])
+dnl AC_CHECK_HEADER(boost/pool/pool_alloc.hpp,[AC_DEFINE([HAVE_BOOST_POOL_ALLOC],[1],[Is boost pool alloc header found?])],[AC_MSG_ERROR([boost containers requested but boost/container/bool_alloc.hpp not foun])])
+dnl AC_CHECK_HEADER(boost/unordered_set.hpp,[AC_DEFINE([HAVE_BOOST_UNORDERED_SET],[1],[Is boost unordered set header found>])],[AC_MSG_ERROR([boost containers requested but boost/unordered_set.hpp not foun])])
+dnl AC_CHECK_HEADER(boost/functional/hash.hpp,[AC_DEFINE([HAVE_BOOST_HASH],[1],[Is boost hash header found?])],[AC_MSG_ERROR([boost containers requested but boost/functional/hash.hpp not foun])])
+dnl fi
 
 AC_CHECK_HEADER(boost/test/unit_test.hpp, BUNITTEST=1,[echo "boost/test/unit_test.hpp not found. Unit tests will not be compiled."])
 
@@ -74,7 +76,7 @@ AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
           AC_CHECK_LIB(sequence, main,HAVELIBSEQ=1,[AC_MSG_WARN([libsequence runtime library does not seem to be here.  Example programs will not be compiled])])
-	  AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
+	  dnl AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
 	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
 	  AM_CONDITIONAL([HAVE_LIBSEQ_RUNTIME], test x$HAVELIBSEQ = x1)
 	  AM_CONDITIONAL([BUNIT_TEST_LIB_PRESENT], test x$BUNITTESTLIB = x1)
