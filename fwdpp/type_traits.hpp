@@ -34,8 +34,8 @@ namespace KTfwd {
     {
     };
     
-    //! Gives the "recycling bin" type corresponding to list_t
-    template<typename list_t>
+    //! Gives the "recycling bin" type corresponding to cont_t
+    template<typename cont_t>
     struct recycling_bin_t
     {
       using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
@@ -46,50 +46,52 @@ namespace KTfwd {
     struct gamete_lookup_t
     {
       static_assert( is_gamete_t<typename gcont_t::value_type>::value,
-		     "gcont__t::value_type must be a gamete type");
+		     "gcont_t::value_type must be a gamete type");
       static_assert( is_mutation_t<typename mcont_t::value_type>::value,
-		     "gcont__t::value_type must be a gamete type");
+		     "mcont_t::value_type must be a mutation type");
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<gcont_t,mcont_t>)(gcont_t &,mcont_t &)>::type;
     };
 
     /*!
-      Gives the mutation model function signature corresponding to mlist_t.
+      Gives the mutation model function signature corresponding to mcont_t.
 
-      Applies to mutation policies that only take recycling bins and  mlist_t *
+      Applies to mutation policies that only take recycling bins and  mcont_t *
       as arguments
     */
-    template<typename mlist_t>
+    template<typename mcont_t>
     struct mmodel_t
     {
-      static_assert( is_mutation_t<typename mlist_t::value_type>::value,
-		     "mlist_t::value_type must be derived from KTfwd::mutation_base" );
-      using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,mlist_t &)>;
+      static_assert( is_mutation_t<typename mcont_t::value_type>::value,
+		     "mcont_t::value_type must be derived from KTfwd::mutation_base" );
+      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
     };
 
     /*!
       Gives mutation model function signature for models requiring gametes as arguments
     */
-    template<typename mlist_t,typename glist_t>
+    template<typename mcont_t,typename gcont_t>
     struct mmodel_gamete_t
     {
-      using type = std::function<typename mlist_t::iterator(typename recycling_bin_t<mlist_t>::type &,
-							    typename glist_t::value_type &,
-							    mlist_t *)>;
+      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
+							    typename gcont_t::value_type &,
+							    mcont_t *)>;
     };
 
     //! Check that a mutation model type is valid.
-    template<typename mmodel_t,typename mlist_t,typename glist_t>
-    struct valid_mutation_model
+    template<typename mmodel_t,typename mcont_t,typename gcont_t>
+    struct valid_mutation_model : public std::integral_constant<bool,
+								std::is_same<typename std::result_of<
+									       decltype(&fwdpp_internal::mmodel_dispatcher<
+											mmodel_t,
+											typename gcont_t::value_type,
+											mcont_t,
+											typename recycling_bin_t<mcont_t>::type>)
+									       (mmodel_t &,typename gcont_t::value_type &,mcont_t &,typename recycling_bin_t<mcont_t>::type &)
+									       >::type,
+									     std::size_t
+									     >::value
+								>
     {
-      using queue_t = typename recycling_bin_t<mlist_t>::type;
-      using gamete_t = typename glist_t::value_type;
-      //http://stackoverflow.com/questions/11470802/stdresult-of-simple-function
-      //http://stackoverflow.com/questions/2763824/decltype-result-of-or-typeof
-      using result_type = typename std::result_of<
-	decltype(&fwdpp_internal::mmodel_dispatcher<mmodel_t,gamete_t,mlist_t,queue_t>)
-	(mmodel_t &,gamete_t &,mlist_t &,queue_t &)
-	>::type;
-      using type = typename std::is_same<result_type,std::size_t>::type;
     };
 
     //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
@@ -102,6 +104,17 @@ namespace KTfwd {
 					  typename recycling_bin_t<gcont_t>::type &) >;
     };
 
+    template<typename recmodel_t,typename gamete_t,
+	     typename mcont_t>
+    struct valid_rec_model : std::integral_constant<bool,
+						    std::is_same<
+						      typename std::result_of<
+							recmodel_t(const gamete_t &,
+								   const gamete_t &,
+								   const mcont_t &)>::type,
+						      std::vector<double>>::value>
+    {
+    };
   }
 }
 #endif
