@@ -181,7 +181,7 @@ namespace KTfwd {
 	  assert(gametes[dip.second].n<=2*N_next);
 	}
 #endif
-      fwdpp_internal::process_glist(gametes,mutations,mcounts);
+      fwdpp_internal::process_gametes(gametes,mutations,mcounts);
       assert(popdata_sane(diploids,gametes,mcounts));
       fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
       assert(check_sum(gametes,2*N_next));

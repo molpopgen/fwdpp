@@ -159,7 +159,7 @@ namespace KTfwd
 	assert(gametes[dip.second].n<=2*N_next);
       }
 #endif
-    fwdpp_internal::process_glist(gametes,mutations,mcounts);
+    fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     assert(mcounts.size()==mutations.size());
 #ifndef NDEBUG
     for(const auto & mc : mcounts)
@@ -341,7 +341,7 @@ namespace KTfwd
 	    dip.second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
 	  }
       }
-    fwdpp_internal::process_glist(gametes,mutations,mcounts);
+    fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     assert(mcounts.size()==mutations.size());
     fwdpp_internal::gamete_cleaner(gametes,mcounts,
 				   2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0)),
@@ -475,7 +475,7 @@ namespace KTfwd
 // 					   gametes,mutations,mu,mmodel,gpolicy_mut
 // 					   );
 //       }
-    fwdpp_internal::process_glist(gametes,mutations,mcounts);
+    fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,
 				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
     return wbar;

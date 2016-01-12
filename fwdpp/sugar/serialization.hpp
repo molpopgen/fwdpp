@@ -418,7 +418,7 @@ namespace KTfwd
       KTfwd::read_binary_pop(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
 
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -453,7 +453,7 @@ namespace KTfwd
       s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -495,7 +495,7 @@ namespace KTfwd
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -565,7 +565,7 @@ namespace KTfwd
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       size_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -599,7 +599,7 @@ namespace KTfwd
       gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
       KTfwd::read_binary_pop_mloc( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
@@ -641,7 +641,7 @@ namespace KTfwd
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( &pop.gametes,&pop.mutations,&pop.diploids,rt,gzin,dr );
       //update the mutation counts
-      fwdpp_internal::process_glist(pop.gametes,pop.mutations,pop.mcounts);
+      fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
       gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
       for( uint_t m=0;m<temp ;++m )
