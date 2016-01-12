@@ -100,6 +100,16 @@ namespace KTfwd {
 	selected.reserve(reserve_size);
       }
 
+      bool operator==( const metapop & rhs ) const
+      {
+	return this->mutations == rhs.mutations &&
+	  this->mcounts == rhs.mcounts &&
+	  this->gametes == rhs.gametes &&
+	  this->diploids == rhs.diploids &&
+	  this->fixations == rhs.fixations &&
+	  this->fixation_times == rhs.fixation_times;
+      }
+      
       //! Empty all containers
       void clear() 
       {
