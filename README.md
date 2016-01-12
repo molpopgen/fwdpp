@@ -37,7 +37,6 @@ Currently, the Travis-CI setup uses the following tools:
 * gcc 4.9
 * clang 3.6
 * GSL 1.15
-* boost 1.48
 
 # Introduction
 
@@ -155,57 +154,17 @@ In order to compile the unit tests, you also need:
 
 1.  [boost](http://www.boost.org).
 
-In order to get good performance out of simulations you also need one or both of the following:
-
-1.  [boost](http://www.boost.org).
-2.  [Google's perftools](https://code.google.com/p/gperftools/)
-
 For OS X users, all of the above dependencies are available via [homebrew](http://brew.sh).
 
-### Why use boost and/or Google's perftools?
+### Why use Google's perftools?
 
-Forward simulations are constantly allocating relativel small objects whose lifetimes are random variables.  For example, mutations enter populations every generation and are typically rapidly lost.   We can improve the performance of a simulation using various techniques, including replacing the C++ standard library's allocator with a custom allocator and/or replacing the C library's malloc function with a faster replacement.
+Forward simulations are constantly allocating relativel small objects whose lifetimes are random variables.  For example, mutations enter populations every generation and are typically rapidly lost.   We can improve the performance of a simulation using various techniques, including replacing the C++ standard library's allocator with a custom allocator and/or replacing the C library's malloc function with a faster replacement. Google's perftools provide the tcmalloc library, which provides a faster malloc.
 
-The boost library provides fast_pool_allocator, which is a good replacement for the standard allocators.  Google's perftools provide the tcmalloc library, which provides a faster malloc.
-
-Empirically, on my linux systems, I have found that the fastest combination appears to be the standard C++ allocator combined with linking to tcmalloc.  See below for how to compile the examples in various ways, allowing you to benchmark performance on your own system.
+Empirically, on my linux systems, I have found that the fastest combination appears to be the standard C++ allocator combined with linking to tcmalloc. However, this may not be the case on your system, and I provide the [fwdpp_perf](http://github.com/molpopgen/fwdpp_perf) project to let you benchmark different methods on your system.
 
 ## Performance
 
-Fwdpp 0.3.3 introduced massive performance improvements, requiring several API changes to make them possible.
-
-I performed a series of benchmarks on a 4-core, 3.6Ghz 64bit Intel machine, which is the same machine where the library is developed.  I performed small-N and large-N simulations, comparing performance between the following simulations:
-
-| Simulation | Version | Container/malloc combo |
-|:-----:|:-----:|:-----:|
-|fwdpp | 0.3.2 | std |
-|fwdpp | 0.3.2 | std + tcmalloc |
-|fwdpp | 0.3.2 | boost |
-|fwdpp | 0.3.2 | boost + tcmalloc |
-|fwdpp | 0.3.3 | std |
-|fwdpp | 0.3.3 | std + tcmalloc |
-|fwdpp | 0.3.3 | boost |
-|fwdpp | 0.3.3 | boost + tcmalloc |
-|[SLiM](http://messerlab.org/software/)| 1.8 | std |
-
-All simulations were compiled with GCC 4.9.2 and using -O3.  The intent is to check "out-of-the-box" performance, meaning that the programs were compiled as the developer intends them.  In the case of fwdpp, the configure script allows all of the above combinations.  For SLiM, I simply compiled it "as is", following the author's instructions.
-
-All fwdpp jobs are based on the example program diploid_ind that comes with the library.
-
-__Links to pdfs only show up on github.  I'll try to fix this later for the doxygen reference manual page.__
-
-The parameters for the small-N simulations were \f$N=1,000\f$, \f$\theta = \rho = 5,000\f$, and evolved for \f$10N\f$ generations.  I performed 12 replicates of each of the above combinations, running 4 at a time using GNU parallel.  The [run times](performance/time_0_3_3.pdf) and [peak memory use](performance/mem_0_3_3.pdf) show that:
-
-* fwdpp 0.3.3 is about 40% faster than 0.3.2
-* fwdpp 0.3.3 is more memory efficient than previous versions
-* fwdpp 0.3.3 outperforms SLiM for this case (which is a change from the fwdpp paper, where SLiM was faster for small-N simulations with large mutation/recombination rates).
-
-The parameters for the large-N simulations wer \f$N=10,000\f$, \f$\theta = \rho = 4,000\f$, and evolved for \f$10N\f$ generations.   I performed 4 replicates of each of the above combinations, running 4 at a time using GNU parallel, imposing a 36-hour wall clock limit, at which point a simulation was killed.  For these parameters, SLiM did not complete a single replicated.  The [run time](performance/bigtime_0_3_3.pdf) and [peak memory use](performance/bigmem_0_3_3.pdf) results for fwdpp show that:
-
-* fwdpp 0.3.2 took ~19.5 hours to complete a replicate
-* fwdpp 0.3.3 takes ~9.5 hours and uses less memory than 0.3.2.
-
-This suggests that fwdpp 0.3.3 is _at least_ ~4X faster than SLiM for simulations like this (because all SLiM jobs were killed at 36 hours).
+Performance testing has been moved to the [fwdpp_perf](http://github.com/molpopgen/fwdpp_perf) project.
 
 ##Obtaining the source code
 
@@ -306,13 +265,6 @@ __This is the recommended method for maximum run-time performance.__
 
 ~~~{.sh}
 ./configure --enable-tcmalloc=yes
-make check
-~~~
-
-### Using boost containers and Google's tcmalloc replacement for malloc
-
-~~~{.sh}
-./configure --enable-boost=yes --enable-tcmalloc=yes
 make check
 ~~~
 
