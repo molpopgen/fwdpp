@@ -132,6 +132,8 @@ namespace KTfwd
     \param rec_pol Recombination model policy
     \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
     \param ffs Container of fitness functions.  One for each deme.
+    \param neutral
+    \param selected
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param mig Migration policy.  This function/function object must take a single size_t (values 0 to diploids.size()-1).  If no migration event occurs, the passed value is returned.  Otherwise, a size_t representing the index of the deme from which the other parent comes (aka the migrant) is returned.
     \param f Probability that a mating is a selfing event.  This is an array, with 1 f per deme.
@@ -192,6 +194,8 @@ namespace KTfwd
     \param rec_pol Recombination model policy
     \param gpolicy_mut Policy determining how new gametes are added to population after a mutation event
     \param ffs Container of fitness functions.  One for each deme.
+    \param neutral
+    \param selected
     \param mp Policy determining how to remove mutations from a diploid (e.g., removing fixed and/or lost mutations)
     \param mig Migration policy.  This function/function object must take a single size_t (values 0 to metapop->size()-1).  If no migration event occurs, the passed value is returned.  Otherwise, a size_t representing the index of the deme from which the other parent comes (aka the migrant) is returned.
     \param f Probability that a mating is a selfing event.  This is an array, with 1 f per deme.
