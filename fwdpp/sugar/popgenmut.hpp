@@ -34,6 +34,15 @@ namespace KTfwd
       : mutation_base(__pos,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
     {
     }
+
+    bool operator==(const popgenmut & rhs) const
+    {
+      return this->pos == rhs.pos &&
+	this->s == rhs.s &&
+	this->h == rhs.h &&
+	this->g == rhs.g &&
+	this->neutral == rhs.neutral;
+    }
   };
 }
 #endif
