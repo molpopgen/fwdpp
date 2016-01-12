@@ -26,8 +26,6 @@ addons:
     - clang-3.6
     - zlib1g
     - zlib1g-dev
-    - libboost-dev
-    - libboost-system-dev
     - libboost-test-dev
     - libgsl0-dev
     - libgsl0ldbl
