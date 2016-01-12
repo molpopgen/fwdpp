@@ -14,7 +14,6 @@
 #include <functional>
 #include <iostream>
 #include <utility>
-#include <list>
 
 /*
   Testing move semantics with mutations is tricky.

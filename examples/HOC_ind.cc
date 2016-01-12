@@ -4,7 +4,6 @@
 */
 #include <config.h>
 #include <vector>
-#include <list>
 #include <iostream>
 #include <gsl/gsl_statistics_double.h>
 #include <fwdpp/diploid.hh>

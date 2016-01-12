@@ -8,7 +8,6 @@
 
 #include <limits>
 #include <vector>
-#include <list>
 #include <cmath>
 #include <cstdint>
 #include <type_traits>

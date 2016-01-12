@@ -41,9 +41,6 @@ void simulate( poptype & pop )
 
   unsigned generation = 0;
   
-  //Mutation model for 4 loci
-  //auto x = std::result_of<KTfwd::fwdpp_internal::make_mut_queue(poptype::mlist_t *)>::type();
-  
   std::vector<std::function<std::size_t(std::queue<std::size_t> &,poptype::mcont_t &)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
     std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),std::ref(pop.mut_lookup),&generation,
