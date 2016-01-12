@@ -16,8 +16,6 @@
 #include <fwdpp/sugar/infsites.hpp>
 
 using mutation_t = KTfwd::popgenmut;
-using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_t>;
 
 using singlepop_t = KTfwd::singlepop<mutation_t>;
 using metapop_t = KTfwd::metapop<mutation_t>;
