@@ -144,3 +144,21 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative4 )
 					     1.);
   BOOST_CHECK_EQUAL(w,1.1*1.1);
 }
+
+BOOST_AUTO_TEST_CASE( simple_additive_1 )
+{
+  gtype g1(1),g2(1);
+  mvector mutations;
+
+  //add mutation at position 0.1, s=0.1,n=1,dominance=1.0
+  mutations.emplace_back(0.1,0.1,1 );
+  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
+  mutations.emplace_back(0.2,0.1,1);
+  KTfwd::fwdpp_internal::add_new_mutation(1,mutations,g1);
+  BOOST_CHECK_EQUAL(g1.smutations.size(),2);
+
+  gvector g{g1,g2};
+
+  double w = KTfwd::additive_diploid()(g[0],g[1],mutations);
+  BOOST_CHECK_EQUAL(w,1.2);
+}
