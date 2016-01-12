@@ -142,7 +142,7 @@ namespace KTfwd
       {
 	throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
       }
-    auto temp = ms_sample_separate(r,&p.diploids[deme],nsam,removeFixed);
+    auto temp = ms_sample_separate(r,p.mutations,p.gametes,p.diploids[deme],nsam,removeFixed);
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
@@ -178,7 +178,7 @@ namespace KTfwd
       {
 	throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
       }
-    return ms_sample_separate(r,&p.diploids[deme],nsam,removeFixed);
+    return ms_sample_separate(r,p.mutations,p.gametes,p.diploids[deme],nsam,removeFixed);
   }
 
   template<typename poptype>
@@ -211,7 +211,7 @@ namespace KTfwd
 	    throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
 	  }
       }
-    auto temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,2*individuals.size(),removeFixed);
+    auto temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids[deme],individuals,2*individuals.size(),removeFixed);
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
@@ -253,7 +253,7 @@ namespace KTfwd
 	    throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
 	  }
       }
-    return fwdpp_internal::ms_sample_separate_single_deme(&p.diploids[deme],individuals,2*individuals.size(),removeFixed);
+    return fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids[deme],individuals,2*individuals.size(),removeFixed);
   }
 }
 

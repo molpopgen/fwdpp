@@ -39,7 +39,7 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::true_type)
   {
-    sample_t rv =  ms_sample(r,&p.diploids,nsam,removeFixed);
+    sample_t rv =  ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(!removeFixed)
       add_fixations(&rv,p.fixations,nsam,sugar::treat_neutral::ALL);
     return rv;
@@ -53,7 +53,7 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::false_type)
   {
-    sample_t rv = ms_sample(r,&p.diploids,nsam,removeFixed);
+    sample_t rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(!removeFixed)
       add_fixations(&rv,p.fixations,nsam,sugar::treat_neutral::ALL);
     return rv;
@@ -67,7 +67,7 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::true_type)
   {
-    sep_sample_t rv = ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    sep_sample_t rv = ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
@@ -82,7 +82,7 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::true_type)
   {
-    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
@@ -105,7 +105,7 @@ namespace KTfwd
 			   const bool removeFixed,
 			   std::false_type)
   {
-    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
+    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
@@ -128,7 +128,7 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::true_type)
   {
-    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(&p.diploids,individuals,2*individuals.size(),removeFixed);
+    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&rv.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
@@ -145,7 +145,7 @@ namespace KTfwd
 				   const bool removeFixed,
 				   std::false_type)
   {
-    sep_sample_t rv =  ms_sample_separate(r,&p.diploids,nsam,removeFixed);
+    sep_sample_t rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(! removeFixed)
       {
 	add_fixations(&rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
