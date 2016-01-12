@@ -1,7 +1,7 @@
 /*! 
   \file sugar1.cc 
   \ingroup unit 
-  \brief Testing KTfwd::singlepop and KTfwd::singlepop_serialized
+  \brief Testing KTfwd::singlepop 
 */
 #define BOOST_TEST_MODULE sugarTest1
 #define BOOST_TEST_DYN_LINK 
@@ -16,287 +16,75 @@
 using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_t>;
+using singlepop_t = KTfwd::singlepop<mutation_t>;
 
+void simulate( singlepop_t & pop )
+{
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+
+  //Evolve for 10 generations
+  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get());
+  for( unsigned generation= 0 ; generation < 10 ; ++generation )
+    {
+      double wbar = KTfwd::sample_diploid(rng.get(),
+					  pop.gametes,
+					  pop.diploids,
+					  pop.mutations,
+					  pop.mcounts,
+					  1000,
+					  0.005,
+					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),std::ref(pop.mut_lookup),generation,
+						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
+					  std::bind(KTfwd::poisson_xover(),rng.get(),0.005,0.,1.,
+						    std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+						    std::placeholders::_3,2.),
+					  pop.neutral,pop.selected);
+      KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*pop.N);
+    }
+}
+  
 
 BOOST_AUTO_TEST_CASE( singlepop_sugar_test1 )
 {
-  using poptype = KTfwd::singlepop<mutation_t>;
-  poptype pop(1000);
+  singlepop_t pop(1000);
+  simulate(pop);
 
-  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+  singlepop_t pop2(pop);
 
-  //Evolve for 10 generations
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get());
-  for( unsigned generation= 0 ; generation < 10 ; ++generation )
-    {
-      double wbar = KTfwd::sample_diploid(rng.get(),
-					  &pop.gametes,
-					  &pop.diploids,
-					  &pop.mutations,
-					  1000,
-					  0.005,
-					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),&pop.mut_lookup,generation,
-						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
-					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						    std::ref(pop.neutral),std::ref(pop.selected),
-						    &pop.gametes,
-						    0., //no rec
-						    rng.get(),
-						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
-    }
-  //attempt to copy
+  BOOST_CHECK_EQUAL(pop==pop2,true);
+}
+
+BOOST_AUTO_TEST_CASE( singlepop_sugar_test2 )
+{
+  singlepop_t pop(1000);
+  simulate(pop);
+
   KTfwd::serialize s;
   s(pop,mwriter());
-  poptype pop2(0);
+  singlepop_t pop2(0);
   KTfwd::deserialize()(pop2,s,mreader());
-  BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  // unsigned NN=0;
-  // for(const auto & g : pop.gametes)
-  //   {
-  //     if(g.n)++NN;
-  //   }
-  // BOOST_REQUIRE(NN == pop2.gametes.size());
-  BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
-  //Compare the mutations
-  for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
-    {
-      BOOST_CHECK_EQUAL( m1->pos, m2->pos );
-      BOOST_CHECK_EQUAL( m1->n, m2->n );
-    }
-  
-  //Compare the gametes
-  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-    {
-      BOOST_CHECK( g1 != g2 );
-      BOOST_CHECK_EQUAL( g1->n, g2->n );
-      if( g1->n )
-	{
-	  for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-	    {
-	      BOOST_CHECK( m1 != m2 );
-	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	    }
-	}
-    }
-  
-  //Compare the diploids
-  for( auto d1 = pop.diploids.begin(),d2 = pop2.diploids.begin() ; d1 != pop.diploids.end() ; ++d1,++d2 )
-    {
-      BOOST_CHECK(d1->first != d2->first);
-      BOOST_CHECK(d1->second != d2->second);
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
-      for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-      for( auto m1 = d1->second->mutations.begin(),m2=d2->second->mutations.begin() ; m1 != d1->second->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-    }
+  BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
-BOOST_AUTO_TEST_CASE( singlepop_serialized_copy_construct_test )
+BOOST_AUTO_TEST_CASE( singlepop_sugar_test3 )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader>;
-  poptype pop(1000);
+  singlepop_t pop(1000);
+  simulate(pop);
 
-  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  
-  //Evolve for 10 generations
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get());
-  for( unsigned generation= 0 ; generation < 10 ; ++generation )
-    {
-      double wbar = KTfwd::sample_diploid(rng.get(),
-					  &pop.gametes,
-					  &pop.diploids,
-					  &pop.mutations,
-					  1000,
-					  0.005,
-					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),&pop.mut_lookup,generation,
-						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
-					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						    std::ref(pop.neutral),std::ref(pop.selected),
-						    &pop.gametes,
-						    0., //no rec
-						    rng.get(),
-						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
-    }
-
-  //attempt to copy
-  poptype pop2(pop);
-
-  BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  // unsigned NN=0;
-  // for(const auto & g : pop.gametes)
-  //   {
-  //     if(g.n)++NN;
-  //   }
-  // BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
-  BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
-  //Compare the mutations
-  for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
-    {
-      BOOST_CHECK_EQUAL( m1->pos, m2->pos );
-      BOOST_CHECK_EQUAL( m1->n, m2->n );
-    }
-  
-  //Compare the gametes
-  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-    {
-      BOOST_CHECK( g1 != g2 );
-      BOOST_CHECK_EQUAL( g1->n, g2->n );
-      if(g1->n)
-	{
-	  for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-	    {
-	      BOOST_CHECK( m1 != m2 );
-	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	    }
-	}
-    }
-  
-  //Compare the diploids
-  for( auto d1 = pop.diploids.begin(),d2 = pop2.diploids.begin() ; d1 != pop.diploids.end() ; ++d1,++d2 )
-    {
-      BOOST_CHECK(d1->first != d2->first);
-      BOOST_CHECK(d1->second != d2->second);
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
-      for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-      for( auto m1 = d1->second->mutations.begin(),m2=d2->second->mutations.begin() ; m1 != d1->second->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-    }
+  singlepop_t pop2(std::move(pop));
+  //Should be false b/c move will leave
+  //pop's containers in a wacky state
+  BOOST_CHECK_EQUAL(pop==pop2,false);
 }
 
-BOOST_AUTO_TEST_CASE( singlepop_sugar_assignment_test )
+BOOST_AUTO_TEST_CASE( singlepop_sugar_test4 )
 {
-  using poptype = KTfwd::singlepop_serialized<mutation_t,mwriter,mreader>;
-  poptype pop(1000);
+  singlepop_t pop(1000);
+  simulate(pop);
 
-  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    
-  //Evolve for 10 generations
-  std::function<double(void)> recmap = std::bind(gsl_rng_uniform,rng.get());
-  for( unsigned generation= 0 ; generation < 10 ; ++generation )
-    {
-      double wbar = KTfwd::sample_diploid(rng.get(),
-					  &pop.gametes,
-					  &pop.diploids,
-					  &pop.mutations,
-					  1000,
-					  0.005,
-					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),&pop.mut_lookup,generation,
-						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
-					  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-						    std::ref(pop.neutral),std::ref(pop.selected),
-						    &pop.gametes,
-						    0., //no rec
-						    rng.get(),
-						    recmap),
-					  std::bind(KTfwd::insert_at_end<poptype::gamete_t,poptype::glist_t>,std::placeholders::_1,std::placeholders::_2),
-					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,2.),
-					  std::bind(KTfwd::mutation_remover(),std::placeholders::_1,2*pop.N));
-      KTfwd::update_mutations(&pop.mutations,&pop.fixations,&pop.fixation_times,&pop.mut_lookup,generation,2*pop.N);
-    }
-
-  //attempt to copy
-  poptype pop2 = pop;
-
-  BOOST_REQUIRE(pop.mutations.size() == pop2.mutations.size());
-  BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  // unsigned NN=0;
-  // for(const auto & g : pop.gametes)
-  //   {
-  //     if(g.n)++NN;
-  //   }
-  //BOOST_REQUIRE(NN == pop2.gametes.size());
-  //BOOST_REQUIRE(pop.gametes.size() == pop2.gametes.size());
-  BOOST_REQUIRE(pop.diploids.size() == pop2.diploids.size());
-  BOOST_REQUIRE(pop.mut_lookup == pop2.mut_lookup);
-  //Compare the mutations
-  for( auto m1 = pop.mutations.begin(),m2 = pop2.mutations.begin() ; m1 != pop.mutations.end() ; ++m1,++m2 )
-    {
-      BOOST_CHECK_EQUAL( m1->pos, m2->pos );
-      BOOST_CHECK_EQUAL( m1->n, m2->n );
-    }
-  
-  //Compare the gametes
-  for( auto g1 = pop.gametes.begin(),g2 = pop2.gametes.begin() ; g1 != pop.gametes.end() ; ++g1,++g2 )
-    {
-      BOOST_CHECK( g1 != g2 );
-      BOOST_CHECK_EQUAL( g1->n,g2->n );
-      if(g1->n)
-	{
-	  for( auto m1 = g1->mutations.begin(),m2=g2->mutations.begin() ; m1 != g1->mutations.end() ; ++m1,++m2 )
-	    {
-	      BOOST_CHECK( m1 != m2 );
-	      BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	      BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	      BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	    }
-	}
-    }
-  
-  //Compare the diploids
-  for( auto d1 = pop.diploids.begin(),d2 = pop2.diploids.begin() ; d1 != pop.diploids.end() ; ++d1,++d2 )
-    {
-      BOOST_CHECK(d1->first != d2->first);
-      BOOST_CHECK(d1->second != d2->second);
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->first ) == std::distance( pop2.gametes.begin(),d2->first ) );
-      BOOST_CHECK( std::distance( pop.gametes.begin(),d1->second ) == std::distance( pop2.gametes.begin(),d2->second ) );
-      for( auto m1 = d1->first->mutations.begin(),m2=d2->first->mutations.begin() ; m1 != d1->first->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-      for( auto m1 = d1->second->mutations.begin(),m2=d2->second->mutations.begin() ; m1 != d1->second->mutations.end() ; ++m1,++m2 )
-	{
-	  BOOST_CHECK( m1 != m2 );
-	  BOOST_CHECK( std::distance(pop.mutations.begin(),*m1) == std::distance(pop2.mutations.begin(),*m2) );
-	  BOOST_CHECK_EQUAL( (*m1)->pos, (*m2)->pos );
-	  BOOST_CHECK_EQUAL( (*m1)->n, (*m2)->n ); 
-	}
-    }
-
-  poptype pop3(std::move(pop));
-  BOOST_REQUIRE(pop2.mut_lookup == pop3.mut_lookup);
-  BOOST_REQUIRE(pop.mut_lookup != pop3.mut_lookup); //Assert that it moved
-  BOOST_REQUIRE(pop.mut_lookup.empty());
+  singlepop_t pop2=std::move(pop);
+  //Should be false b/c move will leave
+  //pop's containers in a wacky state
+  BOOST_CHECK_EQUAL(pop==pop2,false);
 }
