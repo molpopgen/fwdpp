@@ -92,6 +92,7 @@ namespace KTfwd
 			     gamete_recycling_bin,
 			     neutral,selected);
   }
+  
   template<typename gcont_t,
 	   typename mcont_t,
 	   typename lookup_t,
