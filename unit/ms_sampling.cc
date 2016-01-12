@@ -16,30 +16,29 @@
 #include <fwdpp/sampling_functions.hpp>
 
 using mutation_t = KTfwd::popgenmut;
-using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_t>;
 using poptype = KTfwd::singlepop<mutation_t>;
 
 void add_mutations(poptype & p)
 {
-  auto first_gam = p.gametes.begin();
+  //auto first_gam = p.gametes.begin();
   for( unsigned i = 0 ; i < 10 ; ++i )
     {
-      mutation_t m(double(i),0.,0.,0u,1);
-      auto mitr = p.mutations.insert(p.mutations.end(),std::move(m));
+      p.mutations.emplace_back(double(i),0.,0.,1);
       poptype::gamete_t ng(1);
-      ng.mutations.push_back(mitr);
-      auto gitr1 = p.gametes.insert(p.gametes.end(),std::move(ng));
-      mutation_t m1(double(i)+0.5,0.,0.,0u,1);
-      mitr = p.mutations.insert(p.mutations.end(),std::move(m1));
+      ng.mutations.push_back(p.mutations.size()-1);
+
+      p.mutations.emplace_back(double(i)+0.5,0.,0.,1);
       poptype::gamete_t ng2(1);
-      ng2.mutations.push_back(mitr);
-      auto gitr2 = p.gametes.insert(p.gametes.end(),std::move(ng2));
-      p.diploids[i].first=gitr1;
-      p.diploids[i].second=gitr2;
-      first_gam->n--;
+      ng2.mutations.push_back(p.mutations.size()-1);
+
+      p.gametes.emplace_back(std::move(ng));
+      p.diploids[i].first = p.gametes.size()-1;
+      p.gametes.emplace_back(std::move(ng2));
+      p.diploids[i].second = p.gametes.size()-1;
     }
-  p.gametes.erase(first_gam);
+  p.gametes[0].n=0;
+  p.mcounts = decltype(p.mcounts)(p.mcounts.size(),1);
+  //p.gametes.erase(first_gam);
 }
 
 poptype make_poptype()
@@ -56,13 +55,13 @@ BOOST_AUTO_TEST_CASE( check_pop )
   poptype pop = make_poptype();
   
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),20);
-  BOOST_REQUIRE_EQUAL(pop.gametes.size(),20);
+  BOOST_REQUIRE_EQUAL(pop.gametes.size(),21);
 }
 
 BOOST_AUTO_TEST_CASE( sample_properties_test )
 {
   poptype pop = make_poptype();
-  auto sample = KTfwd::fwdpp_internal::ms_sample_separate_single_deme(&pop.diploids,
+  auto sample = KTfwd::fwdpp_internal::ms_sample_separate_single_deme(pop.mutations,pop.gametes,pop.diploids,
 								      std::vector<unsigned>({0,1,2,3,4,5,6,7,8,9}),
 								      20,true);
   BOOST_REQUIRE_EQUAL(sample.second.empty(),true); //no selected mutations
@@ -83,7 +82,7 @@ BOOST_AUTO_TEST_CASE( sample_properties_test )
 BOOST_AUTO_TEST_CASE( odd )
 {
   poptype pop = make_poptype();
-  auto sample = KTfwd::fwdpp_internal::ms_sample_separate_single_deme(&pop.diploids,
+  auto sample = KTfwd::fwdpp_internal::ms_sample_separate_single_deme(pop.mutations,pop.gametes,pop.diploids,
 								      std::vector<unsigned>({0,1,2,3,4,5,6,7,8,9}),
 								      19,true);
   BOOST_REQUIRE_EQUAL(sample.second.empty(),true); //no selected mutations
