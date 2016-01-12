@@ -4,6 +4,8 @@
 
 TL;DR Big performance improvements due to better handling of objects in memory. Yay!  API changes. Boo!
 
+__The library documentation is likely to be out of date until a future release__
+
 * Vastly improved management of object lifetimes:
   * Extinct mutations/gametes are no longer removed each generation.
   * FIFO queues are constructed each generation in order to "recycle" those objects as new mutations/gametes.
@@ -20,13 +22,14 @@ TL;DR Big performance improvements due to better handling of objects in memory. 
   * The functions KTfwd::add_elements in the main library and KTfwd::add_recyclable in the sugar sub-library allow the addition of recylable objects.  See example programs for how to use these functions.
 
 * Other API changes:
-  * As a result of the changes described above, mutation models must now take a pointer to a list of mutations as an argument.
-  * The change to mutation model requirements means that the notion of a "mutation insertion policy" is no longer needed.  KTfwd::sample_diploid has been updated accordingly.
+  * As a result of the changes described above, the data structures of the library were changed from linked lists of iterators to vectors of std::size_t.  This is a radical change to the data layout, and results in further speedups.
+  * KTfwd::sample_diploid has been streamlined in light of common defaults
+  * Recombination policies have been simplified.  See KTfwd::poisson_xover for an example.
 
 * Behavior changes:
   * As a result of object recycling, data structures (mutation and gamete lists, specifically) at the end of a simulation contain both extant and extinct objects.
 * Implementation changes:
-  * Serialized populations may contain extinct mutations and gametes.   In the case of extinct gametes, the mutation containers are written as if they are empty.
+  * Serialized populations may contain extinct mutations and gametes.  
   * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
   * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
 
@@ -34,7 +37,8 @@ TL;DR Big performance improvements due to better handling of objects in memory. 
 * Deprecated functions/objects removed from library
 * Bug fixes:
   * Issue #30 fixed regarding serialization of KTfwd::generalmut and KTfwd::generalmut_vec
-
+  * A bug in KTfwd::ms_sample and KTfwd::ms_sample separate was identified and fixed.  The bug only applied to multilocus simulations.  The bug was that the first 'n' chromosomes were sampled, rather than 'n' randomly-chosen chromosomes.  The effect of the bug is that the first sample is truly random (as chromosomes are not sorted in any meaningful way), but a second sample would overlap with the first, etc.
+  
 ## 0.4.3
 
 * Fix for issue #29
