@@ -4,7 +4,6 @@ check_PROGRAMS=mutateTest \
 	crossoverTest \
 	gameteTest \
 	mutationTest \
-	policyTests \
 	mlocusCrossoverTest \
 	siteDepFitness \
 	sugar1 \

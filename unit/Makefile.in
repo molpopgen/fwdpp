@@ -79,7 +79,6 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	gameteTest$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	policyTests$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
@@ -139,11 +138,6 @@ am__mutationTest_SOURCES_DIST = mutationTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest.$(OBJEXT)
 mutationTest_OBJECTS = $(am_mutationTest_OBJECTS)
 mutationTest_LDADD = $(LDADD)
-am__policyTests_SOURCES_DIST = policyTests.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_policyTests_OBJECTS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	policyTests.$(OBJEXT)
-policyTests_OBJECTS = $(am_policyTests_OBJECTS)
-policyTests_LDADD = $(LDADD)
 am__siteDepFitness_SOURCES_DIST = siteDepFitness.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_siteDepFitness_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
@@ -218,9 +212,8 @@ am__v_CXXLD_1 =
 SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
 	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
 	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(policyTests_SOURCES) \
-	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
-	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
+	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
+	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
 	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
 	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES) \
 	$(test_generalmut_vec_SOURCES)
@@ -230,7 +223,6 @@ DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
-	$(am__policyTests_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
 	$(am__sugar1_custom_SOURCES_DIST) $(am__sugar2_SOURCES_DIST) \
 	$(am__sugar2_custom_SOURCES_DIST) $(am__sugar3_SOURCES_DIST) \
@@ -645,10 +637,6 @@ mutationTest$(EXEEXT): $(mutationTest_OBJECTS) $(mutationTest_DEPENDENCIES) $(EX
 	@rm -f mutationTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutationTest_OBJECTS) $(mutationTest_LDADD) $(LIBS)
 
-policyTests$(EXEEXT): $(policyTests_OBJECTS) $(policyTests_DEPENDENCIES) $(EXTRA_policyTests_DEPENDENCIES) 
-	@rm -f policyTests$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(policyTests_OBJECTS) $(policyTests_LDADD) $(LIBS)
-
 siteDepFitness$(EXEEXT): $(siteDepFitness_OBJECTS) $(siteDepFitness_DEPENDENCIES) $(EXTRA_siteDepFitness_DEPENDENCIES) 
 	@rm -f siteDepFitness$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(siteDepFitness_OBJECTS) $(siteDepFitness_LDADD) $(LIBS)
@@ -698,7 +686,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ms_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/policyTests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1_custom.Po@am__quote@
@@ -940,13 +927,6 @@ gameteTest.log: gameteTest$(EXEEXT)
 mutationTest.log: mutationTest$(EXEEXT)
 	@p='mutationTest$(EXEEXT)'; \
 	b='mutationTest'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-policyTests.log: policyTests$(EXEEXT)
-	@p='policyTests$(EXEEXT)'; \
-	b='policyTests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
