@@ -7,34 +7,33 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
+#include <iostream>
 #include <fwdpp/diploid.hh>
 #include <boost/test/unit_test.hpp>
 #include <unistd.h>
 #include <iterator>
 #include <functional>
-#include <list>
+#include <vector>
 //trivial ways to play with the KTfwd::mutation type
 using mut = KTfwd::mutation;
 using gtype = KTfwd::gamete;
 
 BOOST_AUTO_TEST_CASE( make_mutation_1 )
 {
-  //Mutation at position 0.1, selection coefficient of 0, count in population of 1
-  mut m(0.1,0.,1);
+  //Mutation at position 0.1, selection coefficient of 0
+  mut m(0.1,0.);
 
   BOOST_REQUIRE_EQUAL(m.pos,0.1);
-  BOOST_REQUIRE_EQUAL(m.n,1);
   BOOST_REQUIRE_EQUAL(m.neutral,true);
 }
 
 BOOST_AUTO_TEST_CASE( make_mutation_2 )
 {
-  //Mutation at position 0.1, selection coefficient of 0, count in population of 1
+  //Mutation at position 0.1, selection coefficient of 0,
   //dominance of 0.25
-  mut m(0.1,0.,1,0.25);
+  mut m(0.1,0,0.25);
 
   BOOST_REQUIRE_EQUAL(m.pos,0.1);
-  BOOST_REQUIRE_EQUAL(m.n,1);
   BOOST_REQUIRE_EQUAL(m.neutral,true);
   BOOST_REQUIRE_EQUAL(m.h,0.25);
 }
@@ -62,22 +61,22 @@ BOOST_AUTO_TEST_CASE( add_mutation_1 )
   gtype g(1);
 
   //create a neutral mutation and add it to the "mutation pool"
-  std::list<mut> mlist;
+  std::vector<mut> mvector(1,mut(0.1,0.));
 
-  auto mitr = mlist.insert(mlist.end(),mut(0.1,0.,1));
-
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g);
+  KTfwd::fwdpp_internal::add_new_mutation(0,mvector,g);
 
   //So now, there is 1 neutral mutation and no selected mutations
   BOOST_CHECK_EQUAL( g.mutations.size(), 1 );
   BOOST_CHECK( g.smutations.empty() );
 
   //let's put in a selected mutation
-  mitr = mlist.insert(mlist.end(),mut(0.1,-2.,1));
-  KTfwd::fwdpp_internal::add_new_mutation(mitr,g);
+  mvector.emplace_back(0.1,-0.2);
+  KTfwd::fwdpp_internal::add_new_mutation(1,mvector,g);
 
   BOOST_CHECK_EQUAL( g.mutations.size(), 1 );
   BOOST_CHECK_EQUAL( g.smutations.size(), 1 );
+  BOOST_CHECK_EQUAL( mvector[1].pos,0.1 );
+  BOOST_CHECK_CLOSE( mvector[1].s,-0.2,1e-6 );
 }
 
 /*
@@ -93,23 +92,25 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_1 )
   std::vector<double> next_mut_pos = { 2., 0.24, 0.25, 3, 1.999 };
   decltype(next_mut_pos)::size_type i = 0;
 
-  std::list<mut> mlist;
-
-  auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
+  std::vector<mut> mvector;
+  std::vector<KTfwd::uint_t> mcounts;
+  auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
   //This is the mutation model.  Return a mutation at the next position
   //Positions are deterministic for the sake of testing.
-  auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) & rbin,std::list<mut> * __mlist )
+  auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) & rbin,std::vector<mut> & __mvector )
     {
       //mutations are all neutral
-      return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mlist,next_mut_pos[i++], 0., 1 );
+      return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mvector,next_mut_pos[i++], 0. );
     };
 
+  std::cerr << "HERE\n";
   KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
 						 mmodel,
 						 next_mut_pos.size(),
-						 &mlist,
+						 mvector,
 						 g);
-  BOOST_CHECK_EQUAL( mlist.size(), next_mut_pos.size() );
+  
+  BOOST_CHECK_EQUAL( mvector.size(), next_mut_pos.size() );
   //neutral mutations should contain 5 things
   BOOST_CHECK_EQUAL( g.mutations.size(), next_mut_pos.size() );
   //selected mutations should be empty
@@ -124,9 +125,8 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_1 )
    */
   BOOST_CHECK( std::is_sorted( g.mutations.cbegin(),
 			       g.mutations.cend(),
-			       []( std::list<mut>::iterator i,
-				   std::list<mut>::iterator j ) {
-				 return i->pos < j->pos;
+			       [&mvector]( std::size_t i, std::size_t j ) {
+				 return mvector[i].pos < mvector[j].pos;
 			       } )
 	       );
 
@@ -135,59 +135,10 @@ BOOST_AUTO_TEST_CASE( add_N_mutations_1 )
     {
       BOOST_CHECK( std::find_if( g.mutations.begin(),
 				 g.mutations.end(),
-				 [&p]( std::list<mut>::iterator i ) {
-				   return i->pos == p;
+				 [&p,&mvector]( std::size_t i ) {
+				   return mvector[i].pos == p;
 				 } ) != g.mutations.end()
 		   );
     }
 }
 
-/*
-  Same as previous test, but all mutations at the same position.
-  This is allowed,  but that doesn't meant it is a good idea 
-  unless you really know what you're doing
-*/
-BOOST_AUTO_TEST_CASE( add_N_mutations_2 )
-{
-  gtype g(1);
-
-  std::vector<double> next_mut_pos = { 1.,1.,1.,1. };
-  decltype(next_mut_pos)::size_type i = 0;
-
-  std::list<mut> mlist;
-  auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(&mlist);
-  
-  //This is the mutation model.  Return a mutation at the next position
-  //Positions are deterministic for the sake of testing.
-  auto mmodel = [&next_mut_pos,&i](decltype(mut_recycling_bin) & rbin, std::list<mut> * __mlist )
-    {
-      //mutations are all neutral
-      return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mlist,next_mut_pos[i++], 0., 1 );
-    };
-
-  KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,mmodel,
-						 next_mut_pos.size(),
-						 &mlist,
-						 g );
-
-  BOOST_CHECK_EQUAL( mlist.size(), next_mut_pos.size() );
-  //neutral mutations should contain 5 things
-  BOOST_CHECK_EQUAL( g.mutations.size(), next_mut_pos.size() );
-  //selected mutations should be empty
-  BOOST_CHECK( g.smutations.empty() );
-  /*
-    This is the important test:
-    
-    The library assumes that the iterators to mutations
-    stored by gametes are sorted w.r.to position.
-
-    The mutation functions take care of that.
-   */
-  BOOST_CHECK( std::is_sorted( g.mutations.cbegin(),
-			       g.mutations.cend(),
-			       []( std::list<mut>::iterator i,
-				   std::list<mut>::iterator j ) {
-				 return i->pos < j->pos;
-			       } )
-	       );
-}
