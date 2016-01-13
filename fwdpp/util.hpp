@@ -17,18 +17,6 @@
 
 namespace KTfwd
 {
-  /* \brief Sets mutation::checked to false
-   */
-  template<typename mutation_type,
-  	   typename list_type_allocator,
-  	   template <typename,typename> class list_type>
-  void uncheck( list_type<mutation_type,list_type_allocator> * mutations )
-  {
-    static_assert( typename traits::is_mutation_t<mutation_type>::type(),
-                   "mutation_type must be derived from KTfwd::mutation_base" );
-    std::for_each(mutations->begin(),mutations->end(),[](mutation_type & __m){__m.checked=false;});
-  }
-
   /*!
     Label all extinct and fixed variants for recycling
 
