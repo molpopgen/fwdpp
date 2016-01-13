@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <functional>
-
+#include <cassert>
 namespace KTfwd
 {
   namespace fwdpp_internal
@@ -17,7 +17,8 @@ namespace KTfwd
       if(__first==__last) return __first;
       return std::upper_bound(__first,__last,
 			      std::cref(val),
-			      [&mutations](const double __val,const std::size_t __mut) {
+			      [&mutations](const double __val,const std::size_t __mut) noexcept {
+				assert(__mut < mutations.size());
 				return __val < mutations[__mut].pos;
 			      });
     }
