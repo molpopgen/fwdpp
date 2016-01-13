@@ -2,7 +2,7 @@
 #define __FWDPP_INTERNAL_MUTATION_HPP__
 
 #include <algorithm>
-
+#include <cassert>
 namespace KTfwd {
   namespace fwdpp_internal
   {
@@ -25,7 +25,8 @@ namespace KTfwd {
 			   new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
 	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
 							new_gamete.mutations.end(),mutations[idx].pos,
-							[&mutations](const double & __value,const std::size_t __mut){
+							[&mutations](const double & __value,const std::size_t __mut) noexcept {
+							  assert(__mut<mutations.size());
 							  return __value < mutations[__mut].pos;}),
 				       idx );
 	  assert(gamete_is_sorted_n(new_gamete,mutations));
@@ -36,7 +37,8 @@ namespace KTfwd {
 			   new_gamete.smutations.end(),idx)==new_gamete.smutations.end());
 	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
 							 new_gamete.smutations.end(),mutations[idx].pos,
-							 [&mutations](const double & __value,const std::size_t __mut){
+							 [&mutations](const double & __value,const std::size_t __mut) noexcept {
+							   assert(__mut<mutations.size());
 							   return __value < mutations[__mut].pos;}),
 					idx );
 	  assert(gamete_is_sorted_s(new_gamete,mutations));
