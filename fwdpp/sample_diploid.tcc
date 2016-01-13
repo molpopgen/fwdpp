@@ -1,6 +1,7 @@
 //  -*- C++ -*-
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
+#include <memory>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
@@ -90,7 +91,8 @@ namespace KTfwd
     assert(mcounts.size()==mutations.size());
     assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
-    std::vector<double> fitnesses(diploids.size());
+
+    std::unique_ptr<double[]> fitnesses(new (std::nothrow) double[diploids.size()]);
     double wbar = 0.;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
@@ -107,7 +109,7 @@ namespace KTfwd
 #ifndef NDEBUG
     for(const auto & g : gametes) assert(!g.n);
 #endif
-    fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(fitnesses.size(),&fitnesses[0]));
+    fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,fitnesses.get()));
     const auto parents(diploids); //copy the parents
 
     //Change the population size
@@ -260,7 +262,8 @@ namespace KTfwd
 
     //get max N
     auto mN = *std::max_element(N_curr,N_curr+diploids.size());
-    double * fitnesses = new double[mN];
+
+    std::unique_ptr<double[]> fitnesses(new double[mN]);
 
     std::size_t popi=0;
     for(const auto & dipvec : diploids ) //go over each container of diploids...
@@ -274,11 +277,9 @@ namespace KTfwd
 	    ++i;
 	  }
 	wbars[popi] /= double(dipvec.size());
-	lookups.emplace_back(lookup_t(gsl_ran_discrete_preproc(dipvec.size(),fitnesses)));
+	lookups.emplace_back(lookup_t(gsl_ran_discrete_preproc(dipvec.size(),fitnesses.get())));
 	++popi;
       }
-    
-    delete [] fitnesses;
 
     assert(lookups.size() == diploids.size());
     //copy diploids into temporary parents
