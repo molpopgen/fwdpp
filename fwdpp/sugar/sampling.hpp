@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
