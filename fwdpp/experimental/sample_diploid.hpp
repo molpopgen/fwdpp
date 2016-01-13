@@ -157,9 +157,9 @@ namespace KTfwd {
 	  if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 	  
 	  dip.first = recombination(gametes,gamete_lookup,gamete_recycling_bin,
-				    neutral,selected,rec_pol,p1g1,p1g2,mutations);
+				    neutral,selected,rec_pol,p1g1,p1g2,mutations).first;
 	  dip.second = recombination(gametes,gamete_lookup,gamete_recycling_bin,
-				     neutral,selected,rec_pol,p2g1,p2g2,mutations);
+				     neutral,selected,rec_pol,p2g1,p2g2,mutations).first;
 	
 	  gametes[dip.first].n++;
 	  gametes[dip.second].n++;
