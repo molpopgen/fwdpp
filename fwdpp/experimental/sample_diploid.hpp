@@ -40,14 +40,7 @@ namespace KTfwd {
 	    fitnesses[i]= fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],gametes,mutations,
 								   typename KTfwd::traits::is_custom_diploid_t<diploid_geno_t>::type());
 	  }
-	// for( unsigned i = 0 ; i < N_curr ; ++i )
-	//   {
-	//     (dptr+i)->first->n = 0;
-	//     (dptr+i)->second->n = 0;
-	//     fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,(dptr+i),
-	// 							    typename KTfwd::traits::is_custom_diploid_t<diploid_geno_t>::type());
-	//     wbar += fitnesses[i];
-	//   }
+	
 	wbar /= double(diploids.size());
 
 	/*!
@@ -70,8 +63,6 @@ namespace KTfwd {
       //template<typename diploid_itr_t>
       inline size_t pick2(gsl_rng * r, const size_t & p1, const double & f ) const
       {
-	//static asserts suppress hideously-long compiler warnings on GCC
-	//static_assert( std::is_const< typename std::remove_pointer<typename decltype(p1_itr)::pointer>::type >::value , "p1_itr must point to const data");
 	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
       }
 
