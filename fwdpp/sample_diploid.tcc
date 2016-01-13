@@ -118,9 +118,7 @@ namespace KTfwd
 	diploids.resize(N_next);
       }
     assert(diploids.size()==N_next);
-    //std::size_t p1g1,p1g2,p2g1,p2g2;
 
-    //for( uint_t i = 0 ; i < N_next ; ++i )
     for(auto & dip : diploids)
       {
 	size_t p1 = gsl_ran_discrete(r,lookup.get());
@@ -452,30 +450,6 @@ namespace KTfwd
 					       );
 	
       }
-//     for( uint_t curr_dip = 0 ; curr_dip < N_next ; ++curr_dip )
-//       {
-// 	assert(dptr==diploids->begin());
-// 	assert( (dptr+curr_dip) < diploids->end() );
-
-// 	//Choose the two parents
-// 	typename decltype(pptr)::difference_type p1 = decltype(p1)(gsl_ran_discrete(r,lookup.get()));
-// #ifdef FWDPP_COMPAT_0_3_0
-// 	decltype(p1) p2  = (gsl_rng_uniform(r) < f) ? p1 : decltype(p1)(gsl_ran_discrete(r,lookup.get()));
-// #else
-// 	decltype(p1) p2 = (f==1. || (f>0. && gsl_rng_uniform(r)<f)) ? p1 :  decltype(p1)(gsl_ran_discrete(r,lookup.get()));
-// #endif
-// 	assert(p1<N_curr);
-// 	assert(p2<N_curr);
-
-// 	auto cdip = (dptr+curr_dip);
-// 	fwdpp_internal::multilocus_rec_mut(r,*(pptr+p1),*(pptr+p2),cdip,
-// 					   mut_recycling_bin,gamete_recycling_bin,gamete_lookup,
-// 					   rec_policies,blrf,r_between_loci,
-// 					   ((gsl_rng_uniform(r)<0.5)?1:0),
-// 					   ((gsl_rng_uniform(r)<0.5)?1:0),
-// 					   gametes,mutations,mu,mmodel,gpolicy_mut
-// 					   );
-//       }
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,
 				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
