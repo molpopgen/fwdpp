@@ -40,13 +40,8 @@ namespace KTfwd {
 #endif
     >
     diploid_type multilocus_rec_mut(gsl_rng * r,
-				    //const std::size_t & parent1,
-				    //const std::size_t & parent2,
 				    diploid_type parent1,
 				    diploid_type parent2,
-				    //const diploid_type & parent1,
-				    //const diploid_type & parent2,
-				    //diploid_type & offspring, //non-const ref, this is the offspring whose data gets modified
 				    mqueue_t & mutation_recycling_bin,
 				    gqueue_t & gamete_recycling_bin,
 				    gamete_lookup_t & gamete_lookup,
@@ -77,8 +72,8 @@ namespace KTfwd {
       diploid_type offspring(parent1.size());
       std::vector<int> nswaps1(parent1.size(),iswitch1),nswaps2(parent2.size(),iswitch2);
       std::vector<int>::iterator s1 = nswaps1.begin(),s2=nswaps2.begin();
-      //unsigned nrec;
-      for(unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2)//,++optr )
+
+      for(unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2)
 	{
 	  if(i)
 	    {
@@ -96,12 +91,7 @@ namespace KTfwd {
 	  if( *s1 % 2 != 0.) std::swap(parent1[i].first,parent1[i].second);
 	  if( *s2 % 2 != 0.) std::swap(parent2[i].first,parent2[i].second);
 
-	  //Assign pointers to offspring
-	  //optr->first = parent1[i].first;
-	  //optr->second = parent2[i].first;
-
 	  //mechanics of recombination
-	  //unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup,gamete_recycling_bin);
 	  auto xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
 				  parent1[i].first,parent1[i].second,mutations);
 	  offspring[i].first = xx.first;
@@ -110,7 +100,6 @@ namespace KTfwd {
 	  xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
 			    parent2[i].first,parent2[i].second,mutations);
 	  offspring[i].second = xx.first;
-	  //nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup,gamete_recycling_bin);
 	  if(xx.second%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
 
 #ifndef FWDPP_UNIT_TESTING
@@ -118,12 +107,6 @@ namespace KTfwd {
 	  gametes[offspring[i].second].n++;
 	  offspring[i].first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].first,mmodel[i],gpolicy_mut);
 	  offspring[i].second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].second,mmodel[i],gpolicy_mut);
-	  /*
-	  optr->first->n++;
-	  optr->second->n++;
-	  optr->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->first,mmodel[i],gpolicy_mut);
-	  optr->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,optr->second,mmodel[i],gpolicy_mut);
-	  */
 #endif
 	}
       return offspring;
