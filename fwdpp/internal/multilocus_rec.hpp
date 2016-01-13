@@ -77,7 +77,7 @@ namespace KTfwd {
       diploid_type offspring(parent1.size());
       std::vector<int> nswaps1(parent1.size(),iswitch1),nswaps2(parent2.size(),iswitch2);
       std::vector<int>::iterator s1 = nswaps1.begin(),s2=nswaps2.begin();
-      unsigned nrec;
+      //unsigned nrec;
       for(unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2)//,++optr )
 	{
 	  if(i)
@@ -102,14 +102,16 @@ namespace KTfwd {
 
 	  //mechanics of recombination
 	  //unsigned nrec = rec_pols[i](optr->first,parent1[i].second,gamete_lookup,gamete_recycling_bin);
-	  offspring[i].first = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
-					     parent1[i].first,parent1[i].second,mutations,&nrec);
-	  if(nrec%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	  auto xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+				  parent1[i].first,parent1[i].second,mutations);
+	  offspring[i].first = xx.first;
+	  if(xx.second%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
 
-	  offspring[i].second = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
-					      parent2[i].first,parent2[i].second,mutations,&nrec);
+	  xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+			    parent2[i].first,parent2[i].second,mutations);
+	  offspring[i].second = xx.first;
 	  //nrec = rec_pols[i](optr->second,parent2[i].second,gamete_lookup,gamete_recycling_bin);
-	  if(nrec%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,nrec) );
+	  if(xx.second%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
 
 #ifndef FWDPP_UNIT_TESTING
 	  gametes[offspring[i].first].n++;

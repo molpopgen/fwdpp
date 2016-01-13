@@ -48,51 +48,24 @@ namespace KTfwd
     \param g1 Index of gamete 1 to recombine
     \param g2 Index of gamete 2 to recombine
     \param mutation A container of mutations
-   */
+    
+    \return A pair.  The first element is the index of the recombinant gamete.  The second element is the number of breakpoints 
+    where recombination occurred.  Typically, the latter is not needed.
+  */
   template<typename gcont_t,
 	   typename mcont_t,
 	   typename lookup_t,
 	   typename recbin_t,
 	   typename recpol_t>
-  std::size_t recombination(gcont_t & gametes,
-			    lookup_t & gamete_lookup,
-			    recbin_t & gamete_recycling_bin,
-			    typename gcont_t::value_type::mutation_container & neutral,
-			    typename gcont_t::value_type::mutation_container & selected,
-			    const recpol_t & rec_pol,
-			    const std::size_t g1,
-			    const std::size_t g2,
-			    const mcont_t & mutations);
-
-    /*!
-    Recombine gametes[g1] and gametes[g2] at positions determined by rec_pol
-
-    \param Gametes A container of gametes
-    \param gamete_lookup
-    \param gamete_recycling_bin
-    \param neutral A container for neutral mutations. Will be cleared and updated.
-    \param selected A container for non-neutral mutations. Will be cleared and updated.
-    \param rec_pol Function to generate recombination positions
-    \param g1 Index of gamete 1 to recombine
-    \param g2 Index of gamete 2 to recombine
-    \param mutation A container of mutations
-    \param nrecs Stores the number of recombination breakpoints.
-   */
-  template<typename gcont_t,
-	   typename mcont_t,
-	   typename lookup_t,
-	   typename recbin_t,
-	   typename recpol_t>
-  std::size_t recombination(gcont_t & gametes,
-			    lookup_t & gamete_lookup,
-			    recbin_t & gamete_recycling_bin,
-			    typename gcont_t::value_type::mutation_container & neutral,
-			    typename gcont_t::value_type::mutation_container & selected,
-			    const recpol_t & rec_pol,
-			    const std::size_t g1,
-			    const std::size_t g2,
-			    const mcont_t & mutations,
-			    unsigned * nrec);
+  std::pair<std::size_t,unsigned> recombination(gcont_t & gametes,
+						lookup_t & gamete_lookup,
+						recbin_t & gamete_recycling_bin,
+						typename gcont_t::value_type::mutation_container & neutral,
+						typename gcont_t::value_type::mutation_container & selected,
+						const recpol_t & rec_pol,
+						const std::size_t g1,
+						const std::size_t g2,
+						const mcont_t & mutations);
   
   /*!
     Overload for fixed xover positions.
