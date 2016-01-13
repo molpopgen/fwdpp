@@ -29,14 +29,14 @@ namespace KTfwd {
 	    {
 	      g.mutations.erase(std::remove_if(g.mutations.begin(),
 					       g.mutations.end(),
-					       [&mcounts,&twoN](const std::size_t & i)
+					       [&mcounts,&twoN](const std::size_t & i) noexcept
 					       {
 						 return mcounts[i]==twoN;
 					       }),
 				g.mutations.end());
 	      g.smutations.erase(std::remove_if(g.smutations.begin(),
 						g.smutations.end(),
-						[&mcounts,&twoN](const std::size_t & i)
+						[&mcounts,&twoN](const std::size_t & i) noexcept
 						{
 						  return mcounts[i]==twoN;
 						}),
