@@ -21,14 +21,14 @@ namespace KTfwd {
       assert( std::is_sorted(pos.cbegin(),pos.cend()) );
       short SWITCH = 0;
 
-      auto itr = gametes[ibeg].mutations.cbegin(),
-	jtr = gametes[jbeg].mutations.cbegin(),
-	itr_s = gametes[ibeg].smutations.cbegin(),
-	jtr_s = gametes[jbeg].smutations.cbegin(),
-	itr_e = gametes[ibeg].mutations.cend(),
-	itr_s_e = gametes[ibeg].smutations.cend(),
-	jtr_e = gametes[jbeg].mutations.cend(),
-	jtr_s_e = gametes[jbeg].smutations.cend();
+      auto itr = gametes[ibeg].mutations.cbegin();
+      auto jtr = gametes[jbeg].mutations.cbegin();
+      auto itr_s = gametes[ibeg].smutations.cbegin();
+      auto jtr_s = gametes[jbeg].smutations.cbegin();
+      auto itr_e = gametes[ibeg].mutations.cend();
+      auto itr_s_e = gametes[ibeg].smutations.cend();
+      auto jtr_e = gametes[jbeg].mutations.cend();
+      auto jtr_s_e = gametes[jbeg].smutations.cend();
       
       for(const double dummy : pos )
 	{
