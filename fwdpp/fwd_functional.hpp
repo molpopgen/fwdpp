@@ -11,45 +11,6 @@
 
 namespace KTfwd
 {
-  /*! \brief Returns true if member n == 0
-    Used internally
-   */
-  struct n_is_zero
-  {
-    using result_type = bool;
-    template<typename T>
-    inline bool operator()(const T & t)const
-    {
-      return t.n==0;
-    }
-  };
-
-  /*! \brief Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
-    Returns true if std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon()
-   */
-  struct mutation_at_pos
-  {
-    using result_type = bool;
-    template<typename mutation_type>
-    inline bool operator()(const mutation_type & m, const double & d) const
-    {
-      return( std::fabs(m.pos-d) <= std::numeric_limits<double>::epsilon() );
-    }
-  };
-  
-  /*!\brief Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
-    Returns true if std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon()
-  */
-  struct same_pos
-  {
-    using result_type = bool;
-    template<typename mutation_type>
-    inline bool operator()(const mutation_type & m1, const mutation_type & m2) const
-    {
-      return( std::fabs(m1.pos-m2.pos) <= std::numeric_limits<double>::epsilon() );
-    }
-  };
-
   /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
   struct equal_eps
   {
@@ -62,30 +23,6 @@ namespace KTfwd
     {
       return( std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon() );
     }
-  };
-
-  /*! \brief Policy determining how mutations are removed from gametes after sampling
-    Policy determining how mutations are removed from gametes after sampling
-
-    Typical usage is to pass to KTfwd::sample_diploid as follows:
-    \code
-    std::bind( KTfwd::mutation_remover(), twoN ); //If a mutation is at frequency 2N after sampling, remove pointers to it from all gametes
-    \endcode
-   */
-  struct mutation_remover
-  {
-    using result_type = bool;
-    template<typename iterator_type> 
-    inline result_type operator()(const iterator_type & i,
-				  const uint_t & x1 ) const
-    {
-      assert(i);
-      return i == x1;
-    }
-  };
-
-  struct remove_fixed
-  {
   };
   
   /* \brief Policy telling library not to remove any mutations from gametes after sampling
