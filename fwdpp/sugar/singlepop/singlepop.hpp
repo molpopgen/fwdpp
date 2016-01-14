@@ -64,7 +64,8 @@ namespace KTfwd {
       using mvector_t = mvector;
       //! container type for fixation times
       using ftvector_t = ftvector;
-
+      //! Fitness function signature compatible with this type
+      using fitness_t = KTfwd::traits::fitness_fxn_t<dipvector_t,gcont_t,mcont_t>;
       mcont mutations;
       /*!
 	Used to keep track of mutation frequencies.
