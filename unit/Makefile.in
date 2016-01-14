@@ -89,7 +89,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -113,6 +114,11 @@ am__crossoverTest_SOURCES_DIST = crossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
 crossoverTest_OBJECTS = $(am_crossoverTest_OBJECTS)
 crossoverTest_LDADD = $(LDADD)
+am__extensions_SOURCES_DIST = extensions.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_extensions_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	extensions.$(OBJEXT)
+extensions_OBJECTS = $(am_extensions_OBJECTS)
+extensions_LDADD = $(LDADD)
 am__gameteTest_SOURCES_DIST = gameteTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_gameteTest_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	gameteTest.$(OBJEXT)
@@ -210,16 +216,17 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
-	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
-	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
-	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
+	$(extensions_SOURCES) $(gameteTest_SOURCES) \
+	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
+	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
+	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
+	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
 	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
 	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES) \
 	$(test_generalmut_vec_SOURCES)
 DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
-	$(am__gameteTest_SOURCES_DIST) \
+	$(am__extensions_SOURCES_DIST) $(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
@@ -568,6 +575,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@callbacks_SOURCES = callbacks.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_SOURCES = test_generalmut.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_vec_SOURCES = test_generalmut_vec.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@extensions_SOURCES = extensions.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -615,6 +623,10 @@ callbacks$(EXEEXT): $(callbacks_OBJECTS) $(callbacks_DEPENDENCIES) $(EXTRA_callb
 crossoverTest$(EXEEXT): $(crossoverTest_OBJECTS) $(crossoverTest_DEPENDENCIES) $(EXTRA_crossoverTest_DEPENDENCIES) 
 	@rm -f crossoverTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(crossoverTest_OBJECTS) $(crossoverTest_LDADD) $(LIBS)
+
+extensions$(EXEEXT): $(extensions_OBJECTS) $(extensions_DEPENDENCIES) $(EXTRA_extensions_DEPENDENCIES) 
+	@rm -f extensions$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(extensions_OBJECTS) $(extensions_LDADD) $(LIBS)
 
 gameteTest$(EXEEXT): $(gameteTest_OBJECTS) $(gameteTest_DEPENDENCIES) $(EXTRA_gameteTest_DEPENDENCIES) 
 	@rm -f gameteTest$(EXEEXT)
@@ -680,6 +692,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extensions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ms_sampling.Po@am__quote@
@@ -1010,6 +1023,13 @@ test_generalmut.log: test_generalmut$(EXEEXT)
 test_generalmut_vec.log: test_generalmut_vec$(EXEEXT)
 	@p='test_generalmut_vec$(EXEEXT)'; \
 	b='test_generalmut_vec'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+extensions.log: extensions$(EXEEXT)
+	@p='extensions$(EXEEXT)'; \
+	b='extensions'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
