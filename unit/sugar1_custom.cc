@@ -77,8 +77,10 @@ void simulate( singlepop_t & pop )
 						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
 					  std::bind(KTfwd::poisson_xover(),rng.get(),0.005,0.,1.,
 						    std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
-					  []( const diploid_t & dip, const singlepop_t::gcont_t & gametes,
-					      const singlepop_t::mcont_t & mutations) { return KTfwd::multiplicative_diploid()(gametes[dip.first],gametes[dip.second],mutations,2.); },
+					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+						    std::placeholders::_3,2),
+					  //[]( const diploid_t & dip, const singlepop_t::gcont_t & gametes,
+					  //    const singlepop_t::mcont_t & mutations) { return KTfwd::multiplicative_diploid()(gametes[dip.first],gametes[dip.second],mutations,2.); },
 					  pop.neutral,pop.selected);
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*pop.N);
     }
