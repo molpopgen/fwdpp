@@ -56,8 +56,8 @@ namespace KTfwd
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
 		 const diploid_fitness_function & ff,
-		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const double f = 0.,
 		 const mutation_removal_policy & mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy()
@@ -112,8 +112,8 @@ namespace KTfwd
 		 const mutation_model & mmodel,
 		 const recombination_policy & rec_pol,
 		 const diploid_fitness_function & ff,
-		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const double f = 0.,
 		 const mutation_removal_policy & mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy()
@@ -172,8 +172,8 @@ namespace KTfwd
 		 const recombination_policy & rec_pol,
 		 const diploid_fitness_function_container & ffs,
 		 const migration_policy & mig,
-		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const double * f = nullptr,
 		 const mutation_removal_policy & mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
@@ -233,8 +233,8 @@ namespace KTfwd
 		 const recombination_policy & rec_pol,
 		 const diploid_fitness_function_container & ffs,
 		 const migration_policy & mig,
-		 typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		 typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
 		 const double * f = nullptr,
 		 const mutation_removal_policy & mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
@@ -261,23 +261,23 @@ namespace KTfwd
 	    >
   double
   sample_diploid(gsl_rng * r,
-		      gamete_cont_type<gamete_type, gamete_cont_type_allocator> & gametes,
-		      diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> & diploids,
-		      mutation_cont_type<mutation_type,mutation_cont_type_allocator > & mutations,
-		      std::vector<uint_t> & mcounts,
-		      const uint_t & N_curr,
-		      const uint_t & N_next,
-		      const double * mu,
-		      const mutation_model_container & mmodel,
-		      const recombination_policy_container & rec_policies,
-		      const double * r_between_loci,
-		      const bw_locus_rec_fxn & blrf,
-		      const diploid_fitness_function & ff,
-		      typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		      typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
-		      const double & f = 0,
-		      const mutation_removal_policy & mp = mutation_removal_policy(),
-		      const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
+		 gamete_cont_type<gamete_type, gamete_cont_type_allocator> & gametes,
+		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> & diploids,
+		 mutation_cont_type<mutation_type,mutation_cont_type_allocator > & mutations,
+		 std::vector<uint_t> & mcounts,
+		 const uint_t & N_curr,
+		 const uint_t & N_next,
+		 const double * mu,
+		 const mutation_model_container & mmodel,
+		 const recombination_policy_container & rec_policies,
+		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
+		 const diploid_fitness_function & ff,
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
+		 const double & f = 0,
+		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
 
   /*! \brief Single deme, multilocus model, constant population size
     \example diploid_ind_2locus.cc
@@ -302,22 +302,22 @@ namespace KTfwd
 	    typename gamete_insertion_policy = emplace_back>
   double
   sample_diploid(gsl_rng * r,
-		      gamete_cont_type<gamete_type, gamete_cont_type_allocator> & gametes,
-		      diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> & diploids,
-		      mutation_cont_type<mutation_type,mutation_cont_type_allocator > & mutations,
-		      std::vector<uint_t> & mcounts,
-		      const uint_t & N,
-		      const double * mu,
-		      const mutation_model_container & mmodel,
-		      const recombination_policy_container & rec_policies,
-		      const double * r_between_loci,
-		      const bw_locus_rec_fxn & blrf,
-		      const diploid_fitness_function & ff,
-		      typename gamete_type::mutation_container & neutral = typename gamete_type::mutation_container(),
-		      typename gamete_type::mutation_container & selected = typename gamete_type::mutation_container(),
-		      const double & f = 0,
-		      const mutation_removal_policy & mp = mutation_removal_policy(),
-		      const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
+		 gamete_cont_type<gamete_type, gamete_cont_type_allocator> & gametes,
+		 diploid_vector_type<locus_vector_type< diploid_geno_t, locus_vector_type_allocator>, diploid_vector_type_allocator> & diploids,
+		 mutation_cont_type<mutation_type,mutation_cont_type_allocator > & mutations,
+		 std::vector<uint_t> & mcounts,
+		 const uint_t & N,
+		 const double * mu,
+		 const mutation_model_container & mmodel,
+		 const recombination_policy_container & rec_policies,
+		 const double * r_between_loci,
+		 const bw_locus_rec_fxn & blrf,
+		 const diploid_fitness_function & ff,
+		 typename gamete_type::mutation_container & neutral,
+		 typename gamete_type::mutation_container & selected,
+		 const double & f = 0,
+		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy());
 }
 
 #include <fwdpp/sample_diploid.tcc>
