@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <functional>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/policies.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
 #include <fwdpp/internal/type_traits.hpp>
 #include <fwdpp/internal/recycling.hpp>
