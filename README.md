@@ -136,8 +136,6 @@ I have tested the library on my development machine (64-bit Intel processor, Ubu
 | clang++  | 3.5  | __YES__ | |
 | clang++  | 3.6  | __YES__ | |
 
-Please note that one unit test (policyTests) will show some test failures on GCC.  This is known, and fine.  That unit test basically shows that GCC sometimes chooses to copy an objects instead of move it, even when a move is requested.  Clang++, however, moves.  This has no effect on simulation correctness.  Rather, this unit test helps me understand some of the nuances that distinguish clang++ from g++.
-
 
 ##Library dependencies
 
