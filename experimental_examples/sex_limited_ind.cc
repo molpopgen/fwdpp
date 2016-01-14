@@ -208,9 +208,11 @@ struct sexSpecificRules
   }
   
   //! \brief Update some property of the offspring based on properties of the parents
-  template<typename diploid_t>
+  template<typename diploid_t,typename gcont_t,
+	   typename mcont_t>
   void update(gsl_rng * r,diploid_t & offspring,
-	      const diploid_t &, const diploid_t &) const
+	      const diploid_t &, const diploid_t &,
+	      const gcont_t &, const mcont_t &) const
   {
     offspring.sex = (gsl_rng_uniform(r) < 0.5);
     return;

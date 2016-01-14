@@ -66,8 +66,11 @@ namespace KTfwd {
       }
 
       //! \brief Update some property of the offspring based on properties of the parents
-      template<typename diploid_t>
-      void update(gsl_rng * , diploid_t &, const diploid_t & , const diploid_t & ) const
+      template<typename diploid_t,typename gcont_t,typename mcont_t>
+      void update(gsl_rng * , diploid_t &, const diploid_t & ,
+		  const diploid_t &,
+		  const gcont_t &,
+		  const mcont_t &) const
       {
       }
 
@@ -160,7 +163,7 @@ namespace KTfwd {
 	  
 	  assert( gametes[dip.first].n );
 	  assert( gametes[dip.second].n );
-	  pmr.update(r,dip,parents[p1],parents[p2]);
+	  pmr.update(r,dip,parents[p1],parents[p2],gametes,mutations);
 	}
 #ifndef NDEBUG
       for(const auto & dip : diploids)
