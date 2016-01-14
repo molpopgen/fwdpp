@@ -60,7 +60,6 @@ namespace KTfwd {
       }
 
       //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
-      //template<typename diploid_itr_t>
       inline size_t pick2(gsl_rng * r, const size_t & p1, const double & f ) const
       {
 	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
