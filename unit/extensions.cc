@@ -22,6 +22,7 @@ using namespace KTfwd;
 
 using poptype = singlepop<popgenmut>;
 
+//Check that extensions::discrete_mut_model::make_mut compiles
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_1 )
 {
   poptype pop(1000);
@@ -42,7 +43,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_1 )
   static_assert( std::is_same<decltype(x),std::size_t>::value,
 		 "extensions::discrete_mut_model::make_muts must return a std::size_t" );
 }
-
+//Check that extensions::discrete_mut_model::make_mut can be bound
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 {
   poptype pop(1000);
@@ -65,6 +66,9 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 		 "extensions::discrete_mut_model::make_muts must return a std::size_t" );
 }
 
+//Check that extensions::discrete_mut_model::make_mut can be bound
+//with placeholders, and that the resulting type is a valid
+//mutation model
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 {
   poptype pop(1000);
@@ -89,6 +93,9 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 		 "extensions::discrete_mut_model::make_muts must return a std::size_t" );
 }
 
+//Check that extensions::discrete_mut_model::make_mut can be bound
+//with placeholders, that the resulting type is a valid
+//mutation model, and can be passed to KTfwd::sample_diploid
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 {
   poptype pop(1000);
