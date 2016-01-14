@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <functional>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/policies.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
 #include <fwdpp/internal/type_traits.hpp>
 #include <fwdpp/internal/recycling.hpp>
@@ -14,11 +15,17 @@ namespace KTfwd {
   namespace traits {
     //! Evaluates to std::true_type if T inherits from KTfwd::mutation_base
     template<typename T>
-    using is_mutation_t = typename std::is_base_of<KTfwd::mutation_base,T>::type;
-
+    struct is_mutation_t : std::integral_constant<bool,
+						  std::is_base_of<KTfwd::mutation_base,T>::value>
+    {
+    };
+      
     //! Evaluates to std::true_type if T publicly inherits from KTfwd::tags::custom_diploid_t
     template<typename T>
-    using is_custom_diploid_t = typename std::is_base_of<KTfwd::tags::custom_diploid_t,T>::type;
+    struct is_custom_diploid_t : std::integral_constant<bool,
+							std::is_base_of<KTfwd::tags::custom_diploid_t,T>::value>
+    {
+    };
 
     //! Determine if T is/is derived from KTfwd::gamete_base
     template<typename T>
@@ -34,13 +41,6 @@ namespace KTfwd {
     {
     };
     
-    //! Gives the "recycling bin" type corresponding to cont_t
-    template<typename cont_t>
-    struct recycling_bin_t
-    {
-      using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
-    };
-
     //! Gives the "gamete lookup table" type corresponding to gcont_t and mcont_t
     template<typename gcont_t,typename mcont_t>
     struct gamete_lookup_t
@@ -52,29 +52,11 @@ namespace KTfwd {
       using type = typename std::result_of<decltype(&fwdpp_internal::gamete_lookup_table<gcont_t,mcont_t>)(gcont_t &,mcont_t &)>::type;
     };
 
-    /*!
-      Gives the mutation model function signature corresponding to mcont_t.
-
-      Applies to mutation policies that only take recycling bins and  mcont_t *
-      as arguments
-    */
-    template<typename mcont_t>
-    struct mmodel_t
+    //! Gives the "recycling bin" type corresponding to cont_t
+    template<typename cont_t>
+    struct recycling_bin_t
     {
-      static_assert( is_mutation_t<typename mcont_t::value_type>::value,
-		     "mcont_t::value_type must be derived from KTfwd::mutation_base" );
-      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
-    };
-
-    /*!
-      Gives mutation model function signature for models requiring gametes as arguments
-    */
-    template<typename mcont_t,typename gcont_t>
-    struct mmodel_gamete_t
-    {
-      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
-							    typename gcont_t::value_type &,
-							    mcont_t *)>;
+      using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
     };
 
     //! Check that a mutation model type is valid.
@@ -85,7 +67,8 @@ namespace KTfwd {
 											mmodel_t,
 											typename gcont_t::value_type,
 											mcont_t,
-											typename recycling_bin_t<mcont_t>::type>)
+											typename recycling_bin_t<mcont_t>::type
+											>)
 									       (mmodel_t &,typename gcont_t::value_type &,mcont_t &,typename recycling_bin_t<mcont_t>::type &)
 									       >::type,
 									     std::size_t
@@ -93,17 +76,7 @@ namespace KTfwd {
 								>
     {
     };
-
-    //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
-    template<typename gcont_t,typename mcont_t>
-    struct recmodel_t
-    {
-      using type = std::function<unsigned(const std::size_t,
-					  const std::size_t,
-					  typename gamete_lookup_t<gcont_t,mcont_t>::type &,
-					  typename recycling_bin_t<gcont_t>::type &) >;
-    };
-
+    
     template<typename recmodel_t,typename gamete_t,
 	     typename mcont_t>
     struct valid_rec_model : std::integral_constant<bool,
@@ -115,6 +88,55 @@ namespace KTfwd {
 						      std::vector<double>>::value>
     {
     };
+
+      template<typename dipvector_t,
+	   typename gcont_t,
+	   typename mcont_t>
+  struct fitness_fxn_type
+  {
+    using type = typename std::conditional< std::is_base_of<KTfwd::tags::custom_diploid_t,typename dipvector_t::value_type>::value,
+					    std::function<double(const typename dipvector_t::value_type &,
+								 const gcont_t &,
+								 const mcont_t &)>,
+					    std::function<double(const typename gcont_t::value_type &,
+								 const typename gcont_t::value_type &,
+								 const mcont_t &)>
+					    >::type;
+  };
+
+  template<typename dipvector_t,
+	   typename gcont_t,
+	   typename mcont_t>
+  using fitness_fxn_t = typename fitness_fxn_type<dipvector_t,gcont_t,mcont_t>::type;
+
+  //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
+  template<typename gcont_t,typename mcont_t>
+  using recmodel_t = std::function<std::vector<double>(const typename gcont_t::value_type &,
+						       const typename gcont_t::value_type &,
+						       const mcont_t &)>;
+
+  /*!
+    Gives the mutation model function signature corresponding to mcont_t.
+
+    Applies to mutation policies that only take recycling bins and  mcont_t *
+    as arguments
+  */
+  template<typename mcont_t>
+  struct mmodel_t
+  {
+    using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
+  };
+
+  /*!
+    Gives mutation model function signature for models requiring gametes as arguments
+  */
+  template<typename mcont_t,typename gcont_t>
+  struct mmodel_gamete_t
+  {
+    using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
+							  typename gcont_t::value_type &,
+							  mcont_t *)>;
+  };
   }
 }
 #endif
