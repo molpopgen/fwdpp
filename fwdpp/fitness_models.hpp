@@ -279,7 +279,7 @@ namespace KTfwd
 				   const mcont_t & mutations,
 				   const double & scaling = 1. ) const noexcept
     {
-      return this->operator()(gametes[dip.first],gametes[dip.second],scaling);
+      return this->operator()(gametes[dip.first],gametes[dip.second],mutations,scaling);
     }
   };
 }
