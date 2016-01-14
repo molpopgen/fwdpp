@@ -88,54 +88,54 @@ namespace KTfwd {
     {
     };
 
-      template<typename dipvector_t,
-	   typename gcont_t,
-	   typename mcont_t>
-  struct fitness_fxn_type
-  {
-    using type = typename std::conditional< std::is_base_of<KTfwd::tags::custom_diploid_t,typename dipvector_t::value_type>::value,
-					    std::function<double(const typename dipvector_t::value_type &,
-								 const gcont_t &,
-								 const mcont_t &)>,
-					    std::function<double(const typename gcont_t::value_type &,
-								 const typename gcont_t::value_type &,
-								 const mcont_t &)>
-					    >::type;
-  };
+    template<typename dipvector_t,
+	     typename gcont_t,
+	     typename mcont_t>
+    struct fitness_fxn_type
+    {
+      using type = typename std::conditional< std::is_base_of<KTfwd::tags::custom_diploid_t,typename dipvector_t::value_type>::value,
+					      std::function<double(const typename dipvector_t::value_type &,
+								   const gcont_t &,
+								   const mcont_t &)>,
+					      std::function<double(const typename gcont_t::value_type &,
+								   const typename gcont_t::value_type &,
+								   const mcont_t &)>
+					      >::type;
+    };
 
-  template<typename dipvector_t,
-	   typename gcont_t,
-	   typename mcont_t>
-  using fitness_fxn_t = typename fitness_fxn_type<dipvector_t,gcont_t,mcont_t>::type;
+    template<typename dipvector_t,
+	     typename gcont_t,
+	     typename mcont_t>
+    using fitness_fxn_t = typename fitness_fxn_type<dipvector_t,gcont_t,mcont_t>::type;
 
-  //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
-  template<typename gcont_t,typename mcont_t>
-  using recmodel_t = std::function<std::vector<double>(const typename gcont_t::value_type &,
-						       const typename gcont_t::value_type &,
-						       const mcont_t &)>;
+    //! Gives the recombination model function signature corresponding to gcont_t,mcont_t
+    template<typename gcont_t,typename mcont_t>
+    using recmodel_t = std::function<std::vector<double>(const typename gcont_t::value_type &,
+							 const typename gcont_t::value_type &,
+							 const mcont_t &)>;
 
-  /*!
-    Gives the mutation model function signature corresponding to mcont_t.
+    /*!
+      Gives the mutation model function signature corresponding to mcont_t.
 
-    Applies to mutation policies that only take recycling bins and  mcont_t *
-    as arguments
-  */
-  template<typename mcont_t>
-  struct mmodel_t
-  {
-    using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
-  };
+      Applies to mutation policies that only take recycling bins and  mcont_t *
+      as arguments
+    */
+    template<typename mcont_t>
+    struct mmodel_t
+    {
+      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
+    };
 
-  /*!
-    Gives mutation model function signature for models requiring gametes as arguments
-  */
-  template<typename mcont_t,typename gcont_t>
-  struct mmodel_gamete_t
-  {
-    using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
-							  typename gcont_t::value_type &,
-							  mcont_t *)>;
-  };
+    /*!
+      Gives mutation model function signature for models requiring gametes as arguments
+    */
+    template<typename mcont_t,typename gcont_t>
+    struct mmodel_gamete_t
+    {
+      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
+							    typename gcont_t::value_type &,
+							    mcont_t *)>;
+    };
   }
 }
 #endif
