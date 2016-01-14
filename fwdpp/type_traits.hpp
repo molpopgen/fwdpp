@@ -53,10 +53,13 @@ namespace KTfwd {
 
     //! Gives the "recycling bin" type corresponding to cont_t
     template<typename cont_t>
-    struct recycling_bin_t
+    struct recycling_bin_type
     {
       using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
     };
+
+    template<typename T>
+    using recycling_bin_t = typename recycling_bin_type<T>::type;
 
     //! Check that a mutation model type is valid.
     template<typename mmodel_t,typename mcont_t,typename gcont_t>
@@ -66,9 +69,9 @@ namespace KTfwd {
 											mmodel_t,
 											typename gcont_t::value_type,
 											mcont_t,
-											typename recycling_bin_t<mcont_t>::type
+											recycling_bin_t<mcont_t>
 											>)
-									       (mmodel_t &,typename gcont_t::value_type &,mcont_t &,typename recycling_bin_t<mcont_t>::type &)
+									       (mmodel_t &,typename gcont_t::value_type &,mcont_t &,recycling_bin_t<mcont_t> &)
 									       >::type,
 									     std::size_t
 									     >::value
@@ -123,7 +126,7 @@ namespace KTfwd {
     template<typename mcont_t>
     struct mmodel_t
     {
-      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,mcont_t &)>;
+      using type = std::function<typename mcont_t::iterator(recycling_bin_t<mcont_t> &,mcont_t &)>;
     };
 
     /*!
@@ -132,7 +135,7 @@ namespace KTfwd {
     template<typename mcont_t,typename gcont_t>
     struct mmodel_gamete_t
     {
-      using type = std::function<typename mcont_t::iterator(typename recycling_bin_t<mcont_t>::type &,
+      using type = std::function<typename mcont_t::iterator(recycling_bin_t<mcont_t> &,
 							    typename gcont_t::value_type &,
 							    mcont_t *)>;
     };
