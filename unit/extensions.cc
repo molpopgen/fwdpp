@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel =  std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+  auto mmodel =  std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
 			   &dm,rng.get(),0.001,0.,0u,rb,pop.mutations,std::ref(pop.mut_lookup));
   auto x = mmodel();
   static_assert( std::is_same<decltype(x),std::size_t>::value,
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
 			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
   static_assert( traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
 		 "error: type mutation_model is not a dispatchable mutation model type!" );
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
 			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
   static_assert( traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
 		 "error: type mutation_model is not a dispatchable mutation model type!" );
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 				    {}
 				    );
   
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
 			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
   
   extensions::discrete_rec_model drm( {0,1},
