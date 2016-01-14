@@ -12,6 +12,7 @@
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
+#include <fwdpp/internal/sample_diploid_helpers.hpp>
 
 namespace KTfwd
 {
