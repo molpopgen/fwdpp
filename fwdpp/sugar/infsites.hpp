@@ -5,7 +5,7 @@
 #include <gsl/gsl_randist.h>
 #include <type_traits>
 #include <fwdpp/sugar/popgenmut.hpp>
-
+#include <fwdpp/internal/recycling.hpp>
 namespace KTfwd
 {
   
