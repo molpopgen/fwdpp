@@ -220,11 +220,14 @@ namespace KTfwd
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
       \note See @ref md_md_customdip
     */
-    template< typename diploid2dispatch>
+    template< typename diploid2dispatch,
+	      typename gcont_t,typename mcont_t>
     inline result_type operator()( const diploid2dispatch & dip,
+				   const gcont_t & gametes,
+				   const mcont_t & mutations,
 				   const double & scaling = 1. ) const noexcept
     {
-      return this->operator()(dip->first,dip->second,scaling);
+      return this->operator()(gametes[dip.first],gametes[dip.second],mutations,scaling);
     }
   };
 
@@ -268,11 +271,15 @@ namespace KTfwd
       \brief Overload for custom diploids.  This is what a programmer's functions will call.
       \note See @ref md_md_customdip
     */
-    template< typename diploid2dispatch >
+    template< typename diploid2dispatch,
+	      typename gcont_t,
+	      typename mcont_t>
     inline result_type operator()( const diploid2dispatch & dip,
+				   const gcont_t & gametes,
+				   const mcont_t & mutations,
 				   const double & scaling = 1. ) const noexcept
     {
-      return this->operator()(dip->first,dip->second,scaling);
+      return this->operator()(gametes[dip.first],gametes[dip.second],scaling);
     }
   };
 }
