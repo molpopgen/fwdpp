@@ -1,8 +1,6 @@
 /*
   \file extensions.cc
   API checks on fwdpp's extensions sub-library.
-
-  This test passes if all blocks compile.
 */
 
 #define BOOST_TEST_MODULE extensions_test
@@ -10,6 +8,8 @@
 
 #include <config.h>
 #include <iostream>
+#include <cmath>
+#include <limits>
 #include <type_traits>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
@@ -17,6 +17,8 @@
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/extensions/regions.hpp>
+#include <fwdpp/extensions/callbacks.hpp>
+#include <limits>
 
 using namespace KTfwd;
 
@@ -184,7 +186,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_3 )
 		"extensions::dicrete_rec_model::operator() must return std::vector<double>");
 }
 
-//test binding of extensions::discrete_rec_model::operator()
+//Put it all together into a call to KTfwd::sample_diploid
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 {
   poptype pop(1000);
@@ -230,4 +232,145 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 					      std::placeholders::_3,2.),
 				    pop.neutral,
 				    pop.selected);
+}
+
+//Tests of fwdpp/extensions/callbacks.hpp
+
+//This test makes sure that each type of callback compiles
+BOOST_AUTO_TEST_CASE( vector_shmodel )
+{
+  //PS, uniform initialization rocks...
+  std::vector< extensions::shmodel > callbacks {
+    {extensions::constant(1.),extensions::constant(0.)},
+      {extensions::exponential(1.),extensions::exponential(1.)},
+	{extensions::uniform(1.,2.),extensions::uniform(1.,2.)},
+	  {extensions::beta(1.,2.),extensions::beta(1.,2.)},             //defaults to factor = 1
+	    {extensions::beta(1.,2.,0.25),extensions::beta(1.,2.,0.25)}, //pass all 3 params to constructor
+	      {extensions::gaussian(1.),extensions::gaussian(1.)},
+		{extensions::gamma(1.,0.1),extensions::gamma(1.,0.1)}
+  };
+}
+
+//The callbacks can throw exceptions if their parameters aren't valid
+
+BOOST_AUTO_TEST_CASE( callback_exceptions )
+{
+  {
+    //inf
+    BOOST_REQUIRE_THROW( extensions::constant(1./0.), 
+			 std::runtime_error
+			 );
+  }
+  
+  {
+    //nan
+    BOOST_REQUIRE_THROW( extensions::constant(std::nan("")), 
+     			 std::runtime_error
+     			 );
+  }
+
+  {
+    //first arg not finite
+    BOOST_REQUIRE_THROW( extensions::uniform(1./0., 1.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //2nd arg not finite
+    BOOST_REQUIRE_THROW( extensions::uniform(1., 1./0.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //min > max
+    BOOST_REQUIRE_THROW( extensions::uniform(1., 0.99),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //a not finite
+    BOOST_REQUIRE_THROW( extensions::beta(std::nan(""),1.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //b not finite
+    BOOST_REQUIRE_THROW( extensions::beta(1.,std::nan("")),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //f not finite
+    BOOST_REQUIRE_THROW( extensions::beta(1.,1.,std::nan("")),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //a <= 0.
+    BOOST_REQUIRE_THROW( extensions::beta(0.,1.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //b <= 0.
+    BOOST_REQUIRE_THROW( extensions::beta(1.,0.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //f <= 0.
+    BOOST_REQUIRE_THROW( extensions::beta(1.,1.,0.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //sd = 0
+    BOOST_REQUIRE_THROW( extensions::gaussian(0.),
+			 std::runtime_error
+			 );
+  }
+  
+  {
+    //sd < 0
+    BOOST_REQUIRE_THROW( extensions::gaussian(-1e-6),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //sd not finite
+    BOOST_REQUIRE_THROW( extensions::gaussian(1./0.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //mean not finite
+    BOOST_REQUIRE_THROW( extensions::gamma(1./0.,1.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //shape not finite
+    BOOST_REQUIRE_THROW( extensions::gamma(1.0,1./0.),
+			 std::runtime_error
+			 );
+  }
+
+  {
+    //!(shape>0)
+    BOOST_REQUIRE_THROW( extensions::gamma(1.0,0.),
+			 std::runtime_error
+			 );
+  }
 }
