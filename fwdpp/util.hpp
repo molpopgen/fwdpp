@@ -48,15 +48,9 @@ namespace KTfwd
 
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
   */
-  template<//typename mutation_type,
-	   typename mutation_list_type,
+  template<typename mutation_list_type,
 	   typename fixation_container_t,
 	   typename fixation_time_container_t,
-	   //typename vector_type_allocator1,
-	   //typename vector_type_allocator2,
-	   //typename list_type_allocator,
-	   //template <typename,typename> class vector_type,
-	   //template <typename,typename> class list_type,
 	   typename mutation_lookup_table>
   void update_mutations( mutation_list_type & mutations, 
 			 fixation_container_t & fixations, 
