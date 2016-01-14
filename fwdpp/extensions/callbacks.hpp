@@ -128,7 +128,7 @@ namespace KTfwd {
       const double a,b,factor;
       beta(const double & __a,
 	   const double & __b,
-	   const double & __f) : a(__a),b(__b),factor(__f)
+	   const double & __f = 1) : a(__a),b(__b),factor(__f)
       {
 	if(!std::isfinite(a) || a <= 0.)
 	  {
