@@ -78,7 +78,7 @@ The fwdpp publication showed that the library performs well in terms of speed co
 * Several lookup operations were implemented using expensive linear-time searches.
 * The linked lists plus the constant insertion and deletion of new and extinct objects, respectively, resulted in memory fragmentation or poor "cache locality".
 
-The 0.3.x releases of fwdpp solved most of the first problem, and sped the library up by over an order of magnitude.  Further, I recommended that users link programs based on fwdpp to an external library replacing the built-in malloc (the main memory allocation function for the C family of languages).  I specifically recommended using Google's tcmalloc.  This recommendation went a long way toward solving the second problem--simply using an industrial-strength memory allocator went a long way towards addressing the performance hit due to memory fragmentation.
+The 0.3.x releases of fwdpp solved most of the first problem, and sped the library up by over an order of magnitude.  Further, I recommended that users link programs based on fwdpp to an external library replacing the built-in malloc (the main memory allocation function for the C family of languages, and C++'s "new" is a wrapper around malloc).  I specifically recommended using Google's tcmalloc.  This recommendation went a long way toward solving the second problem--simply using an industrial-strength memory allocator went a long way towards addressing the performance hit due to memory fragmentation.
 
 (These releases also introduced various sub-libraries aimed at making fwdpp easier to use.)
 
