@@ -40,8 +40,8 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_1 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto x = dm.make_mut(rng.get(),0.001,0.,
-		       0,rb,pop.mutations,pop.mut_lookup);
+  auto x = dm.make_mut(rb,pop.mutations,rng.get(),0.001,0.,
+		       0,pop.mut_lookup);
   static_assert( std::is_same<decltype(x),std::size_t>::value,
 		 "extensions::discrete_mut_model::make_muts must return a std::size_t" );
 }
@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel =  std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
-			   &dm,rng.get(),0.001,0.,0u,rb,pop.mutations,std::ref(pop.mut_lookup));
+  auto mmodel =  std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+			   &dm,rb,pop.mutations,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   auto x = mmodel();
   static_assert( std::is_same<decltype(x),std::size_t>::value,
 		 "extensions::discrete_mut_model::make_muts must return a std::size_t" );
@@ -86,8 +86,8 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
-			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+			  &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   static_assert( traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
 		 "error: type mutation_model is not a dispatchable mutation model type!" );
   auto x = mmodel(rb,pop.mutations);
@@ -113,8 +113,8 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    );
   auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
-			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+			  &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   static_assert( traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
 		 "error: type mutation_model is not a dispatchable mutation model type!" );
   auto wbar = KTfwd::sample_diploid(rng.get(),
@@ -131,6 +131,56 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 					      std::placeholders::_3,2.),
 				    pop.neutral,
 				    pop.selected);
+}
+
+//Test the convenience fxn
+BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
+{
+  poptype pop(1000);
+
+  //attempt
+  extensions::discrete_mut_model dm({0,1},
+				    {1,2},
+				    {1,0.5},
+				    {},
+				    {},
+				    {},
+				    {}
+				    );
+  auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+
+  for(unsigned generation=0;generation<10000;++generation)
+    {
+      auto wbar = KTfwd::sample_diploid(rng.get(),
+					pop.gametes,  
+					pop.diploids, 
+					pop.mutations,
+					pop.mcounts,
+					1000,     
+					0.001,    
+					extensions::bind_dmm(dm,pop.mutations,pop.mut_lookup,
+							     rng.get(),0.001,0.,generation),
+					std::bind(KTfwd::poisson_xover(),rng.get(),0.001,0.,2.,
+						  std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+						  std::placeholders::_3,2.),
+					pop.neutral,
+					pop.selected);
+      KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2000);
+    }
+  BOOST_REQUIRE_EQUAL(pop.mutations.size(),pop.mcounts.size());
+  for(std::size_t i = 0 ; i < pop.mcounts.size() ; ++i )
+    {
+      if(pop.mcounts[i])
+	{
+	  BOOST_REQUIRE( pop.mut_lookup.find(pop.mutations[i].pos) != pop.mut_lookup.end() );
+	}
+      else
+	{
+	  BOOST_REQUIRE( pop.mut_lookup.find(pop.mutations[i].pos) == pop.mut_lookup.end() );
+	}
+    }
 }
 
 //check return type of extensions::discrete_rec_model
@@ -202,8 +252,8 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 				    {}
 				    );
   
-  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>::type,decltype(pop.mut_lookup),decltype(pop.mutations)>,
-			  &dm,rng.get(),0.001,0.,0u,std::placeholders::_1,std::placeholders::_2,std::ref(pop.mut_lookup));
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+			  &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   
   extensions::discrete_rec_model drm( {0,1},
 				      {1,2},
@@ -234,6 +284,44 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 				    pop.selected);
 }
 
+//Put it all together into a call to KTfwd::sample_diploid,
+//using both convenience fxns instead of the nasty templates
+BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
+{
+  poptype pop(1000);
+
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+  
+  extensions::discrete_mut_model dm({0,1},
+				    {1,2},
+				    {1,0.5},
+				    {},
+				    {},
+				    {},
+				    {}
+				    );
+  
+  extensions::discrete_rec_model drm( {0,1},
+				      {1,2},
+				      {1,2}
+				      );
+
+  auto wbar = KTfwd::sample_diploid(rng.get(),
+				    pop.gametes,  
+				    pop.diploids, 
+				    pop.mutations,
+				    pop.mcounts,
+				    1000,     
+				    0.001,
+				    extensions::bind_dmm(dm,pop.mutations,pop.mut_lookup,
+							 rng.get(),0.001,0.,0u),
+				    extensions::bind_drm(drm,pop.gametes,pop.mutations,
+							 rng.get(),0.001),
+				    std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+					      std::placeholders::_3,2.),
+				    pop.neutral,
+				    pop.selected);
+}
 //Tests of fwdpp/extensions/callbacks.hpp
 
 //This test makes sure that each type of callback compiles
