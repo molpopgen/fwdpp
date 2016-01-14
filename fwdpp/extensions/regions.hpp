@@ -2,8 +2,12 @@
 #ifndef __FWDPP_EXTENSIONS_REGIONS_HPP__
 #define __FWDPP_EXTENSIONS_REGIONS_HPP__
 
+#include <limits>
+#include <algorithm>
+#include <gsl/gsl_randist.h>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
+#include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 
 namespace KTfwd
@@ -20,7 +24,7 @@ namespace KTfwd
       Intended to be used with the callbacks in fwdpp/extensions/callbacks.hpp
      */
     {
-      using result_type = KTfwd::popgenmut;
+      using result_type = std::size_t;
       std::vector<double> nbeg,nend,sbeg,send;
       std::vector< shmodel > shmodels;
       KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup,slookup;
@@ -57,14 +61,14 @@ namespace KTfwd
       inline double posmaker( gsl_rng * r,
 			      const double & beg,
 			      const double & end,
-			      lookup_table_t * lookup) const
+			      lookup_table_t & lookup) const
       {
 	double pos = gsl_ran_flat(r,beg,end);
-	while( lookup->find(pos) != lookup->end() )
+	while( lookup.find(pos) != lookup.end() )
 	  {
 	    pos = gsl_ran_flat(r,beg,end);
 	  }
-	lookup->insert(pos);
+	lookup.insert(pos);
 	return pos;
       }
 
@@ -74,25 +78,37 @@ namespace KTfwd
 	\param r A gsl_rng
 	\param nmu Neutral mutation rate (per gamete, per generation)
 	\param smu Selected mutation rate (per gamete, per generation)
+	\param generation The current generation
+	\param recycling_bin A recycling bin for mutations
+	\param mutations A container of mutations
 	\param lookup Lookup table for mutations
        */
-      template<typename lookup_table_t>
+      template<typename queue_t,
+	       typename lookup_table_t,
+	       typename mcont_t>
       inline result_type make_mut(gsl_rng * r,
 				  const double & nmu,
 				  const double & smu,
 				  unsigned generation,
-				  lookup_table_t * lookup) const
+				  queue_t & recycling_bin,
+				  mcont_t & mutations,
+				  lookup_table_t & lookup) const
       {
 	bool is_neutral = (gsl_rng_uniform(r) < nmu/(nmu+smu)) ? true : false;
 	if( is_neutral )
 	  {
 	    size_t region = gsl_ran_discrete(r,nlookup.get());
 	    double pos = posmaker(r,nbeg[region],nend[region],lookup);
-	    return KTfwd::popgenmut(pos,0.,0.,generation,1);
+	    return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
+							   pos,0.,0.,generation);
 	  }
 	size_t region = gsl_ran_discrete(r,slookup.get());
 	double pos = posmaker(r,sbeg[region],send[region],lookup);
-	return KTfwd::popgenmut(pos,shmodels[region].s(r),shmodels[region].h(r),generation,1);
+	return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
+						       pos,
+						       shmodels[region].s(r),
+						       shmodels[region].h(r),
+						       generation);
       }
     };
 
@@ -102,7 +118,7 @@ namespace KTfwd
       in recombination rates along a region.
      */
     {
-      using result_type = double;
+      using result_type = std::vector<double>;
       std::vector<double> beg,end;
       KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
       /*!
@@ -119,10 +135,25 @@ namespace KTfwd
       /*!
 	Returns a position from a region that is chosen based on region weights.
        */
-      inline result_type operator()(gsl_rng * r) const
+      template<typename gamete_t,
+	       typename mcont_t>
+      inline result_type operator()(gsl_rng * r,
+				    const double recrate,
+				    const gamete_t &,
+				    const gamete_t &,
+				    const mcont_t &) const
       {
-	size_t region = gsl_ran_discrete(r,lookup.get());
-	return gsl_ran_flat(r,beg[region],end[region]);
+	auto nbreaks = gsl_ran_poisson(r,recrate);
+	if(!nbreaks) return {};
+	result_type rv;
+	for( unsigned i=0;i<nbreaks;++i )
+	  {
+	    size_t region = gsl_ran_discrete(r,lookup.get());
+	    rv.push_back(gsl_ran_flat(r,beg[region],end[region]));
+	  }
+	std::sort(rv.begin(),rv.end());
+	rv.push_back(std::numeric_limits<double>::max());
+	return rv;
       }
     };
   }
