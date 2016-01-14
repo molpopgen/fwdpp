@@ -179,9 +179,9 @@ namespace KTfwd {
 	  {
 	    throw std::runtime_error("mean and shape must both be finite");
 	  }
-	if(shape <= 0)
+	if(!(shape > 0))
 	  {
-	    throw std::runtime_error("shape must be >= 0");
+	    throw std::runtime_error("shape must be > 0");
 	  }
       }
       inline double operator()(const gsl_rng * r) const
