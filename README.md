@@ -82,7 +82,7 @@ The 0.3.x releases of fwdpp solved most of the first problem, and sped the libra
 
 (These releases also introduced various sub-libraries aimed at making fwdpp easier to use.)
 
-At this point, intuition (backed up by extensive code profiling using tools like Google's profiling library and valgrind's cachegrind) told me that the main hurtle to improving performance was to address memory usage.
+At this point, intuition (backed up by extensive code profiling using tools like Google's profiling library and valgrind's cachegrind) told me that the main hurdle to improving performance was to address memory usage.
 
 Release 0.4.4 introduced a fundamental change in the library design:
 
