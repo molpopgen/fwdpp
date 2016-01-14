@@ -60,7 +60,9 @@ namespace KTfwd {
       }
 
       //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
-      inline size_t pick2(gsl_rng * r, const size_t & p1, const double & f ) const
+      template<typename diploid_t,typename gcont_t,typename mcont_t>
+      inline size_t pick2(gsl_rng * r, const size_t & p1, const double & f,
+			  const diploid_t &, const gcont_t &, const mcont_t &) const
       {
 	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
       }
@@ -136,7 +138,7 @@ namespace KTfwd {
 	  //Pick parent 1
 	  size_t p1 = pmr.pick1(r);
 	  //Pick parent 2
-	  size_t p2 = pmr.pick2(r,p1,f);
+	  size_t p2 = pmr.pick2(r,p1,f,parents[p1],gametes,mutations);
 	  assert(p1<parents.size());
 	  assert(p2<parents.size());
 	

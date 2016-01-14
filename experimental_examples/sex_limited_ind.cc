@@ -202,7 +202,9 @@ struct sexSpecificRules
   }
 
   //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
-  inline size_t pick2(gsl_rng * r, const size_t & , const double & ) const
+  template<typename diploid_t,typename gcont_t,typename mcont_t>
+  inline size_t pick2(gsl_rng * r, const size_t & , const double &,
+		      const diploid_t &, const gcont_t &, const mcont_t &) const
   {
     return female_indexes[gsl_ran_discrete(r,female_lookup.get())];
   }
