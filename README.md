@@ -50,11 +50,11 @@ The library uses advanced C++ techniques to allow arbitrary models to be impleme
 
 The first two are excellent books for people already familiar with C++ syntax but want to know more about effective software design using the language. Meyer's books are particularly good, espectially the first two.  The C++ Templates book is a bible of how to get the most out of templates.  It is a very advanced and detailed book, but I've found it helpful over the years.
 
-##A note about which version to use
+## A note about which version to use
 
 This code is distributed via my gitub [account](http://www.github.com/molpopgen).  The "master" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that, while the version number in the configure script on master/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in master/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at master.  Also note that master may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
 
-###Revision history
+### Revision history
 
 [Release notes](@ref md_md_RELEASE_NOTES)
 
@@ -62,11 +62,47 @@ You should pay particular attention to any statements about backwards compatibil
 
 Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](@ref md_md_RELEASE_NOTES), beginning with release 0.2.4.
 
-##Which C++?
+#### Where fwdpp is now (compared to the publication).
+
+The published version of fwdpp described a library with the following features:
+
+* Objects (mutations and gametes) are stored only once in _doubly-linked lists_.
+* Diploids are pairs of pointers to gamtes (technically, pairs of iterators derived from the list of gametes).
+* Gametes contain vectors of pointers (again, C++ iterators) to mutations.
+* Each generation, extinct mutations and gametes are removed from the population.  This removal is a constant-time operation due to the use of linked lists.
+
+This design had a certain elegance to it.  A pointer to a diploid gave you immediate access to the mutations by means of the pointer structure.  It was also compact in memory, because iterators are only 8 bytes (on a 64-bit system) while gametes and mutations are 64 and _at least_ 48 bytes, respectively.
+
+The fwdpp publication showed that the library performs well in terms of speed compared to other tools out there.  However, the original design had the following problems:
+
+* Several lookup operations were implemented using expensive linear-time searches.
+* The linked lists plus the constant insertion and deletion of new and extinct objects, respectively, resulted in memory fragmentation or poor "cache locality".
+
+The 0.3.x releases of fwdpp solved most of the first problem, and sped the library up by over an order of magnitude.  Further, I recommended that users link programs based on fwdpp to an external library replacing the built-in malloc (the main memory allocation function for the C family of languages).  I specifically recommended using Google's tcmalloc.  This recommendation went a long way toward solving the second problem--simply using an industrial-strength memory allocator went a long way towards addressing the performance hit due to memory fragmentation.
+
+(These releases also introduced various sub-libraries aimed at making fwdpp easier to use.)
+
+At this point, intuition (backed up by extensive code profiling using tools like Google's profiling library and valgrind's cachegrind) told me that the main hurtle to improving performance was to address memory usage.
+
+Release 0.4.4 introduced a fundamental change in the library design:
+
+* Extinct objects are no longer deleted.  Instead, their locations are recorded in a FIFO queue.  These queues are used to "recycle" already-allocated memory.
+* (Similarly, fixed variants can be tagged for recycling under many modeling situations.)
+* Once extinct objects are no longer removed, then there are no longer insertions/removals to/from the middle of containers.  Rather, we either recycle an object, or add a newly-allocated object to the end.
+* Thus, we can replace doubly-linked lists with vectors.
+* Further, we can replace iterators with integers.
+
+All of these changes were introduced in one fell swoop in 0.4.4, along with a set of other API changes that I'd wanted to make for a while.  The current design is conceptually the same as the published version, with 8 byte keys representing where mutations and gametes are, thus ensuring that an object is only represented once in memory.
+
+However, the new design is also less elegant.  Now, the vectors of gametes and mutations have to be passed along with the diploids.
+
+So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 60% faster.  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the librar.y
+
+## Which C++?
 
 As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC  and clang both support this option, which covers most Linux and OS X users.
 
-##Citation
+## Citation
 
 The fwdpp manuscript has published in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
 
