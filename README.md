@@ -96,7 +96,7 @@ All of these changes were introduced in one fell swoop in 0.4.4, along with a se
 
 However, the new design is also less elegant.  Now, the vectors of gametes and mutations have to be passed along with the diploids.
 
-So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 60% faster.  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the librar.y
+So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 60% faster.  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the library.
 
 ## Which C++?
 
