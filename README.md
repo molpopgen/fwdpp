@@ -28,7 +28,7 @@ This README is the main page of the fwdpp documentation.  It may display some th
 
 # Build status
 
-* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp) 
+* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp)
 * Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp)
 
 Currently, the Travis-CI setup uses the following tools:
@@ -123,7 +123,7 @@ All of these changes were introduced in one fell swoop in 0.4.4, along with a se
 
 However, the new design is also less elegant.  Now, the vectors of gametes and mutations have to be passed along with the diploids.
 
-So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 60% faster.  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the library.
+So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 80% faster!  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the library.
 
 
 # Documentation
@@ -149,7 +149,7 @@ The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutoria
 
 
 ##Built from source
-The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html. 
+The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.
 
 ##Example documentation
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
@@ -180,12 +180,12 @@ I have tested the library on my development machine (64-bit Intel processor, Ubu
 
 The minimal dependencies required to use the library to develop simulations are:
 
-1.  [GSL](http://gnu.org/software/gsl) 
-2.  [zlib](http://zlib.net) 
+1.  [GSL](http://gnu.org/software/gsl)
+2.  [zlib](http://zlib.net)
 
 In order to compile the example programs, you will also need:
 
-1.  [libsequence](http://github.com/molpopgen/libsequence). 
+1.  [libsequence](http://github.com/molpopgen/libsequence).
 
 In order to compile the unit tests, you also need:
 
@@ -209,7 +209,7 @@ Performance testing has been moved to the [fwdpp_perf](http://github.com/molpopg
 You have a few options:
 
 1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git
-2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp 
+2.  Click on "Download Zip" at https://github.com/molpopgen/fwdpp
 
 
 ###Obtaining a specific release
@@ -296,7 +296,7 @@ This is the default:
 make check
 ~~~
 
-### Using the standard C++ containers and the Google's tcmalloc 
+### Using the standard C++ containers and the Google's tcmalloc
 
 __This is the recommended method for maximum run-time performance.__
 
