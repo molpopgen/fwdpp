@@ -135,6 +135,8 @@ __Note:__ the links above may be out of date, as the online documentation are no
 
 ## Tutorials
 
+__The first few tutorials are out of date due to API changes in 0.4.4.  The basic ideas are the same, but you'll have to look at the example programs and unit tests for the best HOW-TOs until I fix these documents.__
+
 The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutorials:
 
 * @ref md_md_datatypes
