@@ -62,7 +62,34 @@ You should pay particular attention to any statements about backwards compatibil
 
 Specific version numbers ("tags" in git-ese, a.k.a. "releases") will occur when new feature are added to the library and/or bugs are fixed.  The details of what happens in each release can be found [here](@ref md_md_RELEASE_NOTES), beginning with release 0.2.4.
 
-#### Where fwdpp is now (compared to the publication).
+
+## Which C++?
+
+As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC  and clang both support this option, which covers most Linux and OS X users.
+
+## Citation
+
+The fwdpp manuscript has published in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
+
+~~~
+@Article{,
+  author = 	 {K. R. Thornton},
+  title = 	 {A C++ Template Library for Efficient Forward-Time Population Genetic Simulation of Large Populations},
+  journal = 	 {Genetics},
+  year = 	 {2014},
+  OPTkey = 	 {},
+  volume = 	 {198},
+  OPTnumber = 	 {},
+  pages = 	 {157-166},
+  OPTmonth = 	 {},
+  OPTnote = 	 {},
+  annote = 	 {doi:/10.1534/genetics.114.165019}
+}
+~~~
+
+The version of fwdpp used in that publication is 0.2.4.
+
+### Where fwdpp is now (compared to the publication).
 
 The published version of fwdpp described a library with the following features:
 
@@ -97,32 +124,6 @@ All of these changes were introduced in one fell swoop in 0.4.4, along with a se
 However, the new design is also less elegant.  Now, the vectors of gametes and mutations have to be passed along with the diploids.
 
 So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 60% faster.  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the library.
-
-## Which C++?
-
-As of version 0.2.5, fwdpp requires a compiler supporting the "C++11" version of the language.  Currently, fwdpp requires that your compiler support the flag -std=c++11 in order to use c++11 language features. Recent version of GCC  and clang both support this option, which covers most Linux and OS X users.
-
-## Citation
-
-The fwdpp manuscript has published in Genetics.  The accepted version of the manuscript is [here](http://www.genetics.org/content/early/2014/06/19/genetics.114.165019.abstract).  For LaTeX users:
-
-~~~
-@Article{,
-  author = 	 {K. R. Thornton},
-  title = 	 {A C++ Template Library for Efficient Forward-Time Population Genetic Simulation of Large Populations},
-  journal = 	 {Genetics},
-  year = 	 {2014},
-  OPTkey = 	 {},
-  volume = 	 {198},
-  OPTnumber = 	 {},
-  pages = 	 {157-166},
-  OPTmonth = 	 {},
-  OPTnote = 	 {},
-  annote = 	 {doi:/10.1534/genetics.114.165019}
-}
-~~~
-
-The version of fwdpp used in that publication is 0.2.4.
 
 
 # Documentation
