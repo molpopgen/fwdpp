@@ -6,7 +6,6 @@ pkginclude_HEADERS=debug.hpp \
 	fitness_models.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
-	initms.hpp \
 	insertion_policies.hpp \
 	IO.hpp \
 	IO.tcc \

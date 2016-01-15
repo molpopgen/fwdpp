@@ -31,7 +31,6 @@
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/mutation.hpp>
 #include <fwdpp/util.hpp>
-#include <fwdpp/initms.hpp>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/recombination.hpp>
 #include <fwdpp/sample_diploid.hpp>
