@@ -200,7 +200,8 @@ namespace KTfwd
     return fwdpp_internal::split_deme_details(r,mutations,mcounts,gametes,diploids,i,N_new,replacement);
   }
 
-  /* \brief Create admixed population
+  /*!
+    \brief Create admixed population
 
      Create an admixed population with a specified amount of ancestry from each parental deme.
 
