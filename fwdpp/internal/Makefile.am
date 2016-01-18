@@ -12,5 +12,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	gamete_cleaner.hpp \
 	recycling.hpp \
 	sample_diploid_helpers.hpp \
-	type_traits.hpp
+	type_traits.hpp \
+	demography_details.hpp
 
