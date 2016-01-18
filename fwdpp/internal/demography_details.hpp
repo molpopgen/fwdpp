@@ -104,9 +104,9 @@ namespace KTfwd
 	     typename gcont_t,
 	     typename vdipvector_t>
     int split_deme_no_replacement( gsl_rng * r,
-				   const mcont_t & mutations,
-				   mcount_t & mcounts,
-				   gcont_t & gametes,
+				   const mcont_t &,
+				   mcount_t &,
+				   gcont_t &,
 				   vdipvector_t & diploids,
 				   const size_t i,
 				   const uint_t N_new )
