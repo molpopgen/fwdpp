@@ -6,6 +6,7 @@
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/sugar/singlepop/singlepop.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
 namespace KTfwd {
@@ -75,7 +76,14 @@ namespace KTfwd {
       using ftvector_t = ftvector;
       //! Fitness function signature compatible with this type
       using fitness_t = KTfwd::traits::fitness_fxn_t<dipvector_t,gcont_t,mcont_t>;
-      
+      //! Metapops can be constructed from singlepops of this type
+      using compat_singlepop_t = sugar::singlepop<mutation_t,
+						  mcont_t,
+						  gcont_t,
+						  dipvector_t,
+						  mvector_t,
+						  ftvector_t,
+						  lookup_table_t>;
       //! Deme sizes
       std::vector<uint_t> Ns;
       mcont_t mutations;
@@ -157,6 +165,34 @@ namespace KTfwd {
 	init_vectors();
 	neutral.reserve(reserve_size);
 	selected.reserve(reserve_size);
+      }
+						  
+      //! Copy construct from a singlepop based on the same basic types
+      metapop( const compat_singlepop_t & spop ) : Ns({spop.N}),
+						   mutations(spop.mutations),
+						   mcounts(spop.mcounts),
+						   gametes(spop.gametes),
+						   diploids(vdipvector_t(1,spop.diploids)),
+						   neutral(spop.neutral),
+						   selected(spop.selected),
+						   mut_lookup(spop.mut_lookup),
+						   fixations(spop.fixations),
+						   fixation_times(spop.fixation_times)
+      {
+      }
+
+      //! Move construct from a singlepop based on the same basic types
+      metapop( compat_singlepop_t && spop ) : Ns({spop.N}),
+					      mutations(std::move(spop.mutations)),
+					      mcounts(std::move(spop.mcounts)),
+					      gametes(std::move(spop.gametes)),
+					      diploids(vdipvector_t(1,std::move(spop.diploids))),
+					      neutral(std::move(spop.neutral)),
+					      selected(std::move(spop.selected)),
+					      mut_lookup(std::move(spop.mut_lookup)),
+					      fixations(std::move(spop.fixations)),
+					      fixation_times(std::move(spop.fixation_times))
+      {
       }
 
       bool operator==( const metapop & rhs ) const

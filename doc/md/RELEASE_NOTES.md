@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.5
+
+* KTfwd::metapop objects now copy- and move- constructible from KTfwd::singlepop objects
+
 ## 0.4.4
 
 TL;DR Big performance improvements due to better handling of objects in memory. Yay!  API changes. Boo!
