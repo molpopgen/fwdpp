@@ -148,7 +148,7 @@ namespace KTfwd
     indlist = fwdpp_internal::sample_individuals(r,diploids[j].size(),N_from_j,replacement);
 
     //update reference to parental deme
-    const auto parental_deme_j = diploids[j];
+    const auto & parental_deme_j = diploids[j];
     
     //add individuals from deme i into new deme
     for(const auto & ind : indlist) new_deme.push_back(parental_deme_j[ind]);
