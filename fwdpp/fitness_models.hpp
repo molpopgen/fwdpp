@@ -162,7 +162,7 @@ namespace KTfwd
     \param mutation Container of mutations
     \param hpol A policy whose first argument is an iterator to a gamete. Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the effect of this haplotype on fitness
     \param dpol A policy whose first two arguments are doubles, each of which represents the effect of g1 and g2, respectively.  Remaining arguments may be bound via std::bind or the equivalent.  The policy returns a double representing the fitness of a diploid genotype g1/g2
-    \return dpol( hpol(g1), hpol(g2) )
+    \return dpol( hpol(g1,mutations), hpol(g2,mutations) )
     \note This really is just a convenience function. Depending on the specifics of the model, this function may be totally unnecessary.
     \ingroup fitness
   */
@@ -183,7 +183,7 @@ namespace KTfwd
                      "gamete_type must be a gamete type" );
       static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
 		     "mcont_t::value_type must be a mutation type" );
-      return dpol( hpol(g1), hpol(g2) );
+      return dpol( hpol(g1,mutations), hpol(g2,mutations) );
     }
   };
 
