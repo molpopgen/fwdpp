@@ -16,7 +16,8 @@ check_PROGRAMS=mutateTest \
 	sugar2_custom \
 	test_generalmut \
 	test_generalmut_vec \
-	extensions
+	extensions \
+	demography
 
 
 TESTS=$(check_PROGRAMS)
@@ -38,6 +39,7 @@ callbacks_SOURCES=callbacks.cc
 test_generalmut_SOURCES=test_generalmut.cc
 test_generalmut_vec_SOURCES=test_generalmut_vec.cc
 extensions_SOURCES=extensions.cc
+demography_SOURCES=demography.cc
 
 AM_CXXFLAGS=
 

@@ -90,7 +90,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	demography$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -114,6 +115,11 @@ am__crossoverTest_SOURCES_DIST = crossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	crossoverTest.$(OBJEXT)
 crossoverTest_OBJECTS = $(am_crossoverTest_OBJECTS)
 crossoverTest_LDADD = $(LDADD)
+am__demography_SOURCES_DIST = demography.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_demography_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	demography.$(OBJEXT)
+demography_OBJECTS = $(am_demography_OBJECTS)
+demography_LDADD = $(LDADD)
 am__extensions_SOURCES_DIST = extensions.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_extensions_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	extensions.$(OBJEXT)
@@ -216,17 +222,18 @@ am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
-	$(extensions_SOURCES) $(gameteTest_SOURCES) \
-	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
-	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
-	$(siteDepFitness_SOURCES) $(sugar1_SOURCES) \
-	$(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
+	$(demography_SOURCES) $(extensions_SOURCES) \
+	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
+	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
+	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
+	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
 	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
 	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES) \
 	$(test_generalmut_vec_SOURCES)
 DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
-	$(am__extensions_SOURCES_DIST) $(am__gameteTest_SOURCES_DIST) \
+	$(am__demography_SOURCES_DIST) $(am__extensions_SOURCES_DIST) \
+	$(am__gameteTest_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
@@ -576,6 +583,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_SOURCES = test_generalmut.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_vec_SOURCES = test_generalmut_vec.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@extensions_SOURCES = extensions.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@demography_SOURCES = demography.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -623,6 +631,10 @@ callbacks$(EXEEXT): $(callbacks_OBJECTS) $(callbacks_DEPENDENCIES) $(EXTRA_callb
 crossoverTest$(EXEEXT): $(crossoverTest_OBJECTS) $(crossoverTest_DEPENDENCIES) $(EXTRA_crossoverTest_DEPENDENCIES) 
 	@rm -f crossoverTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(crossoverTest_OBJECTS) $(crossoverTest_LDADD) $(LIBS)
+
+demography$(EXEEXT): $(demography_OBJECTS) $(demography_DEPENDENCIES) $(EXTRA_demography_DEPENDENCIES) 
+	@rm -f demography$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(demography_OBJECTS) $(demography_LDADD) $(LIBS)
 
 extensions$(EXEEXT): $(extensions_OBJECTS) $(extensions_DEPENDENCIES) $(EXTRA_extensions_DEPENDENCIES) 
 	@rm -f extensions$(EXEEXT)
@@ -692,6 +704,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/demography.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extensions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
@@ -1030,6 +1043,13 @@ test_generalmut_vec.log: test_generalmut_vec$(EXEEXT)
 extensions.log: extensions$(EXEEXT)
 	@p='extensions$(EXEEXT)'; \
 	b='extensions'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+demography.log: demography$(EXEEXT)
+	@p='demography$(EXEEXT)'; \
+	b='demography'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

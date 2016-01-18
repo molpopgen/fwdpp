@@ -34,6 +34,7 @@
 #include <fwdpp/IO.hpp>
 #include <fwdpp/recombination.hpp>
 #include <fwdpp/sample_diploid.hpp>
+#include <fwdpp/demography.hpp>
 #endif
 
 /*! \namespace KTfwd

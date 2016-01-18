@@ -19,7 +19,8 @@ pkginclude_HEADERS=debug.hpp \
 	sampling_functions.tcc \
 	type_traits.hpp \
 	util.hpp \
-	sugar.hpp
+	sugar.hpp \
+	demography.hpp
 
 
 
