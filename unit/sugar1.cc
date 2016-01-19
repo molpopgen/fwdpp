@@ -89,3 +89,36 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test4 )
   //pop's containers in a wacky state
   BOOST_CHECK_EQUAL(pop==pop2,false);
 }
+ 
+/*
+  In an MPI-like world, we'd have to send and receive
+  populations as char * types, which we obtain via 
+  serialization.  Here's a mock-up of necessary operations.
+*/
+BOOST_AUTO_TEST_CASE( MPI_like_serialization_test )
+{
+  //Initialize a population
+  singlepop_t pop(1000);
+  //Evolve it
+  simulate(pop);
+  //Serialize it
+  KTfwd::serialize s;
+  s(pop,mwriter());
+
+  //We can copy the data to a std::string,
+  //and can pass serialized_pop.data() or
+  //serialized_pop.c_str() along with the size
+  //to MPI
+  std::string serialized_pop(s.buffer.str());
+
+  //To re-serialize, we have to "hack" things a bit:
+  KTfwd::serialize s2;
+  s2.buffer.str( serialized_pop ); //assign data to the buffer
+
+  //now, deserialize
+
+  singlepop_t pop2(0);
+  KTfwd::deserialize()(pop2,s2,mreader());
+
+  BOOST_REQUIRE(pop==pop2);
+}
