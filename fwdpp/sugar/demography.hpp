@@ -7,6 +7,12 @@
 
 namespace KTfwd
 {
+  /*!
+    Ensure that KTfwd::sugar::metapop::Ns contain sizes of all
+    elements in KTfwd::sugar::metapop::diploids
+
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+  */
   template<typename mpoptype>
   void update_Ns(mpoptype & mpop)
   {
@@ -19,7 +25,15 @@ namespace KTfwd
 	mpop.Ns.push_back(dip.size());
       }
   }
-  
+
+  /*! \brief Copy a deme
+    Make an exact copy of the i-th population
+
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i The deme to copy.
+
+    \note Implemented in terms of KTfwd::copy_deme. See documentation of that function for details.
+  */
   template<typename mpoptype>
   int copy_pop(mpoptype & mpop,
 	       const size_t i)
@@ -34,6 +48,16 @@ namespace KTfwd
     return rv;
   }
 
+  /*! \brief Merge two demes
+
+    Merge two demes into one
+
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i One deme to merge
+    \param j The other deme to merge
+
+    \note Implemented in terms of KTfwd::merge_demes. See documentation of that function for details.
+  */
   template<typename mpoptype>
   int merge_pops(mpoptype & mpop,
 		 const size_t i,
@@ -48,6 +72,15 @@ namespace KTfwd
     return rv;
   }
 
+  /*! \brief Delete a deme
+
+    Delete a deme and remove it from the metapopulation
+      
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i The deme to remove
+      
+    \note Implemented in terms of KTfwd::remove_deme. See documentation of that function for details.
+  */
   template<typename mpoptype>
   int remove_pop(mpoptype & mpop,
 		 const size_t i)
@@ -60,7 +93,17 @@ namespace KTfwd
     update_Ns(mpop); //update deme sizes
     return rv;    
   }
+  
+  /*! \brief Swap two demes
 
+    Swap two sub-populations
+
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i One deme to swap
+    \param j The other deme to swap
+
+    \note Implemented in terms of KTfwd::swap_demes. See documentation of that function for details.
+  */
   template<typename mpoptype>
   int swap_pops(mpoptype & mpop,
 		const size_t i,
@@ -72,6 +115,16 @@ namespace KTfwd
     return swap_demes(mpop.diploids,i,j);
   }
 
+  /*! \brief "Bud" off a new sub-population
+
+    \param r Pointer to a gsl_rng object
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i The parental deme
+    \param N_new The size of the new deme
+    \param replacement Sample parents from \c i with or without replacement
+
+    \note Implemented in terms of KTfwd::split_deme. See documentation of that function for details.
+   */
   template<typename mpoptype>
   int split_pop(gsl_rng * r,
 		mpoptype & mpop,
@@ -89,6 +142,18 @@ namespace KTfwd
     return rv;
   }
 
+    /*! \brief Create an admixed population
+
+    \param r Pointer to a gsl_rng object
+    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param i One parental deme
+    \param j The other parental deme
+    \param pi The fraction of parents in the new deme originating from deme \c i
+    \param N_new The size of the new deme
+    \param replacement Sample parents from \c i with or without replacement
+
+    \note Implemented in terms of KTfwd::admix_demes. See documentation of that function for details.
+   */
   template<typename mpoptype>
   int admix_pops(gsl_rng * r,
 		 mpoptype & mpop,
