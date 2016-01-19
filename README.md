@@ -154,6 +154,12 @@ The source code documentation is in the doc subdirectory that comes with the lib
 ##Example documentation
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
 
+# Projects using fwdpp:
+
+* [fwdpp_perf](https://github.com/molpopgen/fwdpp_perf) is a collection of programs showing how to run independent simulations in a multi-core/many-core environment.  Example programs use either C++11 threads or MPI to run simulations.  I also use this package for performance testing/benchmarking/profiling/etc.
+* [fwdpy](https://github.com/molpopgen/fwdpy) brings fwdpp-powered simulations to the Python programming language.
+
+
 # Dependencies
 
 ##System requirements
