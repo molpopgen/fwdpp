@@ -1,4 +1,5 @@
 
+
 /*! \file demography.cc
   \ingroup unit 
   \brief Testing functions in fwdpp/demography.hpp
@@ -262,5 +263,111 @@ BOOST_AUTO_TEST_CASE( low_level_admix_demes_test )
     //replacement for 2000 individuals will require all individuals from demes i and j.
     auto rv = KTfwd::admix_demes(rng.get(),mpop.mutations,mpop.mcounts,mpop.gametes,mpop.diploids,0,1,0.5,2000,true);
     BOOST_REQUIRE_EQUAL(rv,0);
+  }
+}
+
+#include <fwdpp/sugar/demography.hpp>
+
+/*
+  Now, we test the higher-level functions in the sugar sub-library.
+
+  These functions update other data inside of KTfwd::metapop.
+
+  These functions below are implemented via calls to the above functions.
+
+  Thus, the tests below are API tests plus tests that KTfwd::sugar::metapop::Ns
+  is getting properly updated..
+*/
+BOOST_AUTO_TEST_CASE( copy_pop_test )
+{
+  {
+    metapop_t mpop{1000};
+    auto rv = KTfwd::copy_pop(mpop,0);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),2);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( merge_pops_test )
+{
+  {
+    metapop_t mpop({1000,500});
+    auto rv = KTfwd::merge_pops(mpop,0,1);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,3000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),1);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( remove_pop_test )
+{
+  {
+    metapop_t mpop({1000,500});
+    auto rv = KTfwd::remove_pop(mpop,1);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,2000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),1);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( split_pop_test )
+{
+  {
+    metapop_t mpop{1000};
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    auto rv = KTfwd::split_pop(rng.get(),mpop,0,500,false);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,2000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),2);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+  {
+    metapop_t mpop{1000};
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    auto rv = KTfwd::split_pop(rng.get(),mpop,0,500,true);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,2000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),2);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+}
+
+BOOST_AUTO_TEST_CASE( admix_pops_test )
+{
+  {
+    metapop_t mpop{1000,1000};
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    auto rv = KTfwd::admix_pops(rng.get(),mpop,0,1,0.5,1000);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,6000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),3);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
   }
 }

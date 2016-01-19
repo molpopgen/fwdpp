@@ -9,5 +9,6 @@
 #include<fwdpp/sugar/generalmut.hpp>
 #include<fwdpp/sugar/serialization.hpp>
 #include<fwdpp/sugar/singlepop.hpp>
+#include<fwdpp/sugar/demography.hpp>
 
 #endif
