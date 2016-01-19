@@ -30,7 +30,7 @@ namespace KTfwd
     Make an exact copy of the i-th deme.  The new deme is placed at the end of \c diploids.
 
     \param mutations Container of mutations
-    \param mcounts Container of mutation coutns
+    \param mcounts Container of mutation counts
     \param gametes Container of gametes
     \param diploids Container of diploids in a metapopulation (vector of vectors of diploids).
     \param i The index of the deme to copy.
@@ -97,7 +97,7 @@ namespace KTfwd
     Delete a deme from a metapopulation
 
     \param mutations Container of mutations
-    \param mcounts Container of mutation coutns
+    \param mcounts Container of mutation counts
     \param gametes Container of gametes
     \param diploids Container of diploids in a metapopulation (vector of vectors of diploids).
     \param i The index of the deme to delete.
@@ -161,7 +161,7 @@ namespace KTfwd
     \param r A pointer to a gsl_rng object
 
     \param mutations Container of mutations
-    \param mcounts Container of mutation coutns
+    \param mcounts Container of mutation counts
     \param gametes Container of gametes
     \param diploids Container of diploids in a metapopulation (vector of vectors of diploids).
     \param i The index of the deme to split.
@@ -207,7 +207,7 @@ namespace KTfwd
 
      \param r A pointer to a gsl_rng object
      \param mutations Container of mutations
-     \param mcounts Container of mutation coutns
+     \param mcounts Container of mutation counts
      \param gametes Container of gametes
      \param diploids Container of diploids in a metapopulation (vector of vectors of diploids).
      \param i The index of one parental deme
