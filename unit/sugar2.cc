@@ -31,6 +31,24 @@ size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
 using spoptype = KTfwd::singlepop<mutation_t>;
 using poptype = KTfwd::metapop<mutation_t>;
 
+BOOST_AUTO_TEST_CASE( uniform_init )
+//Make sure C++11-style initialization is working ok
+{
+  {
+    poptype mpop{100,500};
+    BOOST_REQUIRE(mpop.diploids.size()==2);
+    BOOST_REQUIRE(mpop.diploids[0].size()==100);
+    BOOST_REQUIRE(mpop.diploids[1].size()==500);
+  }
+
+  {
+    poptype mpop({100,500});
+    BOOST_REQUIRE(mpop.diploids.size()==2);
+    BOOST_REQUIRE(mpop.diploids[0].size()==100);
+    BOOST_REQUIRE(mpop.diploids[1].size()==500);
+  }
+}
+
 BOOST_AUTO_TEST_CASE( copy_construct_metapop_from_singlepop )
 {
   spoptype pop(1000);
