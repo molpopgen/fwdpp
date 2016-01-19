@@ -4,6 +4,7 @@
 
 * KTfwd::metapop objects now copy- and move- constructible from KTfwd::singlepop objects
 * Support for demographic events via the low-level functions KTfwd::copy_deme, KTfwd::merge_demes, KTfwd::remove_deme, KTfwd::swap_demes, KTfwd::split_deme, and KTfwd::admix_demes.
+* Higher-level support for demographic models via the sugar-layer functions KTfwd::copy_pop, KTfwd::merge_pop, KTfwd::remove_pop, KTfwd::swap_pops, KTfwd::split_pop, and KTfwd::admix_pops.
 * Issue #31 fixed
 
 ## 0.4.4
