@@ -6,14 +6,14 @@ check_PROGRAMS=mutateTest \
 	mutationTest \
 	mlocusCrossoverTest \
 	siteDepFitness \
-	sugar1 \
-	sugar2 \
-	sugar3 \
-	sugar1_custom \
+	sugar_singlepop \
+	sugar_metapop \
+	sugar_multilocus \
+	sugar_singlepop_custom_diploid \
 	ms_sampling \
 	sugar_sampling \
 	callbacks \
-	sugar2_custom \
+	sugar_metapop_custom_diploid \
 	test_generalmut \
 	test_generalmut_vec \
 	extensions \
@@ -28,11 +28,11 @@ gameteTest_SOURCES=gameteTest.cc
 mutationTest_SOURCES=mutationTest.cc
 mlocusCrossoverTest_SOURCES=mlocusCrossoverTest.cc
 siteDepFitness_SOURCES=siteDepFitness.cc
-sugar1_SOURCES=sugar1.cc
-sugar2_SOURCES=sugar2.cc
-sugar3_SOURCES=sugar3.cc
-sugar1_custom_SOURCES=sugar1_custom.cc
-sugar2_custom_SOURCES=sugar2_custom.cc
+sugar_singlepop_SOURCES=sugar_singlepop.cc
+sugar_metapop_SOURCES=sugar_metapop.cc
+sugar_multilocus_SOURCES=sugar_multilocus.cc
+sugar_singlepop_custom_diploid_SOURCES=sugar_singlepop_custom_diploid.cc
+sugar_metapop_custom_diploid_SOURCES=sugar_metapop_custom_diploid.cc
 ms_sampling_SOURCES=ms_sampling.cc
 sugar_sampling_SOURCES=sugar_sampling.cc
 callbacks_SOURCES=callbacks.cc

@@ -81,13 +81,14 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1$(EXEEXT) sugar2$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar3$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepop$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocus$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepop_custom_diploid$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	ms_sampling$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop_custom_diploid$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT) \
@@ -155,33 +156,38 @@ am__siteDepFitness_SOURCES_DIST = siteDepFitness.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
 siteDepFitness_OBJECTS = $(am_siteDepFitness_OBJECTS)
 siteDepFitness_LDADD = $(LDADD)
-am__sugar1_SOURCES_DIST = sugar1.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar1_OBJECTS = sugar1.$(OBJEXT)
-sugar1_OBJECTS = $(am_sugar1_OBJECTS)
-sugar1_LDADD = $(LDADD)
-am__sugar1_custom_SOURCES_DIST = sugar1_custom.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar1_custom_OBJECTS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar1_custom.$(OBJEXT)
-sugar1_custom_OBJECTS = $(am_sugar1_custom_OBJECTS)
-sugar1_custom_LDADD = $(LDADD)
-am__sugar2_SOURCES_DIST = sugar2.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar2_OBJECTS = sugar2.$(OBJEXT)
-sugar2_OBJECTS = $(am_sugar2_OBJECTS)
-sugar2_LDADD = $(LDADD)
-am__sugar2_custom_SOURCES_DIST = sugar2_custom.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar2_custom_OBJECTS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar2_custom.$(OBJEXT)
-sugar2_custom_OBJECTS = $(am_sugar2_custom_OBJECTS)
-sugar2_custom_LDADD = $(LDADD)
-am__sugar3_SOURCES_DIST = sugar3.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar3_OBJECTS = sugar3.$(OBJEXT)
-sugar3_OBJECTS = $(am_sugar3_OBJECTS)
-sugar3_LDADD = $(LDADD)
+am__sugar_metapop_SOURCES_DIST = sugar_metapop.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_metapop_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop.$(OBJEXT)
+sugar_metapop_OBJECTS = $(am_sugar_metapop_OBJECTS)
+sugar_metapop_LDADD = $(LDADD)
+am__sugar_metapop_custom_diploid_SOURCES_DIST =  \
+	sugar_metapop_custom_diploid.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_metapop_custom_diploid_OBJECTS = sugar_metapop_custom_diploid.$(OBJEXT)
+sugar_metapop_custom_diploid_OBJECTS =  \
+	$(am_sugar_metapop_custom_diploid_OBJECTS)
+sugar_metapop_custom_diploid_LDADD = $(LDADD)
+am__sugar_multilocus_SOURCES_DIST = sugar_multilocus.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_multilocus_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocus.$(OBJEXT)
+sugar_multilocus_OBJECTS = $(am_sugar_multilocus_OBJECTS)
+sugar_multilocus_LDADD = $(LDADD)
 am__sugar_sampling_SOURCES_DIST = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_sampling_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_sampling.$(OBJEXT)
 sugar_sampling_OBJECTS = $(am_sugar_sampling_OBJECTS)
 sugar_sampling_LDADD = $(LDADD)
+am__sugar_singlepop_SOURCES_DIST = sugar_singlepop.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_singlepop_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepop.$(OBJEXT)
+sugar_singlepop_OBJECTS = $(am_sugar_singlepop_OBJECTS)
+sugar_singlepop_LDADD = $(LDADD)
+am__sugar_singlepop_custom_diploid_SOURCES_DIST =  \
+	sugar_singlepop_custom_diploid.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_singlepop_custom_diploid_OBJECTS = sugar_singlepop_custom_diploid.$(OBJEXT)
+sugar_singlepop_custom_diploid_OBJECTS =  \
+	$(am_sugar_singlepop_custom_diploid_OBJECTS)
+sugar_singlepop_custom_diploid_LDADD = $(LDADD)
 am__test_generalmut_SOURCES_DIST = test_generalmut.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_test_generalmut_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut.$(OBJEXT)
@@ -226,10 +232,12 @@ SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
 	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
 	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
 	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
-	$(sugar1_SOURCES) $(sugar1_custom_SOURCES) $(sugar2_SOURCES) \
-	$(sugar2_custom_SOURCES) $(sugar3_SOURCES) \
-	$(sugar_sampling_SOURCES) $(test_generalmut_SOURCES) \
-	$(test_generalmut_vec_SOURCES)
+	$(sugar_metapop_SOURCES) \
+	$(sugar_metapop_custom_diploid_SOURCES) \
+	$(sugar_multilocus_SOURCES) $(sugar_sampling_SOURCES) \
+	$(sugar_singlepop_SOURCES) \
+	$(sugar_singlepop_custom_diploid_SOURCES) \
+	$(test_generalmut_SOURCES) $(test_generalmut_vec_SOURCES)
 DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
 	$(am__demography_SOURCES_DIST) $(am__extensions_SOURCES_DIST) \
@@ -237,10 +245,13 @@ DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
-	$(am__siteDepFitness_SOURCES_DIST) $(am__sugar1_SOURCES_DIST) \
-	$(am__sugar1_custom_SOURCES_DIST) $(am__sugar2_SOURCES_DIST) \
-	$(am__sugar2_custom_SOURCES_DIST) $(am__sugar3_SOURCES_DIST) \
+	$(am__siteDepFitness_SOURCES_DIST) \
+	$(am__sugar_metapop_SOURCES_DIST) \
+	$(am__sugar_metapop_custom_diploid_SOURCES_DIST) \
+	$(am__sugar_multilocus_SOURCES_DIST) \
 	$(am__sugar_sampling_SOURCES_DIST) \
+	$(am__sugar_singlepop_SOURCES_DIST) \
+	$(am__sugar_singlepop_custom_diploid_SOURCES_DIST) \
 	$(am__test_generalmut_SOURCES_DIST) \
 	$(am__test_generalmut_vec_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -572,11 +583,11 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@mlocusCrossoverTest_SOURCES = mlocusCrossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@siteDepFitness_SOURCES = siteDepFitness.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_SOURCES = sugar1.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_SOURCES = sugar2.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@sugar3_SOURCES = sugar3.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@sugar1_custom_SOURCES = sugar1_custom.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@sugar2_custom_SOURCES = sugar2_custom.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_singlepop_SOURCES = sugar_singlepop.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_metapop_SOURCES = sugar_metapop.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_multilocus_SOURCES = sugar_multilocus.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_singlepop_custom_diploid_SOURCES = sugar_singlepop_custom_diploid.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@sugar_metapop_custom_diploid_SOURCES = sugar_metapop_custom_diploid.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@ms_sampling_SOURCES = ms_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_sampling_SOURCES = sugar_sampling.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@callbacks_SOURCES = callbacks.cc
@@ -664,29 +675,29 @@ siteDepFitness$(EXEEXT): $(siteDepFitness_OBJECTS) $(siteDepFitness_DEPENDENCIES
 	@rm -f siteDepFitness$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(siteDepFitness_OBJECTS) $(siteDepFitness_LDADD) $(LIBS)
 
-sugar1$(EXEEXT): $(sugar1_OBJECTS) $(sugar1_DEPENDENCIES) $(EXTRA_sugar1_DEPENDENCIES) 
-	@rm -f sugar1$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(sugar1_OBJECTS) $(sugar1_LDADD) $(LIBS)
+sugar_metapop$(EXEEXT): $(sugar_metapop_OBJECTS) $(sugar_metapop_DEPENDENCIES) $(EXTRA_sugar_metapop_DEPENDENCIES) 
+	@rm -f sugar_metapop$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_metapop_OBJECTS) $(sugar_metapop_LDADD) $(LIBS)
 
-sugar1_custom$(EXEEXT): $(sugar1_custom_OBJECTS) $(sugar1_custom_DEPENDENCIES) $(EXTRA_sugar1_custom_DEPENDENCIES) 
-	@rm -f sugar1_custom$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(sugar1_custom_OBJECTS) $(sugar1_custom_LDADD) $(LIBS)
+sugar_metapop_custom_diploid$(EXEEXT): $(sugar_metapop_custom_diploid_OBJECTS) $(sugar_metapop_custom_diploid_DEPENDENCIES) $(EXTRA_sugar_metapop_custom_diploid_DEPENDENCIES) 
+	@rm -f sugar_metapop_custom_diploid$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_metapop_custom_diploid_OBJECTS) $(sugar_metapop_custom_diploid_LDADD) $(LIBS)
 
-sugar2$(EXEEXT): $(sugar2_OBJECTS) $(sugar2_DEPENDENCIES) $(EXTRA_sugar2_DEPENDENCIES) 
-	@rm -f sugar2$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(sugar2_OBJECTS) $(sugar2_LDADD) $(LIBS)
-
-sugar2_custom$(EXEEXT): $(sugar2_custom_OBJECTS) $(sugar2_custom_DEPENDENCIES) $(EXTRA_sugar2_custom_DEPENDENCIES) 
-	@rm -f sugar2_custom$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(sugar2_custom_OBJECTS) $(sugar2_custom_LDADD) $(LIBS)
-
-sugar3$(EXEEXT): $(sugar3_OBJECTS) $(sugar3_DEPENDENCIES) $(EXTRA_sugar3_DEPENDENCIES) 
-	@rm -f sugar3$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(sugar3_OBJECTS) $(sugar3_LDADD) $(LIBS)
+sugar_multilocus$(EXEEXT): $(sugar_multilocus_OBJECTS) $(sugar_multilocus_DEPENDENCIES) $(EXTRA_sugar_multilocus_DEPENDENCIES) 
+	@rm -f sugar_multilocus$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_multilocus_OBJECTS) $(sugar_multilocus_LDADD) $(LIBS)
 
 sugar_sampling$(EXEEXT): $(sugar_sampling_OBJECTS) $(sugar_sampling_DEPENDENCIES) $(EXTRA_sugar_sampling_DEPENDENCIES) 
 	@rm -f sugar_sampling$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(sugar_sampling_OBJECTS) $(sugar_sampling_LDADD) $(LIBS)
+
+sugar_singlepop$(EXEEXT): $(sugar_singlepop_OBJECTS) $(sugar_singlepop_DEPENDENCIES) $(EXTRA_sugar_singlepop_DEPENDENCIES) 
+	@rm -f sugar_singlepop$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_singlepop_OBJECTS) $(sugar_singlepop_LDADD) $(LIBS)
+
+sugar_singlepop_custom_diploid$(EXEEXT): $(sugar_singlepop_custom_diploid_OBJECTS) $(sugar_singlepop_custom_diploid_DEPENDENCIES) $(EXTRA_sugar_singlepop_custom_diploid_DEPENDENCIES) 
+	@rm -f sugar_singlepop_custom_diploid$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(sugar_singlepop_custom_diploid_OBJECTS) $(sugar_singlepop_custom_diploid_LDADD) $(LIBS)
 
 test_generalmut$(EXEEXT): $(test_generalmut_OBJECTS) $(test_generalmut_DEPENDENCIES) $(EXTRA_test_generalmut_DEPENDENCIES) 
 	@rm -f test_generalmut$(EXEEXT)
@@ -712,12 +723,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitness.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar1_custom.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar2_custom.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar3.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_metapop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_metapop_custom_diploid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_multilocus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_sampling.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_singlepop.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_singlepop_custom_diploid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut_vec.Po@am__quote@
 
@@ -970,30 +981,30 @@ siteDepFitness.log: siteDepFitness$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sugar1.log: sugar1$(EXEEXT)
-	@p='sugar1$(EXEEXT)'; \
-	b='sugar1'; \
+sugar_singlepop.log: sugar_singlepop$(EXEEXT)
+	@p='sugar_singlepop$(EXEEXT)'; \
+	b='sugar_singlepop'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sugar2.log: sugar2$(EXEEXT)
-	@p='sugar2$(EXEEXT)'; \
-	b='sugar2'; \
+sugar_metapop.log: sugar_metapop$(EXEEXT)
+	@p='sugar_metapop$(EXEEXT)'; \
+	b='sugar_metapop'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sugar3.log: sugar3$(EXEEXT)
-	@p='sugar3$(EXEEXT)'; \
-	b='sugar3'; \
+sugar_multilocus.log: sugar_multilocus$(EXEEXT)
+	@p='sugar_multilocus$(EXEEXT)'; \
+	b='sugar_multilocus'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sugar1_custom.log: sugar1_custom$(EXEEXT)
-	@p='sugar1_custom$(EXEEXT)'; \
-	b='sugar1_custom'; \
+sugar_singlepop_custom_diploid.log: sugar_singlepop_custom_diploid$(EXEEXT)
+	@p='sugar_singlepop_custom_diploid$(EXEEXT)'; \
+	b='sugar_singlepop_custom_diploid'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1019,9 +1030,9 @@ callbacks.log: callbacks$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-sugar2_custom.log: sugar2_custom$(EXEEXT)
-	@p='sugar2_custom$(EXEEXT)'; \
-	b='sugar2_custom'; \
+sugar_metapop_custom_diploid.log: sugar_metapop_custom_diploid$(EXEEXT)
+	@p='sugar_metapop_custom_diploid$(EXEEXT)'; \
+	b='sugar_metapop_custom_diploid'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

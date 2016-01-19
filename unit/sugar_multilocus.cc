@@ -1,10 +1,10 @@
 /*!
-  \file sugar3.cc
+  \file sugar_multilocus.cc
   \ingroup unit
   \brief Testing KTfwd::multiloc
 */
 
-#define BOOST_TEST_MODULE sugarTest3
+#define BOOST_TEST_MODULE sugar_multilocus
 #define BOOST_TEST_DYN_LINK 
 
 #include <iostream>

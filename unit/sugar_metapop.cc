@@ -1,8 +1,8 @@
-/*! \file sugar2.cc
+/*! \file sugar_metapop.cc
   \ingroup unit 
   \brief Testing KTfwd::metapop
 */
-#define BOOST_TEST_MODULE sugarTest2
+#define BOOST_TEST_MODULE sugar_metapop
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>

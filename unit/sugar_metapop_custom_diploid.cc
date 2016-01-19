@@ -1,8 +1,8 @@
-/*! \file sugar2.cc
+/*! \file sugar_metapop_custom_diploid.cc
   \ingroup unit 
   \brief Testing KTfwd::metapop with custom diploid type
 */
-#define BOOST_TEST_MODULE sugarTest2_custom
+#define BOOST_TEST_MODULE sugar_metapop_custom_diploid
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
