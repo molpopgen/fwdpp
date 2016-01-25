@@ -117,13 +117,15 @@ namespace KTfwd
       for(const auto & b1 : g1.smutations)
 	{
 	  bool found = false;
-	  for( ; !found && b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
+	  for( ; b2 < g2.smutations.size() && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
 	    {
 	      if (b1==g2.smutations[b2])
 		{
 		  assert(mutations[b1].pos == mutations[g2.smutations[b2]].pos);
 		  fpol_hom(w,mutations[b1]);
 		  found=true;
+		  ++b2;
+		  break;
 		}
 	      else
 		{
