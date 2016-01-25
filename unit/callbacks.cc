@@ -72,3 +72,11 @@ BOOST_AUTO_TEST_CASE(shmodel2)
   auto __s = x.s(r);
   auto __h = x.h(r);
 }
+
+BOOST_AUTO_TEST_CASE( point_mass_test1 )
+{
+  gsl_rng_set(r,101);
+  auto x = KTfwd::extensions::uniform(-1.,-1.);
+  auto y = x(r);
+  BOOST_REQUIRE_EQUAL(y,-1.0);
+}
