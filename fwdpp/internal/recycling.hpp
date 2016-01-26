@@ -71,9 +71,9 @@ namespace KTfwd
     template<typename queue_t,
 	     typename mlist_t,
 	     class... Args >
-    typename std::size_t recycle_mutation_helper( queue_t & mutation_recycling_bin,
-						  mlist_t & mutations,
-						  Args&&... args )
+    std::size_t recycle_mutation_helper( queue_t & mutation_recycling_bin,
+					 mlist_t & mutations,
+					 Args&&... args )
     {
       if(!mutation_recycling_bin.empty())
 	{
