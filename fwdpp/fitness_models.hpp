@@ -64,8 +64,8 @@ namespace KTfwd
   /*! \brief Function object for fitness as a function of individual mutations in a diploid
 
     Function object for fitness as a function of mutations in a diploid.  Examples include the standard multiplicative and additive models of population genetics.  This routine idenfifies all homozygous/heterozygous mutations in a diploid and updates the diploid's fitness according to user-defined policies.  See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.
-    \param g1 An gamete
-    \param g2 An gamete
+    \param g1 A gamete
+    \param g2 A gamete
     \param mutations Container of mutations
     \param fpol_hom Policy for updating fitness for the case of homozygosity for a mutant
     \param fpol_het Policy for updating fitness for the case of heterozygosity for a mutant
