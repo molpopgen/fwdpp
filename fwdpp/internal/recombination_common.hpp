@@ -1,6 +1,7 @@
 #ifndef __FDWPP_INTERNAL_RECOMBINATION_COMMON_HPP__
 #define __FDWPP_INTERNAL_RECOMBINATION_COMMON_HPP__
 
+#include <iostream>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 #include <cassert>
 namespace KTfwd {
@@ -19,7 +20,6 @@ namespace KTfwd {
 			    std::vector<std::size_t> & selected)
     {
       assert( std::is_sorted(pos.cbegin(),pos.cend()) );
-      short SWITCH = 0;
 
       auto itr = gametes[ibeg].mutations.cbegin();
       auto jtr = gametes[jbeg].mutations.cbegin();
@@ -29,28 +29,33 @@ namespace KTfwd {
       auto itr_s_e = gametes[ibeg].smutations.cend();
       auto jtr_e = gametes[jbeg].mutations.cend();
       auto jtr_s_e = gametes[jbeg].smutations.cend();
-      
-      for(const double dummy : pos )
+
+      auto pend = (pos.size()%2==0) ? pos.cend() : pos.cend()-1;
+      auto i = pos.cbegin();
+      const double * p = pos.data();
+      for( ; i < pend ; i+=2,p+=2 )
 	{
-	  if(!SWITCH)
-	    {
-	      itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
-						    neutral,dummy);
-	      itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
-						      selected,dummy);
-	      jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,mutations,dummy);
-	      jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,mutations,dummy);
-	    }
-	  else
-	    {
-	      jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,mutations,
-						    neutral,dummy);
-	      jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,mutations,
-						      selected,dummy);
-	      itr = fwdpp_internal::rec_update_itr(itr,itr_e,mutations,dummy);
-	      itr_s = fwdpp_internal::rec_update_itr(itr_s,itr_s_e,mutations,dummy);
-	    }
-	  SWITCH=!SWITCH;
+	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
+						neutral,*p);
+	  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
+						  selected,*p);
+	  jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,mutations,*p);
+	  jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,mutations,*p);
+
+	  jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,mutations,
+						neutral,*(p+1));
+	  jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,mutations,
+						  selected,*(p+1));
+	  itr = fwdpp_internal::rec_update_itr(itr,itr_e,mutations,*(p+1));
+	  itr_s = fwdpp_internal::rec_update_itr(itr_s,itr_s_e,mutations,*(p+1));
+	}
+      assert(std::distance(i,pos.cend())<=1);
+      for( ; i<pos.cend();++i)
+	{
+	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
+						neutral,*p);
+	  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
+						  selected,*p);
 	}
       assert(gamete_is_sorted_n(gametes[ibeg],mutations));
       assert(gamete_is_sorted_s(gametes[ibeg],mutations));
