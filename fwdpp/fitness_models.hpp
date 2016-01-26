@@ -1,6 +1,6 @@
 #ifndef _FITNESS_MODELS_HPP_
 #define _FITNESS_MODELS_HPP_
-#include <iostream>
+
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/tags/diploid_tags.hpp>
@@ -114,74 +114,29 @@ namespace KTfwd
 	return w;
       }
       typename gamete_type::mutation_container::size_type b2 = 0;
-#ifndef NDEBUG
-      unsigned seen1=0,seen2=0;
-#endif
       for(const auto & b1 : g1.smutations)
 	{
-	  //bool found = false;
 	  for( ; b2 < g2.smutations.size() &&
 		 b1!=g2.smutations[b2] && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
 	    {
-	      // if ()
-	      // 	{
-	      // 	  assert(mutations[b1].pos == mutations[g2.smutations[b2]].pos);
-	      // 	  fpol_hom(w,mutations[b1]);
-	      // 	  found=true;
-	      // 	  ++b2;
-	      // 	  break;
-	      // 	}
-	      // else
-	      // 	{
 	      assert(mutations[g2.smutations[b2]].pos < mutations[b1].pos);
 	      fpol_het(w,mutations[g2.smutations[b2]]);
-#ifndef NDEBUG
-	      std::cerr << "2:"<<b2<< ":het ";
-	      ++seen2;
-#endif
-	      //}
 	    }
-	  if(b2<g2.smutations.size()&&b1==g2.smutations[b2])
+	  if(b2<g2.smutations.size()&&b1==g2.smutations[b2]) //mutation with index b1 is homozygous
 	    {
-	      assert(b2<g2.smutations.size());
 	      assert(mutations[g2.smutations[b2]].pos == mutations[b1].pos);
 	      fpol_hom(w,mutations[b1]);
-	      ++b2;
-#ifndef NDEBUG
-	      ++seen1;
-	      std::cerr << "2:"<<b2<<":hom ";
-	      ++seen2;
-#endif
+	      ++b2; //increment so that we don't re-process this site as a het next time 'round
 	    }
-	  else
+	  else //mutation b1 is heterozygous
 	    {
-#ifndef NDEBUG
-	      if(b2<g2.smutations.size())
-		{
-		  assert(mutations[g2.smutations[b2]].pos > mutations[b1].pos);
-		}
-	      ++seen1;
-#endif
 	      fpol_het(w,mutations[b1]);
 	    }
-	  //if(!found) fpol_het(w,mutations[b1]);
 	}
       for( ; b2 < g2.smutations.size() ; ++b2 )
 	{
 	  fpol_het(w,mutations[g2.smutations[b2]]);
-#ifndef NDEBUG
-	  std::cerr << "2:"<<b2<<":het ";
-	  ++seen2;
-#endif
 	}
-#ifndef NDEBUG
-      std::cerr << '\n';
-      if(seen1!=g1.smutations.size()) std::cerr << "1: "<< seen1 << ' ' << g1.smutations.size() << '\n';
-      if(seen2!=g2.smutations.size()) std::cerr << "2: "<< seen2 << ' ' << g2.smutations.size() << '\n';
-#endif
-      assert(seen1==g1.smutations.size());
-      assert(seen2==g2.smutations.size());
-    
       return w;
     }
     
