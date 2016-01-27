@@ -23,33 +23,32 @@ namespace KTfwd {
 	     typename mcont_t>
     struct gamete_lookup
     {
-      using key_t = double;
-      using lookup_table_t = std::multimap<key_t,size_t>;
+      using key_t = std::size_t;
+      using lookup_table_t = std::multimap<key_t,std::size_t>;
       using result_type = std::pair< lookup_table_t::iterator, lookup_table_t::iterator>;
       using inner_t = typename lookup_table_t::value_type;
       lookup_table_t lookup_table;
 
       inline key_t keyit( const std::vector<size_t> & mc,
-			   const mcont_t & mutations ) const
+			  const mcont_t & mutations ) const
       {
-	return (mc.empty()) ? -std::numeric_limits<key_t>::max() : mutations[mc.front()].pos;
+	return (mc.empty()) ? std::numeric_limits<key_t>::max() : (*(mc.begin() + std::distance(mc.begin(),mc.end())/2) << mc.size());
       }
 
       inline void update_details( size_t g,
 				  const gcont_t & gametes,
 				  const mcont_t & mutations)
       {
-	lookup_table.emplace( std::make_pair( keyit(gametes[g].mutations,mutations)*key_t(gametes[g].mutations.size()) +
-					      keyit(gametes[g].smutations,mutations)*key_t(gametes[g].smutations.size()), g) );
+	lookup_table.emplace( std::make_pair( keyit(gametes[g].mutations,mutations) +
+					      keyit(gametes[g].smutations,mutations), g) );
       }
 
       inline result_type lookup( const std::vector<size_t> & n,
 				 const std::vector<size_t> & s,
 				 const mcont_t & mutations )
       {
-	return lookup_table.equal_range(  keyit(n,mutations)*key_t(n.size()) + keyit(s,mutations)*key_t(s.size()) );
+	return lookup_table.equal_range( keyit(n,mutations) + keyit(s,mutations) );
       }
-
       inline void update(size_t idx,
 			 const gcont_t & gametes,
 			 const mcont_t & mutations)
@@ -75,7 +74,7 @@ namespace KTfwd {
       Exists so that calling environ can use auto and not
       deal w/template type, which is an attempt at future-proofing.
     */
-    template< typename gcont_t, typename mcont_t >
+      template< typename gcont_t, typename mcont_t >
     gamete_lookup<gcont_t,mcont_t>
     gamete_lookup_table(const gcont_t & gametes,
 			const mcont_t & mutations)  {
