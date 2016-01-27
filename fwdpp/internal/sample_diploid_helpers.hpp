@@ -13,8 +13,8 @@ namespace KTfwd
 				 const mcont_t & mutations,
 				 std::vector<uint_t> & mcounts)
     /*!
-      For every non-extinct gamete, increment the counts of its mutations
-      via a call to KTfwd::fwdpp_internal::adjust_mutation_counts.
+      For every non-extinct gamete, increment the count of its mutations
+      using the frequency of the gamete.
     */
     {
       if(mutations.size()>mcounts.size())
