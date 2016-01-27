@@ -19,31 +19,21 @@ namespace KTfwd {
 			   gamete_type & new_gamete )
     {
       assert(idx<mutations.size());
-      if(mutations[idx].neutral)
-	{
-	  assert(std::find(new_gamete.mutations.begin(),
-			   new_gamete.mutations.end(),idx)==new_gamete.mutations.end());
-	  new_gamete.mutations.emplace(std::upper_bound(new_gamete.mutations.begin(),
-							new_gamete.mutations.end(),mutations[idx].pos,
-							[&mutations](const double & __value,const std::size_t __mut) noexcept {
-							  assert(__mut<mutations.size());
-							  return __value < mutations[__mut].pos;}),
-				       idx );
-	  assert(gamete_is_sorted_n(new_gamete,mutations));
-	}
-      else
-	{
-	  assert(std::find(new_gamete.smutations.begin(),
-			   new_gamete.smutations.end(),idx)==new_gamete.smutations.end());
-	  new_gamete.smutations.emplace(std::upper_bound(new_gamete.smutations.begin(),
-							 new_gamete.smutations.end(),mutations[idx].pos,
-							 [&mutations](const double & __value,const std::size_t __mut) noexcept {
-							   assert(__mut<mutations.size());
-							   return __value < mutations[__mut].pos;}),
-					idx );
-	  assert(gamete_is_sorted_s(new_gamete,mutations));
-	}
+      auto mc = (mutations[idx].neutral) ? &new_gamete.mutations : &new_gamete.smutations;
 
+      assert( std::find(mv->cbegin(),mc->cend(),idx) == mc->end() );
+      mc->emplace(std::upper_bound(mc->begin(),
+				   mc->end(),mutations[idx].pos,
+				   [&mutations,&idx](const double & __value,const std::size_t __mut) noexcept {
+				     assert(__mut<mutations.size());
+				     return __value < mutations[__mut].pos;}),
+		  idx );
+
+      assert(std::is_sorted(mc->cbegin(),mc->cend(),
+			    [&mutations](const std::size_t i, const std::size_t j)noexcept
+			    {
+			      return mutations[i].pos<mutations[j].pos;
+			    }));
     }
     
     template<typename mmodel,
