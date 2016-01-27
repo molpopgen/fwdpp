@@ -19,9 +19,11 @@ namespace KTfwd {
 			   gamete_type & new_gamete )
     {
       assert(idx<mutations.size());
+      //Establish a pointer to the container to be modified
       auto mc = (mutations[idx].neutral) ? &new_gamete.mutations : &new_gamete.smutations;
 
       assert( std::find(mv->cbegin(),mc->cend(),idx) == mc->end() );
+      //Insert new mutation at position retaining sort-by-position order
       mc->emplace(std::upper_bound(mc->begin(),
 				   mc->end(),mutations[idx].pos,
 				   [&mutations,&idx](const double & __value,const std::size_t __mut) noexcept {
