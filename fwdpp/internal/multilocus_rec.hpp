@@ -23,7 +23,6 @@ namespace KTfwd {
       stuff is skipped during compilation.
     */
     template<typename diploid_type,
-	     typename gamete_lookup_t,
 	     typename recombination_policy_container,
 	     typename mqueue_t,
 	     typename gqueue_t,
@@ -44,7 +43,6 @@ namespace KTfwd {
 				    diploid_type parent2,
 				    mqueue_t & mutation_recycling_bin,
 				    gqueue_t & gamete_recycling_bin,
-				    gamete_lookup_t & gamete_lookup,
 				    const recombination_policy_container & rec_pols,
 				    const bw_locus_rec_fxn & blrf,
 				    const double * r_bw_loci,
@@ -64,7 +62,7 @@ namespace KTfwd {
 				    mlist_t & mutations,
 				    typename glist_t::value_type::mutation_container & neutral,
 				    typename glist_t::value_type::mutation_container & selected
-#endif			
+#endif
 				    )
     {
       //I see the problem: how to get the positions ahead of time...
@@ -92,12 +90,12 @@ namespace KTfwd {
 	  if( *s2 % 2 != 0.) std::swap(parent2[i].first,parent2[i].second);
 
 	  //mechanics of recombination
-	  auto xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+	  auto xx = recombination(gametes,gamete_recycling_bin,neutral,selected,rec_pols[i],
 				  parent1[i].first,parent1[i].second,mutations);
 	  offspring[i].first = xx.first;
 	  if(xx.second%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
 
-	  xx = recombination(gametes,gamete_lookup,gamete_recycling_bin,neutral,selected,rec_pols[i],
+	  xx = recombination(gametes,gamete_recycling_bin,neutral,selected,rec_pols[i],
 			    parent2[i].first,parent2[i].second,mutations);
 	  offspring[i].second = xx.first;
 	  if(xx.second%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );

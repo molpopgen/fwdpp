@@ -5,7 +5,6 @@
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
-#include <fwdpp/internal/gamete_lookup_table.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
@@ -96,8 +95,7 @@ namespace KTfwd
     double wbar = 0.;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    
+
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
 	gametes[diploids[i].first].n=gametes[diploids[i].second].n=0;
@@ -134,9 +132,9 @@ namespace KTfwd
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
-	dip.first = recombination(gametes,gamete_lookup,gam_recycling_bin,
+	dip.first = recombination(gametes,gam_recycling_bin,
 				  neutral,selected,rec_pol,p1g1,p1g2,mutations).first;
-	dip.second = recombination(gametes,gamete_lookup,gam_recycling_bin,
+	dip.second = recombination(gametes,gam_recycling_bin,
 				   neutral,selected,rec_pol,p2g1,p2g2,mutations).first;
 
 	gametes[dip.first].n++;
@@ -256,7 +254,6 @@ namespace KTfwd
     std::vector<double> wbars(diploids.size(),0);
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
 
     //get max N
     auto mN = *std::max_element(N_curr,N_curr+diploids.size());
@@ -293,7 +290,7 @@ namespace KTfwd
 	for(auto & dip : diploids[popi])
 	  {
 	    /* Figure out if parent 1 is migrant or not.
-	       
+
 	       A migration policy takes the current deme (popindex) as
 	       an argument.  It returns popindex if there is no migration,
 	       else it returns the index of the deme of a migrant parent
@@ -326,14 +323,14 @@ namespace KTfwd
 	    if(gsl_rng_uniform(r)<0.5)std::swap(p1g1,p1g2);
 	    if(gsl_rng_uniform(r)<0.5)std::swap(p2g1,p2g2);
 
-	    dip.first = recombination(gametes,gamete_lookup,gamete_recycling_bin,
+	    dip.first = recombination(gametes,gamete_recycling_bin,
 				      neutral,selected,rec_pol,p1g1,p1g2,mutations).first;
-	    dip.second = recombination(gametes,gamete_lookup,gamete_recycling_bin,
+	    dip.second = recombination(gametes,gamete_recycling_bin,
 				       neutral,selected,rec_pol,p2g1,p2g2,mutations).first;
-	    
+
 	    gametes[dip.first].n++;
 	    gametes[dip.second].n++;
-	    
+
 	    //now, add new mutations
 	    dip.first = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	    dip.second = mutate_gamete_recycle(mut_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
@@ -347,7 +344,7 @@ namespace KTfwd
     assert( check_sum(gametes,2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0))) );
     return wbars;
   }
-  
+
   //Multi-locus API
   //single deme, N changing
   template< typename diploid_geno_t,
@@ -397,7 +394,6 @@ namespace KTfwd
     double wbar = 0.;
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
-    auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
     //Go over parents
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
@@ -441,13 +437,13 @@ namespace KTfwd
 	std::size_t p2 = (f==1.||(f>0. && gsl_rng_uniform(r)<f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p2<N_curr);
 	dip=fwdpp_internal::multilocus_rec_mut(r,parents[p1],parents[p2],
-					       mut_recycling_bin,gamete_recycling_bin,gamete_lookup,
+					       mut_recycling_bin,gamete_recycling_bin,
 					       rec_policies,blrf,r_between_loci,
 					       ((gsl_rng_uniform(r)<0.5)?1:0),
 					       ((gsl_rng_uniform(r)<0.5)?1:0),
 					       gametes,mutations,neutral,selected,mu,mmodel,gpolicy_mut
 					       );
-	
+
       }
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,

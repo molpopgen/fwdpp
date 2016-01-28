@@ -40,7 +40,7 @@ namespace KTfwd {
 	    fitnesses[i]= fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],gametes,mutations,
 								   typename KTfwd::traits::is_custom_diploid_t<diploid_geno_t>::type());
 	  }
-	
+
 	wbar /= double(diploids.size());
 
 	/*!
@@ -103,8 +103,8 @@ namespace KTfwd {
 		   diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		   mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
 		   std::vector<uint_t> & mcounts,
-		   const unsigned & N_curr, 
-		   const unsigned & N_next, 
+		   const unsigned & N_curr,
+		   const unsigned & N_next,
 		   const double & mu,
 		   const mutation_model & mmodel,
 		   const recombination_policy & rec_pol,
@@ -120,14 +120,14 @@ namespace KTfwd {
 
       auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
       auto mutation_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
-      auto gamete_lookup = fwdpp_internal::gamete_lookup_table(gametes,mutations);
+
       pmr.w(diploids,gametes,mutations,ff);
 
 #ifndef NDEBUG
       for(const auto & g : gametes) assert(!g.n);
 #endif
       const auto parents(diploids); //copy the parents
-    
+
       //Change the population size
       if( diploids.size() != N_next)
 	{
@@ -141,7 +141,7 @@ namespace KTfwd {
 	  size_t p2 = pmr.pick2(r,p1,f,parents[p1],gametes,mutations);
 	  assert(p1<parents.size());
 	  assert(p2<parents.size());
-	
+
 	  std::size_t p1g1 = parents[p1].first;
 	  std::size_t p1g2 = parents[p1].second;
 	  std::size_t p2g1 = parents[p2].first;
@@ -150,19 +150,19 @@ namespace KTfwd {
 	  //0.3.3 change:
 	  if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	  if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
-	  
-	  dip.first = recombination(gametes,gamete_lookup,gamete_recycling_bin,
+
+	  dip.first = recombination(gametes,gamete_recycling_bin,
 				    neutral,selected,rec_pol,p1g1,p1g2,mutations).first;
-	  dip.second = recombination(gametes,gamete_lookup,gamete_recycling_bin,
+	  dip.second = recombination(gametes,gamete_recycling_bin,
 				     neutral,selected,rec_pol,p2g1,p2g2,mutations).first;
-	
+
 	  gametes[dip.first].n++;
 	  gametes[dip.second].n++;
 
 	  //now, add new mutations
 	  dip.first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	  dip.second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
-	  
+
 	  assert( gametes[dip.first].n );
 	  assert( gametes[dip.second].n );
 	  pmr.update(r,dip,parents[p1],parents[p2],gametes,mutations);
@@ -208,7 +208,7 @@ namespace KTfwd {
 		   diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		   mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
 		   std::vector<uint_t> & mcounts,
-		   const unsigned & N_curr, 
+		   const unsigned & N_curr,
 		   const double & mu,
 		   const mutation_model & mmodel,
 		   const recombination_policy & rec_pol,

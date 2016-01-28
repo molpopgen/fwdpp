@@ -1,4 +1,4 @@
-//  -*- C++ -*- 
+//  -*- C++ -*-
 #ifndef __FWDPP_RECOMBINATION_TCC__
 #define __FWDPP_RECOMBINATION_TCC__
 
@@ -6,18 +6,16 @@
 #include <fwdpp/internal/recombination_common.hpp>
 #include <fwdpp/internal/recycling.hpp>
 namespace KTfwd
-{  
+{
   template< typename vec_t,
 	    typename gcont_t,
 	    typename mcont_t,
-	    typename glookup_t,
 	    typename queue_t>
   std::size_t recombine_gametes( const vec_t & pos,
 				 gcont_t & gametes,
 				 const mcont_t & mutations,
 				 const std::size_t g1,
 				 const std::size_t g2,
-				 glookup_t & gamete_lookup,
 				 queue_t & gamete_recycling_bin,
 				 std::vector<std::size_t> & neutral,
 				 std::vector<std::size_t> & selected )
@@ -31,47 +29,14 @@ namespace KTfwd
     neutral.clear();
     selected.clear();
     fwdpp_internal::recombine_gametes(pos,g1,g2,gametes,mutations,neutral,selected);
-
-    //Lookup table method modified in 0.3.5.  Result is faster simulations with selection.
-    auto lookup = gamete_lookup.lookup(neutral,selected,mutations);
-    if( lookup.first != lookup.second ) 
-      {
-	//Then we have to search through lookup.second
-	auto itr = std::find_if(lookup.first,
-				lookup.second,
-				[&gametes,&neutral,&selected]( typename glookup_t::inner_t & __p) {
-				  return (gametes[__p.second].mutations == neutral &&
-					  gametes[__p.second].smutations == selected);
-				});
-	if( itr == lookup.second )
-	  {
-	    return fwdpp_internal::recycle_gamete(gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
-	  } 
-	else 
-	  {
-	    assert(gametes[itr->second].mutations==neutral);
-	    assert(gametes[itr->second].smutations==selected);
-	    return itr->second;
-	  }
-      } 
-    else
-      {
-	/*
-	  There is no gamete in gametes with the number of neutral AND selected mutations,
-	  and therefore the gamete is novel
-	*/
-	return fwdpp_internal::recycle_gamete(gametes,mutations,gamete_recycling_bin,gamete_lookup,neutral,selected);
-      }
-    return g1;
+    return fwdpp_internal::recycle_gamete(gametes,gamete_recycling_bin,neutral,selected);
   }
-  
+
   template<typename gcont_t,
 	   typename mcont_t,
-	   typename lookup_t,
 	   typename recbin_t,
 	   typename recpol_t>
   std::pair<std::size_t,unsigned> recombination(gcont_t & gametes,
-						lookup_t & gamete_lookup,
 						recbin_t & gamete_recycling_bin,
 						typename gcont_t::value_type::mutation_container & neutral,
 						typename gcont_t::value_type::mutation_container & selected,
@@ -92,15 +57,24 @@ namespace KTfwd
       {
 	return std::make_pair(g1,0u);
       }
+    /*
+      This check is relatively expensive, but we do it for several reasons.
+      1. If it returns true, then it was cheaper than a bunch of calls to
+      std::upper_bound that would have resulted in nothing being done.
+      2. It keeps the number of calls to the RNG the same, meaning that
+      the output is the same as previous library versions.
+    */
+    if(gametes[g1]==gametes[g2]) return std::make_pair(g1,0u);
     auto pos = rec_pol(gametes[g1],gametes[g2],mutations);
     if(pos.empty())
       {
 	return std::make_pair(g1,0u);
       }
+
     assert(pos.back()==std::numeric_limits<double>::max());
     return std::make_pair(recombine_gametes(pos,
 					    gametes,
-					    mutations,g1,g2,gamete_lookup,
+					    mutations,g1,g2,
 					    gamete_recycling_bin,
 					    neutral,selected),
 			  unsigned(pos.size()-1));

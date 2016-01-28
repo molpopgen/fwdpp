@@ -32,12 +32,9 @@ namespace KTfwd
     }
 
     template<typename gcont_t,
-	     typename mcont_t,
-	     typename queue_t,
-	     typename lookup_type>
+	     typename queue_t>
     inline std::size_t recycle_gamete(	gcont_t & gametes,
-					const mcont_t & mutations,
-					queue_t & gamete_recycling_bin, lookup_type & gamete_lookup,
+					queue_t & gamete_recycling_bin,
 					std::vector<std::size_t> & neutral,
 					std::vector<std::size_t> & selected )
     {
@@ -50,11 +47,9 @@ namespace KTfwd
 	  gametes[idx].n=0u;
 	  gametes[idx].mutations.swap(neutral);
 	  gametes[idx].smutations.swap(selected);
-	  gamete_lookup.update(idx,gametes,mutations);
 	  return idx;
 	}
       gametes.emplace_back(0u,std::move(neutral),std::move(selected));
-      gamete_lookup.update(gametes.size()-1,gametes,mutations);
       return (gametes.size()-1);
     }
 

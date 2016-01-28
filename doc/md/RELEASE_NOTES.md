@@ -2,6 +2,7 @@
 
 ## 0.4.5
 
+* The file fwdpp/internal/gamete_lookup_table.hpp was removed and the library updated to stop using this method to check for gamete uniqueness.  The result is a 20% reduction in run times and a slight reduction in peak memory use.  This change was enabled by the changes introduced in 0.4.4, and comes with no change in output.
 * Partial loop unrolling and branch removal from KTfwd::fwdpp_internal::recombine_gametes
 * Faster fitness calculations via the removal of if statements from a for loop in KTfwd::site_dependent_fitness
 * KTfwd::fwdpp_internal::add_new_mutation was shortened for clarity
@@ -20,7 +21,7 @@ __The library documentation is likely to be out of date until a future release__
 * Vastly improved management of object lifetimes:
   * Extinct mutations/gametes are no longer removed each generation.
   * FIFO queues are constructed each generation in order to "recycle" those objects as new mutations/gametes.
-    * The queue is implemented as std::queue<mlist::iterator> or std::queue<glist::iterator> for mutations and gametes, respectively.      
+    * The queue is implemented as std::queue<mlist::iterator> or std::queue<glist::iterator> for mutations and gametes, respectively.
     * These queues result in big performance improvements for "big" simulations, at the cost of breaking API compatibility.  The performance improvement is both reduced run time and reduced memory usage.
     * In order to accomodate the "recycling", mutation models must now return iterators derived from the mutation list, rather than mutation types themselves.
     * Additionally, the internal mutation/recombination functions must take non-const references to "recycling bins", which are the FIFO queues.
@@ -40,7 +41,7 @@ __The library documentation is likely to be out of date until a future release__
 * Behavior changes:
   * As a result of object recycling, data structures (mutation and gamete lists, specifically) at the end of a simulation contain both extant and extinct objects.
 * Implementation changes:
-  * Serialized populations may contain extinct mutations and gametes.  
+  * Serialized populations may contain extinct mutations and gametes.
   * A lot of redundant code has been replaced with function calls. This should help prevent bugs like Issue #27, which was due to a botched copy-paste, which happens when code is written in a hurry...
   * Simpler dispatch method for mutation models (KTfwd::fwdpp_internal::mutation_model_dispatcher)
 
@@ -49,7 +50,7 @@ __The library documentation is likely to be out of date until a future release__
 * Bug fixes:
   * Issue #30 fixed regarding serialization of KTfwd::generalmut and KTfwd::generalmut_vec
   * A bug in KTfwd::ms_sample and KTfwd::ms_sample separate was identified and fixed.  The bug only applied to multilocus simulations.  The bug was that the first 'n' chromosomes were sampled, rather than 'n' randomly-chosen chromosomes.  The effect of the bug is that the first sample is truly random (as chromosomes are not sorted in any meaningful way), but a second sample would overlap with the first, etc.
-  
+
 ## 0.4.3
 
 * Fix for issue #29
@@ -147,7 +148,7 @@ Major changes:
 Minor changes:
 
 * KTfwd::serialize now has a default constructor and a move constructor defined, allowing it to be a member of another class, which helps things in [foRward](http://github.com/molpopgen/foRward).
-* KTfwd::serialize can now be used to serialize multiple records into a single buffer.  
+* KTfwd::serialize can now be used to serialize multiple records into a single buffer.
 * A "validation suite" has been added.  This is mostly for the developer to have an automatic way to check for problems.
 * The package now installs a single binary called fwdppConfig.  This program is intended to be used in configure scripts to make checking for fwdpp's existence and/or version easier.  It takes a single option:
 
@@ -200,7 +201,7 @@ This release has many significant changes.  With the exception of the removal of
 
 * Allow for mutation policies that depdend on the current state of a gamete via KTfwd::tags::gamete_dependent.  Example HOC_ind.cc illustrates its use.
 * Added dispatch tag to KTfwd::gamete_base, via KTfwd::tags::gamete_type_tag.  Currently, this feature is not used in the library.  Its addition affects nothing other than what happens during compilation, and it may be used in the future to add new features to the library, or it may be remvoed.
-* Namespace KTfwd::sugar and \ref sugar functions added.  
+* Namespace KTfwd::sugar and \ref sugar functions added.
 * All _individual-based_ examples have been rewritten using the sugar code
 * New tutorial added: \ref md_md_sugar
 * New tutorial added: \ref md_md_datatypes
@@ -220,12 +221,12 @@ This release has many significant changes.  With the exception of the removal of
 * Two new example programs added: migsel_split_ind and migsel_split_ind_list
 * fwdpp/IO.tcc streamlined using C++11 "auto" instead of nasty typedefs
 
-## 0.2.7 
+## 0.2.7
 
 * Versions ms_sample and ms_sample_separate that took containers of gametes as arguments are now compatible with individual-based simulations.
 * The "devtools" stuff is greatly improved, and a new tutorial added on how to use it: @ref md_md_devtools
 
-## 0.2.6 
+## 0.2.6
 
 * const mutation lists now passed to binary output routines
 * The library internals now fully support C++11 move semantics
@@ -245,7 +246,7 @@ The following changes:
 1. fwdpp/diploid_functions_ind_multilocus.tcc was added.  This contains a more natural method of simulating mutiple partially-linked regions.  The header fwdpp/diploid_functions.hpp contains the relevant prototypes.  These routines are still in "beta" stage, and full support for simulations of partially-linked regions will be put off until a future version, likely 0.2.6 or later.
 2. Header files have been reorganized.  fwdpp/diploid.hh is still the header to use.  The reorg has been for the developer's sanity.
 3. C++11 support is now required.  A side-effect is that users may use what is currently the dev branch of libsequence, which requires c++11 and no longer requires boost.  However, simulations using fwdpp will still be a _lot_ faster with boost installed!
-4. Internally, functions from namespace boost have been replaced with the namespace std equivalents provided by the C++11 standard.  
+4. Internally, functions from namespace boost have been replaced with the namespace std equivalents provided by the C++11 standard.
 5. The internal library functions have been audited for performance.  This audit resulted in changing where some book-keeping functions were called, replacing linear-time search algorithms with logarithmic-time searches, and removing an unnecessary call to std::sort following crossover events.  The result of this audit was a big speedup of simulation run-times, but no change in simulation output (in other words, the same random number seed gives the same result for the same parameters for the same program in 0.2.4 and 0.2.5).
 6.  autoconf stuff rewritten (configure.ac, Makefile.am, etc.)
 7. Internally, the library has moved to a more "functional programming" style, emphasizing lambda expressions over function objects.  This change means that the library no longer needs to define function objects that are only used by the library "internals".  Such function objects have been removed, replaced with lambda expressions, and will no longer clutter the library documentation.

@@ -40,7 +40,6 @@ namespace KTfwd
     Recombine gametes[g1] and gametes[g2] at positions determined by rec_pol
 
     \param Gametes A container of gametes
-    \param gamete_lookup
     \param gamete_recycling_bin
     \param neutral A container for neutral mutations. Will be cleared and updated.
     \param selected A container for non-neutral mutations. Will be cleared and updated.
@@ -48,17 +47,15 @@ namespace KTfwd
     \param g1 Index of gamete 1 to recombine
     \param g2 Index of gamete 2 to recombine
     \param mutation A container of mutations
-    
-    \return A pair.  The first element is the index of the recombinant gamete.  The second element is the number of breakpoints 
+
+    \return A pair.  The first element is the index of the recombinant gamete.  The second element is the number of breakpoints
     where recombination occurred.  Typically, the latter is not needed.
   */
   template<typename gcont_t,
 	   typename mcont_t,
-	   typename lookup_t,
 	   typename recbin_t,
 	   typename recpol_t>
   std::pair<std::size_t,unsigned> recombination(gcont_t & gametes,
-						lookup_t & gamete_lookup,
 						recbin_t & gamete_recycling_bin,
 						typename gcont_t::value_type::mutation_container & neutral,
 						typename gcont_t::value_type::mutation_container & selected,
@@ -66,24 +63,23 @@ namespace KTfwd
 						const std::size_t g1,
 						const std::size_t g2,
 						const mcont_t & mutations);
-  
+
   /*!
     Overload for fixed xover positions.
-    Typically, this is called by the version taking 
+    Typically, this is called by the version taking
     a recombination policy as an argument.
 
     If you wish to call this version directly,
     only do so if length pos > 1, pos is sorted
-    in ascending order, and the last value in 
+    in ascending order, and the last value in
     pos is std::numeric_limits<double>::max(),
-    which is assumed to be a terminating value 
+    which is assumed to be a terminating value
     larger than any possible value for a mutation's position.
 
     \param pos A vector (with interface of std::vector) containing recombination breakpoints.  See note below.
     \param gametes A container of the gametes segregating in the population
     \param g1 An iterator, derived from gametes, representing one parental gamete.
     \param g2 An iterator, derived from gametes, representing the other parental gamete.
-    \param gamete_lookup The return value of KTfwd::fwdpp_internal::gamete_lookup_table, which gets passed in via sample_diploid
     \param gamete_recycling_bin An object returned by a call to KTfwd::fwdpp_internal::make_gamete_queue
     \param neutral A container for neutral mutations. Will be cleared and updated.
     \param selected A container for non-neutral mutations. Will be cleared and updated.
@@ -93,18 +89,16 @@ namespace KTfwd
   template< typename iterator_type,
   	    typename vec_t,
   	    typename glist_t,
-  	    typename glookup_t,
   	    typename queue_t>
   unsigned recombine_gametes( const vec_t & pos,
   			      glist_t * gametes,
   			      iterator_type & g1,
   			      iterator_type & g2,
-  			      glookup_t & gamete_lookup,
   			      queue_t & gamete_recycling_bin,
   			      typename iterator_type::value_type::mutation_container & neutral,
   			      typename iterator_type::value_type::mutation_container & selected );
 }
-#endif // __FWDPP_RECOMBINATION_HPP__ 
+#endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>
 
 
