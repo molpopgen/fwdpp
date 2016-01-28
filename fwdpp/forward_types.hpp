@@ -30,12 +30,8 @@ namespace KTfwd
   {
     /// Mutation position
     double pos;
-    /// Count of mutation in the population
-    //uint_t n;
     /// Is the mutation neutral or not?
     bool neutral;
-    /// Used internally (don't worry about it for now...)
-    //bool checked;
     mutation_base(const double & position, const bool & isneutral = true) noexcept
       : pos(position),neutral(isneutral)
     {
