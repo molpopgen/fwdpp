@@ -22,7 +22,7 @@ namespace KTfwd {
       //Establish a pointer to the container to be modified
       auto mc = (mutations[idx].neutral) ? &new_gamete.mutations : &new_gamete.smutations;
 
-      assert( std::find(mv->cbegin(),mc->cend(),idx) == mc->end() );
+      assert( std::find(mc->cbegin(),mc->cend(),idx) == mc->end() );
       //Insert new mutation at position retaining sort-by-position order
       mc->emplace(std::upper_bound(mc->begin(),
 				   mc->end(),mutations[idx].pos,
@@ -37,7 +37,7 @@ namespace KTfwd {
 			      return mutations[i].pos<mutations[j].pos;
 			    }));
     }
-    
+
     template<typename mmodel,
     	     typename gamete_type,
     	     typename mlist_type,
