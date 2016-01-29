@@ -11,10 +11,10 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
-    std::vector<std::size_t> sample_individuals(gsl_rng * r,
-						const std::size_t N,
-						const uint_t N2,
-						const bool with_replacement)
+    inline std::vector<std::size_t> sample_individuals(gsl_rng * r,
+						       const std::size_t N,
+						       const uint_t N2,
+						       const bool with_replacement)
     {
       std::vector<std::size_t> rv;
       for( std::size_t i = 0 ; i < N2 ; ++i )
@@ -33,7 +33,7 @@ namespace KTfwd
       std::sort(rv.begin(),rv.end(),[](size_t i, size_t j)noexcept { return i>j; });
       return rv;
     }
-	     
+
     template<typename mcont_t,
 	     typename mcount_t,
 	     typename gcont_t,
@@ -55,7 +55,7 @@ namespace KTfwd
 	  gametes[dip.first].n--;
 	  gametes[dip.second].n--;
 	}
-      
+
       //copy diploids from deme i
       typename vdipvector_t::value_type deme_i(diploids[i]);
 
@@ -67,11 +67,11 @@ namespace KTfwd
       //add a new deme
       diploids.emplace_back(typename vdipvector_t::value_type());
       diploids[i].reserve(N_new);
-      
+
       //get references to current and new deme
       auto & curr_deme = diploids[i];
       auto & new_deme = diploids[diploids.size()-1];
-      
+
       //populate new deme based on copy of deme i
       for( const auto & i : indlist_n )
 	{
@@ -134,7 +134,7 @@ namespace KTfwd
       assert(curr_deme.size() == curr_deme_size-N_new);
       return 0;
     }
-    
+
     template<typename mcont_t,
 	     typename mcount_t,
 	     typename gcont_t,
