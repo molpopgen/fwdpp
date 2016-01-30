@@ -22,9 +22,9 @@ namespace KTfwd {
 	     typename diploid_t,
 	     typename gcont_t,
 	     typename mcont_t>
-    inline double  diploid_fitness_dispatch( const fitness_policy_type & fp, const diploid_t & d,
-					     const gcont_t & gametes,const mcont_t & mutations,
-					     std::true_type ) {
+    inline double diploid_fitness_dispatch( const fitness_policy_type & fp, const diploid_t & d,
+					    const gcont_t & gametes,const mcont_t & mutations,
+					    std::true_type ) {
       return fp(d,gametes,mutations);
     }
   }
