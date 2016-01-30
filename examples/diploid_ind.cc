@@ -61,13 +61,6 @@ int main(int argc, char ** argv)
 
   while(nreps--)
     {
-      /*
-	 Initialize a population of N diploids via KTfwd::singlepop (fwdpp/sugar/singlepop.hpp)
-	 Starting in fwdpp 0.3.3, the sugar struct constructor may take a second argument,
-	 which reserves memory for the containers used to hold the intermediate results of
-	 recombination events.  The default is 100, which is probably too small for large-4Nu
-	 simulations, so we use the call to std::max to select something better.
-      */
       singlepop_t pop(N);
       pop.mutations.reserve(size_t(std::ceil(std::log(2*N)*theta+0.667*theta)));
       unsigned generation;
@@ -116,9 +109,9 @@ int main(int argc, char ** argv)
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;
-      
+
       std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1,true);
-      
+
       if(!mslike.empty())
 	{
 	  sdata.assign(mslike.begin(),mslike.end());
