@@ -107,13 +107,16 @@ namespace KTfwd
     {
     }
 
-    /*! @brief Constructor
+    /*! @brief "Perfect-forwarding" constructor
       \param icount The number of occurrences of this gamete in the population
       \param n A container of mutations not affecting trait value/fitness
       \param s A container of mutations affecting trait value/fitness
     */
-    gamete_base(const uint_t & icount, const mutation_container & n,
-		const mutation_container & s) noexcept : n(icount),mutations(n),smutations(s)
+    template<typename T>
+    gamete_base(const uint_t & icount, T && n, T && s) noexcept:
+							n(icount),
+							mutations(std::forward<T>(n)),
+							smutations(std::forward<T>(s))
     {
     }
     //! Destructor is virtual, so you may inherit from this type
