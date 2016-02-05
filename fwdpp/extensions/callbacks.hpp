@@ -4,7 +4,7 @@
   This file provides lightweight wrappers
   around calls to GSL.
 
-  The intendend use is to implement 
+  The intended use is to implement
   standard models of distributions on selection/
   dominance effects of mutations.
 
@@ -23,12 +23,12 @@
 namespace KTfwd {
 
   /*!
-    Useful types for implementing fwdpp-based simulations in 
+    Useful types for implementing fwdpp-based simulations in
     enviroments like R, Python, etc.
 
     Unlike the rest of fwdpp, functions in this namespace
     are allowed to throw exceptions, and it is up to the programmer
-    to catch them and handle them appropriately.  Both Rcpp and 
+    to catch them and handle them appropriately.  Both Rcpp and
     Cython/boost.python
 
     Examples of using this namespace are:
@@ -54,7 +54,7 @@ namespace KTfwd {
       {
       }
     };
-  
+
     struct constant
     /*!
       Callback for fixed s and/or h
