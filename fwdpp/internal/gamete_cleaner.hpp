@@ -19,7 +19,7 @@ namespace KTfwd {
       Intended use is when std::is_same< mutation_removal_policy, KTfwd::remove_nothing >::type is false.
       Called by KTfwd::sample_diploid via dispatch.
     */
-    template<typename gcont_t>//, typename mutation_removal_policy>
+    template<typename gcont_t>
     inline void gamete_cleaner(gcont_t & gametes, const std::vector<uint_t> & mcounts,
 			       const uint_t twoN, std::false_type)
     {
