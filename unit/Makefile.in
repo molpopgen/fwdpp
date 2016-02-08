@@ -92,7 +92,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	demography$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	demography$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	gamete_cleaner$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -131,6 +132,11 @@ am__gameteTest_SOURCES_DIST = gameteTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	gameteTest.$(OBJEXT)
 gameteTest_OBJECTS = $(am_gameteTest_OBJECTS)
 gameteTest_LDADD = $(LDADD)
+am__gamete_cleaner_SOURCES_DIST = gamete_cleaner.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_gamete_cleaner_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	gamete_cleaner.$(OBJEXT)
+gamete_cleaner_OBJECTS = $(am_gamete_cleaner_OBJECTS)
+gamete_cleaner_LDADD = $(LDADD)
 am__mlocusCrossoverTest_SOURCES_DIST = mlocusCrossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_mlocusCrossoverTest_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mlocusCrossoverTest.$(OBJEXT)
@@ -229,10 +235,10 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
 	$(demography_SOURCES) $(extensions_SOURCES) \
-	$(gameteTest_SOURCES) $(mlocusCrossoverTest_SOURCES) \
-	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
-	$(sugar_metapop_SOURCES) \
+	$(gameteTest_SOURCES) $(gamete_cleaner_SOURCES) \
+	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
+	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
+	$(siteDepFitness_SOURCES) $(sugar_metapop_SOURCES) \
 	$(sugar_metapop_custom_diploid_SOURCES) \
 	$(sugar_multilocus_SOURCES) $(sugar_sampling_SOURCES) \
 	$(sugar_singlepop_SOURCES) \
@@ -242,6 +248,7 @@ DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
 	$(am__demography_SOURCES_DIST) $(am__extensions_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
+	$(am__gamete_cleaner_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
@@ -577,7 +584,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
-@BUNIT_TEST_LIB_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc 
+@BUNIT_TEST_LIB_PRESENT_TRUE@mutateTest_SOURCES = mutateTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@crossoverTest_SOURCES = crossoverTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@gameteTest_SOURCES = gameteTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@mutationTest_SOURCES = mutationTest.cc
@@ -595,6 +602,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_generalmut_vec_SOURCES = test_generalmut_vec.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@extensions_SOURCES = extensions.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@demography_SOURCES = demography.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@gamete_cleaner_SOURCES = gamete_cleaner.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -654,6 +662,10 @@ extensions$(EXEEXT): $(extensions_OBJECTS) $(extensions_DEPENDENCIES) $(EXTRA_ex
 gameteTest$(EXEEXT): $(gameteTest_OBJECTS) $(gameteTest_DEPENDENCIES) $(EXTRA_gameteTest_DEPENDENCIES) 
 	@rm -f gameteTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(gameteTest_OBJECTS) $(gameteTest_LDADD) $(LIBS)
+
+gamete_cleaner$(EXEEXT): $(gamete_cleaner_OBJECTS) $(gamete_cleaner_DEPENDENCIES) $(EXTRA_gamete_cleaner_DEPENDENCIES) 
+	@rm -f gamete_cleaner$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(gamete_cleaner_OBJECTS) $(gamete_cleaner_LDADD) $(LIBS)
 
 mlocusCrossoverTest$(EXEEXT): $(mlocusCrossoverTest_OBJECTS) $(mlocusCrossoverTest_DEPENDENCIES) $(EXTRA_mlocusCrossoverTest_DEPENDENCIES) 
 	@rm -f mlocusCrossoverTest$(EXEEXT)
@@ -718,6 +730,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/demography.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extensions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gamete_cleaner.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ms_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
@@ -1061,6 +1074,13 @@ extensions.log: extensions$(EXEEXT)
 demography.log: demography$(EXEEXT)
 	@p='demography$(EXEEXT)'; \
 	b='demography'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+gamete_cleaner.log: gamete_cleaner$(EXEEXT)
+	@p='gamete_cleaner$(EXEEXT)'; \
+	b='gamete_cleaner'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

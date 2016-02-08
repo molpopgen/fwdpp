@@ -17,12 +17,13 @@ check_PROGRAMS=mutateTest \
 	test_generalmut \
 	test_generalmut_vec \
 	extensions \
-	demography
+	demography \
+	gamete_cleaner
 
 
 TESTS=$(check_PROGRAMS)
 
-mutateTest_SOURCES=mutateTest.cc 
+mutateTest_SOURCES=mutateTest.cc
 crossoverTest_SOURCES=crossoverTest.cc
 gameteTest_SOURCES=gameteTest.cc
 mutationTest_SOURCES=mutationTest.cc
@@ -40,6 +41,7 @@ test_generalmut_SOURCES=test_generalmut.cc
 test_generalmut_vec_SOURCES=test_generalmut_vec.cc
 extensions_SOURCES=extensions.cc
 demography_SOURCES=demography.cc
+gamete_cleaner_SOURCES=gamete_cleaner.cc
 
 AM_CXXFLAGS=
 
