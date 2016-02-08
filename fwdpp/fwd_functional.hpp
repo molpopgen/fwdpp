@@ -24,12 +24,23 @@ namespace KTfwd
       return( std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon() );
     }
   };
-  
+
   /* \brief Policy telling library not to remove any mutations from gametes after sampling
      \note This is an empty struct that functions as a dispatch tag for library internals
    */
   struct remove_nothing
   {
+  };
+
+  /*! \brief Policy telling library to remove neutral mutations from gametes after sampling
+   */
+  struct remove_neutral
+  {
+    template<typename mtype>
+    inline bool operator()(const mtype & m) const
+    {
+      return m.neutral;
+    }
   };
 }
 #endif /* _FWD_FUNCTIONAL_HPP_ */
