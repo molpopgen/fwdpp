@@ -32,7 +32,7 @@ If you are reading this, I'm guessing that you are more interested in _running_ 
 
 # fwdpp-users mailing list
 
-There is a Google Group for fwdpp users.  It is called fwdpp-users.  I prefer that questions, etc., are raised there.  Questions on that list that are determined to be real issues will result in issue tickets on the GitHub repo for this site.  The group is also a good place for installation help, use questions, etc.
+There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) for fwdpp users.  It is called fwdpp-users.  I prefer that questions, etc., are raised there.  Questions on that list that are determined to be real issues will result in issue tickets on the GitHub repo for this site.  The group is also a good place for installation help, use questions, etc.
 
 # Build status
 
