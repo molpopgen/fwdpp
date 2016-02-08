@@ -41,7 +41,7 @@ namespace KTfwd
 		 typename gamete_type::mutation_container & neutral,
 		 typename gamete_type::mutation_container & selected,
 		 const double f,
-		 const mutation_removal_policy & mp,
+		 const mutation_removal_policy mp,
 		 const gamete_insertion_policy & gpolicy_mut)
   {
     //run changing N version with N_next == N_curr
@@ -82,7 +82,7 @@ namespace KTfwd
 		 typename gamete_type::mutation_container & neutral,
 		 typename gamete_type::mutation_container & selected,
 		 const double f,
-		 const mutation_removal_policy & mp,
+		 const mutation_removal_policy mp,
 		 const gamete_insertion_policy & gpolicy_mut)
   {
     //test preconditions in debugging mode
@@ -158,6 +158,7 @@ namespace KTfwd
       }
 #endif
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
+    assert(*std::max_element(mcounts.begin(),mcounts.end()) <= 2*N_next);
     assert(mcounts.size()==mutations.size());
 #ifndef NDEBUG
     for(const auto & mc : mcounts)
@@ -166,7 +167,7 @@ namespace KTfwd
       }
 #endif
     assert(popdata_sane(diploids,gametes,mcounts));
-    fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
+    fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
     return wbar;
   }
 
@@ -338,9 +339,8 @@ namespace KTfwd
       }
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     assert(mcounts.size()==mutations.size());
-    fwdpp_internal::gamete_cleaner(gametes,mcounts,
-				   2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0)),
-				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
+    fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,
+				   2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0)),mp);
     assert( check_sum(gametes,2*std::accumulate(N_next,N_next+diploids.size(),uint_t(0))) );
     return wbars;
   }
@@ -446,8 +446,7 @@ namespace KTfwd
 
       }
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
-    fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,
-				   typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
+    fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
     return wbar;
   }
 

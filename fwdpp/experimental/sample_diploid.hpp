@@ -178,7 +178,7 @@ namespace KTfwd {
 #endif
       fwdpp_internal::process_gametes(gametes,mutations,mcounts);
       assert(popdata_sane(diploids,gametes,mcounts));
-      fwdpp_internal::gamete_cleaner(gametes,mcounts,2*N_next,typename std::is_same<decltype(mp),KTfwd::remove_nothing >::type());
+      fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
       assert(check_sum(gametes,2*N_next));
       return pmr.wbar;
     }

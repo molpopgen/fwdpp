@@ -59,7 +59,7 @@ namespace KTfwd
 		 typename gamete_type::mutation_container & neutral,
 		 typename gamete_type::mutation_container & selected,
 		 const double f = 0.,
-		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const mutation_removal_policy mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy()
 		 );
 
@@ -115,7 +115,7 @@ namespace KTfwd
 		 typename gamete_type::mutation_container & neutral,
 		 typename gamete_type::mutation_container & selected,
 		 const double f = 0.,
-		 const mutation_removal_policy & mp = mutation_removal_policy(),
+		 const mutation_removal_policy mp = mutation_removal_policy(),
 		 const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy()
 		 );
 
