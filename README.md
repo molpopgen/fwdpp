@@ -30,6 +30,10 @@ This README is the main page of the fwdpp documentation.  It may display some th
 
 If you are reading this, I'm guessing that you are more interested in _running_ forward simulations than you are in _developing_ them.  This package is about the latter.  I'd recommend that you check out [fwdpy](https://github.com/molpopgen/fwdpy), which is a Python library for running forward simulations.  [fwdpy](https://github.com/molpopgen/fwdpy) is developed using fwdpp (this package).  [fwdpy](https://github.com/molpopgen/fwdpy) is obtainable from GitHub, but many users may prefer to install it from [PyPi](http://pypi.python.org).
 
+# fwdpp-users mailing list
+
+There is a Google Group for fwdpp users.  It is called fwdpp-users.  I prefer that questions, etc., are raised there.  Questions on that list that are determined to be real issues will result in issue tickets on the GitHub repo for this site.  The group is also a good place for installation help, use questions, etc.
+
 # Build status
 
 * Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp)
