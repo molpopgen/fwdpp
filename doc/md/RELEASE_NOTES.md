@@ -2,14 +2,14 @@
 
 ## 0.4.5
 
-* The file fwdpp/internal/gamete_lookup_table.hpp was removed and the library updated to stop using this method to check for gamete uniqueness.  The result is a 20% reduction in run times and a slight reduction in peak memory use.  This change was enabled by the changes introduced in 0.4.4, and comes with no change in output.
+* Issues #31 and #32 fixed
+The file fwdpp/internal/gamete_lookup_table.hpp was removed and the library updated to stop using this method to check for gamete uniqueness.  The result is a 20% reduction in run times and a slight reduction in peak memory use.  This change was enabled by the changes introduced in 0.4.4, and comes with no change in output.
 * Partial loop unrolling and branch removal from KTfwd::fwdpp_internal::recombine_gametes
 * Faster fitness calculations via the removal of if statements from a for loop in KTfwd::site_dependent_fitness
 * KTfwd::fwdpp_internal::add_new_mutation was shortened for clarity
 * KTfwd::metapop objects now copy- and move- constructible from KTfwd::singlepop objects
 * Support for demographic events via the low-level functions KTfwd::copy_deme, KTfwd::merge_demes, KTfwd::remove_deme, KTfwd::swap_demes, KTfwd::split_deme, and KTfwd::admix_demes.
 * Higher-level support for demographic models via the sugar-layer functions KTfwd::copy_pop, KTfwd::merge_pop, KTfwd::remove_pop, KTfwd::swap_pops, KTfwd::split_pop, and KTfwd::admix_pops.
-* Issue #31 fixed
 * New unit tests added and old ones refined
 
 ## 0.4.4
