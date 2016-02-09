@@ -5,13 +5,14 @@
 */
 
 #define BOOST_TEST_MODULE sugar_multilocus
-#define BOOST_TEST_DYN_LINK 
+#define BOOST_TEST_DYN_LINK
 
 #include <iostream>
 #include <unistd.h>
 #include <config.h>
 #include <functional>
 #include <algorithm>
+#include <numeric>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/GSLrng_t.hpp>
@@ -25,22 +26,28 @@ using mreader = KTfwd::mutation_reader<KTfwd::popgenmut>;
 using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
 
 //Fitness function
-struct no_selection_multi
+struct multilocus_additive
 {
   using result_type = double;
-  inline double operator()(const poptype::dipvector_t::value_type ) const
+  inline double operator()(const poptype::dipvector_t::value_type & diploid,
+			   const poptype::gcont_t & gametes,
+			   const poptype::mcont_t & mutations) const
   {
-    return 1.;
+    using dip_t = poptype::dipvector_t::value_type::value_type;
+    return std::max(0.,1.+ std::accumulate( diploid.begin(),diploid.end(),0.,[&gametes,&mutations](const double d,const dip_t & dip)
+				{
+				  return d + KTfwd::additive_diploid()(gametes[dip.first],gametes[dip.second],mutations) - 1.;
+				} ));
   }
 };
 
 void simulate( poptype & pop )
 {
-  
+
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
   unsigned generation = 0;
-  
+
   std::vector<std::function<std::size_t(std::queue<std::size_t> &,poptype::mcont_t &)> > mutmodels {
     //Locus 0: positions Uniform [0,1)
     std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),std::ref(pop.mut_lookup),&generation,
@@ -87,7 +94,7 @@ void simulate( poptype & pop )
 					   recmodels,
 					   &rbw[0],
 					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
-					   std::bind(no_selection_multi(),std::placeholders::_1),
+					   std::bind(multilocus_additive(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 					   pop.neutral,pop.selected);
       assert( check_sum(pop.gametes,8000) );
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2000);
