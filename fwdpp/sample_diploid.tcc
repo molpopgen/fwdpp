@@ -403,7 +403,7 @@ namespace KTfwd
 	    gametes[locus.first].n=gametes[locus.second].n=0;
 	  }
 	//Calculate the fitness of this parent
-	fitnesses[i] += ff( diploids[i] );
+	fitnesses[i] = ff( diploids[i],gametes,mutations );
 	//increment pop. mean fitness
 	wbar += fitnesses[i];
       }
