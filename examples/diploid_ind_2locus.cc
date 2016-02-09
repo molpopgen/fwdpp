@@ -14,12 +14,14 @@
 using mtype = KTfwd::popgenmut;
 #define MULTILOCUS_SIM
 #include <common_ind.hpp>
- 
+
 //Fitness function
 struct no_selection_multi
 {
   typedef double result_type;
-  inline double operator()( const multiloc_t::dipvector_t::value_type & ) const
+  inline double operator()( const multiloc_t::dipvector_t::value_type &,
+			    const multiloc_t::gcont_t &,
+			    const multiloc_t::mcont_t & ) const
   {
     return 1.;
   }
@@ -61,7 +63,7 @@ int main(int argc, char ** argv)
   const unsigned seed = atoi(argv[argument++]);        //Random number seed
 
   const std::vector<double> mu(2,theta/double(4*N));   //per-gamete mutation rate per locus
-  
+
   /*
     littler r is the recombination rate per region per generation.
 
@@ -69,7 +71,7 @@ int main(int argc, char ** argv)
     r = rho/(4N)
   */
   const double littler = rho/double(4*N);
-  
+
   //Initiate random number generation system
   GSLrng r(seed);
 
@@ -121,9 +123,9 @@ int main(int argc, char ** argv)
       //  			       mu[0],0.,std::bind(posmaker(),r.get(),0.,1.),shmaker,shmaker);
       // auto mmodel2 = std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
       //  			       mu[1],0.,std::bind(posmaker(),r.get(),1.,2.),shmaker,shmaker);
-      
+
       //std::vector< decltype(mmodel1) > mmodels{mmodel1,mmodel2};
-      // auto mmodels = {    
+      // auto mmodels = {
       // 	//Locus 0: positions Uniform [0,1)
       // 	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
       // 		  mu[0],0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}) ,
@@ -131,7 +133,7 @@ int main(int argc, char ** argv)
       // 	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
       // 		  mu[1],0.,[&r](){return gsl_ran_flat(r.get(),1.,2.);},[](){return 0.;},[](){return 0.;})
       // };
-      
+
       for( generation = 0; generation < ngens; ++generation )
       	{
       	  //Iterate the population through 1 generation
@@ -146,7 +148,7 @@ int main(int argc, char ** argv)
 				recpols,
 				&rbw,
 				[](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
-				std::bind(no_selection_multi(),std::placeholders::_1),
+				std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				pop.neutral,
 				pop.selected);
 	  assert( check_sum(pop.gametes,2*twoN) );
