@@ -126,12 +126,8 @@ namespace KTfwd
 	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  //typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,			   
-  //			   sample_t >::type
-  //typename std::enable_if<  traits::internal::has_first_type<diploid_geno_t>::value,
-  //			      sample_t >::type
-    typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
-			    sample_t>::type
+  typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
+			  sample_t>::type
   ms_sample( gsl_rng * r,
 	     const mcont_t & mutations,
 	     const gcont_t & gametes,
@@ -149,10 +145,6 @@ namespace KTfwd
 	   typename allocator,
 	   typename diploid_geno_t,
 	   template<typename,typename> class vector_type >
-  //typename std::enable_if< std::is_base_of<mutation_base,typename mcont_t::value_type>::value,
-  //			   sep_sample_t >::type
-  //  typename std::enable_if<  traits::internal::has_first_type<diploid_geno_t>::value,
-  //			      sep_sample_t >::type
   typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
 			  sep_sample_t>::type
   ms_sample_separate( gsl_rng * r,
