@@ -10,5 +10,5 @@
 #include<fwdpp/sugar/serialization.hpp>
 #include<fwdpp/sugar/singlepop.hpp>
 #include<fwdpp/sugar/demography.hpp>
-
+#include<fwdpp/sugar/sampling.hpp>
 #endif
