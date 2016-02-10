@@ -5,7 +5,9 @@
 #define BOOST_TEST_MODULE sugar_metapop
 #define BOOST_TEST_DYN_LINK 
 
+#include <zlib.h>
 #include <config.h>
+#include <unistd.h>
 #include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
@@ -125,6 +127,22 @@ BOOST_AUTO_TEST_CASE( metapop_sugar_test2 )
   s(pop,mwriter());
   KTfwd::deserialize()(pop2,s,mreader());
   BOOST_CHECK_EQUAL(pop==pop2,true);
+}
+
+BOOST_AUTO_TEST_CASE( metapop_sugar_test2_gz )
+{
+  
+  poptype pop({1000,1000});
+  simulate(pop);
+  poptype pop2{0,0};
+  gzFile gzf = gzopen("sugar_metapop_out.gz","wb");
+  KTfwd::gzserialize()(gzf,pop,mwriter());
+  gzclose(gzf);
+  gzf=gzopen("sugar_metapop_out.gz","rb");
+  KTfwd::gzdeserialize()(gzf,pop2,std::bind(mreader(),std::placeholders::_1));
+  gzclose(gzf);
+  BOOST_CHECK_EQUAL(pop==pop2,true);
+  unlink("sugar_metapop_out.gz");
 }
 
 BOOST_AUTO_TEST_CASE( metapop_sugar_test3 )
