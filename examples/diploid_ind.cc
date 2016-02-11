@@ -41,9 +41,6 @@ int main(int argc, char ** argv)
 
   /*
     littler r is the recombination rate per region per generation.
-
-    For individual simulation (UNLIKE GAMETE-BASED SIMS!!!),
-    r = rho/(4N)
   */
   const double littler = rho/double(4*N);
 
@@ -88,10 +85,12 @@ int main(int argc, char ** argv)
 				       /*
       					 Fitness is multiplicative over sites.
 
-      					 The fitness model takes two gametes as arguments.
+      					 The fitness model takes two gametes and a 
+					 vector of mutations as arguments.
       					 The gametes are passed to this function by
       					 KTfwd::sample_diploid, and the _1 and _2 are placeholders for
       					 those gametes (see documentation for boost/bind.hpp for details).
+					 The mutation container is passed in as _3.
       					 The 2. means that fitnesses are 1, 1+sh, and 1+2s for genotypes
       					 AA, Aa, and aa, respectively, where a is a mutation with
       					 selection coefficient s and dominance h, and the fitness of
@@ -109,9 +108,11 @@ int main(int argc, char ** argv)
 	  assert(KTfwd::check_sum(pop.gametes,twoN));
 	}
       Sequence::SimData sdata;
-
+      
+      //Take a sample of size samplesize1 from the population
       std::vector<std::pair<double,std::string> > mslike = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,samplesize1,true);
 
+      //Write the sample date a to libsequence's Sequence::SimData and print to screen
       if(!mslike.empty())
 	{
 	  sdata.assign(mslike.begin(),mslike.end());
