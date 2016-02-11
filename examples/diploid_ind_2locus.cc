@@ -27,13 +27,6 @@ struct no_selection_multi
   }
 };
 
-/*
-struct posmaker
-{
-  inline double operator()(gsl_rng * r, double a,double b) const { return gsl_ran_flat(r,a,b); }
-};
-*/
-
 int main(int argc, char ** argv)
 {
   int argument=1;
@@ -87,12 +80,6 @@ int main(int argc, char ** argv)
       unsigned generation=0;
       double wbar;
 
-      //within-locus recombination policies -- one per locus
-      // deduce_recmodel_t<multiloc_serialized_t::glist_t>::type recpol0 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-      // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap);
-      // deduce_recmodel_t<multiloc_serialized_t::glist_t>::type recpol1 = std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-      // 			       std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2);
-
       std::vector<std::function<std::vector<double>(const multiloc_t::gamete_t &,
 						    const multiloc_t::gamete_t &,
 						    const multiloc_t::mcont_t &)> > recpols
@@ -102,14 +89,7 @@ int main(int argc, char ** argv)
 	  std::bind(KTfwd::poisson_xover(),r.get(),littler,1.,2.,
 						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3)
       };
-      // std::vector< KTfwd::traits::recmodel_t<multiloc_serialized_t::glist_t>::type > recpols{
-      // 	std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-      // 		  std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap),
-      // 	  std::bind(KTfwd::genetics101(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,std::placeholders::_4,
-      // 		    std::ref(pop.neutral),std::ref(pop.selected),&pop.gametes,littler,r.get(),recmap2)
-      // 	  };
 
-      //std::vector< KTfwd::traits::mmodel_t<multiloc_t::mcont_t>::type  > mmodels {
       std::vector<std::function<std::size_t(std::queue<std::size_t> &,multiloc_t::mcont_t &)> > mmodels {
       	//Locus 0: positions Uniform [0,1)
       	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),&generation,
@@ -118,21 +98,6 @@ int main(int argc, char ** argv)
       	  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),&generation,
       		    mu[1],0.,[&r](){return gsl_ran_flat(r.get(),1.,2.);},[](){return 0.;},[](){return 0.;})
       	  };
-
-      // auto mmodel1 = std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
-      //  			       mu[0],0.,std::bind(posmaker(),r.get(),0.,1.),shmaker,shmaker);
-      // auto mmodel2 = std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
-      //  			       mu[1],0.,std::bind(posmaker(),r.get(),1.,2.),shmaker,shmaker);
-
-      //std::vector< decltype(mmodel1) > mmodels{mmodel1,mmodel2};
-      // auto mmodels = {
-      // 	//Locus 0: positions Uniform [0,1)
-      // 	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
-      // 		  mu[0],0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;}) ,
-      // 	//Locus 1: positions Uniform [1,2)
-      // 	std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),&pop.mut_lookup,&generation,
-      // 		  mu[1],0.,[&r](){return gsl_ran_flat(r.get(),1.,2.);},[](){return 0.;},[](){return 0.;})
-      // };
 
       for( generation = 0; generation < ngens; ++generation )
       	{
