@@ -2,6 +2,7 @@
 
 ## 0.4.6
 
+* Issue #34 fixed
 * Issue #35 fixed
 
 ## 0.4.5
