@@ -151,7 +151,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,nsam,sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,nsam,sugar::treat_neutral::ALL);
     return rv;
   }
   
@@ -220,7 +220,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
   

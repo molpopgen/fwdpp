@@ -9,7 +9,7 @@ namespace KTfwd
   }
 
   template<typename vec_mutation_t>
-  void add_fixations( sample_t * sample,
+  void add_fixations( sample_t & sample,
 		      const vec_mutation_t & fixations,
 		      const unsigned nsam,
 		      const sugar::treat_neutral treat )
@@ -18,15 +18,15 @@ namespace KTfwd
       {
 	if( treat == sugar::treat_neutral::ALL )
 	  {
-	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	    sample.emplace_back( f.pos,std::string(nsam,'1') );
 	  }
 	else if (treat == sugar::treat_neutral::NEUTRAL && f.neutral ) //only add neutral mutations
 	  {
-	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	    sample.emplace_back( f.pos,std::string(nsam,'1') );
 	  }
 	else if (treat == sugar::treat_neutral::SELECTED && !f.neutral ) //only add selected mutations
 	  {
-	    sample->emplace_back( std::make_pair(f.pos,std::string(nsam,'1')) );
+	    sample.emplace_back( f.pos,std::string(nsam,'1') );
 	  }
       }
   }
@@ -41,7 +41,7 @@ namespace KTfwd
   {
     sample_t rv =  ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,nsam,sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,nsam,sugar::treat_neutral::ALL);
     return rv;
   }
 
@@ -55,7 +55,7 @@ namespace KTfwd
   {
     sample_t rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,nsam,sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,nsam,sugar::treat_neutral::ALL);
     return rv;
   }
 
@@ -70,8 +70,8 @@ namespace KTfwd
     sep_sample_t rv = ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
-	add_fixations(&rv.second,p.fixations,nsam,sugar::treat_neutral::SELECTED);
+	add_fixations(rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
+	add_fixations(rv.second,p.fixations,nsam,sugar::treat_neutral::SELECTED);
       }
     return rv;
   }
@@ -85,8 +85,8 @@ namespace KTfwd
     sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
@@ -95,7 +95,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
 
@@ -108,8 +108,8 @@ namespace KTfwd
     sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(temp.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(temp.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
@@ -118,7 +118,7 @@ namespace KTfwd
 		return a.first<b.first;
 	      });
     if(!removeFixed)
-      add_fixations(&rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
+      add_fixations(rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
     return rv;
   }
   
@@ -131,8 +131,8 @@ namespace KTfwd
     sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&rv.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
-	add_fixations(&rv.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
+	add_fixations(rv.first,p.fixations,2*individuals.size(),sugar::treat_neutral::NEUTRAL);
+	add_fixations(rv.second,p.fixations,2*individuals.size(),sugar::treat_neutral::SELECTED);
       }
     return rv;
   }
@@ -148,8 +148,8 @@ namespace KTfwd
     sep_sample_t rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     if(! removeFixed)
       {
-	add_fixations(&rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
-	add_fixations(&rv.second,p.fixations,nsam,sugar::treat_neutral::SELECTED);
+	add_fixations(rv.first,p.fixations,nsam,sugar::treat_neutral::NEUTRAL);
+	add_fixations(rv.second,p.fixations,nsam,sugar::treat_neutral::SELECTED);
       }
     return rv;
   }
