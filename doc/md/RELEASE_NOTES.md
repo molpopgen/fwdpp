@@ -2,13 +2,15 @@
 
 ## 0.4.7
 
+Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being discovered, too.
+
 * remove include<iostream> from fwdpp/internal/recombination_common.hpp
 * Issue #37 fixed
 
 ## 0.4.6
 
 * Issue #34 fixed
-* Issue #35 fixed
+* Issue #35 fixed.  Thanks to Alexander Nater for catching this.
 
 ## 0.4.5
 
