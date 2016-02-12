@@ -184,7 +184,11 @@ BOOST_AUTO_TEST_CASE( singlepop_1 )
   BOOST_REQUIRE_EQUAL(std::count(x[0].second.begin(),x[0].second.end(),'1'),1);
   BOOST_REQUIRE_EQUAL(x[0].second[2],'1');
   //Now, make that diploid homozygous for the mutation
-  //(Note: the pop data are now inconsistent...)
+  /*
+    FROM HERE ON OUT, INTERNAL DATA STRUCTURES ARE INCONSISTENT.
+    This doesn't matter for these tests, but it could in future releases, e.g.,
+    if internal code adds some assertions...
+  */
   pop.diploids[1].second=1;
 
   x = KTfwd::sample(pop,{0,1},true);
