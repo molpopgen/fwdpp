@@ -223,3 +223,19 @@ BOOST_AUTO_TEST_CASE( singlepop_1 )
       }), true);
 }
 
+
+//Now, a metapop
+BOOST_AUTO_TEST_CASE( metapop_1 )
+{
+  metapop_t mpop({1000,1000});
+  mpop.fixations.emplace_back( -0.1,0,0,0 );
+
+  //Make sure that fiations end up in samples
+  auto x = KTfwd::sample_separate( mpop, 0, {0,1,2}, false );
+  BOOST_REQUIRE_EQUAL(x.first.size(),1);
+
+  //Add a selected fixation
+  mpop.fixations.emplace_back( -0.2,1.0,0,0 );
+  x = KTfwd::sample_separate( mpop, 0, {0,1,2}, false );
+  BOOST_REQUIRE_EQUAL(x.first.size(),1);
+}
