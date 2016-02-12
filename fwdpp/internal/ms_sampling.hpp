@@ -44,7 +44,7 @@ namespace KTfwd
 	{
 	  auto mutpos = mutations[m].pos;
 	  auto itr = std::find_if(block.begin(),block.end(),std::bind(pf,std::placeholders::_1,mutpos));
-	  	  if( itr == block.end() )
+	  if( itr == block.end() )
 	    {
 	      block.push_back( std::make_pair(mutpos,std::string(n,'0')) );
 	      block[block.size()-1].second[scalar*i+offset] = '1';
@@ -122,6 +122,16 @@ namespace KTfwd
 	  trim_last(&rv.first);
 	  trim_last(&rv.second);
 	}
+      assert(std::is_sorted(rv.first.begin(),rv.first.end(),
+			    [](const sample_site_t & a,
+			       const sample_site_t & b) noexcept {
+			      return a.first<b.first;
+			    }));
+      assert(std::is_sorted(rv.second.begin(),rv.second.end(),
+			    [](const sample_site_t & a,
+			       const sample_site_t & b) noexcept {
+			      return a.first<b.first;
+			    }));
       return rv;
     }
 
@@ -188,7 +198,21 @@ namespace KTfwd
 	      trim_last(&rv[i].second);
 	    }
 	}
-
+#ifndef NDEBUG
+      for(const auto & rvi : rv )
+	{
+	  assert(std::is_sorted(rvi.first.begin(),rvi.first.end(),
+				[](const sample_site_t & a,
+				   const sample_site_t & b) noexcept {
+				  return a.first<b.first;
+				}));
+	  assert(std::is_sorted(rvi.second.begin(),rvi.second.end(),
+				[](const sample_site_t & a,
+				   const sample_site_t & b) noexcept {
+				  return a.first<b.first;
+				}));
+	}
+#endif
       return rv;
     }
   }
