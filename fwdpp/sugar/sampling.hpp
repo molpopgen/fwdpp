@@ -182,7 +182,10 @@ namespace KTfwd
       {
 	throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
       }
-    return ms_sample_separate(r,p.mutations,p.gametes,p.diploids[deme],nsam,removeFixed);
+    auto x = ms_sample_separate(r,p.mutations,p.gametes,p.diploids[deme],nsam,removeFixed);
+    finish_sample(x.first,p.fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
+    finish_sample(x.second,p.fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
+    return x;
   }
 
   template<typename poptype>
@@ -260,7 +263,10 @@ namespace KTfwd
 	    throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
 	  }
       }
-    return fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids[deme],individuals,2*individuals.size(),removeFixed);
+    auto x = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids[deme],individuals,2*individuals.size(),removeFixed);
+    finish_sample(x.first,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::NEUTRAL);
+    finish_sample(x.second,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::SELECTED);
+    return x;
   }
 }
 
