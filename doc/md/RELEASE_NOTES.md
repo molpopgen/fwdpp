@@ -1,5 +1,10 @@
 # FWDPP RELEASE NOTES
 
+## 0.4.7
+
+* remove include<iostream> from fwdpp/internal/recombination_common.hpp
+* Issue #37 fixed
+
 ## 0.4.6
 
 * Issue #34 fixed
