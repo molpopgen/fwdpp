@@ -162,7 +162,8 @@ namespace KTfwd
 			  const std::vector<double> & __end,
 			  const std::vector<double> & __weight ) : beg(__beg),end(__end)
       {
-	lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(__weight.size(),&__weight[0]));
+	if(__weight.size())
+	  lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(__weight.size(),&__weight[0]));
       }
       /*!
 	Returns a position from a region that is chosen based on region weights.
