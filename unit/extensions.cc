@@ -322,6 +322,78 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
 				    pop.neutral,
 				    pop.selected);
 }
+
+//Tests of raising exceptions
+BOOST_AUTO_TEST_CASE( discrete_rec_model_constructor_should_throw )
+{
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_rec_model drm( {0},
+							    {1,2},
+							    {1,2}
+							    ),
+			std::runtime_error
+			);
+  }
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_rec_model drm( {0,1},
+							    {1},
+							    {1,2}
+							    ),
+			std::runtime_error
+			);
+  }
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_rec_model drm( {0,1},
+							    {1,2},
+							    {1,2,3}
+							    ),
+			std::runtime_error
+			);
+  }
+}
+
+BOOST_AUTO_TEST_CASE( discrete_mut_model_constructor_should_throw )
+{
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_mut_model dm({0,1},
+							  {1,2},
+							  {1},
+							  {},
+							  {},
+							  {},
+							  {}
+							  ),
+			std::runtime_error
+			);
+  }
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_mut_model dm({0,1},
+							  {1,2},
+							  {1,2},
+							  //incorrect number of weights
+							  {0,1},
+							  {1,2},
+							  {1},
+							  {}
+							  ),
+			std::runtime_error
+			);
+  }
+  {
+    BOOST_REQUIRE_THROW(extensions::discrete_mut_model dm({0,1},
+							  {1,2},
+							  {1,2},
+							  //There are selected regions, but no "sh models"
+							  {0,1},
+							  {1,2},
+							  {1},
+							  {}
+							  ),
+			std::runtime_error
+			);
+  }
+}
+
 //Tests of fwdpp/extensions/callbacks.hpp
 
 //This test makes sure that each type of callback compiles
@@ -353,8 +425,8 @@ BOOST_AUTO_TEST_CASE( callback_exceptions )
   {
     //nan
     BOOST_REQUIRE_THROW( extensions::constant(std::nan("")), 
-     			 std::runtime_error
-     			 );
+			 std::runtime_error
+			 );
   }
 
   {

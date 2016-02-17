@@ -11,6 +11,8 @@ Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being di
 
 * Issue #34 fixed
 * Issue #35 fixed.  Thanks to Alexander Nater for catching this.
+* KTfwd::extensions::discrete_rec_model no longer generates empty lookup tables when there are no regions
+* KTfwd::extensions::discrete_rec_model and KTfwd::discrete_mut_model may now throw exceptions from their constructors if input data are incorrect
 
 ## 0.4.5
 
