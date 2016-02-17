@@ -101,7 +101,7 @@ namespace KTfwd
 	\precondition If nmu == 0, then nbeg/nend cannot be empty.  Similarly,
 	if smu == 0, then sbeg,end cannot be empty.  These conditions are checked in debug 
 	mode via the assert macro.  It is up to the calling environment to prevent this situation
-	from arising.
+	from arising.  Also, nmu+smu must be > 0, and is also checked by assert.
       */
       template<typename queue_t,
 	       typename lookup_table_t,
@@ -114,6 +114,7 @@ namespace KTfwd
 				  unsigned generation,
 				  lookup_table_t & lookup) const
       {
+	assert(nmu+smu>0.);
 	bool is_neutral = (gsl_rng_uniform(r) < nmu/(nmu+smu)) ? true : false;
 	if( is_neutral )
 	  {
