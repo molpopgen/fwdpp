@@ -1,9 +1,10 @@
 #define BOOST_TEST_MODULE GSLrng_t_test
 #define BOOST_TEST_DYN_LINK 
-
+#include <iostream>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <boost/test/unit_test.hpp>
 #include <gsl/gsl_randist.h>
+#include <sstream>
 
 BOOST_AUTO_TEST_CASE( copy_construct_test )
 {
@@ -26,3 +27,17 @@ BOOST_AUTO_TEST_CASE( is_moveable )
   
   BOOST_CHECK(rng.get()==nullptr);
 }
+
+BOOST_AUTO_TEST_CASE( serialize )
+{
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> rng(101);
+
+  std::stringstream buffer;
+  rng.serialize(buffer);
+
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> rng2(0); //make a new object with different seed
+  //If all is cool, rng2 will have same state as rng 2
+  rng2.deserialize(buffer);
+  BOOST_CHECK_EQUAL(gsl_rng_get(rng.get()),gsl_rng_get(rng2.get()));
+}
+
