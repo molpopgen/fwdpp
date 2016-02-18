@@ -18,7 +18,8 @@ check_PROGRAMS=mutateTest \
 	test_generalmut_vec \
 	extensions \
 	demography \
-	gamete_cleaner
+	gamete_cleaner \
+	GSLrng_test
 
 
 TESTS=$(check_PROGRAMS)
@@ -42,6 +43,7 @@ test_generalmut_vec_SOURCES=test_generalmut_vec.cc
 extensions_SOURCES=extensions.cc
 demography_SOURCES=demography.cc
 gamete_cleaner_SOURCES=gamete_cleaner.cc
+GSLrng_test_SOURCES=GSLrng_test.cc
 
 AM_CXXFLAGS=
 

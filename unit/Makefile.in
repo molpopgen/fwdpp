@@ -93,7 +93,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	test_generalmut_vec$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	extensions$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	demography$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	gamete_cleaner$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	gamete_cleaner$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	GSLrng_test$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
@@ -107,6 +108,11 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__GSLrng_test_SOURCES_DIST = GSLrng_test.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_GSLrng_test_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	GSLrng_test.$(OBJEXT)
+GSLrng_test_OBJECTS = $(am_GSLrng_test_OBJECTS)
+GSLrng_test_LDADD = $(LDADD)
 am__callbacks_SOURCES_DIST = callbacks.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_callbacks_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	callbacks.$(OBJEXT)
@@ -233,18 +239,20 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(callbacks_SOURCES) $(crossoverTest_SOURCES) \
-	$(demography_SOURCES) $(extensions_SOURCES) \
-	$(gameteTest_SOURCES) $(gamete_cleaner_SOURCES) \
-	$(mlocusCrossoverTest_SOURCES) $(ms_sampling_SOURCES) \
-	$(mutateTest_SOURCES) $(mutationTest_SOURCES) \
-	$(siteDepFitness_SOURCES) $(sugar_metapop_SOURCES) \
+SOURCES = $(GSLrng_test_SOURCES) $(callbacks_SOURCES) \
+	$(crossoverTest_SOURCES) $(demography_SOURCES) \
+	$(extensions_SOURCES) $(gameteTest_SOURCES) \
+	$(gamete_cleaner_SOURCES) $(mlocusCrossoverTest_SOURCES) \
+	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
+	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
+	$(sugar_metapop_SOURCES) \
 	$(sugar_metapop_custom_diploid_SOURCES) \
 	$(sugar_multilocus_SOURCES) $(sugar_sampling_SOURCES) \
 	$(sugar_singlepop_SOURCES) \
 	$(sugar_singlepop_custom_diploid_SOURCES) \
 	$(test_generalmut_SOURCES) $(test_generalmut_vec_SOURCES)
-DIST_SOURCES = $(am__callbacks_SOURCES_DIST) \
+DIST_SOURCES = $(am__GSLrng_test_SOURCES_DIST) \
+	$(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
 	$(am__demography_SOURCES_DIST) $(am__extensions_SOURCES_DIST) \
 	$(am__gameteTest_SOURCES_DIST) \
@@ -603,6 +611,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@extensions_SOURCES = extensions.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@demography_SOURCES = demography.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@gamete_cleaner_SOURCES = gamete_cleaner.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@GSLrng_test_SOURCES = GSLrng_test.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -642,6 +651,10 @@ $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
+
+GSLrng_test$(EXEEXT): $(GSLrng_test_OBJECTS) $(GSLrng_test_DEPENDENCIES) $(EXTRA_GSLrng_test_DEPENDENCIES) 
+	@rm -f GSLrng_test$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(GSLrng_test_OBJECTS) $(GSLrng_test_LDADD) $(LIBS)
 
 callbacks$(EXEEXT): $(callbacks_OBJECTS) $(callbacks_DEPENDENCIES) $(EXTRA_callbacks_DEPENDENCIES) 
 	@rm -f callbacks$(EXEEXT)
@@ -725,6 +738,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GSLrng_test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/callbacks.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/crossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/demography.Po@am__quote@
@@ -1081,6 +1095,13 @@ demography.log: demography$(EXEEXT)
 gamete_cleaner.log: gamete_cleaner$(EXEEXT)
 	@p='gamete_cleaner$(EXEEXT)'; \
 	b='gamete_cleaner'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+GSLrng_test.log: GSLrng_test$(EXEEXT)
+	@p='GSLrng_test$(EXEEXT)'; \
+	b='GSLrng_test'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
