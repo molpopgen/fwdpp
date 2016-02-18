@@ -7,6 +7,7 @@ Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being di
 * remove include<iostream> from fwdpp/internal/recombination_common.hpp
 * Issue #37 fixed
 * KTfwd::GSLrng_t has improved copy constructor and is now move-constructible.
+* "debug mode" (compiling _without_ -DNDEBUG) makes more tests about samples from populations being sorted by position
 
 ## 0.4.6
 
