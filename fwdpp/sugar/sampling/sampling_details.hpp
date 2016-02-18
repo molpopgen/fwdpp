@@ -140,7 +140,7 @@ namespace KTfwd
     // 	      });
     // if(!removeFixed)
     //   add_fixations(rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
-    // return rv;
+    return rv;
   }
   
   template<typename poptype>
