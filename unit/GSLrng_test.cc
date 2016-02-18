@@ -17,3 +17,12 @@ BOOST_AUTO_TEST_CASE( copy_construct_test )
   //If something went wrong with copy, destruction will fail here,
   //and we'll get a failure of the test
 }
+
+BOOST_AUTO_TEST_CASE( is_moveable )
+{
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> rng(101);
+  
+  auto rng2(std::move(rng));
+  
+  BOOST_CHECK(rng.get()==nullptr);
+}

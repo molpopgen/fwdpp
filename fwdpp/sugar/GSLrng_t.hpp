@@ -62,6 +62,8 @@ namespace KTfwd {
     {
     }
 
+    GSLrng_t(GSLrng_t &&) = default;
+
     GSLrng_t & operator=(GSLrng_t &) = delete;
     
     //! Return underlying pointer
