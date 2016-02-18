@@ -1,5 +1,3 @@
-
-
 /*! \file demography.cc
   \ingroup unit 
   \brief Testing functions in fwdpp/demography.hpp
