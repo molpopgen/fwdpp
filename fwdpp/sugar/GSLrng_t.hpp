@@ -22,7 +22,6 @@ namespace KTfwd {
     The template instantiation type must be a model of 
     KTfwd::sugar::GSL_RNG_TYPE_TAG, which specifies the
     gsl_rng type.
-
     This type holds an object of type KTfwd::sugar::gsl_rng_ptr_t,
     which is a smart pointer that manages freeing the gsl_rng * upon
     destruction.
@@ -39,28 +38,28 @@ namespace KTfwd {
     {
       return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
     }
+
+    sugar::gsl_rng_ptr_t setup( const gsl_rng * r )
+    {
+      return sugar::gsl_rng_ptr_t(gsl_rng_clone(r));
+    }
+    
   public:
     //! Smart pointer wrapping the gsl_rng *
     sugar::gsl_rng_ptr_t r;
 
     //! Typedef for RNG type, if needed
     using rngtype = T;
-    
+
     //! Construct with a seed
-    GSLrng_t(const unsigned long seed) : r(setup(T())) {
+    GSLrng_t(const unsigned long seed) noexcept : r(setup(T()))
+    {
       gsl_rng_set(r.get(),seed);
     }
 
     //! Copy constructor
-    GSLrng_t( const GSLrng_t & rng) : r(setup(T())) {
-      int rv = gsl_rng_memcpy(r.get(),rng.get());
-      assert(rv==GSL_SUCCESS);
-    }
-      
-    //! Copy constructor
-    GSLrng_t( GSLrng_t & rng) : r(setup(T())) {
-      int rv = gsl_rng_memcpy(r.get(),rng.get());
-      assert(rv==GSL_SUCCESS);
+    GSLrng_t(const GSLrng_t & rng) noexcept : r(setup(rng.get()))
+    {
     }
 
     GSLrng_t & operator=(GSLrng_t &) = delete;
