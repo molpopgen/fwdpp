@@ -147,14 +147,6 @@ namespace KTfwd
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
-    /*
-    std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
-				     const sample_site_t & b){
-		return a.first<b.first;
-	      });
-    if(!removeFixed)
-      add_fixations(rv,p.fixations,nsam,sugar::treat_neutral::ALL);
-    */
     return rv;
   }
   
@@ -222,14 +214,6 @@ namespace KTfwd
     auto rv = std::move(temp.first);
     std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     finish_sample(rv,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
-    /*
-    std::sort(rv.begin(),rv.end(),[](const sample_site_t & a,
-				     const sample_site_t & b){
-		return a.first<b.first;
-	      });
-    if(!removeFixed)
-      add_fixations(rv,p.fixations,2*individuals.size(),sugar::treat_neutral::ALL);
-    */
     return rv;
   }
   
