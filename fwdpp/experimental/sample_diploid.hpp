@@ -54,14 +54,14 @@ namespace KTfwd {
       }
 
       //! \brief Pick parent one
-      inline size_t pick1(gsl_rng * r) const
+      inline size_t pick1(const gsl_rng * r) const
       {
 	return gsl_ran_discrete(r,lookup.get());
       }
 
       //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
       template<typename diploid_t,typename gcont_t,typename mcont_t>
-      inline size_t pick2(gsl_rng * r, const size_t & p1, const double & f,
+      inline size_t pick2(const gsl_rng * r, const size_t & p1, const double & f,
 			  const diploid_t &, const gcont_t &, const mcont_t &) const
       {
 	return ((f==1.)||(f>0.&&gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
@@ -69,7 +69,7 @@ namespace KTfwd {
 
       //! \brief Update some property of the offspring based on properties of the parents
       template<typename diploid_t,typename gcont_t,typename mcont_t>
-      void update(gsl_rng * , diploid_t &, const diploid_t & ,
+      void update(const gsl_rng * , diploid_t &, const diploid_t & ,
 		  const diploid_t &,
 		  const gcont_t &,
 		  const mcont_t &) const
@@ -98,7 +98,7 @@ namespace KTfwd {
 	      typename gamete_insertion_policy = KTfwd::emplace_back
 	      >
     double
-    sample_diploid(gsl_rng * r,
+    sample_diploid(const gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
 		   diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		   mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,
@@ -203,7 +203,7 @@ namespace KTfwd {
 	      typename gamete_insertion_policy = KTfwd::emplace_back
 	      >
     double
-    sample_diploid(gsl_rng * r,
+    sample_diploid(const gsl_rng * r,
 		   gamete_list_type<gamete_type,gamete_list_type_allocator > & gametes,
 		   diploid_vector_type<diploid_geno_t,diploid_vector_type_allocator> & diploids,
 		   mutation_list_type<mutation_type,mutation_list_type_allocator > & mutations,

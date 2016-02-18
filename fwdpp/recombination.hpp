@@ -10,7 +10,7 @@ namespace KTfwd
   {
     template<typename gamete_type,
 	     typename mcont_t>
-    std::vector<double> operator()(gsl_rng * r,
+    std::vector<double> operator()(const gsl_rng * r,
 				   const double littler,
 				   const double minpos,
 				   const double maxpos,

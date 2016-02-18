@@ -38,7 +38,7 @@ namespace KTfwd {
 	     typename bw_locus_rec_fxn
 #endif
     >
-    diploid_type multilocus_rec_mut(gsl_rng * r,
+    diploid_type multilocus_rec_mut(const gsl_rng * r,
 				    diploid_type parent1,
 				    diploid_type parent2,
 				    mqueue_t & mutation_recycling_bin,

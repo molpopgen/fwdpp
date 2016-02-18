@@ -35,7 +35,7 @@ using namespace KTfwd;
 using namespace Sequence;
 
 
-size_t migpop(const size_t & source_pop, gsl_rng * r, const double & mig_prob)
+size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_prob)
 {
   if( gsl_rng_uniform(r) < mig_prob )
     {

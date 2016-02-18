@@ -112,7 +112,7 @@ int main(int argc, char ** argv)
 				mmodels,
 				recpols,
 				&rbw,
-				[](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
+				[](const gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 				std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				pop.neutral,
 				pop.selected);

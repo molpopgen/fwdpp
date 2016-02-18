@@ -117,7 +117,7 @@ namespace KTfwd
 
   /*! \brief "Bud" off a new sub-population
 
-    \param r Pointer to a gsl_rng object
+    \param r Pointer to a const gsl_rng object
     \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
     \param i The parental deme
     \param N_new The size of the new deme
@@ -126,7 +126,7 @@ namespace KTfwd
     \note Implemented in terms of KTfwd::split_deme. See documentation of that function for details.
    */
   template<typename mpoptype>
-  int split_pop(gsl_rng * r,
+  int split_pop(const gsl_rng * r,
 		mpoptype & mpop,
 		const size_t i,
 		const uint_t N_new,
@@ -144,7 +144,7 @@ namespace KTfwd
 
     /*! \brief Create an admixed population
 
-    \param r Pointer to a gsl_rng object
+    \param r Pointer to a const gsl_rng object
     \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
     \param i One parental deme
     \param j The other parental deme
@@ -155,7 +155,7 @@ namespace KTfwd
     \note Implemented in terms of KTfwd::admix_demes. See documentation of that function for details.
    */
   template<typename mpoptype>
-  int admix_pops(gsl_rng * r,
+  int admix_pops(const gsl_rng * r,
 		 mpoptype & mpop,
 		 const size_t i,
 		 const size_t j,

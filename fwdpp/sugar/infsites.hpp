@@ -38,7 +38,7 @@ namespace KTfwd
     }
     
     /*!
-      \param r A gsl_rng *
+      \param r A const gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
       \param generation Generation when this mutation is happening
       \param neutral_mutation_rate Either the rate at which neutral variants arise (per gamete per generation), or something directly proportional to it
@@ -59,7 +59,7 @@ namespace KTfwd
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
 	       mlist_t & mutations,
-	       gsl_rng * r, lookup_table_t & lookup,
+	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -82,7 +82,7 @@ namespace KTfwd
     /*!
       \brief Overload for different position distributions for neutral and non-neutral variants
 
-      \param r A gsl_rng *
+      \param r A const gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
       \param generation Generation when this mutation is happening
       \param neutral_mutation_rate Either the rate at which neutral variants arise (per gamete per generation), or something directly proportional to it
@@ -105,7 +105,7 @@ namespace KTfwd
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
 	       mlist_t & mutations,
-	       gsl_rng * r, lookup_table_t & lookup,
+	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -128,7 +128,7 @@ namespace KTfwd
     }
 
     /*!
-      \param r A gsl_rng *
+      \param r A const gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
       \param generation Generation when this mutation is happening
       \param neutral_mutation_rate Either the rate at which neutral variants arise (per gamete per generation), or something directly proportional to it
@@ -149,7 +149,7 @@ namespace KTfwd
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
 	       mlist_t & mutations,
-	       gsl_rng * r, lookup_table_t & lookup,
+	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t * generation,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -166,7 +166,7 @@ namespace KTfwd
     }
 
     /*!
-      \param r A gsl_rng *
+      \param r A const gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
       \param neutral_mutation_rate Either the rate at which neutral variants arise (per gamete per generation), or something directly proportional to it
       \param selected_mutation_rate Either the rate at which non-neutral variants arise (per gamete per generation), or something directly proportional to it
@@ -186,7 +186,7 @@ namespace KTfwd
 				   std::size_t>::type
     operator()(queue_t & mutation_recycling_bin,
 	       mlist_t & mutations,
-	       gsl_rng * r, lookup_table_t & lookup,
+	       const gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
 	       const position_t & posmaker,
@@ -205,7 +205,7 @@ namespace KTfwd
     /*!
       \brief Overload for different position distributions for neutral and non-neutral variants
 
-      \param r A gsl_rng *
+      \param r A const gsl_rng *
       \param lookup A lookup table of mutation positions, see @ref md_md_policies for 
       \param neutral_mutation_rate Either the rate at which neutral variants arise (per gamete per generation), or something directly proportional to it
       \param selected_mutation_rate Either the rate at which non-neutral variants arise (per gamete per generation), or something directly proportional to it
@@ -227,7 +227,7 @@ namespace KTfwd
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
 	       mlist_t & mutations,
-	       gsl_rng * r, lookup_table_t & lookup,
+	       const gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
 	       const nposition_t & nposmaker,

@@ -47,7 +47,7 @@ namespace KTfwd
   
   //Single-region, single-deme
   template<typename poptype>
-  sample_t sample_details( gsl_rng * r,
+  sample_t sample_details( const gsl_rng * r,
 			   const poptype & p,
 			   const unsigned nsam,
 			   const bool removeFixed,
@@ -62,7 +62,7 @@ namespace KTfwd
 
   //Multi-locus, single-deme
   template<typename poptype>
-  sample_t sample_details( gsl_rng * r,
+  sample_t sample_details( const gsl_rng * r,
 			   const poptype & p,
 			   const unsigned nsam,
 			   const bool removeFixed,
@@ -77,7 +77,7 @@ namespace KTfwd
 
   //Single-region, single-deme
   template<typename poptype>
-  sep_sample_t sample_sep_details( gsl_rng * r,
+  sep_sample_t sample_sep_details( const gsl_rng * r,
 				   const poptype & p,
 				   const unsigned nsam,
 				   const bool removeFixed,
@@ -160,7 +160,7 @@ namespace KTfwd
 
   //Multi-locus, single-deme
   template<typename poptype>
-  sep_sample_t sample_sep_details( gsl_rng * r,
+  sep_sample_t sample_sep_details( const gsl_rng * r,
 				   const poptype & p,
 				   const unsigned nsam,
 				   const bool removeFixed,

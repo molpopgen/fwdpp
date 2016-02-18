@@ -94,7 +94,7 @@ void simulate( poptype & pop )
 					   mutmodels,
 					   recmodels,
 					   &rbw[0],
-					   [](gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
+					   [](const gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 					   std::bind(multilocus_additive(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 					   pop.neutral,pop.selected);
       assert( check_sum(pop.gametes,8000) );

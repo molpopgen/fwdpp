@@ -21,7 +21,7 @@ struct HOChap
   operator()( mqueue_t & mut_recycling_bin,
 	      poptype::gamete_t & g,
 	      singlepop_t::mcont_t & mutations,
-	      gsl_rng * r, poptype::lookup_table_t & lookup, const double & sigmu) const
+	      const gsl_rng * r, poptype::lookup_table_t & lookup, const double & sigmu) const
   {
     double pos = gsl_rng_uniform(r);
     while( lookup.find(pos) != lookup.end() ) //make sure it doesn't exist in the population

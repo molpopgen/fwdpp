@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 							      diploid,diploid2,
 							      mutation_recycling_bin,gamete_recycling_bin,
 							      recpols,
-							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      [](const gsl_rng * __r, const double & __d) { return __d; },
 							      &r_bw_loci[0],
 							      0,0,gametes,mvector,neutral,selected);
 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE( three_locus_test_2 )
 							      diploid,diploid2,
 							      mutation_recycling_bin,gamete_recycling_bin,
 							      recpols,
-							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      [](const gsl_rng * __r, const double & __d) { return __d; },
 							      &r_bw_loci[0],
 							      0,0,gametes,mvector,neutral,selected);
 
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE( three_locus_test_3 )
 							      diploid,diploid2,
 							      mutation_recycling_bin,gamete_recycling_bin,
 							      recpols,
-							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      [](const gsl_rng * __r, const double & __d) { return __d; },
 							      &r_bw_loci[0],
 							      0,0,gametes,mvector,neutral,selected);
 
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE( three_locus_test_4 )
 							      diploid,diploid2,
 							      mutation_recycling_bin,gamete_recycling_bin,
 							      recpols,
-							      [](gsl_rng * __r, const double & __d) { return __d; },
+							      [](const gsl_rng * __r, const double & __d) { return __d; },
 							      &r_bw_loci[0],
 							      0,0,gametes,mvector,neutral,selected);
        BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(),2);

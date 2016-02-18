@@ -128,7 +128,7 @@ namespace KTfwd
 	   template<typename,typename> class vector_type >
   typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
 			  sample_t>::type
-  ms_sample( gsl_rng * r,
+  ms_sample( const gsl_rng * r,
 	     const mcont_t & mutations,
 	     const gcont_t & gametes,
 	     const vector_type< diploid_geno_t, allocator > & diploids,
@@ -147,7 +147,7 @@ namespace KTfwd
 	   template<typename,typename> class vector_type >
   typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
 			  sep_sample_t>::type
-  ms_sample_separate( gsl_rng * r,
+  ms_sample_separate( const gsl_rng * r,
 		      const mcont_t & mutations,
 		      const gcont_t & gametes,
 		      const vector_type< diploid_geno_t, allocator > & diploids,
@@ -165,7 +165,7 @@ namespace KTfwd
 	   typename dcont_t>
   typename std::enable_if< traits::is_diploid_like<typename dcont_t::value_type::value_type>::value,
 			   std::vector<sample_t> >::type
-  ms_sample( gsl_rng * r,
+  ms_sample( const gsl_rng * r,
 	     const mcont_t & mutations,
 	     const gcont_t & gametes,
 	     const dcont_t & diploids,
@@ -183,7 +183,7 @@ namespace KTfwd
 	   typename dcont_t>
   typename std::enable_if<traits::is_diploid_like<typename dcont_t::value_type::value_type>::value,
 			  std::vector<sep_sample_t> >::type
-  ms_sample_separate( gsl_rng * r,
+  ms_sample_separate( const gsl_rng * r,
 		      const mcont_t & mutations,
 		      const gcont_t & gametes,
 		      const dcont_t & diploids,

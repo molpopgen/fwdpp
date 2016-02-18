@@ -45,12 +45,12 @@ namespace KTfwd {
       and dominance (h)
     */
     {
-      std::function<double(gsl_rng*)> s,h;
+      std::function<double(const gsl_rng*)> s,h;
       //! Default constructor useful in extension situations that don't understand std::function
       shmodel() = default;
       //! More efficient constructor for c++11-aware situations
-      shmodel( std::function<double(gsl_rng*)> sfxn,
-	       std::function<double(gsl_rng*)> hfxn ) : s(std::move(sfxn)),h(std::move(hfxn))
+      shmodel( std::function<double(const gsl_rng*)> sfxn,
+	       std::function<double(const gsl_rng*)> hfxn ) : s(std::move(sfxn)),h(std::move(hfxn))
       {
       }
     };
@@ -67,7 +67,7 @@ namespace KTfwd {
 	  throw std::runtime_error("value must be finite");
 	}
       }
-      inline double operator()(gsl_rng *) const
+      inline double operator()(const gsl_rng *) const
       {
 	return x;
       }
@@ -90,7 +90,7 @@ namespace KTfwd {
 	    throw std::runtime_error("mean must not equal 0");
 	  }
       }
-      inline double operator()(gsl_rng * r) const
+      inline double operator()(const gsl_rng * r) const
       {
 	return gsl_ran_exponential(r,mean);
       }
@@ -114,7 +114,7 @@ namespace KTfwd {
 	    throw std::runtime_error("min must be <= max");
 	  }
       }
-      inline double operator()(gsl_rng * r) const
+      inline double operator()(const gsl_rng * r) const
       {
 	return gsl_ran_flat(r,mn,mx);
       }
@@ -143,7 +143,7 @@ namespace KTfwd {
 	    throw std::runtime_error("scaling factor must be finite and > 0");
 	  }
       }
-      inline double operator()(gsl_rng * r) const
+      inline double operator()(const gsl_rng * r) const
       {
 	return factor*gsl_ran_beta(r,a,b);
       }

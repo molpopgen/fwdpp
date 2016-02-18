@@ -31,7 +31,7 @@ namespace KTfwd
 	    typename mcont_t>
   std::size_t mutate_gamete_recycle( queue_type & recycling_bin,
 				     queue_type2 & gamete_recycling_bin,
-				     gsl_rng * r,
+				     const gsl_rng * r,
 				     const double & mu,
 				     gcont_t & gametes,
 				     mcont_t & mutations,

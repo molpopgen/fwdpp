@@ -11,7 +11,7 @@ namespace KTfwd
 {
   namespace fwdpp_internal
   {
-    inline std::vector<std::size_t> sample_individuals(gsl_rng * r,
+    inline std::vector<std::size_t> sample_individuals(const gsl_rng * r,
 						       const std::size_t N,
 						       const uint_t N2,
 						       const bool with_replacement)
@@ -38,7 +38,7 @@ namespace KTfwd
 	     typename mcount_t,
 	     typename gcont_t,
 	     typename vdipvector_t>
-    int split_deme_replacement( gsl_rng * r,
+    int split_deme_replacement( const gsl_rng * r,
 				const mcont_t & mutations,
 				mcount_t & mcounts,
 				gcont_t & gametes,
@@ -103,7 +103,7 @@ namespace KTfwd
 	     typename mcount_t,
 	     typename gcont_t,
 	     typename vdipvector_t>
-    int split_deme_no_replacement( gsl_rng * r,
+    int split_deme_no_replacement( const gsl_rng * r,
 				   const mcont_t &,
 				   mcount_t &,
 				   gcont_t &,
@@ -139,7 +139,7 @@ namespace KTfwd
 	     typename mcount_t,
 	     typename gcont_t,
 	     typename vdipvector_t>
-    int split_deme_details( gsl_rng * r,
+    int split_deme_details( const gsl_rng * r,
 			    const mcont_t & mutations,
 			    mcount_t & mcounts,
 			    gcont_t & gametes,

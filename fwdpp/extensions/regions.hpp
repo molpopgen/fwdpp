@@ -73,7 +73,7 @@ namespace KTfwd
 	Helper function.  Not to be called externally.
       */
       template<typename lookup_table_t>
-      inline double posmaker( gsl_rng * r,
+      inline double posmaker( const gsl_rng * r,
 			      const double & beg,
 			      const double & end,
 			      lookup_table_t & lookup) const
@@ -108,7 +108,7 @@ namespace KTfwd
 	       typename mcont_t>
       inline result_type make_mut(queue_t & recycling_bin,
 				  mcont_t & mutations,
-				  gsl_rng * r,
+				  const gsl_rng * r,
 				  const double & nmu,
 				  const double & smu,
 				  unsigned generation,
@@ -202,7 +202,7 @@ namespace KTfwd
       */
       template<typename gamete_t,
 	       typename mcont_t>
-      inline result_type operator()(gsl_rng * r,
+      inline result_type operator()(const gsl_rng * r,
 				    const double recrate,
 				    const gamete_t &,
 				    const gamete_t &,

@@ -17,7 +17,7 @@ namespace KTfwd
     Take a random sample of size 'nsam' from a population
    */
   template<typename poptype>
-  sample_t sample( gsl_rng * r,
+  sample_t sample( const gsl_rng * r,
 		   const poptype & p,
 		   const unsigned nsam,
 		   const bool removeFixed)
@@ -40,7 +40,7 @@ namespace KTfwd
   }
 
   template<typename poptype>
-  sep_sample_t sample_separate( gsl_rng * r,
+  sep_sample_t sample_separate( const gsl_rng * r,
 				const poptype & p,
 				const unsigned nsam,
 				const bool removeFixed)
@@ -120,7 +120,7 @@ namespace KTfwd
   }
 
   template<typename poptype>
-  sample_t sample( gsl_rng * r,
+  sample_t sample( const gsl_rng * r,
 		   const poptype & p,
 		   const unsigned deme,
 		   const unsigned nsam,
@@ -159,7 +159,7 @@ namespace KTfwd
   }
   
   template<typename poptype>
-  sep_sample_t sample_separate( gsl_rng * r,
+  sep_sample_t sample_separate( const gsl_rng * r,
 				const poptype & p,
 				const unsigned deme,
 				const unsigned nsam,

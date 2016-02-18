@@ -186,7 +186,7 @@ namespace KTfwd
 	   typename mcount_t,
 	   typename gcont_t,
 	   typename vdipvector_t>
-  int split_deme( gsl_rng * r,
+  int split_deme( const gsl_rng * r,
 		  const mcont_t & mutations,
 		  mcount_t & mcounts,
 		  gcont_t & gametes,
@@ -229,7 +229,7 @@ namespace KTfwd
 	   typename mcount_t,
 	   typename gcont_t,
 	   typename vdipvector_t>
-  int admix_demes(gsl_rng * r,
+  int admix_demes(const gsl_rng * r,
 		  const mcont_t & mutations,
 		  mcount_t & mcounts,
 		  gcont_t & gametes,

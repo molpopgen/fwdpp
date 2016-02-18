@@ -71,14 +71,14 @@ using poptype = KTfwd::singlepop<mtype,diploid_t>;
 
 /*
   We will use a gsl_rng_mt19937 as our RNG.
-  This type is implicitly convertible to gsl_rng *,
+  This type is implicitly convertible to const gsl_rng *,
   and auto-handles the gsl_rng_free steps, etc.
 */
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
 
 std::size_t sex_specific_mut_model(std::queue<std::size_t> & mut_recycling_bin,
 				   poptype::mcont_t & mutations,
-				   gsl_rng * r,
+				   const gsl_rng * r,
 				   poptype::lookup_table_t & lookup,
 				   const double & mu_total,
 				   const double & mu_male,
@@ -196,14 +196,14 @@ struct sexSpecificRules
   }
 
   //! \brief Pick parent one
-  inline size_t pick1(gsl_rng * r) const
+  inline size_t pick1(const gsl_rng * r) const
   {
     return male_indexes[gsl_ran_discrete(r,male_lookup.get())];
   }
 
   //! \brief Pick parent 2.  Parent 1's data are passed along for models where that is relevant
   template<typename diploid_t,typename gcont_t,typename mcont_t>
-  inline size_t pick2(gsl_rng * r, const size_t & , const double &,
+  inline size_t pick2(const gsl_rng * r, const size_t & , const double &,
 		      const diploid_t &, const gcont_t &, const mcont_t &) const
   {
     return female_indexes[gsl_ran_discrete(r,female_lookup.get())];
@@ -212,7 +212,7 @@ struct sexSpecificRules
   //! \brief Update some property of the offspring based on properties of the parents
   template<typename diploid_t,typename gcont_t,
 	   typename mcont_t>
-  void update(gsl_rng * r,diploid_t & offspring,
+  void update(const gsl_rng * r,diploid_t & offspring,
 	      const diploid_t &, const diploid_t &,
 	      const gcont_t &, const mcont_t &) const
   {
@@ -225,7 +225,7 @@ struct sexSpecificRules
 double sex_specific_fitness( const poptype::diploid_t & dip,
 			     const poptype::gcont_t & gametes,
 			     const poptype::mcont_t & mutations,
-			     gsl_rng * r, const double & sigmaE )
+			     const gsl_rng * r, const double & sigmaE )
 {
   double trait_value = std::accumulate(gametes[dip.first].smutations.begin(),
 				       gametes[dip.first].smutations.end(),
