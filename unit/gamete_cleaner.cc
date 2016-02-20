@@ -3,7 +3,7 @@
   \ingroup unit
   \brief Testing KTfwd::fwdpp_internal::gamete_cleaner
 */
-#define BOOST_TEST_MODULE sugar_singlepop
+#define BOOST_TEST_MODULE gamete_cleaner
 #define BOOST_TEST_DYN_LINK
 
 #include <config.h>
