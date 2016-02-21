@@ -49,6 +49,8 @@ namespace KTfwd {
 	  This type has its own deleter, which is convenient, because
 	  operator= for unique_ptrs automagically calls the deleter before assignment!
 	  Details: http://www.cplusplus.com/reference/memory/unique_ptr/operator=
+
+	  This only works b/c the rhs of the expression below may be treated as an rvalue reference.
 	*/
 	lookup = fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(N_curr,&fitnesses[0]));
       }
