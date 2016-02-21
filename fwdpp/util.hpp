@@ -22,14 +22,14 @@ namespace KTfwd
 
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
   */
-  template<typename mutation_list_type,
+  template<typename mcont_t,
 	   typename mutation_lookup_table>
-  void update_mutations( mutation_list_type & mutations,
+  void update_mutations( mcont_t & mutations,
 			 mutation_lookup_table & lookup,
 			 std::vector<uint_t> & mcounts,
 			 const unsigned twoN)
   {
-    static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
+    static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
     for(std::size_t i = 0 ; i < mcounts.size() ; ++i)
       {
@@ -47,14 +47,14 @@ namespace KTfwd
 
     \Note: lookup must be compatible with lookup->erase(lookup->find(double))
   */
-  template<typename mutation_list_type,
+  template<typename mcont_t,
 	   typename mutation_lookup_table>
-  void update_mutations( const mutation_list_type & mutations,
+  void update_mutations( const mcont_t & mutations,
 			 mutation_lookup_table & lookup,
 			 std::vector<uint_t> & mcounts)
 
   {
-    static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
+    static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
     for(std::size_t i = 0 ; i < mcounts.size() ; ++i)
       {
@@ -72,18 +72,18 @@ namespace KTfwd
 
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
   */
-  template<typename mutation_list_type,
+  template<typename mcont_t,
 	   typename fixation_container_t,
 	   typename fixation_time_container_t,
 	   typename mutation_lookup_table>
-  void update_mutations( mutation_list_type & mutations,
+  void update_mutations( mcont_t & mutations,
 			 fixation_container_t & fixations,
 			 fixation_time_container_t & fixation_times,
 			 mutation_lookup_table & lookup,
 			 std::vector<uint_t> & mcounts,
 			 const unsigned & generation,const unsigned & twoN )
   {
-    static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
+    static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
     for(unsigned i=0;i<mcounts.size();++i)
       {
@@ -99,24 +99,24 @@ namespace KTfwd
       }
   }
 
-    /*!
+  /*!
     Label all fixed neutral variant and all extinct variants for recycling. Copy fixations and fixation times
     for neutral mutations into containers.
 
     \note: lookup must be compatible with lookup->erase(lookup->find(double))
   */
-  template<typename mutation_list_type,
+  template<typename mcont_t,
 	   typename fixation_container_t,
 	   typename fixation_time_container_t,
 	   typename mutation_lookup_table>
-  void update_mutations_n( mutation_list_type & mutations,
-			 fixation_container_t & fixations,
-			 fixation_time_container_t & fixation_times,
-			 mutation_lookup_table & lookup,
-			 std::vector<uint_t> & mcounts,
-			 const unsigned & generation,const unsigned & twoN )
+  void update_mutations_n( mcont_t & mutations,
+			   fixation_container_t & fixations,
+			   fixation_time_container_t & fixation_times,
+			   mutation_lookup_table & lookup,
+			   std::vector<uint_t> & mcounts,
+			   const unsigned & generation,const unsigned & twoN )
   {
-    static_assert( typename traits::is_mutation_t<typename mutation_list_type::value_type>::type(),
+    static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
     for(unsigned i=0;i<mcounts.size();++i)
       {
