@@ -21,7 +21,9 @@ namespace KTfwd {
     //! Evaluates to std::true_type if T publicly inherits from KTfwd::tags::custom_diploid_t
     template<typename T>
     struct is_custom_diploid_t : std::integral_constant<bool,
-							std::is_base_of<KTfwd::tags::custom_diploid_t,T>::value>
+							std::is_base_of<KTfwd::tags::custom_diploid_t,T>::value &&
+							traits::internal::has_first_type<T>::value &&
+							traits::internal::has_second_type<T>::value>
     {
     };
 
