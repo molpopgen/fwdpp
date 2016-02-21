@@ -17,6 +17,39 @@
 using mutation_t = KTfwd::popgenmut;
 using singlepop_t = KTfwd::singlepop<mutation_t>;
 
+struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
+{
+};
+
+struct trivial_custom_diploid_valid : public KTfwd::tags::custom_diploid_t
+{
+  using first_type = std::size_t;
+  using second_type = std::size_t;
+};
+
+BOOST_AUTO_TEST_CASE( is_diploid_like_test )
+{
+  auto v = KTfwd::traits::is_diploid_like<std::pair<std::size_t,std::size_t> >::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+  v = KTfwd::traits::is_custom_diploid_t<std::pair<std::size_t,std::size_t> >::value;
+  BOOST_REQUIRE_EQUAL(v,false);
+}
+
+BOOST_AUTO_TEST_CASE( is_gamete_test )
+{
+  singlepop_t pop(100);
+  auto v = KTfwd::traits::is_gamete_t<singlepop_t::gamete_t>::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+}
+
+BOOST_AUTO_TEST_CASE( is_custom_diploid_test )
+{
+  auto v = KTfwd::traits::is_custom_diploid_t<trivial_custom_diploid_invalid >::value;
+  BOOST_REQUIRE_EQUAL(v,false);
+  v = KTfwd::traits::is_custom_diploid_t<trivial_custom_diploid_valid >::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+}
+
 BOOST_AUTO_TEST_CASE( is_mmodel_test )
 {
   singlepop_t pop(100);
@@ -24,6 +57,10 @@ BOOST_AUTO_TEST_CASE( is_mmodel_test )
   auto mp = std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,r.get(),std::ref(pop.mut_lookup),0,
 		      0.001,0.,[&r](){return gsl_rng_uniform(r.get());},[](){return 0.;},[](){return 0.;});
   auto v = std::is_convertible<decltype(mp),KTfwd::traits::mmodel_t<singlepop_t::mcont_t> >::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+
+  //This also implicitly tests correctness of traits::recycling_bin_t.  If that isn't working, this won't compile.
+  v=KTfwd::traits::valid_mutation_model<decltype(mp),singlepop_t::mcont_t,singlepop_t::gcont_t>::value;
   BOOST_REQUIRE_EQUAL(v,true);
 }
 
@@ -43,5 +80,7 @@ BOOST_AUTO_TEST_CASE( is_recmodel_test )
   auto rm = std::bind(KTfwd::poisson_xover(),r.get(),1e-2,0.,1.,
 		      std::placeholders::_1,std::placeholders::_2,std::placeholders::_3);
   auto v = std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<singlepop_t::gcont_t,singlepop_t::mcont_t> >::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+  v = KTfwd::traits::valid_rec_model<decltype(rm),singlepop_t::gamete_t,singlepop_t::mcont_t>::value;
   BOOST_REQUIRE_EQUAL(v,true);
 }
