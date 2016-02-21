@@ -111,22 +111,15 @@ namespace KTfwd {
       Applies to mutation policies that only take recycling bins and  mcont_t *
       as arguments
     */
-    template<typename mcont_t>
-    struct mmodel_t
-    {
-      using type = std::function<typename mcont_t::iterator(recycling_bin_t<mcont_t> &,mcont_t &)>;
-    };
+    template<typename mcont_t> using mmodel_t = std::function<std::size_t(recycling_bin_t<mcont_t> &,mcont_t &)>;
 
     /*!
       Gives mutation model function signature for models requiring gametes as arguments
     */
     template<typename mcont_t,typename gcont_t>
-    struct mmodel_gamete_t
-    {
-      using type = std::function<typename mcont_t::iterator(recycling_bin_t<mcont_t> &,
-							    typename gcont_t::value_type &,
-							    mcont_t *)>;
-    };
+    using mmodel_gamete_t = std::function<std::size_t(recycling_bin_t<mcont_t> &,
+						      typename gcont_t::value_type &,
+						      mcont_t &)>;
   }
 }
 #endif
