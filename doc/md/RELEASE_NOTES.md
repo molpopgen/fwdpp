@@ -10,6 +10,7 @@ Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being di
 * KTfwd::GSLrng_t may now be serialized in-memory.  This requires POSIX functions that are not portable!
 * The library is now const-correct vis-a-vis gsl_rng *.  This is an API change.
 * "debug mode" (compiling _without_ -DNDEBUG) makes more tests about samples from populations being sorted by position
+* More extensive checking done by functions in fwdpp/debug.hpp
 * Improvements (and bug fixes) to namespace KTfwd::traits.  Unit tests added for this namespace.
 
 ## 0.4.6
