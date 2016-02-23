@@ -1,7 +1,6 @@
 #ifndef __KTFWD_DEBUG_HPP__
 #define __KTFWD_DEBUG_HPP__
 
-#ifndef NDEBUG
 #include <algorithm>
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
@@ -100,5 +99,4 @@ namespace KTfwd
   }
 }
 
-#endif
 #endif
