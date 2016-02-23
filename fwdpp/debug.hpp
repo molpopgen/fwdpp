@@ -14,7 +14,7 @@ namespace KTfwd
     Returns true if the sum of counts in gametes equals twoN, false otherwise
    */
   template<typename gcont_t>
-  bool check_sum(const gcont_t & gametes, const unsigned & twoN)
+  bool check_sum(const gcont_t & gametes, const unsigned twoN)
   {
     static_assert( typename traits::is_gamete_t<typename gcont_t::value_type>::type(),
 		   "gcont_t::value_type must be a valid gamete type" );
@@ -30,7 +30,7 @@ namespace KTfwd
     Returns true if the sum of counts in gametes equals twoN, false otherwise
    */
   template<typename gcont_t>
-  bool check_sum(const gcont_t * gametes, const unsigned & twoN)
+  bool check_sum(const gcont_t * gametes, const unsigned twoN)
   {
     return check_sum(*gametes,twoN);
   }
