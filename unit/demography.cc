@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( low_level_copy_deme_test )
     BOOST_REQUIRE(mpop.diploids[0]==mpop.diploids[1]);
     for( const auto & dips : mpop.diploids )
       {
-	BOOST_REQUIRE( KTfwd::popdata_sane(dips,mpop.gametes,mpop.mcounts) );
+	BOOST_REQUIRE( KTfwd::popdata_sane(dips,mpop.gametes,mpop.mutations,mpop.mcounts) );
       }
   }
   

@@ -175,7 +175,7 @@ BOOST_AUTO_TEST_CASE( singlepop_1 )
   pop.gametes.emplace_back( 1, std::vector<std::size_t>{0}, std::vector<std::size_t>{} );
   pop.gametes[0].n--;
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
-  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mcounts), true );
+  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
   pop.diploids[1].first=1;
 
   auto x = KTfwd::sample(pop,{0,1},true);

@@ -86,7 +86,7 @@ namespace KTfwd
 		 const gamete_insertion_policy & gpolicy_mut)
   {
     //test preconditions in debugging mode
-    assert(popdata_sane(diploids,gametes,mcounts));
+    assert(popdata_sane(diploids,gametes,mutations,mcounts));
     assert(mcounts.size()==mutations.size());
     assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
@@ -166,7 +166,7 @@ namespace KTfwd
 	assert(mc <= 2*N_next);
       }
 #endif
-    assert(popdata_sane(diploids,gametes,mcounts));
+    assert(popdata_sane(diploids,gametes,mutations,mcounts));
     fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
     return wbar;
   }
