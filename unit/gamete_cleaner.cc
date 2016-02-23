@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_remove_all )
   pop.gametes.push_back( singlepop_t::gamete_t(1) );
   pop.gametes[1].mutations.push_back(1);
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
-  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mcounts), true );
+  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
   KTfwd::fwdpp_internal::gamete_cleaner(pop.gametes,pop.mutations,pop.mcounts,2000,std::true_type());
   BOOST_REQUIRE_EQUAL( pop.gametes[0].mutations.size(),0 );
 }
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE( test_remove_nothing )
   pop.gametes.push_back( singlepop_t::gamete_t(1) );
   pop.gametes[1].mutations.push_back(1);
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
-  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mcounts), true );
+  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
   KTfwd::fwdpp_internal::gamete_cleaner(pop.gametes,pop.mutations,pop.mcounts,2000,KTfwd::remove_nothing());
   BOOST_REQUIRE_EQUAL( pop.gametes[0].mutations.size(),1 );
 }
@@ -58,10 +58,12 @@ BOOST_AUTO_TEST_CASE( test_remove_neutral )
   pop.mcounts.emplace_back(2000); //fixed
   pop.mcounts.emplace_back(2000); //singleton
   pop.gametes[0].mutations.push_back(0);
-  pop.gametes[0].mutations.push_back(1);
+  pop.gametes[0].smutations.push_back(1);
+  BOOST_REQUIRE_EQUAL( pop.gametes[0].mutations.size(),1);
+  BOOST_REQUIRE_EQUAL( pop.gametes[0].smutations.size(),1);
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
-  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mcounts), true );
+  BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
   KTfwd::fwdpp_internal::gamete_cleaner(pop.gametes,pop.mutations,pop.mcounts,2000,KTfwd::remove_neutral());
-  BOOST_REQUIRE_EQUAL( pop.gametes[0].mutations.size(),1 );
-  BOOST_REQUIRE_EQUAL( pop.mutations[pop.gametes[0].mutations[0]].neutral,false );
+  BOOST_REQUIRE_EQUAL( pop.gametes[0].mutations.size(),0 );
+  BOOST_REQUIRE_EQUAL( pop.gametes[0].smutations.size(),1 );
 }
