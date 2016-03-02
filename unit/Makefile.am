@@ -20,7 +20,8 @@ check_PROGRAMS=mutateTest \
 	demography \
 	gamete_cleaner \
 	GSLrng_test \
-	type_traits_test
+	type_traits_test \
+	recycling_integration
 
 
 TESTS=$(check_PROGRAMS)
@@ -46,6 +47,7 @@ demography_SOURCES=demography.cc
 gamete_cleaner_SOURCES=gamete_cleaner.cc
 GSLrng_test_SOURCES=GSLrng_test.cc
 type_traits_test_SOURCES=type_traits_test.cc
+recycling_integration_SOURCES=recycling_integration.cc
 
 AM_CXXFLAGS=
 

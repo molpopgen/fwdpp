@@ -105,7 +105,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	demography$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	gamete_cleaner$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	GSLrng_test$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	type_traits_test$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	type_traits_test$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	recycling_integration$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -173,6 +174,11 @@ am__mutationTest_SOURCES_DIST = mutationTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutationTest.$(OBJEXT)
 mutationTest_OBJECTS = $(am_mutationTest_OBJECTS)
 mutationTest_LDADD = $(LDADD)
+am__recycling_integration_SOURCES_DIST = recycling_integration.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_recycling_integration_OBJECTS =  \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	recycling_integration.$(OBJEXT)
+recycling_integration_OBJECTS = $(am_recycling_integration_OBJECTS)
+recycling_integration_LDADD = $(LDADD)
 am__siteDepFitness_SOURCES_DIST = siteDepFitness.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_siteDepFitness_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitness.$(OBJEXT)
@@ -259,8 +265,8 @@ SOURCES = $(GSLrng_test_SOURCES) $(callbacks_SOURCES) \
 	$(extensions_SOURCES) $(gameteTest_SOURCES) \
 	$(gamete_cleaner_SOURCES) $(mlocusCrossoverTest_SOURCES) \
 	$(ms_sampling_SOURCES) $(mutateTest_SOURCES) \
-	$(mutationTest_SOURCES) $(siteDepFitness_SOURCES) \
-	$(sugar_metapop_SOURCES) \
+	$(mutationTest_SOURCES) $(recycling_integration_SOURCES) \
+	$(siteDepFitness_SOURCES) $(sugar_metapop_SOURCES) \
 	$(sugar_metapop_custom_diploid_SOURCES) \
 	$(sugar_multilocus_SOURCES) $(sugar_sampling_SOURCES) \
 	$(sugar_singlepop_SOURCES) \
@@ -276,6 +282,7 @@ DIST_SOURCES = $(am__GSLrng_test_SOURCES_DIST) \
 	$(am__mlocusCrossoverTest_SOURCES_DIST) \
 	$(am__ms_sampling_SOURCES_DIST) $(am__mutateTest_SOURCES_DIST) \
 	$(am__mutationTest_SOURCES_DIST) \
+	$(am__recycling_integration_SOURCES_DIST) \
 	$(am__siteDepFitness_SOURCES_DIST) \
 	$(am__sugar_metapop_SOURCES_DIST) \
 	$(am__sugar_metapop_custom_diploid_SOURCES_DIST) \
@@ -632,6 +639,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@gamete_cleaner_SOURCES = gamete_cleaner.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@GSLrng_test_SOURCES = GSLrng_test.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@type_traits_test_SOURCES = type_traits_test.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@recycling_integration_SOURCES = recycling_integration.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -715,6 +723,10 @@ mutationTest$(EXEEXT): $(mutationTest_OBJECTS) $(mutationTest_DEPENDENCIES) $(EX
 	@rm -f mutationTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(mutationTest_OBJECTS) $(mutationTest_LDADD) $(LIBS)
 
+recycling_integration$(EXEEXT): $(recycling_integration_OBJECTS) $(recycling_integration_DEPENDENCIES) $(EXTRA_recycling_integration_DEPENDENCIES) 
+	@rm -f recycling_integration$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(recycling_integration_OBJECTS) $(recycling_integration_LDADD) $(LIBS)
+
 siteDepFitness$(EXEEXT): $(siteDepFitness_OBJECTS) $(siteDepFitness_DEPENDENCIES) $(EXTRA_siteDepFitness_DEPENDENCIES) 
 	@rm -f siteDepFitness$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(siteDepFitness_OBJECTS) $(siteDepFitness_LDADD) $(LIBS)
@@ -772,6 +784,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ms_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutationTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/recycling_integration.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_metapop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_metapop_custom_diploid.Po@am__quote@
@@ -1133,6 +1146,13 @@ GSLrng_test.log: GSLrng_test$(EXEEXT)
 type_traits_test.log: type_traits_test$(EXEEXT)
 	@p='type_traits_test$(EXEEXT)'; \
 	b='type_traits_test'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+recycling_integration.log: recycling_integration$(EXEEXT)
+	@p='recycling_integration$(EXEEXT)'; \
+	b='recycling_integration'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
