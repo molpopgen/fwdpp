@@ -2,7 +2,7 @@
 
 * Ability to initialize a population from a list of gametes.
 * Re-organize unit tests with subdirectories (fwdpp, extensions, internal, sugar, etc.)
-* Remove all unit test blocks that are only API tests
+* Remove all unit test blocks that are only API tests.  DONE (where it makes sense)
 * Add unit tests for fwdpp/util.hpp
 * Improve unit test coverage for main library sampling functions
 * Improve unit test coverage for sugar layer sampling functions
