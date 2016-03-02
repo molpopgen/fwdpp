@@ -24,21 +24,7 @@ using multiloc_t = KTfwd::multiloc<mutation_t>;
   
 KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( singledeme1 )
-{
-  singlepop_t pop(1000);
-  auto s = KTfwd::sample_separate(rng.get(),pop,10,true);
-}
-
-//This is an API check
-BOOST_AUTO_TEST_CASE( singledeme2 )
-{
-  singlepop_t pop(1000);
-  auto s = KTfwd::sample_separate(pop,std::vector<unsigned>({0,1,2,999}),true);
-}
-
-BOOST_AUTO_TEST_CASE( singledeme3 )
+BOOST_AUTO_TEST_CASE( singledeme_test_sep_empty )
 {
   singlepop_t pop(1000);
   auto s = KTfwd::sample_separate(pop,std::vector<unsigned>(),true);
@@ -46,76 +32,50 @@ BOOST_AUTO_TEST_CASE( singledeme3 )
   BOOST_REQUIRE(s.second.empty()==true);
 }
 
-BOOST_AUTO_TEST_CASE( singledeme4 )
+BOOST_AUTO_TEST_CASE( singledeme_test_sep_throw )
 {
   singlepop_t pop(1000);
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample_separate(pop,std::vector<unsigned>({1000}),true),
 		      std::out_of_range);
 }
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( singledeme5 )
-{
-  singlepop_t pop(1000);
-  auto s = KTfwd::sample(rng.get(),pop,10,true);
-}
-
-//This is an API check
-BOOST_AUTO_TEST_CASE( singledeme6 )
-{
-  singlepop_t pop(1000);
-  auto s = KTfwd::sample(pop,std::vector<unsigned>({0,1,2,999}),true);
-}
-
-BOOST_AUTO_TEST_CASE( singledeme7 )
+BOOST_AUTO_TEST_CASE( singledeme_test_empty )
 {
   singlepop_t pop(1000);
   auto s = KTfwd::sample(pop,std::vector<unsigned>(),true);
   BOOST_REQUIRE(s.empty()==true);
 }
 
-BOOST_AUTO_TEST_CASE( singledeme8 )
+BOOST_AUTO_TEST_CASE( singledeme_test_throw )
 {
   singlepop_t pop(1000);
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample(pop,std::vector<unsigned>({1000}),true),
 		      std::out_of_range);
 }
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( metapop1 )
-{
-  metapop_t pop({1000,1000});
-  auto s = KTfwd::sample_separate(rng.get(),pop,0,10,true);
-}
-BOOST_AUTO_TEST_CASE( metapop1_throw )
+
+BOOST_AUTO_TEST_CASE( metapop_test_sep_deme_out_of_range_1 )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample_separate(rng.get(),pop,2,10,true),
 		      std::out_of_range);
 }
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( metapop2 )
-{
-  metapop_t pop({1000,1000});
-  auto s = KTfwd::sample_separate(pop,0,std::vector<unsigned>({10,20,50}),true);
-}
-
-BOOST_AUTO_TEST_CASE( metapop2_throw )
+BOOST_AUTO_TEST_CASE( metapop_test_sep_deme_out_of_range_2 )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample_separate(pop,2,std::vector<unsigned>({10,20,50}),true),
 		      std::out_of_range);
 }
 
-BOOST_AUTO_TEST_CASE( metapop2_throw2 )
+BOOST_AUTO_TEST_CASE( metapop_test_sep_throw )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample_separate(pop,0,std::vector<unsigned>({10,20,50,1000}),true),
 		      std::out_of_range);
 }
 
- BOOST_AUTO_TEST_CASE( metapop3 )
+BOOST_AUTO_TEST_CASE( metapop_test_sep_empty )
  {
    metapop_t pop({1000,1000});
    auto s = KTfwd::sample_separate(pop,0,std::vector<unsigned>(),true);
@@ -123,42 +83,29 @@ BOOST_AUTO_TEST_CASE( metapop2_throw2 )
    BOOST_REQUIRE(s.second.empty()==true);
 }
 
-BOOST_AUTO_TEST_CASE( metapop4 )
+BOOST_AUTO_TEST_CASE( metapop_test_sep_deme_and_ind_out_of_range )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample_separate(pop,2,std::vector<unsigned>({1000}),true),
 		      std::out_of_range);
 }
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( metapop5 )
-{
-  metapop_t pop({1000,1000});
-  auto s = KTfwd::sample(rng.get(),pop,0,10,true);
-}
-
-BOOST_AUTO_TEST_CASE( metapop5_throw )
+BOOST_AUTO_TEST_CASE( metapop_test_deme_out_of_range )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample(rng.get(),pop,2,10,true),
 		      std::out_of_range);
 }
 
-//This is an API check
-BOOST_AUTO_TEST_CASE( metapop6 )
-{
-  metapop_t pop({1000,1000});
-  auto s = KTfwd::sample(pop,0,std::vector<unsigned>({0,1,2,999}),true);
-}
 
-BOOST_AUTO_TEST_CASE( metapop7 )
+BOOST_AUTO_TEST_CASE( metapop_test_empty )
 {
   metapop_t pop({1000,1000});
   auto s = KTfwd::sample(pop,0,std::vector<unsigned>(),true);
   BOOST_REQUIRE(s.empty()==true);
 }
 
-BOOST_AUTO_TEST_CASE( metapop8 )
+BOOST_AUTO_TEST_CASE( metapop_test_ind_out_of_range )
 {
   metapop_t pop({1000,1000});
   BOOST_REQUIRE_THROW(auto s = KTfwd::sample(pop,2,std::vector<unsigned>({1000}),true),
