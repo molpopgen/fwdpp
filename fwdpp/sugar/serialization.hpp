@@ -80,7 +80,7 @@ namespace KTfwd
 
     //! \brief overload for KTfwd::generalmut and ostream
     template<typename mutation_t,
-	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
+	     std::size_t N = std::tuple_size<typename mutation_t::array_t>::value>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, std::ostream & buffer) const
     {
@@ -111,7 +111,7 @@ namespace KTfwd
 
     //! \brief overload for KTfwd::generalmut and zlib/gzFile
     template<typename mutation_t,
-	     std::size_t N = std::tuple_size<typename mutation_t::array_t>()>
+	     std::size_t N = std::tuple_size<typename mutation_t::array_t>::value>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, gzFile gzout) const
     {
