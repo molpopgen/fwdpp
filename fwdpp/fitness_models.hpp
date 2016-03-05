@@ -123,7 +123,7 @@ namespace KTfwd
 	      assert(mutations[g2.smutations[b2]].pos < mutations[b1].pos);
 	      fpol_het(w,mutations[g2.smutations[b2]]);
 	    }
-	  if(b2<g2.smutations.size()&&b1==g2.smutations[b2]) //mutation with index b1 is homozygous
+	  if(b2<g2size&&b1==g2.smutations[b2]) //mutation with index b1 is homozygous
 	    {
 	      assert(mutations[g2.smutations[b2]].pos == mutations[b1].pos);
 	      fpol_hom(w,mutations[b1]);
