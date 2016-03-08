@@ -10,10 +10,11 @@ namespace KTfwd
     template<class T> using recycling_bin_t = std::queue<T>;
 
     template<typename mcount_vec>
-    recycling_bin_t<std::size_t> make_mut_queue( const mcount_vec & mcounts )
+    recycling_bin_t<typename mcount_vec::size_type> make_mut_queue( const mcount_vec & mcounts )
     {
-      recycling_bin_t<std::size_t> rv;
-      for( std::size_t i=0;i<mcounts.size();++i)
+      recycling_bin_t<typename mcount_vec::size_type> rv;
+      const auto msize = mcounts.size();
+      for(typename mcount_vec::size_type i=0;i<msize;++i)
 	{
 	  if(!mcounts[i])rv.push(i);
 	}
@@ -21,10 +22,11 @@ namespace KTfwd
     }
 
     template<typename gvec_t>
-    recycling_bin_t<std::size_t> make_gamete_queue( const gvec_t & gametes )
+    recycling_bin_t<typename gvec_t::size_type> make_gamete_queue( const gvec_t & gametes )
     {
-      recycling_bin_t<std::size_t> rv;
-      for(std::size_t i=0;i<gametes.size();++i)
+      recycling_bin_t<typename gvec_t::size_type> rv;
+      const auto gsize = gametes.size();
+      for(typename gvec_t::size_type i=0;i<gsize;++i)
 	{
 	  if(!gametes[i].n)rv.push(i);
 	}
@@ -33,10 +35,10 @@ namespace KTfwd
 
     template<typename gcont_t,
 	     typename queue_t>
-    inline std::size_t recycle_gamete(	gcont_t & gametes,
-					queue_t & gamete_recycling_bin,
-					std::vector<std::size_t> & neutral,
-					std::vector<std::size_t> & selected )
+    inline typename queue_t::value_type recycle_gamete(	gcont_t & gametes,
+							queue_t & gamete_recycling_bin,
+							typename gcont_t::value_type::mutation_container & neutral,
+							typename gcont_t::value_type::mutation_container & selected )
     {
       //Try to recycle
       if( ! gamete_recycling_bin.empty() )
@@ -65,9 +67,9 @@ namespace KTfwd
     template<typename queue_t,
 	     typename mlist_t,
 	     class... Args >
-    std::size_t recycle_mutation_helper( queue_t & mutation_recycling_bin,
-					 mlist_t & mutations,
-					 Args&&... args )
+    typename queue_t::value_type recycle_mutation_helper( queue_t & mutation_recycling_bin,
+							  mlist_t & mutations,
+							  Args&&... args )
     {
       if(!mutation_recycling_bin.empty())
 	{

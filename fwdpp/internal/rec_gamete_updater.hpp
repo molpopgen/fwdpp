@@ -24,10 +24,11 @@ namespace KTfwd
     }
     
     template< typename itr_type,
-	      typename mcont_t >
+	      typename mcont_t,
+	      typename mutation_index_cont_t>
     itr_type rec_gam_updater( itr_type __first, itr_type __last,
 			      const mcont_t & mutations,
-			      std::vector<std::size_t> & muts,
+			      mutation_index_cont_t & muts,
 			      const double & val )
     {
       //O(log_2) comparisons of double plus at most __last - __first copies

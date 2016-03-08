@@ -45,7 +45,7 @@ namespace KTfwd {
     template<typename cont_t>
     struct recycling_bin_type
     {
-      using type = KTfwd::fwdpp_internal::recycling_bin_t<std::size_t>;
+      using type = KTfwd::fwdpp_internal::recycling_bin_t<typename cont_t::size_type>;
     };
 
     template<typename T>

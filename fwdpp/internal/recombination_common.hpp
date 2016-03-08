@@ -15,8 +15,8 @@ namespace KTfwd {
 			    const std::size_t jbeg,
 			    gcont_t & gametes,
 			    const mcont_t & mutations,
-			    std::vector<std::size_t> & neutral,
-			    std::vector<std::size_t> & selected)
+			    typename gcont_t::value_type::mutation_container & neutral,
+			    typename gcont_t::value_type::mutation_container & selected)
     {
       assert( std::is_sorted(pos.cbegin(),pos.cend()) );
 
