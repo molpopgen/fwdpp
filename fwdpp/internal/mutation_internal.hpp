@@ -26,7 +26,7 @@ namespace KTfwd {
       //Insert new mutation at position retaining sort-by-position order
       mc->emplace(std::upper_bound(mc->begin(),
 				   mc->end(),mutations[idx].pos,
-				   [&mutations,&idx](const double & __value,const std::size_t __mut) noexcept {
+				   [&mutations](const double & __value,const std::size_t __mut) noexcept {
 				     assert(__mut<mutations.size());
 				     return __value < mutations[__mut].pos;}),
 		  idx );
