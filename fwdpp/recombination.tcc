@@ -17,8 +17,8 @@ namespace KTfwd
 				 const std::size_t g1,
 				 const std::size_t g2,
 				 queue_t & gamete_recycling_bin,
-				 std::vector<std::size_t> & neutral,
-				 std::vector<std::size_t> & selected )
+				 typename gcont_t::value_type::mutation_container & neutral,
+				 typename gcont_t::value_type::mutation_container & selected )
   {
     assert(g1 < gametes.size());
     assert(g2 < gametes.size());
