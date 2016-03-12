@@ -1,11 +1,15 @@
 #ifndef __FWDPP_INTERNAL_GAMETE_CLEANER_HPP__
 #define __FWDPP_INTERNAL_GAMETE_CLEANER_HPP__
 
+#include <vector>
+#include <algorithm>
 #include <type_traits>
+#include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
+
 namespace KTfwd {
   namespace fwdpp_internal {
-    /*! \brief Handles removal of pointers to mutations from gametes after sampling
+    /*! \brief Handles removal of indexes to mutations from gametes after sampling
       Intended use is when std::is_same< mutation_removal_policy, KTfwd::remove_nothing >::type is true.
       Called by KTfwd::sample_diploid
     */
@@ -17,7 +21,7 @@ namespace KTfwd {
       return;
     }
 
-    /*! \brief Handles removal of pointers to mutations from gametes after sampling
+    /*! \brief Handles removal of indexes to mutations from gametes after sampling
       Intended use is when std::is_same< mutation_removal_policy, KTfwd::true_type >::type is true.
       Called by KTfwd::sample_diploid
     */
@@ -48,7 +52,7 @@ namespace KTfwd {
     	}
     }
 
-    /*! \brief Handles removal of pointers to mutations from gametes after sampling
+    /*! \brief Handles removal of indexes to mutations from gametes after sampling
       This overload handles truly custom policies, which must take a mutation type as an argument.
       Called by KTfwd::sample_diploid
     */
