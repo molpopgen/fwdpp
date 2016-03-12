@@ -62,13 +62,15 @@ namespace KTfwd {
 	    buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
 	    if(nm)
 	      {
-		buffer.write(reinterpret_cast<const char *>(&g.mutations[0]),nm*sizeof(std::size_t));
+		buffer.write(reinterpret_cast<const char *>(&g.mutations[0]),
+			     nm*sizeof(typename gamete_type::mutation_container::value_type));
 	      }
 	    nm = g.smutations.size();
 	    buffer.write(reinterpret_cast<const char *>(&nm),sizeof(std::size_t));
 	    if(nm)
 	      {
-		buffer.write(reinterpret_cast<const char *>(&g.smutations[0]),nm*sizeof(std::size_t));
+		buffer.write(reinterpret_cast<const char *>(&g.smutations[0]),
+			     nm*sizeof(typename gamete_type::mutation_container::value_type));
 	      }
 
 	  }
