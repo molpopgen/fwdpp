@@ -5,6 +5,7 @@
 Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being discovered, too.
 
 * remove include<iostream> from fwdpp/internal/recombination_common.hpp
+* Isssue #36 fixed
 * Issue #37 fixed
 * KTfwd::GSLrng_t has improved copy constructor and is now move-constructible.
 * The library is now const-correct vis-a-vis gsl_rng *.  This is an API change.
@@ -13,6 +14,7 @@ Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being di
 * Improvements (and bug fixes) to namespace KTfwd::traits.  Unit tests added for this namespace.
 * Fixed templates for serializing mutation type KTfwd::generalmut.  Attempting to compile using icc revealed the error.
 * KTfwd::fwdpp_internal::gamete_cleaner has a new, and generally much faster, implementation.
+
 ## 0.4.6
 
 * Issue #34 fixed
