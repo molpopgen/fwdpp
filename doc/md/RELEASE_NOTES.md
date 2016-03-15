@@ -13,7 +13,7 @@ Thanks to Alexander Nater for pointing out issue #36, which lead to #37 being di
 * More extensive checking done by functions in fwdpp/debug.hpp
 * Improvements (and bug fixes) to namespace KTfwd::traits.  Unit tests added for this namespace.
 * Fixed templates for serializing mutation type KTfwd::generalmut.  Attempting to compile using icc revealed the error.
-
+* KTfwd::fwdpp_internal::gamete_cleaner has a new, and generally much faster, implementation.
 ## 0.4.6
 
 * Issue #34 fixed
