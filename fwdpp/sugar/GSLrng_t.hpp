@@ -7,7 +7,7 @@
 
 #include <cassert>
 #include <stdexcept>
-#include <cstdio>// FOR SOME POSIX ONLY FUNCTIONS!
+//#include <cstdio>// FOR SOME POSIX ONLY FUNCTIONS!
 #include <fwdpp/sugar/gsl/tags.hpp>
 #include <fwdpp/sugar/gsl/deleter.hpp>
 
@@ -73,48 +73,48 @@ namespace KTfwd {
       return r.get();
     }
 
-    /*!
-      Write gsl_rng state to memory buffer.
+    // /*!
+    //   Write gsl_rng state to memory buffer.
 
-      Throws std::runtime_error if there are problems
-    */
-    template<typename ostream_t>
-    void serialize(ostream_t & o) const
-    {
-      /*
-	We use C-style NULL in lieu of nullptr
-	b/c we cannot be sure what the POSIX functions
-	are doing...
-      */
-      FILE * stream = NULL; 
-      char * buf = NULL;
-      std::size_t len;
-      stream = open_memstream(&buf,&len);
-      auto rv = gsl_rng_fwrite(stream,this->get());
-      if( rv ) //gsl_rng_fwrite returns 0 upon success
-	{
-	  fclose(stream);
-	  if(buf != NULL) free(buf);
-	  throw std::runtime_error("error calling gsl_rng_fwrite");
-	}
-      fclose(stream);
-      o.write( reinterpret_cast<char*>(&len),sizeof(std::size_t) );
-      o.write( buf, len*sizeof(char) );
-      free(buf);
-    }
+    //   Throws std::runtime_error if there are problems
+    // */
+    // template<typename ostream_t>
+    // void serialize(ostream_t & o) const
+    // {
+    //   /*
+    // 	We use C-style NULL in lieu of nullptr
+    // 	b/c we cannot be sure what the POSIX functions
+    // 	are doing...
+    //   */
+    //   FILE * stream = NULL; 
+    //   char * buf = NULL;
+    //   std::size_t len;
+    //   stream = open_memstream(&buf,&len);
+    //   auto rv = gsl_rng_fwrite(stream,this->get());
+    //   if( rv ) //gsl_rng_fwrite returns 0 upon success
+    // 	{
+    // 	  fclose(stream);
+    // 	  if(buf != NULL) free(buf);
+    // 	  throw std::runtime_error("error calling gsl_rng_fwrite");
+    // 	}
+    //   fclose(stream);
+    //   o.write( reinterpret_cast<char*>(&len),sizeof(std::size_t) );
+    //   o.write( buf, len*sizeof(char) );
+    //   free(buf);
+    // }
 
-    //! Read RNG state from a memory buffer
-    template<typename istream_t>
-    void deserialize(istream_t & i)
-    {
-      std::size_t len;
-      i.read(reinterpret_cast<char*>(&len),sizeof(std::size_t));
-      std::unique_ptr<char> buffer(new char[len]);
-      i.read(buffer.get(),len*sizeof(char));
-      FILE * stream = fmemopen(buffer.get(),len*sizeof(char),"r");
-      auto rv = gsl_rng_fread(stream,r.get());
-      fclose(stream);
-    }
+    // //! Read RNG state from a memory buffer
+    // template<typename istream_t>
+    // void deserialize(istream_t & i)
+    // {
+    //   std::size_t len;
+    //   i.read(reinterpret_cast<char*>(&len),sizeof(std::size_t));
+    //   std::unique_ptr<char> buffer(new char[len]);
+    //   i.read(buffer.get(),len*sizeof(char));
+    //   FILE * stream = fmemopen(buffer.get(),len*sizeof(char),"r");
+    //   auto rv = gsl_rng_fread(stream,r.get());
+    //   fclose(stream);
+    // }
   };
 }
 
