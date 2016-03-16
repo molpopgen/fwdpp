@@ -119,15 +119,15 @@ namespace KTfwd
 
     for(auto & dip : diploids)
       {
-	size_t p1 = gsl_ran_discrete(r,lookup.get());
-	size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+	std::size_t p1 = gsl_ran_discrete(r,lookup.get());
+	std::size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 
-	size_t p1g1 = parents[p1].first;
-	size_t p1g2 = parents[p1].second;
-	size_t p2g1 = parents[p2].first;
-	size_t p2g2 = parents[p2].second;
+	std::size_t p1g1 = parents[p1].first;
+	std::size_t p1g2 = parents[p1].second;
+	std::size_t p2g1 = parents[p2].first;
+	std::size_t p2g2 = parents[p2].second;
 
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
