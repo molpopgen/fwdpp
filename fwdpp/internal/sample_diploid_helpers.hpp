@@ -16,7 +16,7 @@ namespace KTfwd
       For every non-extinct gamete, increment the count of its mutations
       using the frequency of the gamete.
 
-      This is usually the single-most expensive function call in a simulation.
+      This is usually the most expensive function call in a simulation.
     */
     {
       if(mutations.size()>mcounts.size())
