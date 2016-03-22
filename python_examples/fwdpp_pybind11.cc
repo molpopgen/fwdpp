@@ -68,7 +68,12 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
     .def(pybind11::init<unsigned>())
     ;
   //Expose the function to run the model
-  m.def("evolve",&evolve);
+  m.def("evolve",&evolve,R"delimiter(Evolve a population
+:param rng: A GSLrng
+:param N: Diploid population size
+:param generations: Number of generations to simulation
+:param mu: Mutation rate (per gamete, per generation)
+:param recrate: Recombination rate (per diploid, per generation))delimiter");
   //And one to get the sfs of a sample
   m.def("sfs",&sfs);
 
