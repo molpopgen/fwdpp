@@ -1,7 +1,7 @@
 /*
 Essentially a re-implementation of diploid_ind.cc that is capable of being run in python.
 
-This implementation is in terms of pybind11: https://github.com/IAmRarios/pypp11
+This implementation is in terms of pybind11: https://github.com/pybind/pybind11
 
 In addition to the usual fwdpp depdencies, we need boost.python.
 
