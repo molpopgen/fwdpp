@@ -3,14 +3,14 @@ Essentially a re-implementation of diploid_ind.cc that is capable of being run i
 
 This implementation is in terms of pybind11: https://github.com/pybind/pybind11
 
-In addition to the usual fwdpp depdencies, we need boost.python.
+In addition to the usual fwdpp depdencies, we need pybind11 installed
 
 To compile:
-g++ -fPIC -Wall -W -O3 -I. `python-config --includes` -std=c++11 -c fwdpp_boost_python.cc
-g++ -std=c++11 -shared -o fwdpp_boost_python.so fwdpp_boost_python.o -lboost_python -lboost_system  -lpython -lgsl -lgslcblas
+g++ -fPIC -Wall -W -O3 -I. `python-config --includes` -std=c++11 -c fwdpp_pybind11.cc
+g++ -std=c++11 -shared -o fwdpp_pybind11.so fwdpp_pybind11.o -lpython -lgsl -lgslcblas
 
 To run:
-python test_boost_python.py
+python test_pybind11.py
 */
 
 #include <python_common.hpp>
