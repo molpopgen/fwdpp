@@ -69,6 +69,7 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
     ;
   //Expose the function to run the model
   m.def("evolve",&evolve,R"delimiter(Evolve a population
+
 :param rng: A GSLrng
 :param N: Diploid population size
 :param generations: Number of generations to simulation
