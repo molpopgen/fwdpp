@@ -86,6 +86,15 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
 	   return rv.release();
 	 });
     ;
+
+    //Expose gamete type
+    pybind11::class_<KTfwd::gamete>(m,"gamete")
+      .def_readonly("n",&KTfwd::gamete::n)
+      .def_readonly("mutations",&KTfwd::gamete::mutations)
+      .def_readonly("smutations",&KTfwd::gamete::smutations)
+      ;
+
+    
   
   //Expose the type based on fwdpp's "sugar" layer
   pybind11::class_<poptype>(m,"poptype")
@@ -100,6 +109,8 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
     .def_readonly("mutations",&poptype::mutations)
     .def_readonly("mcounts",&poptype::mcounts)
     .def_readonly("fixations",&poptype::fixations)
+    .def_readonly("diploids",&poptype::diploids)
+    .def_readonly("gametes",&poptype::gametes)
     ;
   
   //Expose the GSL wrapper
