@@ -21,7 +21,17 @@ for i in range(0,NREPS):
     XXsfs=fwdpp_pybind11.sfs(gsl_rng,XX,NSAM)
     for i in range(0,(NSAM-1)):
         SFS[i]=SFS[i]+XXsfs[i]
-
+    #Get the mutations that are not extinct
+    #This shows how we are able to use pybind11
+    #to expose C++ types as dicts, taking advantage
+    #of pybind11's ability to auto-convert
+    #C++'s vector to Python's list.
+    muts=[m.as_dict() for m,n in zip(XX.mutations,XX.mcounts) if n > 0]
+    #The next line is commented out,
+    #but if you printed it, you'd see
+    #that mutation containers in fwdpp
+    #contain both extant and extinct mutations.
+    #print len(muts)," ",len(XX.mutations)," ",len(XX.fixations)
 
 #get mean of SFS
 for i in range(0,(NSAM-1)):

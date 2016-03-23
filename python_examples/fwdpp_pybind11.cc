@@ -57,12 +57,51 @@ std::vector<unsigned> sfs(GSLrng & rng,const poptype & pop,const unsigned & nsam
 PYBIND11_PLUGIN(fwdpp_pybind11)
 {
   pybind11::module m("fwdpp_pybind11","example of wrapping fwdpp in python using pybind11");
+
+  /*
+    Make the mutation types from fwdpp visible to Python.
+
+    For a "real" extension, we'd do this more rigorously,
+    and first expose KTfwd::mutation_base,
+    and then tell pybind11 that KTfwd::mutation inherits from that.
+  */
+  pybind11::class_<KTfwd::mutation>(m,"mutation")
+    .def_readonly("pos",&KTfwd::mutation::pos)
+    .def_readonly("s",&KTfwd::mutation::s)
+    .def_readonly("h",&KTfwd::mutation::h)
+    /*
+      This is where pybind is really cool.
+      We can write a lambda here to 
+      get a representation of this type as a 
+      Python dictionary.
+    */
+    .def("as_dict",
+	 [](const KTfwd::mutation &m) noexcept
+	 {
+	   using obj=pybind11::object;
+	   pybind11::dict rv;
+	   rv[obj(pybind11::cast("pos"))]=obj(pybind11::cast(m.pos));
+	   rv[obj(pybind11::cast("s"))]=obj(pybind11::cast(m.s));
+	   rv[obj(pybind11::cast("h"))]=obj(pybind11::cast(m.h));
+	   return rv.release();
+	 });
+    ;
   
   //Expose the type based on fwdpp's "sugar" layer
   pybind11::class_<poptype>(m,"poptype")
     .def(pybind11::init<unsigned>())
     .def("clear",&poptype::clear)
+    /*
+      The next three show how to
+      use pybind's auto-conversion of std::vector
+      to Python list types.  This is a big improvement
+      over boost.python!
+    */
+    .def_readonly("mutations",&poptype::mutations)
+    .def_readonly("mcounts",&poptype::mcounts)
+    .def_readonly("fixations",&poptype::fixations)
     ;
+  
   //Expose the GSL wrapper
   pybind11::class_<GSLrng>(m,"GSLrng")
     .def(pybind11::init<unsigned>())
