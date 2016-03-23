@@ -107,6 +107,8 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
     .def(pybind11::init<unsigned>())
     ;
   //Expose the function to run the model
+  //Note the use of C++11 string literals
+  //to make a nice docstring that Sphinx can parse out.
   m.def("evolve",&evolve,R"delimiter(Evolve a population
 
 :param rng: A GSLrng
