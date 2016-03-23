@@ -27,11 +27,17 @@ for i in range(0,NREPS):
     #of pybind11's ability to auto-convert
     #C++'s vector to Python's list.
     muts=[m.as_dict() for m,n in zip(XX.mutations,XX.mcounts) if n > 0]
+
     #The next line is commented out,
     #but if you printed it, you'd see
     #that mutation containers in fwdpp
     #contain both extant and extinct mutations.
     #print len(muts)," ",len(XX.mutations)," ",len(XX.fixations)
+    
+    #Similarly, let's get the neutral mutations in the first gamete in each diploid
+    for dip in range(len(XX.diploids)):
+        #Again, use pybind11 to provide an easy means to implement as_dict() for a mutation behind the scenes
+        muts_dip_gam1 = [XX.mutations[m].as_dict() for m in XX.gametes[XX.diploids[dip][0]].mutations]
 
 #get mean of SFS
 for i in range(0,(NSAM-1)):
