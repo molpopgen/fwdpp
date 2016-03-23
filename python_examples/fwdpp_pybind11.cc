@@ -83,7 +83,7 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
 	   rv[obj(pybind11::cast("pos"))]=obj(pybind11::cast(m.pos));
 	   rv[obj(pybind11::cast("s"))]=obj(pybind11::cast(m.s));
 	   rv[obj(pybind11::cast("h"))]=obj(pybind11::cast(m.h));
-	   return rv.release();
+	   return rv;
 	 });
     ;
 
