@@ -19,8 +19,6 @@ namespace KTfwd {
 
       All that is missing is the mutation_type and the container types.
 
-      Does not allow copy construction/assignment!
-
       See @ref md_md_sugar for rationale, etc.
 
       \ingroup sugar
