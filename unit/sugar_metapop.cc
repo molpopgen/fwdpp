@@ -33,6 +33,33 @@ size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_p
 using spoptype = KTfwd::singlepop<mutation_t>;
 using poptype = KTfwd::metapop<mutation_t>;
 
+/*
+  These next two derived classes mimic what software 
+  packages like fwdpy do, which is to extend sugart types
+  with data that they need.
+ */
+struct spop_derived : public spoptype
+{
+  unsigned generation;
+  spop_derived(unsigned N) : spoptype(N),generation(0)
+  {
+  }
+};
+
+struct mpop_derived : public poptype
+{
+  unsigned generation;
+  mpop_derived(std::initializer_list<unsigned> & Ns) : poptype(Ns),generation(0)
+  {
+  }
+  mpop_derived(const spop_derived & s) : poptype(s),generation(s.generation)
+  {
+  }
+  mpop_derived(spop_derived && s) : poptype(std::move(s)),generation(s.generation)
+  {
+  }
+};
+
 BOOST_AUTO_TEST_CASE( uniform_init )
 //Make sure C++11-style initialization is working ok
 {
@@ -56,6 +83,20 @@ BOOST_AUTO_TEST_CASE( copy_construct_metapop_from_singlepop )
   spoptype pop(1000);
   BOOST_REQUIRE_EQUAL(pop.N,1000);
   poptype mpop(pop);
+  BOOST_REQUIRE_EQUAL(mpop.Ns.size(),1);
+  BOOST_REQUIRE_EQUAL(mpop.Ns[0],1000);
+  BOOST_REQUIRE_EQUAL(mpop.diploids.size(),1);
+  BOOST_REQUIRE_EQUAL(mpop.diploids[0].size(),1000);
+  BOOST_REQUIRE_EQUAL(pop.mutations==mpop.mutations,true);
+  BOOST_REQUIRE_EQUAL(pop.gametes==mpop.gametes,true);
+  BOOST_REQUIRE_EQUAL(pop.diploids==mpop.diploids[0],true);
+}
+
+BOOST_AUTO_TEST_CASE( copy_construct_mpop_derived_from_spop_derived )
+{
+  spop_derived pop(1000);
+  BOOST_REQUIRE_EQUAL(pop.N,1000);
+  mpop_derived mpop(pop);
   BOOST_REQUIRE_EQUAL(mpop.Ns.size(),1);
   BOOST_REQUIRE_EQUAL(mpop.Ns[0],1000);
   BOOST_REQUIRE_EQUAL(mpop.diploids.size(),1);
