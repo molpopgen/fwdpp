@@ -112,7 +112,10 @@ namespace KTfwd
     static_assert( std::is_same<typename mpoptype::popmodel_t,
 		   sugar::METAPOP_TAG>::value,
 		   "mpoptype must be an object of type KTfwd::metapop or KTfwd::sugar::metapop" );
-    return swap_demes(mpop.diploids,i,j);
+    auto rv = swap_demes(mpop.diploids,i,j);
+    if(rv) return rv; //error
+    std::swap(mpop.Ns[i],mpop.Ns[j]); //Faster than a call to update_Ns
+    return rv;
   }
 
   /*! \brief "Bud" off a new sub-population

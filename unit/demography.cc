@@ -307,6 +307,22 @@ BOOST_AUTO_TEST_CASE( merge_pops_test )
   }
 }
 
+BOOST_AUTO_TEST_CASE( swap_pops_test )
+{
+  {
+    metapop_t mpop({1000,500});
+    auto rv = KTfwd::swap_pops(mpop,0,1);
+    BOOST_REQUIRE_EQUAL(rv,0);
+    BOOST_REQUIRE(KTfwd::check_sum(mpop.gametes,3000));
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),2);
+    BOOST_REQUIRE_EQUAL(mpop.Ns.size(),mpop.diploids.size());
+    for(std::size_t i = 0 ; i < mpop.Ns.size() ; ++i)
+      {
+	BOOST_REQUIRE_EQUAL(mpop.Ns[i],mpop.diploids[i].size());
+      }
+  }
+}
+
 BOOST_AUTO_TEST_CASE( remove_pop_test )
 {
   {
