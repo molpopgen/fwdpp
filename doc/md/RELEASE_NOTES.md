@@ -1,7 +1,9 @@
 # FWDPP RELEASE NOTES
 
-##
+## 0.4.8
 
+* #38 fixed
+* Updates to unit tests
 * Added and example of wrapping fwdpp using [pybind11](https://github.com/pybind/pybind11)
 
 ## 0.4.7
