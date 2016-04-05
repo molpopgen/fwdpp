@@ -6,6 +6,7 @@
 #define BOOST_TEST_DYN_LINK 
 
 #include <config.h>
+#include <memory>
 #include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
@@ -48,7 +49,7 @@ struct spop_derived : public spoptype
 struct mpop_derived : public poptype
 {
   unsigned generation;
-  mpop_derived(std::initializer_list<unsigned> & Ns) : poptype(Ns),generation(0)
+  mpop_derived(std::initializer_list<unsigned> Ns) : poptype(Ns),generation(0)
   {
   }
   mpop_derived(const spop_derived & s) : poptype(s),generation(s.generation)
@@ -152,4 +153,17 @@ BOOST_AUTO_TEST_CASE(move_construct_spop_derived)
   BOOST_REQUIRE_EQUAL(mpop.Ns[0],1000);
   BOOST_REQUIRE_EQUAL(mpop.diploids.size(),1);
   BOOST_REQUIRE_EQUAL(mpop.diploids[0].size(),1000);
+}
+
+//This is what fwdpy does internally: move stuff in and around shared_ptr objects
+BOOST_AUTO_TEST_CASE(move_construct_spop_derived_shared_ptr)
+{
+  std::shared_ptr<spop_derived> pop(new spop_derived(1000));
+  BOOST_REQUIRE_EQUAL(pop->N,1000);
+  std::shared_ptr<mpop_derived> mpop(new mpop_derived(std::initializer_list<unsigned>{0}));
+  mpop.reset(new mpop_derived(*pop.get()));
+  BOOST_REQUIRE_EQUAL(mpop->Ns.size(),1);
+  BOOST_REQUIRE_EQUAL(mpop->Ns[0],1000);
+  BOOST_REQUIRE_EQUAL(mpop->diploids.size(),1);
+  BOOST_REQUIRE_EQUAL(mpop->diploids[0].size(),1000);
 }
