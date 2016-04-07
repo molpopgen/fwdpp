@@ -189,7 +189,7 @@ namespace KTfwd
     Take a non-random sample of nsam chromosomes from a meta-population
     
     \param p A population
-    \param p the index of the deme to sample
+    \param deme the index of the deme to sample
     \param nsam The sample size
     \param removeFixed Whether or not to remove variants present in all nsam chromosomes
     
