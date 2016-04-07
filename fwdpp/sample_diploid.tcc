@@ -305,6 +305,10 @@ namespace KTfwd
       The implementation is the "erase/remove idiom" (Effective STL, Item 32), but with a twist
       that the function will exit early if there are no fixations present in the population at
       the moment.
+
+      Example policies are KTfwd::remove_nothing and KTfwd::remove_neutral, both found 
+      in fwdpp/fwd_functional.hpp.  If mp is std::true_type, then all fixations (e.g., neutral 
+      and selected)  will be removed from all gametes.
     */
     fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
     return wbar;
