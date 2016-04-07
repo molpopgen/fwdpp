@@ -1,5 +1,10 @@
 # FWDPP RELEASE NOTES
 
+##
+
+* Doxygen file changed so that all library source is browsable.
+* Single-deme version of sample_diploid is commented in detail.
+
 ## 0.4.8
 
 * #38 fixed
