@@ -1,4 +1,11 @@
 //  -*- C++ -*-
+
+/*!
+  \file sample_diploid.tcc
+
+  \brief Definitions of functions for evolving populations of diploids.
+*/
+
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
 
@@ -85,20 +92,76 @@ namespace KTfwd
 		 const mutation_removal_policy mp,
 		 const gamete_insertion_policy & gpolicy_mut)
   {
+    /*
+      The main part of fwdpp does not throw exceptions.
+      Rather, testing is performed via C's assert macro.
+      This macro should be disabled in "production" builds via
+      -DNEBUG as is standard practice.  It is the developer's 
+      responsibility to properly set up a build system to distinguish
+      'debug' from 'production' builds.
+
+      More complex debugging blocks will be wrapped in #ifndef NDEBUG/#endif
+      blocks as needed.
+
+      Compiling in a 'debug' mode slows simulations down several-fold.
+    */
+    
     //test preconditions in debugging mode
     assert(popdata_sane(diploids,gametes,mutations,mcounts));
     assert(mcounts.size()==mutations.size());
     assert(N_curr == diploids.size());
     assert(mcounts.size()==mutations.size());
 
-    std::vector<double> fitnesses(diploids.size());
-    double wbar = 0.;
+    /*
+      The mutation and gamete containers contain both extinct and extant objects.
+      The former are useful b/c the represent already-allocated memory.  The library
+      uses these extinct objects to 'recycle' them into new objects.  The function calls
+      below create FIFO queues of where extinct objects are.  These queues are passed to
+      mutation and recombination functions and used to decide if recyling is possible or 
+      if a new object needs to be 'emplace-back'-ed into a container.
+
+      The type of the FIFO queue is abstracted with the name KTfwd::fwdpp_internal::recycling_bin_t,
+      which is a C++11 template alias.
+
+      The details of recycling are implemented in fwdpp/internal/recycling.hpp
+    */
     auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
     auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
 
+    //Calculate fitness for each diploid:
+
+    //create a vector to store fitnesses:
+    std::vector<double> fitnesses(diploids.size());
+    double wbar = 0.; //pop'n mean fitness
     for( uint_t i = 0 ; i < N_curr ; ++i )
       {
+	/*
+	  Set the count of each gamete to 0.
+
+	  Yes, in the case of > 1 diploid having the exact same gamete index,
+	  this is done multiple times.
+	*/
 	gametes[diploids[i].first].n=gametes[diploids[i].second].n=0;
+	/*
+	  Assign fitness to the i-th individual.
+
+	  ff is a "fitness function", which returns a double.  For examples, see
+	  KTfwd::multiplicative_diploid, which is a "standard" type of fitness function 
+	  used in population genetics.  "Standard" types of models are defined in 
+	  fwdpp/fitness_models.hpp.
+
+	  The library supports various types of function signatures for fitness models. 
+	  In order to get the final type of call right, we use a dispatch method, which is 
+	  the call below.  Note that this dispatch happens at compile-time rather than at run-time.
+	  Essentially, the compiler has to work out what the final call will be, and this dispatch operation 
+	  itself is inlined out.  The reason why this is compile-time is b/c the dispatch depends on 
+	  whether or not the diploid is a "custom type", which is a property of a simulation and it is
+	  not possible to mix custom and non-custom diploids in the same simulation.
+
+	  The dispatch itself is implemented in fwdpp/internal/diploid_fitness_dispatch.hpp
+
+	  See the tutorial on custom diploids for more details.
+	 */
 	fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(ff,diploids[i],gametes,mutations,
 								typename traits::is_custom_diploid_t<diploid_geno_t>::type());
 	wbar += fitnesses[i];
@@ -107,8 +170,14 @@ namespace KTfwd
 #ifndef NDEBUG
     for(const auto & g : gametes) assert(!g.n);
 #endif
+
+    /*
+      This is a lookup table for rapid sampling of diploids proportional to their fitnesses.
+      This is a unique_ptr wrapper around an object from the GNU Scientific Library.  A custom deleter
+      is required to make this work, which is why there is no cleanup call down below.
+    */
     fwdpp_internal::gsl_ran_discrete_t_ptr lookup(gsl_ran_discrete_preproc(N_curr,fitnesses.data()));
-    const auto parents(diploids); //copy the parents
+    const auto parents(diploids); //Copy the parents, which is trivally fast for the vast majority of use cases.
 
     //Change the population size
     if( diploids.size() != N_next)
@@ -117,30 +186,69 @@ namespace KTfwd
       }
     assert(diploids.size()==N_next);
 
+    //Fill in the next generation!
     for(auto & dip : diploids)
       {
+	//Choose parent 1 based on fitness
 	std::size_t p1 = gsl_ran_discrete(r,lookup.get());
+	//If inbred (w/probability f2), parent2 = parent1, else choose again based on fitness
 	std::size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 
+	/*
+	  These are the gametes from each parent.
+	  This is a trivial assignment if keys.
+	*/
 	std::size_t p1g1 = parents[p1].first;
 	std::size_t p1g2 = parents[p1].second;
 	std::size_t p2g1 = parents[p2].first;
 	std::size_t p2g2 = parents[p2].second;
 
+	/*
+	  The offspring will inherit some manipulation of p1g1 and p1g2.
+	  The next two lines do "Mendel".	  
+	*/
 	if(gsl_rng_uniform(r)<0.5) std::swap(p1g1,p1g2);
 	if(gsl_rng_uniform(r)<0.5) std::swap(p2g1,p2g2);
 
+	/*
+	  Recombination: the offspring's first gamete will be a recombinant of 
+	  p1g1 and p1g2.  Likewise for the second gamete.
+
+	  Internally, the recombination function does the following:
+	  1. Use rec_pol, a programmer-defined policy, to determine the positions of breakpoints.
+	  2. Create new mixes of the parental gametes into the pre-allocated containers 'neutral' and 'selected'
+	  
+	  The implementation is in fwdpp/recombination.[hpp|tcc] and the gory details 
+	  are in fwdpp/internal/recombination_common.hpp and fwdpp/internal/rec_gamete_updater.hpp.
+
+	  Briefly, recombination is implemented via a series of sequential updates to iterators using binary
+	  searches (std::upper_bound).
+	*/
 	dip.first = recombination(gametes,gam_recycling_bin,
 				  neutral,selected,rec_pol,p1g1,p1g2,mutations).first;
 	dip.second = recombination(gametes,gam_recycling_bin,
 				   neutral,selected,rec_pol,p2g1,p2g2,mutations).first;
 
+	//update gamete counts
 	gametes[dip.first].n++;
 	gametes[dip.second].n++;
 
-	//now, add new mutations
+	/*
+	  Now, add new mutations to the first and second gamete of the offspring.
+
+	  In fwdpp, mutation keys in gametes are "less-than" sorted according to mutation position.
+
+	  The keys to mutations are inserted into the correct place which is found by a binary search (std::upper_bound).
+
+	  I think that there are ways to improve the speed of this part of the code in order to reduce calls
+	  to memmove/memcpy, but profiling suggests that the payoff would be small.  (Note that memmove/memcyp is
+	  never called direclty.  Rather, they are called indirectly via the insert() member function of the relevant
+	  container type.)
+
+	  The implementation details are found in fwdpp/mutation.hpp
+	*/
 	dip.first = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.first,mmodel,gpolicy_mut);
 	dip.second = mutate_gamete_recycle(mut_recycling_bin,gam_recycling_bin,r,mu,gametes,mutations,dip.second,mmodel,gpolicy_mut);
 
@@ -157,6 +265,25 @@ namespace KTfwd
 	assert(gametes[dip.second].n<=2*N_next);
       }
 #endif
+    /*
+      At the end of the above loop, we have a bunch of new diploids
+      that are all recombined and mutated sampling of the parental generation.
+
+      Our problem is that we no longer know how many times each mutation is present, which 
+      is corrected by the following call.
+
+      Although the implementation of process_gametes is super-trivial, it is actually the
+      most computationally-expensive part of a simulation once mutation rates are large.
+
+      Further, the function is hard to optimize. Recall that gametes store mutations in order
+      according to position.  Thus, when we go from a gamete to a position in mcounts, we are
+      accessing the latter container out of order with respect to location in memory.  process_gametes
+      is thus the "scatter" part of a "scatter-gather" idiom.  Modern x86 CPU have little available
+      for vectorizing such cases.  I've experimented with CPU intrinsics to attempt memory prefetches,
+      but never saw any performance improvement, and the code got complex, and possibly less portable.
+
+      The implementation is in fwdpp/internal/sample_diploid_helpers.hpp
+     */
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
     assert(*std::max_element(mcounts.begin(),mcounts.end()) <= 2*N_next);
     assert(mcounts.size()==mutations.size());
@@ -167,6 +294,18 @@ namespace KTfwd
       }
 #endif
     assert(popdata_sane(diploids,gametes,mutations,mcounts));
+
+    /*
+      The last thing to do is handle fixations.  In many contexts, we neither want nor need
+      to keep indexes to fixed variants in our gametes.  Such decisions are implemented via
+      simple policies, which are in the variable 'mp'.
+
+      The implementation is in fwdpp/internal/gamete_cleaner.hpp.
+
+      The implementation is the "erase/remove idiom" (Effective STL, Item 32), but with a twist
+      that the function will exit early if there are no fixations present in the population at
+      the moment.
+    */
     fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
     return wbar;
   }
