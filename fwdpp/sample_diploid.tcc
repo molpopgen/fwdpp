@@ -285,7 +285,6 @@ namespace KTfwd
       The implementation is in fwdpp/internal/sample_diploid_helpers.hpp
      */
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
-    assert(*std::max_element(mcounts.begin(),mcounts.end()) <= 2*N_next);
     assert(mcounts.size()==mutations.size());
 #ifndef NDEBUG
     for(const auto & mc : mcounts)
