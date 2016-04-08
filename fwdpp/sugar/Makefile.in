@@ -303,7 +303,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = singlepop metapop multiloc gsl poptypes sampling
-pkginclude_HEADERS = sugar.hpp serialization.hpp singlepop.hpp metapop.hpp multiloc.hpp GSLrng_t.hpp popgenmut.hpp infsites.hpp sampling.hpp generalmut.hpp demography.hpp
+pkginclude_HEADERS = sugar.hpp serialization.hpp singlepop.hpp metapop.hpp multiloc.hpp GSLrng_t.hpp popgenmut.hpp infsites.hpp sampling.hpp generalmut.hpp demography.hpp util.hpp
 all: all-recursive
 
 .SUFFIXES:
