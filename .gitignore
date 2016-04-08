@@ -1,2 +1,8 @@
 *.o
 *~
+*.trs
+*.log
+Makefile
+config.h
+config.status
+fwdpp.doxygen
