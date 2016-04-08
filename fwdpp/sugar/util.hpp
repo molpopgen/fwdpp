@@ -166,11 +166,15 @@ namespace KTfwd
 
   template<typename metapoptype,
 	   class... Args>
-  void add_mutation(metapoptype & p,
-		    const std::size_t deme,
-		    const std::vector<std::size_t> & indlist,
-		    const std::vector<short> & clist,
-		    Args&&... args)
+  //enable-if is used b/c it is likely we'll need to
+  //have a similar prototype for multi-locus sims
+  typename std::enable_if<std::is_same<typename metapoptype::popmodel_t,KTfwd::sugar::METAPOP_TAG>::value,
+			  void>::type
+  add_mutation(metapoptype & p,
+	       const std::size_t deme,
+	       const std::vector<std::size_t> & indlist,
+	       const std::vector<short> & clist,
+	       Args&&... args)
   /*!
     \brief Add a mutation into a deme from a meta-population at a given frequency.
 
@@ -179,6 +183,8 @@ namespace KTfwd
     \param indlist A list of indexes of diploids into which to add the new mutations.
     \param clist A list of gametes.  See below.
     \param args Values required to cosnstruct a new mutation.  See below.
+
+    \return Nothing (void)
 
     Some notes:
 
