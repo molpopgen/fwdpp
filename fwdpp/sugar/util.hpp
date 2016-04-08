@@ -312,7 +312,7 @@ namespace KTfwd
       {
 	if(indlist[i].size()!=clist[i].size()) throw std::runtime_error("indlist[i] must equal clist[i] for all i");
       }
-    //for( const auto d : demes )
+
     for(std::size_t i=0;i<demes.size();++i)
       {
 	if(i>p.diploids.size()) throw std::out_of_range("deme index out of range");
