@@ -83,8 +83,8 @@ namespace KTfwd
 			    mindex );
 		}
 	      diploids[indlist[i]].first = fwdpp_internal::recycle_gamete(p.gametes,
-									gam_recycling_bin,
-									n,s);
+									  gam_recycling_bin,
+									  n,s);
 	      p.mcounts[mindex]++;
 	    }
 	  if(clist[i]>0)
@@ -162,6 +162,59 @@ namespace KTfwd
     //create a new mutation
     typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
     fwdpp_internal::add_mutation_details(p,p.diploids,new_mutant,indlist,clist);
+  }
+
+  template<typename metapoptype,
+	   class... Args>
+  void add_mutation(metapoptype & p,
+		    const std::size_t deme,
+		    const std::vector<std::size_t> & indlist,
+		    const std::vector<short> & clist,
+		    Args&&... args)
+  /*!
+    \brief Add a mutation into a deme from a meta-population at a given frequency.
+
+    \param p A single deme object.
+    \parm deme Index of the deme
+    \param indlist A list of indexes of diploids into which to add the new mutations.
+    \param clist A list of gametes.  See below.
+    \param args Values required to cosnstruct a new mutation.  See below.
+
+    Some notes:
+
+    clist.size() must equal indlist.size()
+
+    Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
+    second, or both gametes, resepectively, of each diploid in \a indlist.
+
+    Note that \a args can take on a few different forms.  First, it can be a raw set of values
+    used to construct a new mutation.  Or, it can be an object of correct mutation type.  Or, it can be
+    any type from which the correct mutation type can be constructed.  The last two cases require 
+    that the mutation type have the appropriate constructors defined.
+
+    See the unit test file unit/test_sugar_add_mutation.cc for example of use.
+
+    \ingroup sugar
+  */
+  {
+    static_assert( std::is_same<typename metapoptype::popmodel_t,KTfwd::sugar::METAPOP_TAG>::value,
+		   "poptype must be a single-deme object type" );
+
+    //Before we go deep into creating objects, let's do some checks
+    if(deme >= p.diploids.size()) throw std::out_of_range("deme index out of range");
+    for(const auto & i : indlist)
+      {
+	if(i>=p.diploids[deme].size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
+      }
+    for( const auto & c : clist )
+      {
+	if(c<0||c>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
+      }
+    if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
+    
+    //create a new mutation
+    typename metapoptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
+    fwdpp_internal::add_mutation_details(p,p.diploids[deme],new_mutant,indlist,clist);
   }
 }
 
