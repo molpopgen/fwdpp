@@ -26,8 +26,16 @@ namespace KTfwd
     assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
 
     //We defer clearing all the way to this point
+    //Note that this just adjusts the value of end,
+    //and capacity() is not affected, meaning
+    //we can insert into these containers relatively
+    //efficiently
     neutral.clear();
     selected.clear();
+    /*
+      Fill neutral and selected by recombining gametes[g1] and gametes[g2]
+      at positions contains in pos
+    */
     fwdpp_internal::recombine_gametes(pos,g1,g2,gametes,mutations,neutral,selected);
     return fwdpp_internal::recycle_gamete(gametes,gamete_recycling_bin,neutral,selected);
   }
