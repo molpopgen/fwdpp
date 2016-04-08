@@ -98,6 +98,10 @@ namespace KTfwd
     \return The number of breakpoints, which equals pos.size() - 1, as that is fixed in this case.
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
 
+    \pre !pos.empty() && g1 < gametes.size() && g2 < gametes.size()
+
+    \note Preconditions only checked in debug mode, via C's assert() macro.
+
     \return A key representing the recombinant gamete, or g1 if \a pos is empty
   */
     template< typename vec_t,
