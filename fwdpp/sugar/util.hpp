@@ -25,6 +25,8 @@ namespace KTfwd
       or the diploids in a particular deme of a meta-pop sim.
 
       \note Do not call directly.  Use KTfwd::add_mutation instead.
+
+      \ingroup sugar
     */
     void add_mutation_details( poptype & p,
 			       dipvector_t & diploids,
@@ -139,6 +141,8 @@ namespace KTfwd
     that the mutation type have the appropriate constructors defined.
 
     See the unit test file unit/test_sugar_add_mutation.cc for example of use.
+
+    \ingroup sugar
   */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,KTfwd::sugar::SINGLEPOP_TAG>::value,
