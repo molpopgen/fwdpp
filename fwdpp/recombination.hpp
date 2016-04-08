@@ -55,7 +55,7 @@ namespace KTfwd
     \param gamete_recycling_bin An object returned from KTfwd::fwdpp_internal::make_gamete_queue
     \param neutral A container for neutral mutations. Will be cleared and updated.
     \param selected A container for non-neutral mutations. Will be cleared and updated.
-    \param rec_pol Function to generate recombination positions
+    \param rec_pol Function to generate recombination positions.  For example, KTfwd::poisson_xover.
     \param g1 Index of gamete 1 to recombine
     \param g2 Index of gamete 2 to recombine
     \param mutations A container of mutations
