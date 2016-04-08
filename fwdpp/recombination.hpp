@@ -7,7 +7,7 @@
 namespace KTfwd
 {
   struct poisson_xover
-  /*
+  /*!
     \brief Simple model of crossing-over.
     Generates a Poisson-distribued number of recombination breakpoints with mean \a littler that
     are uniformly-distributed between \a minpos and \a maxpos
@@ -22,7 +22,7 @@ namespace KTfwd
 				   const gamete_type & ,
 				   const gamete_type & ,
 				   const mcont_t & ) const
-    /*
+    /*!
       \param r A gsl_rng
       \param littler The recombination rate (per diploid, per region)
       \param minpos The minimum recombination position allowed
