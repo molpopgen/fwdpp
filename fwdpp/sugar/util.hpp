@@ -122,6 +122,12 @@ namespace KTfwd
 				KTfwd::sugar::METAPOP_TAG, //distpatch tag
 				Args&&... args)
     {
+      //Before we go deep into creating objects, let's do some checks
+      if(deme >= p.diploids.size()) throw std::out_of_range("deme index out of range");
+      for(const auto & i : indlist)
+	{
+	  if(i>=p.diploids[deme].size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
+	}
       //create a new mutation
       typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
       fwdpp_internal::add_mutation_details(p,p.diploids[deme],new_mutant,indlist,clist);
@@ -178,20 +184,21 @@ namespace KTfwd
     fwdpp_internal::add_mutation_details(p,p.diploids,new_mutant,indlist,clist);
   }
 
-  template<typename metapoptype,
+  template<typename poptype,
 	   class... Args>
-  void add_mutation(metapoptype & p,
-		    const std::size_t deme,
+  void add_mutation(poptype & p,
+		    const std::size_t index,
 		    const std::vector<std::size_t> & indlist,
 		    const std::vector<short> & clist,
 		    Args&&... args)
   /*!
-    \brief Add a mutation into a deme from a meta-population at a given frequency.
+    \brief Add a mutation into a deme from a population at a given frequency at in a specific
+    deme or locus
 
-    \param p A single deme object.
-    \parm deme Index of the deme
+    \param p A population object. Meta- or multi-locus.
+    \parm index Index of the deme or locus in which to add mutation.
     \param indlist A list of indexes of diploids into which to add the new mutations.
-    \param clist A list of gametes.  See below.
+    \param clist A list of See.  gamete below.
     \param args Values required to cosnstruct a new mutation.  See below.
 
     \return Nothing (void)
@@ -213,22 +220,13 @@ namespace KTfwd
     \ingroup sugar
   */
   {
-    static_assert( std::is_same<typename metapoptype::popmodel_t,KTfwd::sugar::METAPOP_TAG>::value,
-		   "poptype must be a single-deme object type" );
-
-    //Before we go deep into creating objects, let's do some checks
-    if(deme >= p.diploids.size()) throw std::out_of_range("deme index out of range");
-    for(const auto & i : indlist)
-      {
-	if(i>=p.diploids[deme].size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
-      }
     for( const auto & c : clist )
       {
 	if(c<0||c>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
       }
     if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
 
-    fwdpp_internal::add_mutation_dispatch(p,deme,indlist,clist,typename metapoptype::popmodel_t(),args...);
+    fwdpp_internal::add_mutation_dispatch(p,index,indlist,clist,typename poptype::popmodel_t(),args...);
   }
 }
 
