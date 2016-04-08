@@ -76,7 +76,7 @@ namespace KTfwd {
 	  if(i)
 	    {
 	      // between-locus rec, parent 1
-	      auto nrbw = blrf(r,r_bw_loci[i-1]);
+	      unsigned nrbw = blrf(r,r_bw_loci[i-1]);
 	      //only modify if odd
 	      if(nrbw%2!=0.) std::transform( s1,nswaps1.end(),s1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
 
