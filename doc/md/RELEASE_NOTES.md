@@ -1,9 +1,10 @@
 # FWDPP RELEASE NOTES
 
-##
+## 0.4.9
 
 * Doxygen file changed so that all library source is browsable.
 * Single-deme version of sample_diploid is commented in detail.
+* Added KTfwd::add_mutation and unit test  unit/test_sugar_add_mutation.cc
 
 ## 0.4.8
 
