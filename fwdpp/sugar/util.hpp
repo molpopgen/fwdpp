@@ -331,9 +331,9 @@ namespace KTfwd
       }
   }
   
-  template<typename poptype,
+  template<typename multiloc_poptype,
 	   class... Args>
-  void add_mutation(poptype & p,
+  void add_mutation(multiloc_poptype & p,
 		    const std::size_t locus,
 		    const std::vector<std::size_t> & indlist,
 		    const std::vector<short> & clist,
@@ -378,7 +378,7 @@ namespace KTfwd
 	if(i>=p.diploids.size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
       }
     //create a new mutation
-    typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
+    typename multiloc_poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
     auto mindex = fwdpp_internal::get_mut_index(p.mutations,p.mcounts,new_mutant);
     fwdpp_internal::add_mutation_details(p,p.diploids,locus,mindex,indlist,clist);
   }
