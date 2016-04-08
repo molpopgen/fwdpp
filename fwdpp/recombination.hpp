@@ -58,7 +58,7 @@ namespace KTfwd
     \param rec_pol Function to generate recombination positions
     \param g1 Index of gamete 1 to recombine
     \param g2 Index of gamete 2 to recombine
-    \param mutation A container of mutations
+    \param mutations A container of mutations
 
     \return A pair.  The first element is the index of the recombinant gamete.  The second element is the number of breakpoints
     where recombination occurred.  Typically, the latter is not needed.
