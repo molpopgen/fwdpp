@@ -51,7 +51,7 @@ namespace KTfwd {
     mmodel_dispatcher( const mmodel & m, gamete_type & , mlist_type & mutations, queue_t & recycling_bin)
     /*!
       Run-time dispatcher for mutation model
-     */
+    */
     {
       return m(recycling_bin,mutations);
     }
