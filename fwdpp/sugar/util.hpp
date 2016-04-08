@@ -120,6 +120,20 @@ namespace KTfwd
 		    Args&&... args)
   /*!
     \brief Add a mutation into a population at a given frequency.
+
+    \param p A single deme object.
+    \param indlist A list of indexes of diploids into which to add the new mutations.
+    \param clist A list of gametes.  See below.
+    \param args Values required to cosnstruct a new mutation.  See below.
+
+    Some notes:
+
+    clist.size() must equal indlist.size()
+
+    Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
+    second, or both gametes, resepectively, of each diploid in \a indlist.
+
+    See the unit test file unit/test_sugar_add_mutation.cc for example of use.
   */
   {
     static_assert( std::is_same<typename poptype::popmodel_t,KTfwd::sugar::SINGLEPOP_TAG>::value,
