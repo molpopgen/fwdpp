@@ -44,6 +44,9 @@ namespace KTfwd {
     	     typename queue_t>
     inline typename std::result_of<mmodel(queue_t &,mlist_type &)>::type
     mmodel_dispatcher( const mmodel & m, gamete_type & , mlist_type & mutations, queue_t & recycling_bin)
+    /*!
+      Run-time dispatcher for mutation model
+     */
     {
       return m(recycling_bin,mutations);
     }
@@ -54,6 +57,9 @@ namespace KTfwd {
     	     typename queue_t>
     inline typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type &)>::type
     mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type & mutations, queue_t & recycling_bin)
+    /*!
+      Run-time dispatcher for mutation model
+    */
     {
       return m(recycling_bin,g,mutations);
     }
