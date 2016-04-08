@@ -51,7 +51,7 @@ namespace KTfwd
   /*!
     Recombine gametes[g1] and gametes[g2] at positions determined by rec_pol
 
-    \param Gametes A container of gametes
+    \param gametes A container of gametes
     \param gamete_recycling_bin
     \param neutral A container for neutral mutations. Will be cleared and updated.
     \param selected A container for non-neutral mutations. Will be cleared and updated.
