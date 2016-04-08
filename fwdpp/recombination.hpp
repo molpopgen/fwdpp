@@ -103,7 +103,7 @@ namespace KTfwd
   	    typename glist_t,
   	    typename queue_t>
   unsigned recombine_gametes( const vec_t & pos,
-  			      glist_t * gametes,
+  			      glist_t & gametes,
   			      iterator_type & g1,
   			      iterator_type & g2,
   			      queue_t & gamete_recycling_bin,
