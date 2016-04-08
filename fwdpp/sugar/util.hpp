@@ -111,7 +111,21 @@ namespace KTfwd
 	      p.mcounts[mindex]++;
 	    }
 	}
-    }      
+    }
+    
+    template<typename poptype,
+	     class... Args>
+    void add_mutation_dispatch( poptype & p,
+				const std::size_t deme,
+				const std::vector<std::size_t> & indlist,
+				const std::vector<short> & clist,
+				KTfwd::sugar::METAPOP_TAG, //distpatch tag
+				Args&&... args)
+    {
+      //create a new mutation
+      typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
+      fwdpp_internal::add_mutation_details(p,p.diploids[deme],new_mutant,indlist,clist);
+    }
   }
   
   template<typename poptype,
@@ -166,15 +180,11 @@ namespace KTfwd
 
   template<typename metapoptype,
 	   class... Args>
-  //enable-if is used b/c it is likely we'll need to
-  //have a similar prototype for multi-locus sims
-  typename std::enable_if<std::is_same<typename metapoptype::popmodel_t,KTfwd::sugar::METAPOP_TAG>::value,
-			  void>::type
-  add_mutation(metapoptype & p,
-	       const std::size_t deme,
-	       const std::vector<std::size_t> & indlist,
-	       const std::vector<short> & clist,
-	       Args&&... args)
+  void add_mutation(metapoptype & p,
+		    const std::size_t deme,
+		    const std::vector<std::size_t> & indlist,
+		    const std::vector<short> & clist,
+		    Args&&... args)
   /*!
     \brief Add a mutation into a deme from a meta-population at a given frequency.
 
@@ -217,10 +227,8 @@ namespace KTfwd
 	if(c<0||c>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
       }
     if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
-    
-    //create a new mutation
-    typename metapoptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
-    fwdpp_internal::add_mutation_details(p,p.diploids[deme],new_mutant,indlist,clist);
+
+    fwdpp_internal::add_mutation_dispatch(p,deme,indlist,clist,typename metapoptype::popmodel_t(),args...);
   }
 }
 
