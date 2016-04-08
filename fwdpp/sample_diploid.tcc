@@ -399,7 +399,7 @@ namespace KTfwd
     auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
 
     //get max N
-    auto mN = *std::max_element(N_curr,N_curr+diploids.size());
+    auto mN = (!diploids.empty()) ? *std::max_element(N_curr,N_curr+diploids.size()): 0;
 
     std::vector<double> fitnesses(mN);
     std::size_t popi=0;
