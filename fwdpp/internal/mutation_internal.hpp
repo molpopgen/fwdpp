@@ -10,7 +10,11 @@ namespace KTfwd {
       Mechanics of adding a new mutation.
 
       Ensures that it is always added into a vector
-      in less-than-sorted order according to position
+      in less-than-sorted order according to position.
+
+      The insertion position is found via a binary search,
+      and the call to emplace will typically result in a 
+      call to memmove or memcopy, depending on the system/compiler.
     */
     template< typename mcont_t,
 	      typename gamete_type>
@@ -31,6 +35,7 @@ namespace KTfwd {
 				     return __value < mutations[__mut].pos;}),
 		  idx );
 
+      //Check post-condition in debug mode...
       assert(std::is_sorted(mc->cbegin(),mc->cend(),
 			    [&mutations](const std::size_t i, const std::size_t j)noexcept
 			    {
