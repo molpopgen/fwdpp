@@ -133,6 +133,11 @@ namespace KTfwd
     Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
     second, or both gametes, resepectively, of each diploid in \a indlist.
 
+    Note that \a args can take on a few different forms.  First, it can be a raw set of values
+    used to construct a new mutation.  Or, it can be an object of correct mutation type.  Or, it can be
+    any type from which the correct mutation type can be constructed.  The last two cases require 
+    that the mutation type have the appropriate constructors defined.
+
     See the unit test file unit/test_sugar_add_mutation.cc for example of use.
   */
   {
