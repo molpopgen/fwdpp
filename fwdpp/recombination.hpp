@@ -43,6 +43,7 @@ namespace KTfwd
 	  pos.emplace_back(gsl_ran_flat(r,minpos,maxpos));
 	}
       std::sort(pos.begin(),pos.end());
+      //Note: this is required for all vectors of breakpoints!
       pos.emplace_back(std::numeric_limits<double>::max());
       return pos;
     }
