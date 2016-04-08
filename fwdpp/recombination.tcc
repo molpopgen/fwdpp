@@ -23,6 +23,7 @@ namespace KTfwd
     assert(g1 < gametes.size());
     assert(g2 < gametes.size());
     assert( std::is_sorted(pos.begin(),pos.end()) );
+    assert(!pos.empty());
     assert( *(pos.end()-1) == std::numeric_limits<double>::max() );
 
     //We defer clearing all the way to this point
