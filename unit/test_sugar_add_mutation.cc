@@ -103,16 +103,20 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_metapop )
 {
   metapop_t pop({1000,1000});
   const std::size_t DEME = 1; //we're gonna add the mutation into the second deme
+  /*
+    Note: for meta-pops, function takes vectors and vectors of vectors,
+    so use via an initializer list has an extra bracket around it...
+   */
   KTfwd::add_mutation(pop,
 		      //deme index...
-		      DEME,
+		      {DEME},
 		      //individuals where we want to place the mutation
-		      {0,1,3,5,7,9},
+		      {{{0,1,3,5,7,9}}},
 		      /*
 			gametes in each individual: 0 = .first, 1 = .second, 2 = .first and .second
 			Thus, there should be 1+1+1+2+2+1=8 copies of the mutation in the population
 		      */
-		      {0,1,0,2,2,0},
+		      {{{0,1,0,2,2,0}}},
 		      //For fun, pass in new mutation as a temporary
 		      mutation_t(0.1,-0.1,1,0));
   BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
