@@ -190,9 +190,9 @@ namespace KTfwd
     for(auto & dip : diploids)
       {
 	//Choose parent 1 based on fitness
-	std::size_t p1 = gsl_ran_discrete(r,lookup.get());
+	auto p1 = gsl_ran_discrete(r,lookup.get());
 	//If inbred (w/probability f2), parent2 = parent1, else choose again based on fitness
-	std::size_t p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+	auto p2 = (f==1. || (f>0. && gsl_rng_uniform(r) < f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p1<parents.size());
 	assert(p2<parents.size());
 
@@ -200,10 +200,10 @@ namespace KTfwd
 	  These are the gametes from each parent.
 	  This is a trivial assignment if keys.
 	*/
-	std::size_t p1g1 = parents[p1].first;
-	std::size_t p1g2 = parents[p1].second;
-	std::size_t p2g1 = parents[p2].first;
-	std::size_t p2g2 = parents[p2].second;
+	auto p1g1 = parents[p1].first;
+	auto p1g2 = parents[p1].second;
+	auto p2g1 = parents[p2].first;
+	auto p2g2 = parents[p2].second;
 
 	/*
 	  The offspring will inherit some manipulation of p1g1 and p1g2.
@@ -405,7 +405,7 @@ namespace KTfwd
     std::size_t popi=0;
     for(const auto & dipvec : diploids ) //go over each container of diploids...
       {
-	unsigned i=0;
+	std::vector<double>::size_type i=0;
 	for(const auto & dip : dipvec) //...and each diploid
 	  {
 	    fitnesses[i]=fwdpp_internal::diploid_fitness_dispatch(ffs[popi],dip,gametes,mutations,typename traits::is_custom_diploid_t<diploid_geno_t>::type());
@@ -425,7 +425,7 @@ namespace KTfwd
     //Update the diploids, one deme at a time
     for(popi = 0 ; popi < diploids.size() ; ++popi)
       {
-	uint_t demesize = *(N_next+popi);
+	auto demesize = *(N_next+popi);
 	if(demesize != *(N_curr+popi))
 	  {
 	    diploids[popi].resize(demesize);
@@ -438,10 +438,10 @@ namespace KTfwd
 	       an argument.  It returns popindex if there is no migration,
 	       else it returns the index of the deme of a migrant parent
 	    */
-	    std::size_t deme_p1 = mig(popi),deme_p2=popi;
+	    auto deme_p1 = mig(popi),deme_p2=popi;
 
 	    //Figure out who the parents are
-	    std::size_t p1 = gsl_ran_discrete(r,lookups[deme_p1].get()),p2;
+	    auto p1 = gsl_ran_discrete(r,lookups[deme_p1].get()),p2=p1;
 
 	    /*
 	      If the individual is not inbred, then we pick a
@@ -458,10 +458,10 @@ namespace KTfwd
 		p2 = gsl_ran_discrete(r,lookups[deme_p2].get());
 	      }
 
-	    std::size_t p1g1 = parents[deme_p1][p1].first;
-	    std::size_t p1g2 = parents[deme_p1][p1].second;
-	    std::size_t p2g1 = parents[deme_p2][p2].first;
-	    std::size_t p2g2 = parents[deme_p2][p2].second;
+	    auto p1g1 = parents[deme_p1][p1].first;
+	    auto p1g2 = parents[deme_p1][p1].second;
+	    auto p2g1 = parents[deme_p2][p2].first;
+	    auto p2g2 = parents[deme_p2][p2].second;
 
 	    if(gsl_rng_uniform(r)<0.5)std::swap(p1g1,p1g2);
 	    if(gsl_rng_uniform(r)<0.5)std::swap(p2g1,p2g2);
@@ -574,9 +574,9 @@ namespace KTfwd
 
     for(auto & dip : diploids)
       {
-	std::size_t p1 = gsl_ran_discrete(r,lookup.get());
+	auto p1 = gsl_ran_discrete(r,lookup.get());
 	assert(p1<N_curr);
-	std::size_t p2 = (f==1.||(f>0. && gsl_rng_uniform(r)<f)) ? p1 : gsl_ran_discrete(r,lookup.get());
+	auto p2 = (f==1.||(f>0. && gsl_rng_uniform(r)<f)) ? p1 : gsl_ran_discrete(r,lookup.get());
 	assert(p2<N_curr);
 	dip=fwdpp_internal::multilocus_rec_mut(r,parents[p1],parents[p2],
 					       mut_recycling_bin,gamete_recycling_bin,
