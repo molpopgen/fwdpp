@@ -97,18 +97,21 @@ namespace KTfwd
     \param selected A container for non-neutral mutations. Will be cleared and updated.
     \return The number of breakpoints, which equals pos.size() - 1, as that is fixed in this case.
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
+
+    \return A key representing the recombinant gamete, or g1 if \a pos is empty
   */
-  template< typename iterator_type,
-  	    typename vec_t,
-  	    typename glist_t,
-  	    typename queue_t>
-  unsigned recombine_gametes( const vec_t & pos,
-  			      glist_t & gametes,
-  			      iterator_type & g1,
-  			      iterator_type & g2,
-  			      queue_t & gamete_recycling_bin,
-  			      typename iterator_type::value_type::mutation_container & neutral,
-  			      typename iterator_type::value_type::mutation_container & selected );
+    template< typename vec_t,
+	    typename gcont_t,
+	    typename mcont_t,
+	    typename queue_t>
+  std::size_t recombine_gametes( const vec_t & pos,
+				 gcont_t & gametes,
+				 const mcont_t & mutations,
+				 const std::size_t g1,
+				 const std::size_t g2,
+				 queue_t & gamete_recycling_bin,
+				 typename gcont_t::value_type::mutation_container & neutral,
+				 typename gcont_t::value_type::mutation_container & selected);
 }
 #endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>
