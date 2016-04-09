@@ -27,7 +27,7 @@
 
 namespace KTfwd
 {
-  namespace fwdpp_internal
+  namespace sugar
   {
     template<typename mcont_t,
 	     typename mcounts_t>
@@ -294,8 +294,8 @@ namespace KTfwd
     
     //create a new mutation
     typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
-    auto mindex = fwdpp_internal::get_mut_index(p.mutations,p.mcounts,new_mutant);
-    fwdpp_internal::add_mutation_details(p,p.diploids,mindex,indlist,clist);
+    auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
+    sugar::add_mutation_details(p,p.diploids,mindex,indlist,clist);
   }
 
   template<typename metapoptype,
@@ -358,10 +358,10 @@ namespace KTfwd
       }
     //create a new mutation
     typename metapoptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
-    auto mindex = fwdpp_internal::get_mut_index(p.mutations,p.mcounts,new_mutant);
+    auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
     for( std::size_t i = 0 ; i < demes.size() ; ++i )
       {
-	fwdpp_internal::add_mutation_details(p,p.diploids[demes[i]],mindex,indlist[i],clist[i]);
+	sugar::add_mutation_details(p,p.diploids[demes[i]],mindex,indlist[i],clist[i]);
       }
   }
   
@@ -413,8 +413,8 @@ namespace KTfwd
       }
     //create a new mutation
     typename multiloc_poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
-    auto mindex = fwdpp_internal::get_mut_index(p.mutations,p.mcounts,new_mutant);
-    fwdpp_internal::add_mutation_details(p,p.diploids,locus,mindex,indlist,clist);
+    auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
+    sugar::add_mutation_details(p,p.diploids,locus,mindex,indlist,clist);
   }
 }
 
