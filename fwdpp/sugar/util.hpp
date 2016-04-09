@@ -28,10 +28,17 @@ namespace KTfwd
     /*!
       \brief Helper function for implementing KTfwd::add_mutation
 
-      This function puts the new mutation into the mutations container and 
+      If \a new_mutation already exists in \a mutations, its location is returned.
+
+      Otherwise, this function puts the new mutation into the mutations container and 
       updates other objects as needed.
 
       \return A key telling where \a new_mutation exists within \a mutations.
+
+      \note This function requires that operator== be defined for the mutation type.
+
+      \note In the event that \a new_mutation is added to \a mutations, the count for that
+      mutations will be zero.
 
       \ingroup sugar
     */
