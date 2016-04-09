@@ -11,19 +11,10 @@
 #include <type_traits>
 #include <algorithm>
 #include <cassert>
+#include <vector>
+#include <unordered_map>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-
-/*
-  TODO:
-
-  1. check if mutation to insert already exists.  Will this require operator== 
-  to be defined...?  Done, and "yes"...
-
-  2. re-work so that a vector of pointers to diploid gamete keys is collected and grouped by value,
-  so that the minimum number of new gametes are created.  Ideally, the unit tests would change such that 
-  only 1 new gamete is inserted for those examples.
-*/
 
 namespace KTfwd
 {
@@ -73,71 +64,28 @@ namespace KTfwd
 	}
       return mindex;
     }
-    
+
     template<typename poptype,
-	     typename dipvector_t>
-    /*!
-      \brief Overload for single-deme sims and metapop sims.
-
-      This function def'n looks funny b/c we use 
-      diploids to refer both to the diploids in a single-deme sim
-      or the diploids in a particular deme of a meta-pop sim.
-
-      \note Do not call directly.  Use KTfwd::add_mutation instead.
-
-      \ingroup sugar
-    */
-    void add_mutation_details( poptype & p,
-			       dipvector_t & diploids,
-			       const std::size_t mindex,
-			       const std::vector<std::size_t> & indlist,
-			       const std::vector<short> & clist)
+	     typename map_t>
+    void add_mutation_details(poptype & p,
+			      const std::vector<std::size_t> & mindexes,
+			      const map_t & gams)
     {
       auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(p.gametes);
-
       //Function object for calls to upper bound
       auto inserter = [&p](const double & __value,const std::size_t __mut) noexcept {
 	assert(__mut<p.mutations.size());
 	return __value < p.mutations[__mut].pos;
       };
-      
-      //update the diploids
-      bool neutral = p.mutations[mindex].neutral;
-      auto pos = p.mutations[mindex].pos;
-      for( std::size_t i = 0 ; i < indlist.size() ; ++i )
+
+      for( const auto & gi : gams )
 	{
-	  if( clist[i] == 0 || clist[i] == 2 )
+	  auto n = p.gametes[gi.first].mutations;
+	  auto s = p.gametes[gi.first].smutations;
+	  for(auto mindex : mindexes)
 	    {
-	      assert(p.gametes[diploids[indlist[i]].first].n); //assert that gamete exists
-	      p.gametes[diploids[indlist[i]].first].n--;       //count goes down by 1
-	      auto n = p.gametes[diploids[indlist[i]].first].mutations;
-	      auto s = p.gametes[diploids[indlist[i]].first].smutations;
-	      if(neutral)
-		{
-		  n.insert( std::upper_bound(n.begin(),
-					     n.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      else
-		{
-		  s.insert( std::upper_bound(s.begin(),
-					     s.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      diploids[indlist[i]].first = fwdpp_internal::recycle_gamete(p.gametes,
-									  gam_recycling_bin,
-									  n,s);
-	      p.gametes[diploids[indlist[i]].first].n++; //update gamete count
-	      p.mcounts[mindex]++;
-	    }
-	  if(clist[i]>0)
-	    {
-	      assert(p.gametes[diploids[indlist[i]].second].n); //assert that gamete exists
-	      p.gametes[diploids[indlist[i]].second].n--;       //count goes down by 1
-	      auto n = p.gametes[diploids[indlist[i]].second].mutations;
-	      auto s = p.gametes[diploids[indlist[i]].second].smutations;
+	      auto pos = p.mutations[mindex].pos;
+	      
 	      if(p.mutations[mindex].neutral)
 		{
 		  n.insert( std::upper_bound(n.begin(),
@@ -152,96 +100,21 @@ namespace KTfwd
 					     inserter),
 			    mindex );
 		}
-	      diploids[indlist[i]].second = fwdpp_internal::recycle_gamete(p.gametes,
-									   gam_recycling_bin,
-									   n,s);
-	      p.gametes[diploids[indlist[i]].second].n++; //update gamete count
-	      p.mcounts[mindex]++;
+	      //update mutation count
+	      p.mcounts[mindex] += typename poptype::mcount_t::value_type(gi.second.size());
 	    }
-	}
-    }
+	  //get new gamete
+	  auto new_gamete_key = fwdpp_internal::recycle_gamete(p.gametes,
+							       gam_recycling_bin,
+							       n,s);
+	  //update gamete count
+	  p.gametes[gi.first].n -= decltype(p.gametes[gi.first].n)(gi.second.size());
+	  p.gametes[new_gamete_key].n += decltype(p.gametes[new_gamete_key].n)(gi.second.size());
 
-    template<typename poptype,
-	     typename dipvector_t>
-    /*!
-      \brief Overload for adding mutations into single-deme multi-locus populations
-
-      \note Do not call directly.  Use KTfwd::add_mutation instead.
-
-      \ingroup sugar
-    */
-    void add_mutation_details( poptype & p,
-			       dipvector_t & diploids,
-			       const std::size_t locus,
-			       const std::size_t mindex,
-			       const std::vector<std::size_t> & indlist,
-			       const std::vector<short> & clist)
-    {
-      auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(p.gametes);
-
-
-      //Function object for calls to upper bound
-      auto inserter = [&p](const double & __value,const std::size_t __mut) noexcept {
-	assert(__mut<p.mutations.size());
-	return __value < p.mutations[__mut].pos;
-      };
-      
-      //update the diploids
-      bool neutral = p.mutations[mindex].neutral;
-      auto pos = p.mutations[mindex].pos;
-      for( std::size_t i = 0 ; i < indlist.size() ; ++i )
-	{
-	  if( clist[i] == 0 || clist[i] == 2 )
+	  //This updates every diploid to have a key to p.gametes[new_gamete_key]
+	  for( auto i : gi.second )
 	    {
-	      assert(p.gametes[diploids[indlist[i]][locus].first].n); //assert that gamete exists
-	      p.gametes[diploids[indlist[i]][locus].first].n--;       //count goes down by 1
-	      auto n = p.gametes[diploids[indlist[i]][locus].first].mutations;
-	      auto s = p.gametes[diploids[indlist[i]][locus].first].smutations;
-	      if(neutral)
-		{
-		  n.insert( std::upper_bound(n.begin(),
-					     n.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      else
-		{
-		  s.insert( std::upper_bound(s.begin(),
-					     s.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      diploids[indlist[i]][locus].first = fwdpp_internal::recycle_gamete(p.gametes,
-										 gam_recycling_bin,
-										 n,s);
-	      p.gametes[diploids[indlist[i]][locus].first].n++; //update gamete count
-	      p.mcounts[mindex]++;
-	    }
-	  if(clist[i]>0)
-	    {
-	      assert(p.gametes[diploids[indlist[i]][locus].second].n); //assert that gamete exists
-	      p.gametes[diploids[indlist[i]][locus].second].n--;       //count goes down by 1
-	      auto n = p.gametes[diploids[indlist[i]][locus].second].mutations;
-	      auto s = p.gametes[diploids[indlist[i]][locus].second].smutations;
-	      if(p.mutations[mindex].neutral)
-		{
-		  n.insert( std::upper_bound(n.begin(),
-					     n.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      else
-		{
-		  s.insert( std::upper_bound(s.begin(),
-					     s.end(),pos,
-					     inserter),
-			    mindex );
-		}
-	      diploids[indlist[i]][locus].second = fwdpp_internal::recycle_gamete(p.gametes,
-										  gam_recycling_bin,
-										  n,s);
-	      p.gametes[diploids[indlist[i]][locus].second].n++; //update gamete count
-	      p.mcounts[mindex]++;
+	      *i=new_gamete_key;
 	    }
 	}
     }
@@ -294,8 +167,21 @@ namespace KTfwd
     
     //create a new mutation
     typename poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
+    //make collection of gametes into which to add mutation
+    std::unordered_map<std::size_t,std::vector<typename poptype::diploid_t::first_type *> > gams;
+    for( std::size_t i = 0 ; i < indlist.size() ; ++i )
+      {
+	if( clist[i]==0||clist[i]==2 )
+	  {
+	    gams[p.diploids[indlist[i]].first].push_back(&p.diploids[indlist[i]].first);
+	  }
+	if(clist[i]>0)
+	  {
+	    gams[p.diploids[indlist[i]].second].push_back(&p.diploids[indlist[i]].second);
+	  }
+      }
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
-    sugar::add_mutation_details(p,p.diploids,mindex,indlist,clist);
+    sugar::add_mutation_details(p,{mindex},gams);
   }
 
   template<typename metapoptype,
@@ -356,13 +242,27 @@ namespace KTfwd
 	    if(di>p.diploids[d].size()) throw std::out_of_range("individual index out of range");
 	  }
       }
+    //collect gametes that are to be updated
+    std::unordered_map<std::size_t,std::vector<typename metapoptype::diploid_t::first_type *> > gams;   
+    for( std::size_t deme = 0 ; deme < demes.size() ; ++deme )
+      {
+	for( std::size_t ind = 0 ; ind < indlist[deme].size() ; ++ind )
+	  {
+	    auto c = clist[deme][ind];
+	    if( c==0||c==2 )
+	      {
+		gams[p.diploids[demes[deme]][indlist[deme][ind]].first].push_back(&p.diploids[demes[deme]][indlist[deme][ind]].first);
+	      }
+	    if(c>0)
+	      {
+		gams[p.diploids[demes[deme]][indlist[deme][ind]].second].push_back(&p.diploids[demes[deme]][indlist[deme][ind]].second);
+	      }
+	  }
+      }
     //create a new mutation
     typename metapoptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
-    for( std::size_t i = 0 ; i < demes.size() ; ++i )
-      {
-	sugar::add_mutation_details(p,p.diploids[demes[i]],mindex,indlist[i],clist[i]);
-      }
+    sugar::add_mutation_details(p,{mindex},gams);
   }
   
   template<typename multiloc_poptype,
@@ -411,10 +311,23 @@ namespace KTfwd
       {
 	if(i>=p.diploids.size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
       }
+    //collect gametes that are to be updated
+    std::unordered_map<std::size_t,std::vector<typename multiloc_poptype::diploid_t::value_type::first_type *> > gams;
+    for(std::size_t ind = 0 ; ind < indlist.size() ; ++ind )
+      {
+	if(clist[ind]==0||clist[ind]==2)
+	  {
+	    gams[p.diploids[indlist[ind]][locus].first].push_back(&p.diploids[indlist[ind]][locus].first);
+	  }
+	if(clist[ind]>0)
+	  {
+	    gams[p.diploids[indlist[ind]][locus].second].push_back(&p.diploids[indlist[ind]][locus].second);
+	  }
+      }
     //create a new mutation
     typename multiloc_poptype::mcont_t::value_type new_mutant(std::forward<Args>(args)...);
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
-    sugar::add_mutation_details(p,p.diploids,locus,mindex,indlist,clist);
+    sugar::add_mutation_details(p,{mindex},gams);
   }
 }
 
