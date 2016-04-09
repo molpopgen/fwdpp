@@ -38,6 +38,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation )
 		      {0,1,0,2,2,0},
 		      //Parameters to pass on to create a new mutation
 		      0.1,-0.1,1,0);
+  BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
   BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
@@ -75,7 +76,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_from_object )
 		      {0,1,0,2,2,0},
 		      //move it right into place:
 		      std::move(m));
-
+  BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
   BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
@@ -119,6 +120,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_metapop )
 		      {{{0,1,0,2,2,0}}},
 		      //For fun, pass in new mutation as a temporary
 		      mutation_t(0.1,-0.1,1,0));
+  BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,4000),true);
   BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
@@ -158,7 +160,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_multiloc )
 		      {0,1,0,2,2,0},
 		      //params for new mutation
 		      0.1,-0.1,1,0);
-
+  BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
   for( auto i : {0,3,9} ) //should have mutation on first gamete only
     {
       BOOST_REQUIRE_EQUAL( pop.gametes[pop.diploids[i][LOCUS].first].smutations.size(),1 );
