@@ -187,12 +187,10 @@ I have tested the library on my development machine (64-bit Intel processor, Ubu
 | GCC | 4.9.2 | __YES__ | |
 | GCC | 5.1 | __YES__ | |
 | GCC | 5.2 | __YES__ | |
-| GCC | 6 | __YES__ | |
 | clang++  | 3.5  | __YES__ | |
 | clang++  | 3.6  | __YES__ | |
 | clang++  | 3.7  | __YES__ | |
 
-GCC 6 is unreleased, but fwdpp works fine with the version available to OS X vis 'brew.
 
 ##Library dependencies
 
