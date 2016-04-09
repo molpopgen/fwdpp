@@ -40,6 +40,8 @@ namespace KTfwd
       This function puts the new mutation into the mutations container and 
       updates other objects as needed.
 
+      \return A key telling where \a new_mutation exists within \a mutations.
+
       \ingroup sugar
     */
     {
