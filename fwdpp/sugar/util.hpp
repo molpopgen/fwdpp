@@ -18,7 +18,7 @@
   TODO:
 
   1. check if mutation to insert already exists.  Will this require operator== 
-  to be defined...?  
+  to be defined...?  Done, and "yes"...
 
   2. re-work so that a vector of pointers to diploid gamete keys is collected and grouped by value,
   so that the minimum number of new gametes are created.  Ideally, the unit tests would change such that 
@@ -43,6 +43,17 @@ namespace KTfwd
       \ingroup sugar
     */
     {
+      //If the mutation already exists, let's not create it...
+      auto mitr = std::find(std::begin(mutations),std::end(mutations),new_mutation);
+      if(mitr!=mutations.end()) return std::size_t(std::distance(std::begin(mutations),mitr));
+
+      /*
+	If we are here, then new_mutation does not currently exist, so we have to add it.
+
+	We do this using fwdpp's recycling method.  But, we don't need to create recycling bin,
+	as we're just looking to add one mutation.  Instead, we can simply search for an extinct 
+	mutation.
+      */
       //find an extinct mutation, if one exists
       auto extinct_mut = std::find(std::begin(mcounts),std::end(mcounts),0);
       std::size_t mindex=mcounts.size();  //this will be the correct value if we use the else block below
