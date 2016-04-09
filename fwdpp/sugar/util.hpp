@@ -14,6 +14,17 @@
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
+/*
+  TODO:
+
+  1. check if mutation to insert already exists.  Will this require operator== 
+  to be defined...?  
+
+  2. re-work so that a vector of pointers to diploid gamete keys is collected and grouped by value,
+  so that the minimum number of new gametes are created.  Ideally, the unit tests would change such that 
+  only 1 new gamete is inserted for those examples.
+*/
+
 namespace KTfwd
 {
   namespace fwdpp_internal
