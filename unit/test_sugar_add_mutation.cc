@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation )
 		      //Parameters to pass on to create a new mutation
 		      0.1,-0.1,1,0);
   BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
-  BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
+  BOOST_REQUIRE_EQUAL(pop.gametes.size(),2); 
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts[0],8);
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_from_object )
 		      //move it right into place:
 		      std::move(m));
   BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
-  BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
+  BOOST_REQUIRE_EQUAL(pop.gametes.size(),2); 
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts[0],8);
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_metapop )
 		      //For fun, pass in new mutation as a temporary
 		      mutation_t(0.1,-0.1,1,0));
   BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,4000),true);
-  BOOST_REQUIRE_EQUAL(pop.gametes.size(),9); //8 copies of mutation generated hap-hazardly will mean 9 total gametes in pop
+  BOOST_REQUIRE_EQUAL(pop.gametes.size(),2); 
   BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
   BOOST_REQUIRE_EQUAL(pop.mcounts[0],8);
