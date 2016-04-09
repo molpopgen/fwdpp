@@ -161,6 +161,11 @@ BOOST_AUTO_TEST_CASE( test_add_mutation_multiloc )
 		      //params for new mutation
 		      0.1,-0.1,1,0);
   BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes,2000),true);
+  BOOST_REQUIRE_EQUAL(pop.gametes.size(),2); 
+  BOOST_REQUIRE_EQUAL(pop.mutations.size(),1);
+  BOOST_REQUIRE_EQUAL(pop.mcounts.size(),1);
+  BOOST_REQUIRE_EQUAL(pop.mcounts[0],8);
+  BOOST_REQUIRE_EQUAL(pop.mutations[0].neutral,false);
   for( auto i : {0,3,9} ) //should have mutation on first gamete only
     {
       BOOST_REQUIRE_EQUAL( pop.gametes[pop.diploids[i][LOCUS].first].smutations.size(),1 );
