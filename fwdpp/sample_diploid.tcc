@@ -438,7 +438,8 @@ namespace KTfwd
 	       an argument.  It returns popindex if there is no migration,
 	       else it returns the index of the deme of a migrant parent
 	    */
-	    auto deme_p1 = mig(popi),deme_p2=popi;
+	    auto deme_p1 = mig(popi);
+	    decltype(deme_p1) deme_p2=popi;
 
 	    //Figure out who the parents are
 	    auto p1 = gsl_ran_discrete(r,lookups[deme_p1].get()),p2=p1;
