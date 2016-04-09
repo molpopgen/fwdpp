@@ -70,9 +70,6 @@ namespace KTfwd
     {
       auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(p.gametes);
 
-      //Add new mutation to mutation container and track its location
-      //auto mindex = get_mut_index(p.mutations,p.mcounts,new_mutation);
-
       //Function object for calls to upper bound
       auto inserter = [&p](const double & __value,const std::size_t __mut) noexcept {
 	assert(__mut<p.mutations.size());
