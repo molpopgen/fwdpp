@@ -10,6 +10,7 @@
 #include <exception>
 #include <type_traits>
 #include <algorithm>
+#include <cassert>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
@@ -83,6 +84,8 @@ namespace KTfwd
 	{
 	  if( clist[i] == 0 || clist[i] == 2 )
 	    {
+	      assert(p.gametes[diploids[indlist[i]].first].n); //assert that gamete exists
+	      p.gametes[diploids[indlist[i]].first].n--;       //count goes down by 1
 	      auto n = p.gametes[diploids[indlist[i]].first].mutations;
 	      auto s = p.gametes[diploids[indlist[i]].first].smutations;
 	      if(neutral)
@@ -102,10 +105,13 @@ namespace KTfwd
 	      diploids[indlist[i]].first = fwdpp_internal::recycle_gamete(p.gametes,
 									  gam_recycling_bin,
 									  n,s);
+	      p.gametes[diploids[indlist[i]].first].n++; //update gamete count
 	      p.mcounts[mindex]++;
 	    }
 	  if(clist[i]>0)
 	    {
+	      assert(p.gametes[diploids[indlist[i]].second].n); //assert that gamete exists
+	      p.gametes[diploids[indlist[i]].second].n--;       //count goes down by 1
 	      auto n = p.gametes[diploids[indlist[i]].second].mutations;
 	      auto s = p.gametes[diploids[indlist[i]].second].smutations;
 	      if(p.mutations[mindex].neutral)
@@ -125,6 +131,7 @@ namespace KTfwd
 	      diploids[indlist[i]].second = fwdpp_internal::recycle_gamete(p.gametes,
 									   gam_recycling_bin,
 									   n,s);
+	      p.gametes[diploids[indlist[i]].second].n++; //update gamete count
 	      p.mcounts[mindex]++;
 	    }
 	}
@@ -162,6 +169,8 @@ namespace KTfwd
 	{
 	  if( clist[i] == 0 || clist[i] == 2 )
 	    {
+	      assert(p.gametes[diploids[indlist[i]][locus].first].n); //assert that gamete exists
+	      p.gametes[diploids[indlist[i]][locus].first].n--;       //count goes down by 1
 	      auto n = p.gametes[diploids[indlist[i]][locus].first].mutations;
 	      auto s = p.gametes[diploids[indlist[i]][locus].first].smutations;
 	      if(neutral)
@@ -181,10 +190,13 @@ namespace KTfwd
 	      diploids[indlist[i]][locus].first = fwdpp_internal::recycle_gamete(p.gametes,
 										 gam_recycling_bin,
 										 n,s);
+	      p.gametes[diploids[indlist[i]][locus].first].n++; //update gamete count
 	      p.mcounts[mindex]++;
 	    }
 	  if(clist[i]>0)
 	    {
+	      assert(p.gametes[diploids[indlist[i]][locus].second].n); //assert that gamete exists
+	      p.gametes[diploids[indlist[i]][locus].second].n--;       //count goes down by 1
 	      auto n = p.gametes[diploids[indlist[i]][locus].second].mutations;
 	      auto s = p.gametes[diploids[indlist[i]][locus].second].smutations;
 	      if(p.mutations[mindex].neutral)
@@ -204,6 +216,7 @@ namespace KTfwd
 	      diploids[indlist[i]][locus].second = fwdpp_internal::recycle_gamete(p.gametes,
 										  gam_recycling_bin,
 										  n,s);
+	      p.gametes[diploids[indlist[i]][locus].second].n++; //update gamete count
 	      p.mcounts[mindex]++;
 	    }
 	}
