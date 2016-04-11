@@ -502,6 +502,11 @@ namespace KTfwd
 	    if(di>p.diploids[d].size()) throw std::out_of_range("individual index out of range");
 	  }
       }
+    for( auto mi : mutation_indexes )
+      {
+	if(mi>=p.mutations.size()) throw std::runtime_error("mutation key out of range");
+      }
+    if(p.mcounts.size()!=p.mutations.size()) throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
     auto gams = sugar::collect_gametes(p,demes,indlist,clist);
     sugar::add_mutation_details(p,mutation_indexes,gams);
   }
@@ -555,6 +560,7 @@ namespace KTfwd
       {
 	if(mi>=p.mutations.size()) throw std::runtime_error("mutation key out of range");
       }
+    if(p.mcounts.size()!=p.mutations.size()) throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
     auto gams = sugar::collect_gametes(p,locus,indlist,clist);
     sugar::add_mutation_details(p,mutation_indexes,gams);
   }
