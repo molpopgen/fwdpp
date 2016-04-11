@@ -342,8 +342,36 @@ namespace KTfwd
 		     const std::vector<std::size_t> & indlist,
 		     const std::vector<short> & clist,
 		     const std::vector<std::size_t> & mutation_indexes)
+  /*!
+    \brief Add a set of mutations into a set of individuals in a population.
+
+    \param p A population object. Meta- or multi-locus.
+    \param indlist A list of indexes of diploids into which to add the new mutations.
+    \param clist A list of gametes. See below.
+    \param mutation_indexes The set of mutations to add.  See below.
+
+    \return Nothing (void)
+
+    Some notes:
+
+    clist.size() must equal indlist.size()
+
+    Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
+    second, or both gametes, resepectively, of each diploid in \a indlist.
+
+    \note \a mutation_indexes refers to the locations of mutations found in \a p.mutations.
+
+    \note For each element, i, in \a mutation_indexes, \a p.mcounts[i] should be zero before
+    entering this function.
+
+    \note \a p.mut_lookup is NOT updated by this function.
+
+    See the unit test file unit/test_sugar_add_mutation.cc for example of use.
+
+    \ingroup sugar
+  */
   {
-     static_assert( std::is_same<typename poptype::popmodel_t,KTfwd::sugar::SINGLEPOP_TAG>::value,
+    static_assert( std::is_same<typename poptype::popmodel_t,KTfwd::sugar::SINGLEPOP_TAG>::value,
 		   "poptype must be a single-deme object type" );
 
     //Before we go deep into creating objects, let's do some checks
