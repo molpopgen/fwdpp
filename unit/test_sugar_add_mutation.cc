@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_add_mutations_singlepop )
   BOOST_REQUIRE_EQUAL(pop.gametes[0].n,1800); //should not test further than this, as it depends on internal details subject to change!
 
   //check those first few individuals
-  for(i in {9,10,23})
+  for(auto i: {9,10,23})
     {
       BOOST_REQUIRE_EQUAL( pop.gametes[pop.diploids[i].first].mutations.size(),1 );
       BOOST_REQUIRE_EQUAL( pop.gametes[pop.diploids[i].first].smutations.size(),2 );
