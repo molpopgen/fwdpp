@@ -336,6 +336,48 @@ namespace KTfwd
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
     sugar::add_mutation_details(p,{mindex},gams);
   }
+
+  template<typename poptype>
+  void add_mutations(poptype & p,
+		     const std::vector<std::size_t> & indlist,
+		     const std::vector<short> & clist,
+		     const std::vector<std::size_t> & mutation_indexes)
+  {
+     static_assert( std::is_same<typename poptype::popmodel_t,KTfwd::sugar::SINGLEPOP_TAG>::value,
+		   "poptype must be a single-deme object type" );
+
+    //Before we go deep into creating objects, let's do some checks
+    for(const auto & i : indlist)
+      {
+	if(i>=p.diploids.size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
+      }
+    for( const auto & c : clist )
+      {
+	if(c<0||c>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
+      }
+    if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
+    for( auto mi : mutation_indexes )
+      {
+	if(mi>=p.mutations.size()) throw std::runtime_error("mutation key out of range");
+      }
+    if(p.mcounts.size()!=p.mutations.size()) throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
+    
+    //make collection of gametes into which to add mutation
+    std::unordered_map<std::size_t,std::vector<typename poptype::diploid_t::first_type *> > gams;
+    for( std::size_t i = 0 ; i < indlist.size() ; ++i )
+      {
+	if( clist[i]==0||clist[i]==2 )
+	  {
+	    gams[p.diploids[indlist[i]].first].push_back(&p.diploids[indlist[i]].first);
+	  }
+	if(clist[i]>0)
+	  {
+	    gams[p.diploids[indlist[i]].second].push_back(&p.diploids[indlist[i]].second);
+	  }
+      }
+    sugar::add_mutation_details(p,mutation_indexes,gams);
+  }
+    
 }
 
 #endif
