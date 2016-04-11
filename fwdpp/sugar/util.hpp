@@ -444,7 +444,120 @@ namespace KTfwd
     auto gams = sugar::collect_gametes(p,indlist,clist);
     sugar::add_mutation_details(p,mutation_indexes,gams);
   }
-    
+
+  template<typename metapoptype>
+  void add_mutations(metapoptype & p,
+		     const std::vector<std::size_t> demes,
+		     const std::vector<std::vector<std::size_t>> & indlist,
+		     const std::vector<std::vector<short>> & clist,
+		     const std::vector<std::size_t> & mutation_indexes)
+  /*!
+    \brief Add a set of mutation into a deme from a population at a given frequency in a specific set of
+    demes.
+
+    \param p A population object. Meta- or multi-locus.
+    \parm demes Vector of indices of the demes in which to add mutation.
+    \param indlist A list of indexes of diploids into which to add the new mutations in each deme.
+    \param clist A list of gametes. See below.
+    \param mutation_indexes Keys to mutations in p.mutations
+
+    \return Nothing (void)
+
+    Some notes:
+
+    clist.size() must equal indlist.size()
+
+    Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
+    second, or both gametes, resepectively, of each diploid in \a indlist.
+
+    \note \a mutation_indexes refers to the locations of mutations found in \a p.mutations.
+
+    \note For each element, i, in \a mutation_indexes, \a p.mcounts[i] should be zero before
+    entering this function.
+
+    \note \a p.mut_lookup is NOT updated by this function.
+
+    See the unit test file unit/test_sugar_add_mutation.cc for example of use.
+
+    \ingroup sugar
+  */
+  {
+    for( const auto & c : clist )
+      {
+	for( auto ci : c )
+	  if(ci<0||ci>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
+      }
+    if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
+    for(std::size_t i=0;i<indlist.size();++i)
+      {
+	if(indlist[i].size()!=clist[i].size()) throw std::runtime_error("indlist[i] must equal clist[i] for all i");
+      }
+
+    for(std::size_t i=0;i<demes.size();++i)
+      {
+	if(i>p.diploids.size()) throw std::out_of_range("deme index out of range");
+	auto d = demes[i];
+	for( const auto di : indlist[i] )
+	  {
+	    if(di>p.diploids[d].size()) throw std::out_of_range("individual index out of range");
+	  }
+      }
+    auto gams = sugar::collect_gametes(p,demes,indlist,clist);
+    sugar::add_mutation_details(p,mutation_indexes,gams);
+  }
+  
+  template<typename multiloc_poptype>
+  void add_mutations(multiloc_poptype & p,
+		     const std::size_t locus,
+		     const std::vector<std::size_t> & indlist,
+		     const std::vector<short> & clist,
+		     const std::vector<std::size_t> & mutation_indexes )
+  /*!
+    \brief Add a set of mutations into a given locus of a multi-locus simulation.
+
+    \param p A population object. Meta- or multi-locus.
+    \parm locus Index of the locus in which to add mutation.
+    \param indlist A list of indexes of diploids into which to add the new mutations.
+    \param clist A list of gametes. See below.
+    \param mutaton_indexes Keys to mutations in p.mutations.
+
+    Some notes:
+
+    clist.size() must equal indlist.size()
+
+    Values in \a clist must be 0, 1, or 2. These values mean to add the mutation to the first,
+    second, or both gametes, resepectively, of each diploid in \a indlist.
+
+    \note \a mutation_indexes refers to the locations of mutations found in \a p.mutations.
+
+    \note For each element, i, in \a mutation_indexes, \a p.mcounts[i] should be zero before
+    entering this function.
+
+    \note \a p.mut_lookup is NOT updated by this function.
+
+    See the unit test file unit/test_sugar_add_mutation.cc for example of use.
+
+    \ingroup sugar
+  */
+  {
+    for( const auto & c : clist )
+      {
+	if(c<0||c>2) throw std::runtime_error("clist contains elements < 0 and/or > 2");
+      }
+    if(indlist.size()!=clist.size()) throw std::runtime_error("indlist and clist must be same length");
+
+    if(locus >= p.diploids[0].size()) throw std::out_of_range("locus index out of range");
+    for(const auto & i : indlist)
+      {
+	if(i>=p.diploids.size()) throw std::out_of_range("indlist contains elements > p.diploids.size()");
+      }
+    for( auto mi : mutation_indexes )
+      {
+	if(mi>=p.mutations.size()) throw std::runtime_error("mutation key out of range");
+      }
+    auto gams = sugar::collect_gametes(p,locus,indlist,clist);
+    sugar::add_mutation_details(p,mutation_indexes,gams);
+  }
 }
 
 #endif
