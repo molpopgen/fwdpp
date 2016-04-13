@@ -30,6 +30,7 @@ namespace KTfwd
       using result_type = std::size_t;
       std::vector<double> nbeg,nend,sbeg,send;
       std::vector< shmodel > shmodels;
+      std::vector< decltype(KTfwd::mutation_base::xtra) > nlabels,slabels;
       KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup,slookup;
 
       /*!
@@ -49,13 +50,58 @@ namespace KTfwd
 			 std::vector<double> sweights, //the weights
 			 std::vector<shmodel> __shmodels) : nbeg(std::move(__nbeg)),nend(std::move(__nend)),
 							    sbeg(std::move(__sbeg)),send(std::move(__send)),
-							    shmodels(std::move(__shmodels))
+							    shmodels(std::move(__shmodels)),
+							    nlabels(std::vector< decltype(KTfwd::mutation_base::xtra) >(nbeg.size(),0)), //not used by this constructor
+							    slabels(std::vector< decltype(KTfwd::mutation_base::xtra) >(sbeg.size(),0)) //not used by this constructor
       {
 	if(nbeg.size()!=nend.size() || nbeg.size()!=nweights.size())
 	  {
 	    throw std::runtime_error("input vectors must all be the same size");
 	  }
 	if(sbeg.size()!=send.size() || sbeg.size()!=sweights.size())
+	  {
+	    throw std::runtime_error("input vectors must all be the same size");
+	  }
+	if(!sweights.empty() && sweights.size() != shmodels.size())
+	  {
+	    throw std::runtime_error("incorrect number of shmodels");
+	  }
+	if(nweights.size())
+	  nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(nweights.size(),&nweights[0]));
+	if(sweights.size())
+	  slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(gsl_ran_discrete_preproc(sweights.size(),&sweights[0]));
+      }
+
+      /*!
+	\param __nbeg Positions of beginnings of 'neutral' regions
+	\param __nend Positions of ends of 'neutral' regions
+	\param nweights Weights on 'neutra'l regions
+	\param __sbeg Positions of beginnings of 'selected' regions
+	\param __send Positions of ends of 'selected' regions
+	\param sweights Weights on 'selected' regions
+	\param __nlabels Values used to fill KTfwd::mutation_base::xtra.  Applied to neutral mutations.
+	\param __slabels Values used to fill KTfwd::mutation_base::xtra.  Applied to selected mutations.
+	\param __shmodels Vector of KTfwd::experimenta::shmodel
+      */
+      discrete_mut_model(std::vector<double> __nbeg,
+			 std::vector<double> __nend,
+			 std::vector<double>  nweights, //the weights
+			 std::vector<double> __sbeg,
+			 std::vector<double> __send,
+			 std::vector<double> sweights, //the weights
+			 std::vector<decltype(KTfwd::mutation_base::xtra)> __nlabels,
+			 std::vector<decltype(KTfwd::mutation_base::xtra)> __slabels,
+			 std::vector<shmodel> __shmodels) : nbeg(std::move(__nbeg)),nend(std::move(__nend)),
+							    sbeg(std::move(__sbeg)),send(std::move(__send)),
+							    shmodels(std::move(__shmodels)),
+							    nlabels(std::move(__nlabels)),
+							    slabels(std::move(__slabels))
+      {
+	if(nbeg.size()!=nend.size() || nbeg.size()!=nweights.size() || nbeg.size() != nlabels.size() )
+	  {
+	    throw std::runtime_error("input vectors must all be the same size");
+	  }
+	if(sbeg.size()!=send.size() || sbeg.size()!=sweights.size() || sbeg.size() != slabels.size() )
 	  {
 	    throw std::runtime_error("input vectors must all be the same size");
 	  }
@@ -123,7 +169,7 @@ namespace KTfwd
 	    size_t region = gsl_ran_discrete(r,nlookup.get());
 	    double pos = posmaker(r,nbeg[region],nend[region],lookup);
 	    return fwdpp_internal::recycle_mutation_helper(recycling_bin,mutations,
-							   pos,0.,0.,generation);
+							   pos,0.,0.,generation,nlabels[region]);
 	  }
 	assert(!sbeg.empty());
 	assert(!send.empty());
@@ -133,7 +179,7 @@ namespace KTfwd
 						       pos,
 						       shmodels[region].s(r),
 						       shmodels[region].h(r),
-						       generation);
+						       generation,slabels[region]);
       }
     };    
 
