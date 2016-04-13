@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_1 )
 		"extensions::dicrete_rec_model::operator() must return std::vector<double>");
 }
 
-//test bindind of extensions::discrete_rec_model::operator()
+//test binding of extensions::discrete_rec_model::operator()
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_2 )
 {
   poptype pop(1000);
