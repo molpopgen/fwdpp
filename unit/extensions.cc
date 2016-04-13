@@ -181,7 +181,65 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
 	  BOOST_REQUIRE( pop.mut_lookup.find(pop.mutations[i].pos) == pop.mut_lookup.end() );
 	}
     }
+
 }
+
+/*
+  Now, test discrete_mut_model's constructor that takes labels,
+  a feature introduced in 0.4.9.  The purpose of this is to
+  assign to mutation_base::xtra, which allows mutations to be integer-labelled.
+*/
+BOOST_AUTO_TEST_CASE( discrete_mut_model_test_6 )
+//This is an 'integration' test, I guess...
+{
+  poptype pop(1000);
+
+  //attempt
+  extensions::discrete_mut_model dm({0,1},   //starts of 'neutral' regions
+				    {1,2},   //ends of 'neutral' regions
+				    {1,0.5}, //weights on 'neutral' regions
+				    {},      //starts of 'selected' regions
+				    {},      //stops of 'selected' regions
+				    {},      //weights on 'selected' regions
+				    {0,1},   //labels to put on mutations from each of the 'neutral' regions
+				    {},      //labels to put on mutations from each of the 'selected' regions
+				    {}       //vector of shmodels
+				    );
+
+  //now, evolve the population
+  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+  auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
+			  &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
+  static_assert( traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
+		 "error: type mutation_model is not a dispatchable mutation model type!" );
+  auto wbar = KTfwd::sample_diploid(rng.get(),
+				    pop.gametes,  
+				    pop.diploids, 
+				    pop.mutations,
+				    pop.mcounts,
+				    1000,     
+				    0.01,     //mutation rate--high so that there are lots of mutations to test below...
+				    mmodel,
+				    std::bind(KTfwd::poisson_xover(),rng.get(),0.001,0.,2.,
+					      std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+				    std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+					      std::placeholders::_3,2.),
+				    pop.neutral,
+				    pop.selected);
+  //Check that mutations in certain position intervals have the correct label
+  for( const auto & m : pop.mutations )
+    {
+      if(m.pos < 1)
+	{
+	  BOOST_REQUIRE_EQUAL(m.xtra,0);
+	}
+      else
+	{
+	  BOOST_REQUIRE_EQUAL(m.xtra,1);
+	}
+    }
+}
+
 
 //check return type of extensions::discrete_rec_model
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_1 )
