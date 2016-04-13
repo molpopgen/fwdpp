@@ -30,10 +30,16 @@ namespace KTfwd
   {
     /// Mutation position
     double pos;
+    /*! 
+      16 bits of extra data to be associated w/this type.  
+      Do with it what you will. Fits into padded space in this struct,
+      and doesn't affect sizeof(mutation).
+    */
+    std::uint16_t xtra;
     /// Is the mutation neutral or not?
     bool neutral;
-    mutation_base(const double & position, const bool & isneutral = true) noexcept
-      : pos(position),neutral(isneutral)
+    mutation_base(const double & position, const bool & isneutral = true, const std::uint16_t x = 0) noexcept
+      : pos(position),xtra(x),neutral(isneutral)
     {
     }
     virtual ~mutation_base() noexcept {}
