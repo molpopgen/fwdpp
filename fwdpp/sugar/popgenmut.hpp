@@ -27,11 +27,11 @@ namespace KTfwd
       \param __s Selection coefficient
       \param __h Dominance coefficient
       \param __g Generation when mutation arose
-      \param __n Number of copies of mutation in population
+      \param __x Value to assign to mutation_base::xtra
     */
     popgenmut(const double & __pos, const double & __s, const double & __h,
-	      const unsigned & __g) noexcept
-      : mutation_base(__pos,(__s==0.) ? true : false),g(__g),s(__s),h(__h)
+	      const unsigned & __g, const std::uint16_t x = 0) noexcept
+      : mutation_base(__pos,(__s==0.) ? true : false, x),g(__g),s(__s),h(__h)
     {
     }
 
