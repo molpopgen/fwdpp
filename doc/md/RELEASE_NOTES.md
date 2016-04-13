@@ -4,7 +4,9 @@
 
 * Doxygen file changed so that all library source is browsable.
 * Single-deme version of sample_diploid is commented in detail.
-* Added KTfwd::add_mutation and unit test  unit/test_sugar_add_mutation.cc
+* Added KTfwd::add_mutation, KTfwd::add_mutations and unit test  unit/test_sugar_add_mutation.cc.  These new functions allow the addition of mutations to diploids in a non-random way, which also means you can fill in a population from external data (e.g., something in a file).  These features resolve Issue #28, albeit at a low level.
+* Member KTfwd::mutation_base::xtra squeezed into unused space in this type.  No extra RAM used, and programs may assign values to that type to represent "stuff", whatever that is.
+* KTfwd::extensions::discrete_mut_model got a new constructor allowing KTfwd::extensions::discrete_mut_model::make_mut to assign values to KTfwd::mutation_base::xtra.
 
 ## 0.4.8
 
