@@ -111,7 +111,6 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    {},
 				    {}
 				    );
-  auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
   auto mmodel = std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
 			  &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
@@ -147,7 +146,6 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
 				    {},
 				    {}
 				    );
-  auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
   for(unsigned generation=0;generation<10000;++generation)
