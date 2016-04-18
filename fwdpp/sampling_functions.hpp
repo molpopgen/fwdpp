@@ -11,7 +11,7 @@
 #include <type_traits>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
-
+#include <fwdpp/type_traits.hpp>
 /*! @defgroup samplingPops Functions related to taking samples from simulated populations
 
   This collection of functions allows a user to draw a sample of size \f$n \ll 2N\f$ from
