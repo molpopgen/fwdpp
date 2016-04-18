@@ -11,5 +11,5 @@
 #include<fwdpp/sugar/singlepop.hpp>
 #include<fwdpp/sugar/demography.hpp>
 #include<fwdpp/sugar/sampling.hpp>
-#include<fwdpp/sugar/util.hpp>
+#include<fwdpp/sugar/add_mutation.hpp>
 #endif

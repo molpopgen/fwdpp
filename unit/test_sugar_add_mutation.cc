@@ -16,7 +16,7 @@
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
-#include <fwdpp/sugar/util.hpp>
+#include <fwdpp/sugar/add_mutation.hpp>
 
 using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;

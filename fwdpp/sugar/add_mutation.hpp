@@ -1,11 +1,11 @@
 /*!
-  \file fwdpp/sugar/util.hpp
+  \file fwdpp/sugar/add_mutation.hpp
 
-  \brief Header for miscellaneous functions 
+  \brief Definition of add_mutation and add_mutations
 */
 
-#ifndef FWDPP_SUGAR_UTIL_HPP
-#define FWDPP_SUGAR_UTIL_HPP
+#ifndef FWDPP_SUGAR_ADD_MUTATION_HPP
+#define FWDPP_SUGAR_ADD_MUTATION_HPP
 
 #include <exception>
 #include <type_traits>
