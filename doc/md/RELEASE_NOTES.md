@@ -7,6 +7,7 @@
 * Added KTfwd::add_mutation, KTfwd::add_mutations and unit test  unit/test_sugar_add_mutation.cc.  These new functions allow the addition of mutations to diploids in a non-random way, which also means you can fill in a population from external data (e.g., something in a file).  These features resolve Issue #28, albeit at a low level.
 * Member KTfwd::mutation_base::xtra squeezed into unused space in this type.  No extra RAM used, and programs may assign values to that type to represent "stuff", whatever that is.
 * KTfwd::extensions::discrete_mut_model got a new constructor allowing KTfwd::extensions::discrete_mut_model::make_mut to assign values to KTfwd::mutation_base::xtra.
+* Added KTfwd::change_neutral, which allows simulations to update the value of KTfwd::mutation_base::neutral and correctly update storage of the affected mutation in all gametes.
 
 ## 0.4.8
 

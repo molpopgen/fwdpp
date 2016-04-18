@@ -107,7 +107,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_LIB_PRESENT_TRUE@	GSLrng_test$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	type_traits_test$(EXEEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	recycling_integration$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	test_sugar_add_mutation$(EXEEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_sugar_add_mutation$(EXEEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	test_sugar_change_neutral$(EXEEXT)
 @BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
 subdir = unit
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -232,6 +233,12 @@ am__test_sugar_add_mutation_SOURCES_DIST = test_sugar_add_mutation.cc
 test_sugar_add_mutation_OBJECTS =  \
 	$(am_test_sugar_add_mutation_OBJECTS)
 test_sugar_add_mutation_LDADD = $(LDADD)
+am__test_sugar_change_neutral_SOURCES_DIST =  \
+	test_sugar_change_neutral.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@am_test_sugar_change_neutral_OBJECTS = test_sugar_change_neutral.$(OBJEXT)
+test_sugar_change_neutral_OBJECTS =  \
+	$(am_test_sugar_change_neutral_OBJECTS)
+test_sugar_change_neutral_LDADD = $(LDADD)
 am__type_traits_test_SOURCES_DIST = type_traits_test.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_type_traits_test_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	type_traits_test.$(OBJEXT)
@@ -278,7 +285,9 @@ SOURCES = $(GSLrng_test_SOURCES) $(callbacks_SOURCES) \
 	$(sugar_singlepop_SOURCES) \
 	$(sugar_singlepop_custom_diploid_SOURCES) \
 	$(test_generalmut_SOURCES) $(test_generalmut_vec_SOURCES) \
-	$(test_sugar_add_mutation_SOURCES) $(type_traits_test_SOURCES)
+	$(test_sugar_add_mutation_SOURCES) \
+	$(test_sugar_change_neutral_SOURCES) \
+	$(type_traits_test_SOURCES)
 DIST_SOURCES = $(am__GSLrng_test_SOURCES_DIST) \
 	$(am__callbacks_SOURCES_DIST) \
 	$(am__crossoverTest_SOURCES_DIST) \
@@ -299,6 +308,7 @@ DIST_SOURCES = $(am__GSLrng_test_SOURCES_DIST) \
 	$(am__test_generalmut_SOURCES_DIST) \
 	$(am__test_generalmut_vec_SOURCES_DIST) \
 	$(am__test_sugar_add_mutation_SOURCES_DIST) \
+	$(am__test_sugar_change_neutral_SOURCES_DIST) \
 	$(am__type_traits_test_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -648,6 +658,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@type_traits_test_SOURCES = type_traits_test.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@recycling_integration_SOURCES = recycling_integration.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@test_sugar_add_mutation_SOURCES = test_sugar_add_mutation.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@test_sugar_change_neutral_SOURCES = test_sugar_change_neutral.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
 all: all-am
@@ -775,6 +786,10 @@ test_sugar_add_mutation$(EXEEXT): $(test_sugar_add_mutation_OBJECTS) $(test_suga
 	@rm -f test_sugar_add_mutation$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(test_sugar_add_mutation_OBJECTS) $(test_sugar_add_mutation_LDADD) $(LIBS)
 
+test_sugar_change_neutral$(EXEEXT): $(test_sugar_change_neutral_OBJECTS) $(test_sugar_change_neutral_DEPENDENCIES) $(EXTRA_test_sugar_change_neutral_DEPENDENCIES) 
+	@rm -f test_sugar_change_neutral$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(test_sugar_change_neutral_OBJECTS) $(test_sugar_change_neutral_LDADD) $(LIBS)
+
 type_traits_test$(EXEEXT): $(type_traits_test_OBJECTS) $(type_traits_test_DEPENDENCIES) $(EXTRA_type_traits_test_DEPENDENCIES) 
 	@rm -f type_traits_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(type_traits_test_OBJECTS) $(type_traits_test_LDADD) $(LIBS)
@@ -807,6 +822,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_generalmut_vec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_sugar_add_mutation.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test_sugar_change_neutral.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/type_traits_test.Po@am__quote@
 
 .cc.o:
@@ -1173,6 +1189,13 @@ recycling_integration.log: recycling_integration$(EXEEXT)
 test_sugar_add_mutation.log: test_sugar_add_mutation$(EXEEXT)
 	@p='test_sugar_add_mutation$(EXEEXT)'; \
 	b='test_sugar_add_mutation'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+test_sugar_change_neutral.log: test_sugar_change_neutral$(EXEEXT)
+	@p='test_sugar_change_neutral$(EXEEXT)'; \
+	b='test_sugar_change_neutral'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
