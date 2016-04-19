@@ -6,7 +6,7 @@
 #ifndef FWDPP_SUGAR_CHANGE_NEUTRAL_HPP
 #define FWDPP_SUGAR_CHANGE_NEUTRAL_HPP
 
-#include <iostream>
+#include <algorithm>
 #include <exception>
 #include <cassert>
 #include <fwdpp/debug.hpp>
@@ -28,25 +28,24 @@ namespace KTfwd
       \note Do not call directly.
      */
     {
-      //Find first mutation in a with position >= pos
-      auto i = std::lower_bound(std::begin(a),std::end(a),
-				pos,[&mutations](const typename mut_key_cont_t::value_type & vt,
-						 const double & p)
-				{
-				  return  mutations[vt].pos<p;
-				});
+      /*
+	Ask if gamete has this mutation.  We do a linear 
+	search here in case of finite-site schemes and we
+	also do not expect this function to be called a whole lot.
+      */
+      auto i = std::find(std::begin(a),std::end(a),mindex);
       //If it exists and is mindex, erase it
-      if(i != a.end() && *i==mindex)
-	{
-	  a.erase(i);
-	}
-      else return;
+      if(i==std::end(a)) return;
+
+      a.erase(i);
+
       //Add mutation key into b
-      b.insert(std::lower_bound(std::begin(b),std::end(b),
+      b.insert(std::upper_bound(std::begin(b),std::end(b),
 				pos,[&mutations](const double & p,
 						 const typename mut_key_cont_t::value_type & vt)
+						 
 				{
-				  return p <= mutations[vt].pos;
+				  return p<mutations[vt].pos;
 				}),mindex);
     }
   }
