@@ -38,6 +38,9 @@ namespace KTfwd
 	   typename mcont_t>
   bool gamete_is_sorted_n( const gamete_t & g,
 			   const mcont_t & m )
+  /*!
+    \brief Check that neutral mutation keys are sorted according to mutation position
+  */
   {
     return std::is_sorted(g.mutations.begin(),
 			  g.mutations.end(),
@@ -51,6 +54,9 @@ namespace KTfwd
 	   typename mcont_t>
   bool gamete_is_sorted_s( const gamete_t & g,
 			   const mcont_t & m )
+  /*!
+    \brief Check that selected mutation keys are sorted according to mutation position
+  */
   {
     return std::is_sorted(g.smutations.begin(),
 			  g.smutations.end(),
@@ -64,6 +70,9 @@ namespace KTfwd
   bool gamete_data_sane( const gamete_t & g,
 			 const mcont_t & mutations,
 			 const std::vector<uint_t> & mutcounts)
+  /*
+    \brief Check that "neutral" and "non-neutral" mutations are where we expect them to be.
+   */
   {
     for( const auto & i : g.mutations )
       {
@@ -87,6 +96,9 @@ namespace KTfwd
 		    const gcont_t & gametes,
 		    const mcont_t & mutations,
 		    const std::vector<uint_t> & mutcounts)
+  /*
+    \brief Check that all diploids refer to extant gametes with sane data.
+   */
   {
     for(const auto & d : diploids)
       {
