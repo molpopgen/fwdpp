@@ -11,7 +11,7 @@ namespace KTfwd
 
   /*! \brief Returns true if the sum of counts in gametes equals twoN, false otherwise
     Returns true if the sum of counts in gametes equals twoN, false otherwise
-   */
+  */
   template<typename gcont_t>
   bool check_sum(const gcont_t & gametes, const unsigned twoN)
   {
@@ -27,7 +27,7 @@ namespace KTfwd
 
   /*! \brief Returns true if the sum of counts in gametes equals twoN, false otherwise
     Returns true if the sum of counts in gametes equals twoN, false otherwise
-   */
+  */
   template<typename gcont_t>
   bool check_sum(const gcont_t * gametes, const unsigned twoN)
   {
