@@ -220,10 +220,10 @@ namespace KTfwd
   
   template<typename poptype,
 	   class... Args>
-  void add_mutation(poptype & p,
-		    const std::vector<std::size_t> & indlist,
-		    const std::vector<short> & clist,
-		    Args&&... args)
+  std::size_t add_mutation(poptype & p,
+			   const std::vector<std::size_t> & indlist,
+			   const std::vector<short> & clist,
+			   Args&&... args)
   /*!
     \brief Add a mutation into a population at a given frequency.
 
@@ -231,6 +231,8 @@ namespace KTfwd
     \param indlist A list of indexes of diploids into which to add the new mutations.
     \param clist A list of gametes.  See below.
     \param args Values required to cosnstruct a new mutation.  See below.
+
+    \return The key referring to the location of the new mutation in the population
 
     Some notes:
 
@@ -268,15 +270,16 @@ namespace KTfwd
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
     auto gams = collect_gametes(p,indlist,clist);
     sugar::add_mutation_details(p,{mindex},gams);
+    return mindex;
   }
 
   template<typename metapoptype,
 	   class... Args>
-  void add_mutation(metapoptype & p,
-		    const std::vector<std::size_t> demes,
-		    const std::vector<std::vector<std::size_t>> & indlist,
-		    const std::vector<std::vector<short>> & clist,
-		    Args&&... args)
+  std::size_t add_mutation(metapoptype & p,
+			   const std::vector<std::size_t> demes,
+			   const std::vector<std::vector<std::size_t>> & indlist,
+			   const std::vector<std::vector<short>> & clist,
+			   Args&&... args)
   /*!
     \brief Add a mutation into a deme from a population at a given frequency in a specific set of
     demes.
@@ -287,7 +290,7 @@ namespace KTfwd
     \param clist A list of gametes. See below.
     \param args Values required to cosnstruct a new mutation.  See below.
 
-    \return Nothing (void)
+    \return The key referring to the location of the new mutation in the population
 
     Some notes:
 
@@ -333,15 +336,16 @@ namespace KTfwd
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
     auto gams = sugar::collect_gametes(p,demes,indlist,clist);
     sugar::add_mutation_details(p,{mindex},gams);
+    return mindex;
   }
   
   template<typename multiloc_poptype,
 	   class... Args>
-  void add_mutation(multiloc_poptype & p,
-		    const std::size_t locus,
-		    const std::vector<std::size_t> & indlist,
-		    const std::vector<short> & clist,
-		    Args&&... args)
+  std::size_t add_mutation(multiloc_poptype & p,
+			   const std::size_t locus,
+			   const std::vector<std::size_t> & indlist,
+			   const std::vector<short> & clist,
+			   Args&&... args)
   /*!
     \brief Add a mutation into a population at a given frequency at in a specific locus.
 
@@ -351,7 +355,8 @@ namespace KTfwd
     \param clist A list of gametes. See below.
     \param args Values required to cosnstruct a new mutation.  See below.
 
-    \return Nothing (void)
+
+    \return Nothing (void)    \return The key referring to the location of the new mutation in the population
 
     Some notes:
 
@@ -387,6 +392,7 @@ namespace KTfwd
     auto mindex = sugar::get_mut_index(p.mutations,p.mcounts,new_mutant);
     auto gams = sugar::collect_gametes(p,locus,indlist,clist);
     sugar::add_mutation_details(p,{mindex},gams);
+    return mindex;
   }
 
   template<typename poptype>
