@@ -532,6 +532,8 @@ namespace KTfwd
     \param clist A list of gametes. See below.
     \param mutaton_indexes Keys to mutations in p.mutations.
 
+    \return Nothing (void)
+
     Some notes:
 
     clist.size() must equal indlist.size()
