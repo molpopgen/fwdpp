@@ -1,10 +1,10 @@
-/*! 
-  \file sugar_sampling.cc 
-  \ingroup unit 
+/*!
+  \file sugar_sampling.cc
+  \ingroup unit
   \brief Testing KTfwd::sample and KTfwd::sample_separate
 */
 #define BOOST_TEST_MODULE sugar_sampling
-#define BOOST_TEST_DYN_LINK 
+#define BOOST_TEST_DYN_LINK
 
 #include <config.h>
 #include <boost/test/unit_test.hpp>
@@ -21,13 +21,21 @@ using mutation_t = KTfwd::popgenmut;
 using singlepop_t = KTfwd::singlepop<mutation_t>;
 using metapop_t = KTfwd::metapop<mutation_t>;
 using multiloc_t = KTfwd::multiloc<mutation_t>;
-  
+
 KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
 BOOST_AUTO_TEST_CASE( singledeme_test_sep_empty )
 {
   singlepop_t pop(1000);
   auto s = KTfwd::sample_separate(pop,std::vector<unsigned>(),true);
+  BOOST_REQUIRE(s.first.empty()==true);
+  BOOST_REQUIRE(s.second.empty()==true);
+}
+
+BOOST_AUTO_TEST_CASE( multilocus_test_sep_empty )
+{
+  multiloc_t pop(1000,4);
+  auto s = KTfwd::sample_separate(rng.get(),pop,20,true);
   BOOST_REQUIRE(s.first.empty()==true);
   BOOST_REQUIRE(s.second.empty()==true);
 }
