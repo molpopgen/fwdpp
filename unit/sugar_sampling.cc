@@ -36,8 +36,11 @@ BOOST_AUTO_TEST_CASE( multilocus_test_sep_empty )
 {
   multiloc_t pop(1000,4);
   auto s = KTfwd::sample_separate(rng.get(),pop,20,true);
-  BOOST_REQUIRE(s.first.empty()==true);
-  BOOST_REQUIRE(s.second.empty()==true);
+  for( auto i : s)
+    {
+      BOOST_REQUIRE(i.first.empty()==true);
+      BOOST_REQUIRE(i.second.empty()==true);
+    }
 }
 
 BOOST_AUTO_TEST_CASE( singledeme_test_sep_throw )

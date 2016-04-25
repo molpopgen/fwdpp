@@ -99,15 +99,22 @@ namespace KTfwd
   }
 
   template<typename poptype>
-  sample_t sample_details( const poptype & p,
+  std::vector<sample_t> sample_details( const poptype & p,
 			   const std::vector<unsigned> & individuals,
 			   const bool removeFixed,
 			   std::false_type)
   {
-    sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
-    auto rv = std::move(temp.first);
-    std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
-    finish_sample(rv,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
+    auto temp = fwdpp_internal::ms_sample_separate_mlocus(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
+    std::vector<sample_t> rv;
+    std::size_t j=0;
+    for( auto & i : temp)
+      {
+	rv.emplace_back(std::move(i.first));
+	std::move(i.second.begin(),i.second.end(),std::back_inserter(rv[j]));
+	finish_sample(rv[j++],p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
+      }
+    //auto rv = std::move(temp.first);
+    //std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     return rv;
   }
   
