@@ -1,6 +1,6 @@
 /*!
   \file fwdpp/experimental/sample_diploid.hpp
-  \brief Testing ground for more flexible API to evolve populations.
+  \brief Testing ground for more flexible API to evolve populations -- single deme version.
 */
 #ifndef __FWDPP_EXPERIMENTAL_SAMPLE_DIPLOID_HPP__
 #define __FWDPP_EXPERIMENTAL_SAMPLE_DIPLOID_HPP__
