@@ -39,7 +39,6 @@ namespace KTfwd
     auto rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
     return rv;
-    //return sample_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
   template<typename poptype>
@@ -65,7 +64,6 @@ namespace KTfwd
     auto rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
     return rv;
-    //return sample_sep_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
   template<typename poptype>
@@ -127,7 +125,6 @@ namespace KTfwd
     auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     finish_sample(rv,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
     return rv;
-    //return sample_sep_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
   }
 
   template<typename poptype>
