@@ -17,10 +17,10 @@ namespace KTfwd
     Take a random sample of size 'nsam' from a population
    */
   template<typename poptype>
-  auto  sample( const gsl_rng * r,
-		const poptype & p,
-		const unsigned nsam,
-		const bool removeFixed) -> decltype(ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed))
+  auto sample( const gsl_rng * r,
+	       const poptype & p,
+	       const unsigned nsam,
+	       const bool removeFixed) -> decltype(ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed))
   /*!
     Take a random sample of nsam chromosomes from a population
 
@@ -36,7 +36,9 @@ namespace KTfwd
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
 		   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG"
 		   );
-    return ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+    auto rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+    finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
+    return rv;
     //return sample_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
@@ -60,7 +62,9 @@ namespace KTfwd
 		    std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value ),
 		   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG"
 		   );
-    return ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+    auto rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+    finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
+    return rv;
     //return sample_sep_details(r,p,nsam,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
   }
 
@@ -90,7 +94,8 @@ namespace KTfwd
 	throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
       }
 
-    return sample_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
+    auto rv = sample_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type());
+    return rv;
   }
   
   template<typename poptype>
@@ -119,7 +124,9 @@ namespace KTfwd
       {
 	throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
       }
-    return fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
+    auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
+    finish_sample(rv,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
+    return rv;
     //return sample_sep_details(p,individuals,removeFixed,typename std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::type()); 
   }
 

@@ -32,7 +32,9 @@ namespace KTfwd
   }
 
   template<typename vec_mutation_t>
-  void finish_sample( sample_t & sample, const vec_mutation_t & fixations, const unsigned nsam, const bool removeFixed, const sugar::treat_neutral treat )
+  void finish_sample( sample_t & sample, const vec_mutation_t & fixations,
+		      const unsigned nsam, const bool removeFixed,
+		      const sugar::treat_neutral treat )
   {
     if(! removeFixed )
       {
@@ -43,6 +45,76 @@ namespace KTfwd
 		  const sample_site_t & b) noexcept {
 		 return a.first<b.first;
 	       });
+  }
+
+  template<typename vec_mutation_t>
+  void finish_sample( sep_sample_t & sample, const vec_mutation_t & fixations,
+		      const unsigned nsam, const bool removeFixed,
+		      const sugar::treat_neutral treat )
+  {
+    if(! removeFixed )
+      {
+	add_fixations(sample.first,fixations,nsam,sugar::treat_neutral::NEUTRAL);
+	add_fixations(sample.second,fixations,nsam,sugar::treat_neutral::SELECTED);
+      }
+    std::sort( sample.first.begin(),sample.first.end(),
+	       [](const sample_site_t & a,
+		  const sample_site_t & b) noexcept {
+		 return a.first<b.first;
+	       });
+    std::sort( sample.second.begin(),sample.second.end(),
+	       [](const sample_site_t & a,
+		  const sample_site_t & b) noexcept {
+		 return a.first<b.first;
+	       });
+  }
+
+  template<typename vec_mutation_t>
+  void finish_sample( std::vector<sample_t> & sample, const vec_mutation_t & fixations,
+		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral treat )
+  {
+    if(! removeFixed )
+      {
+	for( auto & i : sample )
+	  {
+	    add_fixations(i,fixations,nsam,sugar::treat_neutral::ALL);
+	  }
+      }
+    for( auto & i : sample)
+      {
+	std::sort( i.begin(),i.end(),
+		   [](const sample_site_t & a,
+		      const sample_site_t & b) noexcept {
+		     return a.first<b.first;
+		   });
+      }
+  }
+
+  template<typename vec_mutation_t>
+  void finish_sample( std::vector<sep_sample_t> & sample, const vec_mutation_t & fixations,
+		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral treat )
+  {
+    if(! removeFixed )
+      {
+	for(auto & i : sample)
+	  {
+	    add_fixations(i.first,fixations,nsam,sugar::treat_neutral::NEUTRAL);
+	    add_fixations(i.second,fixations,nsam,sugar::treat_neutral::SELECTED);
+	  }
+      }
+    for(auto & i : sample)
+      {
+	std::sort( i.first.begin(),i.first.end(),
+		   [](const sample_site_t & a,
+		      const sample_site_t & b) noexcept {
+		     return a.first<b.first;
+		   });
+	std::sort( i.second.begin(),i.second.end(),
+		   [](const sample_site_t & a,
+		      const sample_site_t & b) noexcept {
+		     return a.first<b.first;
+		   });
+      }
   }
   
   //Single-region, single-deme
