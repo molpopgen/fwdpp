@@ -118,50 +118,50 @@ namespace KTfwd
   }
   
   //Single-region, single-deme
-  template<typename poptype>
-  sample_t sample_details( const gsl_rng * r,
-			   const poptype & p,
-			   const unsigned nsam,
-			   const bool removeFixed,
-			   std::true_type)
-  {
-    sample_t rv =  ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-    finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
-    return rv;
-  }
+  // template<typename poptype>
+  // sample_t sample_details( const gsl_rng * r,
+  // 			   const poptype & p,
+  // 			   const unsigned nsam,
+  // 			   const bool removeFixed,
+  // 			   std::true_type)
+  // {
+  //   sample_t rv =  ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+  //   finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
+  //   return rv;
+  // }
 
-  //Multi-locus, single-deme
-  template<typename poptype>
-  sample_t sample_details( const gsl_rng * r,
-			   const poptype & p,
-			   const unsigned nsam,
-			   const bool removeFixed,
-			   std::false_type)
-  {
-    sample_t rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-    finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
-    return rv;
-  }
+  // //Multi-locus, single-deme
+  // template<typename poptype>
+  // sample_t sample_details( const gsl_rng * r,
+  // 			   const poptype & p,
+  // 			   const unsigned nsam,
+  // 			   const bool removeFixed,
+  // 			   std::false_type)
+  // {
+  //   sample_t rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+  //   finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
+  //   return rv;
+  // }
 
   //Single-region, single-deme
-  template<typename poptype>
-  sep_sample_t sample_sep_details( const gsl_rng * r,
-				   const poptype & p,
-				   const unsigned nsam,
-				   const bool removeFixed,
-				   std::true_type)
-  {
-    sep_sample_t rv = ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-    finish_sample(rv.first,p.fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
-    finish_sample(rv.second,p.fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
-    return rv;
-  }
+  // template<typename poptype>
+  // sep_sample_t sample_sep_details( const gsl_rng * r,
+  // 				   const poptype & p,
+  // 				   const unsigned nsam,
+  // 				   const bool removeFixed,
+  // 				   std::true_type)
+  // {
+  //   sep_sample_t rv = ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+  //   finish_sample(rv.first,p.fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
+  //   finish_sample(rv.second,p.fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
+  //   return rv;
+  // }
 
   template<typename poptype>
   sample_t sample_details( const poptype & p,
-			   const std::vector<unsigned> & individuals,
-			   const bool removeFixed,
-			   std::true_type)
+  			   const std::vector<unsigned> & individuals,
+  			   const bool removeFixed,
+  			   std::true_type)
   {
     sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     auto rv = std::move(temp.first);
@@ -172,49 +172,50 @@ namespace KTfwd
 
   template<typename poptype>
   std::vector<sample_t> sample_details( const poptype & p,
-			   const std::vector<unsigned> & individuals,
-			   const bool removeFixed,
-			   std::false_type)
+					const std::vector<unsigned> & individuals,
+					const bool removeFixed,
+					std::false_type)
   {
     auto temp = fwdpp_internal::ms_sample_separate_mlocus(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
     std::vector<sample_t> rv;
     std::size_t j=0;
     for( auto & i : temp)
       {
-	rv.emplace_back(std::move(i.first));
-	std::move(i.second.begin(),i.second.end(),std::back_inserter(rv[j]));
-	finish_sample(rv[j++],p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
+  	rv.emplace_back(std::move(i.first));
+  	std::move(i.second.begin(),i.second.end(),std::back_inserter(rv[j]));
+  	//finish_sample(rv[j++],p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
       }
+    finish_sample(rv,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::ALL);
     //auto rv = std::move(temp.first);
     //std::move(temp.second.begin(),temp.second.end(),std::back_inserter(rv));
     return rv;
   }
   
-  template<typename poptype>
-  sep_sample_t sample_sep_details( const poptype & p,
-				   const std::vector<unsigned> & individuals,
-				   const bool removeFixed,
-				   std::true_type)
-  {
-    sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
-    finish_sample(rv.first,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::NEUTRAL);
-    finish_sample(rv.second,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::SELECTED);
-    return rv;
-  }
+  // template<typename poptype>
+  // sep_sample_t sample_sep_details( const poptype & p,
+  // 				   const std::vector<unsigned> & individuals,
+  // 				   const bool removeFixed,
+  // 				   std::true_type)
+  // {
+  //   sep_sample_t rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
+  //   finish_sample(rv.first,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::NEUTRAL);
+  //   finish_sample(rv.second,p.fixations,2*individuals.size(),removeFixed,sugar::treat_neutral::SELECTED);
+  //   return rv;
+  // }
 
-  //Multi-locus, single-deme
-  template<typename poptype>
-  sep_sample_t sample_sep_details( const gsl_rng * r,
-				   const poptype & p,
-				   const unsigned nsam,
-				   const bool removeFixed,
-				   std::false_type)
-  {
-    sep_sample_t rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-    finish_sample(rv.first,p.fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
-    finish_sample(rv.second,p.fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
-    return rv;
-  }
+  // // //Multi-locus, single-deme
+  // template<typename poptype>
+  // sep_sample_t sample_sep_details( const gsl_rng * r,
+  // 				   const poptype & p,
+  // 				   const unsigned nsam,
+  // 				   const bool removeFixed,
+  // 				   std::false_type)
+  // {
+  //   sep_sample_t rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+  //   finish_sample(rv.first,p.fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
+  //   finish_sample(rv.second,p.fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
+  //   return rv;
+  // }
 }
 
 #endif
