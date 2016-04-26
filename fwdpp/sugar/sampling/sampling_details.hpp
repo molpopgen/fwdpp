@@ -50,70 +50,30 @@ namespace KTfwd
   template<typename vec_mutation_t>
   void finish_sample( sep_sample_t & sample, const vec_mutation_t & fixations,
 		      const unsigned nsam, const bool removeFixed,
-		      const sugar::treat_neutral treat )
+		      const sugar::treat_neutral )
   {
-    if(! removeFixed )
-      {
-	add_fixations(sample.first,fixations,nsam,sugar::treat_neutral::NEUTRAL);
-	add_fixations(sample.second,fixations,nsam,sugar::treat_neutral::SELECTED);
-      }
-    std::sort( sample.first.begin(),sample.first.end(),
-	       [](const sample_site_t & a,
-		  const sample_site_t & b) noexcept {
-		 return a.first<b.first;
-	       });
-    std::sort( sample.second.begin(),sample.second.end(),
-	       [](const sample_site_t & a,
-		  const sample_site_t & b) noexcept {
-		 return a.first<b.first;
-	       });
+    finish_sample(sample.first,fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
+    finish_sample(sample.second,fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
   }
 
   template<typename vec_mutation_t>
   void finish_sample( std::vector<sample_t> & sample, const vec_mutation_t & fixations,
-		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral treat )
+		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral )
   {
-    if(! removeFixed )
+    for( auto & i : sample )
       {
-	for( auto & i : sample )
-	  {
-	    add_fixations(i,fixations,nsam,sugar::treat_neutral::ALL);
-	  }
-      }
-    for( auto & i : sample)
-      {
-	std::sort( i.begin(),i.end(),
-		   [](const sample_site_t & a,
-		      const sample_site_t & b) noexcept {
-		     return a.first<b.first;
-		   });
+	finish_sample(i,fixations,nsam,removeFixed,sugar::treat_neutral::ALL);
       }
   }
 
   template<typename vec_mutation_t>
   void finish_sample( std::vector<sep_sample_t> & sample, const vec_mutation_t & fixations,
-		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral treat )
+		      const unsigned nsam, const bool removeFixed, const sugar::treat_neutral )
   {
-    if(! removeFixed )
-      {
-	for(auto & i : sample)
-	  {
-	    add_fixations(i.first,fixations,nsam,sugar::treat_neutral::NEUTRAL);
-	    add_fixations(i.second,fixations,nsam,sugar::treat_neutral::SELECTED);
-	  }
-      }
     for(auto & i : sample)
       {
-	std::sort( i.first.begin(),i.first.end(),
-		   [](const sample_site_t & a,
-		      const sample_site_t & b) noexcept {
-		     return a.first<b.first;
-		   });
-	std::sort( i.second.begin(),i.second.end(),
-		   [](const sample_site_t & a,
-		      const sample_site_t & b) noexcept {
-		     return a.first<b.first;
-		   });
+	finish_sample(i.first,fixations,nsam,removeFixed,sugar::treat_neutral::NEUTRAL);
+	finish_sample(i.second,fixations,nsam,removeFixed,sugar::treat_neutral::SELECTED);
       }
   }
 
