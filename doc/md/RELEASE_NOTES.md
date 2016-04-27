@@ -8,6 +8,8 @@
 * Member KTfwd::mutation_base::xtra squeezed into unused space in this type.  No extra RAM used, and programs may assign values to that type to represent "stuff", whatever that is.
 * KTfwd::extensions::discrete_mut_model got a new constructor allowing KTfwd::extensions::discrete_mut_model::make_mut to assign values to KTfwd::mutation_base::xtra.
 * Added KTfwd::change_neutral, which allows simulations to update the value of KTfwd::mutation_base::neutral and correctly update storage of the affected mutation in all gametes.
+* #39 fixed
+* #40 fixed
 
 ## 0.4.8
 
