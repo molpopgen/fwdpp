@@ -147,6 +147,7 @@ namespace KTfwd
 			       const unsigned & n,
 			       const bool & remove_fixed)
     {
+      assert(!diploids.empty());
       using rvtype = std::vector<sep_sample_t>;
       //using genotype = typename dipvector_t::value_type;
 
