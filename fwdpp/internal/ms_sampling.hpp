@@ -150,7 +150,7 @@ namespace KTfwd
       using rvtype = std::vector<sep_sample_t>;
       //using genotype = typename dipvector_t::value_type;
 
-      rvtype rv( diploids.size() );
+      rvtype rv( diploids[0].size() );
 
       std::function<bool(const sample_site_t &, const double &)> sitefinder = [](const sample_site_t & site,
 										 const double & d )
