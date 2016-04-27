@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE( singledeme_test_sep_empty )
 
 BOOST_AUTO_TEST_CASE( multilocus_test_sep_empty )
 {
-  multiloc_t pop(4,1000);
+  multiloc_t pop(1000,4);
+  BOOST_REQUIRE_EQUAL(pop.diploids.size(),1000);
   auto s = KTfwd::sample_separate(rng.get(),pop,20,true);
   BOOST_REQUIRE_EQUAL(s.size(),4);
   for( auto i : s)
@@ -46,7 +47,8 @@ BOOST_AUTO_TEST_CASE( multilocus_test_sep_empty )
 
 BOOST_AUTO_TEST_CASE( multilocus_test_empty )
 {
-  multiloc_t pop(4,1000);
+  multiloc_t pop(1000,4);
+  BOOST_REQUIRE_EQUAL(pop.diploids.size(),1000);
   auto s = KTfwd::sample(rng.get(),pop,20,true);
   BOOST_REQUIRE_EQUAL(s.size(),4);
   for( auto i : s)
