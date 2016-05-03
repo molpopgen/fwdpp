@@ -285,7 +285,7 @@ namespace KTfwd
     demes.
 
     \param p A population object. Meta- or multi-locus.
-    \parm demes Vector of indices of the demes in which to add mutation.
+    \param demes Vector of indices of the demes in which to add mutation.
     \param indlist A list of indexes of diploids into which to add the new mutations in each deme.
     \param clist A list of gametes. See below.
     \param args Values required to cosnstruct a new mutation.  See below.
@@ -350,7 +350,7 @@ namespace KTfwd
     \brief Add a mutation into a population at a given frequency at in a specific locus.
 
     \param p A population object. Meta- or multi-locus.
-    \parm locus Index of the locus in which to add mutation.
+    \param locus Index of the locus in which to add mutation.
     \param indlist A list of indexes of diploids into which to add the new mutations.
     \param clist A list of gametes. See below.
     \param args Values required to cosnstruct a new mutation.  See below.
@@ -462,7 +462,7 @@ namespace KTfwd
     demes.
 
     \param p A population object. Meta- or multi-locus.
-    \parm demes Vector of indices of the demes in which to add mutation.
+    \param demes Vector of indices of the demes in which to add mutation.
     \param indlist A list of indexes of diploids into which to add the new mutations in each deme.
     \param clist A list of gametes. See below.
     \param mutation_indexes Keys to mutations in p.mutations
@@ -527,7 +527,7 @@ namespace KTfwd
     \brief Add a set of mutations into a given locus of a multi-locus simulation.
 
     \param p A population object. Meta- or multi-locus.
-    \parm locus Index of the locus in which to add mutation.
+    \param locus Index of the locus in which to add mutation.
     \param indlist A list of indexes of diploids into which to add the new mutations.
     \param clist A list of gametes. See below.
     \param mutaton_indexes Keys to mutations in p.mutations.
