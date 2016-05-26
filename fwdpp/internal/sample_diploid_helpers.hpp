@@ -1,7 +1,7 @@
 #ifndef FWDPP_INTERNAL_SAMPLE_DIPLOID_HELPERS
 #define FWDPP_INTERNAL_SAMPLE_DIPLOID_HELPERS
 
-#include <algorithm>
+#include <vector>
 
 namespace KTfwd
 {
