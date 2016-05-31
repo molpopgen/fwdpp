@@ -29,7 +29,7 @@ namespace KTfwd
       for(const auto & g : gametes)
 	{
 	  const auto n = g.n;
-	  if(g.n) //only do this for extant gametes
+	  if(n) //only do this for extant gametes
 	    {
 	      for(const auto & m : g.mutations) mcounts[m]+=n;
 	      for(const auto & m : g.smutations) mcounts[m]+=n;
