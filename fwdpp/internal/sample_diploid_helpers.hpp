@@ -19,12 +19,12 @@ namespace KTfwd
       This is usually the most expensive function call in a simulation.
     */
     {
+      //zero out mcounts
+      for(auto & mc : mcounts) mc=0;
       if(mutations.size()>mcounts.size())
 	{
 	  mcounts.resize(mutations.size(),0);
 	}
-      //zero out mcounts
-      for(auto & mc : mcounts) mc=0;
       //update mutation counts
       for(const auto & g : gametes)
 	{
