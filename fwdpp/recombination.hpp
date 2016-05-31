@@ -9,7 +9,7 @@ namespace KTfwd
   struct poisson_xover
   /*!
     \brief Simple model of crossing-over.
-    Generates a Poisson-distribued number of recombination breakpoints with mean \a littler that
+    Generates a Poisson-distributed number of recombination breakpoints with mean \a littler that
     are uniformly-distributed between \a minpos and \a maxpos
    */
   {
