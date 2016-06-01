@@ -30,7 +30,7 @@ using gtype = KTfwd::gamete;
   These tests model what goes on inside of the recombination routines.
 */
 
-BOOST_AUTO_TEST_SUITE( test_crossing_over )
+BOOST_AUTO_TEST_SUITE( test_recombination )
 
 BOOST_FIXTURE_TEST_CASE( simple_test_1,standard_empty_single_deme_fixture )
 {
