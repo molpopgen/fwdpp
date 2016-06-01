@@ -24,7 +24,7 @@ struct standard_empty_single_deme_fixture
   Basic stuff needed for a simulation of a single deme using the low level bit of fwdpp
   \note In practice, one would use KTfwd::singlepop instead of this.  This object is for unit/integration testing only!!
   \ingroup unit
- */
+*/
 {
   mcont_t mutations,fixations;
   gcont_t gametes;
@@ -41,6 +41,32 @@ struct standard_empty_single_deme_fixture
 					 fixation_times(mcounts_t()),
 					 neutral(KTfwd::gamete::mutation_container()),
 					 selected(KTfwd::gamete::mutation_container())
+  {
+  }
+};
+
+struct standard_empty_metapop_fixture
+/*!
+  Basic stuff needed for a simulation of a metapopulation using the low level bit of fwdpp
+  \note In practice, one would use KTfwd::metapop instead of this.  This object is for unit/integration testing only!!
+  \ingroup unit
+*/
+{
+  mcont_t mutations,fixations;
+  gcont_t gametes;
+  std::vector<dipvector_t> diploids;
+  lookup_table_t mut_lookup;
+  mcounts_t mcounts,fixation_times;
+  KTfwd::gamete::mutation_container neutral,selected;
+  standard_empty_metapop_fixture() : mutations(mcont_t()),
+				     fixations(mcont_t()),
+				     gametes(gcont_t()),
+				     diploids(std::vector<dipvector_t>()),
+				     mut_lookup(lookup_table_t()),
+				     mcounts(mcounts_t()),
+				     fixation_times(mcounts_t()),
+				     neutral(KTfwd::gamete::mutation_container()),
+				     selected(KTfwd::gamete::mutation_container())
   {
   }
 };
