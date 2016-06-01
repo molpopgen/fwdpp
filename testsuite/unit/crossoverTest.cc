@@ -1,12 +1,15 @@
 /*!
   \defgroup unit Unit testing
 
-  This documentation page is a list of links to the source code for the library's unit test programs.
+  This documentation page is a list of links to the source code for the library's unit tests.
 
-  These sources are distributed with fwdpp in the unit/ directory of the source repository.
+  These sources are distributed with fwdpp in the testsuite/ directory of the source repository.
 
   They are implemented using boost's unit testing framework, and will not be compiled unless
   the configure script finds this library on your system.
+
+  Please note that any types defined as part of this module are NOT usable parts of the library.  Rather,
+  many of these types are "fixtures", which is a fancy code word for reusable objects for testing.
  */
 
 /*! \file crossoverTest.cc
