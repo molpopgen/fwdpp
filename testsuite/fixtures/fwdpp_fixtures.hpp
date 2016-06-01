@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/forward_types.hpp>
+#include <gsl/gsl_rng.h>
 
 using mtype = KTfwd::mutation;
 using mcont_t = std::vector<mtype>;
@@ -69,6 +70,21 @@ struct standard_empty_metapop_fixture
 				     selected(KTfwd::gamete::mutation_container())
   {
   }
+};
+
+struct gsl_rng_fixture
+/*!
+  Can be used as a global fixture when an RNG is needed.
+  \note mt19937 with seed of 0
+  \ingroup unit
+ */
+{
+  gsl_rng * rng_ptr;
+  gsl_rng_fixture() : rng_ptr(gsl_rng_alloc(gsl_rng_mt19937))
+  {
+    gsl_rng_set(rng_ptr,0);
+  }
+  ~gsl_rng_fixture() { gsl_rng_free(rng_ptr); }
 };
 
 #endif
