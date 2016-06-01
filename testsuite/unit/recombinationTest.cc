@@ -82,7 +82,7 @@ BOOST_FIXTURE_TEST_CASE( simple_test_1,standard_empty_single_deme_fixture )
   auto rv = KTfwd::recombine_gametes(rec_positions,
 				     gametes,mutations,0,1,
 				     grec_bin,neutral,selected);
-
+  BOOST_REQUIRE_EQUAL(rv,2);
   BOOST_REQUIRE_EQUAL(gametes.size(),3);
   /*
     Now, gametes[2] should have both mutations
@@ -123,10 +123,11 @@ BOOST_FIXTURE_TEST_CASE( three_point_cross_1,standard_empty_single_deme_fixture 
 
   //Needed as of 0.3.3
   auto grec_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  KTfwd::recombine_gametes( rec_positions,
-			    gametes,mutations,0,1,
-			    grec_bin,
-			    neutral,selected );
+  auto rv = KTfwd::recombine_gametes( rec_positions,
+				      gametes,mutations,0,1,
+				      grec_bin,
+				      neutral,selected );
+  BOOST_REQUIRE_EQUAL(rv,2);
   BOOST_REQUIRE_EQUAL(gametes.size(),3);
 
   /*
@@ -178,11 +179,11 @@ BOOST_FIXTURE_TEST_CASE( three_point_cross_2,standard_empty_single_deme_fixture 
   gametes = { g1, g2 };
 
   auto grec_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  KTfwd::recombine_gametes( rec_positions,
-			    gametes,mutations,0,1,
-			    grec_bin,
-			    neutral,selected );
-
+  auto rv = KTfwd::recombine_gametes( rec_positions,
+				      gametes,mutations,0,1,
+				      grec_bin,
+				      neutral,selected );
+  BOOST_REQUIRE_EQUAL(rv,2);
   BOOST_REQUIRE_EQUAL(gametes.size(),3);
   auto & MUT = mutations; //HACK so that lambda compiles...
   /*
