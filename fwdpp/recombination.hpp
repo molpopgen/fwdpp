@@ -1,6 +1,7 @@
 #ifndef __FWDPP_RECOMBINATION_HPP__
 #define __FWDPP_RECOMBINATION_HPP__
 
+#include <algorithm>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
