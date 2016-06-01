@@ -3,6 +3,7 @@
 #define __FWDPP_RECOMBINATION_TCC__
 
 #include <vector>
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/recombination_common.hpp>
 #include <fwdpp/internal/recycling.hpp>
 namespace KTfwd
