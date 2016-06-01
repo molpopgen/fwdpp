@@ -14,12 +14,13 @@
 
 /*! \file crossoverTest.cc
   \ingroup unit
-  \brief Tests of KTfwd::fwdpp_internal::recombine_gametes
+  \brief Tests of recombination for single region simulations
 */
 
 #include <config.h>
 #include "../fixtures/fwdpp_fixtures.hpp"
-#include <fwdpp/internal/recombination_common.hpp>
+#include <fwdpp/recombination.hpp>
+#include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/debug.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -77,27 +78,26 @@ BOOST_FIXTURE_TEST_CASE( simple_test_1,standard_empty_single_deme_fixture )
   BOOST_CHECK_EQUAL( g1.mutations.size(), 1 );
   BOOST_CHECK_EQUAL( g2.mutations.size(), 1 );
 
-  //These are our containers for the recombinants
+  auto grec_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  auto rv = KTfwd::recombine_gametes(rec_positions,
+				     gametes,mutations,0,1,
+				     grec_bin,neutral,selected);
 
-  gtype::mutation_container neutral,selected;
-  KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
-					    0,1,
-					    gametes,mutations,
-					    neutral,selected);
+  BOOST_REQUIRE_EQUAL(gametes.size(),3);
   /*
-    Now, neutral should have both mutations
+    Now, gametes[2] should have both mutations
   */
-  BOOST_CHECK( std::find_if( neutral.begin(),
-			     neutral.end(),
+  BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+			     gametes[2].mutations.end(),
 			     [&MUT]( std::size_t __m ) {
 			       return MUT[__m].pos == 0.9;
-			     } ) != neutral.end() );
+			     } ) != gametes[2].mutations.end() );
 
-  BOOST_CHECK( std::find_if( neutral.begin(),
-			     neutral.end(),
+  BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+			     gametes[2].mutations.end(),
 			     [&MUT]( std::size_t __m ) {
 			       return MUT[__m].pos == 0.1;
-			     } ) != neutral.end() );
+			     } ) != gametes[2].mutations.end() );
 
 }
 
@@ -122,30 +122,31 @@ BOOST_FIXTURE_TEST_CASE( three_point_cross_1,standard_empty_single_deme_fixture 
   gametes = { g1, g2 };
 
   //Needed as of 0.3.3
-  gtype::mutation_container neutral,selected;
-  KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
-					    0,1,gametes,mutations,
-					    neutral,selected );
-
+  auto grec_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  KTfwd::recombine_gametes( rec_positions,
+			    gametes,mutations,0,1,
+			    grec_bin,
+			    neutral,selected );
+  BOOST_REQUIRE_EQUAL(gametes.size(),3);
 
   /*
     This was a double x-over.
     Neutral must therefore only contain 0.1
   */
   auto & MUT = mutations; //HACK so that lambda compiles...
-  BOOST_CHECK( std::find_if( neutral.begin(),
-			     neutral.end(),
+  BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+			     gametes[2].mutations.end(),
 			     [&MUT]( std::size_t __m ) {
 			       return MUT[__m].pos == 0.1;
-			     } ) != neutral.end());
+			     } ) != gametes[2].mutations.end());
 
   for( auto d : {0.5,0.9} )
     {
-      BOOST_CHECK( std::find_if( neutral.begin(),
-				 neutral.end(),
+      BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+				 gametes[2].mutations.end(),
 				 [d,&MUT]( std::size_t __m ) {
 				   return MUT[__m].pos == d;
-				 } ) == neutral.end() );
+				 } ) == gametes[2].mutations.end() );
 
     }
 }
@@ -176,29 +177,31 @@ BOOST_FIXTURE_TEST_CASE( three_point_cross_2,standard_empty_single_deme_fixture 
   //We need a "gamete pool"
   gametes = { g1, g2 };
 
-  KTfwd::fwdpp_internal::recombine_gametes( rec_positions,
-					    0,1,gametes,mutations,
-					    neutral,selected );
+  auto grec_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+  KTfwd::recombine_gametes( rec_positions,
+			    gametes,mutations,0,1,
+			    grec_bin,
+			    neutral,selected );
 
-
+  BOOST_REQUIRE_EQUAL(gametes.size(),3);
   auto & MUT = mutations; //HACK so that lambda compiles...
   /*
     This was a double x-over.
     Neutral must therefore only contain 0.1
   */
-  BOOST_CHECK( std::find_if( neutral.begin(),
-			     neutral.end(),
+  BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+			     gametes[2].mutations.end(),
 			     [&MUT]( std::size_t __m ) {
 			       return MUT[__m].pos == 0.1;
-			     } ) != neutral.end());
+			     } ) != gametes[2].mutations.end());
 
   for( auto d : {0.5,0.9} )
     {
-      BOOST_CHECK( std::find_if( neutral.begin(),
-				 neutral.end(),
+      BOOST_CHECK( std::find_if( gametes[2].mutations.begin(),
+				 gametes[2].mutations.end(),
 				 [d,&MUT]( std::size_t __m ) {
 				   return MUT[__m].pos == d;
-				 } ) == neutral.end() );
+				 } ) == gametes[2].mutations.end() );
 
     }
 }
