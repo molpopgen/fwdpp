@@ -23,7 +23,6 @@
 #include <fwdpp/debug.hpp>
 #include <boost/test/unit_test.hpp>
 
-using mut = KTfwd::mutation;
 using gtype = KTfwd::gamete;
 
 /*
@@ -159,7 +158,7 @@ BOOST_FIXTURE_TEST_CASE( three_point_cross_2,standard_empty_single_deme_fixture 
   //g1: neutral muts at 0.1,0.5
   //g2: neutral muts at 0.9
   gtype g1(1),g2(1);
-  mutations.push_back(mut(0.1,0.));
+  mutations.emplace_back(0.1,0.);
   g1.mutations.push_back(0);
   mutations.emplace_back(0.5,0.);
   g1.mutations.push_back(1);
