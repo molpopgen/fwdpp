@@ -14,10 +14,18 @@
 #include <fwdpp/type_traits.hpp>
 
 struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
+/*!
+  \ingroup unit
+  Fails to define typedefts first_type and second_type
+  \note see trivial_custom_diploid_valid 
+*/
 {
 };
 
 struct trivial_custom_diploid_valid : public KTfwd::tags::custom_diploid_t
+/*!
+  \ingroup unit
+*/
 {
   using first_type = std::size_t;
   using second_type = std::size_t;
