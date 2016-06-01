@@ -21,7 +21,8 @@ using mcounts_t = std::vector<KTfwd::uint_t>;
 
 struct standard_empty_single_deme_fixture
 /*!
-  Basic stuff needed for a simulation of a single deme using the low level bit of fwddpp
+  Basic stuff needed for a simulation of a single deme using the low level bit of fwdpp
+  \note In practice, one would use KTfwd::singlepop instead of this.  This object is for unit/integration testing only!!
   \ingroup unit
  */
 {
