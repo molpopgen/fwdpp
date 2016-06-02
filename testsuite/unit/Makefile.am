@@ -5,7 +5,7 @@ check_PROGRAMS=fwdpp_unit_tests extensions_unit_tests
 
 TESTS=$(check_PROGRAMS)
 
-fwdpp_unit_tests_SOURCES=fwdpp_unit_tests.cc mutateTest.cc gameteTest.cc utilTest.cc type_traitsTest.cc recombinationTest.cc demographyTest.cc
+fwdpp_unit_tests_SOURCES=fwdpp_unit_tests.cc mutateTest.cc gameteTest.cc utilTest.cc type_traitsTest.cc recombinationTest.cc demographyTest.cc siteDepFitnessTest.cc
 extensions_unit_tests_SOURCES=extensions_unit_test.cc extensions_regionsTest.cc extensions_callbacksTest.cc
 AM_CXXFLAGS=
 
