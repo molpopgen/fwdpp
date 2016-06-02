@@ -229,9 +229,11 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_1 )
 				      {1,2}
 				      );
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto x = drm(rng.get(),0.001,pop.gametes[0],pop.gametes[0],pop.mutations);
+  //use really big recombination rate here to ensure that return value is not empty
+  auto x = drm(rng.get(),10.0,pop.gametes[0],pop.gametes[0],pop.mutations);
   static_assert(std::is_same<decltype(x),std::vector<double>>::value,
 		"extensions::dicrete_rec_model::operator() must return std::vector<double>");
+  BOOST_REQUIRE( x.empty() || (x.back() == std::numeric_limits<double>::max()) );
 }
 
 //test binding of extensions::discrete_rec_model::operator()
