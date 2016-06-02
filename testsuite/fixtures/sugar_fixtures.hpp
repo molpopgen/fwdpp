@@ -10,8 +10,9 @@
 
 struct singlepop_popgenmut_fixture
 {
-  KTfwd::singlepop<KTfwd::popgenmut> pop;
-  singlepop_popgenmut_fixture() : pop(KTfwd::singlepop<KTfwd::popgenmut>(1000))
+  using poptype= KTfwd::singlepop<KTfwd::popgenmut>;
+  poptype pop;
+  singlepop_popgenmut_fixture() : pop(poptype(1000))
   {
   }
 };
