@@ -6,6 +6,8 @@
 
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
+BOOST_AUTO_TEST_SUITE( test_extensions_callbacks )
+
 BOOST_AUTO_TEST_CASE(constant)
 {
   gsl_rng_set(r,101);
@@ -215,3 +217,5 @@ BOOST_AUTO_TEST_CASE( vector_shmodel )
 		{extensions::gamma(1.,0.1),extensions::gamma(1.,0.1)}
   };
 }
+
+BOOST_AUTO_TEST_SUITE_END()
