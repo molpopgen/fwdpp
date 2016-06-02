@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+/*
 //Test the convenience fxn
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
 {
@@ -169,12 +169,13 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
     }
 
 }
-
+*/
 /*
   Now, test discrete_mut_model's constructor that takes labels,
   a feature introduced in 0.4.9.  The purpose of this is to
   assign to mutation_base::xtra, which allows mutations to be integer-labelled.
 */
+/*
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_6 )
 //This is an 'integration' test, I guess...
 {
@@ -223,7 +224,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_6 )
 	}
     }
 }
-
+*/
 
 //check return type of extensions::discrete_rec_model
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_1 )
@@ -273,6 +274,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_3 )
 }
 
 //Put it all together into a call to KTfwd::sample_diploid
+/*
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 {
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -317,9 +319,10 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+*/
 //Put it all together into a call to KTfwd::sample_diploid,
 //using both convenience fxns instead of the nasty templates
+/*
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
 {
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
@@ -354,7 +357,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+*/
 //Tests of raising exceptions
 BOOST_AUTO_TEST_CASE( discrete_rec_model_constructor_should_throw )
 {
