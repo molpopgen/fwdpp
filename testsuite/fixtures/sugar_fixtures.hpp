@@ -28,16 +28,18 @@ struct singlepop_popgenmut_custom_fixture
 
 struct metapop_popgenmut_fixture
 {
-  KTfwd::metapop<KTfwd::popgenmut> pop;
-  metapop_popgenmut_fixture() : pop(KTfwd::metapop<KTfwd::popgenmut>({1000,1000}))
+  using poptype = KTfwd::metapop<KTfwd::popgenmut>;
+  poptype pop;
+  metapop_popgenmut_fixture() : pop(poptype{1000,1000})
   {
   }
 };
 
 struct multiloc_popgenmut_fixture
 {
-  KTfwd::multiloc<KTfwd::popgenmut> pop;
-  multiloc_popgenmut_fixture() : pop(KTfwd::multiloc<KTfwd::popgenmut>(1000,5))
+  using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
+  poptype pop;
+  multiloc_popgenmut_fixture() : pop(poptype(1000,5))
 				/*! N=1000, 5 loci */
   {
   }
