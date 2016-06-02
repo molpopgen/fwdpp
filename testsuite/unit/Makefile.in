@@ -124,19 +124,19 @@ am__fwdpp_unit_tests_SOURCES_DIST = fwdpp_unit_tests.cc mutateTest.cc \
 fwdpp_unit_tests_OBJECTS = $(am_fwdpp_unit_tests_OBJECTS)
 fwdpp_unit_tests_LDADD = $(LDADD)
 am__sugar_unit_tests_SOURCES_DIST = sugar_unit_tests.cc \
-	sugar_GSLrngTest.cc sugar_metapop_custom_diploidTest.cc \
-	sugar_metapopTest.cc sugar_multilocusTest.cc \
-	sugar_samplingTest.cc sugar_singlepop_custom_diploidTest.cc \
-	sugar_singlepopTest.cc
+	sugar_GSLrngTest.cc sugar_singlepopTest.cc \
+	sugar_singlepop_custom_diploidTest.cc sugar_metapopTest.cc \
+	sugar_metapop_custom_diploidTest.cc sugar_multilocusTest.cc \
+	sugar_samplingTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_sugar_unit_tests_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_GSLrngTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapopTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocusTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_samplingTest.$(OBJEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepopTest.$(OBJEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepopTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapopTest.$(OBJEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop_custom_diploidTest.$(OBJEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocusTest.$(OBJEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_samplingTest.$(OBJEXT)
 sugar_unit_tests_OBJECTS = $(am_sugar_unit_tests_OBJECTS)
 sugar_unit_tests_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -502,12 +502,12 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@extensions_unit_tests_SOURCES = extensions_unit_test.cc extensions_regionsTest.cc extensions_callbacksTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_unit_tests_SOURCES = sugar_unit_tests.cc \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_GSLrngTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop_custom_diploidTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapopTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocusTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_samplingTest.cc \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepopTest.cc \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepop_custom_diploidTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_singlepopTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapopTest.cc \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_metapop_custom_diploidTest.cc \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_multilocusTest.cc \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_samplingTest.cc
 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
 @BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
