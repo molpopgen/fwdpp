@@ -35,6 +35,15 @@ struct metapop_popgenmut_fixture
   }
 };
 
+struct metapop_popgenmut_custom_fixture
+{
+  using poptype = KTfwd::metapop<KTfwd::popgenmut,custom_diploid_testing_t>;
+  poptype pop;
+  metapop_popgenmut_custom_fixture() : pop(poptype{1000,1000})
+  {
+  }
+};
+
 struct multiloc_popgenmut_fixture
 {
   using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
