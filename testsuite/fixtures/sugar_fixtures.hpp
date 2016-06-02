@@ -6,10 +6,21 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 
+#include <testsuite/util/custom_dip.hpp>
+
 struct singlepop_popgenmut_fixture
 {
   KTfwd::singlepop<KTfwd::popgenmut> pop;
   singlepop_popgenmut_fixture() : pop(KTfwd::singlepop<KTfwd::popgenmut>(1000))
+  {
+  }
+};
+
+struct singlepop_popgenmut_custom_fixture
+{
+  using poptype = KTfwd::singlepop<KTfwd::popgenmut,custom_diploid_testing_t>;
+  poptype pop;
+  singlepop_popgenmut_custom_fixture() : pop(poptype(1000))
   {
   }
 };
