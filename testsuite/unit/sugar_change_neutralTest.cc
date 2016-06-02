@@ -4,30 +4,18 @@
   \brief test KTfwd::change_neutral
 */
 
-#define BOOST_TEST_MODULE test_sugar_add_mutation
-#define BOOST_TEST_DYN_LINK 
-
 #include <config.h>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
-#include <fwdpp/sugar/GSLrng_t.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/metapop.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
-#include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/debug.hpp>
 #include <fwdpp/sugar/add_mutation.hpp>
 #include <fwdpp/sugar/change_neutral.hpp>
+#include <testsuite/fixtures/sugar_fixtures.hpp>
 
-using mutation_t = KTfwd::popgenmut;
-using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_t>;
-using singlepop_t = KTfwd::singlepop<mutation_t>;
+BOOST_FIXTURE_TEST_SUITE( test_change_neutral,singlepop_popgenmut_fixture )
 
-
-BOOST_AUTO_TEST_CASE( test_change_neutral )
+BOOST_AUTO_TEST_CASE( test_change_neutral_singlepop )
 {
-  singlepop_t pop(1000);
+
   KTfwd::add_mutation(pop,
 		      //individuals where we want to place the mutation
 		      {0,1,3,5,7,9},
@@ -49,3 +37,5 @@ BOOST_AUTO_TEST_CASE( test_change_neutral )
   //Change it back
   KTfwd::change_neutral(pop,0);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
