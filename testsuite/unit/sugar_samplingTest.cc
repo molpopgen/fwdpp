@@ -3,9 +3,6 @@
   \ingroup unit
   \brief Testing KTfwd::sample and KTfwd::sample_separate
 */
-#define BOOST_TEST_MODULE sugar_sampling
-#define BOOST_TEST_DYN_LINK
-
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>

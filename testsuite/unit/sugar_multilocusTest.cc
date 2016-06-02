@@ -3,10 +3,6 @@
   \ingroup unit
   \brief Testing KTfwd::multiloc
 */
-
-#define BOOST_TEST_MODULE sugar_multilocus
-#define BOOST_TEST_DYN_LINK
-
 #include <unistd.h>
 #include <config.h>
 #include <zlib.h>

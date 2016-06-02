@@ -2,9 +2,6 @@
   \ingroup unit 
   \brief Testing KTfwd::metapop with custom diploid type
 */
-#define BOOST_TEST_MODULE sugar_metapop_custom_diploid
-#define BOOST_TEST_DYN_LINK 
-
 #include <config.h>
 #include <memory>
 #include <algorithm>
@@ -21,15 +18,17 @@ using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_t>;
 
-size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_prob)
+namespace
 {
-  if( gsl_rng_uniform(r) < mig_prob )
-    {
-      return ! source_pop;
-    }
-  return source_pop;
+  size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_prob)
+  {
+    if( gsl_rng_uniform(r) < mig_prob )
+      {
+	return ! source_pop;
+      }
+    return source_pop;
+  }
 }
-
 using spoptype = KTfwd::singlepop<mutation_t,custom_diploid_testing_t>;
 using poptype = KTfwd::metapop<mutation_t,custom_diploid_testing_t>;
 
@@ -37,7 +36,7 @@ using poptype = KTfwd::metapop<mutation_t,custom_diploid_testing_t>;
   These next two derived classes mimic what software 
   packages like fwdpy do, which is to extend sugart types
   with data that they need.
- */
+*/
 struct spop_derived : public spoptype
 {
   unsigned generation;

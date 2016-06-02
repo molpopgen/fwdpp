@@ -1,5 +1,3 @@
-#define BOOST_TEST_MODULE GSLrng_t_test
-#define BOOST_TEST_DYN_LINK 
 #include <iostream>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <boost/test/unit_test.hpp>

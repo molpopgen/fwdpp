@@ -3,9 +3,6 @@
   \ingroup unit 
   \brief Testing single-deme sugar functionality with custom diploids
 */
-#define BOOST_TEST_MODULE sugar_singlepop_custom_diploid
-#define BOOST_TEST_DYN_LINK 
-
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>

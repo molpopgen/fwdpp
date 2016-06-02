@@ -3,9 +3,6 @@
   \ingroup unit 
   \brief Testing KTfwd::singlepop 
 */
-#define BOOST_TEST_MODULE sugar_singlepop
-#define BOOST_TEST_DYN_LINK 
-
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
