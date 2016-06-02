@@ -13,22 +13,11 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
+#include <testsuite/util/migpop.hpp>
 
 using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_t>;
-
-namespace
-{
-  size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_prob)
-  {
-    if( gsl_rng_uniform(r) < mig_prob )
-      {
-	return ! source_pop;
-      }
-    return source_pop;
-  }
-}
 
 using spoptype = KTfwd::singlepop<mutation_t>;
 using poptype = KTfwd::metapop<mutation_t>;
