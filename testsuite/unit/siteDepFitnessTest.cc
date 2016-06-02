@@ -5,7 +5,6 @@
 */
 
 #include <config.h>
-#include <unistd.h>
 #include <boost/test/unit_test.hpp>
 #include <testsuite/fixtures/fwdpp_fixtures.hpp>
 #include <testsuite/util/custom_dip.hpp>
