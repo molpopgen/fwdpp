@@ -9,19 +9,6 @@
 #include <fwdpp/sugar/sampling.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/debug.hpp>
-/*
-#include <fwdpp/diploid.hh>
-
-#include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/metapop.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
-#include <fwdpp/sugar/sampling.hpp>
-#include <fwdpp/sugar/infsites.hpp>
-*/
-
-//using singlepop_t = KTfwd::singlepop<mutation_t>;
-//using metapop_t = KTfwd::metapop<mutation_t>;
-//using multiloc_t = KTfwd::multiloc<mmutation_t>;
 
 KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
 
