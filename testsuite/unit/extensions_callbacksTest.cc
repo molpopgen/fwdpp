@@ -4,43 +4,37 @@
 #include <fwdpp/extensions/callbacks.hpp>
 #include <boost/test/unit_test.hpp>
 
-gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
-
 BOOST_AUTO_TEST_SUITE( test_extensions_callbacks )
+
+gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
 BOOST_AUTO_TEST_CASE(constant)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::constant c(1);
 }
 
 BOOST_AUTO_TEST_CASE(exponential)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::exponential e(1);
 }
 
 BOOST_AUTO_TEST_CASE(uniform)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::uniform e(0,1);
 }
 
 BOOST_AUTO_TEST_CASE(beta)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::beta b(1,2,1.0);
 }
 
 BOOST_AUTO_TEST_CASE(Gamma)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::gamma b(1,2);
 }
 
 BOOST_AUTO_TEST_CASE(gaussian)
 {
-  gsl_rng_set(r,101);
   KTfwd::extensions::gaussian e(1);
 }
 
