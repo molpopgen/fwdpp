@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative1 )
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
   mutations.emplace_back(0.1,0.1,0.5);
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
+  g1.smutations.emplace_back(0);
   BOOST_CHECK_EQUAL(g1.smutations.size(),1);
   
   gcont_t g{g1,g2};
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative2 )
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
   mutations.emplace_back( 0.1,0.1,0.5 );
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g2);
+  g2.smutations.emplace_back(0);
   BOOST_CHECK_EQUAL(g1.smutations.size(),0);
   BOOST_CHECK_EQUAL(g2.smutations.size(),1);
 
@@ -86,8 +86,9 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative3 )
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
   mutations.emplace_back(0.1,0.1,0.5 );
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g2);
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
+  g1.smutations.emplace_back(0);
+  g2.smutations.emplace_back(0);
+
   BOOST_CHECK_EQUAL(g1.smutations.size(),1);
   BOOST_CHECK_EQUAL(g2.smutations.size(),1);
 
@@ -116,9 +117,9 @@ BOOST_AUTO_TEST_CASE( simple_multiplicative4 )
 
   //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
   mutations.emplace_back(0.1,0.1,0.5 );
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
   mutations.emplace_back(0.2,0.1,0.5);
-  KTfwd::fwdpp_internal::add_new_mutation(1,mutations,g1);
+  g1.smutations.emplace_back(0);
+  g1.smutations.emplace_back(1);
   BOOST_CHECK_EQUAL(g1.smutations.size(),2);
 
   gcont_t g{g1,g2};
@@ -142,9 +143,9 @@ BOOST_AUTO_TEST_CASE( simple_additive_1 )
  
   //add mutation at position 0.1, s=0.1,n=1,dominance=1.0
   mutations.emplace_back(0.1,0.1,1 );
-  KTfwd::fwdpp_internal::add_new_mutation(0,mutations,g1);
   mutations.emplace_back(0.2,0.1,1);
-  KTfwd::fwdpp_internal::add_new_mutation(1,mutations,g1);
+  g1.smutations.emplace_back(0);
+  g1.smutations.emplace_back(1);
   BOOST_CHECK_EQUAL(g1.smutations.size(),2);
 
   gcont_t g{g1,g2};
