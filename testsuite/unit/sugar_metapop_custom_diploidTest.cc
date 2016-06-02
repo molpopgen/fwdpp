@@ -15,7 +15,7 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
-#include <custom_dip.hpp>
+#include <testsuite/util/custom_dip.hpp>
 
 using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
@@ -30,8 +30,8 @@ size_t migpop(const size_t & source_pop, const gsl_rng * r, const double & mig_p
   return source_pop;
 }
 
-using spoptype = KTfwd::singlepop<mutation_t,diploid_t>;
-using poptype = KTfwd::metapop<mutation_t,diploid_t>;
+using spoptype = KTfwd::singlepop<mutation_t,custom_diploid_testing_t>;
+using poptype = KTfwd::metapop<mutation_t,custom_diploid_testing_t>;
 
 /*
   These next two derived classes mimic what software 

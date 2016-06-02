@@ -13,13 +13,13 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
-#include <custom_dip.hpp>
+#include <testsuite/util/custom_dip.hpp>
 
 using mutation_t = KTfwd::popgenmut;
 using mwriter = KTfwd::mutation_writer;
 using mreader = KTfwd::mutation_reader<mutation_t>;
 
-using singlepop_t = KTfwd::singlepop<mutation_t,diploid_t>;
+using singlepop_t = KTfwd::singlepop<mutation_t,custom_diploid_testing_t>;
 
 void simulate( singlepop_t & pop )
 {
