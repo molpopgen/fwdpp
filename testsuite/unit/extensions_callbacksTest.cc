@@ -1,16 +1,8 @@
-#define BOOST_TEST_MODULE callbackTest
-#define BOOST_TEST_DYN_LINK 
-
 //This is really an API check
 
 #include <config.h>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <boost/test/unit_test.hpp>
-#include <unistd.h>
-#include <iterator>
-#include <functional>
-#include <list>
-#include <iostream>
 
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
@@ -79,6 +71,9 @@ BOOST_AUTO_TEST_CASE( point_mass_test1 )
   auto x = KTfwd::extensions::uniform(-1.,-1.);
   auto y = x(r);
   BOOST_REQUIRE_EQUAL(y,-1.0);
+
+  //Free here--kinda lame..
+  gsl_rng_free(r);
 }
 
 //The callbacks can throw exceptions if their parameters aren't valid
@@ -203,4 +198,20 @@ BOOST_AUTO_TEST_CASE( callback_exceptions )
 			 std::runtime_error
 			 );
   }
+}
+
+
+BOOST_AUTO_TEST_CASE( vector_shmodel )
+{
+  using namespace KTfwd;
+  //PS, uniform initialization rocks...
+  std::vector< extensions::shmodel > callbacks {
+    {extensions::constant(1.),extensions::constant(0.)},
+      {extensions::exponential(1.),extensions::exponential(1.)},
+	{extensions::uniform(1.,2.),extensions::uniform(1.,2.)},
+	  {extensions::beta(1.,2.),extensions::beta(1.,2.)},             //defaults to factor = 1
+	    {extensions::beta(1.,2.,0.25),extensions::beta(1.,2.,0.25)}, //pass all 3 params to constructor
+	      {extensions::gaussian(1.),extensions::gaussian(1.)},
+		{extensions::gamma(1.,0.1),extensions::gamma(1.,0.1)}
+  };
 }
