@@ -9,7 +9,9 @@ fwdpp_unit_tests_SOURCES=fwdpp_unit_tests.cc mutateTest.cc gameteTest.cc utilTes
 extensions_unit_tests_SOURCES=extensions_unit_test.cc extensions_regionsTest.cc extensions_callbacksTest.cc
 sugar_unit_tests_SOURCES=sugar_unit_tests.cc \
 	sugar_GSLrngTest.cc \
-	sugar_samplingTest.cc
+	sugar_samplingTest.cc \
+	sugar_add_mutationTest.cc \
+	sugar_change_neutralTest.cc	
 
 
 AM_CXXFLAGS=
