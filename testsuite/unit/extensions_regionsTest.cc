@@ -4,19 +4,12 @@
 */
 
 #include <config.h>
-#include <iostream>
-#include <cmath>
-#include <limits>
-#include <type_traits>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/extensions/regions.hpp>
-#include <fwdpp/extensions/callbacks.hpp>
 #include <limits>
 #include "../fixtures/sugar_fixtures.hpp"
+
 using namespace KTfwd;
 
 using poptype = singlepop<popgenmut>;
@@ -90,6 +83,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 //Check that extensions::discrete_mut_model::make_mut can be bound
 //with placeholders, that the resulting type is a valid
 //mutation model, and can be passed to KTfwd::sample_diploid
+/*
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 {
   //attempt
@@ -121,6 +115,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    pop.neutral,
 				    pop.selected);
 }
+*/
 /*
 //Test the convenience fxn
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
