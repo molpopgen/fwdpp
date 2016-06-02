@@ -39,8 +39,8 @@ struct multiloc_popgenmut_fixture
 {
   using poptype = KTfwd::multiloc<KTfwd::popgenmut>;
   poptype pop;
-  multiloc_popgenmut_fixture() : pop(poptype(1000,5))
-				/*! N=1000, 5 loci */
+  multiloc_popgenmut_fixture() : pop(poptype(1000,4))
+				/*! N=1000, 4 loci */
   {
   }
 };
