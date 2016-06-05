@@ -64,6 +64,7 @@ int main(int argc, char ** argv)
   */
   const double littler = rho/double(4*N*K);
 
+  std::vector<double> RBW(K,rbw);
   //Initiate random number generation system
   GSLrng r(seed);
 
@@ -98,10 +99,10 @@ int main(int argc, char ** argv)
 			    pop.mutations,
 			    pop.mcounts,
 			    N,
-			    &mu[0],
+			    mu.data(),
 			    mmodels,
 			    recpols,
-			    &rbw,
+			    RBW.data(),
 			    [](const gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
 			    std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 			    pop.neutral,
