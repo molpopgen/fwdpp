@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.5.0
+
+* Example file diploid_ind_Kloci.cc added
+
 ## 0.4.9
 
 * Doxygen file changed so that all library source is browsable.
