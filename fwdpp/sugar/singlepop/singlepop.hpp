@@ -58,12 +58,6 @@ namespace KTfwd {
       bool operator==( const singlepop & rhs ) const
       {
 	return this->diploids == rhs.diploids && popbase_t::is_equal(rhs);
-      	// return this->mutations == rhs.mutations &&
-      	//   this->mcounts == rhs.mcounts &&
-      	//   this->gametes == rhs.gametes &&
-      	//   this->diploids == rhs.diploids &&
-      	//   this->fixations == rhs.fixations &&
-      	//   this->fixation_times == rhs.fixation_times;
       }
       
       //! Empty all the containers
@@ -71,13 +65,6 @@ namespace KTfwd {
       {
 	diploids.clear();
 	popbase_t::clear_containers();
-      	// mutations.clear();
-      	// mcounts.clear();
-      	// gametes.clear();
-      	// diploids.clear();
-      	// mut_lookup.clear();
-      	// fixations.clear();
-      	// fixation_times.clear();
       }
     };
   }
