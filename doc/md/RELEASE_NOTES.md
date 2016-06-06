@@ -3,6 +3,7 @@
 ## 0.5.0
 
 * Example file diploid_ind_Kloci.cc added
+* Streamlined KTfwd::fwdpp_internal::multilocus_rec_mut
 
 ## 0.4.9
 
