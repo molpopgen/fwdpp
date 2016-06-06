@@ -5,8 +5,6 @@
   The mechanics of crossing over for a multilocus
   simulation
  */
-#include <vector>
-#include <algorithm>
 #include <gsl/gsl_rng.h>
 
 namespace KTfwd {
@@ -39,8 +37,8 @@ namespace KTfwd {
 #endif
     >
     diploid_type multilocus_rec_mut(const gsl_rng * r,
-				    diploid_type parent1,
-				    diploid_type parent2,
+				    const diploid_type & parent1,
+				    const diploid_type & parent2,
 				    mqueue_t & mutation_recycling_bin,
 				    gqueue_t & gamete_recycling_bin,
 				    const recombination_policy_container & rec_pols,
@@ -65,47 +63,46 @@ namespace KTfwd {
 #endif
 				    )
     {
-      //I see the problem: how to get the positions ahead of time...
-      //Maybe we can simply increment all downstream values by 1 if a swap is needed, and do so if odd?
       diploid_type offspring(parent1.size());
-      std::vector<int> nswaps1(parent1.size(),iswitch1),nswaps2(parent2.size(),iswitch2);
-      std::vector<int>::iterator s1 = nswaps1.begin(),s2=nswaps2.begin();
-
-      for(unsigned i = 0 ; i < parent1.size() ; ++i,++s1,++s2)
+      unsigned s1=iswitch1,s2=iswitch2;
+      auto NLOOPS=parent1.size();
+      auto p1 = parent1.data();
+      auto p2 = parent2.data();
+      auto o = offspring.data();
+      decltype(NLOOPS) i = 0;
+      while(i<NLOOPS)
 	{
 	  if(i)
 	    {
 	      // between-locus rec, parent 1
-	      unsigned nrbw = blrf(r,r_bw_loci[i-1]);
-	      //only modify if odd
-	      if(nrbw%2!=0.) std::transform( s1,nswaps1.end(),s1,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
-
+	      s1+=blrf(r,r_bw_loci[i-1]);
 	      // between-locus rec, parent 2
-	      nrbw = blrf(r,r_bw_loci[i-1]);
-	      //only modify if odd
-	      if(nrbw%2!=0.) std::transform( s2,nswaps2.end(),s2,std::bind(std::plus<int>(),std::placeholders::_1,nrbw) );
+	      s2+=blrf(r,r_bw_loci[i-1]);
 	    }
+	  auto p1g1 = p1->first;
+	  auto p1g2 = p1->second;
+	  auto p2g1 = p2->first;
+	  auto p2g2 = p2->second;
 	  //if ttl # recs before now is odd, swap parental pointers
-	  if( *s1 % 2 != 0.) std::swap(parent1[i].first,parent1[i].second);
-	  if( *s2 % 2 != 0.) std::swap(parent2[i].first,parent2[i].second);
+	  if( s1 % 2 != 0.) std::swap(p1g1,p1g2);
+	  if( s2 % 2 != 0.) std::swap(p2g1,p2g2);
 
 	  //mechanics of recombination
 	  auto xx = recombination(gametes,gamete_recycling_bin,neutral,selected,rec_pols[i],
-				  parent1[i].first,parent1[i].second,mutations);
-	  offspring[i].first = xx.first;
-	  if(xx.second%2!=0.) std::transform( s1+1,nswaps1.end(),s1+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
-
+				  p1g1,p1g2,mutations);
+	  o->first = xx.first;
+	  s1+=xx.second;
 	  xx = recombination(gametes,gamete_recycling_bin,neutral,selected,rec_pols[i],
-			    parent2[i].first,parent2[i].second,mutations);
-	  offspring[i].second = xx.first;
-	  if(xx.second%2!=0.) std::transform( s2+1,nswaps2.end(),s2+1,std::bind(std::plus<int>(),std::placeholders::_1,xx.second) );
-
+			     p2g1,p2g2,mutations);
+	  o->second = xx.first;
+	  s2+=xx.second;
 #ifndef FWDPP_UNIT_TESTING
-	  gametes[offspring[i].first].n++;
-	  gametes[offspring[i].second].n++;
-	  offspring[i].first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].first,mmodel[i],gpolicy_mut);
-	  offspring[i].second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,offspring[i].second,mmodel[i],gpolicy_mut);
+	  gametes[o->first].n++;
+	  gametes[o->second].n++;
+	  o->first = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,o->first,mmodel[i],gpolicy_mut);
+	  o->second = mutate_gamete_recycle(mutation_recycling_bin,gamete_recycling_bin,r,mu[i],gametes,mutations,o->second,mmodel[i],gpolicy_mut);
 #endif
+	  ++i;++p1;++p2;++o;
 	}
       return offspring;
     }

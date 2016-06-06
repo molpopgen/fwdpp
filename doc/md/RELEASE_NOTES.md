@@ -1,5 +1,11 @@
 # FWDPP RELEASE NOTES
 
+## 0.5.0
+
+* Example file diploid_ind_Kloci.cc added
+* Streamlined KTfwd::fwdpp_internal::multilocus_rec_mut
+* The sugar types KTfwd::singlepop, KTfwd::metapop, and KTfwd::multiloc were refactored to inerit from KTfwd::sugar::popbase.
+
 ## 0.4.9
 
 * Doxygen file changed so that all library source is browsable.
