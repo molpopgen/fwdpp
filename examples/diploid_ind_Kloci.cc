@@ -112,5 +112,11 @@ int main(int argc, char ** argv)
       assert( check_sum(pop.gametes,2*twoN) );
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
     }
+  auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,10,true);
+  for(auto & i : x)
+    {
+      Sequence::SimData a(i.begin(),i.end());
+      std::cout << a << '\n';
+    }
 }
 
