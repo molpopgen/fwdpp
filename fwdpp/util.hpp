@@ -31,6 +31,7 @@ namespace KTfwd
   {
     static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
+    assert(mcounts.size()==mutations.size());
     for(std::size_t i = 0 ; i < mcounts.size() ; ++i)
       {
 	assert(mcounts[i] <= twoN);
@@ -85,6 +86,7 @@ namespace KTfwd
   {
     static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
+    assert(mcounts.size()==mutations.size());
     for(unsigned i=0;i<mcounts.size();++i)
       {
 	assert(mcounts[i] <= twoN);
@@ -118,6 +120,7 @@ namespace KTfwd
   {
     static_assert( typename traits::is_mutation_t<typename mcont_t::value_type>::type(),
 		   "mutation_type must be derived from KTfwd::mutation_base" );
+    assert(mcounts.size()==mutations.size());
     for(unsigned i=0;i<mcounts.size();++i)
       {
 	assert(mcounts[i] <= twoN);

@@ -43,7 +43,7 @@ namespace KTfwd {
       //! Construct with population size and number of loci
       multiloc(const uint_t & __N, const uint_t & __nloci,
 	       typename popbase_t::gamete_t::mutation_container::size_type reserve_size = 100) :
-	popbase_t(__N,reserve_size),
+	popbase_t(__nloci*__N,reserve_size),
 	N(__N),
 	diploids(__N,typename popbase_t::diploid_t(__nloci,
 						   typename popbase_t::diploid_t::value_type(0,0)))

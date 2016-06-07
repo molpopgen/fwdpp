@@ -109,6 +109,31 @@ namespace KTfwd
       }
     return true;
   }
+
+  template<typename dipcont_t,
+	   typename gcont_t,
+	   typename mcont_t>
+  bool popdata_sane_multilocus(const dipcont_t & diploids,
+			       const gcont_t & gametes,
+			       const mcont_t & mutations,
+			       const std::vector<uint_t> & mutcounts)
+  /*
+    \brief Check that all diploids refer to extant gametes with sane data.
+    \note This is for the case where diploids are equivalent to vector<pair<key,key>>
+   */
+  {
+    for(const auto & d : diploids)
+      {
+	for( const auto & locus : d)
+	  {
+	    if( !gametes[locus.first].n ) return false;
+	    if( !gametes[locus.second].n ) return false;
+	    if( !gamete_data_sane(gametes[locus.first],mutations,mutcounts) ) return false;
+	    if( !gamete_data_sane(gametes[locus.second],mutations,mutcounts) ) return false;
+	  }
+      }
+    return true;
+  }
 }
 
 #endif

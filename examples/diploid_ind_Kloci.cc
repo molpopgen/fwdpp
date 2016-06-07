@@ -109,8 +109,28 @@ int main(int argc, char ** argv)
 			    std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 			    pop.neutral,
 			    pop.selected);
-      assert( check_sum(pop.gametes,2*twoN) );
+      assert( check_sum(pop.gametes,K*twoN) );
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
+      assert(popdata_sane_multilocus(pop.diploids,pop.gametes,pop.mutations,pop.mcounts));
+#ifndef NDEBUG
+      /*
+	Useful block for long-run testing.
+
+	Make sure that all mutation positions are in the "right" locus.
+      */
+      for(const auto & dip : pop.diploids)
+	{
+	  for(unsigned locus = 0 ; locus < dip.size() ; ++locus)
+	    {
+	      assert(!std::any_of(pop.gametes[dip[locus].first].mutations.begin(),
+				 pop.gametes[dip[locus].first].mutations.end(),
+				 [&pop,locus](const std::size_t mi){
+				   return !(pop.mutations[mi].pos >= double(locus) &&
+					    pop.mutations[mi].pos < double(locus)+1.0);
+				  }));
+	    }
+	}
+#endif
     }
   auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,10,true);
   for(auto & i : x)

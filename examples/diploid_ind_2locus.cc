@@ -76,6 +76,8 @@ int main(int argc, char ** argv)
   while(nreps--)
     {
       multiloc_t pop(N,2);
+      assert( check_sum(pop.gametes,2*twoN) );
+      assert( popdata_sane_multilocus(pop.diploids,pop.gametes,pop.mutations,pop.mcounts) );
       pop.mutations.reserve(size_t(2*std::ceil(std::log(2*N)*(theta)+0.667*(theta))));
       unsigned generation=0;
       double wbar;
@@ -118,6 +120,7 @@ int main(int argc, char ** argv)
 				pop.selected);
 	  assert( check_sum(pop.gametes,2*twoN) );
       	  KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
+	  assert( popdata_sane_multilocus(pop.diploids,pop.gametes,pop.mutations,pop.mcounts) );
 	}
       //For giggles, make sure that the pop. is copy-constructible...
       multiloc_t pop2(pop);
