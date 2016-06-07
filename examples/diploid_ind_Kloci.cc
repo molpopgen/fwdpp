@@ -109,7 +109,7 @@ int main(int argc, char ** argv)
 			    std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 			    pop.neutral,
 			    pop.selected);
-      assert( check_sum(pop.gametes,2*twoN) );
+      assert( check_sum(pop.gametes,K*twoN) );
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
     }
   auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,10,true);
