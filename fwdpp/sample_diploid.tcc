@@ -528,10 +528,9 @@ namespace KTfwd
 		 const mutation_removal_policy & mp,
 		 const gamete_insertion_policy & gpolicy_mut)
   {
+    assert(popdata_sane_multilocus(diploids,gametes,mutations,mcounts));
     assert(mcounts.size()==mutations.size());
-#ifndef NDEBUG
     assert(diploids.size()==N_curr);
-#endif
     //Vector of parental fitnesses
     std::vector<double> fitnesses(N_curr);
     double wbar = 0.;
@@ -589,7 +588,8 @@ namespace KTfwd
 
       }
     fwdpp_internal::process_gametes(gametes,mutations,mcounts);
-    fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
+    fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp,std::true_type());
+    assert(popdata_sane_multilocus(diploids,gametes,mutations,mcounts));
     return wbar;
   }
 
