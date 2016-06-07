@@ -111,6 +111,7 @@ int main(int argc, char ** argv)
 			    pop.selected);
       assert( check_sum(pop.gametes,K*twoN) );
       KTfwd::update_mutations(pop.mutations,pop.fixations,pop.fixation_times,pop.mut_lookup,pop.mcounts,generation,2*N);
+      assert(popdata_sane_multilocus(pop.diploids,pop.gametes,pop.mutations,pop.mcounts));
     }
   auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,10,true);
   for(auto & i : x)
