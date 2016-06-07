@@ -5,6 +5,8 @@
 * Example file diploid_ind_Kloci.cc added
 * Streamlined KTfwd::fwdpp_internal::multilocus_rec_mut
 * The sugar types KTfwd::singlepop, KTfwd::metapop, and KTfwd::multiloc were refactored to inerit from KTfwd::sugar::popbase.
+* KTfwd::gamete_data_sane_multiloc was added to fwdpp/debug.hpp
+* Issue #41 fixed. This issue affected simulations using the multi-locus API, and all simulations using that API need to be rerun. Sorry.
 
 ## 0.4.9
 
