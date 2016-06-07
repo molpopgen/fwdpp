@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <limits>
+#include <utility>
 #include <type_traits>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
@@ -125,6 +127,43 @@ namespace KTfwd {
 				  return mcounts[i]==twoN && mp(mutations[i]);
 				}),mc.end());
       }
+
+      template<typename mut_index_cont,typename mcounts_t>
+      inline void operator()(mut_index_cont & mc,
+			     const mcounts_t & mcounts,
+			     const uint_t twoN) const noexcept
+      //! Overload for no custom policy
+      {
+	/*
+	  \note Added in 0.5.0 to address Issue #41
+	*/
+	mc.erase(std::remove_if(mc.begin(),
+				mc.end(),[&mcounts,&twoN](const typename mut_index_cont::value_type & i) noexcept
+				{
+				  return mcounts[i]==twoN;
+				}),mc.end());
+      }
+      
+      template<typename mut_index_cont,
+	       typename mcont_t,
+	       typename mcounts_t,
+	       typename mutation_removal_policy>
+      inline void operator()( mut_index_cont & mc,
+			      const mcont_t & mutations,
+			      const mcounts_t & mcounts,
+			      const uint_t twoN,
+			      mutation_removal_policy && mp) const noexcept
+      //! Overload for custom policy.
+      {
+	/*
+	  \note Added in 0.5.0 to address Issue #41
+	*/
+	mc.erase(std::remove_if(mc.begin(),
+				mc.end(),[&mcounts,&mutations,&twoN,&mp](const typename mut_index_cont::value_type & i) noexcept
+				{
+				  return mcounts[i]==twoN && mp(mutations[i]);
+				}),mc.end());
+      }
     };
 
     /*! \brief Handles removal of indexes to mutations from gametes after sampling
@@ -150,7 +189,6 @@ namespace KTfwd {
     */
     {
       auto extant_gamete = next_extant_gamete(gametes.begin(),gametes.end());
-      if(extant_gamete==gametes.end()) return;
       const auto fixation_n = ff(extant_gamete->mutations);
       bool neutral_fixations_exist = (fixation_n!=extant_gamete->mutations.cend());
       const auto fixation_s = ff(extant_gamete->smutations);
@@ -170,6 +208,74 @@ namespace KTfwd {
 	  if(selected_fixations_exist)
 	    {
 	      iw(extant_gamete->smutations,fixation_s_value);
+	    }
+	  extant_gamete = next_extant_gamete(extant_gamete+1,gend);
+	}
+    }
+
+    template<typename gcont_t,
+	     typename fixation_finder>
+    std::pair<bool,bool> fixation_finder_search_all(const gcont_t & gametes,
+								   const fixation_finder & ff) noexcept
+    /*!
+      Determines whether a fixation exists in ANY gamete. 
+     */
+    {
+      bool neutral=false,selected=false;
+      for(const auto & g : gametes)
+	{
+	  if(!neutral)
+	    {
+	      auto itr = ff(g.mutations);
+	      if(itr != g.mutations.cend())
+		{
+		  neutral=true;
+		}
+	    }
+	  if(!selected)
+	    {
+	      auto itr = ff(g.smutations);
+	      if(itr != g.smutations.cend())
+		{
+		  selected=true;
+		}
+	    }
+	  if(neutral && selected) return std::make_pair(neutral,selected);
+	}
+      return std::make_pair(neutral,selected);
+    }
+    
+    template<typename gcont_t,
+	     typename fixation_finder,
+	     typename idiom_wrapper>
+    inline void gamete_cleaner_details(gcont_t & gametes,
+				       const fixation_finder & ff,
+				       const idiom_wrapper & iw,
+				       std::true_type) noexcept
+    /*!
+      The two overloads of gamete_cleaner dispatch the above policies into this function.
+      \brief Overload for case where a model must search all gametes to figure out if a fixation exists.  
+      Use case is the multi-locus API.
+      \note Added in 0.5.0 to address issue #41 where the logic of this routine failed if the first 
+      extant gamete was in "locus 1" but the first fixation is in "locus 0"
+    */
+    {
+      auto t = fixation_finder_search_all(gametes,ff);
+      auto neutral_fixations_exist=t.first;
+      auto selected_fixations_exist=t.second;
+      if(!neutral_fixations_exist && !selected_fixations_exist) return;
+
+      auto extant_gamete = next_extant_gamete(gametes.begin(),gametes.end());
+      const auto gend = gametes.end();
+      while(extant_gamete < gend)
+	{
+	  if(neutral_fixations_exist)
+	    {
+	      iw(extant_gamete->mutations);
+	    }
+	  if(selected_fixations_exist)
+	    {
+	      iw(extant_gamete->smutations);
 	    }
 	  extant_gamete = next_extant_gamete(extant_gamete+1,gend);
 	}
@@ -214,7 +320,46 @@ namespace KTfwd {
 			     std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
 				       std::placeholders::_1,std::cref(mutations),std::cref(mcounts),std::placeholders::_2,twoN,std::forward<decltype(mp)>(mp)));
     }
-  }
+
+    /*! \brief Handles removal of indexes to mutations from gametes after sampling
+      Intended use is when std::is_same< mutation_removal_policy, KTfwd::true_type >::type is true.
+      Called by KTfwd::sample_diploid
+
+      \note Added in 0.5.0 to deal with issue #41 involving multi-locus sims
+    */
+    template<typename gcont_t,typename mcont_t,typename mutation_removal_policy>
+    inline typename std::enable_if< std::is_same<mutation_removal_policy,std::true_type>::value >::type
+    gamete_cleaner(gcont_t & gametes, const mcont_t &, const std::vector<uint_t> & mcounts,
+		   const uint_t twoN, const mutation_removal_policy &,std::true_type)
+    {
+      gamete_cleaner_details(gametes,
+			     std::bind(find_fixation(),std::placeholders::_1,std::cref(mcounts),twoN),
+			     std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
+				       std::placeholders::_1,std::cref(mcounts),twoN),
+			     std::true_type());
+    }
+
+    /*! \brief Handles removal of indexes to mutations from gametes after sampling
+      This overload handles truly custom policies, which must take a mutation type as an argument.
+      Called by KTfwd::sample_diploid
+
+      \note Added in 0.5.0 to deal with issue #41 involving multi-locus sims
+    */
+    template<typename gcont_t,typename mcont_t,typename mutation_removal_policy>
+    inline typename std::enable_if<
+      !std::is_same<mutation_removal_policy,std::true_type>::value &&
+    !std::is_same<mutation_removal_policy,KTfwd::remove_nothing>::value
+    >::type
+    gamete_cleaner(gcont_t & gametes, const mcont_t & mutations,const std::vector<uint_t> & mcounts,
+		   const uint_t twoN, const mutation_removal_policy & mp,std::true_type)
+    {
+      gamete_cleaner_details(gametes,
+			     std::bind(find_fixation(),std::placeholders::_1,std::cref(mutations),std::cref(mcounts),twoN,std::forward<decltype(mp)>(mp)),
+			     std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
+				       std::placeholders::_1,std::cref(mutations),std::cref(mcounts),twoN,std::forward<decltype(mp)>(mp)),
+			     std::true_type());
+    }
+}
 }
 
 #endif
