@@ -1,4 +1,4 @@
-/*! \include diploid_ind_Kloci.cc
+/*! \include K_linked_regions_multilocus.cc
   Simple example building up a K-locus simulation using the
   mulitlocus API
 */
