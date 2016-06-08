@@ -58,9 +58,6 @@ int main(int argc, char ** argv)
 
   /*
     littler r is the recombination rate per region per generation.
-
-    For individual simulation (UNLIKE GAMETE-BASED SIMS!!!),
-    r = rho/(4N)
   */
   const double littler = rho/double(4*N*K);
 
