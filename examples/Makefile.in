@@ -93,7 +93,7 @@ POST_UNINSTALL = :
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	migsel_split_ind_list$(EXEEXT) \
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	bneck_selection_ind$(EXEEXT) \
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_ind_2locus$(EXEEXT) \
-@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	diploid_ind_Kloci$(EXEEXT) \
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	K_linked_regions_multilocus$(EXEEXT) \
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	HOC_ind$(EXEEXT)
 @DEBUG_FALSE@@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DNDEBUG
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_2 = $(AM_LIBS)
@@ -113,6 +113,13 @@ am__HOC_ind_SOURCES_DIST = HOC_ind.cc
 HOC_ind_OBJECTS = $(am_HOC_ind_OBJECTS)
 HOC_ind_LDADD = $(LDADD)
 HOC_ind_DEPENDENCIES =
+am__K_linked_regions_multilocus_SOURCES_DIST =  \
+	K_linked_regions_multilocus.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_K_linked_regions_multilocus_OBJECTS = K_linked_regions_multilocus.$(OBJEXT)
+K_linked_regions_multilocus_OBJECTS =  \
+	$(am_K_linked_regions_multilocus_OBJECTS)
+K_linked_regions_multilocus_LDADD = $(LDADD)
+K_linked_regions_multilocus_DEPENDENCIES =
 am__bneck_selection_ind_SOURCES_DIST = bneck_selection_ind.cc \
 	common_ind.hpp
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_bneck_selection_ind_OBJECTS = bneck_selection_ind.$(OBJEXT)
@@ -148,12 +155,6 @@ am__diploid_ind_2locus_SOURCES_DIST = diploid_ind_2locus.cc \
 diploid_ind_2locus_OBJECTS = $(am_diploid_ind_2locus_OBJECTS)
 diploid_ind_2locus_LDADD = $(LDADD)
 diploid_ind_2locus_DEPENDENCIES =
-am__diploid_ind_Kloci_SOURCES_DIST = diploid_ind_Kloci.cc \
-	common_ind.hpp
-@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_diploid_ind_Kloci_OBJECTS = diploid_ind_Kloci.$(OBJEXT)
-diploid_ind_Kloci_OBJECTS = $(am_diploid_ind_Kloci_OBJECTS)
-diploid_ind_Kloci_LDADD = $(LDADD)
-diploid_ind_Kloci_DEPENDENCIES =
 am__migsel_ind_SOURCES_DIST = migsel_ind.cc common_ind.hpp
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am_migsel_ind_OBJECTS = migsel_ind.$(OBJEXT)
 migsel_ind_OBJECTS = $(am_migsel_ind_OBJECTS)
@@ -206,20 +207,20 @@ AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
-SOURCES = $(HOC_ind_SOURCES) $(bneck_selection_ind_SOURCES) \
-	$(diploid_binaryIO_ind_SOURCES) \
+SOURCES = $(HOC_ind_SOURCES) $(K_linked_regions_multilocus_SOURCES) \
+	$(bneck_selection_ind_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) \
 	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(diploid_ind_2locus_SOURCES) $(diploid_ind_Kloci_SOURCES) \
-	$(migsel_ind_SOURCES) $(migsel_split_ind_list_SOURCES)
+	$(diploid_ind_2locus_SOURCES) $(migsel_ind_SOURCES) \
+	$(migsel_split_ind_list_SOURCES)
 DIST_SOURCES = $(am__HOC_ind_SOURCES_DIST) \
+	$(am__K_linked_regions_multilocus_SOURCES_DIST) \
 	$(am__bneck_selection_ind_SOURCES_DIST) \
 	$(am__diploid_binaryIO_ind_SOURCES_DIST) \
 	$(am__diploid_fixed_sh_ind_SOURCES_DIST) \
 	$(am__diploid_gzbinaryIO_ind_SOURCES_DIST) \
 	$(am__diploid_ind_SOURCES_DIST) \
 	$(am__diploid_ind_2locus_SOURCES_DIST) \
-	$(am__diploid_ind_Kloci_SOURCES_DIST) \
 	$(am__migsel_ind_SOURCES_DIST) \
 	$(am__migsel_split_ind_list_SOURCES_DIST)
 am__can_run_installinfo = \
@@ -351,7 +352,7 @@ top_srcdir = @top_srcdir@
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@migsel_split_ind_list_SOURCES = migsel_split_ind_list.cc common_ind.hpp
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
-@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@diploid_ind_Kloci_SOURCES = diploid_ind_Kloci.cc common_ind.hpp
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@K_linked_regions_multilocus_SOURCES = K_linked_regions_multilocus.cc common_ind.hpp
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@HOC_ind_SOURCES = HOC_ind.cc
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_CPPFLAGS = -Wall \
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@	-W -I. \
@@ -399,6 +400,10 @@ HOC_ind$(EXEEXT): $(HOC_ind_OBJECTS) $(HOC_ind_DEPENDENCIES) $(EXTRA_HOC_ind_DEP
 	@rm -f HOC_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(HOC_ind_OBJECTS) $(HOC_ind_LDADD) $(LIBS)
 
+K_linked_regions_multilocus$(EXEEXT): $(K_linked_regions_multilocus_OBJECTS) $(K_linked_regions_multilocus_DEPENDENCIES) $(EXTRA_K_linked_regions_multilocus_DEPENDENCIES) 
+	@rm -f K_linked_regions_multilocus$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_multilocus_OBJECTS) $(K_linked_regions_multilocus_LDADD) $(LIBS)
+
 bneck_selection_ind$(EXEEXT): $(bneck_selection_ind_OBJECTS) $(bneck_selection_ind_DEPENDENCIES) $(EXTRA_bneck_selection_ind_DEPENDENCIES) 
 	@rm -f bneck_selection_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(bneck_selection_ind_OBJECTS) $(bneck_selection_ind_LDADD) $(LIBS)
@@ -423,10 +428,6 @@ diploid_ind_2locus$(EXEEXT): $(diploid_ind_2locus_OBJECTS) $(diploid_ind_2locus_
 	@rm -f diploid_ind_2locus$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_2locus_OBJECTS) $(diploid_ind_2locus_LDADD) $(LIBS)
 
-diploid_ind_Kloci$(EXEEXT): $(diploid_ind_Kloci_OBJECTS) $(diploid_ind_Kloci_DEPENDENCIES) $(EXTRA_diploid_ind_Kloci_DEPENDENCIES) 
-	@rm -f diploid_ind_Kloci$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_Kloci_OBJECTS) $(diploid_ind_Kloci_LDADD) $(LIBS)
-
 migsel_ind$(EXEEXT): $(migsel_ind_OBJECTS) $(migsel_ind_DEPENDENCIES) $(EXTRA_migsel_ind_DEPENDENCIES) 
 	@rm -f migsel_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(migsel_ind_OBJECTS) $(migsel_ind_LDADD) $(LIBS)
@@ -442,13 +443,13 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HOC_ind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_multilocus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bneck_selection_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_binaryIO_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_gzbinaryIO_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind_2locus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind_Kloci.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_split_ind_list.Po@am__quote@
 
