@@ -1,7 +1,7 @@
 /*
   \include diploid_fixed_sh_ind.cc
-  
-  Same as diploid_fixed_sh.cc, but individual-based
+ 
+  Simulate a recombining region with neutral mutations and non-neutral mutations with fixed 's' and 'h'.
  */
 
 #include <fwdpp/diploid.hh>
