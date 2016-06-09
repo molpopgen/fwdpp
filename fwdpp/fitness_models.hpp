@@ -14,6 +14,10 @@
 /*
   Revision history
 
+  KRT June 9 2016:
+  1. Added range-based operator() to additive/multiplicative models.
+  1a. I have not (yet) made these new operator() called by the old ones taking gametes as args.
+
   KRT June 8 2016:
   1. Added range-based operator() to site_dependent_fitness.
   2. Changed site_dependent_fitness::operator() that took gametes as arguments
@@ -238,6 +242,27 @@ namespace KTfwd
   struct multiplicative_diploid
   {
     using result_type = double;
+    template< typename iterator_t, typename mcont_t>
+    inline result_type operator()(iterator_t first1,
+				  iterator_t last1,
+				  iterator_t first2,
+				  iterator_t last2,
+				  const mcont_t & mutations,
+				  const double & scaling = 1.) const noexcept
+    {
+      using __mtype =  typename mcont_t::value_type;
+      return std::max(0.,site_dependent_fitness()(first1,last1,first2,last2,mutations,
+						  [&](double & fitness,const __mtype & mut) noexcept
+						  {
+						    fitness *= (1. + scaling*mut.s);
+						  },
+						  [](double & fitness,const __mtype & mut) noexcept
+						  {
+						    fitness *= (1. + mut.h*mut.s);
+						  },
+						  1.));
+    }
+    
     template< typename gamete_type, typename mcont_t>
     inline double operator()(const gamete_type & g1, const gamete_type & g2,
 			     const mcont_t & mutations,
@@ -283,6 +308,28 @@ namespace KTfwd
   struct additive_diploid
   {
     using result_type = double;
+    template< typename iterator_t, typename mcont_t>
+    inline result_type operator()(iterator_t first1,
+				  iterator_t last1,
+				  iterator_t first2,
+				  iterator_t last2,
+				  const mcont_t & mutations,
+				  const double & scaling = 1.) const noexcept
+    {
+      using __mtype =  typename mcont_t::value_type;
+      return std::max(0.,1. + site_dependent_fitness()(first1,last1,first2,last2,mutations,
+						       [&](double & fitness,const __mtype & mut) noexcept
+						       {
+							 fitness += (scaling*mut.s);
+						       },
+						       [](double & fitness,const __mtype & mut) noexcept
+						       {
+							 fitness += ( mut.h*mut.s);
+						       },
+						       0.)
+		      );
+    }
+    
     template< typename gamete_type,typename mcont_t>
     inline result_type operator()(const gamete_type & g1, const gamete_type & g2,
 				  const mcont_t & mutations,
