@@ -18,7 +18,11 @@
   1. Added range-based operator() to site_dependent_fitness.
   2. Changed site_dependent_fitness::operator() that took gametes as arguments
   to call the new range-based function.
+  3. Fixed site_dependent_fitness::operator() for custom diploids.  
+  This had never been updated from the iterator-based library to the index-based library,
+  but it was never caught b/c most calls go through the specific multiplicative/additive models.
 */
+
 /*!
   \defgroup fitness Policies for calculating fitnesses.
   This group contains the following data structures to help you implement custom fitness policies:
@@ -187,14 +191,18 @@ namespace KTfwd
       \note See @ref md_md_customdip
     */
     template< typename diploid2dispatch,
+	      typename gcont_t,
+	      typename mcont_t,
 	      typename fitness_updating_policy_hom,
 	      typename fitness_updating_policy_het>
     inline result_type operator()( const diploid2dispatch & dip,
+				   const gcont_t & gametes,
+				   const mcont_t & mutations,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness = 1. ) const noexcept
     {
-      return this->operator()(dip.first,dip.second,fpol_hom,fpol_het,starting_fitness);
+      return this->operator()(gametes[dip.first],gametes[dip.second],mutations,fpol_hom,fpol_het,starting_fitness);
     }
   };
 
