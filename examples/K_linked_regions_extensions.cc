@@ -171,8 +171,6 @@ int main(int argc, char ** argv)
 			    recpolicy,
 			    std::bind(additive_over_loci(),std::placeholders::_1,std::placeholders::_2,
 				      std::placeholders::_3,K),
-			    //std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
-			    //std::placeholders::_3,2.),
 			    pop.neutral,
 			    pop.selected);
       assert( check_sum(pop.gametes,K*twoN) );
