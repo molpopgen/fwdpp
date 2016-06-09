@@ -288,10 +288,6 @@ namespace KTfwd
 				  const mcont_t & mutations,
 				  const double & scaling = 1.) const noexcept
     {
-      static_assert( typename traits::is_gamete_t<gamete_type>::type(),
-                     "gamete_type must be a gamete type" );
-      static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
-		     "mcont_t::value_type must be a mutation type" );
       using __mtype =  typename mcont_t::value_type;
       return std::max(0.,1. + site_dependent_fitness()(g1,g2,mutations,
 						       [=](double & fitness,const __mtype & mut) noexcept
