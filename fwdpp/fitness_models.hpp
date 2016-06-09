@@ -9,7 +9,16 @@
 #include <type_traits>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
+/*
+  Revision history
+
+  KRT June 8 2016:
+  1. Added range-based operator() to site_dependent_fitness.
+  2. Changed site_dependent_fitness::operator() that took gametes as arguments
+  to call the new range-based function.
+*/
 /*!
   \defgroup fitness Policies for calculating fitnesses.
   This group contains the following data structures to help you implement custom fitness policies:
@@ -78,6 +87,69 @@ namespace KTfwd
   struct site_dependent_fitness
   {
     using result_type = double;
+
+    template<typename iterator_t,
+	     typename mcont_t,
+	     typename fitness_updating_policy_hom,
+	     typename fitness_updating_policy_het>
+    inline result_type operator()( iterator_t first1,
+				   iterator_t last1,
+				   iterator_t first2,
+				   iterator_t last2,
+				   const mcont_t & mutations,
+				   const fitness_updating_policy_hom & fpol_hom,
+				   const fitness_updating_policy_het & fpol_het,
+				   const double & starting_fitness  = 1. ) const noexcept
+    {
+      static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
+		     "mcont_t::value_type must be a mutation type" );
+      static_assert( std::is_convertible<
+		     fitness_updating_policy_hom,
+		     std::function<void(double &,const typename mcont_t::value_type &)>
+		     >::value,
+		     "decltype(fpol_hom) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
+      static_assert( std::is_convertible<
+		     fitness_updating_policy_het,
+		     std::function<void(double &,const typename mcont_t::value_type &)>
+		     >::value,
+		     "decltype(fpol_het) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
+      result_type w = starting_fitness;
+      if(first1==last1 && first2==last2) return w;
+      else if(first1==last1) {
+	for( ; first2 != last2 ; ++first2 ) fpol_het(w,mutations[*first2]);
+	return w;
+      } else if(first2==last2) {
+	for( ; first1 != last1 ; ++first1 ) fpol_het(w,mutations[*first1]);
+	return w;
+      }
+      for( ; first1!=last1 ; ++first1 )
+	{
+	  for(  ; first2 != last2 &&
+		  *first1 != *first2 &&
+		  !( mutations[*first2].pos > mutations[*first1].pos ) ; ++first2 )
+	    //All mutations in this range are Aa
+	    {
+	      assert(mutations[*first2].pos < mutations[*first1].pos);
+	      fpol_het(w,mutations[*first2]);
+	    }
+      	  if(first2<last2&&*first1==*first2) //mutation with index first1 is homozygous
+	    {
+	      assert(mutations[*first2].pos == mutations[*first1].pos);
+	      fpol_hom(w,mutations[*first1]);
+	      ++first2; //increment so that we don't re-process this site as a het next time 'round
+	    }
+	  else //mutation first1 is heterozygous
+	    {
+	      fpol_het(w,mutations[*first1]);
+	    }
+	}
+      for( ; first2!=last2 ; ++first2 )
+	{
+	  fpol_het(w,mutations[*first2]);
+	}
+      return w;
+    }
+    
     ///\example diploid_fixed_sh_ind.cc
     template<typename gamete_type,
 	     typename mcont_t,
@@ -104,41 +176,9 @@ namespace KTfwd
 		     std::function<void(double &,const typename mcont_t::value_type &)>
 		     >::value,
 		     "decltype(fpol_het) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
-      result_type w = starting_fitness;
-      if( g1.smutations.empty() && g2.smutations.empty() ) return w;
-      else if (g1.smutations.empty()) {
-	for( const auto & i : g2.smutations ) fpol_het( w,mutations[i] );
-	return w;
-      } else if (g2.smutations.empty()) {
-	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
-	return w;
-      }
-      typename gamete_type::mutation_container::size_type b2 = 0;
-      const typename gamete_type::mutation_container::size_type g2size=g2.smutations.size();
-      for(const auto & b1 : g1.smutations)
-	{
-	  for(  ; b2 < g2size &&
-		 b1!=g2.smutations[b2] && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
-	    {
-	      assert(mutations[g2.smutations[b2]].pos < mutations[b1].pos);
-	      fpol_het(w,mutations[g2.smutations[b2]]);
-	    }
-	  if(b2<g2size&&b1==g2.smutations[b2]) //mutation with index b1 is homozygous
-	    {
-	      assert(mutations[g2.smutations[b2]].pos == mutations[b1].pos);
-	      fpol_hom(w,mutations[b1]);
-	      ++b2; //increment so that we don't re-process this site as a het next time 'round
-	    }
-	  else //mutation b1 is heterozygous
-	    {
-	      fpol_het(w,mutations[b1]);
-	    }
-	}
-      for( ; b2 < g2size ; ++b2 )
-	{
-	  fpol_het(w,mutations[g2.smutations[b2]]);
-	}
-      return w;
+      return this->operator()(g1.smutations.cbegin(),g1.smutations.cend(),
+			      g2.smutations.cbegin(),g2.smutations.cend(),
+			      mutations,fpol_hom,fpol_het,starting_fitness);
     }
     
     
