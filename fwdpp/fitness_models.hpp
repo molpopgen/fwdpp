@@ -168,18 +168,6 @@ namespace KTfwd
     {
       static_assert( traits::is_gamete_t<gamete_type>::value,
                      "gamete_type::value_type must be a gamete type" );
-      static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
-		     "mcont_t::value_type must be a mutation type" );
-      static_assert( std::is_convertible<
-		     fitness_updating_policy_hom,
-		     std::function<void(double &,const typename mcont_t::value_type &)>
-		     >::value,
-		     "decltype(fpol_hom) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
-      static_assert( std::is_convertible<
-		     fitness_updating_policy_het,
-		     std::function<void(double &,const typename mcont_t::value_type &)>
-		     >::value,
-		     "decltype(fpol_het) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
       return this->operator()(g1.smutations.cbegin(),g1.smutations.cend(),
 			      g2.smutations.cbegin(),g2.smutations.cend(),
 			      mutations,fpol_hom,fpol_het,starting_fitness);
