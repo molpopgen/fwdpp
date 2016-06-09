@@ -271,7 +271,7 @@ namespace KTfwd
   */
   struct multiplicative_diploid
   {
-    using result_type = double;
+    using result_type = site_dependent_fitness::result_type;
     template< typename iterator_t, typename mcont_t>
     inline result_type operator()(iterator_t first1,
 				  iterator_t last1,
@@ -337,7 +337,7 @@ namespace KTfwd
   */
   struct additive_diploid
   {
-    using result_type = double;
+    using result_type = site_dependent_fitness::result_type;
     template< typename iterator_t, typename mcont_t>
     inline result_type operator()(iterator_t first1,
 				  iterator_t last1,
