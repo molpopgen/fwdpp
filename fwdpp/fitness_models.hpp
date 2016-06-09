@@ -18,6 +18,8 @@
   1. Added range-based operator() to additive/multiplicative models.
   1a. I have not (yet) made these new operator() called by the old ones taking gametes as args.
   2. Updated documentation for site_dependent_fitness
+  3. Changed typedef for result_type in additive/multiplicative models to refer
+  to value from site_dependent fitness
 
   KRT June 8 2016:
   1. Added range-based operator() to site_dependent_fitness.
