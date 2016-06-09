@@ -18,6 +18,56 @@ using mtype = KTfwd::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
+//This is our fitness model
+struct additive_over_loci
+{
+  template<typename gamete_t,
+	   typename mcont_t>
+  inline double operator()(const gamete_t & g1,
+			   const gamete_t & g2,
+			   const mcont_t & mutations,
+			   const unsigned K) const noexcept
+  /*
+    The fitness model is additive over loci, multiplicative within loci
+   */
+  {
+    double rv = 0.0;
+    for(unsigned i=0;i<K;++i)
+      {
+	/*
+	  Find the iterators corrsponding to locus 1 in g1 and g2.
+	  Because gamete store mutation keys sorted by mutation position,
+	  we can use efficient binary searches.
+	  
+	  We want the positions of all mutations such that i <= p < i+1,
+	  which correspond to lower_bound and upper_bound, respectively.
+	*/
+	auto stop1 = std::upper_bound(g1.smutations.begin(),g1.smutations.end(),double(i+1),
+				      [&mutations](const double val, const std::size_t i) {
+					return val < mutations[i].pos;
+				       });
+	auto start1 = std::lower_bound(g1.smutations.begin(),
+				       stop1,double(i),
+				       [&mutations](const std::size_t i,const double val) {
+					 return mutations[i].pos <  val;
+				       });
+	auto stop2 = std::upper_bound(g2.smutations.begin(),g2.smutations.end(),double(i+1),
+				      [&mutations](const double val, const std::size_t i) {
+					 return val < mutations[i].pos;
+				       });
+	auto start2 = std::lower_bound(g2.smutations.begin(),
+				       stop2,double(i),
+				       [&mutations](const std::size_t i,const double val) {
+					 return mutations[i].pos <  val;
+				       });
+
+	rv += KTfwd::multiplicative_diploid()(start1,stop1,start2,stop2,mutations,2.0) - 1.0;
+      }
+    return std::max(1.0 + rv,0.0);
+  }
+			   
+};
+
 int main(int argc, char ** argv)
 {
   int argument=1;
@@ -116,11 +166,13 @@ int main(int argc, char ** argv)
 							pop.mut_lookup,
 							r.get(),
 							double(K*mutrate_region),
-							0.0,//double(K*mutrate_del_region),
+							double(K*mutrate_del_region),
 							generation),
 			    recpolicy,
-			    std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
-				      std::placeholders::_3,2.),
+			    std::bind(additive_over_loci(),std::placeholders::_1,std::placeholders::_2,
+				      std::placeholders::_3,K),
+			    //std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
+			    //std::placeholders::_3,2.),
 			    pop.neutral,
 			    pop.selected);
       assert( check_sum(pop.gametes,K*twoN) );
