@@ -191,7 +191,6 @@ namespace KTfwd
       \param starting_fitness The initial fitness value.
 
       \returns Fitness (double)
-      \example diploid_fixed_sh_ind.cc
     */
     {
       static_assert( traits::is_gamete_t<gamete_type>::value,
