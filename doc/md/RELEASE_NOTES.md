@@ -8,6 +8,7 @@
 * Fixed error in KTfwd::multiloc where gametes were initialized with the incorrect count
 * KTfwd::gamete_data_sane_multiloc was added to fwdpp/debug.hpp
 * Issue #41 fixed. This issue affected simulations using the multi-locus API, and all simulations using that API need to be rerun. Sorry.
+* The experimental API to sample_diploid was made more flexible via a new header file, fwdpp/experimental/dispatch.hpp.  This addition allows better fine-tuning of "rules" classes
 
 ## 0.4.9
 
