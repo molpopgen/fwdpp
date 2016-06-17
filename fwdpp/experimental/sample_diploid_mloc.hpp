@@ -14,10 +14,10 @@ namespace KTfwd
     */
     struct standardWFrules_mloc
     {
-      mutable double wbar;
-      mutable std::vector<double> fitnesses;
+      double wbar;
+      std::vector<double> fitnesses;
 
-      mutable fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+      fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
       //! \brief Constructor
       standardWFrules_mloc() : wbar(0.),fitnesses(std::vector<double>()),lookup(fwdpp_internal::gsl_ran_discrete_t_ptr(nullptr))
       {
@@ -31,7 +31,7 @@ namespace KTfwd
       void w(const dipcont_t & diploids,
 	     gcont_t & gametes,
 	     const mcont_t & mutations,
-	     const fitness_func & ff) const
+	     const fitness_func & ff)
       {
 	using diploid_geno_t = typename dipcont_t::value_type;
 	unsigned N_curr = diploids.size();
@@ -122,7 +122,7 @@ namespace KTfwd
 			  typename gamete_type::mutation_container & neutral,
 			  typename gamete_type::mutation_container & selected,
 			  const double & f = 0,
-			  const rules_type & rules = rules_type(),
+			  rules_type && rules = rules_type(),
 			  const mutation_removal_policy & mp = mutation_removal_policy(),
 			  const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy())
     /*
@@ -200,7 +200,7 @@ namespace KTfwd
 			  typename gamete_type::mutation_container & neutral,
 			  typename gamete_type::mutation_container & selected,
 			  const double & f = 0,
-			  const rules_type & rules = rules_type(),
+			  rules_type && rules = rules_type(),
 			  const mutation_removal_policy & mp = mutation_removal_policy(),
 			  const gamete_insertion_policy & gpolicy_mut = gamete_insertion_policy())
     /*

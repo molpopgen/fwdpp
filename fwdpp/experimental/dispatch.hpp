@@ -19,7 +19,7 @@ namespace KTfwd
 	     typename mcont_t,
 	     typename fitness_func_t>
     inline auto
-    dispatch_w(const rules_t & r,const dipcont_t & diploids,
+    dispatch_w( rules_t && r,const dipcont_t & diploids,
 	       gcont_t & gametes,
 	       const mcont_t & mutations,
 	       const fitness_func_t & ff) -> decltype(r.w(diploids,gametes,mutations,ff))
@@ -33,7 +33,7 @@ namespace KTfwd
 	     typename mcont_t,
 	     typename fitness_func_t>
     inline auto 
-    dispatch_w(const rules_t & r,
+    dispatch_w(rules_t && r,
 	       const dipcont_t & diploids,
 	       gcont_t & gametes,
 	       const mcont_t & mutations,
@@ -48,7 +48,7 @@ namespace KTfwd
 	     typename mcont_t,
 	     typename fitness_func_t>
     inline auto
-    dispatch_update(const rules_t & r,
+    dispatch_update(rules_t && r,
 		    const gsl_rng * rng,
 		    diploid_t & offspring,
 		    const diploid_t & parent1,
@@ -66,7 +66,7 @@ namespace KTfwd
     	     typename mcont_t,
     	     typename fitness_func_t>
     inline auto
-    dispatch_update(const rules_t & r,
+    dispatch_update(rules_t && r,
     		    const gsl_rng * rng,
     		    diploid_t & offspring,
     		    const diploid_t & parent1,
