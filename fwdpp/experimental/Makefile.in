@@ -260,7 +260,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = sample_diploid.hpp sample_diploid_mloc.hpp
+pkginclude_HEADERS = sample_diploid.hpp sample_diploid_mloc.hpp dispatch.hpp
 all: all-am
 
 .SUFFIXES:
