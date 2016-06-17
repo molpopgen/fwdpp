@@ -6,7 +6,7 @@
 #define __FWDPP_EXPERIMENTAL_SAMPLE_DIPLOID_HPP__
 
 #include <fwdpp/diploid.hh>
-
+#include <fwdpp/experimental/dispatch.hpp>
 namespace KTfwd {
   namespace experimental {
     /*!
@@ -127,7 +127,7 @@ namespace KTfwd {
       auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
       auto mutation_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
 
-      pmr.w(diploids,gametes,mutations,ff);
+      dispatch_w(pmr,diploids,gametes,mutations,ff);
 
 #ifndef NDEBUG
       for(const auto & g : gametes) assert(!g.n);
@@ -171,7 +171,7 @@ namespace KTfwd {
 
 	  assert( gametes[dip.first].n );
 	  assert( gametes[dip.second].n );
-	  pmr.update(r,dip,parents[p1],parents[p2],gametes,mutations);
+	  dispatch_update(pmr,r,dip,parents[p1],parents[p2],gametes,mutations,ff);
 	}
 #ifndef NDEBUG
       for(const auto & dip : diploids)
