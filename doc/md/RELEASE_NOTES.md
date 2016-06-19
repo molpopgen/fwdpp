@@ -2,7 +2,7 @@
 
 ## 0.5.0
 
-* Example file diploid_ind_Kloci.cc added
+* Example file examples/K_linked_regions_multilocus.cc added
 * Streamlined KTfwd::fwdpp_internal::multilocus_rec_mut
 * The sugar types KTfwd::singlepop, KTfwd::metapop, and KTfwd::multiloc were refactored to inerit from KTfwd::sugar::popbase.
 * Fixed error in KTfwd::multiloc where gametes were initialized with the incorrect count

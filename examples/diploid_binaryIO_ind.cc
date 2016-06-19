@@ -1,8 +1,6 @@
 /*
   \include diploid_binaryIO_ind.cc
 
-  Same as diploid_binaryIO.cc, but used individual-based routines
-  
   The population is then read back in and compared to what was written out.
 
   Main point here is to show how the write/read function objects for fwdpp/IO.hpp should be written.

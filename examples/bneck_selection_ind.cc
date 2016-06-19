@@ -1,7 +1,7 @@
 /*
   \include bneck_selection.cc
   
-  Bottleneck + exponential recovery.  With selection.  Individual-based
+  Bottleneck + exponential recovery.  With selection.
  */
 
 #include <numeric>

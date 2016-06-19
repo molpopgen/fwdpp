@@ -1,4 +1,4 @@
-/*! \include diploid_ind_Kloci.cc
+/*! \include K_linked_regions_multilocus.cc
   Simple example building up a K-locus simulation using the
   mulitlocus API
 */
@@ -58,9 +58,6 @@ int main(int argc, char ** argv)
 
   /*
     littler r is the recombination rate per region per generation.
-
-    For individual simulation (UNLIKE GAMETE-BASED SIMS!!!),
-    r = rho/(4N)
   */
   const double littler = rho/double(4*N*K);
 

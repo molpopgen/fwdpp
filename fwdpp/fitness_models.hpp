@@ -9,6 +9,26 @@
 #include <type_traits>
 #include <algorithm>
 #include <functional>
+#include <iostream>
+
+/*
+  Revision history
+
+  KRT June 9 2016:
+  1. Added range-based operator() to additive/multiplicative models.
+  1a. I have not (yet) made these new operator() called by the old ones taking gametes as args.
+  2. Updated documentation for site_dependent_fitness
+  3. Changed typedef for result_type in additive/multiplicative models to refer
+  to value from site_dependent fitness
+
+  KRT June 8 2016:
+  1. Added range-based operator() to site_dependent_fitness.
+  2. Changed site_dependent_fitness::operator() that took gametes as arguments
+  to call the new range-based function.
+  3. Fixed site_dependent_fitness::operator() for custom diploids.  
+  This had never been updated from the iterator-based library to the index-based library,
+  but it was never caught b/c most calls go through the specific multiplicative/additive models.
+*/
 
 /*!
   \defgroup fitness Policies for calculating fitnesses.
@@ -62,36 +82,43 @@ namespace KTfwd
   };
 
   /*! \brief Function object for fitness as a function of individual mutations in a diploid
-
-    Function object for fitness as a function of mutations in a diploid.  Examples include the standard multiplicative and additive models of population genetics.  This routine idenfifies all homozygous/heterozygous mutations in a diploid and updates the diploid's fitness according to user-defined policies.  See the code for KTfwd::multiplicative_diploid and KTfwd::additive_diploid for specific examples.
-    \param g1 A gamete
-    \param g2 A gamete
-    \param mutations Container of mutations
-    \param fpol_hom Policy for updating fitness for the case of homozygosity for a mutant
-    \param fpol_het Policy for updating fitness for the case of heterozygosity for a mutant
-    \param starting_fitness The value to which the function will initialize the return value
-    \return The fitness of a diploid with genotype g1 and g2
     \note The updating policies must take a non-const reference to a double as the first argument and
     an mcont_t::value_type as the second.  Further, they must not return anything. Any remaining arguments needed should be passed via a mechanism such as std::bind and a function object, or via a lambda expression.  See KTfwd::multiplicative_diploid for an example implementation.
     \ingroup fitness
   */
   struct site_dependent_fitness
   {
+    //! The return value type
     using result_type = double;
-    ///\example diploid_fixed_sh_ind.cc
-    template<typename gamete_type,
+
+    template<typename iterator_t,
 	     typename mcont_t,
 	     typename fitness_updating_policy_hom,
 	     typename fitness_updating_policy_het>
-    inline result_type operator()( const gamete_type & g1,
-				   const gamete_type & g2,
+    inline result_type operator()( iterator_t first1,
+				   iterator_t last1,
+				   iterator_t first2,
+				   iterator_t last2,
 				   const mcont_t & mutations,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness  = 1. ) const noexcept
+    /*!
+      Range-based call operator.  Calculates fitnesses over ranges of mutation keys first1/last1
+      and first2/last2, which are iterators derived from the 'smutations' of two gametes in a diploid.
+
+      \param first1 Iterator to first mutation derived from gamete 1
+      \param last1 Iterator to one past the last mutation derived from gamete 1
+      \param first2 Iterator to first mutation derived from gamete 2
+      \param last2 Iterator to one past the last mutation derived from gamete 2
+      \param mutations The container of mutations for the simulation
+      \param fpol_hom Policy that updates fitness for a homozygous mutation.
+      \param fpol_het Policy that updates fitness for a heterozygous mutation.
+      \param starting_fitness The initial fitness value.
+
+      \returns Fitness (double)
+    */
     {
-      static_assert( traits::is_gamete_t<gamete_type>::value,
-                     "gamete_type::value_type must be a gamete type" );
       static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
 		     "mcont_t::value_type must be a mutation type" );
       static_assert( std::is_convertible<
@@ -105,56 +132,100 @@ namespace KTfwd
 		     >::value,
 		     "decltype(fpol_het) must be convertible to std::function<void(double &,const typename mcont_t::value_type" );
       result_type w = starting_fitness;
-      if( g1.smutations.empty() && g2.smutations.empty() ) return w;
-      else if (g1.smutations.empty()) {
-	for( const auto & i : g2.smutations ) fpol_het( w,mutations[i] );
+      if(first1==last1 && first2==last2) return w;
+      else if(first1==last1) {
+	for( ; first2 != last2 ; ++first2 ) fpol_het(w,mutations[*first2]);
 	return w;
-      } else if (g2.smutations.empty()) {
-	for( const auto & i : g1.smutations ) fpol_het( w,mutations[i] );
+      } else if(first2==last2) {
+	for( ; first1 != last1 ; ++first1 ) fpol_het(w,mutations[*first1]);
 	return w;
       }
-      typename gamete_type::mutation_container::size_type b2 = 0;
-      const typename gamete_type::mutation_container::size_type g2size=g2.smutations.size();
-      for(const auto & b1 : g1.smutations)
+      for( ; first1!=last1 ; ++first1 )
 	{
-	  for(  ; b2 < g2size &&
-		 b1!=g2.smutations[b2] && !( mutations[g2.smutations[b2]].pos > mutations[b1].pos ) ; ++b2 )
+	  for(  ; first2 != last2 &&
+		  *first1 != *first2 &&
+		  !( mutations[*first2].pos > mutations[*first1].pos ) ; ++first2 )
+	    //All mutations in this range are Aa
 	    {
-	      assert(mutations[g2.smutations[b2]].pos < mutations[b1].pos);
-	      fpol_het(w,mutations[g2.smutations[b2]]);
+	      assert(mutations[*first2].pos < mutations[*first1].pos);
+	      fpol_het(w,mutations[*first2]);
 	    }
-	  if(b2<g2size&&b1==g2.smutations[b2]) //mutation with index b1 is homozygous
+      	  if(first2<last2&&*first1==*first2) //mutation with index first1 is homozygous
 	    {
-	      assert(mutations[g2.smutations[b2]].pos == mutations[b1].pos);
-	      fpol_hom(w,mutations[b1]);
-	      ++b2; //increment so that we don't re-process this site as a het next time 'round
+	      assert(mutations[*first2].pos == mutations[*first1].pos);
+	      fpol_hom(w,mutations[*first1]);
+	      ++first2; //increment so that we don't re-process this site as a het next time 'round
 	    }
-	  else //mutation b1 is heterozygous
+	  else //mutation first1 is heterozygous
 	    {
-	      fpol_het(w,mutations[b1]);
+	      fpol_het(w,mutations[*first1]);
 	    }
 	}
-      for( ; b2 < g2size ; ++b2 )
+      for( ; first2!=last2 ; ++first2 )
 	{
-	  fpol_het(w,mutations[g2.smutations[b2]]);
+	  fpol_het(w,mutations[*first2]);
 	}
       return w;
     }
     
-    
+
+    template<typename gamete_type,
+	     typename mcont_t,
+	     typename fitness_updating_policy_hom,
+	     typename fitness_updating_policy_het>
+    inline result_type operator()( const gamete_type & g1,
+				   const gamete_type & g2,
+				   const mcont_t & mutations,
+				   const fitness_updating_policy_hom & fpol_hom,
+				   const fitness_updating_policy_het & fpol_het,
+				   const double & starting_fitness  = 1. ) const noexcept
     /*!
-      \brief Overload for custom diploids.  This is what a programmer's functions will call.
-      \note See @ref md_md_customdip
+      Calculates fitnesses for a diploid whose genotype 
+      across sites is given by gametes g1 and  g2.
+
+      \param g1 A gamete
+      \param g2 A gamete
+      \param mutations The container of mutations for the simulation
+      \param fpol_hom Policy that updates fitness for a homozygous mutation.
+      \param fpol_het Policy that updates fitness for a heterozygous mutation.
+      \param starting_fitness The initial fitness value.
+
+      \returns Fitness (double)
     */
+    {
+      static_assert( traits::is_gamete_t<gamete_type>::value,
+                     "gamete_type::value_type must be a gamete type" );
+      return this->operator()(g1.smutations.cbegin(),g1.smutations.cend(),
+			      g2.smutations.cbegin(),g2.smutations.cend(),
+			      mutations,fpol_hom,fpol_het,starting_fitness);
+    }
+    
+    
     template< typename diploid2dispatch,
+	      typename gcont_t,
+	      typename mcont_t,
 	      typename fitness_updating_policy_hom,
 	      typename fitness_updating_policy_het>
     inline result_type operator()( const diploid2dispatch & dip,
+				   const gcont_t & gametes,
+				   const mcont_t & mutations,
 				   const fitness_updating_policy_hom & fpol_hom,
 				   const fitness_updating_policy_het & fpol_het,
 				   const double & starting_fitness = 1. ) const noexcept
+    /*!
+      Calculates fitnesses for a custom diploid type. See @ref md_md_customdip.
+
+      \param dip A diploid
+      \param gametes The container of gametes for the simulation.
+      \param mutations The container of mutations for the simulation
+      \param fpol_hom Policy that updates fitness for a homozygous mutation.
+      \param fpol_het Policy that updates fitness for a heterozygous mutation.
+      \param starting_fitness The initial fitness value.
+
+      \returns Fitness (double)
+    */
     {
-      return this->operator()(dip.first,dip.second,fpol_hom,fpol_het,starting_fitness);
+      return this->operator()(gametes[dip.first],gametes[dip.second],mutations,fpol_hom,fpol_het,starting_fitness);
     }
   };
 
@@ -201,7 +272,28 @@ namespace KTfwd
   */
   struct multiplicative_diploid
   {
-    using result_type = double;
+    using result_type = site_dependent_fitness::result_type;
+    template< typename iterator_t, typename mcont_t>
+    inline result_type operator()(iterator_t first1,
+				  iterator_t last1,
+				  iterator_t first2,
+				  iterator_t last2,
+				  const mcont_t & mutations,
+				  const double & scaling = 1.) const noexcept
+    {
+      using __mtype =  typename mcont_t::value_type;
+      return std::max(0.,site_dependent_fitness()(first1,last1,first2,last2,mutations,
+						  [&](double & fitness,const __mtype & mut) noexcept
+						  {
+						    fitness *= (1. + scaling*mut.s);
+						  },
+						  [](double & fitness,const __mtype & mut) noexcept
+						  {
+						    fitness *= (1. + mut.h*mut.s);
+						  },
+						  1.));
+    }
+    
     template< typename gamete_type, typename mcont_t>
     inline double operator()(const gamete_type & g1, const gamete_type & g2,
 			     const mcont_t & mutations,
@@ -246,16 +338,34 @@ namespace KTfwd
   */
   struct additive_diploid
   {
-    using result_type = double;
+    using result_type = site_dependent_fitness::result_type;
+    template< typename iterator_t, typename mcont_t>
+    inline result_type operator()(iterator_t first1,
+				  iterator_t last1,
+				  iterator_t first2,
+				  iterator_t last2,
+				  const mcont_t & mutations,
+				  const double & scaling = 1.) const noexcept
+    {
+      using __mtype =  typename mcont_t::value_type;
+      return std::max(0.,1. + site_dependent_fitness()(first1,last1,first2,last2,mutations,
+						       [&](double & fitness,const __mtype & mut) noexcept
+						       {
+							 fitness += (scaling*mut.s);
+						       },
+						       [](double & fitness,const __mtype & mut) noexcept
+						       {
+							 fitness += ( mut.h*mut.s);
+						       },
+						       0.)
+		      );
+    }
+    
     template< typename gamete_type,typename mcont_t>
     inline result_type operator()(const gamete_type & g1, const gamete_type & g2,
 				  const mcont_t & mutations,
 				  const double & scaling = 1.) const noexcept
     {
-      static_assert( typename traits::is_gamete_t<gamete_type>::type(),
-                     "gamete_type must be a gamete type" );
-      static_assert( traits::is_mutation_t<typename mcont_t::value_type>::value,
-		     "mcont_t::value_type must be a mutation type" );
       using __mtype =  typename mcont_t::value_type;
       return std::max(0.,1. + site_dependent_fitness()(g1,g2,mutations,
 						       [=](double & fitness,const __mtype & mut) noexcept
