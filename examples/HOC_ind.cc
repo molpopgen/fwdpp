@@ -37,15 +37,14 @@ struct HOChap
   }
 };
 
-double simple_gaussian( const poptype::gamete_t & h1, const poptype::gamete_t & h2,
-			const poptype::mcont_t & mutations)
+double addEsizes(const poptype::gamete_t & h,
+		 const poptype::mcont_t & mutations)
 {
-  double sum = std::accumulate(h1.smutations.begin(),h1.smutations.end(),0.,
-			       [&mutations](double & d, const std::size_t & m) { return d + mutations[m].s; });
-  sum += std::accumulate(h2.smutations.begin(),h2.smutations.end(),0.,
+  return std::accumulate(h.smutations.begin(),h.smutations.end(),0.,
 			 [&mutations](double & d, const std::size_t & m) { return d + mutations[m].s; });
-  return std::exp(-1.*std::pow(sum,2.)/2.);
 }
+
+double gaussianFitness(const double & a, const double & b) {return std::exp(-1.*std::pow(a+b,2.)/2.); }
 
 int main(int argc, char ** argv)
 {
@@ -116,7 +115,9 @@ int main(int argc, char ** argv)
 							r.get(),std::ref(pop.mut_lookup),sigmu),
 					      std::bind(KTfwd::poisson_xover(),r.get(),littler,0.,1.,
 						 std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
-					      std::bind(simple_gaussian,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
+					      std::bind(KTfwd::haplotype_dependent_fitness(),
+							std::placeholders::_1,std::placeholders::_2,std::placeholders::_3,
+							addEsizes,gaussianFitness),
 					      pop.neutral,pop.selected,
 					      0.,
 					      KTfwd::remove_nothing());
