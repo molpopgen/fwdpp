@@ -259,6 +259,22 @@ namespace KTfwd
 		     "mcont_t::value_type must be a mutation type" );
       return dpol( hpol(g1,mutations), hpol(g2,mutations) );
     }
+    template<typename diploid_t,
+	     typename gcont_t,
+	     typename mcont_t,
+	     typename haplotype_policy,
+	     typename diploid_policy >
+    inline result_type operator()(const diploid_t & diploid,
+				  const gcont_t & gametes,
+				  const mcont_t & mutations,
+				  const haplotype_policy & hpol,
+				  const diploid_policy & dpol) const noexcept
+    {
+      static_assert(traits::is_diploid_like<diploid_t>::value,
+		    "diploid_t must represent a diploid");
+      return this->operator()(gametes[diploid.first],gametes[diploid.second],mutations,hpol,dpol);
+    }
+	     
   };
 
   /*! \brief Multiplicative fitness across sites
