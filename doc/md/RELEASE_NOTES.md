@@ -10,6 +10,7 @@
 * Issue #41 fixed. This issue affected simulations using the multi-locus API, and all simulations using that API need to be rerun. Sorry.
 * The experimental API to sample_diploid was made more flexible via a new header file, fwdpp/experimental/dispatch.hpp.  This addition allows better fine-tuning of "rules" classes
 * The experimental API now takes rvalue refrence (&&) instead of const reference (const &) for rules classes.  This allows the rules to be written and be more idiomatic, avoiding use of mutable variables.
+* Add overload of KTfwd::haplotype_dependent_fitness::operator() for custom diploids
 
 ## 0.4.9
 
