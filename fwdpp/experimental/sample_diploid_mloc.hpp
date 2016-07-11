@@ -163,7 +163,7 @@ namespace KTfwd
 	}
       fwdpp_internal::process_gametes(gametes,mutations,mcounts);
       assert(popdata_sane(diploids,gametes,mutations,mcounts));
-      fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp);
+      fwdpp_internal::gamete_cleaner(gametes,mutations,mcounts,2*N_next,mp,std::true_type());
       assert(check_sum(gametes,2*N_next));
       return rules.wbar;
     }
