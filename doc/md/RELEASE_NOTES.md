@@ -1,5 +1,12 @@
 # FWDPP RELEASE NOTES
 
+## 0.5.1
+
+This is a small bigfix release.  There were performance improvements planned for this release,
+but we will hold off in favor of getting this fix out.
+
+* Fix for #41 in v0.5.0 did not get applied to the experimental version of sample_diploid for multi-locus sims.  That has been fixed.
+
 ## 0.5.0
 
 * Example file examples/K_linked_regions_multilocus.cc added
