@@ -2,6 +2,7 @@
 #define FWDPP_INTERNAL_RECYCLING
 
 #include <queue>
+#include <cassert>
 
 namespace KTfwd
 {
