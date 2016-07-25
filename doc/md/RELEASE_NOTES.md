@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+## 0.5.2
+
+* Missing include of cassert added to fwdpp/internal/recycle.hpp
+
 ## 0.5.1
 
 This is a small bigfix release.  There were performance improvements planned for this release,
