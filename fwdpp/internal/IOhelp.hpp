@@ -61,7 +61,7 @@ struct write_haplotypes {
                      ostreamtype & buffer) const {
         std::size_t N = gametes.size();
         scalar_writer writer;
-		writer(buffer,&N);
+        writer(buffer,&N);
         for( const auto & g : gametes ) {
             writer(buffer,&g.n);
             std::size_t nm = g.mutations.size();
