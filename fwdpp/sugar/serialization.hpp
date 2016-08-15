@@ -380,9 +380,8 @@ struct gzserialize {
                                    const sugarpop_t & pop,
                                    const writer_t & wt,
                                    const diploid_writer_t & dw = diploid_writer_t() ) const {
-        serialize s;
         std::ostringstream buffer;
-        s(buffer,pop,wt,dw);
+        serialize()(buffer,pop,wt,dw);
         return gzwrite(gzout,buffer.str().c_str(),unsigned(buffer.str().size()));
     }
 };
