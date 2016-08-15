@@ -30,11 +30,15 @@ namespace KTfwd
     fwdpp_internal::write_mutations()( mutations,mw,buffer ); 
     fwdpp_internal::write_haplotypes()( gametes, buffer );
     std::size_t NDIPS = diploids.size();
-    buffer.write( reinterpret_cast<char *>(&NDIPS), sizeof(std::size_t) );
+    fwdpp_internal::scalar_writer writer;
+    writer(buffer,&NDIPS);
+    //buffer.write( reinterpret_cast<char *>(&NDIPS), sizeof(std::size_t) );
     for(const auto & dip : diploids )
       {
-	buffer.write(reinterpret_cast<const char *>(&dip.first),sizeof(std::size_t));
-	buffer.write(reinterpret_cast<const char *>(&dip.second),sizeof(std::size_t));
+          writer(buffer,&dip.first);
+          writer(buffer,&dip.second);
+//	buffer.write(reinterpret_cast<const char *>(&dip.first),sizeof(std::size_t));
+//	buffer.write(reinterpret_cast<const char *>(&dip.second),sizeof(std::size_t));
 	dw(dip,buffer);
       }
   }
@@ -85,18 +89,23 @@ namespace KTfwd
 				const diploid_writer_t & dw )
   {
     unsigned nloci = unsigned(diploids[0].size());
-    buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
+    fwdpp_internal::scalar_writer writer;
+    writer(buffer,&nloci);
+    //buffer.write(reinterpret_cast<char*>(&nloci),sizeof(unsigned));
     //write mutations
     fwdpp_internal::write_mutations()(mutations,mw,buffer);
     fwdpp_internal::write_haplotypes()( mlocus_gametes, buffer );
     unsigned ndips=unsigned(diploids.size());
-    buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
+    writer(buffer,&ndips);
+    //buffer.write( reinterpret_cast<char*>(&ndips),sizeof(unsigned) );
     for(const auto & dip : diploids )
       {
 	for ( const auto & genotype : dip )
 	  {
-	    buffer.write(reinterpret_cast<const char *>(&genotype.first),sizeof(decltype(genotype.first)));
-	    buffer.write(reinterpret_cast<const char *>(&genotype.second),sizeof(decltype(genotype.first)));
+          writer(buffer,&genotype.first);
+          writer(buffer,&genotype.second);
+	    //buffer.write(reinterpret_cast<const char *>(&genotype.first),sizeof(decltype(genotype.first)));
+	    //buffer.write(reinterpret_cast<const char *>(&genotype.second),sizeof(decltype(genotype.first)));
 	    dw(genotype,buffer);
 	  }
       }
@@ -181,17 +190,22 @@ namespace KTfwd
 			     const diploid_writer_t & dw)
   {
     std::size_t i = unsigned(diploids.size());
-    buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
+    fwdpp_internal::scalar_writer writer;
+    writer(buffer,&i);
+    //buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
     fwdpp_internal::write_mutations()( mutations,mw,buffer );
     fwdpp_internal::write_haplotypes()( gametes, buffer );
     for(const auto & deme : diploids)
       {
 	i = deme.size();
-	buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
+    writer(buffer,&i);
+	//buffer.write( reinterpret_cast<char *>(&i), sizeof(decltype(i)) );
 	for(const auto & dip : deme)
 	  {
-	    buffer.write(reinterpret_cast<const char*>(&dip.first),sizeof(decltype(dip.first)));
-	    buffer.write(reinterpret_cast<const char*>(&dip.second),sizeof(decltype(dip.second)));
+          writer(buffer,&dip.first);
+          writer(buffer,&dip.second);
+	    //buffer.write(reinterpret_cast<const char*>(&dip.first),sizeof(decltype(dip.first)));
+	    //buffer.write(reinterpret_cast<const char*>(&dip.second),sizeof(decltype(dip.second)));
 	    dw(dip,buffer);
 	  }
       }
