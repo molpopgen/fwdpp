@@ -3,6 +3,7 @@
 ## 0.5.2
 
 * Missing include of cassert added to fwdpp/internal/recycle.hpp
+* Serialization code streamlined.  Lots of redundant code was removed.  The biggest changes are that std::runtime_error can be thrown from low-level functions.  Also, KTfwd::serialize can now work with any stream type, and KTfwd::gzserialize is simply a convenience wrapper (albeit is still works via an in-memory serialization).
 
 ## 0.5.1
 
