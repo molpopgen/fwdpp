@@ -162,23 +162,24 @@ streamtype & buffer) const
     /*!
       \brief overload for KTfwd::popgenmut and istreams
      */
-    template<typename U = mutation_t>
+    template<typename streamtype,typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
-    operator()( std::istream & in ) const
+    operator()( streamtype & in ) const
     {
       uint_t g;
       double pos,s,h;
-      in.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
-      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
-      in.read( reinterpret_cast<char *>(&s),sizeof(double));
-      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+	  fwdpp_internal::scalar_reader reader;
+      reader(in,&g);
+      reader(in,&pos);
+      reader(in,&s);
+      reader(in,&h);
       return result_type(pos,s,h,g);
     }
 
     /*!
       \brief overload for KTfwd::popgenmut and zlib/gzFile
     */
-    template<typename U = mutation_t>
+/*    template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,popgenmut>::value,result_type>::type
     operator()( gzFile in ) const
     {
@@ -190,18 +191,19 @@ streamtype & buffer) const
       gzread(in,&h,sizeof(double));
       return result_type(pos,s,h,g);
     }
-    
+  */  
     /*!
       \brief overload for KTfwd::mutation and istreams
      */
-    template<typename U = mutation_t>
+    template<typename streamtype,typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
-    operator()( std::istream & in ) const
+    operator()(streamtype & in ) const
     {
       double pos,s,h;
-      in.read( reinterpret_cast<char *>(&pos),sizeof(double));
-      in.read( reinterpret_cast<char *>(&s),sizeof(double));
-      in.read( reinterpret_cast<char *>(&h),sizeof(double));
+	  fwdpp_internal::scalar_reader reader;
+      reader(in,&pos);
+      reader(in,&s);
+      reader(in,&h);
       return result_type(pos,s,h);
     }
 
@@ -209,7 +211,7 @@ streamtype & buffer) const
     /*!
       \brief overload for KTfwd::mutation and gzFile
     */
-    template<typename U = mutation_t>
+    /*template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,mutation>::value,result_type>::type
     operator()( gzFile in ) const
     {
@@ -219,51 +221,53 @@ streamtype & buffer) const
       gzread(in,&h,sizeof(double));
       return result_type(pos,s,h);
     }
-
+*/
     //! \brief overalod for KTfwd::generalmut and std::istream
-    template<typename U = mutation_t>
+    template<typename streamtype, typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
-    operator()(std::istream & buffer) const
+    operator()(streamtype & in) const
     {
       uint_t g;
       double pos;
       using value_t = typename U::array_t::value_type;
+	  fwdpp_internal::scalar_reader reader;
       std::array<value_t,std::tuple_size<typename U::array_t>::value> s,h;
-      buffer.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
-      buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
+      reader(in,&g);
+      reader(in,&pos);
       //Write mutation types
-      buffer.read( reinterpret_cast<char *>(&s[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
-      buffer.read( reinterpret_cast<char *>(&h[0]),std::tuple_size<typename U::array_t>::value*sizeof(value_t));
+      reader(in,&s[0],std::tuple_size<typename U::array_t>::value);
+      reader(in,&h[0],std::tuple_size<typename U::array_t>::value);
       return generalmut<std::tuple_size<typename U::array_t>::value>(s,h,pos,g);
     }
 
     //! \brief overalod for KTfwd::generalmut_vec and std::istream
-    template<typename U = mutation_t>
+    template<typename streamtype,typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut_vec>::value,result_type>::type
-    operator()(std::istream & buffer) const
+    operator()(streamtype & in) const
     {
       uint_t g;
       double pos;
-      buffer.read( reinterpret_cast<char *>(&g),sizeof(uint_t));
-      buffer.read( reinterpret_cast<char *>(&pos),sizeof(double));
+	  fwdpp_internal::scalar_reader reader;
+      reader(in,&g);
+      reader(in,&pos);
       typename U::array_t::size_type ns,nh;
-      buffer.read(reinterpret_cast<char*>(&ns),sizeof(typename U::array_t::size_type));
-      buffer.read(reinterpret_cast<char*>(&nh),sizeof(typename U::array_t::size_type));
+      reader(in,&ns);
+      reader(in,&nh);
       typename U::array_t s(ns),h(nh);
       //Write mutation types
       if(ns)
 	{
-	  buffer.read( reinterpret_cast<char *>(s.data()),ns*sizeof(typename U::array_t::size_type) );
+	  reader(in,s.data(),ns);
 	}
       if(nh)
 	{
-	  buffer.read( reinterpret_cast<char *>(h.data()),nh*sizeof(typename U::array_t::size_type) );
+	  reader(in,h.data(),nh);
 	}
       return U(std::move(s),std::move(h),pos,g);
     }
 
     //! \brief overalod for KTfwd::generalmut and zlib/gzFile
-    template<typename U = mutation_t>
+/*    template<typename U = mutation_t>
     inline typename std::enable_if<std::is_same<U,generalmut<std::tuple_size<typename U::array_t>::value> >::value,result_type>::type
     operator()(gzFile in) const
     {
@@ -302,6 +306,7 @@ streamtype & buffer) const
 	}
       return U(std::move(s),std::move(h),pos,g);
     }
+	*/
   };
 
   /*!
