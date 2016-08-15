@@ -8,6 +8,8 @@
 */
 #include <zlib.h>
 #include <cstddef>
+#include <cstdint>
+#include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 
 namespace KTfwd {
@@ -25,13 +27,31 @@ struct scalar_reader {
 };
 
 struct scalar_writer {
+    using result_type = std::uint64_t;
     template<typename streamtype,typename T>
-    inline void operator()( streamtype & i, T * __t, std::size_t n = 1 ) const {
+    inline result_type operator()( streamtype & i, T * __t, std::size_t n = 1 ) const {
+        if(!i) {
+            throw std::runtime_error("serialization error on line " +
+                                     std::to_string(__LINE__) +
+                                     " of " + std::string(__FILE__));
+        }
         i.write( reinterpret_cast<const char*>(__t), n*sizeof(T) );
+        if(!i) {
+            throw std::runtime_error("serialization error on line " +
+                                     std::to_string(__LINE__) +
+                                     " of " + std::string(__FILE__));
+        }
+        return result_type(n*sizeof(T));
     }
     template<typename T>
-    inline void operator()( gzFile & gzout, T * __t, std::size_t n = 1 ) const {
-        gzwrite(gzout,__t,n*sizeof(T));
+    inline result_type operator()( gzFile & gzout, T * __t, std::size_t n = 1 ) const {
+        auto rv = gzwrite(gzout,__t,n*sizeof(T));
+        if(!rv) {
+            throw std::runtime_error("serialization error on line " +
+                                     std::to_string(__LINE__) +
+                                     " of " + std::string(__FILE__));
+        }
+        return result_type(rv);
     }
 };
 
