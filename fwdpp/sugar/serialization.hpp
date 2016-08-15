@@ -423,14 +423,15 @@ streamtype & buffer) const
 		const diploid_reader_t & dr = diploid_reader_t()) const
     {
       pop.clear();
+	  fwdpp_internal::scalar_reader reader;
       //Step 0: read N
-      s.buffer.read( reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
+      reader(s.buffer,&pop.N);
       KTfwd::read_binary_pop(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
 
       //update the mutation counts
       fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
-      s.buffer.read( reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      reader(s.buffer,&temp);
       for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(s.buffer);
@@ -439,7 +440,7 @@ streamtype & buffer) const
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  s.buffer.read( reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
+	  reader(s.buffer,&pop.fixation_times[0],temp);
 	}
       s.buffer.seekg(0);
       //Finally, fill the lookup table:
