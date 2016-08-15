@@ -369,7 +369,7 @@ streamtype & buffer) const
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  writer(buffer,&pop.fixation_times[0],pop.fixation_times.size());
+	  writer(buffer,&pop.fixation_times[0],temp);
 	}
     }
 
@@ -396,7 +396,7 @@ streamtype & buffer) const
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  writer(buffer,&pop.fixation_times[0],pop.fixation_times.size());
+	  writer(buffer,&pop.fixation_times[0],temp);
 	}
     }
   };
@@ -575,12 +575,13 @@ streamtype & buffer) const
     {
       pop.clear();
       //Step 0: read N
-      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
+	  fwdpp_internal::scalar_reader reader;
+      reader(gzin,&pop.N);
       KTfwd::read_binary_pop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
       //update the mutation counts
       fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
-      size_t temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      uint_t temp;
+      reader(gzin,&temp);
       for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
@@ -589,7 +590,7 @@ streamtype & buffer) const
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), unsigned(temp*sizeof(uint_t)) );
+	  reader(gzin,&pop.fixation_times[0],temp);
 	}
       //Finally, fill the lookup table:
       for(unsigned i=0;i<pop.mcounts.size();++i)
@@ -609,12 +610,13 @@ streamtype & buffer) const
     {
       pop.clear();
       //Step 0: read N
-      gzread( gzin, reinterpret_cast<char*>(&pop.N),sizeof(uint_t) );
+	  fwdpp_internal::scalar_reader reader;
+      reader(gzin,&pop.N);
       KTfwd::read_binary_pop_mloc( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
       //update the mutation counts
       fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      reader(gzin,&temp);
       for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
@@ -623,7 +625,7 @@ streamtype & buffer) const
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
+	  reader(gzin,&pop.fixation_times[0],temp);
 	}
       //Finally, fill the lookup table:
       for(unsigned i=0;i<pop.mcounts.size();++i)
@@ -646,17 +648,18 @@ streamtype & buffer) const
 		const diploid_reader_t & dr = diploid_reader_t()) const
     {
       pop.clear();
+	  fwdpp_internal::scalar_reader reader;
       //Step 0: read N
       uint_t numNs;
-      gzread( gzin, reinterpret_cast<char*>(&numNs),sizeof(uint_t) );
+      reader(gzin,&numNs);
       pop.Ns.resize(numNs);
-      gzread( gzin, reinterpret_cast<char*>(&pop.Ns[0]),numNs*sizeof(uint_t) );
+      reader(gzin,&pop.Ns[0],numNs);
       //Step 1: write the mutations, diploids, gametes to the stream
       KTfwd::read_binary_metapop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
       //update the mutation counts
       fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
       uint_t temp;
-      gzread( gzin, reinterpret_cast<char*>(&temp),sizeof(uint_t) );
+      reader(gzin,&temp);
       for( uint_t m=0;m<temp ;++m )
     	{
     	  typename reader_t::result_type mm = rt(gzin);
@@ -665,7 +668,7 @@ streamtype & buffer) const
       pop.fixation_times.resize(temp);
       if(temp)
 	{
-	  gzread( gzin, reinterpret_cast<char*>(&pop.fixation_times[0]), temp*sizeof(uint_t) );
+	  reader(gzin,&pop.fixation_times[0],temp);
 	}
       //Finally, fill the lookup table:
       for(unsigned i=0;i<pop.mcounts.size();++i)
