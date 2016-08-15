@@ -359,17 +359,17 @@ streamtype & buffer) const
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
+      writer(buffer,&pop.N);
       write_binary_pop_mloc(pop.gametes,pop.mutations,pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
       uint_t temp = uint_t(pop.fixations.size());
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
+      writer(buffer,&temp);
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write(reinterpret_cast<const char *>(&pop.fixation_times[0]), std::streamsize(pop.fixation_times.size()*sizeof(uint_t)));
+	  writer(buffer,&pop.fixation_times[0],pop.fixation_times.size());
 	}
     }
 
@@ -385,18 +385,18 @@ streamtype & buffer) const
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
       uint_t npops = uint_t(pop.Ns.size());
-      buffer.write(reinterpret_cast<char *>(&npops),sizeof(uint_t));
-      buffer.write( reinterpret_cast<const char*>(&pop.Ns[0]), npops*sizeof(uint_t) );
+      writer(buffer,&npops);
+      writer(buffer,&pop.Ns[0],npops);
       write_binary_metapop(pop.gametes,pop.mutations,pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
       uint_t temp = uint_t(pop.fixations.size());
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
+      writer(buffer,&temp);
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write( reinterpret_cast<const char *>(&pop.fixation_times[0]), pop.fixation_times.size()*sizeof(uint_t) );
+	  writer(buffer,&pop.fixation_times[0],pop.fixation_times.size());
 	}
     }
   };
