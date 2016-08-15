@@ -27,21 +27,22 @@ namespace KTfwd
       \brief overload for KTfwd::popgenmut and ostreams
      */
     using result_type = void;
-    template<typename mutation_t>
+    template<typename streamtype,typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,popgenmut>::value,result_type>::type
     operator()( const mutation_t &m,
-		std::ostream & buffer) const
+		streamtype & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.g),sizeof(uint_t));
-      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+		fwdpp_internal::scalar_writer writer;
+      writer(buffer,&m.g);
+      writer(buffer,&m.pos);
+      writer(buffer,&m.s);
+      writer(buffer,&m.h);
     }
 
     /*!
       \brief overload for KTfwd::popgenmut and zlib/gzFile
     */
-    template<typename mutation_t>
+/*    template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,popgenmut>::value,result_type>::type
     operator()( const mutation_t &m,
 		gzFile gzout) const
@@ -51,24 +52,25 @@ namespace KTfwd
       gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
     }
-    
+ */   
     /*!
       \brief overload for KTfwd::mutation and ostreams
      */
-    template<typename mutation_t>
+    template<typename streamtype,typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
     operator()( const mutation_t &m,
-		std::ostream & buffer) const
+streamtype & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&m.pos),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.s),sizeof(double));
-      buffer.write( reinterpret_cast<const char *>(&m.h),sizeof(double));
+		fwdpp_internal::scalar_writer writer;
+      writer(buffer,&m.pos);
+      writer(buffer,&m.s);
+      writer(buffer,&m.h);
     }
 
     /*!
       \brief overload for KTfwd::mutation and zlib/gzFile
     */
-    template<typename mutation_t>
+/*    template<typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,mutation>::value,result_type>::type
     operator()( const mutation_t &m,
 		gzFile gzout) const
@@ -77,7 +79,7 @@ namespace KTfwd
       gzwrite(gzout, reinterpret_cast<const char *>(&m.s),sizeof(double));
       gzwrite(gzout, reinterpret_cast<const char *>(&m.h),sizeof(double));
     }
-
+*/
     //! \brief overload for KTfwd::generalmut and ostream
     template<typename mutation_t,
 	     std::size_t N = std::tuple_size<typename mutation_t::array_t>::value>
