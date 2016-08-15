@@ -317,9 +317,9 @@ streamtype & buffer) const
   {
     using result_type = void;
     mutable std::stringstream buffer;
-
+	fwdpp_internal::scalar_writer writer;
     //!Default constructor
-    serialize() : buffer(std::string()) {}
+    serialize() : buffer(std::string()),writer(fwdpp_internal::scalar_writer()) {}
 
     //! Move constructor.  Req'd for this to be a member type of another class
     serialize( serialize && __s) : buffer(__s.buffer.str())
@@ -337,17 +337,17 @@ streamtype & buffer) const
 		const writer_t & wt,
 		const diploid_writer_t & dw = diploid_writer_t()) const
     {
-      buffer.write( reinterpret_cast<const char*>(&pop.N), sizeof(uint_t) );
+      writer(buffer,&pop.N);
       write_binary_pop(pop.gametes,pop.mutations,pop.diploids,wt,buffer,dw);
       //Step 2: output fixations 
       uint_t temp = uint_t(pop.fixations.size());
-      buffer.write( reinterpret_cast<char*>(&temp), sizeof(uint_t) );
+      writer(buffer,&temp);
       if( temp )
 	{
 	  std::for_each( pop.fixations.begin(), pop.fixations.end(),
 			 std::bind(std::cref(wt),std::placeholders::_1,std::ref(buffer)) );
 	  //Step 3:the fixation times
-	  buffer.write(reinterpret_cast<const char *>(&pop.fixation_times[0]), std::streamsize(pop.fixation_times.size()*sizeof(uint_t)));
+	  writer(buffer,&pop.fixation_times[0],temp);
 	}
     }
 
