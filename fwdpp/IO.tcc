@@ -58,13 +58,13 @@ namespace KTfwd
     fwdpp_internal::read_mutations()(mutations,mr,in); 
     fwdpp_internal::read_haplotypes()(gametes,in);
     std::size_t NDIPS,c;
-    fwdpp_internal::scalar_reader<decltype(NDIPS)>()(in,&NDIPS);
+    fwdpp_internal::scalar_reader()(in,&NDIPS);
     diploids.resize(NDIPS);
     for( auto & dip : diploids )
       {
-	fwdpp_internal::scalar_reader<decltype(c)>()(in,&c);
+	fwdpp_internal::scalar_reader()(in,&c);
 	dip.first = c;
-	fwdpp_internal::scalar_reader<decltype(c)>()(in,&c);
+	fwdpp_internal::scalar_reader()(in,&c);
 	dip.second = c;
 	dr(dip,in);
       }
@@ -134,20 +134,20 @@ namespace KTfwd
     diploids.clear();
 
     unsigned nloci;
-    fwdpp_internal::scalar_reader<unsigned>()(in,&nloci);
+    fwdpp_internal::scalar_reader()(in,&nloci);
     //Read the mutations from the buffer
     fwdpp_internal::read_mutations()( mutations,mr,in);
     fwdpp_internal::read_haplotypes()(mlocus_gametes,in);
     unsigned ndips;
-    fwdpp_internal::scalar_reader<unsigned>()(in,&ndips);
+    fwdpp_internal::scalar_reader()(in,&ndips);
     diploids.resize(ndips, typename dipvector_t::value_type(nloci) );
     for( auto & dip : diploids )
       {
 	assert(dip.size()==nloci);
 	for( auto & genotype : dip)
 	  {
-	    fwdpp_internal::scalar_reader<decltype(genotype.first)>()(in,&genotype.first);
-	    fwdpp_internal::scalar_reader<decltype(genotype.first)>()(in,&genotype.second);
+	    fwdpp_internal::scalar_reader()(in,&genotype.first);
+	    fwdpp_internal::scalar_reader()(in,&genotype.second);
 	    dr(genotype,in);
 	  }
       }
@@ -215,20 +215,20 @@ namespace KTfwd
     diploids.clear();
     
     std::size_t i;
-    fwdpp_internal::scalar_reader<decltype(i)>()(in,&i);
+    fwdpp_internal::scalar_reader()(in,&i);
     diploids.resize(i);
     fwdpp_internal::read_mutations()(mutations,mr,in); 
     fwdpp_internal::read_haplotypes()(gametes,in);	
     for( auto & deme : diploids)
       {
-	fwdpp_internal::scalar_reader<decltype(i)>()(in,&i);
+	fwdpp_internal::scalar_reader()(in,&i);
 	if(i)
 	  {
 	    deme.resize(i);
 	    for(auto & dip : deme)
 	      {
-		fwdpp_internal::scalar_reader<decltype(dip.first)>()(in,&dip.first);
-		fwdpp_internal::scalar_reader<decltype(dip.second)>()(in,&dip.second);
+		fwdpp_internal::scalar_reader()(in,&dip.first);
+		fwdpp_internal::scalar_reader()(in,&dip.second);
 		dr(dip,in);
 	      }
 	  }
