@@ -116,8 +116,9 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test2 )
   simulate(pop);
   poptype pop2(0,0);
   KTfwd::serialize s;
-  s(pop,mwriter());
-  KTfwd::deserialize()(pop2,s,mreader());
+  std::stringstream buffer;
+  s(buffer,pop,mwriter());
+  KTfwd::deserialize()(pop2,buffer,mreader());
   BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
@@ -130,7 +131,7 @@ BOOST_AUTO_TEST_CASE( multiloc_sugar_test2_gz )
   KTfwd::gzserialize()(gzf,pop,mwriter());
   gzclose(gzf);
   gzf=gzopen("sugar_multilocus_out.gz","rb");
-  KTfwd::gzdeserialize()(gzf,pop2,std::bind(mreader(),std::placeholders::_1));
+  KTfwd::gzdeserialize()(pop2,gzf,std::bind(mreader(),std::placeholders::_1));
   gzclose(gzf);
   unlink("sugar_multilocus_out.gz");
   BOOST_CHECK_EQUAL(pop==pop2,true);

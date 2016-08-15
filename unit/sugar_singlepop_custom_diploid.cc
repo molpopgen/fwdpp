@@ -63,11 +63,11 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_custom_test2 )
 {
   singlepop_t pop(1000);
   simulate(pop);
-
+	std::stringstream buffer;
   KTfwd::serialize s;
-  s(pop,mwriter(),diploid_writer());
+  s(buffer,pop,mwriter(),diploid_writer());
   singlepop_t pop2(0);
-  KTfwd::deserialize()(pop2,s,mreader(),diploid_reader());
+  KTfwd::deserialize()(pop2,buffer,mreader(),diploid_reader());
   BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 

@@ -62,9 +62,10 @@ BOOST_AUTO_TEST_CASE( singlepop_sugar_test2 )
   simulate(pop);
 
   KTfwd::serialize s;
-  s(pop,mwriter());
+  std::stringstream buffer;
+  s(buffer,pop,mwriter());
   singlepop_t pop2(0);
-  KTfwd::deserialize()(pop2,s,mreader());
+  KTfwd::deserialize()(pop2,buffer,mreader());
   BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
@@ -103,22 +104,23 @@ BOOST_AUTO_TEST_CASE( MPI_like_serialization_test )
   simulate(pop);
   //Serialize it
   KTfwd::serialize s;
-  s(pop,mwriter());
+  std::stringstream buffer;
+  s(buffer,pop,mwriter());
 
   //We can copy the data to a std::string,
   //and can pass serialized_pop.data() or
   //serialized_pop.c_str() along with the size
   //to MPI
-  std::string serialized_pop(s.buffer.str());
+  //std::string serialized_pop(buffer.str());
 
   //To re-serialize, we have to "hack" things a bit:
-  KTfwd::serialize s2;
-  s2.buffer.str( serialized_pop ); //assign data to the buffer
+  //KTfwd::serialize s2;
+  //s2.buffer.str( serialized_pop ); //assign data to the buffer
 
   //now, deserialize
 
   singlepop_t pop2(0);
-  KTfwd::deserialize()(pop2,s2,mreader());
+  KTfwd::deserialize()(pop2,buffer,mreader());
 
   BOOST_REQUIRE(pop==pop2);
 }

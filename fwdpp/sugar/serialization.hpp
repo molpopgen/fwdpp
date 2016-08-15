@@ -163,25 +163,27 @@ struct mutation_reader {
  */
 struct serialize {
     using result_type = void;
-    mutable std::stringstream buffer;
     fwdpp_internal::scalar_writer writer;
     //!Default constructor
-    serialize() : buffer(std::string()),writer(fwdpp_internal::scalar_writer()) {}
+    serialize() : writer(fwdpp_internal::scalar_writer()) {}
 
     //! Move constructor.  Req'd for this to be a member type of another class
-    serialize( serialize && __s) : buffer(__s.buffer.str()) {
-    }
+    serialize(serialize &&) = default;
+//    serialize( serialize && __s) : buffer(__buffer.str()) {
+//    }
 
     /*!
       \brief Overload for single population simulations
      */
-    template<typename sugarpop_t,
+    template<typename streamtype,
+             typename sugarpop_t,
              typename writer_t,
              typename diploid_writer_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
-    operator()( const sugarpop_t & pop,
-                const writer_t & wt,
-                const diploid_writer_t & dw = diploid_writer_t()) const {
+    operator()(streamtype & buffer,
+               const sugarpop_t & pop,
+               const writer_t & wt,
+               const diploid_writer_t & dw = diploid_writer_t()) const {
         writer(buffer,&pop.N);
         write_binary_pop(pop.gametes,pop.mutations,pop.diploids,wt,buffer,dw);
         //Step 2: output fixations
@@ -195,13 +197,14 @@ struct serialize {
         }
     }
 
-    template<typename sugarpop_t,
+    template<typename streamtype,typename sugarpop_t,
              typename writer_t,
              typename diploid_writer_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value,result_type>::type
-    operator()( const sugarpop_t & pop,
-                const writer_t & wt,
-                const diploid_writer_t & dw = diploid_writer_t()) const {
+    operator()(streamtype & buffer,
+               const sugarpop_t & pop,
+               const writer_t & wt,
+               const diploid_writer_t & dw = diploid_writer_t()) const {
         writer(buffer,&pop.N);
         write_binary_pop_mloc(pop.gametes,pop.mutations,pop.diploids,wt,buffer,dw);
         //Step 2: output fixations
@@ -218,13 +221,15 @@ struct serialize {
     /*!
       \brief Overload for metapopulation simulations
      */
-    template<typename sugarpop_t,
+    template<typename streamtype,
+             typename sugarpop_t,
              typename writer_t,
              typename diploid_writer_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
-    operator()( const sugarpop_t & pop,
-                const writer_t & wt,
-                const diploid_writer_t & dw = diploid_writer_t()) const {
+    operator()(streamtype & buffer,
+               const sugarpop_t & pop,
+               const writer_t & wt,
+               const diploid_writer_t & dw = diploid_writer_t()) const {
         uint_t npops = uint_t(pop.Ns.size());
         writer(buffer,&npops);
         writer(buffer,&pop.Ns[0],npops);
@@ -252,65 +257,66 @@ struct deserialize {
     /*!
       \brief Overload for single population simulations
      */
-    template<typename sugarpop_t,
+    template<typename streamtype,typename sugarpop_t,
              typename reader_t,
              typename diploid_reader_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,result_type>::type
     operator()( sugarpop_t & pop,
-                const serialize & s,
+                streamtype & buffer,
                 const reader_t & rt,
                 const diploid_reader_t & dr = diploid_reader_t()) const {
         pop.clear();
         fwdpp_internal::scalar_reader reader;
         //Step 0: read N
-        reader(s.buffer,&pop.N);
-        KTfwd::read_binary_pop(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
+        reader(buffer,&pop.N);
+        KTfwd::read_binary_pop(pop.gametes,pop.mutations,pop.diploids,rt,buffer,dr );
 
         //update the mutation counts
         fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
         uint_t temp;
-        reader(s.buffer,&temp);
+        reader(buffer,&temp);
         for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(s.buffer);
+            typename reader_t::result_type mm = rt(buffer);
             pop.fixations.emplace_back( std::move(mm) );
         }
         pop.fixation_times.resize(temp);
         if(temp) {
-            reader(s.buffer,&pop.fixation_times[0],temp);
+            reader(buffer,&pop.fixation_times[0],temp);
         }
-        s.buffer.seekg(0);
+
         //Finally, fill the lookup table:
         for(unsigned i=0; i<pop.mcounts.size(); ++i) {
             if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
         }
     }
 
-    template<typename sugarpop_t,
+    template<typename streamtype,
+             typename sugarpop_t,
              typename reader_t,
              typename diploid_reader_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value,result_type>::type
     operator()( sugarpop_t & pop,
-                const serialize & s,
+                streamtype & buffer,
                 const reader_t & rt,
                 const diploid_reader_t & dr = diploid_reader_t()) const {
         pop.clear();
         fwdpp_internal::scalar_reader reader;
         //Step 0: read N
-        reader(s.buffer,&pop.N);
-        KTfwd::read_binary_pop_mloc(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
+        reader(buffer,&pop.N);
+        KTfwd::read_binary_pop_mloc(pop.gametes,pop.mutations,pop.diploids,rt,buffer,dr );
         //update the mutation counts
         fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
         uint_t temp;
-        reader(s.buffer,&temp);
+        reader(buffer,&temp);
         for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(s.buffer);
+            typename reader_t::result_type mm = rt(buffer);
             pop.fixations.emplace_back( std::move(mm) );
         }
         pop.fixation_times.resize(temp);
         if(temp) {
-            reader(s.buffer,&pop.fixation_times[0],temp);
+            reader(buffer,&pop.fixation_times[0],temp);
         }
-        s.buffer.seekg(0);
+
         //Finally, fill the lookup table:
         for(unsigned i=0; i<pop.mcounts.size(); ++i) {
             if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
@@ -320,36 +326,37 @@ struct deserialize {
     /*!
       \brief Overload for metapopulation simulations
      */
-    template<typename sugarpop_t,
+    template<typename streamtype,
+             typename sugarpop_t,
              typename reader_t,
              typename diploid_reader_t = diploidIOplaceholder>
     inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
     operator()( sugarpop_t & pop,
-                const serialize & s,
+                streamtype & buffer,
                 const reader_t & rt,
                 const diploid_reader_t & dr = diploid_reader_t()) const {
         pop.clear();
         fwdpp_internal::scalar_reader reader;
         //Step 0: read N
         uint_t numNs;
-        reader(s.buffer,&numNs);
+        reader(buffer,&numNs);
         pop.Ns.resize(numNs);
-        reader(s.buffer,&pop.Ns[0],numNs);
+        reader(buffer,&pop.Ns[0],numNs);
         //Step 1: write the mutations, diploids, gametes to the stream
-        KTfwd::read_binary_metapop(pop.gametes,pop.mutations,pop.diploids,rt,s.buffer,dr );
+        KTfwd::read_binary_metapop(pop.gametes,pop.mutations,pop.diploids,rt,buffer,dr );
         //update the mutation counts
         fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
         uint_t temp;
-        reader(s.buffer,&temp);
+        reader(buffer,&temp);
         for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(s.buffer);
+            typename reader_t::result_type mm = rt(buffer);
             pop.fixations.emplace_back( std::move(mm) );
         }
         pop.fixation_times.resize(temp);
         if(temp) {
-            reader(s.buffer,&pop.fixation_times[0],temp);
+            reader(buffer,&pop.fixation_times[0],temp);
         }
-        s.buffer.seekg(0);
+
         //Finally, fill the lookup table:
         for(unsigned i=0; i<pop.mcounts.size(); ++i) {
             if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
@@ -374,121 +381,17 @@ struct gzserialize {
                                    const writer_t & wt,
                                    const diploid_writer_t & dw = diploid_writer_t() ) const {
         serialize s;
-        s(pop,wt,dw);
-        return gzwrite(gzout,s.buffer.str().c_str(),unsigned(s.buffer.str().size()));
+        std::ostringstream buffer;
+        s(buffer,pop,wt,dw);
+        return gzwrite(gzout,buffer.str().c_str(),unsigned(buffer.str().size()));
     }
 };
 
 /*!
   Read a population from a gzFile in binary format
+  \deprecated
  */
-struct gzdeserialize {
-    using result_type = void;
-    /*!
-      \brief Call operator
-      \note gzin must be opened for reading in binary mode
-    */
-    template<typename sugarpop_t,
-             typename reader_t,
-             typename diploid_reader_t = diploidIOplaceholder>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-           result_type>::type operator()( gzFile gzin,
-                                          sugarpop_t & pop,
-                                          const reader_t & rt,
-    const diploid_reader_t & dr = diploid_reader_t()) const {
-        pop.clear();
-        //Step 0: read N
-        fwdpp_internal::scalar_reader reader;
-        reader(gzin,&pop.N);
-        KTfwd::read_binary_pop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
-        //update the mutation counts
-        fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
-        uint_t temp;
-        reader(gzin,&temp);
-        for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(gzin);
-            pop.fixations.emplace_back( std::move(mm) );
-        }
-        pop.fixation_times.resize(temp);
-        if(temp) {
-            reader(gzin,&pop.fixation_times[0],temp);
-        }
-        //Finally, fill the lookup table:
-        for(unsigned i=0; i<pop.mcounts.size(); ++i) {
-            if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
-        }
-    }
-
-    template<typename sugarpop_t,
-             typename reader_t,
-             typename diploid_reader_t = diploidIOplaceholder>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
-           result_type>::type operator()( gzFile gzin,
-                                          sugarpop_t & pop,
-                                          const reader_t & rt,
-    const diploid_reader_t & dr = diploid_reader_t()) const {
-        pop.clear();
-        //Step 0: read N
-        fwdpp_internal::scalar_reader reader;
-        reader(gzin,&pop.N);
-        KTfwd::read_binary_pop_mloc( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
-        //update the mutation counts
-        fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
-        uint_t temp;
-        reader(gzin,&temp);
-        for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(gzin);
-            pop.fixations.emplace_back( std::move(mm) );
-        }
-        pop.fixation_times.resize(temp);
-        if(temp) {
-            reader(gzin,&pop.fixation_times[0],temp);
-        }
-        //Finally, fill the lookup table:
-        for(unsigned i=0; i<pop.mcounts.size(); ++i) {
-            if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
-        }
-    }
-
-    /*!
-      \brief Call operator
-      \note gzin must be opened for reading in binary mode
-    */
-    template<typename sugarpop_t,
-             typename reader_t,
-             typename diploid_reader_t = diploidIOplaceholder>
-    inline typename std::enable_if<std::is_same<typename sugarpop_t::popmodel_t,sugar::METAPOP_TAG>::value,result_type>::type
-    operator()( gzFile gzin,
-                sugarpop_t & pop,
-                const reader_t & rt,
-                const diploid_reader_t & dr = diploid_reader_t()) const {
-        pop.clear();
-        fwdpp_internal::scalar_reader reader;
-        //Step 0: read N
-        uint_t numNs;
-        reader(gzin,&numNs);
-        pop.Ns.resize(numNs);
-        reader(gzin,&pop.Ns[0],numNs);
-        //Step 1: write the mutations, diploids, gametes to the stream
-        KTfwd::read_binary_metapop( pop.gametes,pop.mutations,pop.diploids,rt,gzin,dr );
-        //update the mutation counts
-        fwdpp_internal::process_gametes(pop.gametes,pop.mutations,pop.mcounts);
-        uint_t temp;
-        reader(gzin,&temp);
-        for( uint_t m=0; m<temp ; ++m ) {
-            typename reader_t::result_type mm = rt(gzin);
-            pop.fixations.emplace_back( std::move(mm) );
-        }
-        pop.fixation_times.resize(temp);
-        if(temp) {
-            reader(gzin,&pop.fixation_times[0],temp);
-        }
-        //Finally, fill the lookup table:
-        for(unsigned i=0; i<pop.mcounts.size(); ++i) {
-            if(pop.mcounts[i]) pop.mut_lookup.insert(pop.mutations[i].pos);
-        }
-    }
-};
+using gzdeserialize = deserialize;
 }
 
 #endif

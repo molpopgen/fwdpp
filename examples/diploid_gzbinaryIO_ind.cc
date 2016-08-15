@@ -155,7 +155,7 @@ int main(int argc, char ** argv)
   gzFile gzin = gzopen( hapfile, "rb" ); //open it for reading.  Again, binary mode.
   gzseek( gzin, rec_offset, SEEK_CUR ); //seek to position
 
-  KTfwd::gzdeserialize()(gzin,pop2,std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1));
+  KTfwd::gzdeserialize()(pop2,gzin,std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1));
 
   for( std::size_t i = 0 ; i < pop.diploids.size() ; ++i )
     {
