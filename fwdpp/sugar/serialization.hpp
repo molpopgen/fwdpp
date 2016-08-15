@@ -81,38 +81,40 @@ streamtype & buffer) const
     }
 */
     //! \brief overload for KTfwd::generalmut and ostream
-    template<typename mutation_t,
+    template<typename streamtype,typename mutation_t,
 	     std::size_t N = std::tuple_size<typename mutation_t::array_t>::value>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
-    operator()(const mutation_t & t, std::ostream & buffer) const
+    operator()(const mutation_t & t, streamtype & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
-      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
+		fwdpp_internal::scalar_writer writer;
+      writer(buffer,&t.g);
+      writer(buffer,&t.pos);
       //Write mutation types
-      using value_t = typename generalmut<N>::array_t::value_type;
-      buffer.write( reinterpret_cast<const char *>(&t.s[0]),N*sizeof(value_t));
-      buffer.write( reinterpret_cast<const char *>(&t.h[0]),N*sizeof(value_t));
+//      using value_t = typename generalmut<N>::array_t::value_type;
+      writer(buffer,&t.s[0],N);
+      writer(buffer,&t.h[0],N);
     }
 
     //! \brief overload for KTfwd::generalmut_vec and ostream
-    template<typename mutation_t>
+    template<typename streamtype,typename mutation_t>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut_vec >::value,result_type>::type
-    operator()(const mutation_t & t, std::ostream & buffer) const
+    operator()(const mutation_t & t, streamtype & buffer) const
     {
-      buffer.write( reinterpret_cast<const char *>(&t.g),sizeof(uint_t));
-      buffer.write( reinterpret_cast<const char *>(&t.pos),sizeof(double));
+		fwdpp_internal::scalar_writer writer;
+      writer(buffer,&t.g);
+      writer(buffer,&t.pos);
       //Write mutation types
       using value_t = typename generalmut_vec::array_t::value_type;
       using array_t_size_t = typename generalmut_vec::array_t::size_type;
       array_t_size_t ns = t.s.size(),nh=t.h.size();
-      buffer.write( reinterpret_cast<char *>(&ns),sizeof(array_t_size_t) );
-      buffer.write( reinterpret_cast<char *>(&nh),sizeof(array_t_size_t) );
-      buffer.write( reinterpret_cast<const char *>(t.s.data()),ns*sizeof(value_t));
-      buffer.write( reinterpret_cast<const char *>(t.h.data()),nh*sizeof(value_t));
+      writer(buffer,&ns);
+      writer(buffer,&nh);
+      writer(buffer,t.s.data(),ns);
+      writer(buffer,t.h.data(),nh);
     }
 
     //! \brief overload for KTfwd::generalmut and zlib/gzFile
-    template<typename mutation_t,
+/*    template<typename mutation_t,
 	     std::size_t N = std::tuple_size<typename mutation_t::array_t>::value>
     inline typename std::enable_if<std::is_same<mutation_t,generalmut<N> >::value,result_type>::type
     operator()(const mutation_t & t, gzFile gzout) const
@@ -141,8 +143,8 @@ streamtype & buffer) const
       gzwrite( out, reinterpret_cast<const char *>(t.s.data()),ns*sizeof(value_t));
       gzwrite( out, reinterpret_cast<const char *>(t.h.data()),nh*sizeof(value_t));
     }
+	*/
   };
-
   /*!
     \brief Facilitates serialization of mutation
     types supported by the fwdpp sugar library.
