@@ -1,6 +1,7 @@
 #ifndef __FWDPP_RECOMBINATION_HPP__
 #define __FWDPP_RECOMBINATION_HPP__
 
+#include <algorithm>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -96,7 +97,6 @@ namespace KTfwd
     \param gamete_recycling_bin An object returned by a call to KTfwd::fwdpp_internal::make_gamete_queue
     \param neutral A container for neutral mutations. Will be cleared and updated.
     \param selected A container for non-neutral mutations. Will be cleared and updated.
-    \return The number of breakpoints, which equals pos.size() - 1, as that is fixed in this case.
     \note The vector pos must be sorted (ascending order) and must contain the value std::numeric_limits<double>::max() as a terminating value.
 
     \pre !pos.empty() && g1 < gametes.size() && g2 < gametes.size()

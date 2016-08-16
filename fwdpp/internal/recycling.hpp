@@ -1,6 +1,7 @@
 #ifndef FWDPP_INTERNAL_RECYCLING
 #define FWDPP_INTERNAL_RECYCLING
 
+#include <cassert>
 #include <queue>
 #include <cassert>
 

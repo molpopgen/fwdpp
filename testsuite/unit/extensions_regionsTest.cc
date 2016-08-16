@@ -3,32 +3,21 @@
   API checks on fwdpp's extensions sub-library.
 */
 
-#define BOOST_TEST_MODULE extensions_test
-#define BOOST_TEST_DYN_LINK 
-
 #include <config.h>
-#include <iostream>
-#include <cmath>
-#include <limits>
-#include <type_traits>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/extensions/regions.hpp>
-#include <fwdpp/extensions/callbacks.hpp>
 #include <limits>
+#include "../fixtures/sugar_fixtures.hpp"
 
 using namespace KTfwd;
 
 using poptype = singlepop<popgenmut>;
+BOOST_FIXTURE_TEST_SUITE( test_extensions, singlepop_popgenmut_fixture )
 
 //Check that extensions::discrete_mut_model::make_mut compiles
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_1 )
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},
 				    {1,2},
@@ -48,8 +37,6 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_1 )
 //Check that extensions::discrete_mut_model::make_mut can be bound
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},
 				    {1,2},
@@ -73,8 +60,6 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_2 )
 //mutation model
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},
 				    {1,2},
@@ -98,10 +83,9 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_3 )
 //Check that extensions::discrete_mut_model::make_mut can be bound
 //with placeholders, that the resulting type is a valid
 //mutation model, and can be passed to KTfwd::sample_diploid
+/*
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},
 				    {1,2},
@@ -131,12 +115,11 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+*/
+/*
 //Test the convenience fxn
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},
 				    {1,2},
@@ -181,17 +164,16 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_5 )
     }
 
 }
-
+*/
 /*
   Now, test discrete_mut_model's constructor that takes labels,
   a feature introduced in 0.4.9.  The purpose of this is to
   assign to mutation_base::xtra, which allows mutations to be integer-labelled.
 */
+/*
 BOOST_AUTO_TEST_CASE( discrete_mut_model_test_6 )
 //This is an 'integration' test, I guess...
 {
-  poptype pop(1000);
-
   //attempt
   extensions::discrete_mut_model dm({0,1},   //starts of 'neutral' regions
 				    {1,2},   //ends of 'neutral' regions
@@ -237,28 +219,26 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_6 )
 	}
     }
 }
-
+*/
 
 //check return type of extensions::discrete_rec_model
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_1 )
 {
-  poptype pop(1000);
-
   extensions::discrete_rec_model drm( {0,1},
 				      {1,2},
 				      {1,2}
 				      );
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-  auto x = drm(rng.get(),0.001,pop.gametes[0],pop.gametes[0],pop.mutations);
+  //use really big recombination rate here to ensure that return value is not empty
+  auto x = drm(rng.get(),10.0,pop.gametes[0],pop.gametes[0],pop.mutations);
   static_assert(std::is_same<decltype(x),std::vector<double>>::value,
 		"extensions::dicrete_rec_model::operator() must return std::vector<double>");
+  BOOST_REQUIRE( x.empty() || (x.back() == std::numeric_limits<double>::max()) );
 }
 
 //test binding of extensions::discrete_rec_model::operator()
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_2 )
 {
-  poptype pop(1000);
-
   extensions::discrete_rec_model drm( {0,1},
 				      {1,2},
 				      {1,2}
@@ -275,8 +255,6 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_2 )
 //test binding of extensions::discrete_rec_model::operator()
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_3 )
 {
-  poptype pop(1000);
-
   extensions::discrete_rec_model drm( {0,1},
 				      {1,2},
 				      {1,2}
@@ -293,10 +271,9 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_3 )
 }
 
 //Put it all together into a call to KTfwd::sample_diploid
+/*
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 {
-  poptype pop(1000);
-
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
   
   extensions::discrete_mut_model dm({0,1},
@@ -339,13 +316,12 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+*/
 //Put it all together into a call to KTfwd::sample_diploid,
 //using both convenience fxns instead of the nasty templates
+/*
 BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
 {
-  poptype pop(1000);
-
   KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
   
   extensions::discrete_mut_model dm({0,1},
@@ -378,7 +354,7 @@ BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
 				    pop.neutral,
 				    pop.selected);
 }
-
+*/
 //Tests of raising exceptions
 BOOST_AUTO_TEST_CASE( discrete_rec_model_constructor_should_throw )
 {
@@ -450,19 +426,4 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_constructor_should_throw )
   }
 }
 
-//Tests of fwdpp/extensions/callbacks.hpp
-
-//This test makes sure that each type of callback compiles
-BOOST_AUTO_TEST_CASE( vector_shmodel )
-{
-  //PS, uniform initialization rocks...
-  std::vector< extensions::shmodel > callbacks {
-    {extensions::constant(1.),extensions::constant(0.)},
-      {extensions::exponential(1.),extensions::exponential(1.)},
-	{extensions::uniform(1.,2.),extensions::uniform(1.,2.)},
-	  {extensions::beta(1.,2.),extensions::beta(1.,2.)},             //defaults to factor = 1
-	    {extensions::beta(1.,2.,0.25),extensions::beta(1.,2.,0.25)}, //pass all 3 params to constructor
-	      {extensions::gaussian(1.),extensions::gaussian(1.)},
-		{extensions::gamma(1.,0.1),extensions::gamma(1.,0.1)}
-  };
-}
+BOOST_AUTO_TEST_SUITE_END()

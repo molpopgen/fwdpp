@@ -9,6 +9,8 @@
 #ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
 
+#include <fwdpp/debug.hpp>
+#include <fwdpp/mutation.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/diploid_fitness_dispatch.hpp>
