@@ -24,7 +24,7 @@ using poptype = KTfwd::metapop<mutation_t,custom_diploid_testing_t>;
 
 /*
   These next two derived classes mimic what software 
-  packages like fwdpy do, which is to extend sugart types
+  packages like fwdpy do, which is to extend sugar types
   with data that they need.
 */
 struct spop_derived : public spoptype
