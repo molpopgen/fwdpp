@@ -66,7 +66,6 @@ struct mutation_writer {
         writer(buffer,&t.g);
         writer(buffer,&t.pos);
         //Write mutation types
-        using value_t = typename generalmut_vec::array_t::value_type;
         using array_t_size_t = typename generalmut_vec::array_t::size_type;
         array_t_size_t ns = t.s.size(),nh=t.h.size();
         writer(buffer,&ns);
