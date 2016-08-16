@@ -5,8 +5,8 @@
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>
-#include <testsuite/fixtures/sugar_fixtures.hpp>
-#include <testsuite/util/quick_evolve_sugar.hpp>
+#include "../fixtures/sugar_fixtures.hpp"
+#include "../util/quick_evolve_sugar.hpp"
 
 BOOST_FIXTURE_TEST_SUITE( test_singlepop, singlepop_popgenmut_fixture )
 
