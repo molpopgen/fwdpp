@@ -4459,7 +4459,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile testsuite/unit/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
+ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile testsuite/unit/Makefile testsuite/integration/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
 
@@ -6064,6 +6064,7 @@ do
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
     "testsuite/Makefile") CONFIG_FILES="$CONFIG_FILES testsuite/Makefile" ;;
     "testsuite/unit/Makefile") CONFIG_FILES="$CONFIG_FILES testsuite/unit/Makefile" ;;
+    "testsuite/integration/Makefile") CONFIG_FILES="$CONFIG_FILES testsuite/integration/Makefile" ;;
     "experimental_examples/Makefile") CONFIG_FILES="$CONFIG_FILES experimental_examples/Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
     "doc/fwdpp.doxygen") CONFIG_FILES="$CONFIG_FILES doc/fwdpp.doxygen" ;;
