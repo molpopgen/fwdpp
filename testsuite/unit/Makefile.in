@@ -111,7 +111,8 @@ extensions_unit_tests_OBJECTS = $(am_extensions_unit_tests_OBJECTS)
 extensions_unit_tests_LDADD = $(LDADD)
 am__fwdpp_unit_tests_SOURCES_DIST = fwdpp_unit_tests.cc mutateTest.cc \
 	gameteTest.cc utilTest.cc type_traitsTest.cc \
-	recombinationTest.cc demographyTest.cc siteDepFitnessTest.cc
+	recombinationTest.cc demographyTest.cc siteDepFitnessTest.cc \
+	serializationTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@am_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	mutateTest.$(OBJEXT) \
@@ -120,7 +121,8 @@ am__fwdpp_unit_tests_SOURCES_DIST = fwdpp_unit_tests.cc mutateTest.cc \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	type_traitsTest.$(OBJEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	recombinationTest.$(OBJEXT) \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	demographyTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitnessTest.$(OBJEXT)
+@BUNIT_TEST_LIB_PRESENT_TRUE@	siteDepFitnessTest.$(OBJEXT) \
+@BUNIT_TEST_LIB_PRESENT_TRUE@	serializationTest.$(OBJEXT)
 fwdpp_unit_tests_OBJECTS = $(am_fwdpp_unit_tests_OBJECTS)
 fwdpp_unit_tests_LDADD = $(LDADD)
 am__sugar_unit_tests_SOURCES_DIST = sugar_unit_tests.cc \
@@ -494,7 +496,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 @BUNIT_TEST_LIB_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
-@BUNIT_TEST_LIB_PRESENT_TRUE@fwdpp_unit_tests_SOURCES = fwdpp_unit_tests.cc mutateTest.cc gameteTest.cc utilTest.cc type_traitsTest.cc recombinationTest.cc demographyTest.cc siteDepFitnessTest.cc
+@BUNIT_TEST_LIB_PRESENT_TRUE@fwdpp_unit_tests_SOURCES = fwdpp_unit_tests.cc mutateTest.cc gameteTest.cc utilTest.cc type_traitsTest.cc recombinationTest.cc demographyTest.cc siteDepFitnessTest.cc serializationTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@extensions_unit_tests_SOURCES = extensions_unit_test.cc extensions_regionsTest.cc extensions_callbacksTest.cc
 @BUNIT_TEST_LIB_PRESENT_TRUE@sugar_unit_tests_SOURCES = sugar_unit_tests.cc \
 @BUNIT_TEST_LIB_PRESENT_TRUE@	sugar_GSLrngTest.cc \
@@ -567,6 +569,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gameteTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mutateTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/recombinationTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/serializationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/siteDepFitnessTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_GSLrngTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sugar_add_mutationTest.Po@am__quote@
