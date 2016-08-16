@@ -67,11 +67,11 @@ struct scalar_writer {
 
 struct write_mutations {
     template< typename mutation_type,
-              typename list_type_allocator,
-              template<typename,typename> class list_type,
+              typename container_type_allocator,
+              template<typename,typename> class container_type,
               typename mutation_writer_type,
               typename ostreamtype>
-    void operator()( const list_type< mutation_type, list_type_allocator > & mutations,
+    void operator()( const container_type< mutation_type, container_type_allocator > & mutations,
                      const mutation_writer_type & mw,
                      ostreamtype & buffer) const {
         std::size_t MUTNO = mutations.size();
@@ -110,11 +110,11 @@ struct write_haplotypes {
 
 struct read_mutations {
     template< typename mutation_type,
-              typename list_type_allocator,
-              template<typename,typename> class list_type,
+              typename container_type_allocator,
+              template<typename,typename> class container_type,
               typename mutation_reader,
               typename istreamtype >
-    void operator()(list_type< mutation_type, list_type_allocator > & mutations,
+    void operator()(container_type< mutation_type, container_type_allocator > & mutations,
                     const mutation_reader & mr,
                     istreamtype & in) const {
         std::size_t NMUTS;
@@ -127,10 +127,10 @@ struct read_mutations {
 
 struct read_haplotypes {
     template< typename gamete_type,
-              typename list_type_allocator,
-              template<typename,typename> class list_type,
+              typename container_type_allocator,
+              template<typename,typename> class container_type,
               typename istreamtype >
-    void  operator()(list_type< gamete_type, list_type_allocator > & gametes,
+    void operator()(container_type< gamete_type, container_type_allocator > & gametes,
                      istreamtype & in) const {
         scalar_reader reader;
         std::size_t NHAPS;
