@@ -4,6 +4,8 @@
 
 * Missing include of cassert added to fwdpp/internal/recycle.hpp
 * Serialization code streamlined.  Lots of redundant code was removed.  The biggest changes are that std::runtime_error can be thrown from low-level functions.  Also, KTfwd::serialize can now work with any stream type, and KTfwd::gzserialize is simply a convenience wrapper (albeit is still works via an in-memory serialization).
+* Test suite refactored.  The code has moved from unit/ to testsuite/, and attempts to better separate unit tests from
+  integration tests.  Further, fixtures are used to improve code reuse in testing.
 
 ## 0.5.1
 
