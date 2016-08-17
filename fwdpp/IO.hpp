@@ -22,9 +22,9 @@ namespace KTfwd
     };
   
   /*! \brief Write population to binary-format file for individual-based simulations
-    \param gametes  The vector of lists gametes for each deme in metapop
-    \param mutations The list of mutations
-    \param diploids The vector of diploids
+    \param gametes  The gamete container.
+    \param mutations The container of mutations.
+    \param diploids The vector of diploids.
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must support a write() function
     akin to those found in the std::ostream classes.
@@ -70,7 +70,7 @@ namespace KTfwd
 
   /*! \brief Write the population to a binary-format file for individual-based multilocus simulations.
     \param mlocus_gametes A container of gametes for a multilocus simulation
-    \param mutations A linked list of mutation objects
+    \param mutations A container of mutation objects
     \param diploids A container of individuals in the simulation
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An object whose public interface is compatible with std::ostream or is a gzFile
@@ -90,7 +90,7 @@ namespace KTfwd
 
   /*! \brief Read the population back from a binary-format file for individual-based multilocus simulations
     \param mlocus_gametes A container of gametes for a multilocus simulation
-    \param mutations A linked list of mutation objects
+    \param mutations A mutation container
     \param diploids A container of individuals in the simulation
     \param mr A function object taking a input stream as argument, and reads a mutation object from the stream. Must be provided by the library user.
     \param in An object whose public interface is compatible with std::ostream or is a gzFile.
@@ -111,8 +111,8 @@ namespace KTfwd
   /*! \brief Write the metapopulation to a compact binary-format output file for individual-based simulations.
     Write the metapopulation to a compact binary-format output file.
     
-    \param metapop  The vector of lists gametes for each deme in metapop
-    \param mutations The list of mutations
+    \param gametes The gamete container.
+    \param mutations THe mutation container.
     \param diploids The vector of vectors of diploids.
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
     \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must support a write() function
@@ -128,7 +128,7 @@ namespace KTfwd
 	    typename mutation_writer_type,
 	    typename ostreamtype,
 	    typename diploid_writer_t = diploidIOplaceholder>
-  void write_binary_metapop (const gcont_t & metapop,
+  void write_binary_metapop (const gcont_t & gametes,
 			     const mcont_t & mutations,
 			     const dipvector_t & diploids,
 			     const mutation_writer_type & mw,

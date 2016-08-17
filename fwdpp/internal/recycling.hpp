@@ -64,20 +64,20 @@ namespace KTfwd
 
       \param mutation_recycling_bin  A FIFO queue of iterators pointing to extinct mutations.
       \param mutations A list of mutation objects
-      \param args Parameter pack to be passed to constructor of an mlist_t::value_type
+      \param args Parameter pack to be passed to constructor of an mcont_t::value_type
      */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     class... Args >
     typename queue_t::value_type recycle_mutation_helper( queue_t & mutation_recycling_bin,
-							  mlist_t & mutations,
+							  mcont_t & mutations,
 							  Args&&... args )
     {
       if(!mutation_recycling_bin.empty())
 	{
 	  auto rv = mutation_recycling_bin.front();
 	  mutation_recycling_bin.pop();
-	  mutations[rv]=typename mlist_t::value_type(args...);
+	  mutations[rv]=typename mcont_t::value_type(args...);
 	  return rv;
 	}
       mutations.emplace_back(std::forward<Args>(args)...);

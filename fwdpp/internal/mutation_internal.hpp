@@ -45,10 +45,10 @@ namespace KTfwd {
 
     template<typename mmodel,
     	     typename gamete_type,
-    	     typename mlist_type,
+    	     typename mcont_type,
     	     typename queue_t>
-    inline typename std::result_of<mmodel(queue_t &,mlist_type &)>::type
-    mmodel_dispatcher( const mmodel & m, gamete_type & , mlist_type & mutations, queue_t & recycling_bin)
+    inline typename std::result_of<mmodel(queue_t &,mcont_type &)>::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & , mcont_type & mutations, queue_t & recycling_bin)
     /*!
       Run-time dispatcher for mutation model
     */
@@ -58,10 +58,10 @@ namespace KTfwd {
 
     template<typename mmodel,
 	     typename gamete_type,
-    	     typename mlist_type,
+    	     typename mcont_type,
     	     typename queue_t>
-    inline typename std::result_of<mmodel(queue_t &,gamete_type &,mlist_type &)>::type
-    mmodel_dispatcher( const mmodel & m, gamete_type & g, mlist_type & mutations, queue_t & recycling_bin)
+    inline typename std::result_of<mmodel(queue_t &,gamete_type &,mcont_type &)>::type
+    mmodel_dispatcher( const mmodel & m, gamete_type & g, mcont_type & mutations, queue_t & recycling_bin)
     /*!
       Run-time dispatcher for mutation model
     */
@@ -71,16 +71,16 @@ namespace KTfwd {
 
     /*!
       Apply mutation model N times to a new gamete.
-      Updates mutation list
+      Updates mutation container.
     */
     template<typename queue_type,
 	     typename mutation_model,
-    	     typename mlist_type,
+    	     typename mcont_type,
     	     typename gamete_type>
     void add_N_mutations_recycle( queue_type & recycling_bin,
 				  const mutation_model & mmodel,
 				  const unsigned & n,
-				  mlist_type & mutations,
+				  mcont_type & mutations,
 				  gamete_type & g)
     {
       assert(gamete_is_sorted_n(g,mutations));

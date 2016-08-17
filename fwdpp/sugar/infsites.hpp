@@ -50,15 +50,15 @@ namespace KTfwd
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     typename lookup_table_t,
 	     typename position_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
+    inline typename std::enable_if<std::is_same<typename mcont_t::value_type,popgenmut>::value,
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t & mutations,
+	       mcont_t & mutations,
 	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
@@ -67,8 +67,8 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
-      static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
-		    "mlist_t::value_type must be KTfwd::popgenmut");
+      static_assert(std::is_same<typename mcont_t::value_type,KTfwd::popgenmut>::value,
+		    "mcont_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
       auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
@@ -95,16 +95,16 @@ namespace KTfwd
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     typename lookup_table_t,
 	     typename nposition_t,
 	     typename sposition_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
+    inline typename std::enable_if<std::is_same<typename mcont_t::value_type,popgenmut>::value,
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t & mutations,
+	       mcont_t & mutations,
 	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t & generation,
 	       const double & neutral_mutation_rate,
@@ -140,15 +140,15 @@ namespace KTfwd
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     typename lookup_table_t,
 	     typename position_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,popgenmut>::value,
+    inline typename std::enable_if<std::is_same<typename mcont_t::value_type,popgenmut>::value,
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t & mutations,
+	       mcont_t & mutations,
 	       const gsl_rng * r, lookup_table_t & lookup,
 	       const uint_t * generation,
 	       const double & neutral_mutation_rate,
@@ -157,8 +157,8 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
-      static_assert(std::is_same<typename mlist_t::value_type,KTfwd::popgenmut>::value,
-		    "mlist_t::value_type must be KTfwd::popgenmut");
+      static_assert(std::is_same<typename mcont_t::value_type,KTfwd::popgenmut>::value,
+		    "mcont_t::value_type must be KTfwd::popgenmut");
       //Establish position of new mutation
       auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
@@ -177,15 +177,15 @@ namespace KTfwd
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     typename lookup_table_t,
 	     typename position_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,mutation>::value,
+    inline typename std::enable_if<std::is_same<typename mcont_t::value_type,mutation>::value,
 				   std::size_t>::type
     operator()(queue_t & mutation_recycling_bin,
-	       mlist_t & mutations,
+	       mcont_t & mutations,
 	       const gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
@@ -193,8 +193,8 @@ namespace KTfwd
 	       const sdist_t & smaker,
 	       const hdist_t & hmaker) const
     {
-      static_assert(std::is_same<typename mlist_t::value_type,KTfwd::mutation>::value,
-		    "mlist_t::value_type must be KTfwd::mutation");
+      static_assert(std::is_same<typename mcont_t::value_type,KTfwd::mutation>::value,
+		    "mcont_t::value_type must be KTfwd::mutation");
       //Establish position of new mutation
       auto pos = this->generate_mut_pos(posmaker,lookup);
       bool selected = (gsl_rng_uniform(r) < selected_mutation_rate/(neutral_mutation_rate + selected_mutation_rate));
@@ -217,16 +217,16 @@ namespace KTfwd
       \note A mutation will be "selected" with probability selected_mutation_rate/(selected_mutation_rate + neutral_mutation_rate)
     */
     template<typename queue_t,
-	     typename mlist_t,
+	     typename mcont_t,
 	     typename lookup_table_t,
 	     typename nposition_t,
 	     typename sposition_t,
 	     typename sdist_t,
 	     typename hdist_t>
-    inline typename std::enable_if<std::is_same<typename mlist_t::value_type,mutation>::value,
+    inline typename std::enable_if<std::is_same<typename mcont_t::value_type,mutation>::value,
 				   std::size_t>::type
     operator()(queue_t & recycling_bin,
-	       mlist_t & mutations,
+	       mcont_t & mutations,
 	       const gsl_rng * r, lookup_table_t & lookup,
 	       const double & neutral_mutation_rate,
 	       const double & selected_mutation_rate,
