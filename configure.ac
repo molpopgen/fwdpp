@@ -5,7 +5,7 @@ AC_CONFIG_SRCDIR([fwdpp/diploid.hh])
 AC_CONFIG_SRCDIR([examples/diploid_ind.cc])
 AC_CONFIG_SRCDIR([experimental_examples/sex_limited_ind.cc])
 AC_CONFIG_SRCDIR([testsuite/unit/fwdpp_unit_tests.cc])
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -23,7 +23,7 @@ AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Make
 				 fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile
 				 fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile
 				 fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile
-				 testsuite/unit/Makefile testsuite/integration/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen])
+				 experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen])
 
 dnl AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]),[AC_DEFINE([USE_STANDARD_CONTAINERS],[1],[Prefer containers from namespace std when compiling])])
 dnl Disabled as of 0.4.4
