@@ -75,8 +75,8 @@ AC_LANG_SAVE
           AC_LANG_CPLUSPLUS
           AC_REQUIRE_CPP
           AC_CHECK_LIB(sequence, main,HAVELIBSEQ=1,[AC_MSG_WARN([libsequence runtime library does not seem to be here.  Example programs will not be compiled])])
-	  dnl AC_CHECK_LIB(boost_system,main,,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
-	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,[AC_MSG_WARN([boost containers requested but the boost_system runtime library does not seem to be here])])
+	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,
+                   [AC_MSG_WARN([boost unit testing framework not found. Test suite will not be compiled.])])
 	  AM_CONDITIONAL([HAVE_LIBSEQ_RUNTIME], test x$HAVELIBSEQ = x1)
 	  AM_CONDITIONAL([BUNIT_TEST_LIB_PRESENT], test x$BUNITTESTLIB = x1)
 AC_LANG_RESTORE

@@ -4462,7 +4462,6 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
-
 # Check whether --enable-debug was given.
 if test "${enable_debug+set}" = set; then :
   enableval=$enable_debug;
@@ -4475,7 +4474,6 @@ else
   DEBUG_TRUE='#'
   DEBUG_FALSE=
 fi
-
 
 # Check whether --enable-tcmalloc was given.
 if test "${enable_tcmalloc+set}" = set; then :
@@ -5232,7 +5230,7 @@ else
 $as_echo "$as_me: WARNING: libsequence runtime library does not seem to be here.  Example programs will not be compiled" >&2;}
 fi
 
-	  	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_unit_test_framework" >&5
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_unit_test_framework" >&5
 $as_echo_n "checking for main in -lboost_unit_test_framework... " >&6; }
 if ${ac_cv_lib_boost_unit_test_framework_main+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -5265,8 +5263,8 @@ $as_echo "$ac_cv_lib_boost_unit_test_framework_main" >&6; }
 if test "x$ac_cv_lib_boost_unit_test_framework_main" = xyes; then :
   BUNITTESTLIB=1
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&5
-$as_echo "$as_me: WARNING: boost containers requested but the boost_system runtime library does not seem to be here" >&2;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost unit testing framework not found. Test suite will not be compiled." >&5
+$as_echo "$as_me: WARNING: boost unit testing framework not found. Test suite will not be compiled." >&2;}
 fi
 
 	   if test x$HAVELIBSEQ = x1; then
