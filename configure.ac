@@ -25,13 +25,8 @@ AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Make
 				 fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile
 				 experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen])
 
-dnl AC_ARG_ENABLE([standard],AS_HELP_STRING([--enable-standard],[Disable use of boost containers when compiling examples]),[AC_DEFINE([USE_STANDARD_CONTAINERS],[1],[Prefer containers from namespace std when compiling])])
-dnl Disabled as of 0.4.4
-dnl AC_ARG_ENABLE([boost],AS_HELP_STRING([--enable-boost],[Enable use of boost containers when compiling examples]),[AC_DEFINE([USE_BOOST_CONTAINERS],[1],[Use containers from namespace boost when compiling])])
-
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
-
 dnl do we want tcmalloc?
 AC_ARG_ENABLE([tcmalloc],AS_HELP_STRING([--enable-tcmalloc],[Enable linking to Google's tcmalloc library, if present.]))
 dnl do we want jemalloc?
