@@ -2,6 +2,7 @@
 *~
 *.trs
 *.log
+*.pyc
 Makefile
 config.h
 config.status
