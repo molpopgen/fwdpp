@@ -6,6 +6,7 @@
 #include <config.h>
 #include <fstream>
 #include <sstream>
+#include <unistd.h>
 #include <zlib.h>
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include <fwdpp/internal/IOhelp.hpp>
@@ -44,6 +45,7 @@ BOOST_AUTO_TEST_CASE(test_scalar_writer_exceptions)
 	gzclose(gzf);
 	//Throw when writing to closed file
 	BOOST_REQUIRE_THROW(KTfwd::fwdpp_internal::scalar_writer()(gzf,&x),std::runtime_error);
+	unlink("test_scalar_writer_exceptions.gz");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
