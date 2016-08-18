@@ -3,10 +3,6 @@
   \ingroup unit
   \brief Tests KTfwd::fwdpp_internal::multilocus_rec
 */
-
-#define BOOST_TEST_MODULE mlocusCrossoverTest
-#define BOOST_TEST_DYN_LINK
-
 #include <config.h>
 #include <iostream>
 //For this unit test, this symbol eliminates the mutation-related part of KTfwd::fwdpp_internal::multiloc_rec_mut,
@@ -20,9 +16,7 @@
 #include <functional>
 #include <vector>
 #include <gsl/gsl_rng.h>
-
-using mut = KTfwd::mutation;
-using gtype = KTfwd::gamete;
+#include "../fixtures/fwdpp_fixtures.hpp"
 
 /*
   Initiate random number generation system --
@@ -32,10 +26,7 @@ using gtype = KTfwd::gamete;
 */
 gsl_rng * r =  gsl_rng_alloc(gsl_rng_ranlxs2);
 
-//Set up our basic containers
-using gvector = std::vector<gtype>;
-using mutvector = std::vector<mut>;
-using diploid_t = std::vector< std::pair< std::size_t,std::size_t> >;
+using diploid_t = dipvector_t;
 
 // /*
 //   Setup fxn for 3-locus scenario
@@ -48,11 +39,11 @@ using diploid_t = std::vector< std::pair< std::size_t,std::size_t> >;
 //   g1,l3 = 1.25, 1.5
 //   g2,l3 = 1.1
 // */
-void setup3locus2( gvector & gametes,
-		   mutvector & mvector,
+void setup3locus2( gcont_t & gametes,
+		   mcont_t & mvector,
 		   diploid_t & diploid )
 {
-  gametes = gvector(6,gtype(1));
+  gametes = gcont_t(6,gcont_t::value_type(1));
   mvector.clear();
 
   //To set this up, let's add the mutations:
@@ -80,11 +71,12 @@ void setup3locus2( gvector & gametes,
   diploid.emplace_back(std::make_pair(4,5));
   return;
 }
+BOOST_FIXTURE_TEST_SUITE(multilocus_rec_mutTest,standard_empty_multiloc_fixture)
 
 BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 {
-  gvector gametes;
-  mutvector mvector;
+  gcont_t gametes;
+  mcont_t mvector;
   diploid_t diploid;            //parent 1
   setup3locus2(gametes,mvector,diploid);
   std::vector<unsigned> mcounts(mvector.size(),1);
@@ -104,21 +96,21 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
   //auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
   auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
   auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+  gcont_t::value_type::mutation_container neutral,selected; //req'd as of 0.3.3
 
-  std::vector<std::function<std::vector<double>(const gtype &,
-						const gtype &,
-						const mutvector &)> > recpols
+  std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
+						const gcont_t::value_type &,
+						const mcont_t &)> > recpols
   {
-    [&rec1](const gtype &,
-	    const gtype &,
-	    const mutvector &) { return rec1[0]; },
-      [&rec1](const gtype &,
-	      const gtype &,
-	      const mutvector &) { return rec1[1]; },
-	[&rec1](const gtype &,
-		const gtype &,
-		const mutvector &) { return rec1[2]; }
+    [&rec1](const gcont_t::value_type &,
+	    const gcont_t::value_type &,
+	    const mcont_t &) { return rec1[0]; },
+      [&rec1](const gcont_t::value_type &,
+	      const gcont_t::value_type &,
+	      const mcont_t &) { return rec1[1]; },
+	[&rec1](const gcont_t::value_type &,
+		const gcont_t::value_type &,
+		const mcont_t &) { return rec1[2]; }
   };
 
   auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
@@ -137,8 +129,8 @@ BOOST_AUTO_TEST_CASE( three_locus_test_1 )
 
 BOOST_AUTO_TEST_CASE( three_locus_test_2 )
 {
-  gvector gametes;
-  mutvector mvector;
+  gcont_t gametes;
+  mcont_t mvector;
   diploid_t diploid;            //parent 1
   setup3locus2(gametes,mvector,diploid);
   std::vector<unsigned> mcounts(mvector.size(),1);
@@ -158,21 +150,21 @@ BOOST_AUTO_TEST_CASE( three_locus_test_2 )
   //auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
   auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
   auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+  gcont_t::value_type::mutation_container neutral,selected; //req'd as of 0.3.3
 
-  std::vector<std::function<std::vector<double>(const gtype &,
-						const gtype &,
-						const mutvector &)> > recpols
+  std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
+						const gcont_t::value_type &,
+						const mcont_t &)> > recpols
   {
-    [&rec1](const gtype &,
-	    const gtype &,
-	    const mutvector &) { return rec1[0]; },
-      [&rec1](const gtype &,
-	      const gtype &,
-	      const mutvector &) { return rec1[1]; },
-	[&rec1](const gtype &,
-		const gtype &,
-		const mutvector &) { return rec1[2]; }
+    [&rec1](const gcont_t::value_type &,
+	    const gcont_t::value_type &,
+	    const mcont_t &) { return rec1[0]; },
+      [&rec1](const gcont_t::value_type &,
+	      const gcont_t::value_type &,
+	      const mcont_t &) { return rec1[1]; },
+	[&rec1](const gcont_t::value_type &,
+		const gcont_t::value_type &,
+		const mcont_t &) { return rec1[2]; }
   };
 
   auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
@@ -194,8 +186,8 @@ BOOST_AUTO_TEST_CASE( three_locus_test_2 )
 
 BOOST_AUTO_TEST_CASE( three_locus_test_3 )
 {
-  gvector gametes;
-  mutvector mvector;
+  gcont_t gametes;
+  mcont_t mvector;
   diploid_t diploid;            //parent 1
   setup3locus2(gametes,mvector,diploid);
   std::vector<unsigned> mcounts(mvector.size(),1);
@@ -215,21 +207,21 @@ BOOST_AUTO_TEST_CASE( three_locus_test_3 )
   //auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
   auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
   auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+  gcont_t::value_type::mutation_container neutral,selected; //req'd as of 0.3.3
 
-  std::vector<std::function<std::vector<double>(const gtype &,
-						const gtype &,
-						const mutvector &)> > recpols
+  std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
+						const gcont_t::value_type &,
+						const mcont_t &)> > recpols
   {
-    [&rec1](const gtype &,
-	    const gtype &,
-	    const mutvector &) { return rec1[0]; },
-      [&rec1](const gtype &,
-	      const gtype &,
-	      const mutvector &) { return rec1[1]; },
-	[&rec1](const gtype &,
-		const gtype &,
-		const mutvector &) { return rec1[2]; }
+    [&rec1](const gcont_t::value_type &,
+	    const gcont_t::value_type &,
+	    const mcont_t &) { return rec1[0]; },
+      [&rec1](const gcont_t::value_type &,
+	      const gcont_t::value_type &,
+	      const mcont_t &) { return rec1[1]; },
+	[&rec1](const gcont_t::value_type &,
+		const gcont_t::value_type &,
+		const mcont_t &) { return rec1[2]; }
   };
 
   auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
@@ -251,8 +243,8 @@ BOOST_AUTO_TEST_CASE( three_locus_test_3 )
 
 BOOST_AUTO_TEST_CASE( three_locus_test_4 )
 {
-  gvector gametes;
-  mutvector mvector;
+  gcont_t gametes;
+  mcont_t mvector;
   diploid_t diploid;            //parent 1
   setup3locus2(gametes,mvector,diploid);
   std::vector<unsigned> mcounts(mvector.size(),1);
@@ -272,21 +264,21 @@ BOOST_AUTO_TEST_CASE( three_locus_test_4 )
   //auto gamete_lookup = KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mvector);
   auto mutation_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
   auto gamete_recycling_bin = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
-  gtype::mutation_container neutral,selected; //req'd as of 0.3.3
+  gcont_t::value_type::mutation_container neutral,selected; //req'd as of 0.3.3
 
-  std::vector<std::function<std::vector<double>(const gtype &,
-						const gtype &,
-						const mutvector &)> > recpols
+  std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
+						const gcont_t::value_type &,
+						const mcont_t &)> > recpols
   {
-    [&rec1](const gtype &,
-	    const gtype &,
-	    const mutvector &) { return rec1[0]; },
-      [&rec1](const gtype &,
-	      const gtype &,
-	      const mutvector &) { return rec1[1]; },
-	[&rec1](const gtype &,
-		const gtype &,
-		const mutvector &) { return rec1[2]; }
+    [&rec1](const gcont_t::value_type &,
+	    const gcont_t::value_type &,
+	    const mcont_t &) { return rec1[0]; },
+      [&rec1](const gcont_t::value_type &,
+	      const gcont_t::value_type &,
+	      const mcont_t &) { return rec1[1]; },
+	[&rec1](const gcont_t::value_type &,
+		const gcont_t::value_type &,
+		const mcont_t &) { return rec1[2]; }
   };
 
   auto offspring  = KTfwd::fwdpp_internal::multilocus_rec_mut(r,
@@ -303,3 +295,4 @@ BOOST_AUTO_TEST_CASE( three_locus_test_4 )
        BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[0]].pos,1.1);
        BOOST_CHECK_EQUAL(mvector[gametes[offspring[2].first].mutations[1]].pos,1.25);
 }
+BOOST_AUTO_TEST_SUITE_END()
