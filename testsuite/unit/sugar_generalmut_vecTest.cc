@@ -3,9 +3,6 @@
   \ingroup unit 
   \brief Testing KTfwd::generalmut_vec
 */
-#define BOOST_TEST_MODULE generalmut_vecTest
-#define BOOST_TEST_DYN_LINK 
-
 #include <unistd.h>
 #include <config.h>
 #include <sstream>
@@ -16,6 +13,8 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
 #include <fwdpp/sugar/serialization.hpp>
+
+BOOST_AUTO_TEST_SUITE(generalmut_vecTest)
 
 BOOST_AUTO_TEST_CASE( construct_2 )
 {
@@ -105,5 +104,7 @@ BOOST_AUTO_TEST_CASE( serialize_pop1 )
   using singlepop_t = KTfwd::singlepop<mtype>;
   singlepop_t pop1(100);
   singlepop_t pop2(pop1);
-  
+	BOOST_REQUIRE_EQUAL(pop1==pop2,true);  
 }
+
+BOOST_AUTO_TEST_SUITE_END()

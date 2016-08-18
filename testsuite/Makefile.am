@@ -13,7 +13,8 @@ unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
 	unit/sugar_samplingTest.cc \
 	unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc \
-	unit/sugar_generalmutTest.cc
+	unit/sugar_generalmutTest.cc \
+	unit/sugar_generalmut_vecTest.cc
 
 #Integration test targets:
 integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
