@@ -1,11 +1,8 @@
 /*! 
-  \file test_generalmut.cc 
+  \file sugar_generalmutTest.cc 
   \ingroup unit 
   \brief Testing KTfwd::generalmut
 */
-#define BOOST_TEST_MODULE generalmutTest
-#define BOOST_TEST_DYN_LINK 
-
 #include <unistd.h>
 #include <config.h>
 #include <sstream>
@@ -110,4 +107,5 @@ BOOST_AUTO_TEST_CASE( serialize_pop1 )
   using singlepop_t = KTfwd::singlepop<mtype>;
   singlepop_t pop1(100);
   singlepop_t pop2(pop1);
+  BOOST_REQUIRE_EQUAL(pop1==pop2,true);
 }
