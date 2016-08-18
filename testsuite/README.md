@@ -1,6 +1,12 @@
-# Unit tests for fwdpp
+# fwdpp testing suite
 
-Unit tests are found in the unit subdirectory of the source code repository.
+Unit and integration tests are found in the unit subdirectory of the source code repository.
+
+The source code for unit tests are in unit/ and integration tests in integration/.
+
+These tests make use of
+[fixtures](http://www.boost.org/doc/libs/1_60_0/libs/test/doc/html/boost_test/tests_organization/fixtures/case.html) so
+that a common set of objects can be re-used for similar tests.
 
 ##Dependencies
 
@@ -15,13 +21,13 @@ make check
 ##Running the tests
 
 ~~~~
-sh runTests.sh
+make check
 ~~~~
 
 If you really want all the details, then execute this instead:
 
 ~~~
-BOOST_TEST_LOG_LEVEL=all sh runTests.sh
+BOOST_TEST_LOG_LEVEL=all make check
 ~~~
 
 The boost unit testing library will report any errors in any testing modules.
