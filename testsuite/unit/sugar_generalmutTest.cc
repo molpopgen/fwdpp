@@ -14,6 +14,8 @@
 #include <fwdpp/sugar/generalmut.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 
+BOOST_AUTO_TEST_SUITE(generalmutTest)
+
 BOOST_AUTO_TEST_CASE( construct_2 )
 {
   KTfwd::generalmut<2> p( {{0.5,-1}},{{1,0}},0.001,1);
@@ -109,3 +111,5 @@ BOOST_AUTO_TEST_CASE( serialize_pop1 )
   singlepop_t pop2(pop1);
   BOOST_REQUIRE_EQUAL(pop1==pop2,true);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
