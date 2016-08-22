@@ -86,14 +86,16 @@ KTfwd::internal::recycle_mutation_helper to facilitate this operation.
 
 Additional model parameters are possible via the usual mechanisms: class members, std::bind, etc.
 
-A valid mutation policy passes a static assertion involving KTfwd::traits::valid_mutation_model at compile time.
+A valid mutation policy passes a static assertion involving KTfwd::traits::valid_mutation_model at compile time. See
+type_traitsTest.cc for an example of this assertion.
 
 * KTfwd::infsites
 
 \subsection TutRec Recombination policies
 
 The function signature of a recombination policy must be equivalent to KTfwd::traits::recmodel_t.  If so, then a static
-assertion involving KTfwd::traits::valid_rec_model will pass at compile time.
+assertion involving KTfwd::traits::valid_rec_model will pass at compile time. See type_traitsTest.cc for an example of
+this assertion. 
 
 Additional model parameters are possible via the usual mechanisms: class members, std::bind, etc.
 
