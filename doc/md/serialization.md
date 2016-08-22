@@ -43,72 +43,8 @@ You need to tell these functions how to read/write mutation objects.  Specifical
 * Define a mutation write function, which takes a mutation object and an output stream type as an object.
 * Define a mutation read function, taking an input stream type as an object
 
-Let's look at an example.  For this definition of a mutation type:
-
-~~~{.cpp}
-struct mutation_with_age : public KTfwd::mutation_base
-{
-  double s,h;
-  unsigned g; //generation in which mutation arose
-  mutation_with_age(const unsigned & __o,const double & position, const unsigned & count, 
-		    const double & __s, const double __h,
-		    const bool & isneutral = true)
-    : KTfwd::mutation_base(position,count,isneutral),s(__s),h(__h),g(__o)
-  {	
-  }
-};
-~~~
-
-This function object works as a writer:
-
-~~~{.cpp}
-//function object to write mutation data in binary format
-struct mwriter
-{
-  typedef void result_type;
-  result_type operator()( const mutation_with_age & m, std::ostream & buffer ) const
-  {
-    unsigned u = m.n;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    u = m.g;
-    buffer.write( reinterpret_cast< char * >(&u),sizeof(unsigned) );
-    bool b = m.neutral;
-    buffer.write( reinterpret_cast< char * >(&b),sizeof(bool) );
-    double d = m.pos;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.s;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-    d = m.h;
-    buffer.write( reinterpret_cast< char * >(&d),sizeof(double) );
-  }
-};
-~~~
-
-And this function object works as a reader:
-
-~~~{.cpp}
-//function object to read mutation data in binary format
-struct mreader
-{
-  typedef mutation_with_age result_type;
-  result_type operator()( std::istream & in ) const
-  {
-    unsigned n;
-    in.read( reinterpret_cast< char * >(&n),sizeof(unsigned) );
-    unsigned g;
-    in.read( reinterpret_cast< char * >(&g),sizeof(unsigned) );
-    bool neut;
-    in.read( reinterpret_cast< char * >(&neut),sizeof(bool) );
-    double pos;
-    in.read( reinterpret_cast< char * >(&pos),sizeof(double) );
-    double s;
-    in.read( reinterpret_cast< char * >(&s),sizeof(double) );
-    double h;
-    in.read( reinterpret_cast< char * >(&h),sizeof(double) );
-    return result_type(g,pos,n,s,h,neut);
-  }
-};
-~~~
+For a concrete example of implementing "mutation readers" and "mutation writers", see the implementation of
+KTfwd::mutation_writer and KTfwd::mutation_writer.
 
 Below, you will see how to pass these to KTfwd::write_binary_pop and KTfwd::read_binary_pop.
 
@@ -137,23 +73,23 @@ These custom serialization objects may be passed as the last arguments to the fu
 
 It may be desirable to be able to restore a population from a previous state.  For example, you may wish to repeatedly introduce a mutation at a position, and then simulate until it is fixed.  For replicates where it is lost, you will restore the population to the state it was in when you introduced the mutation.  You may do this using KTfwd::write_binary_pop  or KTfwd::write_binary_metapop, and write the population to an in-memory buffer such as [std::ostringstream](http://www.cplusplus.com/reference/sstream/ostringstream/).  You may restore the population by reading the data from a [std::istringstream](http://www.cplusplus.com/reference/sstream/istringstream/).
 
-Here is some pseudocode for an individual-based simulation:
+Here is some pseudocode for an single-deme simulation:
 
 ~~~{.cpp}
 //run a simulation...
 
 //write it to a buffer:
 std::ostringstream buffer;
-KTfwd::write_binary_pop(&gametes,&mutations,&diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
+KTfwd::write_binary_pop(gametes,mutations,diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
 
 //Now, if you want to restore it:
 std::istringstream inbuffer(buffer.str());
 decltype(mutations) mutations2;
 decltype(gametes) gametes2;
 decltype(diploids) diploids2;
-KTfwd::read_binary_pop(&gametes2,
-			 &mutations2,
-			 &diploids2,
+KTfwd::read_binary_pop(gametes2,
+			 mutations2,
+			 diploids2,
 			 std::bind(mreader(),std::placeholders::_1),
 			 inbuffer);
 ~~~
