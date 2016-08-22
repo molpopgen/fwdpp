@@ -1,5 +1,5 @@
 /*!
-  \file type_traits_test.cc
+  \file type_traitsTest.cc
   \ingroup unit
   \brief Testing fwdpp/type_traits.hpp
 
