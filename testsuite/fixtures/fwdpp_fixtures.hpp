@@ -33,6 +33,7 @@ struct standard_empty_single_deme_fixture
   lookup_table_t mut_lookup;
   mcounts_t mcounts,fixation_times;
   KTfwd::gamete::mutation_container neutral,selected;
+  gsl_rng * r;
   standard_empty_single_deme_fixture() : mutations(mcont_t()),
 					 fixations(mcont_t()),
 					 gametes(gcont_t()),
@@ -41,9 +42,11 @@ struct standard_empty_single_deme_fixture
 					 mcounts(mcounts_t()),
 					 fixation_times(mcounts_t()),
 					 neutral(KTfwd::gamete::mutation_container()),
-					 selected(KTfwd::gamete::mutation_container())
+					 selected(KTfwd::gamete::mutation_container()),
+					 r(gsl_rng_alloc(gsl_rng_mt19937))
   {
   }
+  ~standard_empty_single_deme_fixture() { gsl_rng_free(r); }
 };
 
 struct standard_empty_metapop_fixture
@@ -59,6 +62,7 @@ struct standard_empty_metapop_fixture
   lookup_table_t mut_lookup;
   mcounts_t mcounts,fixation_times;
   KTfwd::gamete::mutation_container neutral,selected;
+  gsl_rng * r;
   standard_empty_metapop_fixture() : mutations(mcont_t()),
 				     fixations(mcont_t()),
 				     gametes(gcont_t()),
@@ -67,9 +71,12 @@ struct standard_empty_metapop_fixture
 				     mcounts(mcounts_t()),
 				     fixation_times(mcounts_t()),
 				     neutral(KTfwd::gamete::mutation_container()),
-				     selected(KTfwd::gamete::mutation_container())
+				     selected(KTfwd::gamete::mutation_container()),
+					 r(gsl_rng_alloc(gsl_rng_mt19937))
   {
   }
+  ~standard_empty_metapop_fixture() { gsl_rng_free(r); }
+  
 };
 
 struct standard_empty_multiloc_fixture
@@ -85,6 +92,7 @@ struct standard_empty_multiloc_fixture
   lookup_table_t mut_lookup;
   mcounts_t mcounts,fixation_times;
   KTfwd::gamete::mutation_container neutral,selected;
+  gsl_rng * r;
   standard_empty_multiloc_fixture() : mutations(mcont_t()),
 				     fixations(mcont_t()),
 				     gametes(gcont_t()),
@@ -93,8 +101,10 @@ struct standard_empty_multiloc_fixture
 				     mcounts(mcounts_t()),
 				     fixation_times(mcounts_t()),
 				     neutral(KTfwd::gamete::mutation_container()),
-				     selected(KTfwd::gamete::mutation_container())
+				     selected(KTfwd::gamete::mutation_container()),
+					 r(gsl_rng_alloc(gsl_rng_mt19937))
   {
   }
+  ~standard_empty_multiloc_fixture() { gsl_rng_free(r); }
 };
 #endif
