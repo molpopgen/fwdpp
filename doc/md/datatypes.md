@@ -35,117 +35,115 @@ This type is usable in a simulation, but not in an interesting simulation, as th
 
 * KTfwd::mutation
 * KTfwd::popgenmut
+* KTfwd::generalmut
+* KTfwd::generalmut_vec
 
 ### Notes
 
 * Remember to _properly_ initialize the base class from your derived mutation classes!
 * All fitness models provided by the library require a mutation type to contain a double called \f$s\f$ representing the selection coefficient (or effect size).  For example, see KTfwd::site_dependent_fitness.  Hoewever, if you write your own fitness models, then your mutations can contain whatever they want. 
 
-## Mutation lists
+## Mutation containers
 
-Mutations must be stored in double-linked lists.  In the C++ standard library, use std::list:
-
-~~~{.cpp}
-#include <list>
-#include <fwdpp/diploid.hh>
-
-std::list< KTfwd::mutation > mlist;
-~~~
-
-The standard list type works well, and simulations will be pretty fast.  However, we can do better.  In any forward simulations, mutations enter the population and then quickly exit because they are lost due to drift and/or selection.  Situations where small objects are coming and going rapidly screams for a memory pool allocation model, rather than the standard allocator that the above code block is implying:
+Mutations must be stored in a container supporting random access via operator[].  Typically, this will be std::vector.
+For example: 
 
 ~~~{.cpp}
-#include <list>
+#include <vector>
 #include <fwdpp/diploid.hh>
 
-//This is equivalent to the above block,
-//which relies on the default allocator
-//being the standard one.
-std::list< KTfwd::mutation, std::allocator<KTfwd::mutation> > mlist;
+//Create a typedef for a container of mutations:
+using mcont_t = std::vector<KTfwd::mutation>;
 ~~~
-
-The [boost](http://www.boost.org) C++ libraries provide nicely-implemented memory pool objects:
-
-~~~{.cpp}
-#include <boost/container/list.hpp>
-#include <boost/pool/pool_alloc.hpp>
-#include <fwdpp/diploid.hh>
-
-//We see that typedefs lead to improved sanity:
-using mutation_t = KTfwd::mutation;
-using mutation_t_allocator = boost::pool_allocator<mutation_t>;
-boost::container::list< mutation_t, mutation_t_allocator > mlist;
-~~~
-
-For simulations with large mutation and/or recombination rates, using the boost types can result is substantially faster simulations.  It is well worth it to have boost available on your systems!
-
-Note that you can use the boost allocators with the standard containers, etc.
-
-Further note that I have done _zero_ experimentation with parameters to the pool_allocator template, which itself can be tweaked in various ways.  
 
 ## Gamete types
 
-The basic gamete type is KTfwd::gamete_base, which is a template type.  Fundamentally, gametes contain vectors if _iterators_ derived from mutation lists.  There is one such vector for "neutral" variants, another for "selected" variants.  
+The basic gamete type is KTfwd::gamete_base, which is a template type. A gamete contains two std::vector<std::size_t>
+called _mutations_ and _smutations_.  The values contained in these vectors correspond to the mutations present in the
+gamete, and are used as indexes into the mutation container described above.  The containers _mutations_ and
+_smutations_ contain indexes (or "keys") to neutral and non-neutral mutations, respectively.
 
-In order to instantiate a gamete template, you must provide the mutation type at a minimum:
+A gamete also contains an unsigned integer, _n_, representing how many times the gamete is present in the simulation.
 
-~~~{.cpp}
-#include <list>
-#include <fwdpp/diploid.hh>
-
-using mutation_t = KTfwd::mutation;
-std::list< mutation_t > mlist;
-//This defaults to assuming that std::list<mutation_t> is the mutation list type
-using gamete_t = KTfwd::gamete_base<mutation_t>;
-~~~
-
-If your mutation list type is not std::list, then you must provide an additional template parameter:
-
-~~~{.cpp}
-#include <boost/container/list.hpp>
-#include <boost/pool/pool_alloc.hpp>
-#include <fwdpp/diploid.hh>
-
-//We see that typedefs lead to improved sanity:
-using mutation_t = KTfwd::mutation;
-using mutation_t_allocator = boost::pool_allocator<mutation_t>;
-using mlist_t = boost::container::list< mutation_t, mutation_t_allocator >;
-mlist_t mlist;
-using gamete_t = KTfwd::gamete_base<mutation_t,mlist_t>;
-~~~
+__NOTE:__ __fwdpp__ makes no attempt to collect identical gametes together. In other words, imagine a recombination
+event results in a gamete identical to one that already exists.  The library will _not_ check for this, because the
+comparison is relatively slow.  Thus, the _n_ value will tend towards 1 over time, particularly for simulations with
+large mutation/recombination rates.
 
 That's basically it for gametes. 
 
-### Notes
 
-* The interface to Ktfwd::gamete_base is a little funny.  Ideally, you should be able to provide only the mutation list type, _e.g._,
+## Gamete containers
 
-~~~{.cpp}
-using gamete_t = KTfwd::gamete_base<mutation_t,mlist_t>;
-~~~
-
-The gamete_t should be able to deduce the mutation_t from the mlist_t::value_type.  That's all true, but I first wrote the gamete type based around the idea of the mutation and the default std::list<mutation_t>.  Changing it now would break all existing simulations using the library.
-
-* As of __fwdpp__ 0.3.0, KTfwd::gamete_base takes a third template argument, which currently defaults to KTfwd::tags::standard_gamete.  This tag has no effect on anything, and the library remains source-compatible with previous versions.  This "tag" is a placeholder for potential future library features making use of tag-dispatch methods for implementing more complex models.
-
-## Gamete lists
-
-Like mutations, gametes are stored in doubly-linked lists.  All of the stuff from the section on mutation lists applies here.
+Like mutations, gametes are stored in vector-like containers.   All of the stuff from the section on mutation containers applies here.
 
 ## Diploids
 
-In fwdpp, a diploid is a pair of iterator derived from a gamete list, _e.g._,
+In fwdpp, the simplest diploid is std::pair<std::size_t,std::size_t>.  These two integers are indexes/keys referring to
+the diploid's two gametes.
+
+The information represented in a diploid may be augmented via custom diploid types. See @ref md_md_customdip for
+details.
+
+A simulation of a single deme makes use of a vector of diploids:
 
 ~~~{.cpp}
-using glist_t = std::list<gamete_t>;
-using diploid_t = std::pair< glist_t::iterator, glist_t::iterator >;
+std::vector<std:pair<std::size_t,std::size_t> > diploids;
 ~~~
 
-Then, the entire population is a vector of diploids:
+A simulation of multiple demes makes use of a vector of vector of diploids:
 
 ~~~{.cpp}
-std::vector< diploid_t > diploids;
+using diploid_t = std::pair<std::size_t,std::size_t>;
+using dipvector_t = std::vector<diploid_t>;
+std::vector<dipvector_t> diploids;
 ~~~
+
+## Accessing the data in a population
+
+With the above definitions, we are ready to access all of the information in a population.  Here's a quick run-through:
+
+~~~{.cpp}
+#include <fwdpp/diploid.hh>
+#include <fwdpp/sugar/popgenmut.hpp>
+#include <iostream>
+
+using mtype = KTfwd::popgenmut;
+using mcont_t = std::vector<mtype>;
+using gamete_t = KTfwd::gamete;
+using gcont_t = std::vector<gamete_t>;
+using diploid_t = std::pair<std::size_t,std::size_t>;
+using dipcont_t = std::vector<diploid_t>;
+
+mcont_t mutations;
+gcont_t gametes;
+dipcont_t diploids;
+
+//Run a simulation, etc., now...
+
+//Go over all diploids, printing out the neutral and selected mutation
+//positions of each variant in each diploid.
+void print_mutations(const gamete_t::mutation_container & mc, const mcont_t & mutations)
+{
+    for(const auto & key : mc) {
+    std::cout << mutations[key].pos << ' ';
+    }
+    std::cout << '\n';
+}
+
+for(const auto & dip : diploids)
+{
+   //neutral mutations, first gamete
+   print_mutations(gametes[dip.first].mutations,mutations); 
+   //selected mutations, first gamete
+   print_mutations(gametes[dip.first].smutations,mutations);
+   //Repeat process for second gamete
+   print_mutations(gametes[dip.second].mutations,mutations);   
+   print_mutations(gametes[dip.second].smutations,mutations);   
+}
+
+~~~
+
 
 ## What next
 
