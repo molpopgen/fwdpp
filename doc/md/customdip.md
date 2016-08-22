@@ -18,5 +18,6 @@ using diploid_t = std::pair<std::size_t,std::size_t>;
 
 It is often desirable to have diploid types with additional data, and __fwdpp__ easily supports this in the form of
 "custom" diploid types.  Such custom types must have the same public API as
-[std::pair](http://en.cppreference.com/w/cpp/utility/pair). Once that requirement is fulfilled, the type will be
-compatible with the library.
+[std::pair](http://en.cppreference.com/w/cpp/utility/pair). Further, the type must inherit from
+KTfwd::tags::custom_diploid_t.  Once these requirements are fulfilled, the type will be
+compatible with the library. See type_traitsTest.cc for minimal examples.
