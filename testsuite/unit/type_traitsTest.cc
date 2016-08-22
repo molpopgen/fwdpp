@@ -10,8 +10,10 @@
 #include <config.h>
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include <fwdpp/fitness_models.hpp>
+#include <fwdpp/recombination.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/type_traits.hpp>
+#include <gsl/gsl_rng.h>
 
 struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
 /*!
@@ -84,16 +86,15 @@ BOOST_AUTO_TEST_CASE( is_standard_fitness_model_test )
   BOOST_REQUIRE_EQUAL(v,true);
 }
 
-// BOOST_AUTO_TEST_CASE( is_recmodel_test )
-// {
-//   singlepop_t pop(100);
-//   KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> r(101);
-//   auto rm = std::bind(KTfwd::poisson_xover(),r.get(),1e-2,0.,1.,
-// 		      std::placeholders::_1,std::placeholders::_2,std::placeholders::_3);
-//   auto v = std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<singlepop_t::gcont_t,singlepop_t::mcont_t> >::value;
-//   BOOST_REQUIRE_EQUAL(v,true);
-//   v = KTfwd::traits::valid_rec_model<decltype(rm),singlepop_t::gamete_t,singlepop_t::mcont_t>::value;
-//   BOOST_REQUIRE_EQUAL(v,true);
-// }
+BOOST_AUTO_TEST_CASE( is_recmodel_test )
+{
+  auto rm = std::bind(KTfwd::poisson_xover(),r,1e-2,0.,1.,
+		      std::placeholders::_1,std::placeholders::_2,std::placeholders::_3);
+  //auto v = std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<singlepop_t::gcont_t,singlepop_t::mcont_t> >::value;
+  auto v = std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<gcont_t,mcont_t>>::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+  v = KTfwd::traits::valid_rec_model<decltype(rm),gcont_t,mcont_t>::value;
+  BOOST_REQUIRE_EQUAL(v,true);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
