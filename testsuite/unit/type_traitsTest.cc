@@ -16,7 +16,7 @@
 struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
 /*!
   \ingroup unit
-  Fails to define typedefts first_type and second_type
+  Fails to define typedefs first_type and second_type
   \note see trivial_custom_diploid_valid 
 */
 {
