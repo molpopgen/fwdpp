@@ -113,8 +113,8 @@ int main(int argc, char ** argv)
 				&mu[0],
 				mmodels,
 				recpols,
-				&rbw,
-				[](const gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); },
+				&rbw, //this are the recombination rates b/w loci
+				[](const gsl_rng * __r, const double __d){ return gsl_ran_binomial(__r,__d,1); }, //This is the function modeling recombination between loci.
 				std::bind(no_selection_multi(),std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 				pop.neutral,
 				pop.selected);
