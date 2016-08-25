@@ -1,4 +1,4 @@
-if BUNIT_TEST_LIB_PRESENT
+if BUNIT_TEST_PRESENT
 
 check_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
 			   integration/sugar_integration_tests
@@ -21,9 +21,9 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 
 AM_CXXFLAGS=
 
-AM_LIBS=-lboost_unit_test_framework
+#AM_LIBS=-lboost_unit_test_framework
 
-LIBS+=$(AM_LIBS)
+#LIBS+=$(AM_LIBS)
 
 endif
 

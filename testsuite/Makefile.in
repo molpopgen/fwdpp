@@ -85,12 +85,11 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-@BUNIT_TEST_LIB_PRESENT_TRUE@check_PROGRAMS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/fwdpp_unit_tests$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/extensions_unit_tests$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_unit_tests$(EXEEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_integration_tests$(EXEEXT)
-@BUNIT_TEST_LIB_PRESENT_TRUE@am__append_1 = $(AM_LIBS)
+@BUNIT_TEST_PRESENT_TRUE@check_PROGRAMS =  \
+@BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/extensions_unit_tests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_integration_tests$(EXEEXT)
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
@@ -110,21 +109,22 @@ am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_singlepop_custom_diploidTest.cc \
 	integration/sugar_singlepopTest.cc
 am__dirstamp = $(am__leading_dot)dirstamp
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_metapop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_metapopTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_multilocusTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_singlepop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapop_custom_diploidTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapopTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_multilocusTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepop_custom_diploidTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT)
 integration_sugar_integration_tests_OBJECTS =  \
 	$(am_integration_sugar_integration_tests_OBJECTS)
 integration_sugar_integration_tests_LDADD = $(LDADD)
 am__unit_extensions_unit_tests_SOURCES_DIST =  \
 	unit/extensions_unit_test.cc unit/extensions_regionsTest.cc \
 	unit/extensions_callbacksTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_unit_extensions_unit_tests_OBJECTS = unit/extensions_unit_test.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/extensions_regionsTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/extensions_callbacksTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@am_unit_extensions_unit_tests_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	unit/extensions_unit_test.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/extensions_regionsTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/extensions_callbacksTest.$(OBJEXT)
 unit_extensions_unit_tests_OBJECTS =  \
 	$(am_unit_extensions_unit_tests_OBJECTS)
 unit_extensions_unit_tests_LDADD = $(LDADD)
@@ -134,19 +134,19 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/demographyTest.cc unit/siteDepFitnessTest.cc \
 	unit/serializationTest.cc unit/ms_samplingTest.cc \
 	unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/gameteTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/utilTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/type_traitsTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/recombinationTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/demographyTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/siteDepFitnessTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/serializationTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/ms_samplingTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/mlocusCrossoverTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/gamete_cleanerTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/gameteTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/utilTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/type_traitsTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/recombinationTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/demographyTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/siteDepFitnessTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/serializationTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/ms_samplingTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/mlocusCrossoverTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/gamete_cleanerTest.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
@@ -154,14 +154,14 @@ am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 	unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc unit/sugar_generalmutTest.cc \
 	unit/sugar_generalmut_vecTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@am_unit_sugar_unit_tests_OBJECTS =  \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_unit_tests.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_GSLrngTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_samplingTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_add_mutationTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_change_neutralTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_generalmutTest.$(OBJEXT) \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@am_unit_sugar_unit_tests_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_GSLrngTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_samplingTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmutTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.$(OBJEXT)
 unit_sugar_unit_tests_OBJECTS = $(am_unit_sugar_unit_tests_OBJECTS)
 unit_sugar_unit_tests_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -465,7 +465,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = @LIBS@ $(am__append_1)
+LIBS = @LIBS@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
@@ -527,24 +527,23 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUNIT_TEST_LIB_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
+@BUNIT_TEST_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
 
 #Unit test targets:
-@BUNIT_TEST_LIB_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/recombinationTest.cc unit/demographyTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_GSLrngTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_samplingTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_add_mutationTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_change_neutralTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_generalmutTest.cc \
-@BUNIT_TEST_LIB_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.cc
+@BUNIT_TEST_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/recombinationTest.cc unit/demographyTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc
+@BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
+@BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_GSLrngTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_samplingTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmutTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.cc
 
 
 #Integration test targets:
-@BUNIT_TEST_LIB_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
-@BUNIT_TEST_LIB_PRESENT_TRUE@AM_CXXFLAGS = 
-@BUNIT_TEST_LIB_PRESENT_TRUE@AM_LIBS = -lboost_unit_test_framework
+@BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
+@BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 all: all-am
 
 .SUFFIXES:
@@ -1119,6 +1118,10 @@ uninstall-am:
 
 .PRECIOUS: Makefile
 
+
+#AM_LIBS=-lboost_unit_test_framework
+
+#LIBS+=$(AM_LIBS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
