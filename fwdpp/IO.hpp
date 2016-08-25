@@ -26,11 +26,10 @@ namespace KTfwd
     \param mutations The container of mutations.
     \param diploids The vector of diploids.
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
-    \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must support a write() function
-    akin to those found in the std::ostream classes.
+    \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must either support a write() function
+    akin to those found in the std::ostream classes or be a gzFile opened in 'wb' mode.
 
-    \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
-    in turn allowing file locking which speeds up performance on distributed file systems.
+    \note Using std::stringstream or std::ostringstream allows in-memory serialization for, e.g. MPI.
    */
   template< typename gcont_t,
 	    typename mcont_t,
@@ -44,8 +43,6 @@ namespace KTfwd
 			  const mutation_writer_type & mw,
 			  ostreamtype & buffer,
 			  const diploid_writer_t & dw = diploid_writer_t() );
-
-
 
   /*! \brief Read the population back from a binary-format file for individual-based simulations
 
@@ -115,11 +112,10 @@ namespace KTfwd
     \param mutations THe mutation container.
     \param diploids The vector of vectors of diploids.
     \param mw A function object taking a mutation and an ostreamtype as arguments. Must be provided by the library user.
-    \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must support a write() function
-    akin to those found in the std::ostream classes.
+    \param buffer An ouptut stream into which the population is written.  This is the "return value" of the function.  The stream must either support a write() function
+    akin to those found in the std::ostream classes or be a gzFile opened in 'wb' mode.
 
-    \note If is often useful for buffer to be of type std::ostringstream to allow writing of the buffered data to C-style file handles/pointers, 
-    in turn allowing file locking which speeds up performance on distributed file systems.
+    \note Using std::stringstream or std::istringstream allows in-memory serialization for, e.g., MPI.
     \example diploid_binaryIO_ind.cc
    */
   template< typename gcont_t,
