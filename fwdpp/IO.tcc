@@ -129,20 +129,6 @@ void read_binary_pop_mloc (gcont_t & mlocus_gametes,
             dr(genotype,in);
         }
     }
-    // std::for_each( diploids->begin(), diploids->end(),
-    // 		   [&gam_info_vec,&in,&dr]( typename dipvector_t::value_type  & diploid ) {
-    // 		     unsigned i = 0;
-    //  		     for( auto l = diploid.begin(); l != diploid.end() ; ++l,++i )
-    //  		       {
-    //  			 unsigned c;
-    //  			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-    //  			 l->first = gam_info_vec[c];
-    //  			 fwdpp_internal::scalar_reader<unsigned>()(in,&c);
-    //  			 l->second = gam_info_vec[c];
-    //  			 dr(l,in);
-    //  		       }
-    //  		   }
-    //);
 }
 
 template< typename gcont_t,
