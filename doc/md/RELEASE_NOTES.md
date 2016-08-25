@@ -1,5 +1,9 @@
 # FWDPP RELEASE NOTES
 
+For a list of planned features, etc., see the issues list on [GitHub](https://github.com/molpopgen/fwdpp/issues).
+Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
+milestones (target version numbers for these features to go live) because that is not realistic given how I work.
+
 ## 0.5.2
 
 * Documentation updates, finally!  The tutorials, etc., have been brought up to date.
