@@ -42,9 +42,10 @@ There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) f
 Currently, the Travis-CI setup uses the following tools:
 
 * Linux
-* gcc 4.9
-* clang 3.6
+* gcc-5
 * GSL 1.15
+
+Currently, unit tests are not compiled/run on Travis.  The boost versions available to Travis are too old.
 
 # Introduction
 
