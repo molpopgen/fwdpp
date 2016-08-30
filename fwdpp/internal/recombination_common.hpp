@@ -13,7 +13,7 @@ namespace KTfwd {
     void recombine_gametes( const double_vec_type & pos,
 			    const std::size_t ibeg,
 			    const std::size_t jbeg,
-			    gcont_t & gametes,
+			    const gcont_t & gametes,
 			    const mcont_t & mutations,
 			    typename gcont_t::value_type::mutation_container & neutral,
 			    typename gcont_t::value_type::mutation_container & selected)
