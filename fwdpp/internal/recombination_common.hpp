@@ -29,33 +29,20 @@ namespace KTfwd {
       auto jtr_e = gametes[jbeg].mutations.cend();
       auto jtr_s_e = gametes[jbeg].smutations.cend();
 
-      auto pend = (pos.size()%2==0) ? pos.cend() : pos.cend()-1;
-      auto i = pos.cbegin();
-      const double * p = pos.data();
-      for( ; i < pend ; i+=2,p+=2 )
-	{
-	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
-						neutral,*p);
-	  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
-						  selected,*p);
-	  jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,mutations,*p);
-	  jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,mutations,*p);
+	  for(auto && p : pos)
+	  {
+		  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
+							neutral,p);
+		  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
+							  selected,p);
+		  jtr = fwdpp_internal::rec_update_itr(jtr,jtr_e,mutations,p);
+		  jtr_s = fwdpp_internal::rec_update_itr(jtr_s,jtr_s_e,mutations,p);
+		  std::swap(itr,jtr);
+		  std::swap(itr_s,jtr_s);
+		  std::swap(itr_e,jtr_e);
+		  std::swap(itr_s_e,jtr_s_e);
+	  }
 
-	  jtr = fwdpp_internal::rec_gam_updater(jtr,jtr_e,mutations,
-						neutral,*(p+1));
-	  jtr_s = fwdpp_internal::rec_gam_updater(jtr_s,jtr_s_e,mutations,
-						  selected,*(p+1));
-	  itr = fwdpp_internal::rec_update_itr(itr,itr_e,mutations,*(p+1));
-	  itr_s = fwdpp_internal::rec_update_itr(itr_s,itr_s_e,mutations,*(p+1));
-	}
-      assert(std::distance(i,pos.cend())<=1);
-      for( ; i<pos.cend();++i)
-	{
-	  itr = fwdpp_internal::rec_gam_updater(itr,itr_e,mutations,
-						neutral,*p);
-	  itr_s = fwdpp_internal::rec_gam_updater(itr_s,itr_s_e,mutations,
-						  selected,*p);
-	}
       assert(gamete_is_sorted_n(gametes[ibeg],mutations));
       assert(gamete_is_sorted_s(gametes[ibeg],mutations));
     }    
