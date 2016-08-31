@@ -64,6 +64,9 @@ sample( const gsl_rng * r,
         throw std::runtime_error("locus boundaries required when adding fixations");
     }
     auto rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+	if(!removeFixed && locus_boundaries.size() != rv.size()) {
+		throw std::runtime_error("incorrect number of elements in locus_boundaries");
+	}
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL,locus_boundaries);
     return rv;
 }
@@ -93,6 +96,9 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
         throw std::runtime_error("locus boundaries required when adding fixations");
     }
     auto rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
+	if(!removeFixed && locus_boundaries.size() != rv.size()) {
+		throw std::runtime_error("incorrect number of elements in locus_boundaries");
+	}
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL,locus_boundaries);
     return rv;
 }
@@ -181,8 +187,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
 
-    auto rv = sample_details(p,individuals,removeFixed,locus_boundaries);
-    return rv;
+	return sample_details(p,individuals,removeFixed,locus_boundaries);
 }
 
 template<typename poptype>

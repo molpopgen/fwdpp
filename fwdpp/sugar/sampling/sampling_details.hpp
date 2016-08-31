@@ -118,6 +118,9 @@ std::vector<sample_t> sample_details( const poptype & p,
                                       const bool removeFixed,
 									  const std::vector<std::pair<double,double>> & locus_boundaries){
     auto temp = fwdpp_internal::ms_sample_separate_mlocus(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
+	if(!removeFixed && temp.size()!=locus_boundaries.size()) {
+		throw std::runtime_error("incorrect number of elements in locus_boundaries");
+	}
     std::vector<sample_t> rv;
     std::size_t j=0;
     for( auto & i : temp) {
