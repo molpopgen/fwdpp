@@ -11,7 +11,7 @@
 #include <sstream>
 //Use mutation model from sugar layer
 #include <fwdpp/sugar/infsites.hpp>
-
+#include <fwdpp/sugar/sampling.hpp>
 using mtype = KTfwd::popgenmut;
 #define MULTILOCUS_SIM
 #include <common_ind.hpp>
@@ -130,10 +130,19 @@ int main(int argc, char ** argv)
 #endif
     }
   auto x = KTfwd::ms_sample(r.get(),pop.mutations,pop.gametes,pop.diploids,10,true);
+  for(auto & f:pop.fixations) std::cout << f.pos << ' ';
+  std::cout << '\n';
   for(auto & i : x)
     {
       Sequence::SimData a(i.begin(),i.end());
       std::cout << a << '\n';
     }
+	auto y = KTfwd::sample(r.get(),pop,10,false);
+	for(auto && i : y)
+	{
+		Sequence::SimData a(i.begin(),i.end());
+		std::cout << a << '\n';
+	}
 }
+
 
