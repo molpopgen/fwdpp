@@ -15,11 +15,11 @@
 namespace KTfwd {
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
+         sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample(const gsl_rng * r,
-                 const poptype & p,
-                 const unsigned nsam,
-                 const bool removeFixed)
+                const poptype & p,
+                const unsigned nsam,
+                const bool removeFixed)
          /*!
            Take a random sample of nsam chromosomes from a population
 
@@ -40,22 +40,22 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
-sample(const gsl_rng * r,
-        const poptype & p,
-        const unsigned nsam,
-        const bool removeFixed,
-        const std::vector<std::pair<double,double> > & locus_boundaries = std::vector<std::pair<double,double>>())
-/*!
-  Take a random sample of nsam chromosomes from a population
+         sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
+         sample(const gsl_rng * r,
+                const poptype & p,
+                const unsigned nsam,
+                const bool removeFixed,
+                const std::vector<std::pair<double,double> > & locus_boundaries = std::vector<std::pair<double,double>>())
+         /*!
+           Take a random sample of nsam chromosomes from a population
 
-  \param r A random-number generator
-  \param p A population
-  \param nsam The sample size
-  \param removeFixed Whether or not to remove variants present in all nsam chromosomes
+           \param r A random-number generator
+           \param p A population
+           \param nsam The sample size
+           \param removeFixed Whether or not to remove variants present in all nsam chromosomes
 
-  \return A vector of both neutral and non-neutral variants
-*/
+           \return A vector of both neutral and non-neutral variants
+         */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
                   "poptype must be MULTILOCPOP_TAG");
@@ -63,21 +63,21 @@ sample(const gsl_rng * r,
         throw std::runtime_error("locus boundaries required when adding fixations");
     }
     auto rv = ms_sample(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-	if(!removeFixed && locus_boundaries.size() != rv.size()) {
-		throw std::runtime_error("incorrect number of elements in locus_boundaries");
-	}
+    if(!removeFixed && locus_boundaries.size() != rv.size()) {
+        throw std::runtime_error("incorrect number of elements in locus_boundaries");
+    }
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL,locus_boundaries);
     return rv;
 }
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
+         sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
          sample_separate(const gsl_rng * r,
-                          const poptype & p,
-                          const unsigned nsam,
-                          const bool removeFixed,
-                          const std::vector<std::pair<double,double> > & locus_boundaries = std::vector<std::pair<double,double>>())
+                         const poptype & p,
+                         const unsigned nsam,
+                         const bool removeFixed,
+                         const std::vector<std::pair<double,double> > & locus_boundaries = std::vector<std::pair<double,double>>())
          /*!
            Take a random sample of nsam chromosomes from a population
 
@@ -95,20 +95,20 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
         throw std::runtime_error("locus boundaries required when adding fixations");
     }
     auto rv =  ms_sample_separate(r,p.mutations,p.gametes,p.diploids,nsam,removeFixed);
-	if(!removeFixed && locus_boundaries.size() != rv.size()) {
-		throw std::runtime_error("incorrect number of elements in locus_boundaries");
-	}
+    if(!removeFixed && locus_boundaries.size() != rv.size()) {
+        throw std::runtime_error("incorrect number of elements in locus_boundaries");
+    }
     finish_sample(rv,p.fixations,nsam,removeFixed,sugar::treat_neutral::ALL,locus_boundaries);
     return rv;
 }
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
+         sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample_separate(const gsl_rng * r,
-                          const poptype & p,
-                          const unsigned nsam,
-                          const bool removeFixed)
+                         const poptype & p,
+                         const unsigned nsam,
+                         const bool removeFixed)
          /*!
            Take a random sample of nsam chromosomes from a population
 
@@ -129,7 +129,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
+         sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample(const poptype & p,
                 const std::vector<unsigned> & individuals,
                 const bool removeFixed)
@@ -146,9 +146,10 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
                   "poptype must be SINGLEPOP_TAG");
     if (individuals.empty())return sample_t();
-    if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+    if(std::find_if(individuals.begin(),individuals.end(),
+    [&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end()){
+    }) != individuals.end()) {
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
 
@@ -158,7 +159,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
+         sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
          sample(const poptype & p,
                 const std::vector<unsigned> & individuals,
                 const bool removeFixed,
@@ -182,16 +183,16 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     if (individuals.empty())return sample_t();
     if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end()){
+    }) != individuals.end()) {
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
 
-	return sample_details(p,individuals,removeFixed,locus_boundaries);
+    return sample_details(p,individuals,removeFixed,locus_boundaries);
 }
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::SINGLEPOP_TAG>::value,sep_sample_t>::type
+         sugar::SINGLEPOP_TAG>::value,sep_sample_t>::type
          sample_separate(const poptype & p,
                          const std::vector<unsigned> & individuals,
                          const bool removeFixed)
@@ -211,7 +212,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     if (individuals.empty())return sep_sample_t();
     if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end()){
+    }) != individuals.end()) {
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
     auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
@@ -221,7 +222,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-		 sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
+         sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
          sample_separate(const poptype & p,
                          const std::vector<unsigned> & individuals,
                          const bool removeFixed)
@@ -241,7 +242,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     if (individuals.empty())return sep_sample_t();
     if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end()){
+    }) != individuals.end()) {
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
     auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
@@ -251,10 +252,10 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 sample_t sample(const gsl_rng * r,
-                 const poptype & p,
-                 const unsigned deme,
-                 const unsigned nsam,
-                 const bool removeFixed )
+                const poptype & p,
+                const unsigned deme,
+                const unsigned nsam,
+                const bool removeFixed )
 /*!
   Take a random sample of nsam chromosomes from a meta-population
 
@@ -268,7 +269,7 @@ sample_t sample(const gsl_rng * r,
 */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
-                   "METAPOP_TAG required");
+                  "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
@@ -281,10 +282,10 @@ sample_t sample(const gsl_rng * r,
 
 template<typename poptype>
 sep_sample_t sample_separate(const gsl_rng * r,
-                              const poptype & p,
-                              const unsigned deme,
-                              const unsigned nsam,
-                              const bool removeFixed )
+                             const poptype & p,
+                             const unsigned deme,
+                             const unsigned nsam,
+                             const bool removeFixed )
 /*!
   Take a random sample of nsam chromosomes from a meta-population
 
@@ -298,7 +299,7 @@ sep_sample_t sample_separate(const gsl_rng * r,
 */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
-                   "METAPOP_TAG required");
+                  "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
@@ -325,12 +326,12 @@ sample_t sample(const poptype & p,
 */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
-                   "METAPOP_TAG required");
+                  "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
     if(individuals.empty()) return sample_t();
-    for(const auto i : individuals){
+    for(const auto i : individuals) {
         if(i>=p.diploids[deme].size()) {
             throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
         }
@@ -359,12 +360,12 @@ sep_sample_t sample_separate(const poptype & p,
 */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
-                   "METAPOP_TAG required");
+                  "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
     if(individuals.empty()) return sep_sample_t();
-    for(const auto i : individuals){
+    for(const auto i : individuals) {
         if(i>=p.diploids[deme].size()) {
             throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
         }
