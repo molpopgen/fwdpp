@@ -104,7 +104,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-         sugar::SINGLEPOP_TAG>::value,sample_t>::type
+         sugar::SINGLEPOP_TAG>::value,sep_sample_t>::type
          sample_separate(const gsl_rng * r,
                          const poptype & p,
                          const unsigned nsam,
