@@ -14,8 +14,8 @@
 
 namespace KTfwd {
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-         sample_t>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample( const gsl_rng * r,
                  const poptype & p,
                  const unsigned nsam,
@@ -39,9 +39,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEP
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG
->::value,
-std::vector<sample_t>>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
 sample( const gsl_rng * r,
         const poptype & p,
         const unsigned nsam,
@@ -72,8 +71,8 @@ sample( const gsl_rng * r,
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
-         std::vector<sep_sample_t>>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
          sample_separate( const gsl_rng * r,
                           const poptype & p,
                           const unsigned nsam,
@@ -104,8 +103,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-         sample_t>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample_separate( const gsl_rng * r,
                           const poptype & p,
                           const unsigned nsam,
