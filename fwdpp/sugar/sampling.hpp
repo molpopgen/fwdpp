@@ -128,8 +128,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-         sample_t>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample(const poptype & p,
                 const std::vector<unsigned> & individuals,
                 const bool removeFixed)
@@ -157,8 +157,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEP
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
-         std::vector<sample_t>>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
          sample(const poptype & p,
                 const std::vector<unsigned> & individuals,
                 const bool removeFixed,
@@ -190,8 +190,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-         sep_sample_t>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::SINGLEPOP_TAG>::value,sep_sample_t>::type
          sample_separate(const poptype & p,
                          const std::vector<unsigned> & individuals,
                          const bool removeFixed)
@@ -220,8 +220,8 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEP
 }
 
 template<typename poptype>
-typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
-         std::vector<sep_sample_t>>::type
+typename std::enable_if<std::is_same<typename poptype::popmodel_t,
+		 sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
          sample_separate(const poptype & p,
                          const std::vector<unsigned> & individuals,
                          const bool removeFixed)
