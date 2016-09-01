@@ -16,7 +16,7 @@ namespace KTfwd {
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
-         sample( const gsl_rng * r,
+         sample(const gsl_rng * r,
                  const poptype & p,
                  const unsigned nsam,
                  const bool removeFixed)
@@ -41,7 +41,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 		 sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
-sample( const gsl_rng * r,
+sample(const gsl_rng * r,
         const poptype & p,
         const unsigned nsam,
         const bool removeFixed,
@@ -73,7 +73,7 @@ sample( const gsl_rng * r,
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 		 sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
-         sample_separate( const gsl_rng * r,
+         sample_separate(const gsl_rng * r,
                           const poptype & p,
                           const unsigned nsam,
                           const bool removeFixed,
@@ -105,7 +105,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 template<typename poptype>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
 		 sugar::SINGLEPOP_TAG>::value,sample_t>::type
-         sample_separate( const gsl_rng * r,
+         sample_separate(const gsl_rng * r,
                           const poptype & p,
                           const unsigned nsam,
                           const bool removeFixed)
@@ -146,9 +146,9 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEP
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
                   "poptype must be SINGLEPOP_TAG");
     if (individuals.empty())return sample_t();
-    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+    if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end() ) {
+    }) != individuals.end()){
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
 
@@ -180,9 +180,9 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
         throw std::runtime_error("locus boundaries required when adding fixations");
     }
     if (individuals.empty())return sample_t();
-    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+    if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end() ) {
+    }) != individuals.end()){
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
 
@@ -209,9 +209,9 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::SINGLEP
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
                   "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG");
     if (individuals.empty())return sep_sample_t();
-    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+    if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end() ) {
+    }) != individuals.end()){
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
     auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
@@ -239,9 +239,9 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::MULTILOCPOP_TAG>::value,
                   "poptype must be MULTILOCPOP_TAG or MULTILOCPOP_TAG");
     if (individuals.empty())return sep_sample_t();
-    if( std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
+    if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
-    }) != individuals.end() ) {
+    }) != individuals.end()){
         throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
     }
     auto rv = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
@@ -250,7 +250,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,sugar::MULTILO
 }
 
 template<typename poptype>
-sample_t sample( const gsl_rng * r,
+sample_t sample(const gsl_rng * r,
                  const poptype & p,
                  const unsigned deme,
                  const unsigned nsam,
@@ -267,7 +267,7 @@ sample_t sample( const gsl_rng * r,
   \return A vector of both neutral and non-neutral variants
 */
 {
-    static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
+    static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
                    "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
@@ -280,7 +280,7 @@ sample_t sample( const gsl_rng * r,
 }
 
 template<typename poptype>
-sep_sample_t sample_separate( const gsl_rng * r,
+sep_sample_t sample_separate(const gsl_rng * r,
                               const poptype & p,
                               const unsigned deme,
                               const unsigned nsam,
@@ -297,7 +297,7 @@ sep_sample_t sample_separate( const gsl_rng * r,
   \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
 */
 {
-    static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
+    static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
                    "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
@@ -324,13 +324,13 @@ sample_t sample(const poptype & p,
   \return A vector of both neutral and non-neutral variants
 */
 {
-    static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
+    static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
                    "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
     if(individuals.empty()) return sample_t();
-    for( const auto i : individuals ) {
+    for(const auto i : individuals){
         if(i>=p.diploids[deme].size()) {
             throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
         }
@@ -358,13 +358,13 @@ sep_sample_t sample_separate(const poptype & p,
   \return A pair of vectors.  The first element contains neutral variants.  The second contains non-neutral variants.
 */
 {
-    static_assert( std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
+    static_assert(std::is_same<typename poptype::popmodel_t,sugar::METAPOP_TAG>::value,
                    "METAPOP_TAG required");
     if(deme >= p.diploids.size()) {
         throw std::out_of_range("KTfwd::sample_separate: deme index out of range");
     }
     if(individuals.empty()) return sep_sample_t();
-    for( const auto i : individuals ) {
+    for(const auto i : individuals){
         if(i>=p.diploids[deme].size()) {
             throw std::out_of_range("KTfwd::sample_separate: individual index out of range");
         }
