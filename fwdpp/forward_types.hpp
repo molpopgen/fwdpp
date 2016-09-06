@@ -80,8 +80,7 @@ namespace KTfwd
 
     The template parameter types are:
     tag_type = A type that can be used as a "dispatch tag".  Currently, these are not used elsewhere in the library, but they may
-    be in the future, or this may disappear in future library releases.  The current default (KTfwd::tags::standard_gamete) maintains
-    backwards compatibility with previous library versions and does not affect compilation of existing programs based on the library.
+    be in the future, or this may disappear in future library releases.
 
     \note The typical use of this class is simply to define your mutation type (see @ref md_md_policies)
     and then use a typedef to define your gamete type in the simulations:
