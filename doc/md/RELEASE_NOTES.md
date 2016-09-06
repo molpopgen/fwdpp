@@ -8,6 +8,7 @@ milestones (target version numbers for these features to go live) because that i
 
 * Streamline internal details of crossing over
 * Fix issue #43
+* KTfwd::change_neutral no longer tries to update extinct gametes.
 
 ## 0.5.2
 
