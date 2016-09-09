@@ -95,7 +95,7 @@ namespace KTfwd
       ftvector fixation_times;
 
       //! Constructor
-      popbase( const uint_t & popsize,
+      explicit popbase( const uint_t & popsize,
 	       typename gamete_t::mutation_container::size_type reserve_size = 100) :
 	//No muts in the population
 	mutations(mcont_t()),

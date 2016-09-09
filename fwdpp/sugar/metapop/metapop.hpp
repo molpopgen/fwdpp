@@ -66,7 +66,7 @@ namespace KTfwd {
       vdipvector_t diploids;
 
       //! Construct with a cont of deme sizes
-      metapop( std::initializer_list<uint_t> __Ns,
+      explicit metapop( std::initializer_list<uint_t> __Ns,
 	       typename popbase_t::gamete_t::mutation_container::size_type reserve_size = 100) :
 	popbase_t(std::accumulate(std::begin(__Ns),std::end(__Ns),0.),reserve_size),
 	Ns(__Ns),
@@ -76,7 +76,7 @@ namespace KTfwd {
       }
 
       //! Construct with array of deme sizes
-      metapop(const uint_t * __Ns, const size_t num_Ns,
+      explicit metapop(const uint_t * __Ns, const size_t num_Ns,
 	      typename popbase_t::gamete_t::mutation_container::size_type reserve_size = 100) :
 	popbase_t(std::accumulate(__Ns,__Ns+num_Ns,0.),reserve_size),
 	Ns(std::vector<uint_t>(__Ns,__Ns+num_Ns)),
@@ -86,7 +86,7 @@ namespace KTfwd {
       }
 						  
       //! Copy construct from a singlepop based on the same basic types
-      metapop( const compat_singlepop_t & spop ) :
+      explicit metapop( const compat_singlepop_t & spop ) :
 	popbase_t(0),
 	Ns({spop.N})
       {

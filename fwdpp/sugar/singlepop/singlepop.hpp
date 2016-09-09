@@ -46,7 +46,7 @@ namespace KTfwd {
       typename popbase_t::dipvector_t diploids;
 
       //! Constructor
-      singlepop( const uint_t & popsize,
+      explicit singlepop( const uint_t & popsize,
 		 typename popbase_t::gamete_t::mutation_container::size_type reserve_size = 100) :
 	popbase_t(popsize,reserve_size),
 	N(popsize),
