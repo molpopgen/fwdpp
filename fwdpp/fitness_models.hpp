@@ -9,7 +9,6 @@
 #include <type_traits>
 #include <algorithm>
 #include <functional>
-#include <iostream>
 
 /*
   Revision history
