@@ -10,6 +10,7 @@ milestones (target version numbers for these features to go live) because that i
 * Fix issue #43
 * KTfwd::change_neutral no longer tries to update extinct gametes.
 * Single-argument constructors marked explicit for types inheriting from KTfwd::popbase
+* Added an additional overload of KTfwd::infsites::operator()
 
 ## 0.5.2
 
