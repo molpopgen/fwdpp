@@ -236,18 +236,10 @@ namespace KTfwd
                        const position_t &posmaker, const sdist_t &smaker,
                        const hdist_t &hmaker) const
         {
-            static_assert(std::is_same<typename mcont_t::value_type,
-                                       KTfwd::popgenmut>::value,
-                          "mcont_t::value_type must be KTfwd::popgenmut");
-            // Establish position of new mutation
-            auto pos = this->generate_mut_pos(posmaker, lookup);
-            bool selected
-                = (gsl_rng_uniform(r)
-                   < selected_mutation_rate
-                         / (neutral_mutation_rate + selected_mutation_rate));
-            return fwdpp_internal::recycle_mutation_helper(
-                recycling_bin, mutations, pos, (selected) ? smaker() : 0.,
-                (selected) ? hmaker() : 0., *generation);
+            return this->operator()(recycling_bin, mutations, r, lookup,
+                                    *generation, neutral_mutation_rate,
+                                    selected_mutation_rate, posmaker, smaker,
+                                    hmaker);
         }
 
         /*!
