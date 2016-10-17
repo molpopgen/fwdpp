@@ -80,7 +80,7 @@ namespace KTfwd
         if (mindex >= p.mutations.size())
             throw std::out_of_range("mindex >= p.mutations.size()");
 
-        bool n = p.mutations[mindex].neutral;
+        bool is_neutral = p.mutations[mindex].neutral;
 
         // Change neutral flag
         p.mutations[mindex].neutral = !p.mutations[mindex].neutral;
@@ -90,7 +90,7 @@ namespace KTfwd
             {
                 if (g.n)
                     {
-                        if (n)
+                        if (is_neutral)
                             {
                                 sugar::change_neutral_details(
                                     p.mutations, pos, mindex, g.mutations,
@@ -102,7 +102,7 @@ namespace KTfwd
                                     p.mutations, pos, mindex, g.smutations,
                                     g.mutations);
                             }
-                        assert(gamete_data_sane(g, p.mutations, p.mcounts));
+							assert(gamete_data_sane(g, p.mutations, p.mcounts));
                     }
             }
     }
