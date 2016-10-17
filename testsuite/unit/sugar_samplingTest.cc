@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE( singlepop_1 )
 {
   pop.mutations.emplace_back( 0.1,0,0,0 );
   pop.mcounts.emplace_back(1);
-  pop.gametes.emplace_back( 1, std::vector<std::size_t>{0}, std::vector<std::size_t>{} );
+  pop.gametes.emplace_back( 1, std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{0}, std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{} );
   pop.gametes[0].n--;
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
   BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE( singlepop_1 )
 {
   pop.mutations.emplace_back( 0.1,0,0,0 );
   pop.mcounts.emplace_back(1);
-  pop.gametes.emplace_back( 1, std::vector<std::size_t>{0}, std::vector<std::size_t>{} );
+  pop.gametes.emplace_back( 1, std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{0}, std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{} );
   pop.gametes[0].n--;
   BOOST_REQUIRE_EQUAL( KTfwd::check_sum(pop.gametes,2000), true );
   BOOST_REQUIRE_EQUAL( KTfwd::popdata_sane(pop.diploids,pop.gametes,pop.mutations,pop.mcounts), true );
