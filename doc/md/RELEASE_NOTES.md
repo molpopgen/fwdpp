@@ -11,6 +11,7 @@ milestones (target version numbers for these features to go live) because that i
 * KTfwd::change_neutral no longer tries to update extinct gametes.
 * Single-argument constructors marked explicit for types inheriting from KTfwd::popbase
 * Added an additional overload of KTfwd::infsites::operator()
+* The integer type stored by a gamete and used to index mutations was changed from std::size_t to std::uint32_t.  This change halves RAM use and has no other side-effects other than limiting the number of possible mutations in a simulation to 2^32, which is too many to store on a typical cluster node anyways.
 
 ## 0.5.2
 
