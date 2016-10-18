@@ -97,7 +97,7 @@ namespace KTfwd
     uint_t n;
     //! Dispatch tag type
     using gamete_tag = TAG;
-    using index_t = std::size_t;
+    using index_t = std::uint32_t;
     using mutation_container = std::vector<index_t>;
     //! Container of mutations not affecting trait value/fitness ("neutral mutations")
     mutation_container mutations;
