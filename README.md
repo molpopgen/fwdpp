@@ -39,14 +39,6 @@ There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) f
 * Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp)
 * Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp)
 
-Currently, the Travis-CI setup uses the following tools:
-
-* Linux
-* gcc-5
-* GSL 1.15
-
-Currently, unit tests are not compiled/run on Travis.  The boost versions available to Travis are too old.
-
 # Introduction
 
 fwdpp is a C++ template library that abstracts the basic operations required to implement forward-time simulations of population- and quantitative-genetic models.  The library allows the simulation of single populations or metapopulations evolving under the standard evolutionary forces of drift, recombination, migration, and natural selection.  Arbitrary population size changes are also allowed. Different populations in a metapopulation may evolve under different fitness schemes.
@@ -208,13 +200,7 @@ In order to compile the unit tests, you also need:
 
 1.  [boost](http://www.boost.org).
 
-For OS X users, all of the above dependencies are available via [homebrew](http://brew.sh).
-
-### Why use Google's perftools?
-
-Forward simulations are constantly allocating relativel small objects whose lifetimes are random variables.  For example, mutations enter populations every generation and are typically rapidly lost.   We can improve the performance of a simulation using various techniques, including replacing the C++ standard library's allocator with a custom allocator and/or replacing the C library's malloc function with a faster replacement. Google's perftools provide the tcmalloc library, which provides a faster malloc.
-
-Empirically, on my linux systems, I have found that the fastest combination appears to be the standard C++ allocator combined with linking to tcmalloc. However, this may not be the case on your system, and I provide the [fwdpp_perf](http://github.com/molpopgen/fwdpp_perf) project to let you benchmark different methods on your system.
+For OS X users, all of the above dependencies are available via [homebrew](http://brew.sh) or [conda](http://conda.pydata.org/docs/)/[bioconda](https://bioconda.github.io).
 
 ## Performance
 

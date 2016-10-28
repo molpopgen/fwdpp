@@ -13,6 +13,13 @@ milestones (target version numbers for these features to go live) because that i
 * Added an additional overload of KTfwd::infsites::operator()
 * The integer type stored by a gamete and used to index mutations was changed from std::size_t to std::uint32_t.  This change halves RAM use and has no other side-effects other than limiting the number of possible mutations in a simulation to 2^32, which is too many to store on a typical cluster node anyways.
 
+There are also several changes to the build setup and Travis CI:
+
+* Travis CI is now based on miniconda, taking advantage of bioconda/libsequence.
+* Travis CI now only tests GCC on OS X, as bioconda/libsequence is built with that compiler
+* "make" now makes fwdppConfig, all examples, and all unit tests, provided that dependencies are present.  The examples and unit tests are not installed.
+* "make check" now runs the unit tests
+
 ## 0.5.2
 
 * Documentation updates, finally!  The tutorials, etc., have been brought up to date.
