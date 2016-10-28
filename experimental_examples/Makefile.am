@@ -1,7 +1,7 @@
 if HAVE_SIMDATA_HPP
 if HAVE_LIBSEQ_RUNTIME
 
-check_PROGRAMS=sex_limited_ind diploid_fixed_sh_ind
+noinst_PROGRAMS=sex_limited_ind diploid_fixed_sh_ind
 
 sex_limited_ind_SOURCES=sex_limited_ind.cc 
 diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc

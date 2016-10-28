@@ -1,7 +1,7 @@
 if HAVE_SIMDATA_HPP
 if HAVE_LIBSEQ_RUNTIME
 
-check_PROGRAMS=	diploid_ind \
+noinst_PROGRAMS=	diploid_ind \
 	diploid_binaryIO_ind \
 	diploid_gzbinaryIO_ind \
 	diploid_fixed_sh_ind \

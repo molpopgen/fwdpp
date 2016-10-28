@@ -1,31 +1,36 @@
 language: cpp
-
-sudo: false
-dist: trusty
+matrix:
+    include:
+    - os: linux
+      dist: trusty
+    - os: osx 
+      osx_image: xcode8
+      osx_image: xcode7.2
+sudo: true
 
 notifications:
     email: false
 
-compiler:
-    - gcc
-
-addons:
-    apt:
-        sources:
-        - ubuntu-toolchain-r-test
-        packages:
-        - gcc-5
-        - g++-5
-        - libgsl0-dev
-        - libgsl0ldbl
-
-before_script:
-    - export CXX=g++-5
-    - export CC=gcc-5
-    - ./install_libseq.sh
-
+install: 
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh; fi
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh; fi
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
+    - hash -r
+    - conda config --set always_yes yes --set changeps1 no
+    - conda update -q conda
+    # Useful for debugging any issues with conda
+    - conda info -a
+    - conda install gcc zlib boost=1.60.0
+    - conda install -c asmeurer gsl=1.16
+    - conda install -c bioconda libsequence
 script:
-# The LD_LIBRARY_PATH seems to be needed to get the clang linker to find libsequence b/c it is installed in $HOME
-    - export LD_LIBRARY_PATH=$HOME/lib
-    - ./configure --prefix=$HOME CXXFLAGS="-O2 -I$HOME/include" LDFLAGS="$LDFLAGS -L$HOME/lib" && make && make check && make install
-    - $HOME/bin/fwdppConfig --version
+    - export LD_LIBRARY_PATH=$HOME/miniconda/lib
+    - export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
+    - export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
+    - ./configure --prefix=$HOME && make &&  make install
+    - fwdppConfig --version
+    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make check; fi
+    #For some reason, make check on OS X + conda fails to respect LD_LIBRARY_PATH,
+    #so we'll run the tests manually
+    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then for i in $(find testsuite -type f -perm +111);do $i -r detailed;done; fi
