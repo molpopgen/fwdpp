@@ -60,7 +60,7 @@ int main(int argc, char ** argv)
 		<< "ngens = number of generations to simulate\n"
 		<< "nreps = number of replicates to simulate\n"
 		<< "seed = random number seed\n";	
-      exit(10);
+      exit(0);
     } 
   int argument=1;
   const unsigned N = atoi(argv[argument++]);           //Number of diploids

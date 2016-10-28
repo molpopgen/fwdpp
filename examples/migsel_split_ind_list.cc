@@ -77,7 +77,7 @@ int main( int argc, char ** argv )
     {
       std::cerr << "Too few arguments.\n"
 		<< "Usage: " << argv[0] << " N theta_neutral theta_deleterious rho M s h f1 f2 ngens ngens2 nsam seed\n";
-      exit(10);
+      exit(0);
     }
   int argn=1;
   const unsigned N = atoi(argv[argn++]);

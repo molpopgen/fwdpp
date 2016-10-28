@@ -35,7 +35,7 @@ int main(int argc, char ** argv)
     {
       std::cerr << "Too few arguments\n"
 		<< "Usage: diploid_binaryIO_ind N theta rho ngens replicate_no indexfile hapfile seed\n";
-      exit(10);
+      exit(0);
     } 
   int argument=1;
   const unsigned N = atoi(argv[argument++]);
@@ -100,12 +100,12 @@ int main(int argc, char ** argv)
   if ( index_fd == -1 ) 
     { 
       std::cerr << "ERROR: could not open " << indexfile << '\n';
-      exit(10);
+      exit(0);
     }
   if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
     {
       std::cerr << "ERROR: could not obtain lock on " << indexfile << '\n';
-      exit(10);
+      exit(0);
     }
       
   hapfile_flock.l_type = F_WRLCK;/*Write lock*/
@@ -119,12 +119,12 @@ int main(int argc, char ** argv)
   if ( hapfile_fd == -1 ) 
     { 
       std::cerr << "ERROR: could not open " << hapfile << '\n';
-      exit(10);
+      exit(0);
     }
   if (fcntl(index_fd, F_SETLKW,&index_flock) == -1) 
     {
       std::cerr << "ERROR: could not obtain lock on " << hapfile << '\n';
-      exit(10);
+      exit(0);
     }
 
   long int offset = ftell(haps_fh);
@@ -141,7 +141,7 @@ int main(int argc, char ** argv)
   if (fcntl(hapfile_fd, F_UNLCK,&hapfile_flock) == -1) 
     {
       std::cerr << "ERROR: could not releaselock on " <<  hapfile << '\n';
-      exit(10);
+      exit(0);
     }
   fflush( haps_fh );
   fclose(haps_fh);
@@ -149,7 +149,7 @@ int main(int argc, char ** argv)
   if (fcntl(index_fd, F_UNLCK,&index_flock) == -1) 
     {
       std::cerr << "ERROR: could not release lock on " << indexfile << '\n';
-      exit(10);
+      exit(0);
     }
   fflush( index_fh );
   fclose(index_fh);
