@@ -17,7 +17,7 @@ unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
 	unit/sugar_generalmut_vecTest.cc
 
 #Integration test targets:
-integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
+integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc integration/sugar_matrixTest.cc
 
 AM_CXXFLAGS=
 

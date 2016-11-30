@@ -109,14 +109,16 @@ am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_metapopTest.cc \
 	integration/sugar_multilocusTest.cc \
 	integration/sugar_singlepop_custom_diploidTest.cc \
-	integration/sugar_singlepopTest.cc
+	integration/sugar_singlepopTest.cc \
+	integration/sugar_matrixTest.cc
 am__dirstamp = $(am__leading_dot)dirstamp
 @BUNIT_TEST_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapop_custom_diploidTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapopTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_multilocusTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_matrixTest.$(OBJEXT)
 integration_sugar_integration_tests_OBJECTS =  \
 	$(am_integration_sugar_integration_tests_OBJECTS)
 integration_sugar_integration_tests_LDADD = $(LDADD)
@@ -544,7 +546,7 @@ top_srcdir = @top_srcdir@
 
 
 #Integration test targets:
-@BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
+@BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc integration/sugar_matrixTest.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 all: all-am
 
@@ -604,6 +606,8 @@ integration/sugar_singlepop_custom_diploidTest.$(OBJEXT):  \
 	integration/$(DEPDIR)/$(am__dirstamp)
 integration/sugar_singlepopTest.$(OBJEXT):  \
 	integration/$(am__dirstamp) \
+	integration/$(DEPDIR)/$(am__dirstamp)
+integration/sugar_matrixTest.$(OBJEXT): integration/$(am__dirstamp) \
 	integration/$(DEPDIR)/$(am__dirstamp)
 
 integration/sugar_integration_tests$(EXEEXT): $(integration_sugar_integration_tests_OBJECTS) $(integration_sugar_integration_tests_DEPENDENCIES) $(EXTRA_integration_sugar_integration_tests_DEPENDENCIES) integration/$(am__dirstamp)
@@ -681,6 +685,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_integration_tests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_matrixTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_metapopTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_metapop_custom_diploidTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_multilocusTest.Po@am__quote@
