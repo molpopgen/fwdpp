@@ -19,4 +19,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix)
 	BOOST_REQUIRE_EQUAL(m.nrow,8);
 	BOOST_REQUIRE_EQUAL(m.neutral.size(),m.nrow*keys.first.size());
 	BOOST_REQUIRE_EQUAL(m.selected.size(),m.nrow*keys.second.size());
+	BOOST_REQUIRE_EQUAL(keys.first.size(),m.neutral_positions.size());
+	BOOST_REQUIRE_EQUAL(keys.first.size(),m.neutral_popfreq.size());
+	BOOST_REQUIRE_EQUAL(keys.second.size(),m.selected_positions.size());
+	BOOST_REQUIRE_EQUAL(keys.second.size(),m.selected_popfreq.size());
 }

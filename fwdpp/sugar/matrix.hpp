@@ -301,8 +301,24 @@ namespace KTfwd
                                 "individual index out of range");
                         }
                     auto &dip = pop.diploids[ind];
-                    update_row_common(pop.gametes[dip.first], pop.gametes[dip.second], h);
+                    update_row_common(pop.gametes[dip.first],
+                                      pop.gametes[dip.second], h);
                     fill_matrix_with_rows(m, h, mtype);
+                }
+            // fill out other data fields
+            for (auto &&i : neutral_keys)
+                {
+                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids.size()));
+                }
+            for (auto &&i : selected_keys)
+                {
+                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids.size()));
                 }
         }
 
@@ -324,8 +340,24 @@ namespace KTfwd
                                 "individual index out of range");
                         }
                     auto &dip = pop.diploids[deme][ind];
-                    update_row_common(pop.gametes[dip.first], pop.gametes[dip.second], h);
+                    update_row_common(pop.gametes[dip.first],
+                                      pop.gametes[dip.second], h);
                     fill_matrix_with_rows(m, h, mtype);
+                }
+            // fill out other data fields
+            for (auto &&i : neutral_keys)
+                {
+                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids[deme].size()));
+                }
+            for (auto &&i : selected_keys)
+                {
+                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids[deme].size()));
                 }
         }
         template <typename poptype>
@@ -348,9 +380,25 @@ namespace KTfwd
                     auto &dip = pop.diploids[ind];
                     for (auto &&locus : dip)
                         {
-                            update_row_common(pop.gametes[locus.first], pop.gametes[dip.second], h);
+                            update_row_common(pop.gametes[locus.first],
+                                              pop.gametes[dip.second], h);
                         }
                     fill_matrix_with_rows(m, h, mtype);
+                }
+            // fill out other data fields
+            for (auto &&i : neutral_keys)
+                {
+                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids.size()));
+                }
+            for (auto &&i : selected_keys)
+                {
+                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_popfreq.push_back(
+                        static_cast<double>(pop.mcounts[i])
+                        / static_cast<double>(2 * pop.diploids.size()));
                 }
         }
 
