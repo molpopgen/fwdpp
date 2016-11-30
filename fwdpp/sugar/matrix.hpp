@@ -270,10 +270,12 @@ namespace KTfwd
                 {
                     std::transform(h.neutral_row2.begin(),
                                    h.neutral_row2.end(), h.neutral_row.begin(),
+                                   h.neutral_row.begin(),
                                    std::plus<std::int8_t>());
                     std::transform(
                         h.selected_row2.begin(), h.selected_row2.end(),
-                        h.selected_row.begin(), std::plus<std::int8_t>());
+                        h.selected_row.begin(), h.selected_row.begin(),
+                        std::plus<std::int8_t>());
                     m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
                                      h.neutral_row.end());
                     m.selected.insert(m.selected.end(), h.selected_row.begin(),
