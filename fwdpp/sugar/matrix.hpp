@@ -301,7 +301,7 @@ namespace KTfwd
                                 "individual index out of range");
                         }
                     auto &dip = pop.diploids[ind];
-                    update_row_common(dip.first, dip.second, h);
+                    update_row_common(pop.gametes[dip.first], pop.gametes[dip.second], h);
                     fill_matrix_with_rows(m, h, mtype);
                 }
         }
@@ -324,7 +324,7 @@ namespace KTfwd
                                 "individual index out of range");
                         }
                     auto &dip = pop.diploids[deme][ind];
-                    update_row_common(dip.first, dip.second, h);
+                    update_row_common(pop.gametes[dip.first], pop.gametes[dip.second], h);
                     fill_matrix_with_rows(m, h, mtype);
                 }
         }
@@ -348,7 +348,7 @@ namespace KTfwd
                     auto &dip = pop.diploids[ind];
                     for (auto &&locus : dip)
                         {
-                            update_row_common(locus.first, dip.second, h);
+                            update_row_common(pop.gametes[locus.first], pop.gametes[dip.second], h);
                         }
                     fill_matrix_with_rows(m, h, mtype);
                 }
@@ -366,8 +366,8 @@ namespace KTfwd
                                ? individuals.size()
                                : 2 * individuals.size());
             // dispatch details out depending on population type
-            fill_matrix(pop, individuals, neutral_keys, selected_keys, deme,
-                        typename poptype::popmodel_t(), mtype);
+            fill_matrix(pop, rv, individuals, neutral_keys, selected_keys,
+                        deme, typename poptype::popmodel_t(), mtype);
             return rv;
         }
     }

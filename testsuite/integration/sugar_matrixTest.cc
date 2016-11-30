@@ -15,4 +15,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix)
     simulate_singlepop(pop, 1000);
 	auto keys = mutation_keys(pop,{0,1,2,3},true,true);
 	auto m = haplotype_matrix(pop,{0,1,2,3},keys.first,keys.second);
+
+	BOOST_REQUIRE_EQUAL(m.nrow,8);
+	BOOST_REQUIRE_EQUAL(m.neutral.size(),m.nrow*keys.first.size());
+	BOOST_REQUIRE_EQUAL(m.selected.size(),m.nrow*keys.second.size());
 }
