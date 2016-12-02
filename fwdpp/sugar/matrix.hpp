@@ -247,7 +247,9 @@ namespace KTfwd
 		bool validate_rows(const std::vector<uint_t> & gamete_mut_keys,
 				const std::vector<std::size_t> & keys,
 				const std::vector<std::int8_t> & row)
-		//! check that row sums are ok
+		//! check that row sums are ok.  
+		//We need this more expensive check in case keys are adjusted prior
+		//to filling matrix.
 		{
 			std::set<std::size_t> gam(gamete_mut_keys.begin(),gamete_mut_keys.end());
 			std::set<std::size_t> k(keys.begin(),keys.end());
