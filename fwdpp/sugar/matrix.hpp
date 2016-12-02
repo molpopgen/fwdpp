@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <set>
-#include <unordered_set>
+#include <unordered_map>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
@@ -81,11 +81,11 @@ namespace KTfwd
         struct matrix_helper
         //! Holds the data needed for generating data matrix
         {
-            std::vector<std::size_t> neutral_keys, selected_keys;
+            std::vector<std::pair<std::size_t,uint_t>> neutral_keys, selected_keys;
             std::vector<std::int8_t> neutral_row, neutral_row2, selected_row,
                 selected_row2;
-            matrix_helper(const std::vector<std::size_t> &nk,
-                          const std::vector<std::size_t> &sk)
+            matrix_helper(const std::vector<std::pair<std::size_t,uint_t>> &nk,
+                          const std::vector<std::pair<std::size_t,uint_t>> &sk)
                 : neutral_keys{ nk }, selected_keys{ sk },
                   neutral_row(std::vector<std::int8_t>(nk.size(), 0)),
                   neutral_row2(std::vector<std::int8_t>(nk.size(), 0)),
@@ -106,7 +106,7 @@ namespace KTfwd
 
         template <typename gamete_t>
         void
-        update_mutation_keys(std::unordered_set<std::size_t> &keys,
+        update_mutation_keys(std::unordered_map<std::size_t,uint_t> &keys,
                              const typename gamete_t::mutation_container &a,
                              const std::vector<uint_t> &mcounts)
         {
@@ -114,13 +114,21 @@ namespace KTfwd
                 {
                     if (mcounts[ai])
                         {
-                            keys.insert(ai);
+							auto k = keys.find(ai);
+							if(k==keys.end())
+							{
+								keys.emplace(ai,1);
+							}
+							else
+							{
+								k->second++;
+							}
                         }
                 }
         }
 
         template <typename dipvector_t, typename gcont_t>
-        std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
+        std::pair<std::vector<std::pair<std::size_t,uint_t>>, std::vector<std::pair<std::size_t,uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
                       const gcont_t &gametes,
@@ -128,7 +136,7 @@ namespace KTfwd
                       const bool include_neutral, const bool include_selected,
                       const std::size_t, sugar::SINGLEPOP_TAG)
         {
-            std::unordered_set<std::size_t> n, s;
+            std::unordered_map<std::size_t,uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
             for (auto &&ind : individuals)
                 {
@@ -149,8 +157,8 @@ namespace KTfwd
                         }
                 }
             return std::make_pair(
-                std::vector<std::size_t>(n.begin(), n.end()),
-                std::vector<std::size_t>(s.begin(), s.end()));
+                std::vector<std::pair<std::size_t,uint_t>>(n.begin(), n.end()),
+                std::vector<std::pair<std::size_t,uint_t>>(s.begin(), s.end()));
         }
 
         template <typename dipvector_t, typename gcont_t>
@@ -183,7 +191,7 @@ namespace KTfwd
                       const bool include_neutral, const bool include_selected,
                       const std::size_t, sugar::MULTILOCPOP_TAG)
         {
-            std::unordered_set<std::size_t> n, s;
+            std::unordered_map<std::size_t,uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
             for (auto &&ind : individuals)
                 {
@@ -218,7 +226,7 @@ namespace KTfwd
         inline void
         update_row(std::vector<std::int8_t> &v,
                    const std::vector<KTfwd::uint_t> &mut_keys,
-                   const std::vector<std::size_t> &indexes)
+                   const std::vector<std::pair<std::size_t,uint_t>> &indexes)
         {
             if (v.size() != indexes.size())
                 {
@@ -226,8 +234,7 @@ namespace KTfwd
                 }
             for (auto &&mk : mut_keys)
                 {
-                    auto i = std::find(indexes.begin(), indexes.end(),
-                                       static_cast<std::size_t>(mk));
+                    auto i = std::find_if(indexes.begin(), indexes.end(),[mk](const std::pair<std::size_t,uint_t> & p){return p.first==mk;});
                     if (i != indexes.end()) // i may equal indexes.end iff mk
                                             // refers to a fixation
                         {
@@ -245,14 +252,18 @@ namespace KTfwd
 #ifndef NDEBUG
 		inline
 		bool validate_rows(const std::vector<uint_t> & gamete_mut_keys,
-				const std::vector<std::size_t> & keys,
+				const std::vector<std::pair<std::size_t,uint_t>> & keys,
 				const std::vector<std::int8_t> & row)
 		//! check that row sums are ok.  
 		//We need this more expensive check in case keys are adjusted prior
 		//to filling matrix.
 		{
 			std::set<std::size_t> gam(gamete_mut_keys.begin(),gamete_mut_keys.end());
-			std::set<std::size_t> k(keys.begin(),keys.end());
+			std::set<std::size_t> k;
+			for(auto &&ki:keys)
+			{
+				k.insert(ki.first);
+			}
 			std::vector<std::size_t> intersection;
 			std::set_intersection(gam.begin(),gam.end(),k.begin(),k.end(),std::back_inserter(intersection));
 			return intersection.size()==std::accumulate(row.begin(),row.end(),0.);
@@ -312,8 +323,8 @@ namespace KTfwd
         void
         fill_matrix(const poptype &pop, data_matrix &m,
                     const std::vector<std::size_t> &individuals,
-                    const std::vector<std::size_t> &neutral_keys,
-                    const std::vector<std::size_t> &selected_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                     const std::size_t, sugar::SINGLEPOP_TAG, matrix_type mtype)
         {
             matrix_helper h(neutral_keys, selected_keys);
@@ -332,16 +343,16 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
-                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids.size()));
                 }
             for (auto &&i : selected_keys)
                 {
-                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids.size()));
                 }
         }
@@ -350,8 +361,8 @@ namespace KTfwd
         void
         fill_matrix(const poptype &pop, data_matrix &m,
                     const std::vector<std::size_t> &individuals,
-                    const std::vector<std::size_t> &neutral_keys,
-                    const std::vector<std::size_t> &selected_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                     const std::size_t deme, sugar::METAPOP_TAG,
                     matrix_type mtype)
         {
@@ -371,16 +382,16 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
-                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids[deme].size()));
                 }
             for (auto &&i : selected_keys)
                 {
-                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids[deme].size()));
                 }
         }
@@ -388,8 +399,8 @@ namespace KTfwd
         void
         fill_matrix(const poptype &pop, data_matrix &m,
                     const std::vector<std::size_t> &individuals,
-                    const std::vector<std::size_t> &neutral_keys,
-                    const std::vector<std::size_t> &selected_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                     const std::size_t, sugar::MULTILOCPOP_TAG,
                     matrix_type mtype)
         {
@@ -412,16 +423,16 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
-                    m.neutral_positions.push_back(pop.mutations[i].pos);
+                    m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids.size()));
                 }
             for (auto &&i : selected_keys)
                 {
-                    m.selected_positions.push_back(pop.mutations[i].pos);
+                    m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i])
+                        static_cast<double>(pop.mcounts[i.first])
                         / static_cast<double>(2 * pop.diploids.size()));
                 }
         }
@@ -430,8 +441,8 @@ namespace KTfwd
         data_matrix
         fill_matrix(const poptype &pop,
                     const std::vector<std::size_t> &individuals,
-                    const std::vector<std::size_t> &neutral_keys,
-                    const std::vector<std::size_t> &selected_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                     const std::size_t deme, const matrix_type mtype)
         {
             data_matrix rv((mtype == matrix_type::genotype)
@@ -445,7 +456,7 @@ namespace KTfwd
     }
 
     template <typename poptype>
-    std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
+    std::pair<std::vector<std::pair<std::size_t,uint_t>>, std::vector<std::pair<std::size_t,uint_t>>>
     mutation_keys(const poptype &pop,
                   const std::vector<std::size_t> &individuals,
                   const bool include_neutral, const bool include_selected,
@@ -461,8 +472,8 @@ namespace KTfwd
     data_matrix
     genotype_matrix(const poptype &pop,
                     const std::vector<std::size_t> &individuals,
-                    const std::vector<std::size_t> &neutral_keys,
-                    const std::vector<std::size_t> &selected_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                     const std::size_t deme = 0)
     {
         return data_matrix_details::fill_matrix(
@@ -474,8 +485,8 @@ namespace KTfwd
     data_matrix
     haplotype_matrix(const poptype &pop,
                      const std::vector<std::size_t> &individuals,
-                     const std::vector<std::size_t> &neutral_keys,
-                     const std::vector<std::size_t> &selected_keys,
+                     const std::vector<std::pair<std::size_t,uint_t>> &neutral_keys,
+                     const std::vector<std::pair<std::size_t,uint_t>> &selected_keys,
                      const std::size_t deme = 0)
     {
         return data_matrix_details::fill_matrix(
