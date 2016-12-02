@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
     spoptype pop(1000);
-    simulate_singlepop(pop, 1000);
+    simulate_singlepop(pop, 10000);
 	auto keys = mutation_keys(pop,{0,1,2,3},true,true);
 	auto m = haplotype_matrix(pop,{0,1,2,3},keys.first,keys.second);
 
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(singlepop_genotype_matrix)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
     spoptype pop(1000);
-    simulate_singlepop(pop, 1000);
+    simulate_singlepop(pop, 10000);
 	auto keys = mutation_keys(pop,{0,1,2,3},true,true);
 	auto m = genotype_matrix(pop,{0,1,2,3},keys.first,keys.second);
 

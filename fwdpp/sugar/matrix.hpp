@@ -1,12 +1,15 @@
 #ifndef FWDPP_MATRIX_HPP_
 #define FWDPP_MATRIX_HPP_
 
+#include <cassert>
+#include <numeric>
 #include <utility>
 #include <vector>
 #include <type_traits>
 #include <cstdint>
 #include <algorithm>
 #include <stdexcept>
+#include <set>
 #include <unordered_set>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
@@ -92,7 +95,7 @@ namespace KTfwd
             }
             void
             zero()
-            //! Refill temporary rows with zeros
+            //! Refill temporary rows with zerosconst std::vector<uint_t> & gamete_mut_keys,
             {
                 std::fill(neutral_row.begin(), neutral_row.end(), 0);
                 std::fill(neutral_row2.begin(), neutral_row2.end(), 0);
@@ -239,6 +242,21 @@ namespace KTfwd
                 }
         }
 
+#ifndef NDEBUG
+		inline
+		bool validate_rows(const std::vector<uint_t> & gamete_mut_keys,
+				const std::vector<std::size_t> & keys,
+				const std::vector<std::int8_t> & row)
+		//! check that row sums are ok
+		{
+			std::set<std::size_t> gam(gamete_mut_keys.begin(),gamete_mut_keys.end());
+			std::set<std::size_t> k(keys.begin(),keys.end());
+			std::vector<std::size_t> intersection;
+			std::set_intersection(gam.begin(),gam.end(),k.begin(),k.end(),std::back_inserter(intersection));
+			return intersection.size()==std::accumulate(row.begin(),row.end(),0.);
+		}
+#endif
+
         template <typename gamete_t>
         inline void
         update_row_common(const gamete_t &g1, const gamete_t &g2,
@@ -248,7 +266,11 @@ namespace KTfwd
             update_row(h.neutral_row2, g2.mutations, h.neutral_keys);
             update_row(h.selected_row, g1.smutations, h.selected_keys);
             update_row(h.selected_row2, g2.smutations, h.selected_keys);
-        }
+			assert(validate_rows(g1.mutations,h.neutral_keys,h.neutral_row));
+			assert(validate_rows(g2.mutations,h.neutral_keys,h.neutral_row2));
+			assert(validate_rows(g1.smutations,h.selected_keys,h.selected_row));
+			assert(validate_rows(g2.smutations,h.selected_keys,h.selected_row2));
+		}
 
         inline void
         fill_matrix_with_rows(data_matrix &m, matrix_helper &h,
