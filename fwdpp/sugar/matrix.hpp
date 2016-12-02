@@ -21,7 +21,7 @@ namespace KTfwd
     /*!
      * \brief Genotype or haplotype matrix.
      *
-     * This type uses std::vector<std::int8_t> to hold a matrix
+     * This type uses std::vector<short> to hold a matrix
      * representing the genotypes for a set of diploids.
      *
      * For a haplotype matrix of n individuals, the data represent
@@ -47,9 +47,9 @@ namespace KTfwd
      */
     {
         //! Data for neutral mutations.
-        std::vector<std::int8_t> neutral;
+        std::vector<short> neutral;
         //! Data for selected mutations.
-        std::vector<std::int8_t> selected;
+        std::vector<short> selected;
         //! Positions of neutral mutations.  Same order as matrix column order
         std::vector<double> neutral_positions;
         //! Positions of selected mutations.  Same order as matrix column order
@@ -82,15 +82,15 @@ namespace KTfwd
         //! Holds the data needed for generating data matrix
         {
             std::vector<std::pair<std::size_t,uint_t>> neutral_keys, selected_keys;
-            std::vector<std::int8_t> neutral_row, neutral_row2, selected_row,
+            std::vector<short> neutral_row, neutral_row2, selected_row,
                 selected_row2;
             matrix_helper(const std::vector<std::pair<std::size_t,uint_t>> &nk,
                           const std::vector<std::pair<std::size_t,uint_t>> &sk)
                 : neutral_keys{ nk }, selected_keys{ sk },
-                  neutral_row(std::vector<std::int8_t>(nk.size(), 0)),
-                  neutral_row2(std::vector<std::int8_t>(nk.size(), 0)),
-                  selected_row(std::vector<std::int8_t>(sk.size(), 0)),
-                  selected_row2(std::vector<std::int8_t>(sk.size(), 0))
+                  neutral_row(std::vector<short>(nk.size(), 0)),
+                  neutral_row2(std::vector<short>(nk.size(), 0)),
+                  selected_row(std::vector<short>(sk.size(), 0)),
+                  selected_row2(std::vector<short>(sk.size(), 0))
             {
             }
             void
@@ -224,7 +224,7 @@ namespace KTfwd
         }
 
         inline void
-        update_row(std::vector<std::int8_t> &v,
+        update_row(std::vector<short> &v,
                    const std::vector<KTfwd::uint_t> &mut_keys,
                    const std::vector<std::pair<std::size_t,uint_t>> &indexes)
         {
@@ -253,7 +253,7 @@ namespace KTfwd
 		inline
 		bool validate_rows(const std::vector<uint_t> & gamete_mut_keys,
 				const std::vector<std::pair<std::size_t,uint_t>> & keys,
-				const std::vector<std::int8_t> & row)
+				const std::vector<short> & row)
 		//! check that row sums are ok.  
 		//We need this more expensive check in case keys are adjusted prior
 		//to filling matrix.
@@ -306,11 +306,11 @@ namespace KTfwd
                     std::transform(h.neutral_row2.begin(),
                                    h.neutral_row2.end(), h.neutral_row.begin(),
                                    h.neutral_row.begin(),
-                                   std::plus<std::int8_t>());
+                                   std::plus<short>());
                     std::transform(
                         h.selected_row2.begin(), h.selected_row2.end(),
                         h.selected_row.begin(), h.selected_row.begin(),
-                        std::plus<std::int8_t>());
+                        std::plus<short>());
                     m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
                                      h.neutral_row.end());
                     m.selected.insert(m.selected.end(), h.selected_row.begin(),
@@ -343,6 +343,7 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
+					assert(pop.mutations[i.first].neutral);
                     m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
@@ -350,6 +351,7 @@ namespace KTfwd
                 }
             for (auto &&i : selected_keys)
                 {
+					assert(!pop.mutations[i.first].neutral);
                     m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
@@ -382,6 +384,7 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
+					assert(pop.mutations[i.first].neutral);
                     m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
@@ -389,6 +392,7 @@ namespace KTfwd
                 }
             for (auto &&i : selected_keys)
                 {
+					assert(!pop.mutations[i.first].neutral);
                     m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
@@ -423,6 +427,7 @@ namespace KTfwd
             // fill out other data fields
             for (auto &&i : neutral_keys)
                 {
+					assert(pop.mutations[i.first].neutral);
                     m.neutral_positions.push_back(pop.mutations[i.first].pos);
                     m.neutral_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
@@ -430,6 +435,7 @@ namespace KTfwd
                 }
             for (auto &&i : selected_keys)
                 {
+					assert(!pop.mutations[i.first].neutral);
                     m.selected_positions.push_back(pop.mutations[i.first].pos);
                     m.selected_popfreq.push_back(
                         static_cast<double>(pop.mcounts[i.first])
