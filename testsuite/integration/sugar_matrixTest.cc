@@ -109,6 +109,33 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_compare_to_sample)
 		}
 		BOOST_REQUIRE_EQUAL(sum,sum2);
 	}
+	//Repeat for selected sites
+	v = gsl_matrix_short_const_view_array(m.selected.data(),m.nrow,m.selected_positions.size());
+	BOOST_REQUIRE_EQUAL(v.matrix.size1,2*indlist.size());
+	//Make sure column sums check out
+	for(std::size_t c = 0 ; c < v.matrix.size2 ; ++c)
+	{
+		auto col_view = gsl_matrix_short_const_column(&v.matrix,c);
+		unsigned sum=0,sum2=0;
+		for(std::size_t i=0;i<v.matrix.size1;++i)
+		{
+			sum+=gsl_vector_short_get(&col_view.vector,i);
+			sum2+=(s.second[c].second[i]=='1') ? 1 : 0;
+		}
+		BOOST_REQUIRE_EQUAL(sum,sum2);
+	}
+	//Now, row sums.
+	for(std::size_t r = 0 ; r < v.matrix.size1 ; ++r)
+	{
+		auto row_view = gsl_matrix_short_const_row(&v.matrix,r);
+		unsigned sum=0,sum2=0;
+		for(std::size_t i = 0 ; i < v.matrix.size2; ++i)
+		{
+			sum += gsl_vector_short_get(&row_view.vector,i);
+			sum2 +=(s.second[i].second[r]=='1')?1:0;
+		}
+		BOOST_REQUIRE_EQUAL(sum,sum2);
+	}
 }
 
 BOOST_AUTO_TEST_CASE(singlepop_genotype_matrix)
