@@ -30,7 +30,7 @@ void simulate_singlepop( singlepop_object_t & pop, const unsigned simlen = 10 )
 					  1000,
 					  0.005,
 					  std::bind(KTfwd::infsites(),std::placeholders::_1,std::placeholders::_2,rng.get(),std::ref(pop.mut_lookup),generation,
-						    0.005,0.,[&rng](){return gsl_rng_uniform(rng.get());},[](){return 0.;},[](){return 0.;}),
+						    0.0025,0.0025,[&rng](){return gsl_rng_uniform(rng.get());},[](){return -0.01;},[](){return 1.;}),
 					  std::bind(KTfwd::poisson_xover(),rng.get(),0.005,0.,1.,
 						    std::placeholders::_1,std::placeholders::_2,std::placeholders::_3),
 					  std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
