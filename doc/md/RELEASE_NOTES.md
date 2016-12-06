@@ -4,6 +4,10 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.5.4
+
+* fwdpp/sugar/matrix.hpp was added, providing functions for returning diploid haplotype/genotype data as a 1-d array.
+
 ## 0.5.3 
 
 * Streamline internal details of crossing over
