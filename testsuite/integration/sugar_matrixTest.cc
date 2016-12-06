@@ -37,8 +37,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_compare_to_sample)
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
         indlist.push_back(i);
-    unsigned ntests = 0;
-	while(ntests++<1000)
+	for(unsigned ntests=0;ntests<1000;++ntests)
         {
             std::vector<unsigned> indlist2(indlist.begin(), indlist.end());
             auto keys = mutation_keys(pop, indlist, true, true);
