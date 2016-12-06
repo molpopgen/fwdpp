@@ -41,7 +41,7 @@ void simulate_singlepop( singlepop_object_t & pop, const unsigned simlen = 10 )
 
 
 template<typename singlepop_object_t,typename rng_type>
-unsigned simulate_singlepop2( singlepop_object_t & pop, const rng_type rng,
+unsigned simulate_singlepop2( singlepop_object_t & pop, const rng_type & rng,
 		const unsigned generation, const unsigned simlen )
 /*!
   \brief Quick function for evolving a single-deme simulation
