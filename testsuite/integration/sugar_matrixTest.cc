@@ -10,6 +10,20 @@
 #include <fwdpp/sugar/sampling.hpp>
 #include <gsl/gsl_matrix_short.h>
 
+//This is an involved integration test of
+//haplotype and genotype matrices, and it takes
+//some time to run.
+//We simulate a population of N=1000 diploids to equilibrium.
+//We then construct a haplotype and genotype matrix from a large
+//sample of diploids.  We tests that row and sum columns from the two
+//matrix types agree.  Once those agreement tests pass, we compare the
+//haplotype matrix to the row/sum columns of a sample based on 
+//KTfwd::sample_separate (fwdpp/sugar/sampling.hpp) for the same diploids.
+//These last checks ensure that two independent pieces of code, written 
+//at different times, give the same results.
+//
+//Then, to really make sure, we do the above tests 1,000 times, evolving
+//our population 100 generations in between each test.
 BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
