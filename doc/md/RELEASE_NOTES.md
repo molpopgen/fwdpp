@@ -7,6 +7,7 @@ milestones (target version numbers for these features to go live) because that i
 ## 0.5.4
 
 * fwdpp/sugar/matrix.hpp was added, providing functions for returning diploid haplotype/genotype data as a 1-d array.
+* Functions in fwdpy/sugar/sampling.hpp are now more flexible with the integral types used to specify specific sets of diploids.
 
 ## 0.5.3 
 
