@@ -31,13 +31,14 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_compare_to_sample)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
     spoptype pop(1000);
-    simulate_singlepop(pop, 10000);
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    auto generation = simulate_singlepop2(pop, rng, 0, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
         indlist.push_back(i);
     unsigned ntests = 0;
-    do
+	while(ntests++<1000)
         {
             std::vector<unsigned> indlist2(indlist.begin(), indlist.end());
             auto keys = mutation_keys(pop, indlist, true, true);
@@ -186,9 +187,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_compare_to_sample)
                         }
                 }
             // Evolve pop 100 more generations
-            simulate_singlepop(pop, 100);
+            generation=simulate_singlepop2(pop, rng, generation, 100);
         }
-    while (++ntests < 1000);
 }
 
 BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
