@@ -34,7 +34,6 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
         indlist.push_back(i);
-    std::vector<unsigned> indlist2(indlist.begin(), indlist.end());
     for (unsigned ntests = 0; ntests < 1000; ++ntests)
         {
             auto keys = mutation_keys(pop, indlist, true, true);
@@ -97,7 +96,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
 
             // Now, compare to an independent calculation of the genotypes
             // for same individuals
-            auto s = KTfwd::sample_separate(pop, indlist2, true);
+            auto s = KTfwd::sample_separate(pop, indlist, true);
             // Check same total # of mutations
             BOOST_REQUIRE_EQUAL(s.first.size(), m.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(s.second.size(), m.selected_positions.size());
