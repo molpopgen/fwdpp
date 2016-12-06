@@ -563,7 +563,7 @@ namespace KTfwd
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
-                m.selected, m.nrow, m.selected_positions.size(), false),
+                m.neutral, m.nrow, m.neutral_positions.size(), false),
             data_matrix_details::row_col_sums_details(
                 m.selected, m.nrow, m.selected_positions.size(), false));
     }
