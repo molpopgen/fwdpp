@@ -71,9 +71,12 @@ namespace KTfwd
     };
 }
 
+// This header contains code re-used for
+// implementing functions defined below.
 #include "matrix_details.hpp"
 
-namespace KTfwd {
+namespace KTfwd
+{
     template <typename poptype>
     std::pair<std::vector<std::pair<std::size_t, uint_t>>,
               std::vector<std::pair<std::size_t, uint_t>>>
@@ -81,6 +84,39 @@ namespace KTfwd {
                   const std::vector<std::size_t> &individuals,
                   const bool include_neutral, const bool include_selected,
                   const std::size_t deme = 0)
+    /*!
+     * For a sample defined by a set of diploids, obtain the keys corresponding
+     * to all mutations in that sample.
+     *
+     * \param pop The population object
+     * \param individuals The indexes of individuals in the sample
+     * \param include_neutral If true, obtain keys for neutral sites
+     * \param include_selected If true, obtain keys for selected sites
+     * \param deme If poptype represents a metapopulation object, the
+     * individuals come from this deme.
+     *
+     * \return A pair of vectors representing neutral and selected keys,
+     * respectively.  The value
+     * type of each vector is std::pair<std::size_t,KTfwd::uint_t>.  The first
+     * value is the mutation
+     * key, and the second is its frequency in the sample.
+     *
+     * Several comments are required:
+     *
+     * 1. Return values are unsorted with respect to anything meaningful.  If
+     * you wish to sort on position,
+     * etc., do so yourself.
+     * 2. In general, and manipulation of the keys is possible.  For example,
+     * removing mutations that are fixed
+     * in the sample, or whose frequency is or is not within some desired
+     * range, is easily doable via the
+     * "erase/remove" idiom.
+     * 3. Keys from multiple samples can be merged to form new vectors where
+     * the key elements are unique and
+     * the frequencies are summed, all using standard C++.  Example use case is
+     * combining samples from
+     * multiple demes.
+     */
     {
         return data_matrix_details::mutation_keys(
             pop.diploids, individuals, pop.gametes, pop.mcounts,
@@ -95,6 +131,24 @@ namespace KTfwd {
         const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
         const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
         const std::size_t deme = 0)
+    /*!
+     * Calculate a KTfwd::data_matrix representing genotypes encoded as
+     * 0,1, or 2 copies of the derived mutation.
+     *
+     * \param pop The population
+     * \param individuals The indexes of individuals in \a pop forming the
+     * sample.
+     * \param neutral_keys See documentation of KTfwd::mutation_keys
+     * \param selected_keys See documentation of KTfwd::mutation_keys
+     * \param deme If pop is a metapopulation, this is the deme containing the
+     * sample
+     *
+     * \return KTfwd::data_matrix
+     *
+     * \note Return values representing samples from different demes must be
+     * combined
+     * by the user.
+     */
     {
         return data_matrix_details::fill_matrix(
             pop, individuals, neutral_keys, selected_keys, deme,
@@ -108,6 +162,24 @@ namespace KTfwd {
         const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
         const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
         const std::size_t deme = 0)
+    /*!
+     * Calculate a KTfwd::data_matrix representing haplotypes encoded as
+     * 0 or 1 copies of the derived mutation.
+     *
+     * \param pop The population
+     * \param individuals The indexes of individuals in \a pop forming the
+     * sample.
+     * \param neutral_keys See documentation of KTfwd::mutation_keys
+     * \param selected_keys See documentation of KTfwd::mutation_keys
+     * \param deme If pop is a metapopulation, this is the deme containing the
+     * sample
+     *
+     * \return KTfwd::data_matrix
+     *
+     * \note Return values representing samples from different demes must be
+     * combined
+     * by the user.
+     */
     {
         return data_matrix_details::fill_matrix(
             pop, individuals, neutral_keys, selected_keys, deme,
@@ -116,6 +188,12 @@ namespace KTfwd {
 
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     row_sums(const data_matrix &m)
+	/*!
+	 * Calculate the row sums of a KTfwd::data_matrix
+	 *
+	 * \return A pair of vectors of unsigned integers representing row sums
+	 * for neutral and selected sites in the matrix, respectively.
+	 */
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
@@ -123,8 +201,15 @@ namespace KTfwd {
             data_matrix_details::row_col_sums_details(
                 m.selected, m.nrow, m.selected_positions.size(), true));
     }
-    inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
+    
+	inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     col_sums(const data_matrix &m)
+    /*!
+	 * Calculate the column sums of a KTfwd::data_matrix
+	 *
+	 * \return A pair of vectors of unsigned integers representing column sums
+	 * for neutral and selected sites in the matrix, respectively.
+	 */
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
