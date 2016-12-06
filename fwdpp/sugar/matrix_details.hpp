@@ -1,4 +1,6 @@
-
+/*
+ * This header is not meant to be included directly.
+ */
 namespace KTfwd
 {
     namespace data_matrix_details
