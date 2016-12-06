@@ -68,12 +68,12 @@ namespace KTfwd
 
     template<typename mcont_t,
 	     typename gcont_t,
-	     typename dipvector_t>
+	     typename dipvector_t,typename integer_type = std::size_t>
     sep_sample_t
     ms_sample_separate_single_deme( const mcont_t & mutations,
 				    const gcont_t & gametes,
 				    const dipvector_t & diploids,
-				    const std::vector<unsigned> & diplist,
+				    const std::vector<integer_type> & diplist,
 				    const unsigned & n,
 				    const bool & remove_fixed )
     {
@@ -138,12 +138,12 @@ namespace KTfwd
 
     template<typename mcont_t,
 	     typename gcont_t,
-	     typename dipvector_t>
+	     typename dipvector_t,typename integer_type = std::size_t>
     std::vector<sep_sample_t >
     ms_sample_separate_mlocus( const mcont_t & mutations,
 			       const gcont_t & gametes,
 			       const dipvector_t & diploids,
-			       const std::vector<unsigned> & diplist,
+			       const std::vector<integer_type> & diplist,
 			       const unsigned & n,
 			       const bool & remove_fixed)
     {

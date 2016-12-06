@@ -127,11 +127,11 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     return rv;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
          sugar::SINGLEPOP_TAG>::value,sample_t>::type
          sample(const poptype & p,
-                const std::vector<unsigned> & individuals,
+                const std::vector<integer_type> & individuals,
                 const bool removeFixed)
          /*!
            Take a non-random sample of diploids from a population
@@ -157,11 +157,11 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     return rv;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
          sugar::MULTILOCPOP_TAG>::value,std::vector<sample_t>>::type
          sample(const poptype & p,
-                const std::vector<unsigned> & individuals,
+                const std::vector<integer_type> & individuals,
                 const bool removeFixed,
                 const std::vector<std::pair<double,double> > & locus_boundaries = std::vector<std::pair<double,double>>())
 
@@ -190,11 +190,11 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     return sample_details(p,individuals,removeFixed,locus_boundaries);
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
          sugar::SINGLEPOP_TAG>::value,sep_sample_t>::type
          sample_separate(const poptype & p,
-                         const std::vector<unsigned> & individuals,
+                         const std::vector<integer_type> & individuals,
                          const bool removeFixed)
          /*!
            Take a non-random sample of nsam chromosomes from a population
@@ -220,11 +220,11 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
     return rv;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 typename std::enable_if<std::is_same<typename poptype::popmodel_t,
          sugar::MULTILOCPOP_TAG>::value,std::vector<sep_sample_t>>::type
          sample_separate(const poptype & p,
-                         const std::vector<unsigned> & individuals,
+                         const std::vector<integer_type> & individuals,
                          const bool removeFixed)
          /*!
            Take a non-random sample of nsam chromosomes from a population
@@ -309,10 +309,10 @@ sep_sample_t sample_separate(const gsl_rng * r,
     return x;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 sample_t sample(const poptype & p,
                 const unsigned deme,
-                const std::vector<unsigned> & individuals,
+                const std::vector<integer_type> & individuals,
                 const bool removeFixed )
 /*!
   Take a non-random sample of nsam chromosomes from a meta-population
@@ -343,10 +343,10 @@ sample_t sample(const poptype & p,
     return rv;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 sep_sample_t sample_separate(const poptype & p,
                              const unsigned deme,
-                             const std::vector<unsigned> & individuals,
+                             const std::vector<integer_type> & individuals,
                              const bool removeFixed )
 /*!
   Take a non-random sample of nsam chromosomes from a meta-population

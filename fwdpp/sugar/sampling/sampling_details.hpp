@@ -101,9 +101,9 @@ void finish_sample( std::vector<sep_sample_t> & sample, const vec_mutation_t & f
     }
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 sample_t sample_details( const poptype & p,
-                         const std::vector<unsigned> & individuals,
+                         const std::vector<integer_type> & individuals,
                          const bool removeFixed) {
     sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(p.mutations,p.gametes,p.diploids,individuals,2*individuals.size(),removeFixed);
     auto rv = std::move(temp.first);
@@ -112,9 +112,9 @@ sample_t sample_details( const poptype & p,
     return rv;
 }
 
-template<typename poptype>
+template<typename poptype,typename integer_type = std::size_t>
 std::vector<sample_t> sample_details( const poptype & p,
-                                      const std::vector<unsigned> & individuals,
+                                      const std::vector<integer_type> & individuals,
                                       const bool removeFixed,
 									  const std::vector<std::pair<double,double>> & locus_boundaries){
     auto temp = fwdpp_internal::ms_sample_separate_mlocus(p.mutations,p.gamtes,p.diploids,individuals,2*individuals.size(),removeFixed);
