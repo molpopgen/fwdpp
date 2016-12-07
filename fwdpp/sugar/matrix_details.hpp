@@ -123,7 +123,8 @@ namespace KTfwd
         }
 
         template <typename dipvector_t, typename gcont_t>
-        std::pair<std::vector<std::pair<std::size_t,uint_t>>, std::vector<std::pair<std::size_t,uint_t>>>
+        std::pair<std::vector<std::pair<std::size_t, uint_t>>,
+                  std::vector<std::pair<std::size_t, uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
                       const gcont_t &gametes,
@@ -158,9 +159,12 @@ namespace KTfwd
                                 }
                         }
                 }
-            return std::make_pair(std::vector<std::pair<std::size_t,uint_t>>(std::make_move_iterator(n.begin()),
-                        std::make_move_iterator(n.end())),
-                        std::vector<std::pair<std::size_t,uint_t>>(std::make_move_iterator(s.begin()),std::make_move_iterator(s.end())));
+            return std::make_pair(std::vector<std::pair<std::size_t, uint_t>>(
+                                      std::make_move_iterator(n.begin()),
+                                      std::make_move_iterator(n.end())),
+                                  std::vector<std::pair<std::size_t, uint_t>>(
+                                      std::make_move_iterator(s.begin()),
+                                      std::make_move_iterator(s.end())));
         }
 
         inline void
