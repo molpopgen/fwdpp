@@ -1,3 +1,4 @@
+#include <iterator>
 /*
  * This header is not meant to be included directly.
  */
@@ -122,7 +123,7 @@ namespace KTfwd
         }
 
         template <typename dipvector_t, typename gcont_t>
-        std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
+        std::pair<std::vector<std::pair<std::size_t,uint_t>>, std::vector<std::pair<std::size_t,uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
                       const gcont_t &gametes,
@@ -157,14 +158,9 @@ namespace KTfwd
                                 }
                         }
                 }
-            //We should be able to return
-            //make_pair(vector<size_t>(n.begin(),n.end()),
-            //vector<size_t>(s.begin(),s.end())), but OSX/clang
-            //won't accept that.  Thus we do this instead:
-            std::vector<std::size_t> rvn(n.size()),rvs(s.size());
-            std::copy(n.begin(),n.end(),rvn.begin());
-            std::copy(s.begin(),s.end(),rvs.begin());
-            return std::make_pair(std::move(rvn),std::move(rvs));
+            return std::make_pair(std::vector<std::pair<std::size_t,uint_t>>(std::make_move_iterator(n.begin()),
+                        std::make_move_iterator(n.end())),
+                        std::vector<std::pair<std::size_t,uint_t>>(std::make_move_iterator(s.begin()),std::make_move_iterator(s.end())));
         }
 
         inline void
