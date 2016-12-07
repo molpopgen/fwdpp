@@ -157,9 +157,14 @@ namespace KTfwd
                                 }
                         }
                 }
-            return std::make_pair(
-                std::vector<std::size_t>(n.begin(), n.end()),
-                std::vector<std::size_t>(s.begin(), s.end()));
+            //We should be able to return
+            //make_pair(vector<size_t>(n.begin(),n.end()),
+            //vector<size_t>(s.begin(),s.end())), but OSX/clang
+            //won't accept that.  Thus we do this instead:
+            std::vector<std::size_t> rvn(n.size()),rvs(s.size());
+            std::copy(n.begin(),n.end(),rvn.begin());
+            std::copy(s.begin(),s.end(),rvs.begin());
+            return std::make_pair(std::move(rvn),std::move(rvs));
         }
 
         inline void
