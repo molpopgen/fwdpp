@@ -1,4 +1,5 @@
-/* \brief Integration and unit tests of data matrix generation
+/* \file sugar_matrixTest.cc
+ * \brief Integration and unit tests of data matrix generation
  * \ingroup unit
  */
 

@@ -1,3 +1,8 @@
+/*!
+ * \file quick_evolve_sugar.hpp
+ * \brief Helper functions for unit/integration testing
+ * \ingroup unit
+ */
 #ifndef FWDPP_TESTSUITE_UTIL_QUICK_EVOLVE_SUGAR_HPP
 #define FWDPP_TESTSUITE_UTIL_QUICK_EVOLVE_SUGAR_HPP
 
