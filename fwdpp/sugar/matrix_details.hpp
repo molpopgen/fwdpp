@@ -102,7 +102,8 @@ namespace KTfwd
         }
 
         template <typename dipvector_t, typename gcont_t>
-        std::pair<std::vector<std::size_t>, std::vector<std::size_t>>
+        std::pair<std::vector<std::pair<std::size_t, uint_t>>,
+                  std::vector<std::pair<std::size_t, uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
                       const gcont_t &gametes,
