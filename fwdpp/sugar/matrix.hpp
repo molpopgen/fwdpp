@@ -14,7 +14,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-#include <gsl/gsl_matrix_short.h>
+#include <gsl/gsl_matrix_char.h>
 
 namespace KTfwd
 {
@@ -22,7 +22,7 @@ namespace KTfwd
     /*!
      * \brief Genotype or haplotype matrix.
      *
-     * This type uses std::vector<short> to hold a matrix
+     * This type uses std::vector<char> to hold a matrix
      * representing the genotypes for a set of diploids.
      *
      * For a haplotype matrix of n individuals, the data represent
@@ -48,9 +48,9 @@ namespace KTfwd
      */
     {
         //! Data for neutral mutations.
-        std::vector<short> neutral;
+        std::vector<char> neutral;
         //! Data for selected mutations.
-        std::vector<short> selected;
+        std::vector<char> selected;
         //! Positions of neutral mutations.  Same order as matrix column order
         std::vector<double> neutral_positions;
         //! Positions of selected mutations.  Same order as matrix column order
@@ -63,7 +63,19 @@ namespace KTfwd
         std::vector<double> selected_popfreq;
         //! Number of rows in the matrix
         std::size_t nrow;
-        data_matrix(const std::size_t nrow_)
+        data_matrix(const std::size_t nrow_ = 0)
+			/*!
+			 * Constructor
+			 * 
+			 * \param nrow_ Number of rows in the matrix
+			 *
+			 * The default value of nrow_ = 0 is so that instances of this
+			 * type can be easily stack-allocated.  Intended use cases are Cython,
+			 * Rcpp, or other systems for "wrapping" C++.  This type will
+			 * rely on compiler-generated copy/move constructors, and therefore such
+			 * systems should rely on copy elision to make sure that data_matrix::nrow
+			 * is set correctly.
+			 */
             : neutral{}, selected{}, neutral_positions{}, selected_positions{},
               neutral_popfreq{}, selected_popfreq{}, nrow{ nrow_ }
         {

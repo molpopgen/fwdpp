@@ -9,7 +9,7 @@
 #include "../util/quick_evolve_sugar.hpp"
 #include <fwdpp/sugar/matrix.hpp>
 #include <fwdpp/sugar/sampling.hpp>
-#include <gsl/gsl_matrix_short.h>
+#include <gsl/gsl_matrix_char.h>
 
 //This is an involved integration test of
 //haplotype and genotype matrices, and it takes
@@ -80,6 +80,14 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
             BOOST_REQUIRE_EQUAL(keys.second.size(),
                                 m.selected_positions.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(), m.selected_popfreq.size());
+			
+			//Note that we can convert the data to vectors of other types
+			//as needed
+			std::vector<double> neutral_as_double(m.neutral.begin(),m.neutral.end());
+			for(std::size_t i=0;i<m.neutral.size();++i)
+			{
+				BOOST_REQUIRE_EQUAL(m.neutral[i],neutral_as_double[i]);
+			}
 
             auto gm = genotype_matrix(pop, indlist, keys.first, keys.second);
             BOOST_REQUIRE_EQUAL(gm.nrow, indlist.size());
@@ -263,7 +271,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
     auto m = haplotype_matrix(pop, indlist, keys.first, keys.second);
     BOOST_REQUIRE(keys.first.empty());
     auto error_handler = gsl_set_error_handler_off();
-    auto v = gsl_matrix_short_const_view_array(m.neutral.data(), m.nrow,
+    auto v = gsl_matrix_char_const_view_array(m.neutral.data(), m.nrow,
                                                m.neutral_positions.size());
     BOOST_REQUIRE_EQUAL(v.matrix.size1, 0);
     BOOST_REQUIRE_EQUAL(v.matrix.size2, 0);
