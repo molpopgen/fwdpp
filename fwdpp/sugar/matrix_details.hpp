@@ -375,7 +375,7 @@ namespace KTfwd
                     for (auto &&locus : dip)
                         {
                             update_row_common(pop.gametes[locus.first],
-                                              pop.gametes[dip.second], h);
+                                              pop.gametes[locus.second], h);
                         }
                     fill_matrix_with_rows(m, h, mtype);
                 }

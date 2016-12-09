@@ -11,20 +11,20 @@
 #include <fwdpp/sugar/sampling.hpp>
 #include <gsl/gsl_matrix_char.h>
 
-//This is an involved integration test of
-//haplotype and genotype matrices, and it takes
-//some time to run.
-//We simulate a population of N=1000 diploids to equilibrium.
-//We then construct a haplotype and genotype matrix from a large
-//sample of diploids.  We tests that row and sum columns from the two
-//matrix types agree.  Once those agreement tests pass, we compare the
-//haplotype matrix to the row/sum columns of a sample based on 
-//KTfwd::sample_separate (fwdpp/sugar/sampling.hpp) for the same diploids.
-//These last checks ensure that two independent pieces of code, written 
-//at different times, give the same results.
+// This is an involved integration test of
+// haplotype and genotype matrices, and it takes
+// some time to run.
+// We simulate a population of N=1000 diploids to equilibrium.
+// We then construct a haplotype and genotype matrix from a large
+// sample of diploids.  We tests that row and sum columns from the two
+// matrix types agree.  Once those agreement tests pass, we compare the
+// haplotype matrix to the row/sum columns of a sample based on
+// KTfwd::sample_separate (fwdpp/sugar/sampling.hpp) for the same diploids.
+// These last checks ensure that two independent pieces of code, written
+// at different times, give the same results.
 //
-//Then, to really make sure, we do the above tests 1,000 times, evolving
-//our population 100 generations in between each test.
+// Then, to really make sure, we do the above tests 1,000 times, evolving
+// our population 100 generations in between each test.
 BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
@@ -80,14 +80,15 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
             BOOST_REQUIRE_EQUAL(keys.second.size(),
                                 m.selected_positions.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(), m.selected_popfreq.size());
-			
-			//Note that we can convert the data to vectors of other types
-			//as needed
-			std::vector<double> neutral_as_double(m.neutral.begin(),m.neutral.end());
-			for(std::size_t i=0;i<m.neutral.size();++i)
-			{
-				BOOST_REQUIRE_EQUAL(m.neutral[i],neutral_as_double[i]);
-			}
+
+            // Note that we can convert the data to vectors of other types
+            // as needed
+            std::vector<double> neutral_as_double(m.neutral.begin(),
+                                                  m.neutral.end());
+            for (std::size_t i = 0; i < m.neutral.size(); ++i)
+                {
+                    BOOST_REQUIRE_EQUAL(m.neutral[i], neutral_as_double[i]);
+                }
 
             auto gm = genotype_matrix(pop, indlist, keys.first, keys.second);
             BOOST_REQUIRE_EQUAL(gm.nrow, indlist.size());
@@ -206,45 +207,6 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                         }
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
-            /*
-if (!m.selected_positions.empty())
-{
-v = gsl_matrix_short_const_view_array(
-m.selected.data(), m.nrow,
-m.selected_positions.size());
-BOOST_REQUIRE_EQUAL(v.matrix.size1, 2 * indlist.size());
-// Make sure column sums check out
-for (std::size_t c = 0; c < v.matrix.size2; ++c)
-{
-auto col_view
-    = gsl_matrix_short_const_column(&v.matrix, c);
-unsigned sum = 0, sum2 = 0;
-for (std::size_t i = 0; i < v.matrix.size1; ++i)
-    {
-        sum += gsl_vector_short_get(
-            &col_view.vector, i);
-        sum2 += (s.second[c].second[i] == '1') ? 1
-                                               : 0;
-    }
-BOOST_REQUIRE_EQUAL(sum, sum2);
-}
-// Now, row sums.
-for (std::size_t r = 0; r < v.matrix.size1; ++r)
-{
-auto row_view
-    = gsl_matrix_short_const_row(&v.matrix, r);
-unsigned sum = 0, sum2 = 0;
-for (std::size_t i = 0; i < v.matrix.size2; ++i)
-    {
-        sum += gsl_vector_short_get(
-            &row_view.vector, i);
-        sum2 += (s.second[i].second[r] == '1') ? 1
-                                               : 0;
-    }
-BOOST_REQUIRE_EQUAL(sum, sum2);
-}
-}
-*/
             // Look at properties of the GENOTYPE matrix
             m = genotype_matrix(pop, indlist, keys.first, keys.second);
             // Evolve pop 100 more generations
@@ -272,7 +234,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
     BOOST_REQUIRE(keys.first.empty());
     auto error_handler = gsl_set_error_handler_off();
     auto v = gsl_matrix_char_const_view_array(m.neutral.data(), m.nrow,
-                                               m.neutral_positions.size());
+                                              m.neutral_positions.size());
     BOOST_REQUIRE_EQUAL(v.matrix.size1, 0);
     BOOST_REQUIRE_EQUAL(v.matrix.size2, 0);
     gsl_set_error_handler(error_handler);
