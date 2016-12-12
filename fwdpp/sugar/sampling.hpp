@@ -208,7 +208,7 @@ typename std::enable_if<std::is_same<typename poptype::popmodel_t,
          */
 {
     static_assert(std::is_same<typename poptype::popmodel_t,sugar::SINGLEPOP_TAG>::value,
-                  "poptype must be SINGLEPOP_TAG or MULTILOCPOP_TAG");
+                  "poptype must be SINGLEPOP_TAG");
     if (individuals.empty())return sep_sample_t();
     if(std::find_if(individuals.begin(),individuals.end(),[&p](const unsigned & u) {
     return u >= p.diploids.size();
