@@ -231,13 +231,18 @@ namespace KTfwd
             update_row(h.neutral_row2, g2.mutations, h.neutral_keys);
             update_row(h.selected_row, g1.smutations, h.selected_keys);
             update_row(h.selected_row2, g2.smutations, h.selected_keys);
-            assert(validate_rows(g1.mutations, h.neutral_keys, h.neutral_row));
-            assert(
-                validate_rows(g2.mutations, h.neutral_keys, h.neutral_row2));
-            assert(
-                validate_rows(g1.smutations, h.selected_keys, h.selected_row));
-            assert(validate_rows(g2.smutations, h.selected_keys,
-                                 h.selected_row2));
+            /*
+                            assert(validate_rows(g1.mutations, h.neutral_keys,
+               h.neutral_row));
+                assert(
+                    validate_rows(g2.mutations, h.neutral_keys,
+               h.neutral_row2));
+                assert(
+                    validate_rows(g1.smutations, h.selected_keys,
+               h.selected_row));
+                assert(validate_rows(g2.smutations, h.selected_keys,
+                                     h.selected_row2));
+            */
         }
 
         inline void
@@ -424,7 +429,7 @@ namespace KTfwd
             if (!data.empty())
                 {
                     auto v = gsl_matrix_char_const_view_array(data.data(),
-                                                               nrow, ncol);
+                                                              nrow, ncol);
                     const std::size_t X
                         = (is_row_sums) ? v.matrix.size1 : v.matrix.size2;
                     for (std::size_t rc = 0; rc < X; ++rc)
@@ -432,14 +437,14 @@ namespace KTfwd
                             gsl_vector_char_const_view view
                                 = (is_row_sums)
                                       ? gsl_matrix_char_const_row(&v.matrix,
-                                                                   rc)
-                                      : gsl_matrix_char_const_column(
-                                            &v.matrix, rc);
+                                                                  rc)
+                                      : gsl_matrix_char_const_column(&v.matrix,
+                                                                     rc);
                             unsigned sum = 0;
                             for (std::size_t i = 0; i < view.vector.size; ++i)
                                 {
                                     sum += gsl_vector_char_get(&view.vector,
-                                                                i);
+                                                               i);
                                 }
                             rv.push_back(sum);
                         }
