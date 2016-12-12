@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
     using spoptype = singlepop_popgenmut_fixture::poptype;
     spoptype pop(1000);
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    auto generation = simulate_singlepop2(pop, rng, 0, 10000);
+    auto generation = simulate_singlepop(pop, rng, 0, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
@@ -207,10 +207,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                         }
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
-            // Look at properties of the GENOTYPE matrix
-            m = genotype_matrix(pop, indlist, keys.first, keys.second);
             // Evolve pop 100 more generations
-            generation = simulate_singlepop2(pop, rng, generation, 100);
+            generation = simulate_singlepop(pop, rng, generation, 100);
         }
 }
 
@@ -238,4 +236,106 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
     BOOST_REQUIRE_EQUAL(v.matrix.size1, 0);
     BOOST_REQUIRE_EQUAL(v.matrix.size2, 0);
     gsl_set_error_handler(error_handler);
+}
+
+BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
+{
+    multiloc_popgenmut_fixture mpf;
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(2152146u);
+    auto generation = simulate_mlocuspop(mpf.pop, rng, 0, 10000);
+    std::vector<std::size_t> indlist;
+    // Sample a LOT of individuals
+    for (std::size_t i = 100; i < 750; i += 5)
+        indlist.push_back(i);
+    for (auto t = 0; t < 100; ++t)
+        {
+            auto keys = mutation_keys(mpf.pop, indlist, true, true);
+            std::sort(keys.first.begin(), keys.first.end(),
+                      [&mpf](const std::pair<std::size_t, KTfwd::uint_t> &a,
+                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                          return mpf.pop.mutations[a.first].pos
+                                 < mpf.pop.mutations[b.first].pos;
+                      });
+            std::sort(keys.second.begin(), keys.second.end(),
+                      [&mpf](const std::pair<std::size_t, KTfwd::uint_t> &a,
+                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                          return mpf.pop.mutations[a.first].pos
+                                 < mpf.pop.mutations[b.first].pos;
+                      });
+            // In order to be comparable to a sample taken from the population,
+            // we must remove sites fixed in these inidivudals
+            keys.first.erase(
+                std::remove_if(
+                    keys.first.begin(), keys.first.end(),
+                    [&indlist](
+                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        return a.second == 2 * indlist.size();
+                    }),
+                keys.first.end());
+            keys.second.erase(
+                std::remove_if(
+                    keys.second.begin(), keys.second.end(),
+                    [&indlist](
+                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        return a.second == 2 * indlist.size();
+                    }),
+                keys.second.end());
+            auto m
+                = haplotype_matrix(mpf.pop, indlist, keys.first, keys.second);
+            auto gm
+                = genotype_matrix(mpf.pop, indlist, keys.first, keys.second);
+
+            auto sums = KTfwd::row_sums(m);
+            auto gm_sums = KTfwd::row_sums(gm);
+            // Compare row sums from haplotype and genotype matrix.
+            for (std::size_t hi = 0, gi = 0; hi < sums.first.size();
+                 hi += 2, gi += 1)
+                {
+                    // Neutral sites
+                    BOOST_REQUIRE_EQUAL(sums.first[hi] + sums.first[hi + 1],
+                                        gm_sums.first[gi]);
+                }
+            for (std::size_t hi = 0, gi = 0; hi < sums.second.size();
+                 hi += 2, gi += 1)
+                {
+                    // Selected sites
+                    BOOST_REQUIRE_EQUAL(sums.second[hi] + sums.second[hi + 1],
+                                        gm_sums.second[gi]);
+                }
+
+            // Get a sample
+			auto s = KTfwd::sample_separate(mpf.pop, indlist, true);
+            // multi-locus samples are tricky, so let's simplify
+            KTfwd::sample_t neutral, selected;
+            for (auto &&si : s)
+                {
+                    neutral.insert(neutral.end(), si.first.begin(),
+                                   si.first.end());
+                    selected.insert(selected.end(), si.second.begin(),
+                                    si.second.end());
+                }
+            // Check neutral sites in haplotype matrix to the sample
+            for (std::size_t r = 0; r < sums.first.size(); ++r)
+                {
+                    unsigned sum2 = 0;
+                    for (std::size_t i = 0; i < m.neutral_positions.size();
+                         ++i)
+                        {
+                            sum2 += (neutral[i].second[r] == '1') ? 1 : 0;
+                        }
+                    BOOST_REQUIRE_EQUAL(sums.first[r], sum2);
+                }
+            // Check selected sites
+            for (std::size_t r = 0; r < sums.second.size(); ++r)
+                {
+                    unsigned sum2 = 0;
+                    for (std::size_t i = 0; i < m.selected_positions.size();
+                         ++i)
+                        {
+                            sum2 += (selected[i].second[r] == '1') ? 1 : 0;
+                        }
+                    BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
+                }
+            generation = simulate_mlocuspop(mpf.pop, rng, generation, 100);
+        }
 }
