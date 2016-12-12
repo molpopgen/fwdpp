@@ -276,9 +276,11 @@ namespace KTfwd
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
                                          sugar::MULTILOCPOP_TAG>::value,
                             std::vector<sep_sample_t>>::type
-    sample_separate(const poptype &p,
-                    const std::vector<integer_type> &individuals,
-                    const bool removeFixed)
+    sample_separate(
+        const poptype &p, const std::vector<integer_type> &individuals,
+        const bool removeFixed,
+        const std::vector<std::pair<double, double>> &locus_boundaries
+        = std::vector<std::pair<double, double>>())
     /*!
       Take a non-random sample of nsam chromosomes from a population
 
@@ -296,8 +298,13 @@ namespace KTfwd
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       "poptype must be MULTILOCPOP_TAG or MULTILOCPOP_TAG");
+        if (!removeFixed && locus_boundaries.empty())
+            {
+                throw std::runtime_error(
+                    "locus boundaries required when adding fixations");
+            }
         if (individuals.empty())
-            return sep_sample_t();
+            return std::vector<sep_sample_t>();
         if (std::find_if(
                 individuals.begin(), individuals.end(),
                 [&p](const unsigned &u) { return u >= p.diploids.size(); })
@@ -306,11 +313,17 @@ namespace KTfwd
                 throw std::out_of_range(
                     "KTfwd::sample_separate: individual index out of range");
             }
-        auto rv = fwdpp_internal::ms_sample_separate_single_deme(
+        auto rv = fwdpp_internal::ms_sample_separate_mlocus(
             p.mutations, p.gametes, p.diploids, individuals,
             2 * individuals.size(), removeFixed);
-        finish_sample(rv, p.fixations, 2 * individuals.size(), removeFixed,
-                      sugar::treat_neutral::ALL);
+        if (!removeFixed && locus_boundaries.size() != rv.size())
+            {
+                throw std::runtime_error(
+                    "incorrect number of elements in locus_boundaries");
+            }
+        finish_sample(
+            rv, p.fixations, 2 * static_cast<unsigned>(individuals.size()),
+            removeFixed, sugar::treat_neutral::ALL, locus_boundaries);
         return rv;
     }
 
