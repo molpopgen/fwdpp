@@ -8,6 +8,7 @@ milestones (target version numbers for these features to go live) because that i
 
 * fwdpp/sugar/matrix.hpp was added, providing functions for returning diploid haplotype/genotype data as a 1-d array.
 * Functions in fwdpy/sugar/sampling.hpp are now more flexible with the integral types used to specify specific sets of diploids.
+* Fixed API bugs in KTfwd::sample_separate for the case of multi-locus/region simulations.  These errors resulted in compilation failure, and therefore it was impossible for results to have been affected.
 
 ## 0.5.3 
 
