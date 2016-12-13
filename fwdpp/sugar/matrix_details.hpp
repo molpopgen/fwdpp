@@ -231,18 +231,6 @@ namespace KTfwd
             update_row(h.neutral_row2, g2.mutations, h.neutral_keys);
             update_row(h.selected_row, g1.smutations, h.selected_keys);
             update_row(h.selected_row2, g2.smutations, h.selected_keys);
-            /*
-                            assert(validate_rows(g1.mutations, h.neutral_keys,
-               h.neutral_row));
-                assert(
-                    validate_rows(g2.mutations, h.neutral_keys,
-               h.neutral_row2));
-                assert(
-                    validate_rows(g1.smutations, h.selected_keys,
-               h.selected_row));
-                assert(validate_rows(g2.smutations, h.selected_keys,
-                                     h.selected_row2));
-            */
         }
 
         inline void
@@ -298,6 +286,14 @@ namespace KTfwd
                     auto &dip = pop.diploids[ind];
                     update_row_common(pop.gametes[dip.first],
                                       pop.gametes[dip.second], h);
+                    assert(validate_rows(pop.gametes[dip.first].mutations,
+                                         h.neutral_keys, h.neutral_row));
+                    assert(validate_rows(pop.gametes[dip.second].mutations,
+                                         h.neutral_keys, h.neutral_row2));
+                    assert(validate_rows(pop.gametes[dip.first].smutations,
+                                         h.selected_keys, h.selected_row));
+                    assert(validate_rows(pop.gametes[dip.second].smutations,
+                                         h.selected_keys, h.selected_row2));
                     fill_matrix_with_rows(m, h, mtype);
                 }
             // fill out other data fields
@@ -339,6 +335,14 @@ namespace KTfwd
                     auto &dip = pop.diploids[deme][ind];
                     update_row_common(pop.gametes[dip.first],
                                       pop.gametes[dip.second], h);
+                    assert(validate_rows(pop.gametes[dip.first].mutations,
+                                         h.neutral_keys, h.neutral_row));
+                    assert(validate_rows(pop.gametes[dip.second].mutations,
+                                         h.neutral_keys, h.neutral_row2));
+                    assert(validate_rows(pop.gametes[dip.first].smutations,
+                                         h.selected_keys, h.selected_row));
+                    assert(validate_rows(pop.gametes[dip.second].smutations,
+                                         h.selected_keys, h.selected_row2));
                     fill_matrix_with_rows(m, h, mtype);
                 }
             // fill out other data fields
