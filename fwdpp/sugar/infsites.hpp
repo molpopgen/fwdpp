@@ -45,7 +45,7 @@ namespace KTfwd
         /*!
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param generation Generation when this mutation is happening
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
@@ -98,7 +98,7 @@ namespace KTfwd
 
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param generation Generation when this mutation is happening
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
@@ -158,7 +158,7 @@ namespace KTfwd
 
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param generation Generation when this mutation is happening
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
@@ -203,7 +203,7 @@ namespace KTfwd
         /*!
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param generation Generation when this mutation is happening
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
@@ -245,7 +245,7 @@ namespace KTfwd
         /*!
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
           proportional to it
@@ -296,7 +296,7 @@ namespace KTfwd
 
           \param r A const gsl_rng *
           \param lookup A lookup table of mutation positions, see @ref
-          md_md_policies for
+          md_md_policies for details.
           \param neutral_mutation_rate Either the rate at which neutral
           variants arise (per gamete per generation), or something directly
           proportional to it
