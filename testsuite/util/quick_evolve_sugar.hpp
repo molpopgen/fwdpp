@@ -110,11 +110,14 @@ struct multilocus_additive
     }
 };
 
-template <typename rng_type>
+template <typename poptype, typename rng_type, typename mmodel_vec,
+          typename recmodel_vec, typename fitness_fxn>
 inline unsigned
-simulate_mlocuspop(multiloc_popgenmut_fixture::poptype &pop,
-                   const rng_type &rng, const unsigned generation,
-                   const unsigned simlen)
+simulate_mlocuspop(poptype &pop, const rng_type &rng,
+                   const mmodel_vec &mutmodels, const recmodel_vec &recmodels,
+                   const fitness_fxn &fitness, const std::vector<double> &mu,
+                   const std::vector<double> &rbw, unsigned &generation,
+                   const unsigned simlen = 10)
 /*!
   \brief Quick function for evolving a multilocus deme simulation
   \ingroup testing
@@ -122,57 +125,7 @@ simulate_mlocuspop(multiloc_popgenmut_fixture::poptype &pop,
  */
 {
     unsigned g = generation;
-    std::vector<std::function<std::size_t(
-        std::queue<std::size_t> &,
-        multiloc_popgenmut_fixture::poptype::mcont_t &)>>
-        mutmodels{
-            // Locus 0: positions Uniform [0,1)
-            std::bind(KTfwd::infsites(), std::placeholders::_1,
-                      std::placeholders::_2, rng.get(),
-                      std::ref(pop.mut_lookup), &g, 0.0025, 0.0025,
-                      [&rng]() { return gsl_rng_uniform(rng.get()); },
-                      []() { return -0.01; }, []() { return 1.; }),
-            // Locus 1: positions Uniform [1,2)
-            std::bind(KTfwd::infsites(), std::placeholders::_1,
-                      std::placeholders::_2, rng.get(),
-                      std::ref(pop.mut_lookup), &g, 0.0025, 0.0025,
-                      [&rng]() { return gsl_ran_flat(rng.get(), 1., 2.); },
-                      []() { return -0.01; }, []() { return 1.; }),
-            // Locus 2: positions Uniform [2,3)
-            std::bind(KTfwd::infsites(), std::placeholders::_1,
-                      std::placeholders::_2, rng.get(),
-                      std::ref(pop.mut_lookup), &g, 0.0025, 0.0025,
-                      [&rng]() { return gsl_ran_flat(rng.get(), 2., 3.); },
-                      []() { return -0.01; }, []() { return 1.; }),
-            // Locus 3: positions Uniform [3,4)
-            std::bind(KTfwd::infsites(), std::placeholders::_1,
-                      std::placeholders::_2, rng.get(),
-                      std::ref(pop.mut_lookup), &g, 0.0025, 0.0025,
-                      [&rng]() { return gsl_ran_flat(rng.get(), 3., 4.); },
-                      []() { return -0.01; }, []() { return 1.; })
-        };
-
-    // Within-locus recombination models for 4 loci
-    std::vector<std::function<std::vector<double>(
-        const multiloc_popgenmut_fixture::poptype::gamete_t &,
-        const multiloc_popgenmut_fixture::poptype::gamete_t &,
-        const multiloc_popgenmut_fixture::poptype::mcont_t &)>>
-        recmodels{ std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0., 1.,
-                             std::placeholders::_1, std::placeholders::_2,
-                             std::placeholders::_3),
-                   std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 1., 2.,
-                             std::placeholders::_1, std::placeholders::_2,
-                             std::placeholders::_3),
-                   std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 2., 3.,
-                             std::placeholders::_1, std::placeholders::_2,
-                             std::placeholders::_3),
-                   std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 3., 4.,
-                             std::placeholders::_1, std::placeholders::_2,
-                             std::placeholders::_3) };
-
-    // Equal mutation and rec. rates between loci
-    std::vector<double> mu(4, 0.005), rbw(3, 0.005);
-    for (; g < generation + simlen; ++g)
+    for ( ; generation < g + simlen; ++generation)
         {
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,

@@ -106,30 +106,36 @@ struct multiloc_popgenmut_fixture
     poptype pop;
     unsigned generation;
     rng_t rng;
+    std::vector<double> mu, rbw;
     std::vector<mutmodel> mutmodels;
     std::vector<recmodel> recmodels;
     multiloc_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
         : pop(poptype(1000, 4)),
-		generation(0),
+          generation(0),
           rng(rng_t(seed)),
+          mu(std::vector<double>(4, 0.005)),
+          rbw(std::vector<double>(3, 0.005)),
           mutmodels(
               { // Locus 0: positions Uniform [0,1)
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025, 0.0025,
+                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
+                          0.0025,
                           [this]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
                 // Locus 1: positions Uniform [1,2)
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025, 0.0025,
+                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
+                          0.0025,
                           [this]() { return gsl_ran_flat(rng.get(), 1., 2.); },
                           []() { return -0.01; }, []() { return 1.; }),
                 // Locus 2: positions Uniform [2,3)
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025, 0.0025,
+                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
+                          0.0025,
                           [this]() {
                               return gsl_ran_flat(this->rng.get(), 2., 3.);
                           },
@@ -137,7 +143,8 @@ struct multiloc_popgenmut_fixture
                 // Locus 3: positions Uniform [3,4)
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025, 0.0025,
+                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
+                          0.0025,
                           [this]() { return gsl_ran_flat(rng.get(), 3., 4.); },
                           []() { return -0.01; }, []() { return 1.; }) }),
           recmodels({ std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0.,

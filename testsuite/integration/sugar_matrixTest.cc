@@ -241,8 +241,9 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
 BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
 {
     multiloc_popgenmut_fixture mpf;
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(2152146u);
-    auto generation = simulate_mlocuspop(mpf.pop, rng, 0, 10000);
+    simulate_mlocuspop(mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(),
+                       mpf.mu, mpf.rbw, mpf.generation,10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
@@ -304,7 +305,7 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                 }
 
             // Get a sample
-			auto s = KTfwd::sample_separate(mpf.pop, indlist, true);
+            auto s = KTfwd::sample_separate(mpf.pop, indlist, true);
             // multi-locus samples are tricky, so let's simplify
             KTfwd::sample_t neutral, selected;
             for (auto &&si : s)
@@ -336,6 +337,9 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                         }
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
-            generation = simulate_mlocuspop(mpf.pop, rng, generation, 100);
+            simulate_mlocuspop(
+                mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
+                multiloc_popgenmut_fixture::multilocus_additive(), mpf.mu,
+                mpf.rbw, mpf.generation,100);
         }
 }

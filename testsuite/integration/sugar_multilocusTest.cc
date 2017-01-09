@@ -21,36 +21,12 @@
 
 using poptype = multiloc_popgenmut_fixture::poptype;
 
-void
-simulate(multiloc_popgenmut_fixture &f)
-{
-
-    // Equal mutation and rec. rates per locus
-    std::vector<double> mu(4, 0.005), rbw(3, 0.005);
-    BOOST_REQUIRE_EQUAL(mu.size(), 4);
-    for (; f.generation < 10; ++f.generation)
-        {
-            double wbar = KTfwd::sample_diploid(
-                f.rng.get(), f.pop.gametes, f.pop.diploids, f.pop.mutations,
-                f.pop.mcounts, 1000, &mu[0], f.mutmodels, f.recmodels, &rbw[0],
-                [](const gsl_rng *__r, const double __d) {
-                    return gsl_ran_binomial(__r, __d, 1);
-                },
-                std::bind(multiloc_popgenmut_fixture::multilocus_additive(),
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                f.pop.neutral, f.pop.selected);
-            assert(check_sum(f.pop.gametes, 8000));
-            KTfwd::update_mutations(f.pop.mutations, f.pop.fixations,
-                                    f.pop.fixation_times, f.pop.mut_lookup,
-                                    f.pop.mcounts, f.generation, 2000);
-        }
-}
-
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test1)
 {
     multiloc_popgenmut_fixture f;
-    simulate(f);
+    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
+                       f.rbw, f.generation);
     poptype pop2(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
@@ -58,7 +34,9 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test1)
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
 {
     multiloc_popgenmut_fixture f;
-    simulate(f);
+    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
+                       f.rbw, f.generation);
     poptype pop2(0, 0);
     KTfwd::serialize s;
     std::stringstream buffer;
@@ -70,7 +48,9 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
 {
     multiloc_popgenmut_fixture f;
-    simulate(f);
+    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
+                       f.rbw, f.generation);
     poptype pop2(0, 0);
     gzFile gzf = gzopen("sugar_multilocus_out.gz", "wb");
     KTfwd::gzserialize()(gzf, f.pop, multiloc_popgenmut_fixture::mwriter());
@@ -87,7 +67,9 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test3)
 {
     multiloc_popgenmut_fixture f;
-    simulate(f);
+    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
+                       f.rbw, f.generation);
     poptype pop2(std::move(f.pop));
     BOOST_CHECK_EQUAL(f.pop == pop2, false);
 }
@@ -95,7 +77,9 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test3)
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test4)
 {
     multiloc_popgenmut_fixture f;
-    simulate(f);
+    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
+                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
+                       f.rbw, f.generation);
     poptype pop2 = std::move(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, false);
 }
