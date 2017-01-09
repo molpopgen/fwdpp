@@ -22,13 +22,13 @@
 using poptype = multiloc_popgenmut_fixture::poptype;
 
 void
-simulate(multiloc_popgenmut_fixture &f, unsigned &generation)
+simulate(multiloc_popgenmut_fixture &f)
 {
 
     // Equal mutation and rec. rates per locus
     std::vector<double> mu(4, 0.005), rbw(3, 0.005);
     BOOST_REQUIRE_EQUAL(mu.size(), 4);
-    for (; generation < 10; ++generation)
+    for (; f.generation < 10; ++f.generation)
         {
             double wbar = KTfwd::sample_diploid(
                 f.rng.get(), f.pop.gametes, f.pop.diploids, f.pop.mutations,
@@ -43,24 +43,22 @@ simulate(multiloc_popgenmut_fixture &f, unsigned &generation)
             assert(check_sum(f.pop.gametes, 8000));
             KTfwd::update_mutations(f.pop.mutations, f.pop.fixations,
                                     f.pop.fixation_times, f.pop.mut_lookup,
-                                    f.pop.mcounts, generation, 2000);
+                                    f.pop.mcounts, f.generation, 2000);
         }
 }
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test1)
 {
-    unsigned generation = 0;
-    multiloc_popgenmut_fixture f(&generation);
-    simulate(f, generation);
+    multiloc_popgenmut_fixture f;
+    simulate(f);
     poptype pop2(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
 {
-    unsigned generation = 0;
-    multiloc_popgenmut_fixture f(&generation);
-    simulate(f, generation);
+    multiloc_popgenmut_fixture f;
+    simulate(f);
     poptype pop2(0, 0);
     KTfwd::serialize s;
     std::stringstream buffer;
@@ -71,9 +69,8 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
 {
-    unsigned generation = 0;
-    multiloc_popgenmut_fixture f(&generation);
-    simulate(f, generation);
+    multiloc_popgenmut_fixture f;
+    simulate(f);
     poptype pop2(0, 0);
     gzFile gzf = gzopen("sugar_multilocus_out.gz", "wb");
     KTfwd::gzserialize()(gzf, f.pop, multiloc_popgenmut_fixture::mwriter());
@@ -89,18 +86,16 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test3)
 {
-    unsigned generation = 0;
-    multiloc_popgenmut_fixture f(&generation);
-    simulate(f, generation);
+    multiloc_popgenmut_fixture f;
+    simulate(f);
     poptype pop2(std::move(f.pop));
     BOOST_CHECK_EQUAL(f.pop == pop2, false);
 }
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test4)
 {
-    unsigned generation = 0;
-    multiloc_popgenmut_fixture f(&generation);
-    simulate(f, generation);
+    multiloc_popgenmut_fixture f;
+    simulate(f);
     poptype pop2 = std::move(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, false);
 }
