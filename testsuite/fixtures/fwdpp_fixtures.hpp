@@ -13,6 +13,13 @@
 #include <fwdpp/forward_types.hpp>
 #include <gsl/gsl_rng.h>
 
+/*
+ * These fixtures are for the low-level fwdpp
+ * API.  Thus, we need a bunch of typedefs
+ * to maintain our sanity. "Real-world" use
+ * of fwdpp make use of "sugar" types (fwdpp/sugar/*.hpp),
+ * which handles a lot of this stuff for you.
+ */
 using mtype = KTfwd::mutation;
 using mcont_t = std::vector<mtype>;
 using gcont_t = std::vector<KTfwd::gamete>;
