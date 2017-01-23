@@ -8,6 +8,10 @@ AC_DEFINE(FWDPP_MAJOR_VERSION,FWDPP_MAJOR,[Define major version number.])
 AC_DEFINE(FWDPP_MINOR_VERSION,FWDPP_MINOR,[Define major version number.])
 AC_DEFINE(FWDPP_REVISION_VERSION,FWDPP_REVISION,[Define major version number.])
 AC_DEFINE(FWDPP_VERSION_STRING,"FWDPP_MAJOR.FWDPP_MINOR.FWDPP_REVISION",[Define the version string.])
+AC_SUBST(FWDPP_MAJOR_VERSION,[FWDPP_MAJOR])
+AC_SUBST(FWDPP_MINOR_VERSION,[FWDPP_MINOR])
+AC_SUBST(FWDPP_REVISION_VERSION,[FWDPP_REVISION])
+AC_SUBST(FWDPP_VERSION_STRING,[FWDPP_MAJOR"."FWDPP_MINOR"."FWDPP_REVISION])
 AC_CONFIG_SRCDIR([fwdpp/diploid.hh])
 AC_CONFIG_SRCDIR([examples/diploid_ind.cc])
 AC_CONFIG_SRCDIR([experimental_examples/sex_limited_ind.cc])
@@ -26,7 +30,7 @@ AM_MAINTAINER_MODE([disable])
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
-AC_CONFIG_FILES([Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile
+AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile
 				 fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile
 				 fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile
 				 fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile

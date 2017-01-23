@@ -694,6 +694,10 @@ am__isrc
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
+FWDPP_VERSION_STRING
+FWDPP_REVISION_VERSION
+FWDPP_MINOR_VERSION
+FWDPP_MAJOR_VERSION
 target_alias
 host_alias
 build_alias
@@ -2171,6 +2175,14 @@ $as_echo "#define FWDPP_REVISION_VERSION 4" >>confdefs.h
 
 
 $as_echo "#define FWDPP_VERSION_STRING \"0.5.4\"" >>confdefs.h
+
+FWDPP_MAJOR_VERSION=0
+
+FWDPP_MINOR_VERSION=5
+
+FWDPP_REVISION_VERSION=4
+
+FWDPP_VERSION_STRING=0"."5"."4
 
 
 
@@ -4469,7 +4481,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
+ac_config_files="$ac_config_files Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
 # Check whether --enable-debug was given.
@@ -6008,6 +6020,7 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "fwdpp/version.hpp") CONFIG_FILES="$CONFIG_FILES fwdpp/version.hpp" ;;
     "fwdpp/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/Makefile" ;;
     "fwdpp/internal/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/internal/Makefile" ;;
     "fwdpp/tags/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/tags/Makefile" ;;

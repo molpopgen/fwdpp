@@ -1,0 +1,14 @@
+/*!
+ * \file version.hpp
+ * \brief fwdpp version information
+ */
+#ifndef FWDPP_VERSION_HPP_
+#define FWDPP_VERSION_HPP_
+
+#define FWDPP_VERSION_MAJOR @FWDPP_MAJOR_VERSION@
+#define FWDPP_VERSION_MINOR @FWDPP_MINOR_VERSION@
+#define FWDPP_VERSION_REVISION @FWDPP_REVISION_VERSION@
+#define FWDPP_VERSION_STRING "@FWDPP_VERSION_STRING@"
+
+#endif
+

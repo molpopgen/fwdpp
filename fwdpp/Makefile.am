@@ -20,7 +20,8 @@ pkginclude_HEADERS=debug.hpp \
 	type_traits.hpp \
 	util.hpp \
 	sugar.hpp \
-	demography.hpp
+	demography.hpp \
+	version.hpp
 
 
 
