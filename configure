@@ -2161,6 +2161,18 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
+$as_echo "#define FWDPP_MAJOR_VERSION 0" >>confdefs.h
+
+
+$as_echo "#define FWDPP_MINOR_VERSION 5" >>confdefs.h
+
+
+$as_echo "#define FWDPP_REVISION_VERSION 4" >>confdefs.h
+
+
+$as_echo "#define FWDPP_VERSION_STRING \"0.5.4\"" >>confdefs.h
+
+
 
 
 
