@@ -118,7 +118,7 @@ namespace KTfwd
      * 1. Return values are unsorted with respect to anything meaningful.  If
      * you wish to sort on position,
      * etc., do so yourself.
-     * 2. In general, and manipulation of the keys is possible.  For example,
+     * 2. In general, any manipulation of the keys is possible.  For example,
      * removing mutations that are fixed
      * in the sample, or whose frequency is or is not within some desired
      * range, is easily doable via the
