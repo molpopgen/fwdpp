@@ -11,36 +11,45 @@
 
 namespace KTfwd
 {
-  /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
-  struct equal_eps
-  {
-    /*! \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
-      Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon()
-    */
-    using result_type = bool;
-    template<typename T>
-    inline bool operator()(const T & lhs, const T & rhs) const
+    /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
+    /// std::numeric_limits<T>::epsilon()
+    struct equal_eps
     {
-      return( std::max(lhs,rhs)-std::min(lhs,rhs) <= std::numeric_limits<T>::epsilon() );
-    }
-  };
+        /*! \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
+          std::numeric_limits<T>::epsilon()
+          Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
+          std::numeric_limits<T>::epsilon()
+        */
+        using result_type = bool;
+        template <typename T>
+        inline bool
+        operator()(const T &lhs, const T &rhs) const
+        {
+            return (std::max(lhs, rhs) - std::min(lhs, rhs)
+                    <= std::numeric_limits<T>::epsilon());
+        }
+    };
 
-  /* \brief Policy telling library not to remove any mutations from gametes after sampling
-     \note This is an empty struct that functions as a dispatch tag for library internals
-   */
-  struct remove_nothing
-  {
-  };
-
-  /*! \brief Policy telling library to remove neutral mutations from gametes after sampling
-   */
-  struct remove_neutral
-  {
-    template<typename mtype>
-    inline bool operator()(const mtype & m) const
+    /* \brief Policy telling library not to remove any mutations from gametes
+       after sampling
+       \note This is an empty struct that functions as a dispatch tag for
+       library internals
+     */
+    struct remove_nothing
     {
-      return m.neutral;
-    }
-  };
+    };
+
+    /*! \brief Policy telling library to remove neutral mutations from gametes
+     * after sampling
+     */
+    struct remove_neutral
+    {
+        template <typename mtype>
+        inline bool
+        operator()(const mtype &m) const
+        {
+            return m.neutral;
+        }
+    };
 }
 #endif /* _FWD_FUNCTIONAL_HPP_ */

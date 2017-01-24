@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
     multiloc_popgenmut_fixture mpf;
     simulate_mlocuspop(mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
                        multiloc_popgenmut_fixture::multilocus_additive(),
-                       mpf.mu, mpf.rbw, mpf.generation,10000);
+                       mpf.mu, mpf.rbw, mpf.generation, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
@@ -340,6 +340,6 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
             simulate_mlocuspop(
                 mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
                 multiloc_popgenmut_fixture::multilocus_additive(), mpf.mu,
-                mpf.rbw, mpf.generation,100);
+                mpf.rbw, mpf.generation, 100);
         }
 }

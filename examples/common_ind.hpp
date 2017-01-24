@@ -27,7 +27,7 @@ using metapop_t = KTfwd::metapop<mtype>;
 using multiloc_t = KTfwd::multiloc<mtype>;
 #endif
 
-//RNG type
+// RNG type
 #include <fwdpp/sugar/GSLrng_t.hpp>
 
 using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;

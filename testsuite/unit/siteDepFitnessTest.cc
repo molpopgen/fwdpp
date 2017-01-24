@@ -12,7 +12,8 @@
 
 using mut = KTfwd::mutation;
 
-BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,standard_empty_single_deme_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,
+                         standard_empty_single_deme_fixture)
 /*
   This test creates a situation
   where gamete1 has a selected mutation and gamete2 does not.
@@ -22,136 +23,124 @@ BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,standard_empty_single_deme_
   However, it does not.  Even with the bug, the remaining bit of the function
   gets the calculation right.  Yay!
 */
-BOOST_AUTO_TEST_CASE( simple_multiplicative1 )
+BOOST_AUTO_TEST_CASE(simple_multiplicative1)
 {
-  KTfwd::gamete g1(1),g2(1);
-  
+    KTfwd::gamete g1(1), g2(1);
 
-  //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  mutations.emplace_back(0.1,0.1,0.5);
-  g1.smutations.emplace_back(0);
-  BOOST_CHECK_EQUAL(g1.smutations.size(),1);
-  
-  gcont_t g{g1,g2};
-  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= std::pow(1. + __mut.s,2.);
-					     },
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= (1. + __mut.s);
-					     },
-					     1.);
-  
-  BOOST_CHECK_EQUAL(w,1.1);
+    // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
+    // the dominance...)
+    mutations.emplace_back(0.1, 0.1, 0.5);
+    g1.smutations.emplace_back(0);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 1);
+
+    gcont_t g{ g1, g2 };
+    double w = KTfwd::site_dependent_fitness()(
+        g[0], g[1], mutations,
+        [&](double &fitness, const mut &__mut) {
+            fitness *= std::pow(1. + __mut.s, 2.);
+        },
+        [&](double &fitness, const mut &__mut) { fitness *= (1. + __mut.s); },
+        1.);
+
+    BOOST_CHECK_EQUAL(w, 1.1);
 }
 
 /*
   g2 has it, g1 does not
 */
-BOOST_AUTO_TEST_CASE( simple_multiplicative2 )
+BOOST_AUTO_TEST_CASE(simple_multiplicative2)
 {
-  KTfwd::gamete g1(1),g2(1);
-  
+    KTfwd::gamete g1(1), g2(1);
 
-  //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  mutations.emplace_back( 0.1,0.1,0.5 );
-  g2.smutations.emplace_back(0);
-  BOOST_CHECK_EQUAL(g1.smutations.size(),0);
-  BOOST_CHECK_EQUAL(g2.smutations.size(),1);
+    // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
+    // the dominance...)
+    mutations.emplace_back(0.1, 0.1, 0.5);
+    g2.smutations.emplace_back(0);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 0);
+    BOOST_CHECK_EQUAL(g2.smutations.size(), 1);
 
-  gcont_t g{g1,g2};
+    gcont_t g{ g1, g2 };
 
-  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= std::pow(1. + __mut.s,2.);
-					     },
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= (1. + __mut.s);
-					     },
-					     1.);
-  BOOST_CHECK_EQUAL(w,1.1);
+    double w = KTfwd::site_dependent_fitness()(
+        g[0], g[1], mutations,
+        [&](double &fitness, const mut &__mut) {
+            fitness *= std::pow(1. + __mut.s, 2.);
+        },
+        [&](double &fitness, const mut &__mut) { fitness *= (1. + __mut.s); },
+        1.);
+    BOOST_CHECK_EQUAL(w, 1.1);
 }
 
 /*
   Both have it
 */
-BOOST_AUTO_TEST_CASE( simple_multiplicative3 )
+BOOST_AUTO_TEST_CASE(simple_multiplicative3)
 {
-  KTfwd::gamete g1(1),g2(1);
-  
+    KTfwd::gamete g1(1), g2(1);
 
-  //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  mutations.emplace_back(0.1,0.1,0.5 );
-  g1.smutations.emplace_back(0);
-  g2.smutations.emplace_back(0);
+    // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
+    // the dominance...)
+    mutations.emplace_back(0.1, 0.1, 0.5);
+    g1.smutations.emplace_back(0);
+    g2.smutations.emplace_back(0);
 
-  BOOST_CHECK_EQUAL(g1.smutations.size(),1);
-  BOOST_CHECK_EQUAL(g2.smutations.size(),1);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 1);
+    BOOST_CHECK_EQUAL(g2.smutations.size(), 1);
 
-  gcont_t g{g1,g2};
+    gcont_t g{ g1, g2 };
 
-  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= std::pow(1. + __mut.s,2.);
-					     },
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= (1. + __mut.s);
-					     },
-					     1.);
-  BOOST_CHECK_EQUAL(w,1.1*1.1);
+    double w = KTfwd::site_dependent_fitness()(
+        g[0], g[1], mutations,
+        [&](double &fitness, const mut &__mut) {
+            fitness *= std::pow(1. + __mut.s, 2.);
+        },
+        [&](double &fitness, const mut &__mut) { fitness *= (1. + __mut.s); },
+        1.);
+    BOOST_CHECK_EQUAL(w, 1.1 * 1.1);
 }
 
 /*
   Now, g1 has 2 mutations
 */
-BOOST_AUTO_TEST_CASE( simple_multiplicative4 )
+BOOST_AUTO_TEST_CASE(simple_multiplicative4)
 {
-  KTfwd::gamete g1(1),g2(1);
-  
+    KTfwd::gamete g1(1), g2(1);
 
-  //add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use the dominance...)
-  mutations.emplace_back(0.1,0.1,0.5 );
-  mutations.emplace_back(0.2,0.1,0.5);
-  g1.smutations.emplace_back(0);
-  g1.smutations.emplace_back(1);
-  BOOST_CHECK_EQUAL(g1.smutations.size(),2);
+    // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
+    // the dominance...)
+    mutations.emplace_back(0.1, 0.1, 0.5);
+    mutations.emplace_back(0.2, 0.1, 0.5);
+    g1.smutations.emplace_back(0);
+    g1.smutations.emplace_back(1);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 2);
 
-  gcont_t g{g1,g2};
+    gcont_t g{ g1, g2 };
 
-  double w = KTfwd::site_dependent_fitness()(g[0],g[1],mutations,
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= std::pow(1. + __mut.s,2.);
-					     },
-					     [&](double & fitness,const mut & __mut)
-					     {
-					       fitness *= (1. + __mut.s);
-					     },
-					     1.);
-  BOOST_CHECK_EQUAL(w,1.1*1.1);
+    double w = KTfwd::site_dependent_fitness()(
+        g[0], g[1], mutations,
+        [&](double &fitness, const mut &__mut) {
+            fitness *= std::pow(1. + __mut.s, 2.);
+        },
+        [&](double &fitness, const mut &__mut) { fitness *= (1. + __mut.s); },
+        1.);
+    BOOST_CHECK_EQUAL(w, 1.1 * 1.1);
 }
 
-BOOST_AUTO_TEST_CASE( simple_additive_1 )
+BOOST_AUTO_TEST_CASE(simple_additive_1)
 {
-  KTfwd::gamete g1(1),g2(1);
- 
-  //add mutation at position 0.1, s=0.1,n=1,dominance=1.0
-  mutations.emplace_back(0.1,0.1,1 );
-  mutations.emplace_back(0.2,0.1,1);
-  g1.smutations.emplace_back(0);
-  g1.smutations.emplace_back(1);
-  BOOST_CHECK_EQUAL(g1.smutations.size(),2);
+    KTfwd::gamete g1(1), g2(1);
 
-  gcont_t g{g1,g2};
+    // add mutation at position 0.1, s=0.1,n=1,dominance=1.0
+    mutations.emplace_back(0.1, 0.1, 1);
+    mutations.emplace_back(0.2, 0.1, 1);
+    g1.smutations.emplace_back(0);
+    g1.smutations.emplace_back(1);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 2);
 
-  double w = KTfwd::additive_diploid()(g[0],g[1],mutations);
-  BOOST_CHECK_EQUAL(w,1.2);  
+    gcont_t g{ g1, g2 };
+
+    double w = KTfwd::additive_diploid()(g[0], g[1], mutations);
+    BOOST_CHECK_EQUAL(w, 1.2);
 }
 
 /*
@@ -163,157 +152,138 @@ BOOST_AUTO_TEST_CASE( simple_additive_1 )
   We make use of types defined by population objects from the "sugar" layer.
 */
 
-BOOST_AUTO_TEST_CASE( reassign_test_1 )
+BOOST_AUTO_TEST_CASE(reassign_test_1)
 {
-  //This is the expected type of a fitness policy for non-custom diploids.
-  //We use fwdpp's type_traits header to pull this out.
-  using fitness_model_t = KTfwd::traits::fitness_fxn_type<dipvector_t,gcont_t,mcont_t>::type;
+    // This is the expected type of a fitness policy for non-custom diploids.
+    // We use fwdpp's type_traits header to pull this out.
+    using fitness_model_t
+        = KTfwd::traits::fitness_fxn_type<dipvector_t, gcont_t, mcont_t>::type;
 
-  //Do bare minimum setup to be able to make calls to functions
-  gametes.emplace_back(200);
-  mutations.emplace_back(1.0,0.1); //position 1.0, s = 0.1
-  gametes[0].smutations.push_back(0);
-  
-  {
-    //Test reassignment of the SAME fitness model type
-    //Multiplicative model first
-    
-    //assign a fitness model with default scaling = 1.
-    fitness_model_t dipfit = std::bind(KTfwd::multiplicative_diploid(),
-				       std::placeholders::_1,
-				       std::placeholders::_2,
-				       std::placeholders::_3);
+    // Do bare minimum setup to be able to make calls to functions
+    gametes.emplace_back(200);
+    mutations.emplace_back(1.0, 0.1); // position 1.0, s = 0.1
+    gametes[0].smutations.push_back(0);
 
-    auto a = dipfit(gametes[0],gametes[0],mutations);
-    //Now, reassign it with scaling = 2.
-    dipfit = std::bind(KTfwd::multiplicative_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(gametes[0],gametes[0],mutations);
+    {
+        // Test reassignment of the SAME fitness model type
+        // Multiplicative model first
 
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+        // assign a fitness model with default scaling = 1.
+        fitness_model_t dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
 
-  {
-    //Test reassignment of the SAME fitness model type
-    //Now the additive model
-    
-    //assign a fitness model with default scaling = 1.
-    fitness_model_t dipfit = std::bind(KTfwd::additive_diploid(),
-				       std::placeholders::_1,
-				       std::placeholders::_2,
-				       std::placeholders::_3);
-    auto a = dipfit(gametes[0],gametes[0],mutations);
-    //Now, reassign it with scaling = 2.
-    dipfit = std::bind(KTfwd::additive_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(gametes[0],gametes[0],mutations);
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+        auto a = dipfit(gametes[0], gametes[0], mutations);
+        // Now, reassign it with scaling = 2.
+        dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(gametes[0], gametes[0], mutations);
 
-  {
-    //Convert a multiplicative model to an additive model
-    //The application of this is a program using the library
-    //that wants to decide which model to use based on parameters
-    //passed in by a user.
-    
-    fitness_model_t dipfit = std::bind(KTfwd::multiplicative_diploid(),
-				       std::placeholders::_1,
-				       std::placeholders::_2,
-				       std::placeholders::_3);
-    auto a = dipfit(gametes[0],gametes[0],mutations);
-    //Now, reassign it to addtive model with scaling = 2.
-    dipfit = std::bind(KTfwd::additive_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(gametes[0],gametes[0],mutations);
-    //With only 1 mutation in play, additive & multiplicative will give same result:
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
+
+    {
+        // Test reassignment of the SAME fitness model type
+        // Now the additive model
+
+        // assign a fitness model with default scaling = 1.
+        fitness_model_t dipfit
+            = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
+        auto a = dipfit(gametes[0], gametes[0], mutations);
+        // Now, reassign it with scaling = 2.
+        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                           std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(gametes[0], gametes[0], mutations);
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
+
+    {
+        // Convert a multiplicative model to an additive model
+        // The application of this is a program using the library
+        // that wants to decide which model to use based on parameters
+        // passed in by a user.
+
+        fitness_model_t dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
+        auto a = dipfit(gametes[0], gametes[0], mutations);
+        // Now, reassign it to addtive model with scaling = 2.
+        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                           std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(gametes[0], gametes[0], mutations);
+        // With only 1 mutation in play, additive & multiplicative will give
+        // same result:
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
 }
 
-
-BOOST_AUTO_TEST_CASE( reassign_test_2 )
+BOOST_AUTO_TEST_CASE(reassign_test_2)
 {
-  //Expected signature for fitness policies involving custom diploids
-  //We use fwdpp's type_traits header to pull this out.
-  using fitness_model_t = KTfwd::traits::fitness_fxn_type<std::vector<custom_diploid_testing_t>,gcont_t,mcont_t>::type;
+    // Expected signature for fitness policies involving custom diploids
+    // We use fwdpp's type_traits header to pull this out.
+    using fitness_model_t = KTfwd::traits::
+        fitness_fxn_type<std::vector<custom_diploid_testing_t>, gcont_t,
+                         mcont_t>::type;
 
-  //Bare minimum setup for testing
-  std::vector<custom_diploid_testing_t> cdiploids(1,custom_diploid_testing_t(0,0));
-  gametes.emplace_back(200);
-  mutations.emplace_back(1.0,0.1); //position 1.0, s = 0.1
-  gametes[0].smutations.push_back(0);
-  
-  {
-    //Test reassignment of the SAME fitness model type
-    //Multiplicative model first
+    // Bare minimum setup for testing
+    std::vector<custom_diploid_testing_t> cdiploids(
+        1, custom_diploid_testing_t(0, 0));
+    gametes.emplace_back(200);
+    mutations.emplace_back(1.0, 0.1); // position 1.0, s = 0.1
+    gametes[0].smutations.push_back(0);
 
-    //assign a fitness model with default scaling = 1.
-    fitness_model_t dipfit = std::bind(KTfwd::multiplicative_diploid(),
-					  std::placeholders::_1,
-					  std::placeholders::_2,
-					  std::placeholders::_3);
-    auto a = dipfit(cdiploids[0],gametes,mutations);
-    
-    //Now, reassign it with scaling = 2.
-    dipfit = std::bind(KTfwd::multiplicative_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(cdiploids[0],gametes,mutations);
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+    {
+        // Test reassignment of the SAME fitness model type
+        // Multiplicative model first
 
-  {
-    //Test reassignment of the SAME fitness model type
-    //Now the additive model
-    
-    //assign a fitness model with default scaling = 1.
-    fitness_model_t dipfit = std::bind(KTfwd::additive_diploid(),
-					  std::placeholders::_1,
-					  std::placeholders::_2,
-					  std::placeholders::_3);
-    auto a = dipfit(cdiploids[0],gametes,mutations);
-    //Now, reassign it with scaling = 2.
-    dipfit = std::bind(KTfwd::additive_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(cdiploids[0],gametes,mutations);
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+        // assign a fitness model with default scaling = 1.
+        fitness_model_t dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
+        auto a = dipfit(cdiploids[0], gametes, mutations);
 
-  {
-    //Convert a multiplicative model to an additive model
-    //The application of this is a program using the library
-    //that wants to decide which model to use based on parameters
-    //passed in by a user.
-    
-    fitness_model_t dipfit = std::bind(KTfwd::multiplicative_diploid(),
-					  std::placeholders::_1,
-					  std::placeholders::_2,
-					  std::placeholders::_3);
-    auto a = dipfit(cdiploids[0],gametes,mutations);
-    //Now, reassign it to addtive model with scaling = 2.
-    dipfit = std::bind(KTfwd::additive_diploid(),
-		       std::placeholders::_1,
-		       std::placeholders::_2,
-		       std::placeholders::_3,
-		       2.);
-    auto b = dipfit(cdiploids[0],gametes,mutations);
-    BOOST_CHECK_CLOSE(a-1.0,0.5*(b-1.0),1e-6);
-  }
+        // Now, reassign it with scaling = 2.
+        dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(cdiploids[0], gametes, mutations);
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
+
+    {
+        // Test reassignment of the SAME fitness model type
+        // Now the additive model
+
+        // assign a fitness model with default scaling = 1.
+        fitness_model_t dipfit
+            = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
+        auto a = dipfit(cdiploids[0], gametes, mutations);
+        // Now, reassign it with scaling = 2.
+        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                           std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(cdiploids[0], gametes, mutations);
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
+
+    {
+        // Convert a multiplicative model to an additive model
+        // The application of this is a program using the library
+        // that wants to decide which model to use based on parameters
+        // passed in by a user.
+
+        fitness_model_t dipfit
+            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
+                        std::placeholders::_2, std::placeholders::_3);
+        auto a = dipfit(cdiploids[0], gametes, mutations);
+        // Now, reassign it to addtive model with scaling = 2.
+        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
+                           std::placeholders::_2, std::placeholders::_3, 2.);
+        auto b = dipfit(cdiploids[0], gametes, mutations);
+        BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
+    }
 }
-
 
 BOOST_AUTO_TEST_SUITE_END()

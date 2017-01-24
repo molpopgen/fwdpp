@@ -4,17 +4,18 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-inline std::size_t migpop(const std::size_t & source_pop, const gsl_rng * r, const double & mig_prob)
+inline std::size_t
+migpop(const std::size_t &source_pop, const gsl_rng *r, const double &mig_prob)
 /*!
   \brief Quick migration model for two-deme simulations
   \ingroup unit
 */
 {
-  if( gsl_rng_uniform(r) < mig_prob )
-    {
-      return ! source_pop;
-    }
-  return source_pop;
+    if (gsl_rng_uniform(r) < mig_prob)
+        {
+            return !source_pop;
+        }
+    return source_pop;
 }
 
 #endif

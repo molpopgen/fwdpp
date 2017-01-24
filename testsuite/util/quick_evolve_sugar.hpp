@@ -125,7 +125,7 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
  */
 {
     unsigned g = generation;
-    for ( ; generation < g + simlen; ++generation)
+    for (; generation < g + simlen; ++generation)
         {
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,

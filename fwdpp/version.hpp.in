@@ -11,4 +11,3 @@
 #define FWDPP_VERSION_STRING "@FWDPP_VERSION_STRING@"
 
 #endif
-

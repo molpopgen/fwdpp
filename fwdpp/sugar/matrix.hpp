@@ -35,13 +35,13 @@ namespace KTfwd
      * The data layout is row-major (aka "C-style") ordering,
      * facilitating compatibility with GSL matrix types,
      * NumPy 2D arrays, etc.  Note that GSL matrices may be
-	 * constructed using gsl_matrix_view_array or
-	 * gsl_matrix_const_view_array for cases where a matrix of
-	 * only neutral or only selected mutations is needed.
-	 *
-	 * We use the 8-bit integer type to save space.  In practice,
-	 * one may convert (via copy) to other types for operations like
-	 * regression.
+         * constructed using gsl_matrix_view_array or
+         * gsl_matrix_const_view_array for cases where a matrix of
+         * only neutral or only selected mutations is needed.
+         *
+         * We use the 8-bit integer type to save space.  In practice,
+         * one may convert (via copy) to other types for operations like
+         * regression.
      *
      * \note This type is not constructed directly, but rather returned
      * by other functions.
@@ -64,20 +64,28 @@ namespace KTfwd
         //! Number of rows in the matrix
         std::size_t nrow;
         data_matrix(const std::size_t nrow_ = 0)
-			/*!
-			 * Constructor
-			 * 
-			 * \param nrow_ Number of rows in the matrix
-			 *
-			 * The default value of nrow_ = 0 is so that instances of this
-			 * type can be easily stack-allocated.  Intended use cases are Cython,
-			 * Rcpp, or other systems for "wrapping" C++.  This type will
-			 * rely on compiler-generated copy/move constructors, and therefore such
-			 * systems should rely on copy elision to make sure that data_matrix::nrow
-			 * is set correctly.
-			 */
-            : neutral{}, selected{}, neutral_positions{}, selected_positions{},
-              neutral_popfreq{}, selected_popfreq{}, nrow{ nrow_ }
+            /*!
+             * Constructor
+             *
+             * \param nrow_ Number of rows in the matrix
+             *
+             * The default value of nrow_ = 0 is so that instances of this
+             * type can be easily stack-allocated.  Intended use cases are
+             * Cython,
+             * Rcpp, or other systems for "wrapping" C++.  This type will
+             * rely on compiler-generated copy/move constructors, and therefore
+             * such
+             * systems should rely on copy elision to make sure that
+             * data_matrix::nrow
+             * is set correctly.
+             */
+            : neutral{},
+              selected{},
+              neutral_positions{},
+              selected_positions{},
+              neutral_popfreq{},
+              selected_popfreq{},
+              nrow{ nrow_ }
         {
         }
     };
@@ -200,12 +208,12 @@ namespace KTfwd
 
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     row_sums(const data_matrix &m)
-	/*!
-	 * Calculate the row sums of a KTfwd::data_matrix
-	 *
-	 * \return A pair of vectors of unsigned integers representing row sums
-	 * for neutral and selected sites in the matrix, respectively.
-	 */
+    /*!
+     * Calculate the row sums of a KTfwd::data_matrix
+     *
+     * \return A pair of vectors of unsigned integers representing row sums
+     * for neutral and selected sites in the matrix, respectively.
+     */
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
@@ -213,15 +221,16 @@ namespace KTfwd
             data_matrix_details::row_col_sums_details(
                 m.selected, m.nrow, m.selected_positions.size(), true));
     }
-    
-	inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
+
+    inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     col_sums(const data_matrix &m)
     /*!
-	 * Calculate the column sums of a KTfwd::data_matrix
-	 *
-	 * \return A pair of vectors of unsigned integers representing column sums
-	 * for neutral and selected sites in the matrix, respectively.
-	 */
+         * Calculate the column sums of a KTfwd::data_matrix
+         *
+         * \return A pair of vectors of unsigned integers representing column
+     * sums
+         * for neutral and selected sites in the matrix, respectively.
+         */
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(

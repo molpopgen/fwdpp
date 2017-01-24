@@ -8,44 +8,44 @@
 #include <fwdpp/forward_types.hpp>
 #include <boost/test/unit_test.hpp>
 
-//trivial ways to play with the KTfwd::mutation type
+// trivial ways to play with the KTfwd::mutation type
 using mut = KTfwd::mutation;
 using gtype = KTfwd::gamete;
 
-BOOST_AUTO_TEST_CASE( make_mutation_1 )
+BOOST_AUTO_TEST_CASE(make_mutation_1)
 {
-  //Mutation at position 0.1, selection coefficient of 0
-  mut m(0.1,0.);
+    // Mutation at position 0.1, selection coefficient of 0
+    mut m(0.1, 0.);
 
-  BOOST_REQUIRE_EQUAL(m.pos,0.1);
-  BOOST_REQUIRE_EQUAL(m.neutral,true);
+    BOOST_REQUIRE_EQUAL(m.pos, 0.1);
+    BOOST_REQUIRE_EQUAL(m.neutral, true);
 }
 
-BOOST_AUTO_TEST_CASE( make_mutation_2 )
+BOOST_AUTO_TEST_CASE(make_mutation_2)
 {
-  //Mutation at position 0.1, selection coefficient of 0,
-  //dominance of 0.25
-  mut m(0.1,0,0.25);
+    // Mutation at position 0.1, selection coefficient of 0,
+    // dominance of 0.25
+    mut m(0.1, 0, 0.25);
 
-  BOOST_REQUIRE_EQUAL(m.pos,0.1);
-  BOOST_REQUIRE_EQUAL(m.neutral,true);
-  BOOST_REQUIRE_EQUAL(m.h,0.25);
+    BOOST_REQUIRE_EQUAL(m.pos, 0.1);
+    BOOST_REQUIRE_EQUAL(m.neutral, true);
+    BOOST_REQUIRE_EQUAL(m.h, 0.25);
 }
 
-BOOST_AUTO_TEST_CASE( copy_construct_1 )
+BOOST_AUTO_TEST_CASE(copy_construct_1)
 {
-  mut m(0.1,0.,1);
-  mut m2(m);
+    mut m(0.1, 0., 1);
+    mut m2(m);
 
-  BOOST_REQUIRE(m == m2);
+    BOOST_REQUIRE(m == m2);
 }
 
-BOOST_AUTO_TEST_CASE( assign_1 )
+BOOST_AUTO_TEST_CASE(assign_1)
 {
-  mut m(0.1,0.,1);
-  mut m2 = m;
+    mut m(0.1, 0., 1);
+    mut m2 = m;
 
-  BOOST_REQUIRE(m == m2);
+    BOOST_REQUIRE(m == m2);
 }
 
 /*
@@ -66,10 +66,13 @@ BOOST_AUTO_TEST_CASE( assign_1 )
 //   auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
 //   //This is the mutation model.  Return a mutation at the next position
 //   //Positions are deterministic for the sake of testing.
-//   auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) & rbin,std::vector<mut> & __mvector )
+//   auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) &
+//   rbin,std::vector<mut> & __mvector )
 //     {
 //       //mutations are all neutral
-//       return KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mvector,next_mut_pos[i++], 0. );
+//       return
+//       KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mvector,next_mut_pos[i++],
+//       0. );
 //     };
 
 //   KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
@@ -77,7 +80,7 @@ BOOST_AUTO_TEST_CASE( assign_1 )
 // 						 next_mut_pos.size(),
 // 						 mvector,
 // 						 g);
-  
+
 //   BOOST_CHECK_EQUAL( mvector.size(), next_mut_pos.size() );
 //   //neutral mutations should contain 5 things
 //   BOOST_CHECK_EQUAL( g.mutations.size(), next_mut_pos.size() );
@@ -85,7 +88,7 @@ BOOST_AUTO_TEST_CASE( assign_1 )
 //   BOOST_CHECK( g.smutations.empty() );
 //   /*
 //     This is the important test:
-    
+
 //     The library assumes that the iterators to mutations
 //     stored by gametes are sorted w.r.to position.
 
@@ -109,4 +112,3 @@ BOOST_AUTO_TEST_CASE( assign_1 )
 // 		   );
 //     }
 // }
-

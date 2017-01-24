@@ -11,4 +11,3 @@
 #define FWDPP_VERSION_STRING "0.5.4"
 
 #endif
-

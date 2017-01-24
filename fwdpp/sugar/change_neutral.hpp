@@ -102,7 +102,7 @@ namespace KTfwd
                                     p.mutations, pos, mindex, g.smutations,
                                     g.mutations);
                             }
-							assert(gamete_data_sane(g, p.mutations, p.mcounts));
+                        assert(gamete_data_sane(g, p.mutations, p.mcounts));
                     }
             }
     }

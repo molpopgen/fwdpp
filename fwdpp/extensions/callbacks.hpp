@@ -20,175 +20,189 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace KTfwd {
+namespace KTfwd
+{
 
-  /*!
-    Useful types for implementing fwdpp-based simulations in
-    enviroments like R, Python, etc.
-
-    Unlike the rest of fwdpp, functions in this namespace
-    are allowed to throw exceptions, and it is up to the programmer
-    to catch them and handle them appropriately.  Both Rcpp and
-    Cython/boost.python
-
-    Examples of using this namespace are:
-
-    1. http://github.com/molpopgen/fwdpy
-    2. http://github.com/molpopgen/foRward
-   */
-  namespace extensions {
-
-    struct shmodel
     /*!
-      Callback wrapper.  Used to model
-      distributions on effect sizes/selection coefficients (s)
-      and dominance (h)
-    */
-    {
-      std::function<double(const gsl_rng*)> s,h;
-      //! Default constructor useful in extension situations that don't understand std::function
-      shmodel() = default;
-      //! More efficient constructor for c++11-aware situations
-      shmodel( std::function<double(const gsl_rng*)> sfxn,
-	       std::function<double(const gsl_rng*)> hfxn ) : s(std::move(sfxn)),h(std::move(hfxn))
-      {
-      }
-    };
+      Useful types for implementing fwdpp-based simulations in
+      enviroments like R, Python, etc.
 
-    struct constant
-    /*!
-      Callback for fixed s and/or h
+      Unlike the rest of fwdpp, functions in this namespace
+      are allowed to throw exceptions, and it is up to the programmer
+      to catch them and handle them appropriately.  Both Rcpp and
+      Cython/boost.python
+
+      Examples of using this namespace are:
+
+      1. http://github.com/molpopgen/fwdpy
+      2. http://github.com/molpopgen/foRward
      */
+    namespace extensions
     {
-      const double x;
-      constant(const double & __x) : x(__x)
-      {
-	if(!std::isfinite(x)) {
-	  throw std::runtime_error("value must be finite");
-	}
-      }
-      inline double operator()(const gsl_rng *) const
-      {
-	return x;
-      }
-    };
 
-    struct exponential
-    /*!
-      Exponential s or h
-     */
-    {
-      const double mean;
-      exponential(const double & m) : mean(m)
-      {
-	if(!std::isfinite(mean))
-	  {
-	    throw std::runtime_error("mean must be finite");
-	  }
-	if(mean==0.)
-	  {
-	    throw std::runtime_error("mean must not equal 0");
-	  }
-      }
-      inline double operator()(const gsl_rng * r) const
-      {
-	return gsl_ran_exponential(r,mean);
-      }
-    };
+        struct shmodel
+        /*!
+          Callback wrapper.  Used to model
+          distributions on effect sizes/selection coefficients (s)
+          and dominance (h)
+        */
+        {
+            std::function<double(const gsl_rng *)> s, h;
+            //! Default constructor useful in extension situations that don't
+            //! understand std::function
+            shmodel() = default;
+            //! More efficient constructor for c++11-aware situations
+            shmodel(std::function<double(const gsl_rng *)> sfxn,
+                    std::function<double(const gsl_rng *)> hfxn)
+                : s(std::move(sfxn)), h(std::move(hfxn))
+            {
+            }
+        };
 
-    struct uniform
-    /*!
-      Uniform s or h
-     */
-    {
-      const double mn,mx;
-      uniform(const double & __mn,
-	      const double & __mx) : mn(__mn),mx(__mx)
-      {
-	if(!std::isfinite(mn) || !std::isfinite(mx))
-	  {
-	    throw std::runtime_error("min and max of range must both be finite");
-	  }
-	if(mn>mx)
-	  {
-	    throw std::runtime_error("min must be <= max");
-	  }
-      }
-      inline double operator()(const gsl_rng * r) const
-      {
-	return gsl_ran_flat(r,mn,mx);
-      }
-    };
+        struct constant
+        /*!
+          Callback for fixed s and/or h
+         */
+        {
+            const double x;
+            constant(const double &__x) : x(__x)
+            {
+                if (!std::isfinite(x))
+                    {
+                        throw std::runtime_error("value must be finite");
+                    }
+            }
+            inline double
+            operator()(const gsl_rng *) const
+            {
+                return x;
+            }
+        };
 
-    struct beta
-    /*!
-      Beta-distributed s or h
-    */
-    {
-      const double a,b,factor;
-      beta(const double & __a,
-	   const double & __b,
-	   const double & __f = 1) : a(__a),b(__b),factor(__f)
-      {
-	if(!std::isfinite(a) || a <= 0.)
-	  {
-	    throw std::runtime_error("a must be > 0.");
-	  }
-	if(!std::isfinite(b) || b <= 0.)
-	  {
-	    throw std::runtime_error("b must be > 0.");
-	  }
-	if(!std::isfinite(factor) || !(factor>0.))
-	  {
-	    throw std::runtime_error("scaling factor must be finite and > 0");
-	  }
-      }
-      inline double operator()(const gsl_rng * r) const
-      {
-	return factor*gsl_ran_beta(r,a,b);
-      }
-    };
+        struct exponential
+        /*!
+          Exponential s or h
+         */
+        {
+            const double mean;
+            exponential(const double &m) : mean(m)
+            {
+                if (!std::isfinite(mean))
+                    {
+                        throw std::runtime_error("mean must be finite");
+                    }
+                if (mean == 0.)
+                    {
+                        throw std::runtime_error("mean must not equal 0");
+                    }
+            }
+            inline double
+            operator()(const gsl_rng *r) const
+            {
+                return gsl_ran_exponential(r, mean);
+            }
+        };
 
-    struct gaussian
-    /*!
-      Gaussian s or h
-    */
-    {
-      const double sd;
-      gaussian(const double & __sd) : sd(__sd)
-      {
-	if(!(sd > 0.)) throw std::runtime_error("sd must be > 0");
-	if(!std::isfinite(sd)) throw std::runtime_error("sd must be finite");
-      }
-      inline double operator()(const gsl_rng * r) const
-      {
-	return gsl_ran_gaussian_ziggurat(r,sd);
-      }
-    };
+        struct uniform
+        /*!
+          Uniform s or h
+         */
+        {
+            const double mn, mx;
+            uniform(const double &__mn, const double &__mx)
+                : mn(__mn), mx(__mx)
+            {
+                if (!std::isfinite(mn) || !std::isfinite(mx))
+                    {
+                        throw std::runtime_error(
+                            "min and max of range must both be finite");
+                    }
+                if (mn > mx)
+                    {
+                        throw std::runtime_error("min must be <= max");
+                    }
+            }
+            inline double
+            operator()(const gsl_rng *r) const
+            {
+                return gsl_ran_flat(r, mn, mx);
+            }
+        };
 
-    struct gamma
-    /*!
-      Gamma distributed s or h
-    */
-    {
-      const double mean,shape;
-      gamma(const double & __m,
-	    const double & __s ) : mean(__m),shape(__s)
-      {
-	if(!std::isfinite(mean) || !std::isfinite(shape))
-	  {
-	    throw std::runtime_error("mean and shape must both be finite");
-	  }
-	if(!(shape > 0))
-	  {
-	    throw std::runtime_error("shape must be > 0");
-	  }
-      }
-      inline double operator()(const gsl_rng * r) const
-      {
-	return gsl_ran_gamma(r,shape,mean/shape);
-      }
-    };
-  }
+        struct beta
+        /*!
+          Beta-distributed s or h
+        */
+        {
+            const double a, b, factor;
+            beta(const double &__a, const double &__b, const double &__f = 1)
+                : a(__a), b(__b), factor(__f)
+            {
+                if (!std::isfinite(a) || a <= 0.)
+                    {
+                        throw std::runtime_error("a must be > 0.");
+                    }
+                if (!std::isfinite(b) || b <= 0.)
+                    {
+                        throw std::runtime_error("b must be > 0.");
+                    }
+                if (!std::isfinite(factor) || !(factor > 0.))
+                    {
+                        throw std::runtime_error(
+                            "scaling factor must be finite and > 0");
+                    }
+            }
+            inline double
+            operator()(const gsl_rng *r) const
+            {
+                return factor * gsl_ran_beta(r, a, b);
+            }
+        };
+
+        struct gaussian
+        /*!
+          Gaussian s or h
+        */
+        {
+            const double sd;
+            gaussian(const double &__sd) : sd(__sd)
+            {
+                if (!(sd > 0.))
+                    throw std::runtime_error("sd must be > 0");
+                if (!std::isfinite(sd))
+                    throw std::runtime_error("sd must be finite");
+            }
+            inline double
+            operator()(const gsl_rng *r) const
+            {
+                return gsl_ran_gaussian_ziggurat(r, sd);
+            }
+        };
+
+        struct gamma
+        /*!
+          Gamma distributed s or h
+        */
+        {
+            const double mean, shape;
+            gamma(const double &__m, const double &__s) : mean(__m), shape(__s)
+            {
+                if (!std::isfinite(mean) || !std::isfinite(shape))
+                    {
+                        throw std::runtime_error(
+                            "mean and shape must both be finite");
+                    }
+                if (!(shape > 0))
+                    {
+                        throw std::runtime_error("shape must be > 0");
+                    }
+            }
+            inline double
+            operator()(const gsl_rng *r) const
+            {
+                return gsl_ran_gamma(r, shape, mean / shape);
+            }
+        };
+    }
 }
 #endif
