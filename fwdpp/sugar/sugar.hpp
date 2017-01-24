@@ -1,3 +1,7 @@
+/*! 
+ * \file sugar.hpp
+ * \brief Lazy header for fwdpp/sugar features
+ */
 #ifndef __FWDPP_SUGAR_SUGAR_HPP__
 #define __FWDPP_SUGAR_SUGAR_HPP__
 
