@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_set>
-#include <fwdpp/sugar/multiloc/multiloc.hpp>
+#include <fwdpp/sugar/poptypes/multiloc.hpp>
 #include <fwdpp/fwd_functional.hpp>
 
 namespace KTfwd

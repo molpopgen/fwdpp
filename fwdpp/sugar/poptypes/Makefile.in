@@ -190,6 +190,10 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FWDPP_MAJOR_VERSION = @FWDPP_MAJOR_VERSION@
+FWDPP_MINOR_VERSION = @FWDPP_MINOR_VERSION@
+FWDPP_REVISION_VERSION = @FWDPP_REVISION_VERSION@
+FWDPP_VERSION_STRING = @FWDPP_VERSION_STRING@
 GREP = @GREP@
 HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
@@ -261,7 +265,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = tags.hpp
+pkginclude_HEADERS = tags.hpp popbase.hpp singlepop.hpp metapop.hpp multiloc.hpp
 all: all-am
 
 .SUFFIXES:

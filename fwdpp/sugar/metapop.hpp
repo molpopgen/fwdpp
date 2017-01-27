@@ -1,7 +1,7 @@
 #ifndef __FWDPP_SUGAR_METAPOP_HPP__
 #define __FWDPP_SUGAR_METAPOP_HPP__
 
-#include <fwdpp/sugar/metapop/metapop.hpp>
+#include <fwdpp/sugar/poptypes/metapop.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <vector>
 #include <unordered_set>

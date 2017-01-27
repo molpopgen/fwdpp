@@ -4481,7 +4481,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/singlepop/Makefile fwdpp/sugar/metapop/Makefile fwdpp/sugar/multiloc/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
+ac_config_files="$ac_config_files Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
 # Check whether --enable-debug was given.
@@ -6025,9 +6025,6 @@ do
     "fwdpp/internal/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/internal/Makefile" ;;
     "fwdpp/tags/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/tags/Makefile" ;;
     "fwdpp/sugar/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/Makefile" ;;
-    "fwdpp/sugar/singlepop/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/singlepop/Makefile" ;;
-    "fwdpp/sugar/metapop/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/metapop/Makefile" ;;
-    "fwdpp/sugar/multiloc/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/multiloc/Makefile" ;;
     "fwdpp/sugar/poptypes/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/poptypes/Makefile" ;;
     "fwdpp/sugar/gsl/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/gsl/Makefile" ;;
     "fwdpp/sugar/sampling/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/sugar/sampling/Makefile" ;;

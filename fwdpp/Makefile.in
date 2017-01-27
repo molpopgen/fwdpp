@@ -95,7 +95,7 @@ DIST_COMMON = $(srcdir)/Makefile.am $(pkginclude_HEADERS) \
 	$(am__DIST_COMMON)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = version.hpp
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -181,7 +181,7 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DIST_SUBDIRS = $(SUBDIRS)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/version.hpp.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 am__relativize = \
   dir0=`pwd`; \
@@ -232,6 +232,10 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FWDPP_MAJOR_VERSION = @FWDPP_MAJOR_VERSION@
+FWDPP_MINOR_VERSION = @FWDPP_MINOR_VERSION@
+FWDPP_REVISION_VERSION = @FWDPP_REVISION_VERSION@
+FWDPP_VERSION_STRING = @FWDPP_VERSION_STRING@
 GREP = @GREP@
 HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
@@ -323,7 +327,8 @@ pkginclude_HEADERS = debug.hpp \
 	type_traits.hpp \
 	util.hpp \
 	sugar.hpp \
-	demography.hpp
+	demography.hpp \
+	version.hpp
 
 all: all-recursive
 
@@ -357,6 +362,8 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+version.hpp: $(top_builddir)/config.status $(srcdir)/version.hpp.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 install-pkgincludeHEADERS: $(pkginclude_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(pkginclude_HEADERS)'; test -n "$(pkgincludedir)" || list=; \

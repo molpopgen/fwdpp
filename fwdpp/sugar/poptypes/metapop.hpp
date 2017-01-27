@@ -3,9 +3,9 @@
 
 #include <type_traits>
 #include <numeric>
-#include <fwdpp/sugar/singlepop/singlepop.hpp>
+#include <fwdpp/sugar/poptypes/singlepop.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-#include <fwdpp/sugar/popbase.hpp>
+#include <fwdpp/sugar/poptypes/popbase.hpp>
 
 namespace KTfwd
 {

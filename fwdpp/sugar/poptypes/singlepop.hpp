@@ -7,7 +7,7 @@
 */
 
 #include <fwdpp/sugar/poptypes/tags.hpp>
-#include <fwdpp/sugar/popbase.hpp>
+#include <fwdpp/sugar/poptypes/popbase.hpp>
 namespace KTfwd
 {
     namespace sugar

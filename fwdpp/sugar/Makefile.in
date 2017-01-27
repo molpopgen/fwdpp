@@ -232,6 +232,10 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
+FWDPP_MAJOR_VERSION = @FWDPP_MAJOR_VERSION@
+FWDPP_MINOR_VERSION = @FWDPP_MINOR_VERSION@
+FWDPP_REVISION_VERSION = @FWDPP_REVISION_VERSION@
+FWDPP_VERSION_STRING = @FWDPP_VERSION_STRING@
 GREP = @GREP@
 HAVE_CXX11 = @HAVE_CXX11@
 INSTALL = @INSTALL@
@@ -303,8 +307,8 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-SUBDIRS = singlepop metapop multiloc gsl poptypes sampling
-pkginclude_HEADERS = sugar.hpp serialization.hpp popbase.hpp singlepop.hpp metapop.hpp multiloc.hpp GSLrng_t.hpp popgenmut.hpp infsites.hpp sampling.hpp generalmut.hpp demography.hpp add_mutation.hpp change_neutral.hpp matrix.hpp matrix_details.hpp
+SUBDIRS = gsl poptypes sampling
+pkginclude_HEADERS = sugar.hpp serialization.hpp singlepop.hpp metapop.hpp multiloc.hpp GSLrng_t.hpp popgenmut.hpp infsites.hpp sampling.hpp generalmut.hpp demography.hpp add_mutation.hpp change_neutral.hpp matrix.hpp matrix_details.hpp
 all: all-recursive
 
 .SUFFIXES:

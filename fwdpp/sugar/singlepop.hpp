@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_set>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/sugar/singlepop/singlepop.hpp>
+#include <fwdpp/sugar/poptypes/singlepop.hpp>
 
 namespace KTfwd
 {

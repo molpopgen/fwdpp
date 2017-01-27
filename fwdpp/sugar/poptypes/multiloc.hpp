@@ -5,7 +5,7 @@
 #include <vector>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-#include <fwdpp/sugar/popbase.hpp>
+#include <fwdpp/sugar/poptypes/popbase.hpp>
 
 namespace KTfwd
 {
