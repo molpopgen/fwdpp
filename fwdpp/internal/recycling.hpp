@@ -82,7 +82,7 @@ namespace KTfwd
                 {
                     auto rv = mutation_recycling_bin.front();
                     mutation_recycling_bin.pop();
-                    mutations[rv] = typename mcont_t::value_type(args...);
+                    mutations[rv] = typename mcont_t::value_type(std::forward<Args>(args)...);
                     return rv;
                 }
             mutations.emplace_back(std::forward<Args>(args)...);
