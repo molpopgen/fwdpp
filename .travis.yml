@@ -21,8 +21,8 @@ install:
     - conda update -q conda
     # Useful for debugging any issues with conda
     - conda info -a
-    - conda install gcc zlib boost=1.60.0
-    - conda install -c asmeurer gsl=1.16
+    - conda install gcc zlib boost
+    - conda install -c asmeurer gsl
     - conda install -c bioconda libsequence
 script:
     - export LD_LIBRARY_PATH=$HOME/miniconda/lib
