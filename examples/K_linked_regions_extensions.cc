@@ -21,15 +21,17 @@ using mtype = KTfwd::popgenmut;
 // This is our fitness model
 struct additive_over_loci
 {
-    template <typename gamete_t, typename mcont_t>
+    template <typename diploid_t,typename gcont_t, typename mcont_t>
     inline double
-    operator()(const gamete_t &g1, const gamete_t &g2,
+    operator()(const diploid_t & dip, const gcont_t &gametes,
                const mcont_t &mutations, const unsigned K) const noexcept
     /*
       The fitness model is additive over loci, multiplicative within loci
      */
     {
         double rv = 0.0;
+		auto& g1 = gametes[dip.first];
+		auto& g2 = gametes[dip.second];
         for (unsigned i = 0; i < K; ++i)
             {
                 /*

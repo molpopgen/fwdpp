@@ -45,12 +45,7 @@ namespace KTfwd
                     {
                         gametes[diploids[i].first].n
                             = gametes[diploids[i].second].n = 0;
-                        fitnesses[i]
-                            = fwdpp_internal::diploid_fitness_dispatch(
-                                ff, diploids[i], gametes, mutations,
-                                typename KTfwd::traits::
-                                    is_custom_diploid_t<diploid_geno_t>::
-                                        type());
+                        fitnesses[i] = ff(diploids[i], gametes, mutations);
                     }
 
                 wbar /= double(diploids.size());

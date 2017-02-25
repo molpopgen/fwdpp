@@ -150,8 +150,8 @@ simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
 {
     // Evolve for 10 generations
     std::vector<std::function<double(
-        const typename metapop_object::gamete_t &,
-        const typename metapop_object::gamete_t &,
+        const typename metapop_object::diploid_t &,
+        const typename metapop_object::gcont_t &,
         const typename metapop_object::mcont_t &)>>
         fitness_funcs(2,
                       std::bind(KTfwd::multiplicative_diploid(),

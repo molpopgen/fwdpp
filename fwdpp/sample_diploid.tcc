@@ -172,10 +172,7 @@ namespace KTfwd
 
                   See the tutorial on custom diploids for more details.
                  */
-                fitnesses[i] = fwdpp_internal::diploid_fitness_dispatch(
-                    ff, diploids[i], gametes, mutations,
-                    typename traits::is_custom_diploid_t<diploid_geno_t>::
-                        type());
+                fitnesses[i] = ff(diploids[i], gametes, mutations);
                 wbar += fitnesses[i];
             }
         wbar /= double(diploids.size());
@@ -471,12 +468,7 @@ namespace KTfwd
                 std::vector<double>::size_type i = 0;
                 for (const auto &dip : dipvec) //...and each diploid
                     {
-                        fitnesses[i]
-                            = fwdpp_internal::diploid_fitness_dispatch(
-                                ffs[popi], dip, gametes, mutations,
-                                typename traits::
-                                    is_custom_diploid_t<diploid_geno_t>::
-                                        type());
+                        fitnesses[i] = ffs[popi](dip, gametes, mutations);
                         wbars[popi] += fitnesses[i];
                         gametes[dip.first].n = gametes[dip.second].n = 0;
                         ++i;

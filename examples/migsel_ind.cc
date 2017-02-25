@@ -53,13 +53,13 @@ struct multiplicative_diploid_minus
 {
     typedef double result_type;
     inline double
-    operator()(const poptype::gamete_t &g1, const poptype::gamete_t &g2,
+    operator()(const poptype::diploid_t &dip, const poptype::gcont_t &gametes,
                const poptype::mcont_t &mutations,
                const double scaling = 1.) const
     {
         using mut_t = poptype::mcont_t::value_type;
         return site_dependent_fitness()(
-            g1, g2, mutations,
+            gametes[dip.first], gametes[dip.second], mutations,
             [&](double &fitness, const mut_t &mut) {
                 fitness *= (1. - scaling * mut.s);
             },
@@ -109,8 +109,8 @@ main(int argc, char **argv)
         2 * size_t(std::ceil(std::log(2 * N) * (theta_neut + theta_del)
                              + 0.667 * (theta_neut + theta_del))));
     // create a vector of fitness functions for each population
-    std::vector<std::function<double(const poptype::gamete_t &,
-                                     const poptype::gamete_t &,
+    std::vector<std::function<double(const poptype::diploid_t &,
+                                     const poptype::gcont_t &,
                                      const poptype::mcont_t &)>>
         vbf;
     vbf.push_back(std::bind(multiplicative_diploid(), std::placeholders::_1,
