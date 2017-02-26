@@ -1,5 +1,7 @@
 #ifndef FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #define FWDPP_INTERNAL_TYPE_TRAITS_HPP
+#include <type_traits>
+#include <utility>
 
 namespace KTfwd
 {
@@ -10,11 +12,50 @@ namespace KTfwd
             // Based on
             // http://stackoverflow.com/questions/11813940/possible-to-use-type-traits-sfinae-to-find-if-a-class-defines-a-member-typec
 
-            template <class T> struct void_t
+            template <typename...> struct void_t
             {
                 typedef void type;
             };
 
+            template <typename T, typename = void>
+            struct is_diploid_like : std::false_type
+            {
+            };
+
+            template <typename T>
+            struct is_diploid_like<T, typename traits::internal::void_t<
+                                          typename T::first_type,
+                                          typename T::second_type>::type>
+                : std::integral_constant<bool,
+                                         std::is_integral<
+                                             typename T::first_type>::value
+                                             && std::is_same<
+                                                    typename T::first_type,
+                                                    typename T::second_type>::
+                                                    value>
+            {
+            };
+            template <typename T, typename = void>
+            struct is_custom_diploid_t : std::false_type
+            {
+            };
+
+            template <typename T>
+            struct is_custom_diploid_t<T, typename void_t<
+                                              typename T::first_type,
+                                              typename T::second_type>::type>
+                : std::
+                      integral_constant<bool,
+                                        is_diploid_like<T>::value
+                                            && !std::
+                                                   is_same<std::pair<
+                                                               typename T::
+                                                                   first_type,
+                                                               typename T::
+                                                                   second_type>,
+                                                           T>::value>
+            {
+            };
 /*
    This macro is used to generate
    types able to determine if a class type
