@@ -19,10 +19,10 @@ namespace KTfwd
           \note Added in fwdpp 0.5.0
          */
         {
-            static_assert(typename KTfwd::traits::is_gamete_t<
+            static_assert(typename KTfwd::traits::is_gamete<
                               typename gcont::value_type>::type(),
                           "gcont::value_type must be a gamete type");
-            static_assert(typename KTfwd::traits::is_mutation_t<
+            static_assert(typename KTfwd::traits::is_mutation<
                               typename mcont::value_type>::type(),
                           "mcont::value_type must be a mutation type");
 

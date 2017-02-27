@@ -28,8 +28,7 @@ namespace KTfwd
                      std::vector<uint_t> &mcounts, const unsigned twoN)
     {
         static_assert(
-            typename traits::is_mutation_t<
-                typename mcont_t::value_type>::type(),
+            typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from KTfwd::mutation_base");
         assert(mcounts.size() == mutations.size());
         for (std::size_t i = 0; i < mcounts.size(); ++i)
@@ -55,8 +54,7 @@ namespace KTfwd
 
     {
         static_assert(
-            typename traits::is_mutation_t<
-                typename mcont_t::value_type>::type(),
+            typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from KTfwd::mutation_base");
         for (std::size_t i = 0; i < mcounts.size(); ++i)
             {
@@ -86,8 +84,7 @@ namespace KTfwd
                      const unsigned &twoN)
     {
         static_assert(
-            typename traits::is_mutation_t<
-                typename mcont_t::value_type>::type(),
+            typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from KTfwd::mutation_base");
         assert(mcounts.size() == mutations.size());
         for (unsigned i = 0; i < mcounts.size(); ++i)
@@ -124,8 +121,7 @@ namespace KTfwd
                        const unsigned &generation, const unsigned &twoN)
     {
         static_assert(
-            typename traits::is_mutation_t<
-                typename mcont_t::value_type>::type(),
+            typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from KTfwd::mutation_base");
         assert(mcounts.size() == mutations.size());
         for (unsigned i = 0; i < mcounts.size(); ++i)

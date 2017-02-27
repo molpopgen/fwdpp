@@ -15,7 +15,7 @@ namespace KTfwd
     {
         //! Evaluates to std::true_type if T inherits from KTfwd::mutation_base
         template <typename T>
-        struct is_mutation_t
+        struct is_mutation
             : std::integral_constant<bool,
                                      std::is_base_of<KTfwd::mutation_base,
                                                      T>::value>
@@ -24,7 +24,7 @@ namespace KTfwd
 
         //! Determine if T is/is derived from KTfwd::gamete_base
         template <typename T>
-        struct is_gamete_t
+        struct is_gamete
             : std::integral_constant<bool, traits::internal::
                                                has_gamete_tag<T>::value>
         {
@@ -62,7 +62,7 @@ namespace KTfwd
 
         //! Check that a mutation model type is valid.
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
-        struct valid_mutation_model
+        struct is_mutation_model
             : public std::
                   integral_constant<bool,
                                     std::is_same<
@@ -82,7 +82,7 @@ namespace KTfwd
         };
 
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
-        struct valid_rec_model
+        struct is_rec_model
             : std::
                   integral_constant<bool,
                                     std::is_same<

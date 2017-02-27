@@ -51,8 +51,8 @@ namespace KTfwd
                   const std::size_t g2, const mcont_t &mutations)
     {
         static_assert(
-            traits::valid_rec_model<recpol_t, typename gcont_t::value_type,
-                                    mcont_t>::value,
+            traits::is_rec_model<recpol_t, typename gcont_t::value_type,
+                                 mcont_t>::value,
             "type recpol_t is not a valid recombination policy");
         if (g1 == g2)
             {

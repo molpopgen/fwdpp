@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_3)
         &dm, std::placeholders::_1, std::placeholders::_2, rng.get(), 0.001,
         0., 0u, std::ref(pop.mut_lookup));
     static_assert(
-        traits::valid_mutation_model<decltype(mmodel), poptype::mcont_t,
-                                     poptype::gcont_t>::value,
+        traits::is_mutation_model<decltype(mmodel), poptype::mcont_t,
+                                  poptype::gcont_t>::value,
         "error: type mutation_model is not a dispatchable mutation model "
         "type!");
     auto x = mmodel(rb, pop.mutations);
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE( discrete_mut_model_test_4 )
 std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
                           &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   static_assert(
-traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
+traits::is_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
                  "error: type mutation_model is not a dispatchable mutation
 model type!" );
   auto wbar = KTfwd::sample_diploid(rng.get(),
@@ -195,7 +195,7 @@ each of the 'selected' regions
 std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
                           &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
   static_assert(
-traits::valid_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
+traits::is_mutation_model<decltype(mmodel),poptype::mcont_t,poptype::gcont_t>::value,
                  "error: type mutation_model is not a dispatchable mutation
 model type!" );
   auto wbar = KTfwd::sample_diploid(rng.get(),
@@ -268,8 +268,8 @@ BOOST_AUTO_TEST_CASE(discrete_rec_model_test_3)
         &extensions::discrete_rec_model::operator() < poptype::gamete_t,
         decltype(pop.mutations) >, &drm, rng.get(), 0.001,
         std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-    static_assert(traits::valid_rec_model<decltype(bound), poptype::gamete_t,
-                                          poptype::mcont_t>::value,
+    static_assert(traits::is_rec_model<decltype(bound), poptype::gamete_t,
+                                       poptype::mcont_t>::value,
                   "extensions::discrete_rec_model::operator() is not a valid "
                   "recombination policy");
     auto x = bound(pop.gametes[0], pop.gametes[0], pop.mutations);
@@ -307,7 +307,7 @@ std::bind(&extensions::discrete_rec_model::operator()<poptype::gamete_t,decltype
                          &drm,
                          rng.get(),0.001,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3);
   static_assert(
-traits::valid_rec_model<decltype(bound),poptype::gamete_t,poptype::mcont_t>::value,
+traits::is_rec_model<decltype(bound),poptype::gamete_t,poptype::mcont_t>::value,
                  "extensions::discrete_rec_model::operator() is not a valid
 recombination policy" );
   auto x = bound(pop.gametes[0],pop.gametes[0],pop.mutations);

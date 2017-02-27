@@ -18,7 +18,7 @@ namespace KTfwd
     check_sum(const gcont_t &gametes, const unsigned twoN)
     {
         static_assert(
-            typename traits::is_gamete_t<typename gcont_t::value_type>::type(),
+            typename traits::is_gamete<typename gcont_t::value_type>::type(),
             "gcont_t::value_type must be a valid gamete type");
         return (std::accumulate(gametes.cbegin(), gametes.cend(), 0u,
                                 [](unsigned &__u,

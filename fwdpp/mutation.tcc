@@ -20,7 +20,7 @@ namespace KTfwd
                           const mutation_model &mmodel,
                           const gamete_insertion_policy &gpolicy)
     {
-        static_assert(traits::valid_mutation_model<mutation_model, mcont_t,
+        static_assert(traits::is_mutation_model<mutation_model, mcont_t,
                                                    gcont_t>::value,
                       "error: type mutation_model is not a dispatchable "
                       "mutation model type!");

@@ -47,21 +47,20 @@ BOOST_AUTO_TEST_CASE(is_diploid_test)
 
 BOOST_AUTO_TEST_CASE(is_gamete_test)
 {
-    auto v = KTfwd::traits::is_gamete_t<KTfwd::gamete>::value;
+    auto v = KTfwd::traits::is_gamete<KTfwd::gamete>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_gamete_t<gcont_t::value_type>::value;
+    v = KTfwd::traits::is_gamete<gcont_t::value_type>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_gamete_t<mtype>::value;
+    v = KTfwd::traits::is_gamete<mtype>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
 
 BOOST_AUTO_TEST_CASE(is_custom_diploid_test)
 {
-    auto v = KTfwd::traits::
-        is_custom_diploid<trivial_custom_diploid_invalid>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-    v = KTfwd::traits::is_custom_diploid<trivial_custom_diploid_valid>::
+    auto v = KTfwd::traits::is_custom_diploid<trivial_custom_diploid_invalid>::
         value;
+    BOOST_REQUIRE_EQUAL(v, false);
+    v = KTfwd::traits::is_custom_diploid<trivial_custom_diploid_valid>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
@@ -80,8 +79,8 @@ BOOST_AUTO_TEST_CASE(is_mmodel_test)
                                  KTfwd::traits::mmodel_t<mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
-    v = KTfwd::traits::valid_mutation_model<decltype(mmodel), mcont_t,
-                                            gcont_t>::value;
+    v = KTfwd::traits::is_mutation_model<decltype(mmodel), mcont_t,
+                                         gcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
@@ -108,7 +107,7 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
                                  KTfwd::traits::recmodel_t<gcont_t,
                                                            mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::valid_rec_model<decltype(rm), gcont_t, mcont_t>::value;
+    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
