@@ -1,6 +1,7 @@
 #ifndef FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #define FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #include <type_traits>
+#include <fwdpp/internal/void_t.hpp>
 #include <utility>
 
 namespace KTfwd
@@ -9,14 +10,6 @@ namespace KTfwd
     {
         namespace internal
         {
-            // Based on
-            // http://stackoverflow.com/questions/11813940/possible-to-use-type-traits-sfinae-to-find-if-a-class-defines-a-member-typec
-
-            template <typename...> struct void_t
-            {
-                typedef void type;
-            };
-
             template <typename T, typename = void>
             struct is_diploid : std::false_type
             {
@@ -33,6 +26,20 @@ namespace KTfwd
                                                     typename T::first_type,
                                                     typename T::second_type>::
                                                     value>
+            {
+            };
+
+            template <typename T, typename = void>
+            struct is_multilocus_diploid : std::false_type
+            {
+            };
+
+            template <typename T>
+            struct is_multilocus_diploid<T, typename void_t<
+                                                typename T::value_type>::type>
+                : std::integral_constant<bool,
+                                         is_diploid<
+                                             typename T::value_type>::value>
             {
             };
 
@@ -57,23 +64,6 @@ namespace KTfwd
                                                            T>::value>
             {
             };
-/*
-   This macro is used to generate
-   types able to determine if a class type
-   has a particular member type name
-*/
-#define HAS_TYPE(NAME)                                                        \
-    template <typename, typename = void> struct has_##NAME : std::false_type  \
-    {                                                                         \
-    };                                                                        \
-    template <typename T>                                                     \
-    struct has_##NAME<T, typename void_t<typename T::NAME>::type>             \
-        : std::true_type                                                      \
-    {                                                                         \
-    };
-
-            HAS_TYPE(gamete_tag);
-            HAS_TYPE(mutation_type);
         }
     }
 }

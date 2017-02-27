@@ -34,6 +34,11 @@ namespace KTfwd
             using popbase_t = popbase<mutation_type, mcont, gcont, dipvector,
                                       mvector, ftvector, lookup_table_type>;
 
+            static_assert(
+                traits::is_multilocus_diploid<
+                    typename popbase_t::dipvector_t::value_type>::value,
+                "Require that dipvector_t::value_type be a diploid");
+
             //! Population size
             uint_t N;
 

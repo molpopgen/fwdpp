@@ -4,9 +4,25 @@
 #include <type_traits>
 #include <functional>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/internal/type_traits.hpp>
+#include <fwdpp/internal/void_t.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
+
+namespace KTfwd
+{
+    namespace traits
+    {
+        //! Wraps a static constant allowing a test that T is a gamete
+        template <typename T>
+        struct is_gamete
+            : std::integral_constant<bool, traits::internal::
+                                               has_gamete_tag<T>::value>
+        {
+        };
+    }
+}
+
+#include <fwdpp/internal/type_traits.hpp>
 
 namespace KTfwd
 {
@@ -21,17 +37,12 @@ namespace KTfwd
         {
         };
 
-        //! Wraps a static constant allowing a test that T is a gamete
-        template <typename T>
-        struct is_gamete
-            : std::integral_constant<bool, traits::internal::
-                                               has_gamete_tag<T>::value>
-        {
-        };
-
         //! Wraps a static constant allowing a test that T is a diploid
         template <typename T>
         using is_diploid = traits::internal::is_diploid<T>;
+
+        template <typename T>
+        using is_multilocus_diploid = traits::internal::is_multilocus_diploid<T>;
 
         //! Wraps a static constant allowing a test that T is a custom diploid
         template <typename T>
