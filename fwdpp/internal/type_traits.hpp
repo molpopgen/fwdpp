@@ -35,6 +35,7 @@ namespace KTfwd
                                                     value>
             {
             };
+
             template <typename T, typename = void>
             struct is_custom_diploid : std::false_type
             {
