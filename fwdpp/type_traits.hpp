@@ -28,8 +28,7 @@ namespace KTfwd
                                                      T>::value>
         {
         };
-
-            }
+    }
 }
 
 #include <fwdpp/internal/type_traits.hpp>
@@ -38,12 +37,13 @@ namespace KTfwd
 {
     namespace traits
     {
-//! Wraps a static constant allowing a test that T is a diploid
+        //! Wraps a static constant allowing a test that T is a diploid
         template <typename T>
         using is_diploid = traits::internal::is_diploid<T>;
 
         template <typename T>
-        using is_multilocus_diploid = traits::internal::is_multilocus_diploid<T>;
+        using is_multilocus_diploid
+            = traits::internal::is_multilocus_diploid<T>;
 
         //! Wraps a static constant allowing a test that T is a custom diploid
         template <typename T>
@@ -111,17 +111,20 @@ namespace KTfwd
         {
         };
 
-		/*!
-		 * Defines a struct with a single member typedef called type.
-		 * If type is void, then one or more of dipvector_t, gcont_t, and/or
-		 * mcont_t are not valid input types for a fitness function.
-		 * Otherwise, type will evaluate to
-		 * std::function<void(const dipvector_t::value_type,const gcont_t,const mcont_t)>
-		 */
+        /*!
+         * Defines a struct with a single member typedef called type.
+         * If type is void, then one or more of dipvector_t, gcont_t, and/or
+         * mcont_t are not valid input types for a fitness function.
+         * Otherwise, type will evaluate to
+         * std::function<void(const dipvector_t::value_type,const gcont_t,const
+         * mcont_t)>
+         */
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
-        using fitness_fxn = KTfwd::traits::internal::fitness_fxn<dipvector_t,gcont_t,mcont_t>;
+        using fitness_fxn
+            = KTfwd::traits::internal::fitness_fxn<dipvector_t, gcont_t,
+                                                   mcont_t>;
 
-		//! Evaulates to fitness_fxn<dipvector_t,gcont_t,mcont_t>::type
+        //! Evaulates to fitness_fxn<dipvector_t,gcont_t,mcont_t>::type
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
         using fitness_fxn_t =
             typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
