@@ -4,7 +4,6 @@
 #include <type_traits>
 #include <functional>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/tags/diploid_tags.hpp>
 #include <fwdpp/internal/type_traits.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
@@ -49,7 +48,7 @@ namespace KTfwd
         template <typename T>
         constexpr bool is_custom_diploid_v = is_custom_diploid<T>::value;
 #endif
-		
+
         //! Gives the "recycling bin" type corresponding to cont_t
         template <typename cont_t> struct recycling_bin_type
         {
@@ -94,26 +93,19 @@ namespace KTfwd
         };
 
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
-        struct fitness_fxn_type
+        struct fitness_fxn
         {
-            using type = typename std::
-                conditional<std::is_base_of<KTfwd::tags::custom_diploid_t,
-                                            typename dipvector_t::value_type>::
-                                value,
-                            std::function<double(
-                                const typename dipvector_t::value_type &,
-                                const gcont_t &, const mcont_t &)>,
-                            std::function<double(
-                                const typename gcont_t::value_type &,
-                                const typename gcont_t::value_type &,
-                                const mcont_t &)>>::type;
+            using type = std::function<double(
+                const typename dipvector_t::value_type &, const gcont_t &,
+                const mcont_t &)>;
         };
 
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
         using fitness_fxn_t =
-            typename fitness_fxn_type<dipvector_t, gcont_t, mcont_t>::type;
+            typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
 
-        //! Gives the recombination model function signature corresponding to
+        //! Gives the recombination model function signature corresponding
+        //! to
         //! gcont_t,mcont_t
         template <typename gcont_t, typename mcont_t>
         using recmodel_t = std::function<std::vector<double>(

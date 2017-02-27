@@ -4,10 +4,9 @@
 #include <iosfwd>
 #include <limits>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/tags/diploid_tags.hpp>
 
 // Custom diploid type.
-struct custom_diploid_testing_t : public KTfwd::tags::custom_diploid_t
+struct custom_diploid_testing_t
 /*!
   Semantically identical to standard diploid type, which is
   pair<size_t,size_t>,

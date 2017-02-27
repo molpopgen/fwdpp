@@ -45,7 +45,7 @@ struct sex_specific_mutation : public KTfwd::mutation_base
 using mtype = sex_specific_mutation;
 
 // We need to define a custom diploid genotype for our model
-struct diploid_t : public KTfwd::tags::custom_diploid_t
+struct diploid_t
 {
     using first_type = std::size_t;
     using second_type = std::size_t;
@@ -55,7 +55,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
     // constructors, etc.
     diploid_t() : first(first_type()), second(second_type()), sex(false) {}
     //"perfect forwarding" constructor does not work with iterator from boost
-    //containers...
+    // containers...
     // diploid_t(first_type && g1, first_type && g2) :
     // first(std::forward(g1)),second(std::forward(g2)),i(numeric_limits<unsigned>::max())
     // {}
@@ -65,7 +65,7 @@ struct diploid_t : public KTfwd::tags::custom_diploid_t
     // The following constructors SHOULD be generated automagically by your
     // compiler, so you don't have to:
     //(no idea what, if any, performance effect this may have.  Worst case is
-    //prob. the move constructor doesn't get auto-generated...
+    // prob. the move constructor doesn't get auto-generated...
     // diploid_t( const diploid_t & ) = default;
     // diploid_t( diploid_t && ) = default;
     // diploid_t & operator=(const diploid_t &) = default;
@@ -166,10 +166,7 @@ struct sexSpecificRules
             {
                 gametes[diploids[i].first].n = gametes[diploids[i].second].n
                     = 0;
-                w = KTfwd::fwdpp_internal::diploid_fitness_dispatch(
-                    ff, diploids[i], gametes, mutations,
-                    typename KTfwd::traits::
-                        is_custom_diploid_t<diploid_geno_t>::type());
+                w = ff(diploids[i], gametes, mutations);
                 if (!diploids[i].sex)
                     {
                         male_fitnesses[male] = w;
@@ -339,8 +336,8 @@ main(int argc, char **argv)
                                   rng.get(), sigmaE),
                         pop.neutral, pop.selected,
                         0., // Gotta pass the "selfing" rate, even though it
-                            // makes no sense for this model.  API tradeoff for
-                            // flexibility...
+                        // makes no sense for this model.  API tradeoff for
+                        // flexibility...
                         rules);
                     KTfwd::update_mutations(
                         pop.mutations, pop.fixations, pop.fixation_times,

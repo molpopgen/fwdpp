@@ -15,7 +15,7 @@
 #include <fwdpp/type_traits.hpp>
 #include <gsl/gsl_rng.h>
 
-struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
+struct trivial_custom_diploid_invalid
 /*!
   \ingroup unit
   Fails to define typedefs first_type and second_type
@@ -24,7 +24,7 @@ struct trivial_custom_diploid_invalid : public KTfwd::tags::custom_diploid_t
 {
 };
 
-struct trivial_custom_diploid_valid : public KTfwd::tags::custom_diploid_t
+struct trivial_custom_diploid_valid
 /*!
   \ingroup unit
 */

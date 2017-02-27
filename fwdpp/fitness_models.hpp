@@ -3,7 +3,6 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/tags/diploid_tags.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <cassert>
 #include <type_traits>

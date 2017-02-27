@@ -13,7 +13,6 @@
 #include <fwdpp/mutation.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
-#include <fwdpp/internal/diploid_fitness_dispatch.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
@@ -151,26 +150,6 @@ namespace KTfwd
                   used in population genetics.  "Standard" types of models are
                   defined in
                   fwdpp/fitness_models.hpp.
-
-                  The library supports various types of function signatures for
-                  fitness models.
-                  In order to get the final type of call right, we use a
-                  dispatch method, which is
-                  the call below.  Note that this dispatch happens at
-                  compile-time rather than at run-time.
-                  Essentially, the compiler has to work out what the final call
-                  will be, and this dispatch operation
-                  itself is inlined out.  The reason why this is compile-time
-                  is b/c the dispatch depends on
-                  whether or not the diploid is a "custom type", which is a
-                  property of a simulation and it is
-                  not possible to mix custom and non-custom diploids in the
-                  same simulation.
-
-                  The dispatch itself is implemented in
-                  fwdpp/internal/diploid_fitness_dispatch.hpp
-
-                  See the tutorial on custom diploids for more details.
                  */
                 fitnesses[i] = ff(diploids[i], gametes, mutations);
                 wbar += fitnesses[i];

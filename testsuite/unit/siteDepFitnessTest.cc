@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
     // This is the expected type of a fitness policy for non-custom diploids.
     // We use fwdpp's type_traits header to pull this out.
     using fitness_model_t
-        = KTfwd::traits::fitness_fxn_type<dipvector_t, gcont_t, mcont_t>::type;
+        = KTfwd::traits::fitness_fxn_t<dipvector_t, gcont_t, mcont_t>;
 
     // Do bare minimum setup to be able to make calls to functions
     gametes.emplace_back(200);
@@ -173,12 +173,12 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
             = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
                         std::placeholders::_2, std::placeholders::_3);
 
-        auto a = dipfit(gametes[0], gametes[0], mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit
             = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
                         std::placeholders::_2, std::placeholders::_3, 2.);
-        auto b = dipfit(gametes[0], gametes[0], mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
 
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
@@ -191,11 +191,11 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
         fitness_model_t dipfit
             = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
                         std::placeholders::_2, std::placeholders::_3);
-        auto a = dipfit(gametes[0], gametes[0], mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
                            std::placeholders::_2, std::placeholders::_3, 2.);
-        auto b = dipfit(gametes[0], gametes[0], mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
 
@@ -208,11 +208,11 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
         fitness_model_t dipfit
             = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
                         std::placeholders::_2, std::placeholders::_3);
-        auto a = dipfit(gametes[0], gametes[0], mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it to addtive model with scaling = 2.
         dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
                            std::placeholders::_2, std::placeholders::_3, 2.);
-        auto b = dipfit(gametes[0], gametes[0], mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // With only 1 mutation in play, additive & multiplicative will give
         // same result:
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
@@ -223,9 +223,9 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
 {
     // Expected signature for fitness policies involving custom diploids
     // We use fwdpp's type_traits header to pull this out.
-    using fitness_model_t = KTfwd::traits::
-        fitness_fxn_type<std::vector<custom_diploid_testing_t>, gcont_t,
-                         mcont_t>::type;
+    using fitness_model_t
+        = KTfwd::traits::fitness_fxn_t<std::vector<custom_diploid_testing_t>,
+                                       gcont_t, mcont_t>;
 
     // Bare minimum setup for testing
     std::vector<custom_diploid_testing_t> cdiploids(
