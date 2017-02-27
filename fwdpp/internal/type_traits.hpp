@@ -73,8 +73,6 @@ namespace KTfwd
 
             HAS_TYPE(gamete_tag);
             HAS_TYPE(mutation_type);
-            HAS_TYPE(first_type);
-            HAS_TYPE(second_type);
         }
     }
 }
