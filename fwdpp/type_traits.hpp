@@ -12,7 +12,7 @@ namespace KTfwd
 {
     namespace traits
     {
-        //! Evaluates to std::true_type if T inherits from KTfwd::mutation_base
+        //! Wraps a static constant allowing a test that T is a mutation
         template <typename T>
         struct is_mutation
             : std::integral_constant<bool,
@@ -21,7 +21,7 @@ namespace KTfwd
         {
         };
 
-        //! Determine if T is/is derived from KTfwd::gamete_base
+        //! Wraps a static constant allowing a test that T is a gamete
         template <typename T>
         struct is_gamete
             : std::integral_constant<bool, traits::internal::
@@ -29,15 +29,19 @@ namespace KTfwd
         {
         };
 
+        //! Wraps a static constant allowing a test that T is a diploid
         template <typename T>
         using is_diploid = traits::internal::is_diploid<T>;
 
+        //! Wraps a static constant allowing a test that T is a custom diploid
         template <typename T>
         using is_custom_diploid = traits::internal::is_custom_diploid<T>;
 
+        //! Evaluates to KTfwd::traits::is_diploid<T>::type
         template <typename T>
         using is_diploid_t = typename is_diploid<T>::type;
 
+        //! Evaluates to KTfwd::traits::is_custom_diploid<T>::type
         template <typename T>
         using is_custom_diploid_t = typename is_custom_diploid<T>::type;
 
@@ -59,7 +63,8 @@ namespace KTfwd
         template <typename T>
         using recycling_bin_t = typename recycling_bin_type<T>::type;
 
-        //! Check that a mutation model type is valid.
+        //! Wraps a static constant to test that mmodel_t is a valid mutation
+        //! model/policy
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
         struct is_mutation_model
             : public std::
@@ -80,6 +85,8 @@ namespace KTfwd
         {
         };
 
+        //! Wraps a static constant to test that recmodel_t is a valid mutation
+        //! model/policy
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
         struct is_rec_model
             : std::
