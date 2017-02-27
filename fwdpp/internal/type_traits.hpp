@@ -18,14 +18,14 @@ namespace KTfwd
             };
 
             template <typename T, typename = void>
-            struct is_diploid_like : std::false_type
+            struct is_diploid : std::false_type
             {
             };
 
             template <typename T>
-            struct is_diploid_like<T, typename traits::internal::void_t<
-                                          typename T::first_type,
-                                          typename T::second_type>::type>
+            struct is_diploid<T, typename traits::internal::void_t<
+                                     typename T::first_type,
+                                     typename T::second_type>::type>
                 : std::integral_constant<bool,
                                          std::is_integral<
                                              typename T::first_type>::value
@@ -36,17 +36,17 @@ namespace KTfwd
             {
             };
             template <typename T, typename = void>
-            struct is_custom_diploid_t : std::false_type
+            struct is_custom_diploid : std::false_type
             {
             };
 
             template <typename T>
-            struct is_custom_diploid_t<T, typename void_t<
-                                              typename T::first_type,
-                                              typename T::second_type>::type>
+            struct is_custom_diploid<T, typename void_t<
+                                            typename T::first_type,
+                                            typename T::second_type>::type>
                 : std::
                       integral_constant<bool,
-                                        is_diploid_like<T>::value
+                                        is_diploid<T>::value
                                             && !std::
                                                    is_same<std::pair<
                                                                typename T::

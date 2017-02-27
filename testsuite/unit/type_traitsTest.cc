@@ -35,13 +35,13 @@ struct trivial_custom_diploid_valid : public KTfwd::tags::custom_diploid_t
 
 BOOST_FIXTURE_TEST_SUITE(test_type_traits, standard_empty_single_deme_fixture)
 
-BOOST_AUTO_TEST_CASE(is_diploid_like_test)
+BOOST_AUTO_TEST_CASE(is_diploid_test)
 {
-    auto v = KTfwd::traits::is_diploid_like<std::pair<std::size_t,
-                                                      std::size_t>>::value;
+    auto v = KTfwd::traits::is_diploid<std::pair<std::size_t,
+                                                 std::size_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_custom_diploid_t<std::pair<std::size_t,
-                                                     std::size_t>>::value;
+    v = KTfwd::traits::is_custom_diploid<std::pair<std::size_t,
+                                                   std::size_t>>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
 
@@ -58,9 +58,9 @@ BOOST_AUTO_TEST_CASE(is_gamete_test)
 BOOST_AUTO_TEST_CASE(is_custom_diploid_test)
 {
     auto v = KTfwd::traits::
-        is_custom_diploid_t<trivial_custom_diploid_invalid>::value;
+        is_custom_diploid<trivial_custom_diploid_invalid>::value;
     BOOST_REQUIRE_EQUAL(v, false);
-    v = KTfwd::traits::is_custom_diploid_t<trivial_custom_diploid_valid>::
+    v = KTfwd::traits::is_custom_diploid<trivial_custom_diploid_valid>::
         value;
     BOOST_REQUIRE_EQUAL(v, true);
 }

@@ -149,7 +149,7 @@ namespace KTfwd
     template <typename mcont_t, typename gcont_t, typename allocator,
               typename diploid_geno_t,
               template <typename, typename> class vector_type>
-    typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
+    typename std::enable_if<traits::is_diploid<diploid_geno_t>::value,
                             sample_t>::type
     ms_sample(const gsl_rng *r, const mcont_t &mutations,
               const gcont_t &gametes,
@@ -166,7 +166,7 @@ namespace KTfwd
     template <typename mcont_t, typename gcont_t, typename allocator,
               typename diploid_geno_t,
               template <typename, typename> class vector_type>
-    typename std::enable_if<traits::is_diploid_like<diploid_geno_t>::value,
+    typename std::enable_if<traits::is_diploid<diploid_geno_t>::value,
                             sep_sample_t>::type
     ms_sample_separate(const gsl_rng *r, const mcont_t &mutations,
                        const gcont_t &gametes,
@@ -181,13 +181,12 @@ namespace KTfwd
       \ingroup samplingPopsInd
     */
     template <typename mcont_t, typename gcont_t, typename dcont_t>
-    typename std::
-        enable_if<traits::is_diploid_like<
-                      typename dcont_t::value_type::value_type>::value,
-                  std::vector<sample_t>>::type
-        ms_sample(const gsl_rng *r, const mcont_t &mutations,
-                  const gcont_t &gametes, const dcont_t &diploids,
-                  const unsigned &n, const bool &remove_fixed);
+    typename std::enable_if<traits::is_diploid<typename dcont_t::value_type::
+                                                   value_type>::value,
+                            std::vector<sample_t>>::type
+    ms_sample(const gsl_rng *r, const mcont_t &mutations,
+              const gcont_t &gametes, const dcont_t &diploids,
+              const unsigned &n, const bool &remove_fixed);
 
     /*!
       \brief Sample from an individual-based, multi-locus simulation.
@@ -198,13 +197,12 @@ namespace KTfwd
       \ingroup samplingPopsInd
     */
     template <typename mcont_t, typename gcont_t, typename dcont_t>
-    typename std::
-        enable_if<traits::is_diploid_like<
-                      typename dcont_t::value_type::value_type>::value,
-                  std::vector<sep_sample_t>>::type
-        ms_sample_separate(const gsl_rng *r, const mcont_t &mutations,
-                           const gcont_t &gametes, const dcont_t &diploids,
-                           const unsigned &n, const bool &remove_fixed);
+    typename std::enable_if<traits::is_diploid<typename dcont_t::value_type::
+                                                   value_type>::value,
+                            std::vector<sep_sample_t>>::type
+    ms_sample_separate(const gsl_rng *r, const mcont_t &mutations,
+                       const gcont_t &gametes, const dcont_t &diploids,
+                       const unsigned &n, const bool &remove_fixed);
 }
 #endif
 #include <fwdpp/sampling_functions.tcc>

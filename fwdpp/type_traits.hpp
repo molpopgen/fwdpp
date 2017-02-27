@@ -31,11 +31,25 @@ namespace KTfwd
         };
 
         template <typename T>
-        using is_diploid = traits::internal::is_diploid_like<T>;
+        using is_diploid = traits::internal::is_diploid<T>;
 
         template <typename T>
-        using is_custom_diploid = traits::internal::is_custom_diploid_t<T>;
+        using is_custom_diploid = traits::internal::is_custom_diploid<T>;
 
+        template <typename T>
+        using is_diploid_t = typename is_diploid<T>::type;
+
+        template <typename T>
+        using is_custom_diploid_t = typename is_custom_diploid<T>::type;
+
+#if __cplusplus >= 201402L
+        template <typename T>
+        constexpr bool is_diploid_v = is_diploid<T>::value;
+
+        template <typename T>
+        constexpr bool is_custom_diploid_v = is_custom_diploid<T>::value;
+#endif
+		
         //! Gives the "recycling bin" type corresponding to cont_t
         template <typename cont_t> struct recycling_bin_type
         {

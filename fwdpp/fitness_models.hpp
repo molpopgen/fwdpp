@@ -313,7 +313,7 @@ namespace KTfwd
                    const mcont_t &mutations, const haplotype_policy &hpol,
                    const diploid_policy &dpol) const noexcept
         {
-            static_assert(traits::is_diploid_like<diploid_t>::value,
+            static_assert(traits::is_diploid<diploid_t>::value,
                           "diploid_t must represent a diploid");
             return this->operator()(gametes[diploid.first],
                                     gametes[diploid.second], mutations, hpol,
