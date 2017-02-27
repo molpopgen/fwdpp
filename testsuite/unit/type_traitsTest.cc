@@ -95,6 +95,17 @@ BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
+BOOST_AUTO_TEST_CASE(is_not_fitness_model)
+	//These tests will simply fail to compile if they cannot pass.
+	//They are tests of compile-time concepts and not run-time
+	//expectations.
+{
+    auto v = KTfwd::traits::fitness_fxn<dipvector_t, std::vector<double>,
+                                        mcont_t>();
+    static_assert(std::is_same<void, decltype(v)::type>::value,
+                  "v must be void");
+}
+
 BOOST_AUTO_TEST_CASE(is_recmodel_test)
 {
     auto rm = std::bind(KTfwd::poisson_xover(), r, 1e-2, 0., 1.,
