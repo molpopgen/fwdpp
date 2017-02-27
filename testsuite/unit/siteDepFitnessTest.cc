@@ -159,6 +159,9 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
     using fitness_model_t
         = KTfwd::traits::fitness_fxn_t<dipvector_t, gcont_t, mcont_t>;
 
+	static_assert(!std::is_same<void,fitness_model_t>::value,
+			"Fitness function signature evaluated to void.");
+
     // Do bare minimum setup to be able to make calls to functions
     gametes.emplace_back(200);
     mutations.emplace_back(1.0, 0.1); // position 1.0, s = 0.1
@@ -227,7 +230,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
         = KTfwd::traits::fitness_fxn_t<std::vector<custom_diploid_testing_t>,
                                        gcont_t, mcont_t>;
 
-    // Bare minimum setup for testing
+	static_assert(!std::is_same<void,fitness_model_t>::value,
+			"Fitness function signature evaluated to void.");
+    
+	// Bare minimum setup for testing
     std::vector<custom_diploid_testing_t> cdiploids(
         1, custom_diploid_testing_t(0, 0));
     gametes.emplace_back(200);

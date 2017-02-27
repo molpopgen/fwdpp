@@ -19,15 +19,7 @@ namespace KTfwd
                                                has_gamete_tag<T>::value>
         {
         };
-    }
-}
 
-#include <fwdpp/internal/type_traits.hpp>
-
-namespace KTfwd
-{
-    namespace traits
-    {
         //! Wraps a static constant allowing a test that T is a mutation
         template <typename T>
         struct is_mutation
@@ -37,7 +29,16 @@ namespace KTfwd
         {
         };
 
-        //! Wraps a static constant allowing a test that T is a diploid
+            }
+}
+
+#include <fwdpp/internal/type_traits.hpp>
+
+namespace KTfwd
+{
+    namespace traits
+    {
+//! Wraps a static constant allowing a test that T is a diploid
         template <typename T>
         using is_diploid = traits::internal::is_diploid<T>;
 
@@ -111,12 +112,7 @@ namespace KTfwd
         };
 
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
-        struct fitness_fxn
-        {
-            using type = std::function<double(
-                const typename dipvector_t::value_type &, const gcont_t &,
-                const mcont_t &)>;
-        };
+        using fitness_fxn = KTfwd::traits::internal::fitness_fxn<dipvector_t,gcont_t,mcont_t>;
 
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
         using fitness_fxn_t =

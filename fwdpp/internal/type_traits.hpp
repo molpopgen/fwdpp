@@ -64,6 +64,36 @@ namespace KTfwd
                                                            T>::value>
             {
             };
+
+            template <typename dipvector_t, typename gcont_t, typename mcont_t,
+                      typename = void>
+            struct fitness_fxn
+            {
+                using type = void;
+            };
+
+            template <typename dipvector_t, typename gcont_t, typename mcont_t>
+            struct fitness_fxn<dipvector_t, gcont_t, mcont_t,
+                               typename void_t<
+                                   typename dipvector_t::value_type,
+                                   typename gcont_t::value_type,
+                                   typename mcont_t::value_type>::type>
+            {
+                using type = typename std::
+                    conditional<(is_diploid<
+                                     typename dipvector_t::value_type>::value
+                                 || is_multilocus_diploid<
+                                        typename dipvector_t::value_type>::
+                                        value)
+                                    && is_gamete<
+                                           typename gcont_t::value_type>::value
+                                    && is_mutation<typename mcont_t::
+                                                       value_type>::value,
+                                std::function<double(
+                                    const typename dipvector_t::value_type &,
+                                    const gcont_t &, const mcont_t &)>,
+                                void>::type;
+            };
         }
     }
 }
