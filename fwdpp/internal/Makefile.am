@@ -11,5 +11,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	recycling.hpp \
 	sample_diploid_helpers.hpp \
 	type_traits.hpp \
-	demography_details.hpp
+	demography_details.hpp \
+	void_t.hpp
 
