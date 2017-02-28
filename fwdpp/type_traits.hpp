@@ -35,6 +35,7 @@ namespace KTfwd
                 typename cont_t::size_type>;
         };
 
+		//Evaluates to KTfwd::traits::recycling_bin_type<T>::type
         template <typename T>
         using recycling_bin_t = typename recycling_bin_type<T>::type;
     }
