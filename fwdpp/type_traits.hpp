@@ -81,11 +81,17 @@ namespace KTfwd
         using is_mutation_model
             = traits::internal::is_mutation_model<mmodel_t, mcont_t, gcont_t>;
 
+        template <typename mmodel_t, typename mcont_t, typename gcont_t>
+        using is_mutation_model_t = typename is_mutation_model<mmodel_t,mcont_t,gcont_t>::type;
+		
         //! Wraps a static constant to test that recmodel_t is a valid mutation
         //! model/policy
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
         using is_rec_model
             = traits::internal::is_rec_model<recmodel_t, gamete_t, mcont_t>;
+
+        template <typename recmodel_t, typename gamete_t, typename mcont_t>
+        using is_rec_model_t = typename is_rec_model<recmodel_t,gamete_t,mcont_t>::type;
 
         /*!
          * Defines a struct with a single member typedef called type.
@@ -115,6 +121,10 @@ namespace KTfwd
             = traits::internal::is_fitness_fxn<ff, dipvector_t, gcont_t,
                                                mcont_t>;
 
+        template <typename ff, typename dipvector_t, typename gcont_t,
+                  typename mcont_t>
+        using is_fitness_fxn_t = typename is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>::type;
+		
         //! Gives the recombination model function signature corresponding
         //! to
         //! gcont_t,mcont_t
