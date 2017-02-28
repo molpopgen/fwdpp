@@ -118,10 +118,8 @@ namespace KTfwd
         //! Gives the recombination model function signature corresponding
         //! to
         //! gcont_t,mcont_t
-        template <typename gcont_t, typename mcont_t>
-        using recmodel_t = std::function<std::vector<double>(
-            const typename gcont_t::value_type &,
-            const typename gcont_t::value_type &, const mcont_t &)>;
+        template <typename gcont_t_or_gamete_t, typename mcont_t>
+        using recmodel_t = typename traits::internal::recmodel_t<gcont_t_or_gamete_t,mcont_t>::type;
 
         /*!
           Gives the mutation model function signature corresponding to mcont_t.

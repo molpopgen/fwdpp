@@ -96,18 +96,19 @@ BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
 }
 
 BOOST_AUTO_TEST_CASE(is_not_fitness_model)
-	//These tests will simply fail to compile if they cannot pass.
-	//They are tests of compile-time concepts and not run-time
-	//expectations.
+// These tests will simply fail to compile if they cannot pass.
+// They are tests of compile-time concepts and not run-time
+// expectations.
 {
     auto v = KTfwd::traits::fitness_fxn<dipvector_t, std::vector<double>,
                                         mcont_t>();
-    static_assert(std::is_void<decltype(v)::type>::value,
-                  "v must be void");
-	auto ff = [](const dipvector_t&d,const std::vector<double> & v,const mcont_t &m)
-	{
-	};
-	static_assert(!KTfwd::traits::is_fitness_fxn<decltype(ff),dipvector_t,std::vector<double>,mcont_t>::value,"foo");
+    static_assert(std::is_void<decltype(v)::type>::value, "v must be void");
+    auto ff = [](const dipvector_t &d, const std::vector<double> &v,
+                 const mcont_t &m) {};
+    static_assert(
+        !KTfwd::traits::is_fitness_fxn<decltype(ff), dipvector_t,
+                                       std::vector<double>, mcont_t>::value,
+        "foo");
 }
 
 BOOST_AUTO_TEST_CASE(is_recmodel_test)
@@ -122,7 +123,12 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
                                  KTfwd::traits::recmodel_t<gcont_t,
                                                            mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t, mcont_t>::value;
+    v = std::is_convertible<decltype(rm),
+                            KTfwd::traits::recmodel_t<gcont_t::value_type,
+                                                      mcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t::value_type,
+                                    mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
