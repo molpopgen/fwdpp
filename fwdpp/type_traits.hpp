@@ -2,7 +2,6 @@
 #define __FWDPP_TYPE_TRAITS_HPP__
 
 #include <type_traits>
-#include <functional>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/void_t.hpp>
 #include <fwdpp/internal/recycling.hpp>

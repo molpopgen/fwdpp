@@ -1,9 +1,15 @@
+/*!
+ * \file fwdpp/internal/type_traits.hpp
+ * \not This file is not self-contained and cannot be included directly
+ * Nasty SFINAE details of namespace KTfwd::traits
+ */
 #ifndef FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #define FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #include <type_traits>
+#include <functional>
+#include <utility>
 #include <fwdpp/internal/void_t.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
-#include <utility>
 
 namespace KTfwd
 {
@@ -11,8 +17,13 @@ namespace KTfwd
     {
         namespace internal
         {
+            /* The SFINAE scheme will be documented by looking at
+             * how traits::internal::is_diploid is implemented
+             */
+
             template <typename T, typename = void>
             struct is_diploid : std::false_type
+            /* Fallback type.  Evaluates to std::false_type */
             {
             };
 
@@ -20,6 +31,15 @@ namespace KTfwd
             struct is_diploid<T, typename traits::internal::void_t<
                                      typename T::first_type,
                                      typename T::second_type>::type>
+                /* If T does not have member type name first_type and
+                 * second_type, this will fail to compile, and the fallback
+                 * template type will be used.
+				 *
+				 * If successful, this type evaluates to std::true_type
+				 * if and only if first_type and second_type are the same
+				 * integer types, thus passing the minimal API requirement
+				 * for a diploid.
+                 */
                 : std::integral_constant<bool,
                                          std::is_integral<
                                              typename T::first_type>::value
