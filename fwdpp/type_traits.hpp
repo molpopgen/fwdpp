@@ -112,6 +112,11 @@ namespace KTfwd
         using fitness_fxn_t =
             typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
 
+		/*! 
+		 * Wrap a static constant if ff is a valid fitness function
+		 * whose argument types are const references to the other 
+		 * three template parameters
+		 */
         template <typename ff, typename dipvector_t, typename gcont_t,
                   typename mcont_t>
         using is_fitness_fxn
