@@ -129,6 +129,25 @@ namespace KTfwd
         using fitness_fxn_t =
             typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
 
+        template <typename ff, typename dipvector_t, typename gcont_t,
+                  typename mcont_t>
+        struct is_fitness_fxn
+            : std::
+                  integral_constant<bool,
+                                    !std::is_void<
+                                        typename fitness_fxn<dipvector_t,
+                                                             gcont_t,
+                                                             mcont_t>::type>::
+                                            value
+                                        && std::
+                                               is_convertible<ff,
+                                                              typename fitness_fxn<dipvector_t,
+                                                                                   gcont_t,
+                                                                                   mcont_t>::
+                                                                  type>::value>
+        {
+        };
+
         //! Gives the recombination model function signature corresponding
         //! to
         //! gcont_t,mcont_t

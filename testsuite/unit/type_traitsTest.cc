@@ -104,6 +104,10 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
                                         mcont_t>();
     static_assert(std::is_void<decltype(v)::type>::value,
                   "v must be void");
+	auto ff = [](const dipvector_t&d,const std::vector<double> & v,const mcont_t &m)
+	{
+	};
+	static_assert(!KTfwd::traits::is_fitness_fxn<decltype(ff),dipvector_t,std::vector<double>,mcont_t>::value,"foo");
 }
 
 BOOST_AUTO_TEST_CASE(is_recmodel_test)
