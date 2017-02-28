@@ -127,22 +127,30 @@ namespace KTfwd
           Gives the mutation model function signature corresponding to mcont_t.
 
           Applies to mutation policies that only take recycling bins and
-          mcont_t *
-          as arguments
+          mcont_t as arguments.  
+
+		  If mcont_t is not a container of mutations, then mmodel_t will
+		  evaulate to void.  Otherwise, it will evaluate to
+          std::function<std::size_t(recycling_bin_t<mcont_t> &,
+                                                    mcont_t &)>;
         */
         template <typename mcont_t>
-        using mmodel_t = std::function<std::size_t(recycling_bin_t<mcont_t> &,
-                                                   mcont_t &)>;
+        using mmodel_t = typename traits::internal::mmodel_t<mcont_t>::type;
 
         /*!
           Gives mutation model function signature for models requiring gametes
-          as arguments
+          as arguments.
+
+		  If mcont_t is not a container of mutations and/or gcont_t is not
+		  a container of gametes, them mmodel_gamete_t will evaluate to void.
+
+		  Otherwise, it will evaluate to 
+          std::function<std::size_t(recycling_bin_t<mcont_t> &,
+                                    typename gcont_t::value_type &,
+                                    mcont_t &)>;
         */
         template <typename mcont_t, typename gcont_t>
-        using mmodel_gamete_t
-            = std::function<std::size_t(recycling_bin_t<mcont_t> &,
-                                        typename gcont_t::value_type &,
-                                        mcont_t &)>;
+        using mmodel_gamete_t = typename traits::internal::mmodel_gamete_t<mcont_t,gcont_t>::type;
     }
 }
 #endif

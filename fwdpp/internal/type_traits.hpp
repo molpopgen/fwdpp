@@ -182,6 +182,47 @@ namespace KTfwd
                 : is_rec_model_SFINAE_base<recmodel_t, gamete_t, mcont_t>
             {
             };
+
+            template <typename mcont_t, typename = void> struct mmodel_t
+            {
+                using type = void;
+            };
+
+            template <typename mcont_t>
+            struct mmodel_t<mcont_t, typename void_t<
+                                         typename mcont_t::value_type>::type>
+            {
+                using type = typename std::
+                    conditional<is_mutation<
+                                    typename mcont_t::value_type>::value,
+                                std::function<std::size_t(
+                                    recycling_bin_t<mcont_t> &, mcont_t &)>,
+                                void>::type;
+            };
+
+            template <typename mcont_t, typename gcont_t, typename = void>
+            struct mmodel_gamete_t
+            {
+                using type = void;
+            };
+
+            template <typename mcont_t, typename gcont_t>
+            struct mmodel_gamete_t<mcont_t, gcont_t,
+                                   typename void_t<
+                                       typename mcont_t::value_type,
+                                       typename gcont_t::value_type>::type>
+            {
+                using type = typename std::
+                    conditional<is_mutation<
+                                    typename mcont_t::value_type>::value
+                                    && is_gamete<typename gcont_t::
+                                                     value_type>::value,
+                                std::function<std::size_t(
+                                    recycling_bin_t<mcont_t> &,
+                                    typename gcont_t::value_type &,
+                                    mcont_t &)>,
+                                void>::type;
+            };
         }
     }
 }
