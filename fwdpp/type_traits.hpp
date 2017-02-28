@@ -29,7 +29,7 @@ namespace KTfwd
         {
         };
 
-		//! Gives the "recycling bin" type corresponding to cont_t
+        //! Gives the "recycling bin" type corresponding to cont_t
         template <typename cont_t> struct recycling_bin_type
         {
             using type = KTfwd::fwdpp_internal::recycling_bin_t<
@@ -84,16 +84,8 @@ namespace KTfwd
         //! Wraps a static constant to test that recmodel_t is a valid mutation
         //! model/policy
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
-        struct is_rec_model
-            : std::
-                  integral_constant<bool,
-                                    std::is_same<
-                                        typename std::result_of<recmodel_t(
-                                            const gamete_t &, const gamete_t &,
-                                            const mcont_t &)>::type,
-                                        std::vector<double>>::value>
-        {
-        };
+        using is_rec_model
+            = traits::internal::is_rec_model<recmodel_t, gamete_t, mcont_t>;
 
         /*!
          * Defines a struct with a single member typedef called type.
@@ -112,11 +104,11 @@ namespace KTfwd
         using fitness_fxn_t =
             typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
 
-		/*! 
-		 * Wrap a static constant if ff is a valid fitness function
-		 * whose argument types are const references to the other 
-		 * three template parameters
-		 */
+        /*!
+         * Wrap a static constant if ff is a valid fitness function
+         * whose argument types are const references to the other
+         * three template parameters
+         */
         template <typename ff, typename dipvector_t, typename gcont_t,
                   typename mcont_t>
         using is_fitness_fxn
