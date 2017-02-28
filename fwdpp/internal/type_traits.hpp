@@ -94,6 +94,18 @@ namespace KTfwd
                                     const gcont_t &, const mcont_t &)>,
                                 void>::type;
             };
+
+        template <typename ff, typename dipvector_t, typename gcont_t,
+                  typename mcont_t,
+                  typename ffxn_t
+                  = typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type>
+        struct is_fitness_fxn
+            : std::integral_constant<bool,
+                                     !std::is_void<ffxn_t>::value
+                                         && std::is_convertible<ff,
+                                                                ffxn_t>::value>
+        {
+        };
         }
     }
 }
