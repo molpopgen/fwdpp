@@ -2,6 +2,7 @@
 #define FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #include <type_traits>
 #include <fwdpp/internal/void_t.hpp>
+#include <fwdpp/internal/mutation_internal.hpp>
 #include <utility>
 
 namespace KTfwd
@@ -95,17 +96,65 @@ namespace KTfwd
                                 void>::type;
             };
 
-        template <typename ff, typename dipvector_t, typename gcont_t,
-                  typename mcont_t,
-                  typename ffxn_t
-                  = typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type>
-        struct is_fitness_fxn
-            : std::integral_constant<bool,
-                                     !std::is_void<ffxn_t>::value
-                                         && std::is_convertible<ff,
-                                                                ffxn_t>::value>
-        {
-        };
+            template <
+                typename ff, typename dipvector_t, typename gcont_t,
+                typename mcont_t,
+                typename ffxn_t =
+                    typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type>
+            struct is_fitness_fxn
+                : std::integral_constant<bool,
+                                         !std::is_void<ffxn_t>::value
+                                             && std::is_convertible<ff,
+                                                                    ffxn_t>::
+                                                    value>
+            {
+            };
+
+            template <typename mmodel_t, typename mcont_t, typename gcont_t,
+                      typename = void>
+            struct is_mutation_model : std::false_type
+            {
+            };
+
+            template <typename gamete_t, typename mutation_t>
+            struct check_mmodel_types
+                : std::integral_constant<bool,
+                                         is_gamete<gamete_t>::value
+                                             && is_mutation<mutation_t>::value>
+            {
+            };
+
+            template <typename mmodel_t, typename gcont_t, typename mcont_t,
+                      typename gamete_t = typename gcont_t::value_type,
+                      typename mutation_t = typename mcont_t::value_type,
+                      typename recbin = recycling_bin_t<mcont_t>>
+                struct dispatchable_mmodel
+                : std::is_same<
+                      typename std::result_of<decltype (
+                          &fwdpp_internal::mmodel_dispatcher<mmodel_t,
+                                                             gamete_t, mcont_t,
+                                                             recbin>)(
+                          mmodel_t &, gamete_t &, mcont_t &, recbin &)>::type,
+                      std::size_t>
+            {
+            };
+
+            template <typename mmodel_t, typename mcont_t, typename gcont_t>
+            struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
+                                     typename void_t<
+                                         typename mcont_t::value_type,
+                                         typename gcont_t::value_type>::type>
+                : std::integral_constant<bool,
+                                         check_mmodel_types<
+                                             typename gcont_t::value_type,
+                                             typename mcont_t::value_type>::
+                                                 value
+                                             && dispatchable_mmodel<mmodel_t,
+                                                                    gcont_t,
+                                                                    mcont_t>::
+                                                    value>
+            {
+            };
         }
     }
 }

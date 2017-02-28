@@ -28,6 +28,16 @@ namespace KTfwd
                                                      T>::value>
         {
         };
+
+		//! Gives the "recycling bin" type corresponding to cont_t
+        template <typename cont_t> struct recycling_bin_type
+        {
+            using type = KTfwd::fwdpp_internal::recycling_bin_t<
+                typename cont_t::size_type>;
+        };
+
+        template <typename T>
+        using recycling_bin_t = typename recycling_bin_type<T>::type;
     }
 }
 
@@ -65,37 +75,11 @@ namespace KTfwd
         constexpr bool is_custom_diploid_v = is_custom_diploid<T>::value;
 #endif
 
-        //! Gives the "recycling bin" type corresponding to cont_t
-        template <typename cont_t> struct recycling_bin_type
-        {
-            using type = KTfwd::fwdpp_internal::recycling_bin_t<
-                typename cont_t::size_type>;
-        };
-
-        template <typename T>
-        using recycling_bin_t = typename recycling_bin_type<T>::type;
-
         //! Wraps a static constant to test that mmodel_t is a valid mutation
         //! model/policy
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
-        struct is_mutation_model
-            : public std::
-                  integral_constant<bool,
-                                    std::is_same<
-                                        typename std::result_of<decltype (
-                                            &fwdpp_internal::
-                                                mmodel_dispatcher<mmodel_t,
-                                                                  typename gcont_t::
-                                                                      value_type,
-                                                                  mcont_t,
-                                                                  recycling_bin_t<mcont_t>>)(
-                                            mmodel_t &,
-                                            typename gcont_t::value_type &,
-                                            mcont_t &,
-                                            recycling_bin_t<mcont_t> &)>::type,
-                                        std::size_t>::value>
-        {
-        };
+        using is_mutation_model
+            = traits::internal::is_mutation_model<mmodel_t, mcont_t, gcont_t>;
 
         //! Wraps a static constant to test that recmodel_t is a valid mutation
         //! model/policy
@@ -121,8 +105,7 @@ namespace KTfwd
          */
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
         using fitness_fxn
-            = traits::internal::fitness_fxn<dipvector_t, gcont_t,
-                                                   mcont_t>;
+            = traits::internal::fitness_fxn<dipvector_t, gcont_t, mcont_t>;
 
         //! Evaulates to fitness_fxn<dipvector_t,gcont_t,mcont_t>::type
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
@@ -131,7 +114,9 @@ namespace KTfwd
 
         template <typename ff, typename dipvector_t, typename gcont_t,
                   typename mcont_t>
-        using is_fitness_fxn = traits::internal::is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>;
+        using is_fitness_fxn
+            = traits::internal::is_fitness_fxn<ff, dipvector_t, gcont_t,
+                                               mcont_t>;
 
         //! Gives the recombination model function signature corresponding
         //! to
