@@ -6,6 +6,9 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.5
 
+* Refactor namespace KTfwd::traits, resovling #46.
+* Streamline API for fitness functions, resolving #45.
+* Resolving #45 allows us to simplify how custom diploid types are defined.  See @ref md_md_customdip
 * Test suite fixtures improved
 * All source files reformatted using clang-format
 * Build system generation of package version numbers improved
