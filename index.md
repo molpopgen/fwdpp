@@ -8,6 +8,34 @@ If you use __fwdpp__ for yor research, either to develop simulations or you use 
 
 * Thornton, K. R. (2014) A C++ template library for efficient forward-time population genetic simulation of large populations.  Genetics 98:157-166  PMID: 24950894, [Manuscript](http://www.genetics.org/content/198/1/157.abstract), [Software](https://github.com/molpopgen/fwdpp)
 
+Here it is in Bibtex format:
+
+~~~
+@ARTICLE{Thornton2014-hx,
+  title       = "A C++ template library for efficient forward-time population
+                 genetic simulation of large populations",
+  author      = "Thornton, Kevin R",
+  affiliation = "Department of Ecology and Evolutionary Biology, University of
+                 California, Irvine, California 92697 krthornt@uci.edu.",
+  abstract    = "fwdpp is a C++ library of routines intended to facilitate the
+                 development of forward-time simulations under arbitrary
+                 mutation and fitness models. The library design provides a
+                 combination of speed, low memory overhead, and modeling
+                 flexibility not currently available from other forward
+                 simulation tools. The library is particularly useful when the
+                 simulation of large populations is required, as programs
+                 implemented using the library are much more efficient than
+                 other available forward simulation programs.",
+  journal     = "Genetics",
+  volume      =  198,
+  number      =  1,
+  pages       = "157--166",
+  month       =  sep,
+  year        =  2014,
+  keywords    = "population genetics; quantitative genetics; simulation",
+  language    = "en"
+}
+~~~
 
 ### Applications of fwdpp 
 
