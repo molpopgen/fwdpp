@@ -28,7 +28,7 @@ This README is the main page of the fwdpp documentation.  It may display some th
 
 # Using simulations in Python
 
-If you are reading this, I'm guessing that you are more interested in _running_ forward simulations than you are in _developing_ them.  This package is about the latter.  I'd recommend that you check out [fwdpy](http://molpopgen.github.io/fwdpy), which is a Python library for running forward simulations.  [fwdpy](http://molpopgen.github.io/fwdpy) is developed using fwdpp (this package).  [fwdpy](http://molpopgen.github.io/fwdpy) is obtainable from GitHub, but many users may prefer to install it from [PyPi](http://pypi.python.org).
+If you are reading this, I'm guessing that you are more interested in _running_ forward simulations than you are in _developing_ them.  This package is about the latter.  I'd recommend that you check out [fwdpy](http://molpopgen.github.io/fwdpy), which is a Python package for running forward simulations and processing the output.  [fwdpy](http://molpopgen.github.io/fwdpy) is developed using fwdpp (this package).  [fwdpy](http://molpopgen.github.io/fwdpy) is obtainable from GitHub, but many users may prefer to install it from [PyPi](http://pypi.python.org) or via the [bioconda](https://bioconda.github.io/) channel of [Anaconda](https://www.continuum.io/downloads).
 
 # fwdpp-users mailing list
 
