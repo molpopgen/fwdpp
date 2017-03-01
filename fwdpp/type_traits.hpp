@@ -19,6 +19,9 @@ namespace KTfwd
         {
         };
 
+        //! Convenience wrapper for KTfwd::traits::is_gamete<T>::type.
+        template <typename T> using is_gamete_t = typename is_gamete<T>::type;
+
         //! Wraps a static constant allowing a test that T is a mutation
         template <typename T>
         struct is_mutation
@@ -28,6 +31,10 @@ namespace KTfwd
         {
         };
 
+        //! Convenience wrapper for KTfwd::traits::is_mutation<T>::Type.
+        template <typename T>
+        using is_mutation_t = typename is_mutation<T>::type;
+
         //! Gives the "recycling bin" type corresponding to cont_t
         template <typename cont_t> struct recycling_bin_type
         {
@@ -35,7 +42,7 @@ namespace KTfwd
                 typename cont_t::size_type>;
         };
 
-		//Evaluates to KTfwd::traits::recycling_bin_type<T>::type
+        // Evaluates to KTfwd::traits::recycling_bin_type<T>::type
         template <typename T>
         using recycling_bin_t = typename recycling_bin_type<T>::type;
     }
@@ -59,11 +66,11 @@ namespace KTfwd
         template <typename T>
         using is_custom_diploid = traits::internal::is_custom_diploid<T>;
 
-        //! Evaluates to KTfwd::traits::is_diploid<T>::type
+        //! Convenience wrapper for KTfwd::traits::is_diploid<T>::type
         template <typename T>
         using is_diploid_t = typename is_diploid<T>::type;
 
-        //! Evaluates to KTfwd::traits::is_custom_diploid<T>::type
+        //! Convenience wrapper for KTfwd::traits::is_custom_diploid<T>::type
         template <typename T>
         using is_custom_diploid_t = typename is_custom_diploid<T>::type;
 
@@ -75,23 +82,37 @@ namespace KTfwd
         constexpr bool is_custom_diploid_v = is_custom_diploid<T>::value;
 #endif
 
-        //! Wraps a static constant to test that mmodel_t is a valid mutation
-        //! model/policy
+        /*!
+         *  Wraps a static constant to test that mmodel_t is a
+         *  valid mutation policy
+         */
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
         using is_mutation_model
             = traits::internal::is_mutation_model<mmodel_t, mcont_t, gcont_t>;
 
+		/*!
+		 * Convenience wrapper for 
+		 * KTfwd::traits::is_mutation_model<mmodel_t,mcont_t,gcont_t>::type
+		 */ 
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
-        using is_mutation_model_t = typename is_mutation_model<mmodel_t,mcont_t,gcont_t>::type;
-		
-        //! Wraps a static constant to test that recmodel_t is a valid mutation
-        //! model/policy
+        using is_mutation_model_t =
+            typename is_mutation_model<mmodel_t, mcont_t, gcont_t>::type;
+
+		/*! 
+		 * Wraps a static constant to test that recmodel_t is a valid
+		 * recombination function/policy
+		 */
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
         using is_rec_model
             = traits::internal::is_rec_model<recmodel_t, gamete_t, mcont_t>;
 
+		/*!
+		 * Convenience wrapper for 
+		 * KTfwd::traits::is_rec_model<recmodel_t,gamete_c,mcont_t>::type
+		 */
         template <typename recmodel_t, typename gamete_t, typename mcont_t>
-        using is_rec_model_t = typename is_rec_model<recmodel_t,gamete_t,mcont_t>::type;
+        using is_rec_model_t =
+            typename is_rec_model<recmodel_t, gamete_t, mcont_t>::type;
 
         /*!
          * Defines a struct with a single member typedef called type.
@@ -105,7 +126,7 @@ namespace KTfwd
         using fitness_fxn
             = traits::internal::fitness_fxn<dipvector_t, gcont_t, mcont_t>;
 
-        //! Evaulates to fitness_fxn<dipvector_t,gcont_t,mcont_t>::type
+        //! Convenience wrapper for fitness_fxn<dipvector_t,gcont_t,mcont_t>::type
         template <typename dipvector_t, typename gcont_t, typename mcont_t>
         using fitness_fxn_t =
             typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type;
@@ -121,44 +142,55 @@ namespace KTfwd
             = traits::internal::is_fitness_fxn<ff, dipvector_t, gcont_t,
                                                mcont_t>;
 
+		/*! 
+		 * Conveneince wrapper for
+		 * KTfwd::traits::is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>::type
+		 */
         template <typename ff, typename dipvector_t, typename gcont_t,
                   typename mcont_t>
-        using is_fitness_fxn_t = typename is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>::type;
-		
-        //! Gives the recombination model function signature corresponding
-        //! to
-        //! gcont_t,mcont_t
-        template <typename gcont_t_or_gamete_t, typename mcont_t>
-        using recmodel_t = typename traits::internal::recmodel_t<gcont_t_or_gamete_t,mcont_t>::type;
+        using is_fitness_fxn_t =
+            typename is_fitness_fxn<ff, dipvector_t, gcont_t, mcont_t>::type;
 
         /*!
-          Gives the mutation model function signature corresponding to mcont_t.
+		 * Infers the signature of a recombination function compatible
+		 * with the template type parameters.
+		 *
+		 * If such a function signature cannot be inferred, this 
+		 * evaluates to void.
+		 */
+		template <typename gcont_t_or_gamete_t, typename mcont_t>
+        using recmodel_t =
+            typename traits::internal::recmodel_t<gcont_t_or_gamete_t,
+                                                  mcont_t>::type;
 
-          Applies to mutation policies that only take recycling bins and
-          mcont_t as arguments.  
-
-		  If mcont_t is not a container of mutations, then mmodel_t will
-		  evaulate to void.  Otherwise, it will evaluate to
-          std::function<std::size_t(recycling_bin_t<mcont_t> &,
-                                                    mcont_t &)>;
-        */
+        /*!
+		 * Gives the mutation model function signature corresponding to mcont_t.
+		 * Applies to mutation policies that only take recycling bins and 
+		 * mcont_t as arguments.
+		 *
+		 * If mcont_t is not a container of mutations, then mmodel_t 
+		 * will evaulate to void.  
+		 * 
+		 * Otherwise, it will evaluate to 
+		 * std::function<std::size_t(recycling_bin_t<mcont_t> &,mcont_t &)>;
+         */
         template <typename mcont_t>
         using mmodel_t = typename traits::internal::mmodel_t<mcont_t>::type;
 
         /*!
-          Gives mutation model function signature for models requiring gametes
-          as arguments.
-
-		  If mcont_t is not a container of mutations and/or gcont_t is not
-		  a container of gametes, them mmodel_gamete_t will evaluate to void.
-
-		  Otherwise, it will evaluate to 
-          std::function<std::size_t(recycling_bin_t<mcont_t> &,
-                                    typename gcont_t::value_type &,
-                                    mcont_t &)>;
-        */
+          * Gives mutation model function signature for models requiring gametes
+          * as arguments. If mcont_t is not a container of mutations and/or gcont_t is
+		  * not a container of gametes, them mmodel_gamete_t will evaluate to
+		  * void.
+		  *
+		  * Otherwise, it will evaluate to
+		  * std::function<std::size_t(recycling_bin_t<mcont_t> &,
+		  * typename gcont_t::value_type &,
+		  * mcont_t &)>;
+          */
         template <typename mcont_t, typename gcont_t>
-        using mmodel_gamete_t = typename traits::internal::mmodel_gamete_t<mcont_t,gcont_t>::type;
+        using mmodel_gamete_t =
+            typename traits::internal::mmodel_gamete_t<mcont_t, gcont_t>::type;
     }
 }
 #endif
