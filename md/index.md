@@ -20,16 +20,19 @@ If you use __fwdpp__ for yor research, either to develop simulations or you use 
 
 * Thornton, K. R. (2014) A C++ template library for efficient forward-time population genetic simulation of large populations.  Genetics 98:157-166  PMID: 24950894, [Manuscript](http://www.genetics.org/content/198/1/157.abstract), [Software](https://github.com/molpopgen/fwdpp)
 
+
+### Applications of fwdpp 
+
+The library has been used for the following software projects:
+
+* [fwdpy](https://github.com/molpopgen/fwdpy) uses __fwdpp__ to provide an environment for foward simulation in Python.  This is a very large-scale project, and is where a lot of our future forward-simulation-related tools will end up.
+
 ### Publications (that we are aware of...) using fwdpp
 
 * Sanjak, Jaleal S., Anthony D. Long, and Kevin R. Thornton. 2017. “A Model of Compound Heterozygous, Loss-of-Function Alleles Is Broadly Consistent with Observations from Complex-Disease GWAS Datasets.” PLoS Genetics 13 (1): e1006573. [Paper](http://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006573)  This paper also uses [fwdpy](http://github.com/molpopgen/fwdpy) for some of the supplementary material.
 * Beissinger, Timothy M., Li Wang, Kate Crosby, Arun Durvasula, Matthew B. Hufford, and Jeffrey Ross-Ibarra. 2016. “Recent Demography Drives Changes in Linked Selection across the Maize Genome.” Nature Plants 2 (June): 16084. [Paper](http://www.nature.com/articles/nplants201684?WT.feed_name=subjects_next-generation-sequencing)
 
 ### Early applications of fwdpp
-
-The library has been used for the following projects:
-
-* [fwdpy](https://github.com/molpopgen/fwdpy) uses __fwdpp__ to provide an environment for foward simulation in Python
 
 Early version of the code that eventually became __fwdpp__ were used in the following publications:
 
