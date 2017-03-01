@@ -16,7 +16,7 @@ Here it is in Bibtex format:
                  genetic simulation of large populations",
   author      = "Thornton, Kevin R",
   affiliation = "Department of Ecology and Evolutionary Biology, University of
-                 California, Irvine, California 92697 krthornt@uci.edu.",
+                 California, Irvine, California 92697",
   abstract    = "fwdpp is a C++ library of routines intended to facilitate the
                  development of forward-time simulations under arbitrary
                  mutation and fitness models. The library design provides a
