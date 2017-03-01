@@ -152,49 +152,55 @@ namespace KTfwd
         using is_fitness_fxn_t =
             typename is_fitness_fxn<ff, dipvector_t, gcont_t, mcont_t>::type;
 
+        // clang-format off
         /*!
-                 * Infers the signature of a recombination function compatible
-                 * with the template type parameters.
-                 *
-                 * If such a function signature cannot be inferred, this
-                 * evaluates to void.
-                 */
+		 * Infers the signature of a recombination function compatible
+		 * with the template type parameters.
+		 *
+		 * If such a function signature cannot be inferred, this
+		 * evaluates to void.
+		 */
+        // clang-format on
         template <typename gcont_t_or_gamete_t, typename mcont_t>
         using recmodel_t =
             typename traits::internal::recmodel_t<gcont_t_or_gamete_t,
                                                   mcont_t>::type;
 
+        // clang-format off
         /*!
-                 * Gives the mutation model function signature corresponding to
+		 * Gives the mutation model function signature corresponding to
          * mcont_t.
-                 * Applies to mutation policies that only take recycling bins
+		 * Applies to mutation policies that only take recycling bins
          * and
-                 * mcont_t as arguments.
-                 *
-                 * If mcont_t is not a container of mutations, then mmodel_t
-                 * will evaulate to void.
-                 *
-                 * Otherwise, it will evaluate to
-                 * std::function<std::size_t(recycling_bin_t<mcont_t> &,mcont_t
+		 * mcont_t as arguments.
+		 *
+		 * If mcont_t is not a container of mutations, then mmodel_t
+		 * will evaulate to void.
+		 *
+		 * Otherwise, it will evaluate to
+		 * std::function<std::size_t(recycling_bin_t<mcont_t> &,mcont_t
          * &)>;
          */
+        // clang-format on
         template <typename mcont_t>
         using mmodel_t = typename traits::internal::mmodel_t<mcont_t>::type;
 
-        /*!
-          * Gives mutation model function signature for models requiring
+        // clang-format off
+		/*!
+         * Gives mutation model function signature for models requiring
          * gametes
-          * as arguments. If mcont_t is not a container of mutations and/or
+         * as arguments. If mcont_t is not a container of mutations and/or
          * gcont_t is
-                  * not a container of gametes, them mmodel_gamete_t will
+		 * not a container of gametes, them mmodel_gamete_t will
          * evaluate to
-                  * void.
-                  *
-                  * Otherwise, it will evaluate to
-                  * std::function<std::size_t(recycling_bin_t<mcont_t> &,
-                  * typename gcont_t::value_type &,
-                  * mcont_t &)>;
-          */
+		 * void.
+		 *
+		 * Otherwise, it will evaluate to
+		 * std::function<std::size_t(recycling_bin_t<mcont_t> &,
+		 * typename gcont_t::value_type &,
+	     * mcont_t &)>;
+        */
+        // clang-format on
         template <typename mcont_t, typename gcont_t>
         using mmodel_gamete_t =
             typename traits::internal::mmodel_gamete_t<mcont_t, gcont_t>::type;
