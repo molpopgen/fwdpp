@@ -346,6 +346,14 @@ These containers are defined as C++11 template aliases.  The `singlepop`, `metap
 
 At this point, I'll refer you to the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more detail on these types. We will see them in action below, though.
 
+## Recycling
+
+Mutations and gametes go extinct during the course of a simulation.  For a gamete, this means that its count (`KTfwd::gamete_base::n`) is zero.  For a mutation, this means that the vector tracking mutation occurences has a zero at a specific position.
+
+Internally, __fwdpp__ records where extinct mutations/gametes are and builds a FIFO queue of their indexes.  This queue is used so that these locations can be recycled with new objects.
+
+Recycling allows us to use cache-friendly containers like `std::vector`.  It also allows us to re-use space allocated by gametes for their mutation keys.  Overall, it is a big win in terms of performance.
+
 ## Modeling the biology
 
 ### Mutation
