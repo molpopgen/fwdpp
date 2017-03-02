@@ -6,13 +6,13 @@
 
 When modeling a single contiguous genomic segment, a diploid is simply a pair of gametes.  The way to represent that using __fwdpp__ is actually with a type from the C++ standard library:
 
-~~~{.cpp}
+```{.cpp}
 #include <utility>
 #include <cstdint>
 
 // This is a typedef for a diploid
 using diploid = std::pair<std::size_t,std::size_t>
-~~~
+```
 
 #### Custom diploids
 
