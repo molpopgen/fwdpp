@@ -129,7 +129,7 @@ So, why do this? __It is a lot faster!__  Simulations of large genomic regions i
 
 # Documentation
 
-##Online
+## Online
 
 A tutorial on policies and the library's reference manual can be found at [molpopgen.github.io/fwdpp](http://molpopgen.github.io/fwdpp) or [here](@ref md_md_policies).
 
@@ -149,10 +149,10 @@ The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutoria
 * @ref md_md_sugar
 
 
-##Built from source
+## Built from source
 The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.
 
-##Example documentation
+## Example documentation
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
 
 # Projects using fwdpp:
@@ -163,7 +163,7 @@ The examples can be read in html form via the online reference manual linked to 
 
 # Dependencies
 
-##System requirements
+## System requirements
 
 You must have the following on your system:
 
@@ -185,7 +185,7 @@ I have tested the library on my development machine (64-bit Intel processor, Ubu
 | clang++  | 3.7  | __YES__ | |
 
 
-##Library dependencies
+## Library dependencies
 
 The minimal dependencies required to use the library to develop simulations are:
 
@@ -206,16 +206,16 @@ For OS X users, all of the above dependencies are available via [homebrew](http:
 
 Performance testing has been moved to the [fwdpp_perf](http://github.com/molpopgen/fwdpp_perf) project.
 
-##Obtaining the source code
+## Obtaining the source code
 
-###Obtaining the master branch
+### Obtaining the master branch
 You have a few options:
 
 1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git
 2. Click on "Download Zip" at https://github.com/molpopgen/fwdpp
 
 
-###Obtaining a specific release
+### Obtaining a specific release
 Again, a few options:
 
 1. Click on "Releases" at https://github.com/molpopgen/fwdpp, then download the one you want
@@ -232,7 +232,7 @@ On a decent browser, when you click on a release, it should be called fwdpp-vers
 
 # Installation
 
-##What does fwdpp install?
+## What does fwdpp install?
 
 Two things:
 
@@ -255,7 +255,7 @@ else
 fi
 ~~~
 
-##The case of a standard system with all dependencies installed in standard locations
+## The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
 ~~~
@@ -284,44 +284,24 @@ make check
 
 Currently, the example programs will not get installed via "make install".   If you want them to be installed system-wide, copy the binaries manually to where you need them.
 
-##To compile examples and unit tests
+## To compile examples and unit tests
 
 __Note:__ if you only wish to compile the example programgs, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
 
 You will need [libsequence](http://github.com/molpopgen/libsequence) installed on your system in order to compile the example programs.
 
-### Using standard containers and the standard C-library malloc
-
-This is the default:
-
-~~~{.sh}
-./configure
-make check
-~~~
-
-### Using the standard C++ containers and the Google's tcmalloc
-
-__This is the recommended method for maximum run-time performance.__
-
-~~~{.sh}
-./configure --enable-tcmalloc=yes
-make check
-~~~
-
-Note:  none of these options affect any other programs that you write using fwdpp!  You'll have to manage that on your own for your projects' builds.
-
-##If dependent libraries are in non-stanard locations.
+## If dependent libraries are in non-stanard locations.
 
 For example, if libsequence is in /opt:
 
 ~~~{.sh}
 #Note, you need to add in the desired optimization (-OXX) level:
-./configure CXXFLAGS="-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib"
+CXXFLAGS="-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib" ./configure 
 make check
 make install
 ~~~
 
-##Installing in a custom location
+## Installing in a custom location
 
 ~~~
 ./configure --prefix=/path/2/where/you/want it
@@ -332,6 +312,6 @@ For example:
 ./configure --prefix=$HOME
 ~~~
 
-##Examples
+## Examples
 
 The examples are documented [here](@ref md_md_examples)
