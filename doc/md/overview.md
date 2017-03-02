@@ -4,6 +4,10 @@
 
 ### Diploids
 
+#### Custom diploids
+
+#### Multi-locus/multi-region diploids
+
 ### Gametes
 
 ### Mutations
