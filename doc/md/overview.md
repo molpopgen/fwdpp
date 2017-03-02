@@ -12,13 +12,13 @@ The library is header-only, meaning that there is no runtime library to link to.
 
 There are two main headers to be aware of:
 
-~~~{.cpp}
+```cpp
 //This includes the low-level library:
 #include <fwdpp/diploid.hh>
 //This includes the higher-level objects
 //and functions:
 #include <fwdpp/sugar/sugar.hpp>
-~~~
+```
 
 ## Library organization
  
@@ -38,13 +38,13 @@ This section describes the low-level types required by a simulation.
 
 The library defines this type:
 
-~~~{.cpp}
+```cpp
 #include <cstdint>
 namespace KTfwd
 {
     using uint_t = std::uint32_t;
 }
-~~~
+```
 
 Thus, the name `KTfwd::uint_t` refers to a 32-bit, unsigned integer.
 
@@ -64,7 +64,7 @@ using diploid = std::pair<std::size_t,std::size_t>
 
 Sometimes, you need more information associated with your diploid type.  You can define a custom diploid provided that they provide the same _minimal API_ the pair from the previous section.
 
-~~~{.cpp}
+```cpp
 /* This is a custom diploid
  * that is essentially a hand-coded
  * instantation of pair<size_t,size_t>
@@ -77,11 +77,11 @@ struct minimal_custom_diploid
 
     //define constructors, etc., as needed
 };
-~~~
+```
 
 The code block above will be considered a custom diploid type by __fwdpp__.  Of course, this one is trivial.  Realistic examples may include an integer type representing biological sex, for example:
 
-~~~{.cpp}
+```cpp
 struct diploid_with_sex
 {
     using first_type = std::size_t;
@@ -91,7 +91,7 @@ struct diploid_with_sex
 
     //define appropriate constructors, etc.
 };
-~~~
+```
 
 #### An aside
 
@@ -105,19 +105,19 @@ Future versions of the library may add a custom diploid base type.  However, dip
 
 When modeling multiple contiguous regions separated by some genetic distance, a diploid is represented as a vector of single-region diploid types.  For example:
 
-~~~{.cpp}
+```cpp
 #include <vector>
 
 using multilocus_diploid = std::vector<diploid>;
-~~~
+```
 
 You can also have vectors of custom diploids:
 
-~~~{.cpp}
+```cpp
 #include <vector>
 
 using multilocus_custom_diploid = std::vector<diploid_with_sex>;
-~~~
+```
 
 #### Possible future changes
 
@@ -142,7 +142,7 @@ A gamete is quite simple in structur, containing the following:
 
 Let's go right to its declaration:
 
-~~~{.cpp}
+```cpp
 namespace KTfwd
 {
     template <typename TAG = tags::standard_gamete>
@@ -181,13 +181,13 @@ namespace KTfwd
         operator==(const gamete_base<TAG> &rhs) const;
     };
 }
-~~~
+```
 
 ### Mutations
 
 A mutation is an object that publicly inherits from `KTfwd::mutation_base`, which as the following declaration:
 
-~~~{.cpp}
+```cpp
 namespace KTfwd
 {
     struct mutation_base
@@ -215,7 +215,7 @@ namespace KTfwd
         //here.
 };
 }
-~~~
+```
 
 The base mutation class is very simple.  It records a position and the "neutrality" of the variant.  In fact, it is too simple to be useful.  The "sugar" layer of the library provides a set of more generally useful mutation types.  In practice, we find that these satisfy most needs:
 
