@@ -1,6 +1,6 @@
 # Example programs
 
-The best documentation of how to use the library are the example simulations in the examples/ subdirectory.
+The best documentation of how to use the library are the example simulations in the examples/ subdirectory of the source code repo.
 
 ###Running the examples:
 
