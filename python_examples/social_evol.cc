@@ -30,7 +30,7 @@ using mtype = KTfwd::mutation;
 
 
 //We need to define a custom diploid genotype for our model
-struct diploid_t : public KTfwd::tags::custom_diploid_t
+struct diploid_t 
 {
   using first_type = std::size_t;
   using second_type = std::size_t;
