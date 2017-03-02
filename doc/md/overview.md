@@ -229,7 +229,62 @@ The three types listed above are included via `#include <fwdpp/sugar/sugar.hpp>`
 
 Let's put the previous three sections into context:
 
-* We will need a container of mutations for our simulation.  For example, `using mcont_t = std::vector<KTfwd::popgenmut>;`{.cpp}.
+* We will need a container of mutations for our simulation.
+* We will need a container of gametes for our simulation.
+* We will need a container of diploids for our simulation.
+
+Here, a container refers to a contiguous-memory container that is API compatible with the C++11 `std::vector`. In practice, we use the standard library types for all of our simulations.  Thus, we may define the following:
+
+```cpp
+#include <vector>
+#include <utility> //for std::pair
+#include <cstdlib> //for std::size_t
+#include <fwdpp/diploid.hh>
+#include <fwdpp/sugar.hpp> //for KTfwd::popgenmut
+
+using mcont_t = std::vector<KTfwd::popgenmut>;
+using gcont_t = std::vector<KTfwd::gamete>;
+using diploid = std::pair<std::size_t,std::size_t>;
+using dipcont_t = std::vector<diploid>;
+```
+
+Let's think through these typedefs in light of the definitions of mutation, gamete, and diploid:
+
+* A mutation is a fundamental type, and they are stored in a vector.
+* Gametes are stored in vectors.  Gametes themselves contain vectors of `std::uint32_t`, which I said were "keys" to mutations.  Those keys represent the _indexes_ of the mutations present in a gamete.  "Neutral" and "selected" mutations are separated in order to speed up fitness calculations.  Further, the keys are stored in _ascending_ order according to _mutation position_ (`KTfwd::mutation_base::pos`).  Storing things this way means that we can use _binary searches_ in algorithms like recombination that depend on mutation positions.
+* A diploid is a pair of gametes.  The minimal diploid is `std::pair<std::size_t,std::size_t>`.  Those `size_t` objects are the _indexes_ into the gamete container.
+
+Thus, a simulation requires three containers that all need to talk to each other:
+
+```cpp
+//store our mutations
+mcont_t mutations;
+//Store our gametes,
+//which themselves contain
+//location info referring
+//to mutations
+gcont_t gametes;
+//Store diploids, which
+//contain the location of 
+//their gametes in gametes.
+dipcont_t diploids;
+```
+
+The above typedefs and code block refer to a simulation of a single contiguous region and a single population/deme. For a simulation of multiple, partially-linked regions in a single deme, we can say:
+
+```cpp
+//rely on diploid def'n above
+using multilocus_diploid = std::vector<diploid>;
+using mlocus_dipcont_t = std::vector<multilocus_diploid>;
+```
+
+For a multi-population simulation of a single, contiguous genomic region, we can define:
+
+```cpp
+using metapop = std::vector<dipcont_t>;
+```
+
+If you're following along so far, you'll realize something odd.  The definitions `mlocus_dipcont_t` and `metapop` are the same type ! That is true--both are aliases for `std::vector<std::vector<diploid>>`. They are distinguished from one another in the library because operations on these different population types require different argument types.  In other words, template tricks are involved. 
 
 #### Aside: `std::uint32_t` for mutation keys?
 
