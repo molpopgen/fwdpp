@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cstdint>
 #include <type_traits>
-#include <fwdpp/tags/gamete_tags.hpp>
 #include <fwdpp/tags/tags.hpp>
 
 namespace KTfwd
@@ -104,7 +103,7 @@ namespace KTfwd
       See @ref md_md_policies for examples of this.
       \ingroup basicTypes
     */
-    template <typename TAG = void> struct gamete_base
+    template <typename TAG = tags::standard_gamete> struct gamete_base
     {
         //! Count in population
         uint_t n;
@@ -166,9 +165,16 @@ namespace KTfwd
             return (this->mutations == rhs.mutations
                     && this->smutations == rhs.smutations);
         }
+
+        static_assert(std::is_trivially_constructible<gamete_tag>::value,
+                      "Typename gamete_tag must refer to a "
+                      "trivially-constrictible type");
+        static_assert(std::is_nothrow_default_constructible<gamete_tag>::value,
+                      "Typename gamete_tag must refer to a type that is "
+                      "default- and nothrow-constructible");
     };
 
     /// Default gamete type
-    using gamete = gamete_base<void>;
+    using gamete = gamete_base<tags::standard_gamete>;
 }
 #endif /* _FORWARD_TYPES_HPP_ */

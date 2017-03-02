@@ -5,6 +5,10 @@ namespace KTfwd
 {
     namespace tags
     {
+        //! Empty struct acts like a dispatch tag for KTfwd::gamete_base 
+        struct standard_gamete
+        {
+        };
     }
 }
 
