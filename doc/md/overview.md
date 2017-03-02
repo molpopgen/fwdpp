@@ -158,7 +158,7 @@ namespace KTfwd
         //trait value/fitness ("neutral mutations")
         mutation_container mutations;
         //Container of mutations affecting
-        trait value/fitness ("selected mutations")
+        //trait value/fitness ("selected mutations")
         mutation_container smutations;
 
         //Constructor
