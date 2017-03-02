@@ -10,6 +10,8 @@ The goal of __fwdpp__ is to define fundamental _concepts_ in a generic way, such
 
 The compile-time polymorphism described in the preceding paragraph can be further augmented using C++'s support for object-oriented programming.  By constructing custom base types for both types _and_ for functions (yes, C++ allows this!), one can also have run-time polymorphism, meaning that different models can be selected based on a command-line interface, for example.  
 
+For more information, see the [overview](doc/md/overview) of library features.
+
 #### fwdpy 
 
 The combination of compile- and run-time polymorphism is used in our Python package, [fwdpy](http://molpopgen.github.io/fwdpy), which uses __fwdpp__ as its back-end.
