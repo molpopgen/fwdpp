@@ -2,22 +2,17 @@
 
 The best documentation of how to use the library are the example simulations in the examples/ subdirectory.
 
-The individual-based programs represent the best/most efficient way to use __fwdpp__.  The others are here for legacy purposes.
-
-###Compiling the examples:
-
-As of fwdpp 0.2.5, the examples are compiled by saying "make check" after the configure step.
-
 ###Running the examples:
 
-This following list of parameters and their definitions is in common to all of the example programs:<br>
-N = the number of diploid individuals to simulate<br>
-theta = 4Nu, where u is the mutation rate per gamete per generation. For example, theta = 100 means that on average, 2Nu = 50 new mutations are entering the population each generation.<br>
-rho = 4Nr, where r is the recombination rate per diploid per generation<br>
-g = the number of generations to simulate. Often, this should be >= 8N at a minimum<br>
-n = the sample size to draw at the end of the simulation. To match the typical modeling assumptions of population genetics, you should have n << 2N.<br>
-nreps = the number of replicates to simulate<br>
-seed = a random number seed. I will use $RANDOM as a seed, referring to the bash shell method to return a random integer.<br>
+This following list of parameters and their definitions is in common to all of the example programs:
+
+* N = the number of diploid individuals to simulate
+* theta = 4Nu, where u is the mutation rate per gamete per generation. For example, theta = 100 means that on average, 2Nu = 50 new mutations are entering the population each generation.
+* rho = 4Nr, where r is the recombination rate per diploid per generation
+* g = the number of generations to simulate. Often, this should be >= 8N at a minimum
+* n = the sample size to draw at the end of the simulation. To match the typical modeling assumptions of population genetics, you should have n << 2N.
+* nreps = the number of replicates to simulate
+* seed = a random number seed. I will use $RANDOM as a seed, referring to the bash shell method to return a random integer.
 
 Note: familiarity with Hudson's "[ms](http://home.uchicago.edu/~rhudson1)" program is helpful for some of what comes below.
 
@@ -116,18 +111,19 @@ Usage:
 ~~~
 
 where:
-N = population number for each deme.
-4Nu\_neut = 4N times the neutral mutation rate per gamete
-4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
-4Nr = 4N times the recombination rate per diploid per region per generation
-4Nm = 4N times the probability of migration per diploid per generation
-s = the selection coefficient of newly-arising selected mutations
-h = dominance of newly-arising selected mutations
-f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
-ngens = # of generations to simulate
-n = sample size to take from each deme @ end of simulation (must be even #)
-outfilename = name of output file
-seed = random number seed.
+
+* N = population number for each deme.
+* 4Nu\_neut = 4N times the neutral mutation rate per gamete
+* 4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
+* 4Nr = 4N times the recombination rate per diploid per region per generation
+* 4Nm = 4N times the probability of migration per diploid per generation
+* s = the selection coefficient of newly-arising selected mutations
+* h = dominance of newly-arising selected mutations
+* f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
+* ngens = # of generations to simulate
+* n = sample size to take from each deme @ end of simulation (must be even #)
+* outfilename = name of output file
+* seed = random number seed.
 
 Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
 
@@ -159,18 +155,19 @@ Usage:
 ~~~
 
 where:
-N = population number for each deme.
-4Nu\_neut = 4N times the neutral mutation rate per gamete
-4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
-4Nr = 4N times the recombination rate per diploid per region per generation
-4Nm = 4N times the probability of migration per diploid per generation
-s = the selection coefficient of newly-arising selected mutations
-h = dominance of newly-arising selected mutations
-f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
-ngens = # of generations to simulate
-ngens2 = # of generations to simulate after the split
-n = sample size to take from each deme @ end of simulation (must be even #)
-seed = random number seed.
+
+* N = population number for each deme.
+* 4Nu\_neut = 4N times the neutral mutation rate per gamete
+* 4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
+* 4Nr = 4N times the recombination rate per diploid per region per generation
+* 4Nm = 4N times the probability of migration per diploid per generation
+* s = the selection coefficient of newly-arising selected mutations
+* h = dominance of newly-arising selected mutations
+* f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
+* ngens = # of generations to simulate
+* ngens2 = # of generations to simulate after the split
+* n = sample size to take from each deme @ end of simulation (must be even #)
+* seed = random number seed.
 
 Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
 
@@ -186,19 +183,20 @@ Usage:
 ./bneck_selection_ind N theta_neutral theta_sel rho s h g1 N2 N3 g2 n nreps seed
 ~~~
 
-Where:<br>
-N = starting population size<br>
-theta\_neutral = 4N*(neutral mutation rate per gamete)<br>
-theta\_sel = 4N*(mutation rate per gamete to selected mutations)<br>
-rho = 4Nr, where r is recombination rate per diploid per generation<br>
-s = selection coefficient. Can be negative or positive.<br>
-h = dominance of selected mutations<br>
-N2 = size of bottlenecked population<br>
-N3 = size of recovered population<br>
-g2 = generations taken to go from size N2 to size N3<br>
-n = sample size to take from the population.<br>
-nreps = # replicates to simulate<br>
-seed = random number seed.<br>
+Where:
+
+* N = starting population size
+* theta\_neutral = 4N*(neutral mutation rate per gamete)
+* theta\_sel = 4N*(mutation rate per gamete to selected mutations)
+* rho = 4Nr, where r is recombination rate per diploid per generation
+* s = selection coefficient. Can be negative or positive.
+* h = dominance of selected mutations
+* N2 = size of bottlenecked population
+* N3 = size of recovered population
+* g2 = generations taken to go from size N2 to size N3
+* n = sample size to take from the population.
+* nreps = # replicates to simulate
+* seed = random number seed.
 
 ####diploid\_ind\_2locus (diploid_ind_2locus.cc)
 
@@ -212,6 +210,7 @@ The usage is:
 Usage:
 ./diploid_ind_2locus N theta rho rbw ngens n nreps seed
 Where:
+
 N = population size (number of diploids)
 theta = 4Nu, the scaled neutral mutation rate
 rho = 4Nr, the scale recombination rate
