@@ -2,7 +2,7 @@
 
 The best documentation of how to use the library are the example simulations in the examples/ subdirectory of the source code repo.
 
-###Running the examples:
+### Running the examples:
 
 This following list of parameters and their definitions is in common to all of the example programs:
 
@@ -16,7 +16,7 @@ This following list of parameters and their definitions is in common to all of t
 
 Note: familiarity with Hudson's "[ms](http://home.uchicago.edu/~rhudson1)" program is helpful for some of what comes below.
 
-####diploid_ind (diploid_ind.cc)
+#### diploid_ind (diploid_ind.cc)
 
 The first program, diploid, simulates a Wright-Fisher population with mutation, recombination, and drift. To run it:
 
@@ -33,7 +33,7 @@ Example:
 ~~~
 
 
-####diploid\_binaryIO_ind (diploid_binaryIO_ind.cc)
+#### diploid\_binaryIO_ind (diploid_binaryIO_ind.cc)
 
 The next program is called diploid\_binaryIO\_ind. This program is identical to diploid, except that it only simulates one replicate at a time, creates two output files, and outputs the entire population rather than a sample of size n << 2N. The first file is an index file, containing an integer representing the replicate number of the output and the position in the haplotypes file where this record begins. The second file is the haplotypes file, which contains the entire population in binary format. 
 
@@ -62,7 +62,7 @@ diploid_binaryIO_ind 10000 10 10 100000 $SGE_TASK_ID indexfile hapfile $seed
 The above script, when submitted to a Grid Engine queue, will result in 100 populations of size N=10,000 being written to hapfile. Further, “indexfile” will contain the ID number and position of each file. Records are not over-written because the program uses POSIX file locking to ensure that only 1 process at a time can do the writing. This is a complex program, as it mixes C++ objects with output streams such that they can be written to C-style file descriptors, which is required in order to use file locking (which is a C feature with no C++ analog). However, the advantage is that you write all data to one large file, avoiding the plague of lots of small files that can bring distributed file systems to their knees.
 
 
-####diploid\_fixed\_sh\_ind (diploid_fixed_sh\_ind.cc) and diploid\_fixed\_sh\_ind_lambda (diploid_fixed_sh_ind_lambda.cc)
+#### diploid\_fixed\_sh\_ind (diploid_fixed_sh\_ind.cc) and diploid\_fixed\_sh\_ind_lambda (diploid_fixed_sh_ind_lambda.cc)
 
 This program is similar to diploid_ind, but adds an additional mutation rate (theta\_selected = 4Nu\_s, where u\_s is the mutation rate per gamete per generation to mutations with selection coefficient s) to mutations with selection coefficient s and dominance h. Fitness across sites is multiplicative. The output is in "ms" format--one block for neutral mutations followed by one block for selected mutations.
 
@@ -74,7 +74,7 @@ Usage:
 
 For this program, s can be positive or negative, as can h.
 
-####diploid\_twopop\_mig\_ind (diploid_twopop_mig_ind.cc)
+#### diploid\_twopop\_mig\_ind (diploid_twopop_mig_ind.cc)
 
 This program simulates an ancestral population for g generations, at which point a daughter population of size N is “budded” off from the ancestral population. Evolution continues for g2 more generations, with symmetric migration at rate M = 4Nm, where m is the migration rate per diploid per generation. The output is in "ms" format, with n haplotypes per sample just like how ms outputs data for multi-population models.
 
@@ -98,7 +98,7 @@ ms 100 1 -t 50 -r 50 1000 -I 2 2 1 -ej 0.025 2 1 -em 0.025 1 2 0.
 
 Why may this be considered odd? In ms, when two populations are merged, the rate of coalescence is unaffected by default (this behavior is documented, and it is up to the user to adjust population sizes when population merge and split in ms). That means when the two populations, each of size N merge, the merged (ancestral) population is still of size N. diploid\_twopop\_mig is doing the same thing forwards in time: an ancestral population of size N magically changes into two populations of size N. 
 
-####migsel\_ind (migsel_ind.cc)
+#### migsel\_ind (migsel_ind.cc)
 
 Simulates 2 equal-sized populations of size N (N remains constant over time) diploids with selection at strength s and dominance h. Migration occurs between the two populations.
 
@@ -134,7 +134,7 @@ The output file contains the following:
 
 The program writes the data to the output file and then reads it in again. This is mainly to illustrate the binary I/O routines for individual-based metapopulation simulations.
 
-####migsel\_split\_ind (migsel_split_ind.cc) and migsel\_split\_ind\_list (migsel_split_ind_list.cc)
+#### migsel\_split\_ind (migsel_split_ind.cc) and migsel\_split\_ind\_list (migsel_split_ind_list.cc)
 
 __NOTE:__ migsel_split_ind is not longer compiled as of fwdpp 0.3.0.  It may be resurrected in the future.
 
@@ -173,7 +173,7 @@ Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate ho
 
 
 
-####bneck\_selection\_ind (bneck_selection_ind.cc)
+#### bneck\_selection\_ind (bneck_selection_ind.cc)
 
 This program simulates a population for g generations at size N. In generation g+1, N changes to N2 <= N. The population then grows exponentially to size N3 >= N2 in g2 generations. Selected and neutral mutations are allowed each generation. The output is in “ms” format--one block for neutral mutations followed by one block for selected mutations.
 
@@ -198,7 +198,7 @@ Where:
 * nreps = # replicates to simulate
 * seed = random number seed.
 
-####diploid\_ind\_2locus (diploid_ind_2locus.cc)
+#### diploid\_ind\_2locus (diploid_ind_2locus.cc)
 
 This program simulates a 2-locus neutral model.  Mutations arise at rate \f$\theta\f$ at each locus, and each locus recombines at rate \f$\rho\f$.  The recombination rate between loci is \f$r_{bw}\f$, which corresponds to the probability a crossover is observed between loci.  In other words, the genotypes at the two loci will switch from \f[\frac{AB}{ab}\f] to \f[\frac{Ab}{aB}\f] with probability \f$r_{bw}\f$.
 
