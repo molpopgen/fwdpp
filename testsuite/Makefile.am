@@ -1,9 +1,9 @@
 if BUNIT_TEST_PRESENT
 
-noinst_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
+check_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
 			   integration/sugar_integration_tests
 
-TESTS=$(noinst_PROGRAMS)
+TESTS=$(check_PROGRAMS)
 
 #Unit test targets:
 unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/recombinationTest.cc unit/demographyTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc
