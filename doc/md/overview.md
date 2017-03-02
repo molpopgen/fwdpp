@@ -229,7 +229,7 @@ The three types listed above are included via `#include <fwdpp/sugar/sugar.hpp>`
 
 Let's put the previous three sections into context:
 
-* We will need a container of mutations for our simulation.  For example, `using mcont_t = std::vector<KTfwd::popgenmut>;`cpp.
+* We will need a container of mutations for our simulation.  For example, `using mcont_t = std::vector<KTfwd::popgenmut>;`{.cpp}.
 
 #### Aside: `std::uint32_t` for mutation keys?
 
