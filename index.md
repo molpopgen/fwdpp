@@ -2,6 +2,18 @@
 
 This is the homepage for __fwdpp__, which is a C++ template library for implementing forward-time population-genetic simulations.
 
+### What does fwdpp do?
+
+__fwdpp__ provides the high-level abstractions for data types and algorithms that are needed to implement forward-time population-genetic simulations.  The abstractions are implemented using modern C++ template programming methods defined by the C++11 language standard.  
+
+The goal of __fwdpp__ is to define fundamental _concepts_ in a generic way, such that different models may be implemented via minimal changes in code.  For example, data types have specific minimal API requirements, meaning that custom diploid, gamete, and/or mutation types may be easily implemented for your particular modeling needs.  Likewise, functions to generate new mutations, deterimine recombination breakpoints, etc., have simple minimum requirements.  In combination, custom data types + custom functions work together to generate specific models at compile time.  
+
+The compile-time polymorphism described in the preceding paragraph can be further augmented using C++'s support for object-oriented programming.  By constructing custom base types for both types _and_ for functions (yes, C++ allows this!), one can also have run-time polymorphism, meaning that different models can be selected based on a command-line interface, for example.  
+
+#### fwdpy 
+
+The combination of compile- and run-time polymorphism is used in our Python package, [fwdpy](http://molpopgen.github.io/fwdpy), which uses __fwdpp__ as its back-end.
+
 ### Citation
 
 If you use __fwdpp__ for yor research, either to develop simulations or you use the example programs, please cite the following manuscript:
