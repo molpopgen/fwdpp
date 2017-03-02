@@ -52,7 +52,7 @@ Thus, the name `KTfwd::uint_t` refers to a 32-bit, unsigned integer.
 
 When modeling a single contiguous genomic segment, a diploid is simply a pair of gametes.  The way to represent that using __fwdpp__ is actually with a type from the C++ standard library:
 
-```{.cpp}
+```cpp
 #include <utility>
 #include <cstdint>
 
@@ -223,9 +223,17 @@ The base mutation class is very simple.  It records a position and the "neutrali
 * `KTfwd::generalmut` where `s` and `h` are stored as `std::array<,doublestd::size_t>`, allowing for multiple `s/h` values to be associated with a variant.  Think of using this array to simulate pleiotropic effect sizes, for example.
 * `KTfwd::generalmut_vec` is largely equivalent to `KTfwd::generalmut`, but `std::vector<double>` replaces the `std::array`.  Possible use cases could involve different variants having different numbers of pleitropic effects.  Or, and perhaps more practically, this type can be used in other language environments that do not understand `std::array` (think [Cython](http://www.cython.org)).
 
-The three types listed above are included via `#include <fwdpp/sugar/sugar.hpp>`
+The three types listed above are included via `#include <fwdpp/sugar/sugar.hpp>`.  See the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more details about them.
 
 ### Mutations + Gametes + Diploids = (almost) a population.
+
+Let's put the previous three sections into context:
+
+* We will need a container of mutations for our simulation.  For example, `using mcont_t = std::vector<KTfwd::popgenmut>;`cpp.
+
+#### Aside: `std::uint32_t` for mutation keys?
+
+The astute reader will notice that `KTfwd::gamete_base` stores mutation keys as `std::uint32_t` while `std::vector<any mutation type>::size_type` is almost certainly `std::size_t`, which will be 64 bits on most systems.  In practice, `sizeof(a mutation type)` is sufficiently large that it is very unlikely that anyone can store more than $2^32-1$ such objects.  Thus, __fwdpp__ intentionally makes a compromise on the integer width.  A nice side-effect is that we save a lot of memory!  Those keys end up being a lot of the storage in a simulation of a large population/large genomic region.
 
 ## Representing a population
 
