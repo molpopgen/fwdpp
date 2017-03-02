@@ -1,5 +1,35 @@
 # Overview of fwdpp features
 
+This document is a quick tour of __fwdpp__'s features.  It also points out what is missing from the library that may or may not be addressed in the future.
+
+The document assumes a working knowledge of C++11 and skips details, such as class constructor implementation, that are C++11 issues rather than __fwdpp__ issues.
+
+Sub-sections named "aside" may be skipped--they contain some technical details that hopefully address questions that proficient C++ programmers may have.
+
+## Library headers
+
+The library is header-only, meaning that there is no runtime library to link to. Rather, the vast majority of library code is implemented as generic templates.
+
+There are two main headers to be aware of:
+
+~~~{.cpp}
+//This includes the low-level library:
+#include <fwdpp/diploid.hh>
+//This includes the higher-level objects
+//and functions:
+#include <fwdpp/sugar/sugar.hpp>
+~~~
+
+## Library organization
+ 
+The two headers correspond to two related parts of __fwdpp__.  The header `fwdpp/diploid.hh` contains low-level functionality.  This code base represents how the library grew over time.  
+
+While it is possible to write your simulations using only the part of __fwdpp__, doing so is more cumbersome than it needs to be. During our work in developing simulations for our research, a series of best practices have evolved, which developed into the "sugar" part of the library (`fwdpp/sugar/sugar.hpp`).  
+
+We recommend using "sugar" features whenever possible.  They call the low-level functions an often have simpler APIs.  In the sections below, function calls from "sugar" will be noted.
+
+Both the low-level and sugar parts of __fwdpp__ are in the namespace `KTfwd`.
+
 ## Built-in types
 
 ### Diploids
