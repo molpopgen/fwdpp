@@ -62,8 +62,9 @@ namespace KTfwd
             gcont gametes;
 
             /*!
-              Vectors for holding copies of pointers to mutations during
-              recombination.
+			  Containers that can be used as intermediates during the generation
+			  of new gametes.
+
               The requirement to declare these was introduced in fwdpp 0.3.3.
 
               In previous versions of the library, vectors like this had to be
