@@ -305,6 +305,45 @@ The astute reader will notice that `KTfwd::gamete_base` stores mutation keys as 
 
 ## Representing a population
 
+Sadly, we need more than containers of mutations, gametes and diploids.  There's more to book-keep, requiring additional data structures:
+
+* We need a vector keeping track of mutation frequencies.
+* It would be handy to have a vector of fixed mutations, so that we can remove such mutations from our population (for models where doing so would be appropriate).
+* If we are tracking fixations, we probably want to track fixation times, leading to another vector recording those.
+* When simulating infinitely-many sites mutation models, an efficient lookup table of current mutation positions would be a good idea.
+
+This is where the "sugar" part of __fwdpp__ comes in handy.  While it would be possible to manually define all of these additional container types, it would be better if we could encapsulate all of these concepts into classes. The sugar layer defines three template types to help you: 
+
+* `KTfwd::singlepop` to represent a contiguous region and a single deme
+* `KTfwd::metapop` to represent a contiguous region and multiple demes
+* `KTfwd::multiloc` to represent multiple partially-linked regions and a single deme.
+
+Each of the above takes two type parameters as template arguments.  These are a mutation type and a diploid type, respectively.  Further, the diploid type defaults to `std::pair<std::size_t,std::size_t>`.  For example:
+
+```cpp
+#include <fwdpp/sugar.hpp>
+
+//A population type where 
+//the mutation type is
+//KTfwd::popgenmut and
+//a diploid is pair<size_t,size_t>
+using singlepop_t 
+    = KTfwd::singlepop<KTfwd::popgenmut>;
+
+//A different population type based
+//around a custom diploid
+using singlepop_custom_t 
+    = KTfwd::singlepop<KTfwd::popgenmut,diploid_with_sex>;
+```
+
+The rest of the types are filled in automatically for you.  These types always use `std::vector` for contiguous-memory containers.  The lookup type for mutation positions is defined in terms of `std::unordered_set`.
+
+The `metapop` and `multiloc` template types work similarly.
+
+These containers are defined as C++11 template aliases.  The `singlepop`, `metapop`, and `multiloc` types are template aliases for `KTfwd::sugar::singlepop`, `KTfwd::sugar::metapop`, and `KTfwd::sugar::multiloc`, respectively.  If you wish to use a vector type other than `std::vector` (perhaps `std::vector` with a custom allocator, or `boost::vector`, then you may define a new template alias in terms of those container types and it will "just work", provided that the container type's API matches those of the C++ standard library types. (If they don't, then that should be fixed...)
+
+At this point, I'll refer you to the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more detail on these types. We will see them in action below, though.
+
 ## Modeling the biology
 
 ### Mutation
