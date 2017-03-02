@@ -226,17 +226,19 @@ namespace KTfwd
         //The usual suite of constructors
         //are declared "default", and omitted
         //here.
-};
+    };
 }
 ```
 
 The base mutation class is very simple.  It records a position and the "neutrality" of the variant.  In fact, it is too simple to be useful.  The "sugar" layer of the library provides a set of more generally useful mutation types.  In practice, we find that these satisfy most needs:
 
 * `KTfwd::popgenmut` is a mutation with an effect size (`s`), dominance (`h`) and a record of when it appeared (`g`).  Note that __fwdpp__ does not care if `s` is an effect size on a phenotype or a "selection coefficient" in the way that population geneticists typically define the term.
-* `KTfwd::generalmut` where `s` and `h` are stored as `std::array<double,std::size_t>`, allowing for multiple `s/h` values to be associated with a variant.  Think of using this array to simulate pleiotropic effect sizes, for example.
+* `KTfwd::generalmut` where `s` and `h` are stored as `std::array<double,std::size_t>`, allowing for multiple `s/h` values to be associated with a variant.  Think of using this array to simulate pleiotropic effect sizes, for example. Or use a `std::array<double,2>` to have different effects in females vs males.  Etc.
 * `KTfwd::generalmut_vec` is largely equivalent to `KTfwd::generalmut`, but `std::vector<double>` replaces the `std::array`.  Possible use cases could involve different variants having different numbers of pleitropic effects.  Or, and perhaps more practically, this type can be used in other language environments that do not understand `std::array` (think [Cython](http://www.cython.org)).
 
 The three types listed above are included via `#include <fwdpp/sugar/sugar.hpp>`.  See the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more details about them.
+
+If you have a need for a feature in a mutation that cannot be accomodated by one of the above types, simply define your own.  Your mutation type must publicly interit from `KTfwd::mutation_base`.
 
 ### Mutations + Gametes + Diploids = (almost) a population.
 
