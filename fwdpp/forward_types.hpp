@@ -165,13 +165,15 @@ namespace KTfwd
             return (this->mutations == rhs.mutations
                     && this->smutations == rhs.smutations);
         }
-
+// The following type traits are not implemented in GCC 4.
+#if (defined __GNUG__&& __GNUC__ >= 5) || !defined __GNUG__ || defined __clang__ 
         static_assert(std::is_trivially_constructible<gamete_tag>::value,
                       "Typename gamete_tag must refer to a "
                       "trivially-constrictible type");
         static_assert(std::is_nothrow_default_constructible<gamete_tag>::value,
                       "Typename gamete_tag must refer to a type that is "
                       "default- and nothrow-constructible");
+#endif
     };
 
     /// Default gamete type
