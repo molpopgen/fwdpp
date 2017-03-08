@@ -116,8 +116,13 @@ PYBIND11_PLUGIN(fwdpp_pybind11)
              });
     ;
 
+	using poptype_base = poptype::popbase_t;
+	
+	pybind11::class_<poptype_base>(m,"poptype_base")
+	;
+
     // Expose the type based on fwdpp's "sugar" layer
-    pybind11::class_<poptype>(m, "poptype")
+    pybind11::class_<poptype,poptype_base>(m, "poptype")
         .def(pybind11::init<unsigned>())
         .def("clear", &poptype::clear)
         /*
