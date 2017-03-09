@@ -344,7 +344,7 @@ The `metapop` and `multiloc` template types work similarly.
 
 These containers are defined as C++11 template aliases.  The `singlepop`, `metapop`, and `multiloc` types are template aliases for `KTfwd::sugar::singlepop`, `KTfwd::sugar::metapop`, and `KTfwd::sugar::multiloc`, respectively.  The types in namespace `KTfwd::sugar` take more type names as template parameters.  These types are the various container types, etc.  Thus, if you wish to use a vector type other than `std::vector` (perhaps `std::vector` with a custom allocator, or `boost::vector`), then you may define a new template alias in terms of those container types and it will "just work", provided that the container type's API matches those of the C++ standard library types. 
 
-At this point, I'll refer you to the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more detail on these types. We will see them in action below, though.
+At this point, I'll refer you to the [reference manual](http://molpopgen.github.io/fwdpp/doc/html/index.html) for more detail on these types. 
 
 ## Recycling
 
