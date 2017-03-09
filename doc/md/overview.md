@@ -356,6 +356,77 @@ Recycling allows us to use cache-friendly containers like `std::vector`.  It als
 
 ## Modeling the biology
 
+This section gives a quick overview of wht mutation, recombination, and fitness functions have to look like in order to be compatible with __fwdpp__.  After reading this document, you should go look at the source code for the example programs to get an idea of how these ideas are put into practice.
+
+This section uses the following shorthand notation for types:
+
+* diploid_t is a diploid
+* gamete_t is a gamete
+* mutation_t is a mutation
+* gcont_t is a container of gametes
+* mcont_t is a container of mutations
+
+In practice, the above will refer equally to both type names that are required to instantiate the library's template functions and to specific types used to instantiate the templates.  The following code block shows how `diploid_t` can be both a generic name and a specific type (`pair<size_t,size_t>`):
+
+```cpp
+template<typename diploid_t>
+void do_something(const diploid_t &)
+{
+    static_assert(KTfwd::is_diploid<diploid_t>::value,
+    "diploid_t must be a valid diploid type");
+}
+
+std::pair<std::size_t,std::size_t> a_diploid;
+
+do_something(a_diploid);
+```
+
+The next sections discuss functions _signatures_.  By this, I mean its return type and the argument types that it expects. Further, the signature refers to the argument types _after_ lambda capture and/or binding parameters via `std::bind`.
+
+The signature of our `do_something` function above can be written as `void(const diploid_t &)`.  I will refer to signatures using their representation as a `std::function`.  With this notation, we can rewrite the signature of `do_something` as
+
+```cpp
+std::function<void(const diploid_t &)>
+```
+
+In other words, anything convertible to the above type has the same signature.  In C++, this means regular functions, function objects defining `operator()`, lamba expressions, and C-style function pointers.
+
+Consider the following function object:
+
+```cpp
+struct do_something_else
+{
+    template<typename diploid_t>
+    void operator()(const diploid_t & dip, 
+                    const double x) const
+    {
+    }
+};
+```
+
+Further, consider the following object:
+
+```cpp
+auto bound_function = 
+    std::bind(do_something_else(),
+              std::placeholders::_1,2.0);
+```
+
+The signature of `bound_function` is  `std::function<void(const diploid_t &)>`. (In fact, that is one of many possible signatures, depending on what that placeholder eventually resolves to at compile time, but that detail is beyond the scope for now.)
+
+Likewise, the following lambda has `std::function<void(const diploid_t &)>` for a signature:
+
+```cpp
+double x = 2.0;
+
+auto a_lambda = 
+    [x](const diploid_t &d) -> void
+    {
+    };
+```
+
+Much of __fwdpp__'s flexibility comes from the fact that many different callable objects can reduce to the same signature after binding/lambda capture.
+
 ### Mutation
 
 Two types of mutation function are possible.  First,
