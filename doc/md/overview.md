@@ -358,6 +358,69 @@ Recycling allows us to use cache-friendly containers like `std::vector`.  It als
 
 ### Mutation
 
+Two types of mutation function are possible.  First,
+
+```cpp
+std::function<std::size_t(const recycling_bin_t &, mcont_t &)>
+```
+
+Or,
+
+```cpp
+std::function<std::size_t(const recycling_bin_t &, const gamete_t &,mcont_t &)>
+```
+
+The function must generate a new mutation and return its key.  The key must be the index of the new mutation in the mutations container.  Further, fwdpp's recycling rules must be obeyed.
+
+In order to assist writing mutation functions, the library provids KTfwd::fwdpp_internal::recycle_mutation_helper.  This function is a variadic template function with the following prototype:
+
+```cpp
+template <typename queue_t, typename mcont_t, class... Args>
+typename queue_t::value_type
+recycle_mutation_helper(queue_t &mutation_recycling_bin,
+                        mcont_t &mutations, Args &&... args)
+```
+
+The parameter pack Args represent the constructor calls for the mutation type, which are perfectly-forwarded into a new mutation object. If an existing location in the mutation container cannot be recycled, a new object is emplaced at the end using the parameter pack, minimizing the number of temporary objects created.  If a position can be recycled, a new object is most likely copy-constructed into place (but some compilers may implement a move construction at their discretion--most don't, though).
+
+For a real-world example, see the implementation of KTfwd::infsites.
+
+#### Possible future changes
+
+* Move recycle_mutation_helper out of the fwdpp_internal namespace, as the public API should not be there.
+* Consider additional valid function signatures where a diploid is passed in, which may help implement things like sex-specific mutation rates, etc.
+* Design an API that allows for reversible mutation.  I'm not sure fwdpp is quite there yet.
+
 ### Recombination
 
+A recombination function has the following signature:
+
+```cpp
+std::function<std::vector<double>(const gamete_t &, const gamete_t &, const mcont_t &)>
+```
+
+This function is responsible for returning a vector of breakpoints.  Any random number generators, etc., needed to generate such a vector must be bound/captured separately.
+
+An example of a recombination function is KTfwd::poisson_xover, which is implemented as a function object with a template call operator.
+
+This function signature is the same for a multilocus diploid.  Vectors of such functions are used for multi-locus/region simulations, and they are applied in turn to each locus.
+
+#### Possible future changes
+
+In order to model things like sex-limited recombination, etc., will require a signature like this:
+
+```cpp
+std::function<std::vector<double>(const diploid_t &, const gcont_t &, const mcont_t &)>
+```
+
+Passing in the diploid type itself would allow checking of any data present in custom diploid types (male, female, etc.).  It is likely that such a change will happen in a future release.
+
 ### Fitness
+
+A fitness function has the following signature:
+
+```cpp
+std::function<double(const diploid_t &, const gcont_t &, const mcont_t &)>
+```
+
+In other words, it take a diploid, a container of gametes, and a container of mutations as arguments.  Using that information, fitness is calculated and returned as a double.
