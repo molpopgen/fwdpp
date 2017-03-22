@@ -39,6 +39,9 @@ namespace KTfwd
             }
 
           public:
+            virtual ~metapop() = default;
+			metapop(metapop &&) = default;
+			metapop(const metapop &) = default;
             //! Deme sizes
             std::vector<uint_t> Ns;
 

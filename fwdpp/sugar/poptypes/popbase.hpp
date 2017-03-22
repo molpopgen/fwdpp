@@ -27,6 +27,9 @@ namespace KTfwd
                           "mcont::value_type must be a mutation type");
 
           public:
+            virtual ~popbase() = default;
+            popbase(popbase &&) = default;
+            popbase(const popbase &) = default;
             //! Mutation type
             using mutation_t = mutation_type;
             //! Gamete type
@@ -62,8 +65,9 @@ namespace KTfwd
             gcont gametes;
 
             /*!
-			  Containers that can be used as intermediates during the generation
-			  of new gametes.
+                          Containers that can be used as intermediates during
+              the generation
+                          of new gametes.
 
               The requirement to declare these was introduced in fwdpp 0.3.3.
 

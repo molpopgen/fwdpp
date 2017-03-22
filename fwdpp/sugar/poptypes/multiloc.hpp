@@ -28,6 +28,9 @@ namespace KTfwd
             : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
                              ftvector, lookup_table_type>
         {
+            virtual ~multiloc() = default;
+            multiloc(multiloc &&) = default;
+            multiloc(const multiloc &) = default;
             //! Dispatch tags for other parts of sugar layer
             using popmodel_t = sugar::MULTILOCPOP_TAG;
             //! Typedef for base class
