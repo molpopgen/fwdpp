@@ -17,7 +17,7 @@
 
 template <typename singlepop_object_t>
 void
-simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10)
+simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10, const unsigned popsize = 5000)
 /*!
   \brief Quick function for evolving a single-deme simulation
   \ingroup testing
@@ -25,12 +25,11 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10)
  */
 {
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-
     for (unsigned generation = 0; generation < simlen; ++generation)
         {
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, 0.005,
+                pop.mcounts, pop.N,popsize, 0.005,
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, rng.get(),
                           std::ref(pop.mut_lookup), generation, 0.0025, 0.0025,
@@ -43,6 +42,7 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10)
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
                 pop.neutral, pop.selected);
+			pop.N=popsize;
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * pop.N);
