@@ -30,6 +30,8 @@ namespace KTfwd
             virtual ~popbase() = default;
             popbase(popbase &&) = default;
             popbase(const popbase &) = default;
+            popbase &operator=(popbase &&) = default;
+            popbase &operator=(const popbase &) = default;
             //! Mutation type
             using mutation_t = mutation_type;
             //! Gamete type

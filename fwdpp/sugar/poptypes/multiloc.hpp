@@ -31,6 +31,8 @@ namespace KTfwd
             virtual ~multiloc() = default;
             multiloc(multiloc &&) = default;
             multiloc(const multiloc &) = default;
+            multiloc &operator=(multiloc &&) = default;
+            multiloc &operator=(const multiloc &) = default;
             //! Dispatch tags for other parts of sugar layer
             using popmodel_t = sugar::MULTILOCPOP_TAG;
             //! Typedef for base class
