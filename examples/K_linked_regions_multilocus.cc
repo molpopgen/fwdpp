@@ -158,10 +158,7 @@ main(int argc, char **argv)
             Sequence::SimData a(i.begin(), i.end());
             std::cout << a << '\n';
         }
-    std::vector<std::pair<double, double>> boundaries;
-    for (unsigned i = 0; i < K; ++i)
-        boundaries.emplace_back(i, i + 1);
-    auto y = KTfwd::sample(r.get(), pop, 10, false, boundaries);
+    auto y = KTfwd::sample(r.get(), pop, 10, false);
     for (auto &&i : y)
         {
             Sequence::SimData a(i.begin(), i.end());

@@ -47,9 +47,7 @@ namespace KTfwd
                                          sugar::MULTILOCPOP_TAG>::value,
                             std::vector<sample_t>>::type
     sample(const gsl_rng *r, const poptype &p, const unsigned nsam,
-           const bool removeFixed,
-           const std::vector<std::pair<double, double>> &locus_boundaries
-           = std::vector<std::pair<double, double>>())
+           const bool removeFixed)
     /*!
       Take a random sample of nsam chromosomes from a population
 
@@ -65,20 +63,20 @@ namespace KTfwd
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       "poptype must be MULTILOCPOP_TAG");
-        if (!removeFixed && locus_boundaries.empty())
+        if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
                     "locus boundaries required when adding fixations");
             }
         auto rv = ms_sample(r, p.mutations, p.gametes, p.diploids, nsam,
                             removeFixed);
-        if (!removeFixed && locus_boundaries.size() != rv.size())
+        if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
                 throw std::runtime_error(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(rv, p.fixations, nsam, removeFixed,
-                      sugar::treat_neutral::ALL, locus_boundaries);
+                      sugar::treat_neutral::ALL, p.locus_boundaries);
         return rv;
     }
 
@@ -88,9 +86,7 @@ namespace KTfwd
                             std::vector<sep_sample_t>>::type
     sample_separate(
         const gsl_rng *r, const poptype &p, const unsigned nsam,
-        const bool removeFixed,
-        const std::vector<std::pair<double, double>> &locus_boundaries
-        = std::vector<std::pair<double, double>>())
+        const bool removeFixed)
     /*!
       Take a random sample of nsam chromosomes from a population
 
@@ -107,20 +103,20 @@ namespace KTfwd
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       "poptype must be MULTILOCPOP_TAG");
-        if (!removeFixed && locus_boundaries.empty())
+        if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
                     "locus boundaries required when adding fixations");
             }
         auto rv = ms_sample_separate(r, p.mutations, p.gametes, p.diploids,
                                      nsam, removeFixed);
-        if (!removeFixed && locus_boundaries.size() != rv.size())
+        if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
                 throw std::runtime_error(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(rv, p.fixations, nsam, removeFixed,
-                      sugar::treat_neutral::ALL, locus_boundaries);
+                      sugar::treat_neutral::ALL, p.locus_boundaries);
         return rv;
     }
 
@@ -193,10 +189,7 @@ namespace KTfwd
                                          sugar::MULTILOCPOP_TAG>::value,
                             std::vector<sample_t>>::type
     sample(const poptype &p, const std::vector<integer_type> &individuals,
-           const bool removeFixed,
-           const std::vector<std::pair<double, double>> &locus_boundaries
-           = std::vector<std::pair<double, double>>())
-
+           const bool removeFixed)
     /*!
       Take a non-random sample of diploids from a population
 
@@ -211,7 +204,7 @@ namespace KTfwd
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       "poptype must be MULTILOCPOP_TAG");
-        if (!removeFixed && locus_boundaries.empty())
+        if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
                     "locus boundaries required when adding fixations");
@@ -227,7 +220,7 @@ namespace KTfwd
                     "KTfwd::sample_separate: individual index out of range");
             }
 
-        return sample_details(p, individuals, removeFixed, locus_boundaries);
+        return sample_details(p, individuals, removeFixed, p.locus_boundaries);
     }
 
     template <typename poptype, typename integer_type = std::size_t>
@@ -278,9 +271,7 @@ namespace KTfwd
                             std::vector<sep_sample_t>>::type
     sample_separate(
         const poptype &p, const std::vector<integer_type> &individuals,
-        const bool removeFixed,
-        const std::vector<std::pair<double, double>> &locus_boundaries
-        = std::vector<std::pair<double, double>>())
+        const bool removeFixed)
     /*!
       Take a non-random sample of nsam chromosomes from a population
 
@@ -298,7 +289,7 @@ namespace KTfwd
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       "poptype must be MULTILOCPOP_TAG or MULTILOCPOP_TAG");
-        if (!removeFixed && locus_boundaries.empty())
+        if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
                     "locus boundaries required when adding fixations");
@@ -316,14 +307,14 @@ namespace KTfwd
         auto rv = fwdpp_internal::ms_sample_separate_mlocus(
             p.mutations, p.gametes, p.diploids, individuals,
             2 * individuals.size(), removeFixed);
-        if (!removeFixed && locus_boundaries.size() != rv.size())
+        if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
                 throw std::runtime_error(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(
             rv, p.fixations, 2 * static_cast<unsigned>(individuals.size()),
-            removeFixed, sugar::treat_neutral::ALL, locus_boundaries);
+            removeFixed, sugar::treat_neutral::ALL, p.locus_boundaries);
         return rv;
     }
 
