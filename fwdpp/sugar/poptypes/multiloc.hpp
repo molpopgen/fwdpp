@@ -63,7 +63,7 @@ namespace KTfwd
              */
             multiloc(
                 const uint_t &__N, const uint_t &__nloci,
-                const std::vector<std::pair<double, double>> &locus_boundaries
+                const std::vector<std::pair<double, double>> &locus_boundaries_
                 = std::vector<std::pair<double, double>>(),
                 typename popbase_t::gamete_t::mutation_container::size_type
                     reserve_size
@@ -72,7 +72,8 @@ namespace KTfwd
                   diploids(__N, typename popbase_t::diploid_t(
                                     __nloci,
                                     typename popbase_t::diploid_t::value_type(
-                                        0, 0)))
+                                        0, 0))),
+                  locus_boundaries(locus_boundaries_)
             {
                 if (locus_boundaries.empty())
                     {
