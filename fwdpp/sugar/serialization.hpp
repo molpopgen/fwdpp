@@ -255,6 +255,13 @@ namespace KTfwd
                     // Step 3:the fixation times
                     writer(buffer, &pop.fixation_times[0], temp);
                 }
+            temp = uint_t(pop.locus_boundaries.size());
+            writer(buffer, &temp);
+            for(uint_t i=0;i<temp;++i)
+            {
+                writer(buffer,&pop.locus_boundaries[i].first);
+                writer(buffer,&pop.locus_boundaries[i].second);
+            }
         }
 
         /*!
@@ -371,6 +378,17 @@ namespace KTfwd
                 {
                     reader(buffer, &pop.fixation_times[0], temp);
                 }
+
+            reader(buffer,&temp);
+            if(temp)
+            {
+                double x[2];
+                for(uint_t i=0;i<temp;++i)
+                {
+                    reader(buffer,&x[0],2);
+                    pop.locus_boundaries.emplace_back(x[0],x[1]);
+                }
+            }
 
             // Finally, fill the lookup table:
             for (unsigned i = 0; i < pop.mcounts.size(); ++i)

@@ -88,6 +88,7 @@ namespace KTfwd
             operator==(const multiloc &rhs) const
             {
                 return this->diploids == rhs.diploids
+                       && this->locus_boundaries == rhs.locus_boundaries
                        && popbase_t::is_equal(rhs);
             }
 
