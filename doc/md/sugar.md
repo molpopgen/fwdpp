@@ -11,9 +11,7 @@ The intention of the "sugar layer" is to:
 * Provide a path to more rapid development of simulations, which is accomplished by providing a set of C++11 template aliases for structures defining population objects.
 * Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include KTfwd::mutation (which has been in the library "forever"), KTfwd::popgenmut, which is implemented over and over again as mutation_with_age in the examples (@ref md_md_examples), and KTfwd::infsites, which implements an infinitely-many sites mutation scheme that can return either of these two types of mutation.
 * Provide data types wrapping the serialization methods in __fwdpp__ (see @ref md_md_serialization).  The relevant sugar components are KTfwd::serialize and KTfwd::deserialize.
-* Make sure that all types defined in the sugar layer are properly-defined so that they may be used in conjunction with tools like [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) to enable running/processing simulations within R, and [boost](http://www.boost.org)'s "boost.python" library to enable processing/running simulations in python.
-
-__Note:__  You may find an example of using __fwdpp__ + Rcpp in [foRward](http://github.com/molpopgen/foRward) and an example of using boost.python in the extensions subdirectory of the __fwdpp__ source code repository.  I  will address the issue of Cython support soon, but am currently finding the C++-related documentation for that project to be, well, horrid.
+* Make sure that all types defined in the sugar layer are properly-defined so that they may be used in conjunction with tools like [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) to enable running/processing simulations within R, [boost](http://www.boost.org)'s "boost.python" library to enable processing/running simulations in python, and [pybind11](https://github.com/pybind/pybind11), a C++11/c++14 reimagining of boost.python.
 
 ## Overview
 
