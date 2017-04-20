@@ -84,8 +84,8 @@ main(int argc, char **argv)
         = atof(argv[argument++]); // mutation rate to mutations affecting trait
     const double sigmu = atof(argv[argument++]); // std. dev. of effect size
     const double rho = atof(argv[argument++]);   // 4*n*recombination rate.
-                                               // Note: recombination rate is
-                                               // per REGION, not SITE!!
+                                                 // Note: recombination rate is
+                                                 // per REGION, not SITE!!
     const unsigned ngens
         = atoi(argv[argument++]);       // Number of generations to simulate
     int nreps = atoi(argv[argument++]); // Number of replicates to simulate
@@ -150,8 +150,12 @@ main(int argc, char **argv)
                                   gaussianFitness),
                         pop.neutral, pop.selected, 0.,
                         KTfwd::remove_nothing());
+                    assert(popdata_sane(pop.diploids, pop.gametes,
+                                        pop.mutations, pop.mcounts));
                     KTfwd::update_mutations(pop.mutations, pop.mut_lookup,
-                                            pop.mcounts, 2 * N);
+                                            pop.mcounts);
+                    assert(popdata_sane(pop.diploids, pop.gametes,
+                                        pop.mutations, pop.mcounts));
                     assert(KTfwd::check_sum(pop.gametes, 2 * N));
                 }
             // Get VG for this replicate
