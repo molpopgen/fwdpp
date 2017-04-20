@@ -6,9 +6,10 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.6
 
-* Extend concept of regions to multi-locus sims via extensions::bind_vec__drm and extensions::bind_vec::dmm
-* extensions::discrete_mut_model::make_mut now takes a pointer to the generation, allowing a single point of binding rather than binding each generation.
+* Extend concept of regions to multi-locus sims via extensions::bind_vec__drm and extensions::bind_vec::dmm. [commit](https://github.com/molpopgen/fwdpp/commit/da1b47b661679c80530b3ed477107f9fadf33e25)
+* extensions::discrete_mut_model::make_mut now takes a pointer to the generation, allowing a single point of binding rather than binding each generation. [commit](https://github.com/molpopgen/fwdpp/commit/da1b47b661679c80530b3ed477107f9fadf33e25)
 * Exceptions in namespace KTfwd::extensions changed from std::runtime_error to std::invalid_argument where appropriate.
+* Fix bug in examples/HOC_ind.cc affecting (improper) recycling of fixations during the simulation. [commit](https://github.com/molpopgen/fwdpp/commit/559e7db4cefe6c444584c4a51587bd315e35cbb9)
 
 ## 0.5.5
 
