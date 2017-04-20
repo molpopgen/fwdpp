@@ -4,6 +4,12 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.5.6
+
+* Extend concept of regions to multi-locus sims via extensions::bind_vec__drm and extensions::bind_vec::dmm
+* extensions::discrete_mut_model::make_mut now takes a pointer to the generation, allowing a single point of binding rather than binding each generation.
+* Exceptions in namespace KTfwd::extensions changed from std::runtime_error to std::invalid_argument where appropriate.
+
 ## 0.5.5
 
 * Added KTfwd::sugar::multiloc::locus_boundaries and simplified API in fwdpp/sugar/sampling.hpp, resolving #47.
