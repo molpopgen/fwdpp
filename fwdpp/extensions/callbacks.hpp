@@ -34,8 +34,9 @@ namespace KTfwd
 
       Examples of using this namespace are:
 
-      1. http://github.com/molpopgen/fwdpy
-      2. http://github.com/molpopgen/foRward
+      1. http://github.com/molpopgen/fwdpy (This project is deprecated
+      and no longer tracks changes to the extensions API.)
+      2. http://github.com/molpopgen/fwdpy11
      */
     namespace extensions
     {
@@ -69,7 +70,7 @@ namespace KTfwd
             {
                 if (!std::isfinite(x))
                     {
-                        throw std::runtime_error("value must be finite");
+                        throw std::invalid_argument("value must be finite");
                     }
             }
             inline double
@@ -89,11 +90,11 @@ namespace KTfwd
             {
                 if (!std::isfinite(mean))
                     {
-                        throw std::runtime_error("mean must be finite");
+                        throw std::invalid_argument("mean must be finite");
                     }
                 if (mean == 0.)
                     {
-                        throw std::runtime_error("mean must not equal 0");
+                        throw std::invalid_argument("mean must not equal 0");
                     }
             }
             inline double
@@ -114,12 +115,12 @@ namespace KTfwd
             {
                 if (!std::isfinite(mn) || !std::isfinite(mx))
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "min and max of range must both be finite");
                     }
                 if (mn > mx)
                     {
-                        throw std::runtime_error("min must be <= max");
+                        throw std::invalid_argument("min must be <= max");
                     }
             }
             inline double
@@ -140,15 +141,15 @@ namespace KTfwd
             {
                 if (!std::isfinite(a) || a <= 0.)
                     {
-                        throw std::runtime_error("a must be > 0.");
+                        throw std::invalid_argument("a must be > 0.");
                     }
                 if (!std::isfinite(b) || b <= 0.)
                     {
-                        throw std::runtime_error("b must be > 0.");
+                        throw std::invalid_argument("b must be > 0.");
                     }
                 if (!std::isfinite(factor) || !(factor > 0.))
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "scaling factor must be finite and > 0");
                     }
             }
@@ -168,9 +169,9 @@ namespace KTfwd
             gaussian(const double &__sd) : sd(__sd)
             {
                 if (!(sd > 0.))
-                    throw std::runtime_error("sd must be > 0");
+                    throw std::invalid_argument("sd must be > 0");
                 if (!std::isfinite(sd))
-                    throw std::runtime_error("sd must be finite");
+                    throw std::invalid_argument("sd must be finite");
             }
             inline double
             operator()(const gsl_rng *r) const
@@ -189,12 +190,12 @@ namespace KTfwd
             {
                 if (!std::isfinite(mean) || !std::isfinite(shape))
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "mean and shape must both be finite");
                     }
                 if (!(shape > 0))
                     {
-                        throw std::runtime_error("shape must be > 0");
+                        throw std::invalid_argument("shape must be > 0");
                     }
             }
             inline double

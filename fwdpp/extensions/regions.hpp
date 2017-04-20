@@ -61,18 +61,18 @@ namespace KTfwd
                 if (nbeg.size() != nend.size()
                     || nbeg.size() != nweights.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "input vectors must all be the same size");
                     }
                 if (sbeg.size() != send.size()
                     || sbeg.size() != sweights.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "input vectors must all be the same size");
                     }
                 if (!sweights.empty() && sweights.size() != shmodels.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "incorrect number of shmodels");
                     }
                 if (nweights.size())
@@ -115,19 +115,19 @@ namespace KTfwd
                     || nbeg.size() != nweights.size()
                     || nbeg.size() != nlabels.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "input vectors must all be the same size");
                     }
                 if (sbeg.size() != send.size()
                     || sbeg.size() != sweights.size()
                     || sbeg.size() != slabels.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "input vectors must all be the same size");
                     }
                 if (!sweights.empty() && sweights.size() != shmodels.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "incorrect number of shmodels");
                     }
                 if (nweights.size())
@@ -181,8 +181,8 @@ namespace KTfwd
                       typename mcont_t>
             inline result_type
             make_mut(queue_t &recycling_bin, mcont_t &mutations,
-                     const gsl_rng *r, const double &nmu, const double &smu,
-                     unsigned generation, lookup_table_t &lookup) const
+                     const gsl_rng *r, const double nmu, const double smu,
+                     const unsigned *generation, lookup_table_t &lookup) const
             {
                 assert(nmu + smu > 0.);
                 bool is_neutral
@@ -195,7 +195,7 @@ namespace KTfwd
                         double pos
                             = posmaker(r, nbeg[region], nend[region], lookup);
                         return fwdpp_internal::recycle_mutation_helper(
-                            recycling_bin, mutations, pos, 0., 0., generation,
+                            recycling_bin, mutations, pos, 0., 0., *generation,
                             nlabels[region]);
                     }
                 assert(!sbeg.empty());
@@ -204,7 +204,7 @@ namespace KTfwd
                 double pos = posmaker(r, sbeg[region], send[region], lookup);
                 return fwdpp_internal::recycle_mutation_helper(
                     recycling_bin, mutations, pos, shmodels[region].s(r),
-                    shmodels[region].h(r), generation, slabels[region]);
+                    shmodels[region].h(r), *generation, slabels[region]);
             }
         };
 
@@ -233,6 +233,42 @@ namespace KTfwd
                 std::forward<Args>(args)..., std::ref(mut_lookup));
         }
 
+        /*! Return a vector of callables bount
+         *  to KTfwd::extensions::discrete_mut_model::make_mut
+         */
+        template <typename mcont_t, typename lookup_t, class... Args>
+        inline auto
+        bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
+                     mcont_t &mutations, lookup_t &mut_lookup,
+                     const gsl_rng *r,
+                     const std::vector<double> &neutral_mutrates,
+                     const std::vector<double> &selected_mutrates,
+                     Args &&... args)
+            -> std::vector<decltype(
+                bind_dmm(vdm[0], mutations, mut_lookup, r, neutral_mutrates[0],
+                         selected_mutrates[0], std::forward<Args>(args)...))>
+        {
+            if (vdm.size() != neutral_mutrates.size()
+                || vdm.size() != selected_mutrates.size())
+                {
+                    throw std::invalid_argument(
+                        "container sizes must all be equal");
+                }
+            std::vector<decltype(
+                bind_dmm(vdm[0], mutations, mut_lookup, r, neutral_mutrates[0],
+                         selected_mutrates[0], std::forward<Args>(args)...))>
+                rv;
+            std::size_t i = 0;
+            for (auto &&dm : vdm)
+                {
+                    rv.emplace_back(bind_dmm(
+                        dm, mutations, mut_lookup, r, neutral_mutrates[i],
+                        selected_mutrates[i], std::forward<Args>(args)...));
+                    ++i;
+                }
+            return rv;
+        }
+
         struct discrete_rec_model
         /*!
           Class allowing the simulation of discrete variation
@@ -254,7 +290,7 @@ namespace KTfwd
             {
                 if (beg.size() != end.size() || beg.size() != __weight.size())
                     {
-                        throw std::runtime_error(
+                        throw std::invalid_argument(
                             "input vectors must all be the same size");
                     }
 
@@ -299,23 +335,54 @@ namespace KTfwd
         /*!
           Returns a function call bound to discrete_rec_model::operator().
 
-          See unit test extensions.cc for example usage.
+          See unit test extensions_regionsTest.cc for example usage.
          */
-        template <typename gcont_t, typename mcont_t, class... Args>
+        template <typename gcont_t, typename mcont_t>
         inline auto
         bind_drm(const discrete_rec_model &drm, const gcont_t &,
-                 const mcont_t &, Args &&... args)
-            -> decltype(std::bind(&discrete_rec_model::operator() <
-                                      typename gcont_t::value_type,
-                                  mcont_t >, &drm, std::forward<Args>(args)...,
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3))
+                 const mcont_t &, const gsl_rng *r, const double recrate)
+            -> decltype(
+                std::bind(&discrete_rec_model::
+                          operator()<typename gcont_t::value_type, mcont_t>,
+                          &drm, r, recrate, std::placeholders::_1,
+                          std::placeholders::_2, std::placeholders::_3))
         {
-            return std::bind(&discrete_rec_model::operator() <
-                                 typename gcont_t::value_type,
-                             mcont_t >, &drm, std::forward<Args>(args)...,
-                             std::placeholders::_1, std::placeholders::_2,
-                             std::placeholders::_3);
+            return std::bind(&discrete_rec_model::
+                             operator()<typename gcont_t::value_type, mcont_t>,
+                             &drm, r, recrate, std::placeholders::_1,
+                             std::placeholders::_2, std::placeholders::_3);
+        }
+
+        /*! Returns a vector of function calls bound to
+         *  discrete_rec_model::operator()
+         */
+        template <typename gcont_t, typename mcont_t>
+        inline auto
+        bind_vec_drm(const std::vector<discrete_rec_model> &vdrm,
+                     const gcont_t &gametes, const mcont_t &mutations,
+                     const gsl_rng *r, const std::vector<double> &recrates)
+            -> std::vector<decltype(bind_drm(vdrm[0], gametes, mutations, r,
+                                             recrates[0]))>
+        {
+            if (vdrm.size() != recrates.size())
+                {
+                    throw std::invalid_argument("unequal container sizes");
+                }
+            std::vector<decltype(
+                bind_drm(vdrm[0], gametes, mutations, r, recrates[0]))>
+                rv;
+            static_assert(
+                traits::is_rec_model<typename decltype(rv)::value_type,
+                                     typename gcont_t::value_type,
+                                     mcont_t>::value,
+                "bound object must be a valid recombination model");
+            std::size_t i = 0;
+            for (auto &&drm : vdrm)
+                {
+                    rv.emplace_back(
+                        bind_drm(drm, gametes, mutations, r, recrates[i++]));
+                }
+            return rv;
         }
     }
 }

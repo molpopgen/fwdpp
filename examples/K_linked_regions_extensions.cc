@@ -21,17 +21,17 @@ using mtype = KTfwd::popgenmut;
 // This is our fitness model
 struct additive_over_loci
 {
-    template <typename diploid_t,typename gcont_t, typename mcont_t>
+    template <typename diploid_t, typename gcont_t, typename mcont_t>
     inline double
-    operator()(const diploid_t & dip, const gcont_t &gametes,
+    operator()(const diploid_t &dip, const gcont_t &gametes,
                const mcont_t &mutations, const unsigned K) const noexcept
     /*
       The fitness model is additive over loci, multiplicative within loci
      */
     {
         double rv = 0.0;
-		auto& g1 = gametes[dip.first];
-		auto& g2 = gametes[dip.second];
+        auto &g1 = gametes[dip.first];
+        auto &g2 = gametes[dip.second];
         for (unsigned i = 0; i < K; ++i)
             {
                 /*
@@ -100,10 +100,10 @@ main(int argc, char **argv)
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
                                                  // mutation rate is per
                                                  // REGION, not SITE!!
-    const double rho = atof(argv[argument++]); // 4*n*recombination rate.
-                                               // Note: recombination rate is
-                                               // per REGION, not SITE!!
-    const double rbw = atof(argv[argument++]); // rec rate b/w loci.
+    const double rho = atof(argv[argument++]);   // 4*n*recombination rate.
+                                                 // Note: recombination rate is
+                                                 // per REGION, not SITE!!
+    const double rbw = atof(argv[argument++]);   // rec rate b/w loci.
     const unsigned K = atoi(argv[argument++]); // Number of loci in simulation
     const unsigned ngens = atoi(argv[argument++]); //# generations to simulatae
     const unsigned seed
@@ -167,6 +167,11 @@ main(int argc, char **argv)
     const auto recpolicy = KTfwd::extensions::bind_drm(
         recmap, pop.gametes, pop.mutations, r.get(),
         double(K) * recrate_region + double(K - 1) * rbw);
+    const auto bound_mmodels = KTfwd::extensions::bind_dmm(
+        mmodels, pop.mutations, pop.mut_lookup, r.get(),
+        double(K * mutrate_region), double(K * mutrate_del_region),
+        &generation);
+
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
@@ -175,11 +180,7 @@ main(int argc, char **argv)
                 N, double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
                 // mmodels:
-                KTfwd::extensions::bind_dmm(
-                    mmodels, pop.mutations, pop.mut_lookup, r.get(),
-                    double(K * mutrate_region), double(K * mutrate_del_region),
-                    generation),
-                recpolicy,
+                bound_mmodels, recpolicy,
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);

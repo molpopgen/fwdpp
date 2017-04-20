@@ -62,103 +62,103 @@ BOOST_AUTO_TEST_CASE(callback_exceptions)
     {
         // inf
         BOOST_REQUIRE_THROW(KTfwd::extensions::constant(1. / 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // nan
         BOOST_REQUIRE_THROW(KTfwd::extensions::constant(std::nan("")),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // first arg not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::uniform(1. / 0., 1.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // 2nd arg not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::uniform(1., 1. / 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // min > max
         BOOST_REQUIRE_THROW(KTfwd::extensions::uniform(1., 0.99),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // a not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(std::nan(""), 1.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // b not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(1., std::nan("")),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // f not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(1., 1., std::nan("")),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // a <= 0.
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(0., 1.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // b <= 0.
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(1., 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // f <= 0.
         BOOST_REQUIRE_THROW(KTfwd::extensions::beta(1., 1., 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // sd = 0
         BOOST_REQUIRE_THROW(KTfwd::extensions::gaussian(0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // sd < 0
         BOOST_REQUIRE_THROW(KTfwd::extensions::gaussian(-1e-6),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // sd not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::gaussian(1. / 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // mean not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::gamma(1. / 0., 1.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         // shape not finite
         BOOST_REQUIRE_THROW(KTfwd::extensions::gamma(1.0, 1. / 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 
     {
         //!(shape>0)
         BOOST_REQUIRE_THROW(KTfwd::extensions::gamma(1.0, 0.),
-                            std::runtime_error);
+                            std::invalid_argument);
     }
 }
 

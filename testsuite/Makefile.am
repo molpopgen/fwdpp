@@ -1,7 +1,8 @@
 if BUNIT_TEST_PRESENT
 
 check_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
-			   integration/sugar_integration_tests
+			   integration/sugar_integration_tests \
+			   integration/extensions_integration_tests
 
 TESTS=$(check_PROGRAMS)
 
@@ -18,6 +19,8 @@ unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
 
 #Integration test targets:
 integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc integration/sugar_matrixTest.cc
+
+integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
 
 AM_CXXFLAGS=
 

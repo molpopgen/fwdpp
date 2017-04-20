@@ -89,7 +89,8 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/extensions_unit_tests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests$(EXEEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_integration_tests$(EXEEXT)
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_integration_tests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/extensions_integration_tests$(EXEEXT)
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
@@ -101,6 +102,15 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+am__integration_extensions_integration_tests_SOURCES_DIST =  \
+	integration/extensions_integration_tests.cc \
+	integration/extensions_regionsIntegrationTest.cc
+am__dirstamp = $(am__leading_dot)dirstamp
+@BUNIT_TEST_PRESENT_TRUE@am_integration_extensions_integration_tests_OBJECTS = integration/extensions_integration_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	integration/extensions_regionsIntegrationTest.$(OBJEXT)
+integration_extensions_integration_tests_OBJECTS =  \
+	$(am_integration_extensions_integration_tests_OBJECTS)
+integration_extensions_integration_tests_LDADD = $(LDADD)
 am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_integration_tests.cc \
 	integration/sugar_metapop_custom_diploidTest.cc \
@@ -109,7 +119,6 @@ am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_singlepop_custom_diploidTest.cc \
 	integration/sugar_singlepopTest.cc \
 	integration/sugar_matrixTest.cc
-am__dirstamp = $(am__leading_dot)dirstamp
 @BUNIT_TEST_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapop_custom_diploidTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_metapopTest.$(OBJEXT) \
@@ -195,11 +204,13 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = $(integration_sugar_integration_tests_SOURCES) \
+SOURCES = $(integration_extensions_integration_tests_SOURCES) \
+	$(integration_sugar_integration_tests_SOURCES) \
 	$(unit_extensions_unit_tests_SOURCES) \
 	$(unit_fwdpp_unit_tests_SOURCES) \
 	$(unit_sugar_unit_tests_SOURCES)
 DIST_SOURCES =  \
+	$(am__integration_extensions_integration_tests_SOURCES_DIST) \
 	$(am__integration_sugar_integration_tests_SOURCES_DIST) \
 	$(am__unit_extensions_unit_tests_SOURCES_DIST) \
 	$(am__unit_fwdpp_unit_tests_SOURCES_DIST) \
@@ -549,6 +560,7 @@ top_srcdir = @top_srcdir@
 
 #Integration test targets:
 @BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc  integration/sugar_metapop_custom_diploidTest.cc  integration/sugar_metapopTest.cc  integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc integration/sugar_matrixTest.cc
+@BUNIT_TEST_PRESENT_TRUE@integration_extensions_integration_tests_SOURCES = integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = 
 all: all-am
 
@@ -592,6 +604,16 @@ integration/$(am__dirstamp):
 integration/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) integration/$(DEPDIR)
 	@: > integration/$(DEPDIR)/$(am__dirstamp)
+integration/extensions_integration_tests.$(OBJEXT):  \
+	integration/$(am__dirstamp) \
+	integration/$(DEPDIR)/$(am__dirstamp)
+integration/extensions_regionsIntegrationTest.$(OBJEXT):  \
+	integration/$(am__dirstamp) \
+	integration/$(DEPDIR)/$(am__dirstamp)
+
+integration/extensions_integration_tests$(EXEEXT): $(integration_extensions_integration_tests_OBJECTS) $(integration_extensions_integration_tests_DEPENDENCIES) $(EXTRA_integration_extensions_integration_tests_DEPENDENCIES) integration/$(am__dirstamp)
+	@rm -f integration/extensions_integration_tests$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(integration_extensions_integration_tests_OBJECTS) $(integration_extensions_integration_tests_LDADD) $(LIBS)
 integration/sugar_integration_tests.$(OBJEXT):  \
 	integration/$(am__dirstamp) \
 	integration/$(DEPDIR)/$(am__dirstamp)
@@ -686,6 +708,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_integration_tests.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_integration_tests.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_matrixTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_metapopTest.Po@am__quote@
@@ -949,6 +973,13 @@ unit/sugar_unit_tests.log: unit/sugar_unit_tests$(EXEEXT)
 integration/sugar_integration_tests.log: integration/sugar_integration_tests$(EXEEXT)
 	@p='integration/sugar_integration_tests$(EXEEXT)'; \
 	b='integration/sugar_integration_tests'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+integration/extensions_integration_tests.log: integration/extensions_integration_tests$(EXEEXT)
+	@p='integration/extensions_integration_tests$(EXEEXT)'; \
+	b='integration/extensions_integration_tests'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
