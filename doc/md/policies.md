@@ -101,9 +101,9 @@ Additional model parameters are possible via the usual mechanisms: class members
 
 * KTfwd::poisson_xover
 
-\subsection TutFitness Fitness policies
+\subsection TutFitness Genetic value policies
 
-* KTfwd::site_dependent_fitness
+* KTfwd::site_dependent_genetic_value
 * KTfwd::additive_diploid
 * KTfwd::multiplicative_diploid
 

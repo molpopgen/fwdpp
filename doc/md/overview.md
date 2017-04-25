@@ -155,10 +155,10 @@ namespace KTfwd
         using index_t = std::uint32_t;
         using mutation_container = std::vector<index_t>;
         //Container of mutations not affecting
-        //trait value/fitness ("neutral mutations")
+        //genetic value/fitness ("neutral mutations")
         mutation_container mutations;
         //Container of mutations affecting
-        //trait value/fitness ("selected mutations")
+        //genetic value/fitness ("selected mutations")
         mutation_container smutations;
 
         //Constructor
@@ -266,7 +266,7 @@ using dipcont_t = std::vector<diploid>;
 Let's think through these typedefs in light of the definitions of mutation, gamete, and diploid:
 
 * A mutation is a fundamental type, and they are stored in a vector.
-* Gametes are stored in vectors.  Gametes themselves contain vectors of `std::uint32_t`, which I said were "keys" to mutations.  Those keys represent the _indexes_ of the mutations present in a gamete.  "Neutral" and "selected" mutations are separated in order to speed up fitness calculations.  Further, the keys are stored in _ascending_ order according to _mutation position_ (`KTfwd::mutation_base::pos`).  Storing things this way means that we can use _binary searches_ in algorithms like recombination that depend on mutation positions.
+* Gametes are stored in vectors.  Gametes themselves contain vectors of `std::uint32_t`, which I said were "keys" to mutations.  Those keys represent the _indexes_ of the mutations present in a gamete.  "Neutral" and "selected" mutations are separated in order to speed up genetic value calculations.  Further, the keys are stored in _ascending_ order according to _mutation position_ (`KTfwd::mutation_base::pos`).  Storing things this way means that we can use _binary searches_ in algorithms like recombination that depend on mutation positions.
 * A diploid is a pair of gametes.  The minimal diploid is `std::pair<std::size_t,std::size_t>`.  Those `size_t` objects are the _indexes_ into the gamete container.
 
 Thus, a simulation requires three containers that all need to talk to each other:
@@ -356,7 +356,7 @@ Recycling allows us to use cache-friendly containers like `std::vector`.  It als
 
 ## Modeling the biology
 
-This section gives a quick overview of wht mutation, recombination, and fitness functions have to look like in order to be compatible with __fwdpp__.  After reading this document, you should go look at the source code for the example programs to get an idea of how these ideas are put into practice.
+This section gives a quick overview of what mutation, recombination, and genetic value functions have to look like in order to be compatible with __fwdpp__.  After reading this document, you should go look at the source code for the example programs to get an idea of how these ideas are put into practice.
 
 This section uses the following shorthand notation for types:
 
@@ -486,12 +486,51 @@ std::function<std::vector<double>(const diploid_t &, const gcont_t &, const mcon
 
 Passing in the diploid type itself would allow checking of any data present in custom diploid types (male, female, etc.).  It is likely that such a change will happen in a future release.
 
-### Fitness
+### Calculating a diploid's genetic value
 
-A fitness function has the following signature:
+For simulations with fitness effects, we need to:
+
+1. Take the data in a diploid's gametes and calculate some quantity.  Call it the genetic value, which is a `double`.
+2. Convert that value into fitness, which is a non-negative `double`.
+
+For standard population-genetic simulations, the mapping of genetic value to fitness is trivial.  Often, it is as simple as `max(0.0,genetic_value);`.
+
+For simulations of quantitative traits, there are probably extra steps involved:
+
+1. Is the final trait value going to be a combination of genetic value plus random noise?
+2. What is the mapping of final trait value to fitness?  For example--Gaussian stabilizing selection or a linear selection gradient?
+
+For quantitative genetic simulations, the genetic value is a `double` that can take on any finite value.
+
+We define the following conventions:
+
+1. Fitnesses must be `w >= 0` and a mutant-free diploid would have a fitness of `w = 1`. 
+2. Genetic values may take on any finite value and a mutant-free diploid would have `g = 0`.
+
+The challenge is to write functions to calculate `g` and map them onto the correct scale.
+
+__fwdpp__ has a simple requirement for the signature of a function to calculate a genetic value:
 
 ```cpp
 std::function<double(const diploid_t &, const gcont_t &, const mcont_t &)>
 ```
 
-In other words, it take a diploid, a container of gametes, and a container of mutations as arguments.  Using that information, fitness is calculated and returned as a double.
+In other words, it take a diploid, a container of gametes, and a container of mutations as arguments.  Using that information, the genetic value is calculated and returned as a double.
+
+For the case of a single locus/region simulation, the library provides efficient implementations of two standard models:
+
+* `KTfwd::additive_diploid` applies an additive model with dominance.
+* `KTfwd::multiplicative_diploid` applies a multiplicative model with dominance.
+
+By default, both of these function objects map genetic values to fitness when constructing the return value.  This is done via calls to `KTfwd::aw` or `KTfwd::mw`, respectively.  This behavior may be changed by passing in a differnt policy to the object's constructor--`KTfwd::atrait()` and `KTfwd::mtrait()`, respectively, change the behavior of each type to return a trait value centered on zero.
+
+#### General comments
+
+Mapping a diploid genotype to fitness is one of the most important aspects of implementing a simulation.  It is also one of the most difficult, both in terms of the programming itself and because it really forces you to think about your models.  For "standard pop-gen" scenarios, the default behaviors are quite simple.  For quantitative trait simulations, things are more necessarily more complex, and the library allows you to do any of the following:
+
+1. Map genetic value straight to fitness.
+2. Separate genetic value from trait value from fitness calculations.
+
+The latter is very important, as it allows the flexibility of recording the `g`, `e`, and `w` values that may be part of the calculation as data, for example in a custom diploid type.
+
+For more details, see the tutorials.

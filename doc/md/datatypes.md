@@ -41,7 +41,7 @@ This type is usable in a simulation, but not in an interesting simulation, as th
 ### Notes
 
 * Remember to _properly_ initialize the base class from your derived mutation classes!
-* All fitness models provided by the library require a mutation type to contain a double called \f$s\f$ representing the selection coefficient (or effect size).  For example, see KTfwd::site_dependent_fitness.  Hoewever, if you write your own fitness models, then your mutations can contain whatever they want. 
+* All fitness models provided by the library require a mutation type to contain a double called \f$s\f$ representing the selection coefficient (or effect size).  For example, see KTfwd::site_dependent_genetic_value.  Hoewever, if you write your own fitness models, then your mutations can contain whatever they want. 
 
 ## Mutation containers
 
