@@ -111,7 +111,6 @@ namespace KTfwd
                   typename diploid_fitness_function,
                   typename mutation_model_container,
                   typename recombination_policy_container,
-                  typename bw_locus_rec_fxn,
                   template <typename, typename> class gamete_cont_type,
                   template <typename, typename> class mutation_cont_type,
                   template <typename, typename> class diploid_vector_type,
@@ -132,7 +131,7 @@ namespace KTfwd
             const uint_t &N_next, const double *mu,
             const mutation_model_container &mmodel,
             const recombination_policy_container &rec_policies,
-            const double *r_between_loci, const bw_locus_rec_fxn &blrf,
+			const std::vector<std::function<unsigned(void)>> & interlocus_rec,
             const diploid_fitness_function &ff,
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
@@ -170,18 +169,18 @@ namespace KTfwd
 
                     dip = fwdpp_internal::multilocus_rec_mut(
                         r, parents[p1], parents[p2], mutation_recycling_bin,
-                        gamete_recycling_bin, rec_policies, blrf,
-                        r_between_loci, ((gsl_rng_uniform(r) < 0.5) ? 1 : 0),
+                        gamete_recycling_bin, rec_policies, interlocus_rec,
+                        ((gsl_rng_uniform(r) < 0.5) ? 1 : 0),
                         ((gsl_rng_uniform(r) < 0.5) ? 1 : 0), gametes,
                         mutations, neutral, selected, mu, mmodel, gpolicy_mut);
                     dispatch_update(rules, r, dip, parents[p1], parents[p2],
                                     gametes, mutations, ff);
                 }
             fwdpp_internal::process_gametes(gametes, mutations, mcounts);
-            assert(popdata_sane(diploids, gametes, mutations, mcounts));
+            assert(popdata_sane_multilocus(diploids, gametes, mutations, mcounts));
             fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts,
                                            2 * N_next, mp, std::true_type());
-            assert(check_sum(gametes, 2 * N_next));
+            assert(check_sum(gametes, 2 * diploids[0].size() * N_next));
             return rules.wbar;
         }
 
@@ -193,7 +192,6 @@ namespace KTfwd
                   typename diploid_fitness_function,
                   typename mutation_model_container,
                   typename recombination_policy_container,
-                  typename bw_locus_rec_fxn,
                   template <typename, typename> class gamete_cont_type,
                   template <typename, typename> class mutation_cont_type,
                   template <typename, typename> class diploid_vector_type,
@@ -213,7 +211,7 @@ namespace KTfwd
             std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
             const mutation_model_container &mmodel,
             const recombination_policy_container &rec_policies,
-            const double *r_between_loci, const bw_locus_rec_fxn &blrf,
+            const std::vector<std::function<unsigned(void)>> &interlocus_rec,
             const diploid_fitness_function &ff,
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
@@ -227,8 +225,8 @@ namespace KTfwd
         {
             return experimental::sample_diploid(
                 r, gametes, diploids, mutations, mcounts, N, N, mu, mmodel,
-                rec_policies, r_between_loci, blrf, ff, neutral, selected, f,
-                rules, mp, gpolicy_mut);
+                rec_policies, interlocus_rec, ff, neutral, selected, f, rules,
+                mp, gpolicy_mut);
         }
     }
 }

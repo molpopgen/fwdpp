@@ -31,10 +31,10 @@ namespace KTfwd
             typename diploid_type, typename recombination_policy_container,
             typename mqueue_t, typename gqueue_t,
 #ifndef FWDPP_UNIT_TESTING
-            typename bw_locus_rec_fxn, typename mcont_t, typename gcont_t,
+            typename mcont_t, typename gcont_t,
             typename mutation_model_container, typename gamete_insertion_policy
 #else
-            typename mcont_t, typename gcont_t, typename bw_locus_rec_fxn
+            typename mcont_t, typename gcont_t
 #endif
             >
         diploid_type
@@ -43,7 +43,7 @@ namespace KTfwd
             const diploid_type &parent2, mqueue_t &mutation_recycling_bin,
             gqueue_t &gamete_recycling_bin,
             const recombination_policy_container &rec_pols,
-            const bw_locus_rec_fxn &blrf, const double *r_bw_loci,
+            const std::vector<std::function<unsigned(void)>> &interlocus_rec,
             const int iswitch1,
 #ifndef FWDPP_UNIT_TESTING
             const int iswitch2, gcont_t &gametes, mcont_t &mutations,
@@ -70,9 +70,9 @@ namespace KTfwd
                     if (i)
                         {
                             // between-locus rec, parent 1
-                            s1 += blrf(r, r_bw_loci[i - 1]);
+                            s1 += interlocus_rec[i - 1]();
                             // between-locus rec, parent 2
-                            s2 += blrf(r, r_bw_loci[i - 1]);
+                            s2 += interlocus_rec[i - 1]();
                         }
                     auto p1g1 = p1->first;
                     auto p1g2 = p1->second;

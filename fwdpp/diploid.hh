@@ -1,6 +1,7 @@
 /*! \file diploid.hh
   \brief Main header for programming using this library
-  \warning Do not try to include individual headers a la carte. Life will get confusing for you. Just include this file.
+  \warning Do not try to include individual headers a la carte. Life will get
+  confusing for you. Just include this file.
 
   \code
   #include <fwdpp/diploid.hh>
@@ -9,7 +10,7 @@
 #ifndef __DIPLOID_HH__
 #define __DIPLOID_HH__
 
-//namespace std
+// namespace std
 #include <vector>
 #include <list>
 #include <cassert>
@@ -17,11 +18,11 @@
 #include <ctime>
 #include <cmath>
 
-//gsl
+// gsl
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-//headers from this project
+// headers from this project
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/fitness_models.hpp>
@@ -33,6 +34,7 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/recombination.hpp>
+#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/demography.hpp>
 #endif
@@ -60,7 +62,12 @@
 /*! @defgroup sugar Syntactic sugar layer
   \brief Syntactic sugar for easier development of simulations
 
-  See @ref md_md_sugar for a full description of the features that fwdpp's sugar layer provides.
+  See @ref md_md_sugar for a full description of the features that fwdpp's
+  sugar layer provides.
+ */
+
+/*! @defgroup mlocus Multi-locus/region simulations
+ * \brief Functions related to modeling multi-locus/region simulations
  */
 
 /*! \namespace KTfwd::sugar
@@ -68,7 +75,6 @@
 
   This namespace provides the implementation details for @ref sugar.
 
-  See @ref md_md_sugar for a full description of the features that fwdpp's sugar layer provides.
+  See @ref md_md_sugar for a full description of the features that fwdpp's
+  sugar layer provides.
  */
-
-

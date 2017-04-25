@@ -10,14 +10,17 @@
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
+#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/experimental/sample_diploid_mloc.hpp>
 #include <testsuite/util/migpop.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
 template <typename singlepop_object_t>
 void
-simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10, const unsigned popsize = 5000)
+simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
+                   const unsigned popsize = 5000)
 /*!
   \brief Quick function for evolving a single-deme simulation
   \ingroup testing
@@ -29,7 +32,7 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10, const un
         {
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, pop.N,popsize, 0.005,
+                pop.mcounts, pop.N, popsize, 0.005,
                 std::bind(KTfwd::infsites(), std::placeholders::_1,
                           std::placeholders::_2, rng.get(),
                           std::ref(pop.mut_lookup), generation, 0.0025, 0.0025,
@@ -42,7 +45,7 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10, const un
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
                 pop.neutral, pop.selected);
-			pop.N=popsize;
+            pop.N = popsize;
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * pop.N);
@@ -125,14 +128,49 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
  */
 {
     unsigned g = generation;
+    auto interlocus_rec = KTfwd::make_binomial_interlocus_rec(
+        rng.get(), rbw.data(), rbw.size());
     for (; generation < g + simlen; ++generation)
         {
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, &mu[0], mutmodels, recmodels, &rbw[0],
-                [](const gsl_rng *__r, const double __d) {
-                    return gsl_ran_binomial(__r, __d, 1);
-                },
+                pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
+                interlocus_rec,
+                std::bind(multilocus_additive(), std::placeholders::_1,
+                          std::placeholders::_2, std::placeholders::_3),
+                pop.neutral, pop.selected);
+            assert(check_sum(pop.gametes, 8000));
+            KTfwd::update_mutations(pop.mutations, pop.fixations,
+                                    pop.fixation_times, pop.mut_lookup,
+                                    pop.mcounts, generation, 2000);
+        }
+    return g + simlen;
+}
+
+template <typename poptype, typename rng_type, typename mmodel_vec,
+          typename recmodel_vec, typename fitness_fxn>
+inline unsigned
+simulate_mlocuspop_experimental(
+    poptype &pop, const rng_type &rng, const mmodel_vec &mutmodels,
+    const recmodel_vec &recmodels, const fitness_fxn &fitness,
+    const std::vector<double> &mu, const std::vector<double> &rbw,
+    unsigned &generation, const unsigned simlen = 10)
+/*!
+  \brief Quick function for evolving a multilocus deme simulation using
+  KTfwd::experimental
+  \ingroup testing
+  \note this version CAN be used on the same population object
+ */
+{
+    unsigned g = generation;
+    auto interlocus_rec = KTfwd::make_binomial_interlocus_rec(
+        rng.get(), rbw.data(), rbw.size());
+    for (; generation < g + simlen; ++generation)
+        {
+            double wbar = KTfwd::experimental::sample_diploid(
+                rng.get(), pop.gametes, pop.diploids, pop.mutations,
+                pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
+                interlocus_rec,
                 std::bind(multilocus_additive(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3),
                 pop.neutral, pop.selected);

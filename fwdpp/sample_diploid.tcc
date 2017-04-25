@@ -566,7 +566,7 @@ namespace KTfwd
         typename diploid_vector_type_allocator,
         typename locus_vector_type_allocator,
         typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container, typename bw_locus_rec_fxn,
+        typename recombination_policy_container,
         template <typename, typename> class gamete_cont_type,
         template <typename, typename> class mutation_cont_type,
         template <typename, typename> class diploid_vector_type,
@@ -585,7 +585,7 @@ namespace KTfwd
         const uint_t &N_next, const double *mu,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
-        const double *r_between_loci, const bw_locus_rec_fxn &blrf,
+		const std::vector<std::function<unsigned(void)>> & interlocus_rec,
         const diploid_fitness_function &ff,
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected, const double &f,
@@ -653,7 +653,7 @@ namespace KTfwd
                 assert(p2 < N_curr);
                 dip = fwdpp_internal::multilocus_rec_mut(
                     r, parents[p1], parents[p2], mut_recycling_bin,
-                    gamete_recycling_bin, rec_policies, blrf, r_between_loci,
+                    gamete_recycling_bin, rec_policies, interlocus_rec, 
                     ((gsl_rng_uniform(r) < 0.5) ? 1 : 0),
                     ((gsl_rng_uniform(r) < 0.5) ? 1 : 0), gametes, mutations,
                     neutral, selected, mu, mmodel, gpolicy_mut);
@@ -673,7 +673,7 @@ namespace KTfwd
         typename diploid_vector_type_allocator,
         typename locus_vector_type_allocator,
         typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container, typename bw_locus_rec_fxn,
+        typename recombination_policy_container,
         template <typename, typename> class gamete_cont_type,
         template <typename, typename> class mutation_cont_type,
         template <typename, typename> class diploid_vector_type,
@@ -691,7 +691,7 @@ namespace KTfwd
         std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
-        const double *r_between_loci, const bw_locus_rec_fxn &blrf,
+		const std::vector<std::function<unsigned(void)>> & interlocus_rec,
         const diploid_fitness_function &ff,
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected, const double &f,
@@ -699,7 +699,7 @@ namespace KTfwd
         const gamete_insertion_policy &gpolicy_mut)
     {
         return sample_diploid(r, gametes, diploids, mutations, mcounts, N, N,
-                              mu, mmodel, rec_policies, r_between_loci, blrf,
+                              mu, mmodel, rec_policies, interlocus_rec, 
                               ff, neutral, selected, f, mp, gpolicy_mut);
     }
 }

@@ -4,6 +4,7 @@
 #include <fwdpp/extensions/regions.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
+#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <limits>
 #include "../fixtures/sugar_fixtures.hpp"
@@ -72,16 +73,16 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_6)
 {
     // attempt
     extensions::discrete_mut_model dm(
-        { 0, 1 },   // starts of 'neutral' regions
-        { 1, 2 },   // ends of 'neutral' regions
+        { 0, 1 }, // starts of 'neutral' regions
+        { 1, 2 }, // ends of 'neutral' regions
         { 1, 0.5 }, // weights on 'neutral' regions
-        {},         // starts of 'selected' regions
-        {},         // stops of 'selected' regions
-        {},         // weights on 'selected' regions
+        {}, // starts of 'selected' regions
+        {}, // stops of 'selected' regions
+        {}, // weights on 'selected' regions
         { 0,
           1 }, // labels to put on mutations from each of the 'neutral' regions
         {}, // labels to put on mutations from each of the 'selected' regions
-        {}  // vector of shmodels
+        {} // vector of shmodels
         );
 
     // now, evolve the population
@@ -99,7 +100,7 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_6)
     auto wbar = KTfwd::sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts, 1000,
         0.01, // mutation rate--high so that there are lots of mutations to
-              // test below...
+        // test below...
         mmodel, std::bind(KTfwd::poisson_xover(), rng.get(), 0.001, 0., 2.,
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3),
@@ -146,12 +147,11 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
     auto bound_mutmodels = extensions::bind_vec_dmm(
         vdmm, pop.mutations, pop.mut_lookup, rng.get(), neutral_mutrates,
         selected_mutrates, &generation);
+    auto interlocus_rec = KTfwd::make_binomial_interlocus_rec(
+        rng.get(), rbw.data(), rbw.size());
     double wbar = sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-        pop.N, &mu[0], bound_mutmodels, bound_recmodels, &rbw[0],
-        [](const gsl_rng* __r, const double __d) {
-            return gsl_ran_binomial(__r, __d, 1);
-        },
+        pop.N, &mu[0], bound_mutmodels, bound_recmodels, interlocus_rec,
         std::bind(multilocus_additive(), std::placeholders::_1,
                   std::placeholders::_2, std::placeholders::_3),
         pop.neutral, pop.selected);

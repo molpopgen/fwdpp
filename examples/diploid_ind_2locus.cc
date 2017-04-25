@@ -49,13 +49,13 @@ main(int argc, char **argv)
                       << "seed = seed value for random number generations\n";
             std::exit(0);
         }
-    const unsigned N = atoi(argv[argument++]);   // Number of diploids
+    const unsigned N = atoi(argv[argument++]); // Number of diploids
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
-                                                 // mutation rate is per
-                                                 // REGION, not SITE!!
+    // mutation rate is per
+    // REGION, not SITE!!
     const double rho = atof(argv[argument++]); // 4*n*recombination rate.
-                                               // Note: recombination rate is
-                                               // per REGION, not SITE!!
+    // Note: recombination rate is
+    // per REGION, not SITE!!
     const double rbw = atof(argv[argument++]); // rec rate b/w loci.
     const unsigned ngens
         = atoi(argv[argument++]); // Number of generations to simulate
@@ -124,17 +124,16 @@ main(int argc, char **argv)
                               []() { return 0.; }, []() { return 0.; })
                 };
 
+            std::vector<std::function<unsigned(void)>> interlocus_rec(
+                2, std::bind(KTfwd::binomial_interlocus_rec(rbw), r.get()));
+
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
                     KTfwd::sample_diploid(
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
                         pop.mcounts, N, &mu[0], mmodels, recpols,
-                        &rbw, // this are the recombination rates b/w loci
-                        [](const gsl_rng *__r, const double __d) {
-                            return gsl_ran_binomial(__r, __d, 1);
-                        }, // This is the function modeling recombination
-                           // between loci.
+                        interlocus_rec,
                         std::bind(no_selection_multi(), std::placeholders::_1,
                                   std::placeholders::_2,
                                   std::placeholders::_3),

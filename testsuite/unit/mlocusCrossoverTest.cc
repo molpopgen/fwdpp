@@ -115,10 +115,14 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
                     const mcont_t &) { return rec1[2]; }
         };
 
+    std::vector<std::function<unsigned(void)>> interlocus_rec{
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
+    };
+
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, [](const gsl_rng *__r, const double &__d) { return __d; },
-        &r_bw_loci[0], 0, 0, gametes, mutations, neutral, selected);
+        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 0);
@@ -166,10 +170,14 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
                     const mcont_t &) { return rec1[2]; }
         };
 
+    std::vector<std::function<unsigned(void)>> interlocus_rec{
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
+    };
+
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, [](const gsl_rng *__r, const double &__d) { return __d; },
-        &r_bw_loci[0], 0, 0, gametes, mutations, neutral, selected);
+        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
@@ -221,10 +229,14 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
                     const mcont_t &) { return rec1[2]; }
         };
 
+    std::vector<std::function<unsigned(void)>> interlocus_rec{
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
+    };
+
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, [](const gsl_rng *__r, const double &__d) { return __d; },
-        &r_bw_loci[0], 0, 0, gametes, mutations, neutral, selected);
+        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
@@ -275,10 +287,14 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
                     const mcont_t &) { return rec1[2]; }
         };
 
+    std::vector<std::function<unsigned(void)>> interlocus_rec{
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
+        [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
+    };
+
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, [](const gsl_rng *__r, const double &__d) { return __d; },
-        &r_bw_loci[0], 0, 0, gametes, mutations, neutral, selected);
+        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected);
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
     BOOST_CHECK_EQUAL(mutations[gametes[offspring[1].first].mutations[0]].pos,

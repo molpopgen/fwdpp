@@ -50,13 +50,13 @@ main(int argc, char **argv)
                       << "seed = seed value for random number generations\n";
             std::exit(0);
         }
-    const unsigned N = atoi(argv[argument++]);   // Number of diploids
+    const unsigned N = atoi(argv[argument++]); // Number of diploids
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
-                                                 // mutation rate is per
-                                                 // REGION, not SITE!!
+    // mutation rate is per
+    // REGION, not SITE!!
     const double rho = atof(argv[argument++]); // 4*n*recombination rate.
-                                               // Note: recombination rate is
-                                               // per REGION, not SITE!!
+    // Note: recombination rate is
+    // per REGION, not SITE!!
     const double rbw = atof(argv[argument++]); // rec rate b/w loci.
     const unsigned K = atoi(argv[argument++]); // Number of loci in simulation
     const unsigned ngens = atoi(argv[argument++]); //# generations to simulatae
@@ -71,7 +71,6 @@ main(int argc, char **argv)
     */
     const double littler = rho / double(4 * N * K);
 
-    std::vector<double> RBW(K, rbw);
     // Initiate random number generation system
     GSLrng r(seed);
 
@@ -105,16 +104,14 @@ main(int argc, char **argv)
                 },
                 []() { return 0.; }, []() { return 0.; }));
         }
-
+    std::vector<std::function<unsigned(void)>> interlocus_rec(
+        K - 1, std::bind(KTfwd::binomial_interlocus_rec(rbw), r.get()));
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
             KTfwd::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu.data(), mmodels, recpols, RBW.data(),
-                [](const gsl_rng *__r, const double __d) -> unsigned {
-                    return (gsl_rng_uniform(__r) <= __d) ? 1u : 0u;
-                },
+                N, mu.data(), mmodels, recpols, interlocus_rec,
                 std::bind(no_selection_multi(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3),
                 pop.neutral, pop.selected);

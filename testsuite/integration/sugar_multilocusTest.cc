@@ -31,6 +31,17 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test1)
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
 
+BOOST_AUTO_TEST_CASE(multiloc_experimental_sugar_api_test)
+{
+    multiloc_popgenmut_fixture f;
+    simulate_mlocuspop_experimental(
+        f.pop, f.rng, f.mutmodels, f.recmodels,
+        multiloc_popgenmut_fixture::multilocus_additive(), f.mu, f.rbw,
+        f.generation);
+    poptype pop2(f.pop);
+    BOOST_CHECK_EQUAL(f.pop == pop2, true);
+}
+
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
 {
     multiloc_popgenmut_fixture f;
