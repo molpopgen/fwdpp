@@ -77,18 +77,18 @@ namespace KTfwd
     /// \brief Model inter-locus/region recombination as a Binomial process.
     /// \ingroup mlocus
     {
-		/// Genetic distance between loci i and i+1 is in centiMorgans (cM).
-        const double cM;
+		/// Genetic distance between loci i and i+1 is in recombination distance (cM/100).
+        const double dist;
 
-		/// Construct with number of cM
-        explicit binomial_interlocus_rec(const double cM_) : cM(cM_) {}
+		/// Construct with number of dist
+        explicit binomial_interlocus_rec(const double dist_) : dist(dist_) {}
 
         inline unsigned
         operator()(const gsl_rng *r) const noexcept
 		/// Return whether or not loci i and i+1 had an odd number of crossovers
 		/// between them.
         {
-            return gsl_ran_binomial(r, cM, 1);
+            return gsl_ran_binomial(r, dist, 1);
         }
     };
 }
