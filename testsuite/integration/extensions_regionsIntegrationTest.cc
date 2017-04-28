@@ -73,16 +73,16 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_6)
 {
     // attempt
     extensions::discrete_mut_model dm(
-        { 0, 1 }, // starts of 'neutral' regions
-        { 1, 2 }, // ends of 'neutral' regions
+        { 0, 1 },   // starts of 'neutral' regions
+        { 1, 2 },   // ends of 'neutral' regions
         { 1, 0.5 }, // weights on 'neutral' regions
-        {}, // starts of 'selected' regions
-        {}, // stops of 'selected' regions
-        {}, // weights on 'selected' regions
+        {},         // starts of 'selected' regions
+        {},         // stops of 'selected' regions
+        {},         // weights on 'selected' regions
+        {},         // vector of shmodels
         { 0,
-          1 }, // labels to put on mutations from each of the 'neutral' regions
-        {}, // labels to put on mutations from each of the 'selected' regions
-        {} // vector of shmodels
+          1 },      // labels to put on mutations from each of the 'neutral' regions
+        {}          // labels to put on mutations from each of the 'selected' regions
         );
 
     // now, evolve the population

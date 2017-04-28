@@ -22,6 +22,10 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_1)
     // attempt
     extensions::discrete_mut_model dm({ 0, 1 }, { 1, 2 }, { 1, 0.5 }, {}, {},
                                       {}, {});
+    //Check copy-constructible:
+    decltype(dm) dm2(dm);
+    //move-constructible:
+    decltype(dm) dm3(std::move(dm2));
     auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     auto x = dm.make_mut(rb, pop.mutations, rng.get(), 0.001, 0., &generation,

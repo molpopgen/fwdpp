@@ -6,6 +6,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <algorithm>
+#include <memory>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/sugar/infsites.hpp>
@@ -17,46 +18,25 @@ namespace KTfwd
 {
     namespace extensions
     {
-        struct discrete_mut_model
-        /*!
-          Class allowing the simulation of discrete variation
-          in mutation models along a region.
-
-          Implemented in terms of KTfwd::popgenmut.
-
-          Intended to be used with the callbacks in
-          fwdpp/extensions/callbacks.hpp
-        */
+        struct discrete_mut_model_data
         {
-            using result_type = std::size_t;
-            std::vector<double> nbeg, nend, sbeg, send;
+            std::vector<double> nbeg, nend, sbeg, send, nweights, sweights;
             std::vector<shmodel> shmodels;
-            std::vector<decltype(KTfwd::mutation_base::xtra)> nlabels, slabels;
-            KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup, slookup;
-
-            /*!
-              \param __nbeg Positions of beginnings of 'neutral' regions
-              \param __nend Positions of ends of 'neutral' regions
-              \param nweights Weights on 'neutra'l regions
-              \param __sbeg Positions of beginnings of 'selected' regions
-              \param __send Positions of ends of 'selected' regions
-              \param sweights Weights on 'selected' regions
-              \param __shmodels Vector of KTfwd::experimenta::shmodel
-            */
-            discrete_mut_model(std::vector<double> __nbeg,
-                               std::vector<double> __nend,
-                               std::vector<double> nweights, // the weights
-                               std::vector<double> __sbeg,
-                               std::vector<double> __send,
-                               std::vector<double> sweights, // the weights
-                               std::vector<shmodel> __shmodels)
+            using vec_xtra = std::vector<decltype(KTfwd::mutation_base::xtra)>;
+            vec_xtra nlabels, slabels;
+            discrete_mut_model_data(
+                std::vector<double> __nbeg, std::vector<double> __nend,
+                std::vector<double> __nweights, // the weights
+                std::vector<double> __sbeg, std::vector<double> __send,
+                std::vector<double> __sweights, // the weights
+                std::vector<shmodel> __shmodels, vec_xtra __nlabels,
+                vec_xtra __slabels)
                 : nbeg(std::move(__nbeg)), nend(std::move(__nend)),
                   sbeg(std::move(__sbeg)), send(std::move(__send)),
+                  nweights(std::move(__nweights)),
+                  sweights(std::move(__sweights)),
                   shmodels(std::move(__shmodels)),
-                  nlabels(std::vector<decltype(KTfwd::mutation_base::xtra)>(
-                      nbeg.size(), 0)), // not used by this constructor
-                  slabels(std::vector<decltype(KTfwd::mutation_base::xtra)>(
-                      sbeg.size(), 0)) // not used by this constructor
+                  nlabels(std::move(__nlabels)), slabels(std::move(__slabels))
             {
                 if (nbeg.size() != nend.size()
                     || nbeg.size() != nweights.size())
@@ -75,69 +55,42 @@ namespace KTfwd
                         throw std::invalid_argument(
                             "incorrect number of shmodels");
                     }
-                if (nweights.size())
-                    nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(nweights.size(),
-                                                 &nweights[0]));
-                if (sweights.size())
-                    slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(sweights.size(),
-                                                 &sweights[0]));
+                if (slabels.empty())
+                    {
+                        slabels.resize(sbeg.size(), 0);
+                    }
+                if (nlabels.empty())
+                    {
+                        nlabels.resize(nend.size(), 0);
+                    }
             }
+        };
 
-            /*!
-              \param __nbeg Positions of beginnings of 'neutral' regions
-              \param __nend Positions of ends of 'neutral' regions
-              \param nweights Weights on 'neutra'l regions
-              \param __sbeg Positions of beginnings of 'selected' regions
-              \param __send Positions of ends of 'selected' regions
-              \param sweights Weights on 'selected' regions
-              \param __nlabels Values used to fill KTfwd::mutation_base::xtra.
-              Applied to neutral mutations.
-              \param __slabels Values used to fill KTfwd::mutation_base::xtra.
-              Applied to selected mutations.
-              \param __shmodels Vector of KTfwd::experimenta::shmodel
-            */
-            discrete_mut_model(
-                std::vector<double> __nbeg, std::vector<double> __nend,
-                std::vector<double> nweights, // the weights
-                std::vector<double> __sbeg, std::vector<double> __send,
-                std::vector<double> sweights, // the weights
-                std::vector<decltype(KTfwd::mutation_base::xtra)> __nlabels,
-                std::vector<decltype(KTfwd::mutation_base::xtra)> __slabels,
-                std::vector<shmodel> __shmodels)
-                : nbeg(std::move(__nbeg)), nend(std::move(__nend)),
-                  sbeg(std::move(__sbeg)), send(std::move(__send)),
-                  shmodels(std::move(__shmodels)),
-                  nlabels(std::move(__nlabels)), slabels(std::move(__slabels))
+        class discrete_mut_model
+        /*!
+          Class allowing the simulation of discrete variation
+          in mutation models along a region.
+
+          Implemented in terms of KTfwd::popgenmut.
+
+          Intended to be used with the callbacks in
+          fwdpp/extensions/callbacks.hpp
+        */
+        {
+          private:
+            std::unique_ptr<discrete_mut_model_data> data;
+            KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup, slookup;
+            inline void
+            assign_weights()
             {
-                if (nbeg.size() != nend.size()
-                    || nbeg.size() != nweights.size()
-                    || nbeg.size() != nlabels.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-                if (sbeg.size() != send.size()
-                    || sbeg.size() != sweights.size()
-                    || sbeg.size() != slabels.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-                if (!sweights.empty() && sweights.size() != shmodels.size())
-                    {
-                        throw std::invalid_argument(
-                            "incorrect number of shmodels");
-                    }
-                if (nweights.size())
+                if (data->nweights.size())
                     nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(nweights.size(),
-                                                 &nweights[0]));
-                if (sweights.size())
+                        gsl_ran_discrete_preproc(data->nweights.size(),
+                                                 data->nweights.data()));
+                if (data->sweights.size())
                     slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(sweights.size(),
-                                                 &sweights[0]));
+                        gsl_ran_discrete_preproc(data->sweights.size(),
+                                                 data->sweights.data()));
             }
 
             /*!
@@ -157,12 +110,52 @@ namespace KTfwd
                 return pos;
             }
 
+          public:
+            using result_type = std::size_t;
+
+            /*!
+              \param __nbeg Positions of beginnings of 'neutral' regions
+              \param __nend Positions of ends of 'neutral' regions
+              \param nweights Weights on 'neutral' regions
+              \param __sbeg Positions of beginnings of 'selected' regions
+              \param __send Positions of ends of 'selected' regions
+              \param sweights Weights on 'selected' regions
+              \param __shmodels Vector of KTfwd::experimenta::shmodel
+            */
+            discrete_mut_model(std::vector<double> __nbeg,
+                               std::vector<double> __nend,
+                               std::vector<double> nweights, // the weights
+                               std::vector<double> __sbeg,
+                               std::vector<double> __send,
+                               std::vector<double> sweights, // the weights
+                               std::vector<shmodel> __shmodels,
+                               discrete_mut_model_data::vec_xtra __nlabels
+                               = discrete_mut_model_data::vec_xtra(),
+                               discrete_mut_model_data::vec_xtra __slabels
+                               = discrete_mut_model_data::vec_xtra())
+                : data(new discrete_mut_model_data(
+                      std::move(__nbeg), std::move(__nend),
+                      std::move(nweights), std::move(__sbeg),
+                      std::move(__send), std::move(sweights),
+                      std::move(__shmodels), std::move(__nlabels),
+                      std::move(__slabels)))
+            {
+                assign_weights();
+            }
+
+            discrete_mut_model(const discrete_mut_model &dmm)
+                : data(new discrete_mut_model_data(*dmm.data))
+            {
+                assign_weights();
+            }
+
             /*!
               Return a KTfwd::popgenmut
 
               \param r A gsl_rng
               \param nmu Neutral mutation rate (per gamete, per generation)
-              \param smu Selected mutation rate (per gamete, per generation)
+              \param smu Selected mutation rate (per gamete, per
+              generation)
               \param generation The current generation
               \param recycling_bin A recycling bin for mutations
               \param mutations A container of mutations
@@ -170,11 +163,14 @@ namespace KTfwd
 
               \precondition If nmu == 0, then nbeg/nend cannot be empty.
               Similarly,
-              if smu == 0, then sbeg,end cannot be empty.  These conditions are
+              if smu == 0, then sbeg,end cannot be empty.  These conditions
+              are
               checked in debug
-              mode via the assert macro.  It is up to the calling environment
+              mode via the assert macro.  It is up to the calling
+              environment
               to prevent this situation
-              from arising.  Also, nmu+smu must be > 0, and is also checked by
+              from arising.  Also, nmu+smu must be > 0, and is also checked
+              by
               assert.
             */
             template <typename queue_t, typename lookup_table_t,
@@ -189,22 +185,24 @@ namespace KTfwd
                     = (gsl_rng_uniform(r) < nmu / (nmu + smu)) ? true : false;
                 if (is_neutral)
                     {
-                        assert(!nbeg.empty());
-                        assert(!nend.empty());
+                        assert(!data->nbeg.empty());
+                        assert(!data->nend.empty());
                         size_t region = gsl_ran_discrete(r, nlookup.get());
-                        double pos
-                            = posmaker(r, nbeg[region], nend[region], lookup);
+                        double pos = posmaker(r, data->nbeg[region],
+                                              data->nend[region], lookup);
                         return fwdpp_internal::recycle_mutation_helper(
                             recycling_bin, mutations, pos, 0., 0., *generation,
-                            nlabels[region]);
+                            data->nlabels[region]);
                     }
-                assert(!sbeg.empty());
-                assert(!send.empty());
+                assert(!data->sbeg.empty());
+                assert(!data->send.empty());
                 size_t region = gsl_ran_discrete(r, slookup.get());
-                double pos = posmaker(r, sbeg[region], send[region], lookup);
+                double pos = posmaker(r, data->sbeg[region],
+                                      data->send[region], lookup);
                 return fwdpp_internal::recycle_mutation_helper(
-                    recycling_bin, mutations, pos, shmodels[region].s(r),
-                    shmodels[region].h(r), *generation, slabels[region]);
+                    recycling_bin, mutations, pos, data->shmodels[region].s(r),
+                    data->shmodels[region].h(r), *generation,
+                    data->slabels[region]);
             }
         };
 
@@ -269,43 +267,72 @@ namespace KTfwd
             return rv;
         }
 
-        struct discrete_rec_model
+        struct discrete_rec_model_data
+        {
+            std::vector<double> beg, end, weight;
+            discrete_rec_model_data(const std::vector<double> &&b,
+                                    const std::vector<double> &&e,
+                                    const std::vector<double> &&w)
+                : beg(std::move(b)), end(std::move(e)), weight(std::move(w))
+            {
+                if (beg.size() != end.size() || beg.size() != weight.size())
+                    {
+                        throw std::invalid_argument(
+                            "input vectors must all be the same size");
+                    }
+            }
+        };
+
+        class discrete_rec_model
         /*!
           Class allowing the simulation of discrete variation
           in recombination rates along a region.
         */
         {
+          private:
             using result_type = std::vector<double>;
-            std::vector<double> beg, end;
+            std::unique_ptr<discrete_rec_model_data> data;
             KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+            void
+            assign_weights()
+            {
+                if (data->weight.size())
+                    lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                        gsl_ran_discrete_preproc(data->weight.size(),
+                                                 data->weight.data()));
+            }
+
+          public:
             /*!
               \param __beg Region beginnings
               \param __end Region ends
               \param __weight Region weights
             */
-            discrete_rec_model(const std::vector<double> &__beg,
-                               const std::vector<double> &__end,
-                               const std::vector<double> &__weight)
-                : beg(__beg), end(__end)
+            discrete_rec_model(const std::vector<double> __beg,
+                               const std::vector<double> __end,
+                               const std::vector<double> __weight)
+                : data(new discrete_rec_model_data(
+                      std::move(__beg), std::move(__end), std::move(__weight)))
             {
-                if (beg.size() != end.size() || beg.size() != __weight.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-
-                if (__weight.size())
-                    lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(__weight.size(),
-                                                 &__weight[0]));
+                assign_weights();
             }
+
+            discrete_rec_model(const discrete_rec_model &drm)
+                : data(new discrete_rec_model_data(*drm.data))
+            {
+                assign_weights();
+            }
+
             /*!
-              Returns a position from a region that is chosen based on region
+              Returns a position from a region that is chosen based on
+              region
               weights.
 
-              \precondition If recrate == 0, then beg and end cannot be empty.
+              \precondition If recrate == 0, then beg and end cannot be
+              empty.
               It is up to the calling environment to make sure
-              that this cannot happen.  This is checked in debug mode via the
+              that this cannot happen.  This is checked in debug mode via
+              the
               assert macro.
             */
             template <typename gamete_t, typename mcont_t>
@@ -314,7 +341,8 @@ namespace KTfwd
                        const gamete_t &, const gamete_t &,
                        const mcont_t &) const
             {
-                assert(!(recrate == 0. && (beg.empty() || end.empty())));
+                assert(!(recrate == 0.
+                         && (data->beg.empty() || data->end.empty())));
                 auto nbreaks = gsl_ran_poisson(r, recrate);
                 if (!nbreaks)
                     return {};
@@ -323,8 +351,8 @@ namespace KTfwd
                 for (unsigned i = 0; i < nbreaks; ++i)
                     {
                         size_t region = gsl_ran_discrete(r, lookup.get());
-                        rv.push_back(
-                            gsl_ran_flat(r, beg[region], end[region]));
+                        rv.push_back(gsl_ran_flat(r, data->beg[region],
+                                                  data->end[region]));
                     }
                 std::sort(rv.begin(), rv.end());
                 rv.push_back(std::numeric_limits<double>::max());
@@ -341,16 +369,16 @@ namespace KTfwd
         inline auto
         bind_drm(const discrete_rec_model &drm, const gcont_t &,
                  const mcont_t &, const gsl_rng *r, const double recrate)
-            -> decltype(
-                std::bind(&discrete_rec_model::
-                          operator()<typename gcont_t::value_type, mcont_t>,
-                          &drm, r, recrate, std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3))
+            -> decltype(std::bind(&discrete_rec_model::operator() <
+                                      typename gcont_t::value_type,
+                                  mcont_t >, &drm, r, recrate,
+                                  std::placeholders::_1, std::placeholders::_2,
+                                  std::placeholders::_3))
         {
-            return std::bind(&discrete_rec_model::
-                             operator()<typename gcont_t::value_type, mcont_t>,
-                             &drm, r, recrate, std::placeholders::_1,
-                             std::placeholders::_2, std::placeholders::_3);
+            return std::bind(
+                &discrete_rec_model::operator() < typename gcont_t::value_type,
+                mcont_t >, &drm, r, recrate, std::placeholders::_1,
+                std::placeholders::_2, std::placeholders::_3);
         }
 
         /*! Returns a vector of function calls bound to
