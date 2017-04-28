@@ -6,7 +6,7 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.6
 
-* API issue #48 is addressed.  This is an API change breaking backwards compatilibity for multi-locus/region simulations. The new API allows more flexibility in modeling interlocus/region crossovers.  The API for KTfwd::sample_diploid is changed for multi-locus/region sims.  The new types KTfwd::poisson_interlocus_rec and KTfwd::binomial_interlocus_rec are provided to facilitate modeling interlocus recombination.  Two functions, KTfwd::make_poisson_interlocus_rec and KTfwd::make_binomial_interlocus_rec, return vectors of callbacks bound to the two new structs. [commit](https://github.com/molpopgen/fwdpp/commit/a5037a8f4a01b9534d1b6b12596b8eb8c1cee35f)
+* API issue #48 is addressed.  This is an API change breaking backwards compatilibity for multi-locus/region simulations. The new API allows more flexibility in modeling interlocus/region crossovers.  The API for KTfwd::sample_diploid is changed for multi-locus/region sims.  Two functions, KTfwd::make_poisson_interlocus_rec and KTfwd::make_binomial_interlocus_rec, return vectors of callbacks bound to the two new structs. [commit](https://github.com/molpopgen/fwdpp/commit/8ee950e7f315434284164e50c0f09b1e52a4c40c)
 * API issue #49 is addressed.  The changes maintain compile-time API compatibility with previous library versions.
 * Refactored KTfwd::extensions::discrete_rec_model and KTfwd::extensions::discrete_mut_model to use PIMPL idiom and be
   default-constructible. [commit](https://github.com/molpopgen/fwdpp/commit/9edcb8ca0da2dac5d04f066fbc0f26e3b7776c16)
