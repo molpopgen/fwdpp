@@ -73,8 +73,24 @@ setup3locus2(gcont_t &gametes, mcont_t &mutations, diploid_t &diploid)
     diploid.emplace_back(std::make_pair(4, 5));
     return;
 }
+
+struct always_recombine
+{
+    inline unsigned operator()() const
+    {
+        return 1u;
+    }
+};
+
 BOOST_FIXTURE_TEST_SUITE(multilocus_rec_mutTest,
                          standard_empty_multiloc_fixture)
+
+BOOST_AUTO_TEST_CASE(test_flexibility)
+{
+    std::vector<double> rates{1e-3,0.1};
+    auto x = KTfwd::make_poisson_interlocus_rec(r,rates.data(),rates.size());
+    x.emplace_back(always_recombine());
+}
 
 BOOST_AUTO_TEST_CASE(three_locus_test_1)
 {

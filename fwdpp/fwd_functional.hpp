@@ -53,43 +53,5 @@ namespace KTfwd
             return m.neutral;
         }
     };
-
-    struct poisson_interlocus_rec
-    /// \brief Model inter-locus/region recombination as a Poisson process
-    /// \ingroup mlocus
-    {
-        /// The number of cross-overs between loci i and i+1
-        /// are Poisson-distributed with this mean
-        const double mean;
-
-        /// Construct with a mean value.
-        explicit poisson_interlocus_rec(const double mean_) : mean(mean_) {}
-
-        inline unsigned
-        operator()(const gsl_rng *r) const noexcept
-        /// \return Number of crossovers between loci i and i+1
-        {
-            return gsl_ran_poisson(r, mean);
-        }
-    };
-
-    struct binomial_interlocus_rec
-    /// \brief Model inter-locus/region recombination as a Binomial process.
-    /// \ingroup mlocus
-    {
-		/// Genetic distance between loci i and i+1 is in recombination distance (cM/100).
-        const double dist;
-
-		/// Construct with number of dist
-        explicit binomial_interlocus_rec(const double dist_) : dist(dist_) {}
-
-        inline unsigned
-        operator()(const gsl_rng *r) const noexcept
-		/// Return whether or not loci i and i+1 had an odd number of crossovers
-		/// between them.
-        {
-            return gsl_ran_binomial(r, dist, 1);
-        }
-    };
 }
 #endif /* _FWD_FUNCTIONAL_HPP_ */

@@ -8,7 +8,7 @@ milestones (target version numbers for these features to go live) because that i
 
 * API issue #48 is addressed.  This is an API change breaking backwards compatilibity for multi-locus/region simulations. The new API allows more flexibility in modeling interlocus/region crossovers.  The API for KTfwd::sample_diploid is changed for multi-locus/region sims.  The new types KTfwd::poisson_interlocus_rec and KTfwd::binomial_interlocus_rec are provided to facilitate modeling interlocus recombination.  Two functions, KTfwd::make_poisson_interlocus_rec and KTfwd::make_binomial_interlocus_rec, return vectors of callbacks bound to the two new structs. [commit](https://github.com/molpopgen/fwdpp/commit/a5037a8f4a01b9534d1b6b12596b8eb8c1cee35f)
 * API issue #49 is addressed.  The changes maintain compile-time API compatibility with previous library versions.
-* Refactores KTfwd::extensions::discrete_rec_model and KTfwd::extensions::discrete_mut_model to use PIMPL idiom and be
+* Refactored KTfwd::extensions::discrete_rec_model and KTfwd::extensions::discrete_mut_model to use PIMPL idiom and be
   default-constructible. [commit](https://github.com/molpopgen/fwdpp/commit/9edcb8ca0da2dac5d04f066fbc0f26e3b7776c16)
 * Extend concept of regions to multi-locus sims via extensions::bind_vec__drm and extensions::bind_vec::dmm. [commit](https://github.com/molpopgen/fwdpp/commit/da1b47b661679c80530b3ed477107f9fadf33e25)
 * extensions::discrete_mut_model::make_mut now takes a pointer to the generation, allowing a single point of binding rather than binding each generation. [commit](https://github.com/molpopgen/fwdpp/commit/da1b47b661679c80530b3ed477107f9fadf33e25)
