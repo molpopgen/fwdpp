@@ -97,6 +97,7 @@ namespace KTfwd
             clear()
             {
                 diploids.clear();
+                locus_boundaries.clear();
                 popbase_t::clear_containers();
             }
         };
