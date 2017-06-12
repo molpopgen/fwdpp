@@ -231,8 +231,9 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
     auto m = haplotype_matrix(pop, indlist, keys.first, keys.second);
     BOOST_REQUIRE(keys.first.empty());
     auto error_handler = gsl_set_error_handler_off();
-    auto v = gsl_matrix_char_const_view_array(m.neutral.data(), m.nrow,
-                                              m.neutral_positions.size());
+    auto v = gsl_matrix_char_const_view_array(
+        reinterpret_cast<const char *>(m.neutral.data()), m.nrow,
+        m.neutral_positions.size());
     BOOST_REQUIRE_EQUAL(v.matrix.size1, 0);
     BOOST_REQUIRE_EQUAL(v.matrix.size2, 0);
     gsl_set_error_handler(error_handler);

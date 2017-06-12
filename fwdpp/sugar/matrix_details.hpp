@@ -18,16 +18,16 @@ namespace KTfwd
         {
             std::vector<std::pair<std::size_t, uint_t>> neutral_keys,
                 selected_keys;
-            std::vector<char> neutral_row, neutral_row2, selected_row,
+            std::vector<std::int8_t> neutral_row, neutral_row2, selected_row,
                 selected_row2;
             matrix_helper(
                 const std::vector<std::pair<std::size_t, uint_t>> &nk,
                 const std::vector<std::pair<std::size_t, uint_t>> &sk)
                 : neutral_keys{ nk }, selected_keys{ sk },
-                  neutral_row(std::vector<char>(nk.size(), 0)),
-                  neutral_row2(std::vector<char>(nk.size(), 0)),
-                  selected_row(std::vector<char>(sk.size(), 0)),
-                  selected_row2(std::vector<char>(sk.size(), 0))
+                  neutral_row(std::vector<std::int8_t>(nk.size(), 0)),
+                  neutral_row2(std::vector<std::int8_t>(nk.size(), 0)),
+                  selected_row(std::vector<std::int8_t>(sk.size(), 0)),
+                  selected_row2(std::vector<std::int8_t>(sk.size(), 0))
             {
             }
             void
@@ -169,7 +169,7 @@ namespace KTfwd
         }
 
         inline void
-        update_row(std::vector<char> &v,
+        update_row(std::vector<std::int8_t> &v,
                    const std::vector<KTfwd::uint_t> &mut_keys,
                    const std::vector<std::pair<std::size_t, uint_t>> &indexes)
         {
@@ -185,7 +185,7 @@ namespace KTfwd
                             return p.first == mk;
                         });
                     if (i != indexes.end()) // i may equal indexes.end iff mk
-                                            // refers to a fixation
+                        // refers to a fixation
                         {
                             auto idx = std::distance(indexes.begin(), i);
                             if (static_cast<std::size_t>(idx) >= v.size())
@@ -193,7 +193,7 @@ namespace KTfwd
                                     throw std::runtime_error(
                                         "idx >= v.size()");
                                 }
-                            v[static_cast<std::size_t>(idx)] += 1.0;
+                            v[static_cast<std::size_t>(idx)]++;
                         }
                 }
         }
@@ -202,7 +202,7 @@ namespace KTfwd
         inline bool
         validate_rows(const std::vector<uint_t> &gamete_mut_keys,
                       const std::vector<std::pair<std::size_t, uint_t>> &keys,
-                      const std::vector<char> &row)
+                      const std::vector<std::int8_t> &row)
         //! check that row sums are ok.
         // We need this more expensive check in case keys are adjusted prior
         // to filling matrix.
@@ -253,11 +253,11 @@ namespace KTfwd
                 {
                     std::transform(h.neutral_row2.begin(),
                                    h.neutral_row2.end(), h.neutral_row.begin(),
-                                   h.neutral_row.begin(), std::plus<char>());
+                                   h.neutral_row.begin(), std::plus<std::int8_t>());
                     std::transform(h.selected_row2.begin(),
                                    h.selected_row2.end(),
                                    h.selected_row.begin(),
-                                   h.selected_row.begin(), std::plus<char>());
+                                   h.selected_row.begin(), std::plus<std::int8_t>());
                     m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
                                      h.neutral_row.end());
                     m.selected.insert(m.selected.end(), h.selected_row.begin(),
@@ -425,15 +425,16 @@ namespace KTfwd
         }
 
         inline std::vector<std::uint32_t>
-        row_col_sums_details(const std::vector<char> &data,
+        row_col_sums_details(const std::vector<std::int8_t> &data,
                              const std::size_t nrow, const std::size_t ncol,
                              const bool is_row_sums)
         {
             std::vector<std::uint32_t> rv;
             if (!data.empty())
                 {
-                    auto v = gsl_matrix_char_const_view_array(data.data(),
-                                                              nrow, ncol);
+                    auto v = gsl_matrix_char_const_view_array(
+                        reinterpret_cast<const char *>(data.data()), nrow,
+                        ncol);
                     const std::size_t X
                         = (is_row_sums) ? v.matrix.size1 : v.matrix.size2;
                     for (std::size_t rc = 0; rc < X; ++rc)

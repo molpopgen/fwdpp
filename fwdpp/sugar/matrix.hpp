@@ -22,7 +22,7 @@ namespace KTfwd
     /*!
      * \brief Genotype or haplotype matrix.
      *
-     * This type uses std::vector<char> to hold a matrix
+     * This type uses std::vector<std::int8_t> to hold a matrix
      * representing the genotypes for a set of diploids.
      *
      * For a haplotype matrix of n individuals, the data represent
@@ -48,9 +48,9 @@ namespace KTfwd
      */
     {
         //! Data for neutral mutations.
-        std::vector<char> neutral;
+        std::vector<std::int8_t> neutral;
         //! Data for selected mutations.
-        std::vector<char> selected;
+        std::vector<std::int8_t> selected;
         //! Positions of neutral mutations.  Same order as matrix column order
         std::vector<double> neutral_positions;
         //! Positions of selected mutations.  Same order as matrix column order

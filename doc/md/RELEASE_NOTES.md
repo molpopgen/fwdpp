@@ -14,6 +14,7 @@ milestones (target version numbers for these features to go live) because that i
 * extensions::discrete_mut_model::make_mut now takes a pointer to the generation, allowing a single point of binding rather than binding each generation. [commit](https://github.com/molpopgen/fwdpp/commit/da1b47b661679c80530b3ed477107f9fadf33e25)
 * Exceptions in namespace KTfwd::extensions changed from std::runtime_error to std::invalid_argument where appropriate.
 * Fix bug in examples/HOC_ind.cc affecting (improper) recycling of fixations during the simulation. [commit](https://github.com/molpopgen/fwdpp/commit/559e7db4cefe6c444584c4a51587bd315e35cbb9)
+* KTfwd::data_matrix is now based on std:int8_t instead of char.
 
 ## 0.5.5
 
