@@ -64,8 +64,7 @@ namespace KTfwd
             gsl_rng_set(r.get(), seed);
         }
 
-        //! Copy constructor
-        GSLrng_t(const GSLrng_t &rng) noexcept : r(setup(rng.get())) {}
+        GSLrng_t(const GSLrng_t &rng) = default; 
 
         GSLrng_t(GSLrng_t &&) = default;
 
