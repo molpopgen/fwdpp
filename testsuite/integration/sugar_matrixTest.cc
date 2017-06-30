@@ -212,33 +212,6 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
         }
 }
 
-BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_GSL_behavior)
-// What happens if try to create empty matrix?
-// This can happen in production code, and
-// the default behavior is that GSL raises
-// a signal. There are two solutions:
-// 1. Don't make empty views
-// 2. Turn off error handler, check return value,
-// and then turn error handler back on.
-{
-    using spoptype = singlepop_popgenmut_fixture::poptype;
-    spoptype pop(1000); // a monomorphic population
-    std::vector<std::size_t> indlist;
-    // Sample a LOT of individuals
-    for (std::size_t i = 100; i < 750; i += 5)
-        indlist.push_back(i);
-    auto keys = mutation_keys(pop, indlist, true, true);
-    auto m = haplotype_matrix(pop, indlist, keys.first, keys.second);
-    BOOST_REQUIRE(keys.first.empty());
-    auto error_handler = gsl_set_error_handler_off();
-    auto v = gsl_matrix_char_const_view_array(
-        reinterpret_cast<const char *>(m.neutral.data()), m.nrow,
-        m.neutral_positions.size());
-    BOOST_REQUIRE_EQUAL(v.matrix.size1, 0);
-    BOOST_REQUIRE_EQUAL(v.matrix.size2, 0);
-    gsl_set_error_handler(error_handler);
-}
-
 BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
 {
     multiloc_popgenmut_fixture mpf;
