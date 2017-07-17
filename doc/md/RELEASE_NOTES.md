@@ -6,6 +6,8 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.6
 
+This release breaks API compatibility.
+
 * Issue #51 resolved.
 * API issue #50 resolved.  The KTfwd::GSLrng_t is no longer copy-constructible.
 * API issue #48 is addressed.  This is an API change breaking backwards compatilibity for multi-locus/region simulations. The new API allows more flexibility in modeling interlocus/region crossovers.  The API for KTfwd::sample_diploid is changed for multi-locus/region sims.  Two functions, KTfwd::make_poisson_interlocus_rec and KTfwd::make_binomial_interlocus_rec, return vectors of callbacks bound to the two new structs. [commit](https://github.com/molpopgen/fwdpp/commit/8ee950e7f315434284164e50c0f09b1e52a4c40c)
