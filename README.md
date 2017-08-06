@@ -301,10 +301,13 @@ For example, if libsequence is in /opt:
 
 ~~~{.sh}
 #Note, you need to add in the desired optimization (-OXX) level:
-CXXFLAGS="-O2 -I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib" ./configure 
+CPPFLAGS="-I/opt/include" LDFLAGS="$LDFLAGS -L/opt/lib -Wl,-rpath/opt/lib" ./configure 
 make check
 make install
 ~~~
+
+The "-Wl,-rpath" business adds the library path locations into the compiled binaries.  The flags work on GCC and clang
+compilers, and are often handy when using systems like Anaconda or Homebrew to manage dependencies.
 
 ## Installing in a custom location
 
