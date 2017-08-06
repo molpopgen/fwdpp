@@ -4,6 +4,10 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.5.7
+
+* Travis builds now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
+
 ## 0.5.6
 
 This release breaks API compatibility.

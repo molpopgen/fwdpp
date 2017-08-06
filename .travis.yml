@@ -9,6 +9,8 @@ matrix:
       osx_image: xcode8
     - os: osx 
       osx_image: xcode7.3
+    - os: osx 
+      osx_image: xcode6.4
 
 sudo: true
 
@@ -32,9 +34,10 @@ script:
     - export LD_LIBRARY_PATH=$HOME/miniconda/lib
     - export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
     - export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
-    - ./configure --prefix=$HOME && make &&  make install
+    - LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make &&  make install
     - fwdppConfig --version
-    - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make check; fi
+    - make check
+    #- if [ "$TRAVIS_OS_NAME" == "linux" ]; then make check; fi
     #For some reason, make check on OS X + conda fails to respect LD_LIBRARY_PATH,
     #so we'll run the tests manually
-    - if [ "$TRAVIS_OS_NAME" == "osx" ]; then for i in $(find testsuite -type f -perm +111);do $i -r detailed;done; fi
+    #- if [ "$TRAVIS_OS_NAME" == "osx" ]; then for i in $(find testsuite -type f -perm +111);do $i -r detailed;done; fi
