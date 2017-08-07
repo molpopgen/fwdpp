@@ -240,8 +240,12 @@ namespace KTfwd
                 dip.second = mutate_recombine(
                     r, mu, mmodel, rec_pol, p2g1, p2g2, gametes, mutations,
                     mut_recycling_bin, gam_recycling_bin, neutral, selected);
-				gametes[dip.first].n++;
-				gametes[dip.second].n++;
+                std::cout << "counts " << gametes[dip.first].n << ' '
+                          << gametes[dip.second].n << ' ';
+                gametes[dip.first].n++;
+                gametes[dip.second].n++;
+                std::cout << gametes[dip.first].n << ' '
+                          << gametes[dip.second].n << '\n';
                 // dip.first
                 //    = recombination(gametes, gam_recycling_bin, neutral,
                 //                    selected, rec_pol, p1g1, p1g2, mutations)
@@ -329,9 +333,17 @@ namespace KTfwd
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         assert(mcounts.size() == mutations.size());
 #ifndef NDEBUG
+		unsigned XX = 0;
         for (const auto &mc : mcounts)
             {
+                if (mc >= 2 * N_next)
+                    {
+                        std::cout << mutations.size() << ' ' << mc << ' ' << mutations[XX].pos << ' '
+                                  << mutations[XX].g << ' ' << mcounts[XX]
+                                  << '\n';
+                    }
                 assert(mc <= 2 * N_next);
+				XX++;
             }
 #endif
         assert(popdata_sane(diploids, gametes, mutations, mcounts));

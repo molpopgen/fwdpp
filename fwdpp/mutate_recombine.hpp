@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
+#include <unordered_map>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
@@ -76,19 +77,21 @@ namespace KTfwd
                                        }),
                                    m);
                     }
-                std::cerr << "returning a new mutant " << new_mutations.size() << '\n';
+                std::cerr << "returning a new mutant " << new_mutations.size()
+                          << '\n';
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
             }
         std::cerr << breakpoints.size() << ' ' << new_mutations.size() << '\n';
 
         assert(breakpoints.back() == std::numeric_limits<double>::max());
-		assert(std::is_sorted(breakpoints.begin(),breakpoints.end()));
+        assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
         assert(std::is_sorted(
             new_mutations.begin(), new_mutations.end(),
             [&mutations](const std::uint32_t i, const std::uint32_t j) {
                 return mutations[i].pos < mutations[j].pos;
             }));
+
         auto itr = gametes[g1].mutations.cbegin();
         auto jtr = gametes[g2].mutations.cbegin();
         auto itr_s = gametes[g1].smutations.cbegin();
@@ -122,14 +125,14 @@ namespace KTfwd
                                                      next_pos);
                 jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
                                                        mutations, next_pos);
+
                 std::swap(itr, jtr);
                 std::swap(itr_s, jtr_s);
                 std::swap(itr_e, jtr_e);
                 std::swap(itr_s_e, jtr_s_e);
-
                 if (is_mut)
                     {
-						std::cerr << "is a mutation!\n";
+                        std::cerr << "is a mutation!\n";
                         if (mutations[*next_mutation].neutral)
                             {
                                 neutral.push_back(*next_mutation);
@@ -144,6 +147,33 @@ namespace KTfwd
                     {
                         ++i;
                     }
+            }
+        std::unordered_map<uint_t, uint_t> n, s;
+        for (auto &&ni : neutral)
+            n[ni]++;
+        for (auto &&ni : selected)
+            s[ni]++;
+        for (auto &&ni : n)
+            {
+                if (ni.second > 1)
+                    {
+                        std::cout << ni.second << ": -> ";
+                        for (auto x : neutral)
+                            {
+                                std::cout << x << ' ';
+                            }
+                        std::cout << '\n';
+                        for (auto mi : new_mutations)
+                            {
+                                std::cout << mi << ' ';
+                            }
+                        std::cout << '\n';
+                    }
+                assert(ni.second == 1);
+            }
+        for (auto &&ni : s)
+            {
+                assert(ni.second == 1);
             }
         std::cerr << "DONE\n";
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
