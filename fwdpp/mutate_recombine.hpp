@@ -58,12 +58,14 @@ namespace KTfwd
             }
         else if (breakpoints.empty())
             {
-                neutral.clear();
-                selected.clear();
-                neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
-                               gametes[g1].mutations.end());
-                selected.insert(selected.end(), gametes[g1].smutations.begin(),
-                                gametes[g1].smutations.end());
+				neutral=gametes[g1].mutations;
+				selected=gametes[g1].smutations;
+                //neutral.clear();
+                //selected.clear();
+                //neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
+                //               gametes[g1].mutations.end());
+                //selected.insert(selected.end(), gametes[g1].smutations.begin(),
+                //                gametes[g1].smutations.end());
                 for (auto &&m : new_mutations)
                     {
                         auto c = (mutations[m].neutral) ? &neutral : &selected;
@@ -81,6 +83,7 @@ namespace KTfwd
                 // std::cerr << "returning a new mutant " <<
                 // new_mutations.size()
                 //         << '\n';
+#ifndef NDEBUG
                 std::unordered_map<uint_t, uint_t> n, s;
                 for (auto &&ni : neutral)
                     n[ni]++;
@@ -104,6 +107,7 @@ namespace KTfwd
                             }
                         assert(ni.second == 1);
                     }
+#endif
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
             }
@@ -180,6 +184,7 @@ namespace KTfwd
                         ++i;
                     }
             }
+#ifndef NDEBUG
         std::unordered_map<uint_t, uint_t> n, s;
         for (auto &&ni : neutral)
             n[ni]++;
@@ -207,6 +212,7 @@ namespace KTfwd
             {
                 assert(ni.second == 1);
             }
+#endif
         // std::cerr << "DONE\n";
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
