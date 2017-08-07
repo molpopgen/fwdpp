@@ -240,12 +240,12 @@ namespace KTfwd
                 dip.second = mutate_recombine(
                     r, mu, mmodel, rec_pol, p2g1, p2g2, gametes, mutations,
                     mut_recycling_bin, gam_recycling_bin, neutral, selected);
-                std::cout << "counts " << gametes[dip.first].n << ' '
-                          << gametes[dip.second].n << ' ';
+//                std::cout << "counts " << gametes[dip.first].n << ' '
+//                          << gametes[dip.second].n << ' ';
                 gametes[dip.first].n++;
                 gametes[dip.second].n++;
-                std::cout << gametes[dip.first].n << ' '
-                          << gametes[dip.second].n << '\n';
+//                std::cout << gametes[dip.first].n << ' '
+//                          << gametes[dip.second].n << '\n';
                 // dip.first
                 //    = recombination(gametes, gam_recycling_bin, neutral,
                 //                    selected, rec_pol, p1g1, p1g2, mutations)

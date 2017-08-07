@@ -59,6 +59,8 @@ namespace KTfwd
             }
         else if (breakpoints.empty())
             {
+                neutral.clear();
+                selected.clear();
                 neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
                                gametes[g1].mutations.end());
                 selected.insert(selected.end(), gametes[g1].smutations.begin(),
@@ -77,12 +79,37 @@ namespace KTfwd
                                        }),
                                    m);
                     }
-                std::cerr << "returning a new mutant " << new_mutations.size()
-                          << '\n';
+                //std::cerr << "returning a new mutant " << new_mutations.size()
+                 //         << '\n';
+                std::unordered_map<uint_t, uint_t> n, s;
+                for (auto &&ni : neutral)
+                    n[ni]++;
+                for (auto &&ni : selected)
+                    s[ni]++;
+                for (auto &&ni : n)
+                    {
+                        if (ni.second > 1)
+                            {
+                                std::cout << ni.second << ": -> ";
+                                for (auto x : neutral)
+                                    {
+                                        std::cout << x << ' ';
+                                    }
+                                std::cout << '\n';
+                                for (auto mi : new_mutations)
+                                    {
+                                        std::cout << mi << ' ';
+                                    }
+                                std::cout << '\n';
+                            }
+                        assert(ni.second == 1);
+                    }
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
             }
-        std::cerr << breakpoints.size() << ' ' << new_mutations.size() << '\n';
+        neutral.clear();
+        selected.clear();
+        //std::cerr << breakpoints.size() << ' ' << new_mutations.size() << '\n';
 
         assert(breakpoints.back() == std::numeric_limits<double>::max());
         assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
@@ -113,10 +140,10 @@ namespace KTfwd
                         next_pos = mutations[*next_mutation].pos;
                         is_mut = true;
                     }
-                std::cerr << is_mut << ' ' << next_pos << ' '
-                          << std::distance(next_mutation, new_mutations.cend())
-                          << ' ' << std::distance(i, breakpoints.cend())
-                          << '\n';
+                //std::cerr << is_mut << ' ' << next_pos << ' '
+                          //<< std::distance(next_mutation, new_mutations.cend())
+                          //<< ' ' << std::distance(i, breakpoints.cend())
+                          //<< '\n';
                 itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations,
                                                       neutral, next_pos);
                 itr_s = fwdpp_internal::rec_gam_updater(
@@ -126,13 +153,13 @@ namespace KTfwd
                 jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
                                                        mutations, next_pos);
 
-                std::swap(itr, jtr);
-                std::swap(itr_s, jtr_s);
-                std::swap(itr_e, jtr_e);
-                std::swap(itr_s_e, jtr_s_e);
+                // std::swap(itr, jtr);
+                // std::swap(itr_s, jtr_s);
+                // std::swap(itr_e, jtr_e);
+                // std::swap(itr_s_e, jtr_s_e);
                 if (is_mut)
                     {
-                        std::cerr << "is a mutation!\n";
+                        //std::cerr << "is a mutation!\n";
                         if (mutations[*next_mutation].neutral)
                             {
                                 neutral.push_back(*next_mutation);
@@ -145,6 +172,10 @@ namespace KTfwd
                     }
                 else
                     {
+                        std::swap(itr, jtr);
+                        std::swap(itr_s, jtr_s);
+                        std::swap(itr_e, jtr_e);
+                        std::swap(itr_s_e, jtr_s_e);
                         ++i;
                     }
             }
@@ -175,7 +206,7 @@ namespace KTfwd
             {
                 assert(ni.second == 1);
             }
-        std::cerr << "DONE\n";
+        //std::cerr << "DONE\n";
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
