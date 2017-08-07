@@ -30,13 +30,16 @@ namespace KTfwd
                   [&mutations](const uint_t a, const uint_t b) {
                       return mutations[a].pos < mutations[b].pos;
                   });
+		if(!rv.empty())
+		{
 		for(auto && i : rv)
 		{
-			std::cout << rv[i].pos << ' ';
+			std::cout << mutations[i].pos << ' ';
 
 		}
 		std::cout << '\n';
 		std::exit(0);
+		}
         return rv;
     }
 
