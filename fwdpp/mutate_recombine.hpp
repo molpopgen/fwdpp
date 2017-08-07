@@ -30,18 +30,24 @@ namespace KTfwd
                   [&mutations](const uint_t a, const uint_t b) {
                       return mutations[a].pos < mutations[b].pos;
                   });
+		for(auto && i : rv)
+		{
+			std::cout << rv[i].pos << ' ';
+
+		}
+		std::cout << '\n';
+		std::exit(0);
         return rv;
     }
 
-    template <typename gcont_t, typename mcont_t,typename queue_type>
+    template <typename gcont_t, typename mcont_t, typename queue_type>
     std::size_t
     mutate_recombine(
-         const std::vector<uint_t> &new_mutations,
+        const std::vector<uint_t> &new_mutations,
         const std::vector<double> &breakpoints,
         // const mutation_model &mmodel, const recombination_model &recmodel,
         const std::size_t g1, const std::size_t g2, gcont_t &gametes,
-        mcont_t &mutations,
-		queue_type & gamete_recycling_bin,
+        mcont_t &mutations, queue_type &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     {
@@ -58,13 +64,14 @@ namespace KTfwd
             }
         else if (breakpoints.empty())
             {
-				neutral=gametes[g1].mutations;
-				selected=gametes[g1].smutations;
-                //neutral.clear();
-                //selected.clear();
-                //neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
+                neutral = gametes[g1].mutations;
+                selected = gametes[g1].smutations;
+                // neutral.clear();
+                // selected.clear();
+                // neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
                 //               gametes[g1].mutations.end());
-                //selected.insert(selected.end(), gametes[g1].smutations.begin(),
+                // selected.insert(selected.end(),
+                // gametes[g1].smutations.begin(),
                 //                gametes[g1].smutations.end());
                 for (auto &&m : new_mutations)
                     {
@@ -80,9 +87,9 @@ namespace KTfwd
                                        }),
                                    m);
                     }
-                // std::cerr << "returning a new mutant " <<
-                // new_mutations.size()
-                //         << '\n';
+// std::cerr << "returning a new mutant " <<
+// new_mutations.size()
+//         << '\n';
 #ifndef NDEBUG
                 std::unordered_map<uint_t, uint_t> n, s;
                 for (auto &&ni : neutral)
@@ -136,35 +143,23 @@ namespace KTfwd
         auto next_mutation = new_mutations.cbegin();
         for (auto i = breakpoints.cbegin(); i != breakpoints.cend();)
             {
-                // Get the next relevant position
-                bool is_mut = false;
-                double next_pos = *i;
                 if (next_mutation != new_mutations.cend()
                     && mutations[*next_mutation].pos < *i)
                     {
-                        next_pos = mutations[*next_mutation].pos;
-                        is_mut = true;
-                    }
-                // std::cerr << is_mut << ' ' << next_pos << ' '
-                //<< std::distance(next_mutation, new_mutations.cend())
-                //<< ' ' << std::distance(i, breakpoints.cend())
-                //<< '\n';
-                itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations,
-                                                      neutral, next_pos);
-                itr_s = fwdpp_internal::rec_gam_updater(
-                    itr_s, itr_s_e, mutations, selected, next_pos);
-                jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e, mutations,
-                                                     next_pos);
-                jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
-                                                       mutations, next_pos);
-
-                // std::swap(itr, jtr);
-                // std::swap(itr_s, jtr_s);
-                // std::swap(itr_e, jtr_e);
-                // std::swap(itr_s_e, jtr_s_e);
-                if (is_mut)
-                    {
-                        // std::cerr << "is a mutation!\n";
+                        // next_pos = mutations[*next_mutation].pos;
+                        // is_mut = true;
+                        itr = fwdpp_internal::rec_gam_updater(
+                            itr, itr_e, mutations, neutral,
+                            mutations[*next_mutation].pos);
+                        itr_s = fwdpp_internal::rec_gam_updater(
+                            itr_s, itr_s_e, mutations, selected,
+                            mutations[*next_mutation].pos);
+                        jtr = fwdpp_internal::rec_update_itr(
+                            jtr, jtr_e, mutations,
+                            mutations[*next_mutation].pos);
+                        jtr_s = fwdpp_internal::rec_update_itr(
+                            jtr_s, jtr_s_e, mutations,
+                            mutations[*next_mutation].pos);
                         if (mutations[*next_mutation].neutral)
                             {
                                 neutral.push_back(*next_mutation);
@@ -177,12 +172,24 @@ namespace KTfwd
                     }
                 else
                     {
+                        itr = fwdpp_internal::rec_gam_updater(
+                            itr, itr_e, mutations, neutral, *i);
+                        itr_s = fwdpp_internal::rec_gam_updater(
+                            itr_s, itr_s_e, mutations, selected, *i);
+                        jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e,
+                                                             mutations, *i);
+                        jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
+                                                               mutations, *i);
                         std::swap(itr, jtr);
                         std::swap(itr_s, jtr_s);
                         std::swap(itr_e, jtr_e);
                         std::swap(itr_s_e, jtr_s_e);
                         ++i;
                     }
+            }
+        if (next_mutation != new_mutations.cend())
+            {
+                throw std::runtime_error("we didn't do all the mutations");
             }
 #ifndef NDEBUG
         std::unordered_map<uint_t, uint_t> n, s;
