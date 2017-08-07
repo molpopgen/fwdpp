@@ -234,15 +234,13 @@ namespace KTfwd
                   sequential updates to iterators using binary
                   searches (std::upper_bound).
                 */
-                auto breakpoints
-                    = rec_pol(gametes[p1g1], gametes[p1g2], mutations);
-                auto breakpoints2
-                    = rec_pol(gametes[p2g1], gametes[p2g2], mutations);
+                auto breakpoints = generate_breakpoints(p1g1,p1g2,gametes,mutations,rec_pol);
+                auto breakpoints2 = generate_breakpoints(p2g1,p2g2,gametes,mutations,rec_pol);
                 auto new_mutations = generate_new_mutations(
                     mut_recycling_bin, r, mu, mutations, p1g1, mmodel);
                 auto new_mutations2 = generate_new_mutations(
                     mut_recycling_bin, r, mu, mutations, p2g2, mmodel);
-
+                //std::cout << breakpoints.size() << ' ' << breakpoints2.size() << '\n';
                 dip.first = mutate_recombine(
                     new_mutations, breakpoints, p1g1, p1g2, gametes, mutations,
                     gam_recycling_bin, neutral, selected);

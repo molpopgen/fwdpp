@@ -10,6 +10,25 @@
 
 namespace KTfwd
 {
+    template <typename recombination_policy, typename gcont_t,
+              typename mcont_t>
+    std::vector<double>
+    generate_breakpoints(const std::size_t g1, const std::size_t g2,
+                         const gcont_t &gametes, const mcont_t &mutations,
+                         const recombination_policy rec_pol)
+    {
+        auto nm1
+            = gametes[g1].mutations.size() + gametes[g1].smutations.size();
+        auto nm2
+            = gametes[g2].mutations.size() + gametes[g2].smutations.size();
+        if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
+            || gametes[g1] == gametes[g2])
+            {
+                return {};
+            }
+        return rec_pol(gametes[g1], gametes[g2], mutations);
+    }
+
     template <typename queue_type, typename mutation_model, typename mcont_t>
     std::vector<uint_t>
     generate_new_mutations(queue_type &recycling_bin, const gsl_rng *r,
@@ -30,16 +49,6 @@ namespace KTfwd
                   [&mutations](const uint_t a, const uint_t b) {
                       return mutations[a].pos < mutations[b].pos;
                   });
-		if(!rv.empty())
-		{
-		for(auto && i : rv)
-		{
-			std::cout << mutations[i].pos << ' ';
-
-		}
-		std::cout << '\n';
-		std::exit(0);
-		}
         return rv;
     }
 
@@ -54,42 +63,55 @@ namespace KTfwd
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     {
-        // The order here is to keep results same as previous fwdpp versions,
-        // so we generate recombination breakpoints first, and then the new
-        // mutations:
-        // auto breakpoints = recmodel(gametes[g1], gametes[g2], mutations);
-        // auto new_mutations = generate_new_mutations(
-        //    mut_recycling_bin, r, mutation_rate, mutations, g1, mmodel);
-
         if (new_mutations.empty() && breakpoints.empty())
             {
                 return g1;
             }
         else if (breakpoints.empty())
             {
-                neutral = gametes[g1].mutations;
-                selected = gametes[g1].smutations;
-                // neutral.clear();
-                // selected.clear();
-                // neutral.insert(neutral.end(), gametes[g1].mutations.begin(),
-                //               gametes[g1].mutations.end());
-                // selected.insert(selected.end(),
-                // gametes[g1].smutations.begin(),
-                //                gametes[g1].smutations.end());
+                neutral.clear();
+                selected.clear();
+                neutral.reserve(std::max(gametes[g1].mutations.size(),
+                                         gametes[g2].mutations.size())
+                                + new_mutations.size());
+                selected.reserve(std::max(gametes[g1].smutations.size(),
+                                          gametes[g2].smutations.size())
+                                 + new_mutations.size());
+                auto nb = gametes[g1].mutations.begin(),
+                     sb = gametes[g1].smutations.begin();
+                const auto ne = gametes[g1].mutations.end(),
+                           se = gametes[g1].smutations.end();
                 for (auto &&m : new_mutations)
                     {
-                        auto c = (mutations[m].neutral) ? &neutral : &selected;
-                        c->emplace(std::upper_bound(
-                                       c->begin(), c->end(), mutations[m].pos,
-                                       [&mutations](
-                                           const double &__value,
-                                           const std::size_t __mut) noexcept {
-                                           assert(__mut < mutations.size());
-                                           return __value
-                                                  < mutations[__mut].pos;
-                                       }),
-                                   m);
+                        if (mutations[m].neutral)
+                            {
+                                auto t = std::upper_bound(
+                                    nb, ne, mutations[m].pos,
+                                    [&mutations](
+                                        const double &v,
+                                        const std::size_t mut) noexcept {
+                                        return v < mutations[mut].pos;
+                                    });
+                                neutral.insert(neutral.end(), nb, t);
+                                neutral.push_back(m);
+                                nb = t;
+                            }
+                        else
+                            {
+                                auto t = std::upper_bound(
+                                    sb, se, mutations[m].pos,
+                                    [&mutations](
+                                        const double &v,
+                                        const std::size_t mut) noexcept {
+                                        return v < mutations[mut].pos;
+                                    });
+                                selected.insert(selected.end(), sb, t);
+                                selected.push_back(m);
+                                sb = t;
+                            }
                     }
+                neutral.insert(neutral.end(), nb, ne);
+                selected.insert(selected.end(), sb, se);
 // std::cerr << "returning a new mutant " <<
 // new_mutations.size()
 //         << '\n';
@@ -123,8 +145,12 @@ namespace KTfwd
             }
         neutral.clear();
         selected.clear();
-        // std::cerr << breakpoints.size() << ' ' << new_mutations.size() <<
-        // '\n';
+        neutral.reserve(std::max(gametes[g2].mutations.size(),
+                                 gametes[g2].mutations.size())
+                        + new_mutations.size());
+        selected.reserve(std::max(gametes[g2].smutations.size(),
+                                  gametes[g2].smutations.size())
+                         + new_mutations.size());
 
         assert(breakpoints.back() == std::numeric_limits<double>::max());
         assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
@@ -223,7 +249,6 @@ namespace KTfwd
                 assert(ni.second == 1);
             }
 #endif
-        // std::cerr << "DONE\n";
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
