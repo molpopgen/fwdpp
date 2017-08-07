@@ -33,25 +33,24 @@ namespace KTfwd
         return rv;
     }
 
-    template <typename mutation_queue_type, typename gamete_queue_type,
-              typename gcont_t, typename mcont_t, typename mutation_model,
-              typename recombination_model>
+    template <typename gcont_t, typename mcont_t,typename queue_type>
     std::size_t
     mutate_recombine(
-        const gsl_rng *r, const double mutation_rate,
-        const mutation_model &mmodel, const recombination_model &recmodel,
+         const std::vector<uint_t> &new_mutations,
+        const std::vector<double> &breakpoints,
+        // const mutation_model &mmodel, const recombination_model &recmodel,
         const std::size_t g1, const std::size_t g2, gcont_t &gametes,
-        mcont_t &mutations, mutation_queue_type &mut_recycling_bin,
-        gamete_queue_type &gamete_recycling_bin,
+        mcont_t &mutations,
+		queue_type & gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     {
         // The order here is to keep results same as previous fwdpp versions,
         // so we generate recombination breakpoints first, and then the new
         // mutations:
-        auto breakpoints = recmodel(gametes[g1], gametes[g2], mutations);
-        auto new_mutations = generate_new_mutations(
-            mut_recycling_bin, r, mutation_rate, mutations, g1, mmodel);
+        // auto breakpoints = recmodel(gametes[g1], gametes[g2], mutations);
+        // auto new_mutations = generate_new_mutations(
+        //    mut_recycling_bin, r, mutation_rate, mutations, g1, mmodel);
 
         if (new_mutations.empty() && breakpoints.empty())
             {
@@ -79,8 +78,9 @@ namespace KTfwd
                                        }),
                                    m);
                     }
-                //std::cerr << "returning a new mutant " << new_mutations.size()
-                 //         << '\n';
+                // std::cerr << "returning a new mutant " <<
+                // new_mutations.size()
+                //         << '\n';
                 std::unordered_map<uint_t, uint_t> n, s;
                 for (auto &&ni : neutral)
                     n[ni]++;
@@ -109,7 +109,8 @@ namespace KTfwd
             }
         neutral.clear();
         selected.clear();
-        //std::cerr << breakpoints.size() << ' ' << new_mutations.size() << '\n';
+        // std::cerr << breakpoints.size() << ' ' << new_mutations.size() <<
+        // '\n';
 
         assert(breakpoints.back() == std::numeric_limits<double>::max());
         assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
@@ -140,10 +141,10 @@ namespace KTfwd
                         next_pos = mutations[*next_mutation].pos;
                         is_mut = true;
                     }
-                //std::cerr << is_mut << ' ' << next_pos << ' '
-                          //<< std::distance(next_mutation, new_mutations.cend())
-                          //<< ' ' << std::distance(i, breakpoints.cend())
-                          //<< '\n';
+                // std::cerr << is_mut << ' ' << next_pos << ' '
+                //<< std::distance(next_mutation, new_mutations.cend())
+                //<< ' ' << std::distance(i, breakpoints.cend())
+                //<< '\n';
                 itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations,
                                                       neutral, next_pos);
                 itr_s = fwdpp_internal::rec_gam_updater(
@@ -159,7 +160,7 @@ namespace KTfwd
                 // std::swap(itr_s_e, jtr_s_e);
                 if (is_mut)
                     {
-                        //std::cerr << "is a mutation!\n";
+                        // std::cerr << "is a mutation!\n";
                         if (mutations[*next_mutation].neutral)
                             {
                                 neutral.push_back(*next_mutation);
@@ -206,7 +207,7 @@ namespace KTfwd
             {
                 assert(ni.second == 1);
             }
-        //std::cerr << "DONE\n";
+        // std::cerr << "DONE\n";
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
