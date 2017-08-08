@@ -3,8 +3,7 @@
 
 #include <vector>
 #include <algorithm>
-#include <iostream>
-#include <unordered_map>
+#include <cassert>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
@@ -52,6 +51,23 @@ namespace KTfwd
         return rv;
     }
 
+    template <typename container, typename integer_type, typename mcont_t>
+    typename container::iterator
+    insert_new_mutation(const typename container::iterator beg,
+                        const typename container::iterator end,
+                        const integer_type mut_key, const mcont_t &mutations,
+                        container &c)
+    {
+        auto t = std::upper_bound(
+            beg, end, mutations[mut_key].pos,
+            [&mutations](const double &v, const std::size_t mut) noexcept {
+                return v < mutations[mut].pos;
+            });
+        c.insert(c.end(), beg, t);
+        c.push_back(mut_key);
+        return t;
+    }
+
     template <typename gcont_t, typename mcont_t, typename queue_type>
     std::size_t
     mutate_recombine(
@@ -85,29 +101,33 @@ namespace KTfwd
                     {
                         if (mutations[m].neutral)
                             {
-                                auto t = std::upper_bound(
-                                    nb, ne, mutations[m].pos,
-                                    [&mutations](
-                                        const double &v,
-                                        const std::size_t mut) noexcept {
-                                        return v < mutations[mut].pos;
-                                    });
-                                neutral.insert(neutral.end(), nb, t);
-                                neutral.push_back(m);
-                                nb = t;
+                                nb = insert_new_mutation(nb, ne, m, mutations,
+                                                         neutral);
+                                // auto t = std::upper_bound(
+                                //    nb, ne, mutations[m].pos,
+                                //    [&mutations](
+                                //        const double &v,
+                                //        const std::size_t mut) noexcept {
+                                //        return v < mutations[mut].pos;
+                                //    });
+                                // neutral.insert(neutral.end(), nb, t);
+                                // neutral.push_back(m);
+                                // nb = t;
                             }
                         else
                             {
-                                auto t = std::upper_bound(
-                                    sb, se, mutations[m].pos,
-                                    [&mutations](
-                                        const double &v,
-                                        const std::size_t mut) noexcept {
-                                        return v < mutations[mut].pos;
-                                    });
-                                selected.insert(selected.end(), sb, t);
-                                selected.push_back(m);
-                                sb = t;
+                                sb = insert_new_mutation(sb, se, m, mutations,
+                                                         selected);
+                                // auto t = std::upper_bound(
+                                //    sb, se, mutations[m].pos,
+                                //    [&mutations](
+                                //        const double &v,
+                                //        const std::size_t mut) noexcept {
+                                //        return v < mutations[mut].pos;
+                                //    });
+                                // selected.insert(selected.end(), sb, t);
+                                // selected.push_back(m);
+                                // sb = t;
                             }
                     }
                 neutral.insert(neutral.end(), nb, ne);
@@ -118,10 +138,10 @@ namespace KTfwd
             }
         neutral.clear();
         selected.clear();
-        neutral.reserve(std::max(gametes[g2].mutations.size(),
+        neutral.reserve(std::max(gametes[g1].mutations.size(),
                                  gametes[g2].mutations.size())
                         + new_mutations.size());
-        selected.reserve(std::max(gametes[g2].smutations.size(),
+        selected.reserve(std::max(gametes[g1].smutations.size(),
                                   gametes[g2].smutations.size())
                          + new_mutations.size());
 
