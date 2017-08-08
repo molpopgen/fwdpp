@@ -214,87 +214,42 @@ namespace KTfwd
                 if (gsl_rng_uniform(r) < 0.5)
                     std::swap(p2g1, p2g2);
 
-                /*
-                  Recombination: the offspring's first gamete will be a
-                  recombinant of
-                  p1g1 and p1g2.  Likewise for the second gamete.
+                // Now, we generate the crossover breakpoints for
+                // both parents,as well as the new mutations that we'll place
+                // onto each gamete.  The specific order of operations below
+                // is done to ensure the exact same output as fwdpp 0.5.6 and
+                // earlier.
+                // The breakpoints are of type std::vector<double>, and
+                // the new_mutations are std::vector<KTfwd::uint_t>, with
+                // the integers representing the locations of the new mutations
+                // in "mutations".
 
-                  Internally, the recombination function does the following:
-                  1. Use rec_pol, a programmer-defined policy, to determine the
-                  positions of breakpoints.
-                  2. Create new mixes of the parental gametes into the
-                  pre-allocated containers 'neutral' and 'selected'
-
-                  The implementation is in fwdpp/recombination.[hpp|tcc] and
-                  the gory details
-                  are in fwdpp/internal/recombination_common.hpp and
-                  fwdpp/internal/rec_gamete_updater.hpp.
-
-                  Briefly, recombination is implemented via a series of
-                  sequential updates to iterators using binary
-                  searches (std::upper_bound).
-                */
-                auto breakpoints = generate_breakpoints(p1g1,p1g2,gametes,mutations,rec_pol);
-                auto breakpoints2 = generate_breakpoints(p2g1,p2g2,gametes,mutations,rec_pol);
+                auto breakpoints = generate_breakpoints(p1g1, p1g2, gametes,
+                                                        mutations, rec_pol);
+                auto breakpoints2 = generate_breakpoints(p2g1, p2g2, gametes,
+                                                         mutations, rec_pol);
                 auto new_mutations = generate_new_mutations(
                     mut_recycling_bin, r, mu, mutations, p1g1, mmodel);
                 auto new_mutations2 = generate_new_mutations(
                     mut_recycling_bin, r, mu, mutations, p2g2, mmodel);
-                //std::cout << breakpoints.size() << ' ' << breakpoints2.size() << '\n';
+
+                // Pass the breakpoints and new mutation keys on to
+                // KTfwd::mutate_recombine (defined in
+                // fwdpp/mutate_recombine.hpp),
+                // which splices together the offspring gamete and returns its
+                // location in gametes.  The location of the offspring gamete
+                // is
+                // either reycled from an extinct gamete or it is the location
+                // of a
+                // new gamete emplace_back'd onto the end.
                 dip.first = mutate_recombine(
                     new_mutations, breakpoints, p1g1, p1g2, gametes, mutations,
                     gam_recycling_bin, neutral, selected);
                 dip.second = mutate_recombine(
                     new_mutations2, breakpoints2, p2g1, p2g2, gametes,
                     mutations, gam_recycling_bin, neutral, selected);
-                //                std::cout << "counts " <<
-                //                gametes[dip.first].n << ' '
-                //                          << gametes[dip.second].n << ' ';
                 gametes[dip.first].n++;
                 gametes[dip.second].n++;
-                //                std::cout << gametes[dip.first].n << ' '
-                //                          << gametes[dip.second].n << '\n';
-                // dip.first
-                //    = recombination(gametes, gam_recycling_bin, neutral,
-                //                    selected, rec_pol, p1g1, p1g2, mutations)
-                //          .first;
-                // dip.second
-                //    = recombination(gametes, gam_recycling_bin, neutral,
-                //                    selected, rec_pol, p2g1, p2g2, mutations)
-                //          .first;
-
-                //// update gamete counts
-                // gametes[dip.first].n++;
-                // gametes[dip.second].n++;
-
-                ///*
-                //  Now, add new mutations to the first and second gamete of
-                //  the
-                //  offspring.
-
-                //  In fwdpp, mutation keys in gametes are "less-than" sorted
-                //  according to mutation position.
-
-                //  The keys to mutations are inserted into the correct place
-                //  which is found by a binary search (std::upper_bound).
-
-                //  I think that there are ways to improve the speed of this
-                //  part
-                //  of the code in order to reduce calls
-                //  to memmove/memcpy, but profiling suggests that the payoff
-                //  would be small.  (Note that memmove/memcyp is
-                //  never called direclty.  Rather, they are called indirectly
-                //  via the insert() member function of the relevant
-                //  container type.)
-
-                //  The implementation details are found in fwdpp/mutation.hpp
-                //*/
-                // dip.first = mutate_gamete_recycle(
-                //    mut_recycling_bin, gam_recycling_bin, r, mu, gametes,
-                //    mutations, dip.first, mmodel, gpolicy_mut);
-                // dip.second = mutate_gamete_recycle(
-                //    mut_recycling_bin, gam_recycling_bin, r, mu, gametes,
-                //    mutations, dip.second, mmodel, gpolicy_mut);
 
                 assert(gametes[dip.first].n);
                 assert(gametes[dip.second].n);
@@ -343,13 +298,6 @@ namespace KTfwd
 #ifndef NDEBUG
         for (const auto &mc : mcounts)
             {
-                // if (mc >= 2 * N_next)
-                //    {
-                //        std::cout << mutations.size() << ' ' << mc << ' ' <<
-                //        mutations[XX].pos << ' '
-                //                  << mutations[XX].g << ' ' << mcounts[XX]
-                //                  << '\n';
-                //    }
                 assert(mc <= 2 * N_next);
             }
 #endif
