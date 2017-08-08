@@ -112,34 +112,7 @@ namespace KTfwd
                     }
                 neutral.insert(neutral.end(), nb, ne);
                 selected.insert(selected.end(), sb, se);
-// std::cerr << "returning a new mutant " <<
-// new_mutations.size()
-//         << '\n';
-#ifndef NDEBUG
-                std::unordered_map<uint_t, uint_t> n, s;
-                for (auto &&ni : neutral)
-                    n[ni]++;
-                for (auto &&ni : selected)
-                    s[ni]++;
-                for (auto &&ni : n)
-                    {
-                        if (ni.second > 1)
-                            {
-                                std::cout << ni.second << ": -> ";
-                                for (auto x : neutral)
-                                    {
-                                        std::cout << x << ' ';
-                                    }
-                                std::cout << '\n';
-                                for (auto mi : new_mutations)
-                                    {
-                                        std::cout << mi << ' ';
-                                    }
-                                std::cout << '\n';
-                            }
-                        assert(ni.second == 1);
-                    }
-#endif
+
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
             }
@@ -175,21 +148,16 @@ namespace KTfwd
                 if (next_mutation != new_mutations.cend()
                     && mutations[*next_mutation].pos < *i)
                     {
-                        // next_pos = mutations[*next_mutation].pos;
-                        // is_mut = true;
+                        const auto mut = &mutations[*next_mutation];
                         itr = fwdpp_internal::rec_gam_updater(
-                            itr, itr_e, mutations, neutral,
-                            mutations[*next_mutation].pos);
+                            itr, itr_e, mutations, neutral, mut->pos);
                         itr_s = fwdpp_internal::rec_gam_updater(
-                            itr_s, itr_s_e, mutations, selected,
-                            mutations[*next_mutation].pos);
+                            itr_s, itr_s_e, mutations, selected, mut->pos);
                         jtr = fwdpp_internal::rec_update_itr(
-                            jtr, jtr_e, mutations,
-                            mutations[*next_mutation].pos);
+                            jtr, jtr_e, mutations, mut->pos);
                         jtr_s = fwdpp_internal::rec_update_itr(
-                            jtr_s, jtr_s_e, mutations,
-                            mutations[*next_mutation].pos);
-                        if (mutations[*next_mutation].neutral)
+                            jtr_s, jtr_s_e, mutations, mut->pos);
+                        if (mut->neutral)
                             {
                                 neutral.push_back(*next_mutation);
                             }
@@ -216,39 +184,7 @@ namespace KTfwd
                         ++i;
                     }
             }
-        if (next_mutation != new_mutations.cend())
-            {
-                throw std::runtime_error("we didn't do all the mutations");
-            }
-#ifndef NDEBUG
-        std::unordered_map<uint_t, uint_t> n, s;
-        for (auto &&ni : neutral)
-            n[ni]++;
-        for (auto &&ni : selected)
-            s[ni]++;
-        for (auto &&ni : n)
-            {
-                if (ni.second > 1)
-                    {
-                        std::cout << ni.second << ": -> ";
-                        for (auto x : neutral)
-                            {
-                                std::cout << x << ' ';
-                            }
-                        std::cout << '\n';
-                        for (auto mi : new_mutations)
-                            {
-                                std::cout << mi << ' ';
-                            }
-                        std::cout << '\n';
-                    }
-                assert(ni.second == 1);
-            }
-        for (auto &&ni : s)
-            {
-                assert(ni.second == 1);
-            }
-#endif
+        assert(next_mutation == mutations.cbegin());
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
