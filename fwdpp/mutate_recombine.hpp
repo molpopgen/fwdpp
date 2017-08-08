@@ -51,35 +51,38 @@ namespace KTfwd
         return rv;
     }
 
-    template <typename container, typename integer_type, typename mcont_t>
-    typename container::iterator
-    insert_new_mutation(const typename container::iterator beg,
-                        const typename container::iterator end,
-                        const integer_type mut_key, const mcont_t &mutations,
-                        container &c)
+    namespace fwdpp_internal
     {
-        auto t = std::upper_bound(
-            beg, end, mutations[mut_key].pos,
-            [&mutations](const double &v, const uint_t mut) noexcept {
-                return v < mutations[mut].pos;
-            });
-        c.insert(c.end(), beg, t);
-        c.push_back(mut_key);
-        return t;
-    }
+        template <typename container, typename integer_type, typename mcont_t>
+        typename container::iterator
+        insert_new_mutation(const typename container::iterator beg,
+                            const typename container::iterator end,
+                            const integer_type mut_key,
+                            const mcont_t &mutations, container &c)
+        {
+            auto t = std::upper_bound(
+                beg, end, mutations[mut_key].pos,
+                [&mutations](const double &v, const uint_t mut) noexcept {
+                    return v < mutations[mut].pos;
+                });
+            c.insert(c.end(), beg, t);
+            c.push_back(mut_key);
+            return t;
+        }
 
-    template <typename gcont_t, typename container>
-    void
-    prep_temporary_containers(const std::size_t g1, const std::size_t g2,
-                              const gcont_t &gametes, container &neutral,
-                              container &selected)
-    {
-        neutral.clear();
-        selected.clear();
-        neutral.reserve(std::max(gametes[g1].mutations.size(),
-                                 gametes[g2].mutations.size()));
-        selected.reserve(std::max(gametes[g1].smutations.size(),
-                                  gametes[g2].smutations.size()));
+        template <typename gcont_t, typename container>
+        void
+        prep_temporary_containers(const std::size_t g1, const std::size_t g2,
+                                  const gcont_t &gametes, container &neutral,
+                                  container &selected)
+        {
+            neutral.clear();
+            selected.clear();
+            neutral.reserve(std::max(gametes[g1].mutations.size(),
+                                     gametes[g2].mutations.size()));
+            selected.reserve(std::max(gametes[g1].smutations.size(),
+                                      gametes[g2].smutations.size()));
+        }
     }
 
     template <typename gcont_t, typename mcont_t, typename queue_type>
@@ -98,7 +101,8 @@ namespace KTfwd
             }
         else if (breakpoints.empty()) // only mutations to deal with
             {
-                prep_temporary_containers(g1, g2, gametes, neutral, selected);
+                fwdpp_internal::prep_temporary_containers(g1, g2, gametes,
+                                                          neutral, selected);
                 // neutral.clear();
                 // selected.clear();
                 // neutral.reserve(std::max(gametes[g1].mutations.size(),
@@ -115,13 +119,13 @@ namespace KTfwd
                     {
                         if (mutations[m].neutral)
                             {
-                                nb = insert_new_mutation(nb, ne, m, mutations,
-                                                         neutral);
+                                nb = fwdpp_internal::insert_new_mutation(
+                                    nb, ne, m, mutations, neutral);
                             }
                         else
                             {
-                                sb = insert_new_mutation(sb, se, m, mutations,
-                                                         selected);
+                                sb = fwdpp_internal::insert_new_mutation(
+                                    sb, se, m, mutations, selected);
                             }
                     }
                 neutral.insert(neutral.end(), nb, ne);
@@ -132,7 +136,8 @@ namespace KTfwd
             }
         // If we get here, there are mutations and
         // recombinations to handle
-        prep_temporary_containers(g1, g2, gametes, neutral, selected);
+        fwdpp_internal::prep_temporary_containers(g1, g2, gametes, neutral,
+                                                  selected);
 
         assert(breakpoints.back() == std::numeric_limits<double>::max());
         assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
