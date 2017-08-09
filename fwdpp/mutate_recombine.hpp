@@ -1,3 +1,10 @@
+/*!
+  \file mutate_recombine.hpp
+
+  \brief Handling of recombination and mutation in one step.
+
+  \note Introduced in fwdpp 0.5.7
+*/
 #ifndef FWDPP_MUTATE_RECOMBINE_HPP__
 #define FWDPP_MUTATE_RECOMBINE_HPP__
 
@@ -6,6 +13,7 @@
 #include <cassert>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
+#include <fwdpp/internal/rec_gamete_updater.hpp>
 
 namespace KTfwd
 {
@@ -14,7 +22,20 @@ namespace KTfwd
     std::vector<double>
     generate_breakpoints(const std::size_t g1, const std::size_t g2,
                          const gcont_t &gametes, const mcont_t &mutations,
-                         const recombination_policy rec_pol)
+                         const recombination_policy &rec_pol)
+    /*! Generate vector of recombination breakpoints
+     \param g1 Index of gamete 1
+     \param g2 Index of gamete 2
+     \param gametes Vector of gametes
+     \param mutation Vector of mutations
+     \param rec_pol Function to generate breakpoints
+
+     \return std::vector<double> containing sorted breakpoints
+
+     \note An empty return value means no breakpoints.  Otherwise,
+     the breakpoints are returned and are terminated by
+     std::numeric_limits<double>::max()
+     */
     {
         auto nm1
             = gametes[g1].mutations.size() + gametes[g1].smutations.size();
@@ -33,8 +54,19 @@ namespace KTfwd
     generate_new_mutations(queue_type &recycling_bin, const gsl_rng *r,
                            const double &mu, mcont_t &mutations,
                            const std::size_t g, const mutation_model &mmodel)
-    /// Return a vector of keys to new mutations.  The keys
-    /// will be sorted according to mutation postition.
+    /*!
+         Return a vector of keys to new mutations.  The keys
+     will be sorted according to mutation postition.
+
+         \param recycling_bin The queue for recycling mutations
+         \param r A random number generator
+         \param mu The total mutation rate
+         \param mutations Vector of mutations
+		 \param g index of gamete to mutate
+         \param mmodel The mutation policy
+
+         \return Vector of mutation keys, sorted according to position
+	 */
     {
         unsigned nm = gsl_ran_poisson(r, mu);
         std::vector<uint_t> rv;
@@ -59,6 +91,7 @@ namespace KTfwd
                             const typename container::iterator end,
                             const integer_type mut_key,
                             const mcont_t &mutations, container &c)
+        //Inserts mutation key into c such that sort order is maintained
         {
             auto t = std::upper_bound(
                 beg, end, mutations[mut_key].pos,
@@ -75,6 +108,7 @@ namespace KTfwd
         prep_temporary_containers(const std::size_t g1, const std::size_t g2,
                                   const gcont_t &gametes, container &neutral,
                                   container &selected)
+        //Clear temporary containers and reserve memory
         {
             neutral.clear();
             selected.clear();
@@ -103,14 +137,6 @@ namespace KTfwd
             {
                 fwdpp_internal::prep_temporary_containers(g1, g2, gametes,
                                                           neutral, selected);
-                // neutral.clear();
-                // selected.clear();
-                // neutral.reserve(std::max(gametes[g1].mutations.size(),
-                //                         gametes[g2].mutations.size())
-                //                + new_mutations.size());
-                // selected.reserve(std::max(gametes[g1].smutations.size(),
-                //                          gametes[g2].smutations.size())
-                //                 + new_mutations.size());
                 auto nb = gametes[g1].mutations.begin(),
                      sb = gametes[g1].smutations.begin();
                 const auto ne = gametes[g1].mutations.end(),
@@ -138,14 +164,6 @@ namespace KTfwd
         // recombinations to handle
         fwdpp_internal::prep_temporary_containers(g1, g2, gametes, neutral,
                                                   selected);
-
-        assert(breakpoints.back() == std::numeric_limits<double>::max());
-        assert(std::is_sorted(breakpoints.begin(), breakpoints.end()));
-        assert(std::is_sorted(
-            new_mutations.begin(), new_mutations.end(),
-            [&mutations](const std::uint32_t i, const std::uint32_t j) {
-                return mutations[i].pos < mutations[j].pos;
-            }));
 
         auto itr = gametes[g1].mutations.cbegin();
         auto jtr = gametes[g2].mutations.cbegin();
@@ -198,7 +216,7 @@ namespace KTfwd
                         ++i;
                     }
             }
-        assert(next_mutation == mutations.cbegin());
+        assert(next_mutation == mutations.cend());
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
