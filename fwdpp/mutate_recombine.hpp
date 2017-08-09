@@ -11,6 +11,8 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
@@ -49,11 +51,13 @@ namespace KTfwd
         return rec_pol(gametes[g1], gametes[g2], mutations);
     }
 
-    template <typename queue_type, typename mutation_model, typename mcont_t>
+    template <typename queue_type, typename mutation_model, typename gcont_t,
+              typename mcont_t>
     std::vector<uint_t>
     generate_new_mutations(queue_type &recycling_bin, const gsl_rng *r,
-                           const double &mu, mcont_t &mutations,
-                           const std::size_t g, const mutation_model &mmodel)
+                           const double &mu, gcont_t &gametes,
+                           mcont_t &mutations, const std::size_t g,
+                           const mutation_model &mmodel)
     /*!
          Return a vector of keys to new mutations.  The keys
      will be sorted according to mutation postition.
@@ -61,6 +65,7 @@ namespace KTfwd
          \param recycling_bin The queue for recycling mutations
          \param r A random number generator
          \param mu The total mutation rate
+		 \param gametes Vector of gametes
          \param mutations Vector of mutations
 		 \param g index of gamete to mutate
          \param mmodel The mutation policy
@@ -74,7 +79,7 @@ namespace KTfwd
         for (unsigned i = 0; i < nm; ++i)
             {
                 rv.emplace_back(fwdpp_internal::mmodel_dispatcher(
-                    mmodel, g, mutations, recycling_bin));
+                    mmodel, gametes[g], mutations, recycling_bin));
             }
         std::sort(rv.begin(), rv.end(),
                   [&mutations](const uint_t a, const uint_t b) {
@@ -216,7 +221,7 @@ namespace KTfwd
                         ++i;
                     }
             }
-        assert(next_mutation == mutations.cend());
+        assert(next_mutation == new_mutations.cend());
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }

@@ -228,10 +228,12 @@ namespace KTfwd
                                                         mutations, rec_pol);
                 auto breakpoints2 = generate_breakpoints(p2g1, p2g2, gametes,
                                                          mutations, rec_pol);
-                auto new_mutations = generate_new_mutations(
-                    mut_recycling_bin, r, mu, mutations, p1g1, mmodel);
-                auto new_mutations2 = generate_new_mutations(
-                    mut_recycling_bin, r, mu, mutations, p2g2, mmodel);
+                auto new_mutations
+                    = generate_new_mutations(mut_recycling_bin, r, mu, gametes,
+                                             mutations, p1g1, mmodel);
+                auto new_mutations2
+                    = generate_new_mutations(mut_recycling_bin, r, mu, gametes,
+                                             mutations, p2g2, mmodel);
 
                 // Pass the breakpoints and new mutation keys on to
                 // KTfwd::mutate_recombine (defined in
