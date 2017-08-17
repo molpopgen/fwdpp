@@ -1,6 +1,7 @@
 #ifndef __FDWPP_INTERNAL_RECOMBINATION_COMMON_HPP__
 #define __FDWPP_INTERNAL_RECOMBINATION_COMMON_HPP__
 
+#include <fwdpp/debug.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 #include <cassert>
 namespace KTfwd
