@@ -230,7 +230,7 @@ namespace KTfwd
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,
               typename recmodel, typename mutmodel>
-    void
+    std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
     mutate_recombine_update(
         const gsl_rng *r, gcont_t &gametes, mcont_t &mutations,
         std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
@@ -241,6 +241,12 @@ namespace KTfwd
         diploid_t &dip,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
+    ///
+    /// Mechanics of merge mutation/recombination algorithm.
+    /// Introduced in 0.5.7
+    ///
+    /// \return Number of recombination breakpoints and mutations for each
+    /// gamete.
     {
         auto p1g1 = std::get<0>(parental_gametes);
         auto p1g2 = std::get<1>(parental_gametes);
@@ -256,8 +262,7 @@ namespace KTfwd
         // the integers representing the locations of the new mutations
         // in "mutations".
 
-        auto breakpoints = generate_breakpoints(std::get<0>(parental_gametes),
-                                                std::get<1>(parental_gametes),
+        auto breakpoints = generate_breakpoints(p1g1,p1g2,
                                                 gametes, mutations, rec_pol);
         auto breakpoints2
             = generate_breakpoints(p2g1, p2g2, gametes, mutations, rec_pol);
@@ -286,6 +291,11 @@ namespace KTfwd
 
         assert(gametes[dip.first].n);
         assert(gametes[dip.second].n);
+
+        auto nrec = (!breakpoints.empty()) ? breakpoints.size() - 1 : 0;
+        auto nrec2 = (!breakpoints2.empty()) ? breakpoints2.size() - 1 : 0;
+        return std::make_tuple(nrec, nrec2, new_mutations.size(),
+                               new_mutations2.size());
     }
 }
 
