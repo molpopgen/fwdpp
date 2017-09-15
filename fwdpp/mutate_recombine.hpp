@@ -11,9 +11,11 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
+#include <tuple>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 
@@ -65,13 +67,13 @@ namespace KTfwd
          \param recycling_bin The queue for recycling mutations
          \param r A random number generator
          \param mu The total mutation rate
-		 \param gametes Vector of gametes
+                 \param gametes Vector of gametes
          \param mutations Vector of mutations
-		 \param g index of gamete to mutate
+                 \param g index of gamete to mutate
          \param mmodel The mutation policy
 
          \return Vector of mutation keys, sorted according to position
-	 */
+         */
     {
         unsigned nm = gsl_ran_poisson(r, mu);
         std::vector<uint_t> rv;
@@ -96,7 +98,7 @@ namespace KTfwd
                             const typename container::iterator end,
                             const integer_type mut_key,
                             const mcont_t &mutations, container &c)
-        //Inserts mutation key into c such that sort order is maintained
+        // Inserts mutation key into c such that sort order is maintained
         {
             auto t = std::upper_bound(
                 beg, end, mutations[mut_key].pos,
@@ -113,7 +115,7 @@ namespace KTfwd
         prep_temporary_containers(const std::size_t g1, const std::size_t g2,
                                   const gcont_t &gametes, container &neutral,
                                   container &selected)
-        //Clear temporary containers and reserve memory
+        // Clear temporary containers and reserve memory
         {
             neutral.clear();
             selected.clear();
@@ -224,6 +226,66 @@ namespace KTfwd
         assert(next_mutation == new_mutations.cend());
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
+    }
+
+    template <typename diploid_t, typename gcont_t, typename mcont_t,
+              typename recmodel, typename mutmodel>
+    void
+    mutate_recombine_update(
+        const gsl_rng *r, gcont_t &gametes, mcont_t &mutations,
+        std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
+            parental_gametes,
+        const recmodel &rec_pol, const mutmodel &mmodel, const double mu,
+        typename traits::recycling_bin_t<gcont_t> &gamete_recycling_bin,
+        typename traits::recycling_bin_t<mcont_t> &mutation_recycling_bin,
+        diploid_t &dip,
+        typename gcont_t::value_type::mutation_container &neutral,
+        typename gcont_t::value_type::mutation_container &selected)
+    {
+        auto p1g1 = std::get<0>(parental_gametes);
+        auto p1g2 = std::get<1>(parental_gametes);
+        auto p2g1 = std::get<2>(parental_gametes);
+        auto p2g2 = std::get<3>(parental_gametes);
+        // Now, we generate the crossover breakpoints for
+        // both parents,as well as the new mutations that we'll place
+        // onto each gamete.  The specific order of operations below
+        // is done to ensure the exact same output as fwdpp 0.5.6 and
+        // earlier.
+        // The breakpoints are of type std::vector<double>, and
+        // the new_mutations are std::vector<KTfwd::uint_t>, with
+        // the integers representing the locations of the new mutations
+        // in "mutations".
+
+        auto breakpoints = generate_breakpoints(std::get<0>(parental_gametes),
+                                                std::get<1>(parental_gametes),
+                                                gametes, mutations, rec_pol);
+        auto breakpoints2
+            = generate_breakpoints(p2g1, p2g2, gametes, mutations, rec_pol);
+        auto new_mutations = generate_new_mutations(
+            mutation_recycling_bin, r, mu, gametes, mutations, p1g1, mmodel);
+        auto new_mutations2 = generate_new_mutations(
+            mutation_recycling_bin, r, mu, gametes, mutations, p2g1, mmodel);
+
+        // Pass the breakpoints and new mutation keys on to
+        // KTfwd::mutate_recombine (defined in
+        // fwdpp/mutate_recombine.hpp),
+        // which splices together the offspring gamete and returns its
+        // location in gametes.  The location of the offspring gamete
+        // is
+        // either reycled from an extinct gamete or it is the location
+        // of a
+        // new gamete emplace_back'd onto the end.
+        dip.first = mutate_recombine(new_mutations, breakpoints, p1g1, p1g2,
+                                     gametes, mutations, gamete_recycling_bin,
+                                     neutral, selected);
+        dip.second = mutate_recombine(new_mutations2, breakpoints2, p2g1, p2g2,
+                                      gametes, mutations, gamete_recycling_bin,
+                                      neutral, selected);
+        gametes[dip.first].n++;
+        gametes[dip.second].n++;
+
+        assert(gametes[dip.first].n);
+        assert(gametes[dip.second].n);
     }
 }
 

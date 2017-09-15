@@ -170,28 +170,12 @@ namespace KTfwd
                     if (gsl_rng_uniform(r) < 0.5)
                         std::swap(p2g1, p2g2);
 
-                    dip.first = recombination(gametes, gamete_recycling_bin,
-                                              neutral, selected, rec_pol, p1g1,
-                                              p1g2, mutations)
-                                    .first;
-                    dip.second = recombination(gametes, gamete_recycling_bin,
-                                               neutral, selected, rec_pol,
-                                               p2g1, p2g2, mutations)
-                                     .first;
-
-                    gametes[dip.first].n++;
-                    gametes[dip.second].n++;
-
-                    // now, add new mutations
-                    dip.first = mutate_gamete_recycle(
-                        mutation_recycling_bin, gamete_recycling_bin, r, mu,
-                        gametes, mutations, dip.first, mmodel, gpolicy_mut);
-                    dip.second = mutate_gamete_recycle(
-                        mutation_recycling_bin, gamete_recycling_bin, r, mu,
-                        gametes, mutations, dip.second, mmodel, gpolicy_mut);
-
-                    assert(gametes[dip.first].n);
-                    assert(gametes[dip.second].n);
+                    mutate_recombine_update(
+                        r, gametes, mutations,
+                        std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pol,
+                        mmodel, mu, gamete_recycling_bin,
+                        mutation_recycling_bin, dip, neutral, selected);
+                    
                     dispatch_update(pmr, r, dip, parents[p1], parents[p2],
                                     gametes, mutations, ff);
                 }

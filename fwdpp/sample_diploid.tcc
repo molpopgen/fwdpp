@@ -194,7 +194,6 @@ namespace KTfwd
                               : gsl_ran_discrete(r, lookup.get());
                 assert(p1 < parents.size());
                 assert(p2 < parents.size());
-
                 /*
                   These are the gametes from each parent.
                   This is a trivial assignment if keys.
@@ -214,47 +213,11 @@ namespace KTfwd
                 if (gsl_rng_uniform(r) < 0.5)
                     std::swap(p2g1, p2g2);
 
-                // Now, we generate the crossover breakpoints for
-                // both parents,as well as the new mutations that we'll place
-                // onto each gamete.  The specific order of operations below
-                // is done to ensure the exact same output as fwdpp 0.5.6 and
-                // earlier.
-                // The breakpoints are of type std::vector<double>, and
-                // the new_mutations are std::vector<KTfwd::uint_t>, with
-                // the integers representing the locations of the new mutations
-                // in "mutations".
-
-                auto breakpoints = generate_breakpoints(p1g1, p1g2, gametes,
-                                                        mutations, rec_pol);
-                auto breakpoints2 = generate_breakpoints(p2g1, p2g2, gametes,
-                                                         mutations, rec_pol);
-                auto new_mutations
-                    = generate_new_mutations(mut_recycling_bin, r, mu, gametes,
-                                             mutations, p1g1, mmodel);
-                auto new_mutations2
-                    = generate_new_mutations(mut_recycling_bin, r, mu, gametes,
-                                             mutations, p2g2, mmodel);
-
-                // Pass the breakpoints and new mutation keys on to
-                // KTfwd::mutate_recombine (defined in
-                // fwdpp/mutate_recombine.hpp),
-                // which splices together the offspring gamete and returns its
-                // location in gametes.  The location of the offspring gamete
-                // is
-                // either reycled from an extinct gamete or it is the location
-                // of a
-                // new gamete emplace_back'd onto the end.
-                dip.first = mutate_recombine(
-                    new_mutations, breakpoints, p1g1, p1g2, gametes, mutations,
-                    gam_recycling_bin, neutral, selected);
-                dip.second = mutate_recombine(
-                    new_mutations2, breakpoints2, p2g1, p2g2, gametes,
-                    mutations, gam_recycling_bin, neutral, selected);
-                gametes[dip.first].n++;
-                gametes[dip.second].n++;
-
-                assert(gametes[dip.first].n);
-                assert(gametes[dip.second].n);
+                mutate_recombine_update(
+                    r, gametes, mutations,
+                    std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pol, mmodel,
+                    mu, gam_recycling_bin, mut_recycling_bin, dip, neutral,
+                    selected);
             }
         assert(check_sum(gametes, 2 * N_next));
 #ifndef NDEBUG
@@ -500,29 +463,11 @@ namespace KTfwd
                         if (gsl_rng_uniform(r) < 0.5)
                             std::swap(p2g1, p2g2);
 
-                        dip.first
-                            = recombination(gametes, gamete_recycling_bin,
-                                            neutral, selected, rec_pol, p1g1,
-                                            p1g2, mutations)
-                                  .first;
-                        dip.second
-                            = recombination(gametes, gamete_recycling_bin,
-                                            neutral, selected, rec_pol, p2g1,
-                                            p2g2, mutations)
-                                  .first;
-
-                        gametes[dip.first].n++;
-                        gametes[dip.second].n++;
-
-                        // now, add new mutations
-                        dip.first = mutate_gamete_recycle(
-                            mut_recycling_bin, gamete_recycling_bin, r, mu,
-                            gametes, mutations, dip.first, mmodel,
-                            gpolicy_mut);
-                        dip.second = mutate_gamete_recycle(
-                            mut_recycling_bin, gamete_recycling_bin, r, mu,
-                            gametes, mutations, dip.second, mmodel,
-                            gpolicy_mut);
+                        mutate_recombine_update(
+                            r, gametes, mutations,
+                            std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pol,
+                            mmodel, mu, gamete_recycling_bin,
+                            mut_recycling_bin, dip, neutral, selected);
                     }
             }
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
