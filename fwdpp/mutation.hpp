@@ -24,6 +24,9 @@ namespace KTfwd
       \note g is passed non-const and will be modified by mutation events.
       \note Used in invididual-based forward simulations.
       \return The location of the newly-mutated gamete in gametes.
+     
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename queue_type, typename queue_type2,
               typename mutation_model, typename gamete_insertion_policy,

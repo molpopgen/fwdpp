@@ -68,6 +68,9 @@ namespace KTfwd
       \return A pair.  The first element is the index of the recombinant
       gamete.  The second element is the number of breakpoints
       where recombination occurred.  Typically, the latter is not needed.
+      
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename gcont_t, typename mcont_t, typename recbin_t,
               typename recpol_t>
@@ -112,6 +115,9 @@ namespace KTfwd
 
       \return A key representing the recombinant gamete, or g1 if \a pos is
       empty
+
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename vec_t, typename gcont_t, typename mcont_t,
               typename queue_t>

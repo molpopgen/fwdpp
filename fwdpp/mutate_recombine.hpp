@@ -27,19 +27,19 @@ namespace KTfwd
     generate_breakpoints(const std::size_t g1, const std::size_t g2,
                          const gcont_t &gametes, const mcont_t &mutations,
                          const recombination_policy &rec_pol)
-    /*! Generate vector of recombination breakpoints
-     \param g1 Index of gamete 1
-     \param g2 Index of gamete 2
-     \param gametes Vector of gametes
-     \param mutation Vector of mutations
-     \param rec_pol Function to generate breakpoints
-
-     \return std::vector<double> containing sorted breakpoints
-
-     \note An empty return value means no breakpoints.  Otherwise,
-     the breakpoints are returned and are terminated by
-     std::numeric_limits<double>::max()
-     */
+    /// Generate vector of recombination breakpoints
+    ///
+    /// \param g1 Index of gamete 1
+    /// \param g2 Index of gamete 2
+    /// \param gametes Vector of gametes
+    /// \param mutation Vector of mutations
+    /// \param rec_pol Function to generate breakpoints
+    ///
+    /// \return std::vector<double> containing sorted breakpoints
+    ///
+    /// \note An empty return value means no breakpoints.  Otherwise,
+    /// the breakpoints are returned and are terminated by
+    /// std::numeric_limits<double>::max()
     {
         auto nm1
             = gametes[g1].mutations.size() + gametes[g1].smutations.size();
@@ -60,20 +60,20 @@ namespace KTfwd
                            const double &mu, gcont_t &gametes,
                            mcont_t &mutations, const std::size_t g,
                            const mutation_model &mmodel)
-    /*!
-         Return a vector of keys to new mutations.  The keys
-     will be sorted according to mutation postition.
-
-         \param recycling_bin The queue for recycling mutations
-         \param r A random number generator
-         \param mu The total mutation rate
-                 \param gametes Vector of gametes
-         \param mutations Vector of mutations
-                 \param g index of gamete to mutate
-         \param mmodel The mutation policy
-
-         \return Vector of mutation keys, sorted according to position
-         */
+    ///
+    /// Return a vector of keys to new mutations.  The keys
+    /// will be sorted according to mutation postition.
+    ///
+    /// \param recycling_bin The queue for recycling mutations
+    /// \param r A random number generator
+    /// \param mu The total mutation rate
+    /// \param gametes Vector of gametes
+    /// \param mutations Vector of mutations
+    /// \param g index of gamete to mutate
+    /// \param mmodel The mutation policy
+    ///
+    /// \return Vector of mutation keys, sorted according to position
+    ///
     {
         unsigned nm = gsl_ran_poisson(r, mu);
         std::vector<uint_t> rv;
@@ -135,6 +135,30 @@ namespace KTfwd
         queue_type &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
+    ///
+    /// Update apply new mutations and recombination events to 
+    /// an offspring's gamete.
+    ///
+    /// \param new_mutations Keys to new mutations
+    /// \param breakpoints Recombination breakpoints
+    /// \param g1 Parental gamete 1
+    /// \param g2 Parental gamete 2
+    /// \param gametes The vector of gametes in the population
+    /// \param mutation The vector of mutations in the population
+    /// \param gamete_recycling_bin FIFO queue for gamete recycling
+    /// \param neutral Temporary container for updating neutral mutations
+    /// \param selected Temporary container for updatng selected positions
+    ///
+    /// \return The index of the new offspring gamete in \a gametes.
+    ///
+    /// \note For efficiency, it is helpful if \a new_mutations is sorted
+    /// by mutation position.  KTfwd::generate_new_mutations exists to help in that
+    /// regard. Many of the evolve functions used in this library and other
+    /// packages by the author will use KTfwd::generate_breakpoints to 
+    /// generate \a breakpoints.  That is not, however, required.
+    /// 
+    /// \version
+    /// This function was added in fwdpp 0.5.7.
     {
         if (new_mutations.empty() && breakpoints.empty())
             {
@@ -242,11 +266,34 @@ namespace KTfwd
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///
-    /// Mechanics of merge mutation/recombination algorithm.
-    /// Introduced in 0.5.7
+    /// "Convenience" function for generating offspring gametes.  
+    /// 
+    /// This function calls KTfwd::generate_breakpoints, 
+    /// KTfwd::generate_new_mutations, and KTfwd::mutate_recombine,
+    /// resulting in two offspring gametes.
+    ///
+    /// \param r A gsl_rng *
+    /// \param gametes Vector of gametes in population
+    /// \param mutations Vector of mutations in population
+    /// \param parental_gametes Tuple of gamete keys for each parent
+    /// \param rec_pol Policy to generate recombination breakpoints
+    /// \param mmodel Policy to generate new mutations
+    /// \param gamete_recycling_bin FIFO queue for gamete recycling
+    /// \param mutation_recycling_bin FIFO queue for mutation recycling
+    /// \param dip The offspring
+    /// \param neutral Temporary container for updating neutral mutations
+    /// \param selected Temporary container for updating selected mutations
     ///
     /// \return Number of recombination breakpoints and mutations for each
     /// gamete.
+    ///
+    /// \note
+    /// \a parental_gametes should contain parent one/gamete one, 
+    /// parent one/gamete two, parent two/gamete one, 
+    /// and parent two/gamete two, in that order.
+    /// 
+    /// \version
+    /// Added in fwdpp 0.5.7.
     {
         auto p1g1 = std::get<0>(parental_gametes);
         auto p1g2 = std::get<1>(parental_gametes);
@@ -262,8 +309,8 @@ namespace KTfwd
         // the integers representing the locations of the new mutations
         // in "mutations".
 
-        auto breakpoints = generate_breakpoints(p1g1,p1g2,
-                                                gametes, mutations, rec_pol);
+        auto breakpoints
+            = generate_breakpoints(p1g1, p1g2, gametes, mutations, rec_pol);
         auto breakpoints2
             = generate_breakpoints(p2g1, p2g2, gametes, mutations, rec_pol);
         auto new_mutations = generate_new_mutations(
