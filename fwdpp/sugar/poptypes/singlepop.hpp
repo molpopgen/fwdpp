@@ -65,6 +65,18 @@ namespace KTfwd
             {
             }
 
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit singlepop(diploids_input &&d, gametes_input &&g,
+                               mutations_input &&m)
+                : popbase_t(d.size(), g.size()),
+                  popbase_t::diploids(std::forward<diploids_input>(d)),
+                  popbase_t::gametes(std::forward<gametes_input>(g)),
+                  popbase_t::mutations(std::forward<mutations_input>(m))
+            //! Constructor for pre-determined population status
+            {
+            }
+
             bool
             operator==(const singlepop &rhs) const
             {
