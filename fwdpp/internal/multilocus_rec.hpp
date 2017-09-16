@@ -6,6 +6,7 @@
   simulation
  */
 #include <gsl/gsl_rng.h>
+#include <fwdpp/mutate_recombine.hpp>
 
 namespace KTfwd
 {
@@ -15,28 +16,12 @@ namespace KTfwd
         /*!
           Mechanics of segregation, recombination, and mutation for multi-locus
           API
-          This template declaratiopn is messy due to the FWDPP_UNIT_TESTING
-          symbol.
-
-          The reason is that I want to be able to unit test the recombination
-          portion
-          of this code in isolation, w/o having to do anything involving
-          mutation policies.
-
-          Thus, the relevant unit tests define FWDPP_UNIT_TESTING so that the
-          mutation-related
-          stuff is skipped during compilation.
-        */
-        template <
-            typename diploid_type, typename recombination_policy_container,
-            typename mqueue_t, typename gqueue_t,
-#ifndef FWDPP_UNIT_TESTING
-            typename mcont_t, typename gcont_t,
-            typename mutation_model_container, typename gamete_insertion_policy
-#else
-            typename mcont_t, typename gcont_t
-#endif
-            >
+*/
+        template <typename diploid_type,
+                  typename recombination_policy_container, typename mqueue_t,
+                  typename gqueue_t, typename mcont_t, typename gcont_t,
+                  typename mutation_model_container,
+                  typename gamete_insertion_policy>
         diploid_type
         multilocus_rec_mut(
             const gsl_rng *r, const diploid_type &parent1,
@@ -44,19 +29,12 @@ namespace KTfwd
             gqueue_t &gamete_recycling_bin,
             const recombination_policy_container &rec_pols,
             const std::vector<std::function<unsigned(void)>> &interlocus_rec,
-            const int iswitch1,
-#ifndef FWDPP_UNIT_TESTING
-            const int iswitch2, gcont_t &gametes, mcont_t &mutations,
+            const int iswitch1, const int iswitch2, gcont_t &gametes,
+            mcont_t &mutations,
             typename gcont_t::value_type::mutation_container &neutral,
             typename gcont_t::value_type::mutation_container &selected,
             const double *mu, const mutation_model_container &mmodel,
-            const gamete_insertion_policy &gpolicy_mut
-#else
-            const int iswitch2, gcont_t &gametes, mcont_t &mutations,
-            typename gcont_t::value_type::mutation_container &neutral,
-            typename gcont_t::value_type::mutation_container &selected
-#endif
-            )
+            const gamete_insertion_policy &gpolicy_mut)
         {
             diploid_type offspring(parent1.size());
             unsigned s1 = iswitch1, s2 = iswitch2;
@@ -84,26 +62,33 @@ namespace KTfwd
                     if (s2 % 2 != 0.)
                         std::swap(p2g1, p2g2);
 
-                    // mechanics of recombination
-                    auto xx = recombination(gametes, gamete_recycling_bin,
-                                            neutral, selected, rec_pols[i],
-                                            p1g1, p1g2, mutations);
-                    o->first = xx.first;
-                    s1 += xx.second;
-                    xx = recombination(gametes, gamete_recycling_bin, neutral,
-                                       selected, rec_pols[i], p2g1, p2g2,
-                                       mutations);
-                    o->second = xx.first;
-                    s2 += xx.second;
+                    auto rm = mutate_recombine_update(
+                        r, gametes, mutations,
+                        std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pols[i],
+                        mmodel[i], mu[i], gamete_recycling_bin,
+                        mutation_recycling_bin, *o, neutral, selected);
+                    s1 += std::get<0>(rm);
+                    s2 += std::get<1>(rm);
+// mechanics of recombination
+// auto xx = recombination(gametes, gamete_recycling_bin,
+//                        neutral, selected, rec_pols[i],
+//                        p1g1, p1g2, mutations);
+// o->first = xx.first;
+// s1 += xx.second;
+// xx = recombination(gametes, gamete_recycling_bin, neutral,
+//                   selected, rec_pols[i], p2g1, p2g2,
+//                   mutations);
+// o->second = xx.first;
+// s2 += xx.second;
 #ifndef FWDPP_UNIT_TESTING
-                    gametes[o->first].n++;
-                    gametes[o->second].n++;
-                    o->first = mutate_gamete_recycle(
-                        mutation_recycling_bin, gamete_recycling_bin, r, mu[i],
-                        gametes, mutations, o->first, mmodel[i], gpolicy_mut);
-                    o->second = mutate_gamete_recycle(
-                        mutation_recycling_bin, gamete_recycling_bin, r, mu[i],
-                        gametes, mutations, o->second, mmodel[i], gpolicy_mut);
+// gametes[o->first].n++;
+// gametes[o->second].n++;
+// o->first = mutate_gamete_recycle(
+//    mutation_recycling_bin, gamete_recycling_bin, r, mu[i],
+//    gametes, mutations, o->first, mmodel[i], gpolicy_mut);
+// o->second = mutate_gamete_recycle(
+//    mutation_recycling_bin, gamete_recycling_bin, r, mu[i],
+//    gametes, mutations, o->second, mmodel[i], gpolicy_mut);
 #endif
                     ++i;
                     ++p1;
