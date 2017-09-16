@@ -76,7 +76,7 @@ namespace KTfwd
                   typename gcont_t::value_type::mutation_container &neutral,
                   typename gcont_t::value_type::mutation_container &selected,
                   const recpol_t &rec_pol, const std::size_t g1,
-                  const std::size_t g2, const mcont_t &mutations);
+                  const std::size_t g2, const mcont_t &mutations) __attribute__((deprecated));
 
     /*!
       Overload for fixed xover positions.
@@ -120,7 +120,7 @@ namespace KTfwd
         const std::size_t g1, const std::size_t g2,
         queue_t &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected);
+        typename gcont_t::value_type::mutation_container &selected) __attribute__((deprecated));
 }
 #endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>
