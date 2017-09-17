@@ -29,6 +29,12 @@ namespace KTfwd
         {
           private:
             void
+            process_diploid_input()
+            {
+            }
+
+          private:
+            void
             init_vectors()
             {
                 for (uint_t i = 0; i < Ns.size(); ++i)
@@ -40,8 +46,8 @@ namespace KTfwd
 
           public:
             virtual ~metapop() = default;
-			metapop(metapop &&) = default;
-			metapop(const metapop &) = default;
+            metapop(metapop &&) = default;
+            metapop(const metapop &) = default;
             metapop &operator=(metapop &&) = default;
             metapop &operator=(const metapop &) = default;
             //! Deme sizes

@@ -25,7 +25,7 @@ namespace KTfwd
             static_assert(typename KTfwd::traits::is_mutation<
                               typename mcont::value_type>::type(),
                           "mcont::value_type must be a mutation type");
-
+            virtual void process_diploid_input() = 0;
             void check_mutation_keys(
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality);

@@ -25,10 +25,16 @@ namespace KTfwd
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
                   typename lookup_table_type>
-        struct multiloc
-            : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
-                             ftvector, lookup_table_type>
+        class multiloc : public popbase<mutation_type, mcont, gcont, dipvector,
+                                        mvector, ftvector, lookup_table_type>
         {
+          private:
+            void
+            process_diploid_input()
+            {
+            }
+
+          public:
             virtual ~multiloc() = default;
             multiloc(multiloc &&) = default;
             multiloc(const multiloc &) = default;

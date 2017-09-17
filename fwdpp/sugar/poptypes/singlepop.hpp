@@ -29,6 +29,12 @@ namespace KTfwd
             : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
                              ftvector, lookup_table_type>
         {
+          private:
+            void
+            process_diploid_input()
+            {
+            }
+
           public:
             virtual ~singlepop() = default;
             singlepop(singlepop &&) = default;
