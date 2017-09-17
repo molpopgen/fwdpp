@@ -4,6 +4,7 @@
 #include <type_traits>
 #include <vector>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/internal/sample_diploid_helpers.hpp>
 
 namespace KTfwd
 {
@@ -29,7 +30,6 @@ namespace KTfwd
             void check_mutation_keys(
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality);
-            void fill_internal_structures();
 
           public:
             virtual ~popbase() = default;
@@ -155,6 +155,8 @@ namespace KTfwd
                 fixations.clear();
                 fixation_times.clear();
             }
+
+            void fill_internal_structures();
         };
 
         template <typename mutation_type, typename mcont, typename gcont,
@@ -191,10 +193,6 @@ namespace KTfwd
         void
         popbase<mutation_type, mcont, gcont, dipvector, mvector, ftvector,
                 lookup_table_type>::fill_internal_structures()
-        // Note that diploids must be checked in derived classes
-        // I should enforce this API req with a pure virtual fxn
-        // Such a fxn should also make sure that gametes[i].n
-        // are all sane.
         {
             mut_lookup.clear();
             fixations.clear();
@@ -206,9 +204,10 @@ namespace KTfwd
                 }
             for (const auto &g : gametes)
                 {
-                    check_mutation_keys(g.mutations, true);
-                    check_mutation_keys(g.mutations, false);
+                    check_mutation_keys(g.mutations, mutations, true);
+                    check_mutation_keys(g.smutations, mutations, false);
                 }
+            fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         }
     }
 }

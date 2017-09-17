@@ -33,6 +33,34 @@ namespace KTfwd
             void
             process_diploid_input()
             {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&dip : diploids)
+                    {
+                        if (dip.first >= this->gametes.size()
+                            || dip.second >= this->gametes.size())
+                            {
+                                throw std::out_of_range(
+                                    "diploid contains out of range keys");
+                            }
+                        if (!this->gametes[dip.first].n
+                            || !this->gametes[dip.second].n)
+                            {
+                                throw std::runtime_error("diploid refers to "
+                                                         "gamete marked as "
+                                                         "extinct");
+                            }
+                        gcounts[dip.first]++;
+                        gcounts[dip.second]++;
+                    }
+                for (std::size_t i = 0; i < gcounts.size(); ++i)
+                    {
+                        if (gcounts[i] != this->gametes[i].n)
+                            {
+                                throw std::runtime_error(
+                                    "gamete count does not match number of "
+                                    "diploids referring to it");
+                            }
+                    }
             }
 
           public:
@@ -76,11 +104,13 @@ namespace KTfwd
             explicit singlepop(diploids_input &&d, gametes_input &&g,
                                mutations_input &&m)
                 : popbase_t(d.size(), g.size()),
-                  popbase_t::diploids(std::forward<diploids_input>(d)),
-                  popbase_t::gametes(std::forward<gametes_input>(g)),
-                  popbase_t::mutations(std::forward<mutations_input>(m))
+                  diploids(std::forward<diploids_input>(d))
             //! Constructor for pre-determined population status
             {
+                this->gametes = std::forward<gametes_input>(g);
+                this->mutations = std::forward<mutations_input>(m);
+                this->fill_internal_structures();
+                this->process_diploid_input();
             }
 
             bool
