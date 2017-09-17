@@ -26,6 +26,11 @@ namespace KTfwd
                               typename mcont::value_type>::type(),
                           "mcont::value_type must be a mutation type");
 
+            void check_mutation_keys(
+                const typename gcont::value_type::mutation_container &m,
+                const mcont &mutations, const bool neutrality);
+            void fill_internal_structures();
+
           public:
             virtual ~popbase() = default;
             popbase(popbase &&) = default;
@@ -151,7 +156,60 @@ namespace KTfwd
                 fixation_times.clear();
             }
         };
+
+        template <typename mutation_type, typename mcont, typename gcont,
+                  typename dipvector, typename mvector, typename ftvector,
+                  typename lookup_table_type>
+        void
+        popbase<mutation_type, mcont, gcont, dipvector, mvector, ftvector,
+                lookup_table_type>::
+            check_mutation_keys(
+                const typename gcont::value_type::mutation_container &m,
+                const mcont &mutations, const bool neutrality)
+        {
+            for (const auto &k : m)
+                {
+                    mcounts.resize(mutations.size(), 0);
+                    if (k >= mutations.size())
+                        {
+                            throw std::out_of_range(
+                                "gamete contains mutation key that is "
+                                "out of range");
+                        }
+                    if (mutations[k].neutral != neutrality)
+                        {
+                            throw std::logic_error(
+                                "gamete contains key to "
+                                "mutation in wrong container.");
+                        }
+                }
+        }
+
+        template <typename mutation_type, typename mcont, typename gcont,
+                  typename dipvector, typename mvector, typename ftvector,
+                  typename lookup_table_type>
+        void
+        popbase<mutation_type, mcont, gcont, dipvector, mvector, ftvector,
+                lookup_table_type>::fill_internal_structures()
+        // Note that diploids must be checked in derived classes
+        // I should enforce this API req with a pure virtual fxn
+        // Such a fxn should also make sure that gametes[i].n
+        // are all sane.
+        {
+            mut_lookup.clear();
+            fixations.clear();
+            fixation_times.clear();
+            mcounts.clear();
+            for (auto &&m : mutations)
+                {
+                    mut_lookup.insert(m.pos);
+                }
+            for (const auto &g : gametes)
+                {
+                    check_mutation_keys(g.mutations, true);
+                    check_mutation_keys(g.mutations, false);
+                }
+        }
     }
 }
-
 #endif
