@@ -29,18 +29,50 @@ namespace KTfwd
         {
           private:
             void
-            process_diploid_input()
-            {
-            }
-
-          private:
-            void
             init_vectors()
             {
                 for (uint_t i = 0; i < Ns.size(); ++i)
                     {
                         diploids.emplace_back(typename popbase_t::dipvector_t(
                             Ns[i], typename dipvector::value_type(0, 0)));
+                    }
+            }
+
+            void
+            process_diploid_input()
+            {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&deme : diploids)
+                    {
+                        for (auto &&dip : deme)
+                            {
+                                if (dip.first >= this->gametes.size()
+                                    || dip.second >= this->gametes.size())
+                                    {
+                                        throw std::out_of_range(
+                                            "diploid contains out of range "
+                                            "keys");
+                                    }
+                                if (!this->gametes[dip.first].n
+                                    || !this->gametes[dip.second].n)
+                                    {
+                                        throw std::runtime_error(
+                                            "diploid refers to "
+                                            "gamete marked as "
+                                            "extinct");
+                                    }
+                                gcounts[dip.first]++;
+                                gcounts[dip.second]++;
+                            }
+                    }
+                for (std::size_t i = 0; i < gcounts.size(); ++i)
+                    {
+                        if (gcounts[i] != this->gametes[i].n)
+                            {
+                                throw std::runtime_error(
+                                    "gamete count does not match number of "
+                                    "diploids referring to it");
+                            }
                     }
             }
 
@@ -103,6 +135,19 @@ namespace KTfwd
                   diploids(vdipvector_t())
             {
                 init_vectors();
+            }
+
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit metapop(diploids_input &&d, gametes_input &&g,
+                             mutations_input &&m)
+                : popbase_t(0), diploids(std::forward<diploids_input>(d))
+            //! Constructor for pre-determined population status
+            {
+                this->gametes = std::forward<gametes_input>(g);
+                this->mutations = std::forward<mutations_input>(m);
+                this->fill_internal_structures();
+                this->process_diploid_input();
             }
 
             //! Copy construct from a singlepop based on the same basic types
