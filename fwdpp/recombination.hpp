@@ -68,6 +68,9 @@ namespace KTfwd
       \return A pair.  The first element is the index of the recombinant
       gamete.  The second element is the number of breakpoints
       where recombination occurred.  Typically, the latter is not needed.
+      
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename gcont_t, typename mcont_t, typename recbin_t,
               typename recpol_t>
@@ -76,7 +79,7 @@ namespace KTfwd
                   typename gcont_t::value_type::mutation_container &neutral,
                   typename gcont_t::value_type::mutation_container &selected,
                   const recpol_t &rec_pol, const std::size_t g1,
-                  const std::size_t g2, const mcont_t &mutations);
+                  const std::size_t g2, const mcont_t &mutations) __attribute__((deprecated));
 
     /*!
       Overload for fixed xover positions.
@@ -112,6 +115,9 @@ namespace KTfwd
 
       \return A key representing the recombinant gamete, or g1 if \a pos is
       empty
+
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename vec_t, typename gcont_t, typename mcont_t,
               typename queue_t>
@@ -120,7 +126,7 @@ namespace KTfwd
         const std::size_t g1, const std::size_t g2,
         queue_t &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected);
+        typename gcont_t::value_type::mutation_container &selected) __attribute__((deprecated));
 }
 #endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>

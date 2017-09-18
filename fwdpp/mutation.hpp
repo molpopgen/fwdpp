@@ -24,6 +24,9 @@ namespace KTfwd
       \note g is passed non-const and will be modified by mutation events.
       \note Used in invididual-based forward simulations.
       \return The location of the newly-mutated gamete in gametes.
+     
+      \deprecated
+      Deprecated in 0.5.7.
     */
     template <typename queue_type, typename queue_type2,
               typename mutation_model, typename gamete_insertion_policy,
@@ -34,7 +37,7 @@ namespace KTfwd
                                       gcont_t &gametes, mcont_t &mutations,
                                       const size_t g,
                                       const mutation_model &mmodel,
-                                      const gamete_insertion_policy &gpolicy);
+                                      const gamete_insertion_policy &gpolicy) __attribute__((deprecated));
 }
 #endif /* _FWDPP_MUTATION_HPP_ */
 #include <fwdpp/mutation.tcc>

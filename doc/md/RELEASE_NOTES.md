@@ -6,6 +6,8 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.7
 
+* Mutation and recombination are now merged into one path.  See fwdpp/mutate_recombine.hpp.  The entry points into the
+  old API are marked deprecated.  This addresses issue #54 via pull request #55.
 * Travis builds now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
 
 ## 0.5.6
