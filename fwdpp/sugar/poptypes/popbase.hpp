@@ -3,6 +3,7 @@
 
 #include <type_traits>
 #include <vector>
+#include <exception>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
@@ -30,6 +31,41 @@ namespace KTfwd
             void check_mutation_keys(
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality);
+
+          protected:
+            // Protected members introduced in 0.5.7 to help
+            // derived classes implement constructors based
+            // on user input of population data.
+            void
+            validate_diploid_keys(const std::size_t first,
+                                  const std::size_t second)
+            {
+                if (first >= this->gametes.size()
+                    || second >= this->gametes.size())
+                    {
+                        throw std::out_of_range(
+                            "diploid contains out of range keys");
+                    }
+                if (!this->gametes[first].n || !this->gametes[second].n)
+                    {
+                        throw std::runtime_error("diploid refers to "
+                                                 "gamete marked as "
+                                                 "extinct");
+                    }
+            }
+            void
+            validate_gamete_counts(const std::vector<uint_t> &gcounts)
+            {
+                for (std::size_t i = 0; i < gcounts.size(); ++i)
+                    {
+                        if (gcounts[i] != this->gametes[i].n)
+                            {
+                                throw std::runtime_error(
+                                    "gamete count does not match number of "
+                                    "diploids referring to it");
+                            }
+                    }
+            }
 
           public:
             virtual ~popbase() = default;

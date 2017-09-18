@@ -46,34 +46,13 @@ namespace KTfwd
                     {
                         for (auto &&dip : deme)
                             {
-                                if (dip.first >= this->gametes.size()
-                                    || dip.second >= this->gametes.size())
-                                    {
-                                        throw std::out_of_range(
-                                            "diploid contains out of range "
-                                            "keys");
-                                    }
-                                if (!this->gametes[dip.first].n
-                                    || !this->gametes[dip.second].n)
-                                    {
-                                        throw std::runtime_error(
-                                            "diploid refers to "
-                                            "gamete marked as "
-                                            "extinct");
-                                    }
+                                this->validate_diploid_keys(dip.first,
+                                                            dip.second);
                                 gcounts[dip.first]++;
                                 gcounts[dip.second]++;
                             }
                     }
-                for (std::size_t i = 0; i < gcounts.size(); ++i)
-                    {
-                        if (gcounts[i] != this->gametes[i].n)
-                            {
-                                throw std::runtime_error(
-                                    "gamete count does not match number of "
-                                    "diploids referring to it");
-                            }
-                    }
+                this->validate_gamete_counts(gcounts);
             }
 
           public:
@@ -141,13 +120,17 @@ namespace KTfwd
                       typename mutations_input>
             explicit metapop(diploids_input &&d, gametes_input &&g,
                              mutations_input &&m)
-                : popbase_t(0), diploids(std::forward<diploids_input>(d))
+                : popbase_t(0), Ns{}, diploids(std::forward<diploids_input>(d))
             //! Constructor for pre-determined population status
             {
                 this->gametes = std::forward<gametes_input>(g);
                 this->mutations = std::forward<mutations_input>(m);
                 this->fill_internal_structures();
                 this->process_diploid_input();
+                for (const auto &deme : diploids)
+                    {
+                        Ns.push_back(deme.size());
+                    }
             }
 
             //! Copy construct from a singlepop based on the same basic types

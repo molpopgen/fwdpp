@@ -36,31 +36,11 @@ namespace KTfwd
                 std::vector<uint_t> gcounts(this->gametes.size(), 0);
                 for (auto &&dip : diploids)
                     {
-                        if (dip.first >= this->gametes.size()
-                            || dip.second >= this->gametes.size())
-                            {
-                                throw std::out_of_range(
-                                    "diploid contains out of range keys");
-                            }
-                        if (!this->gametes[dip.first].n
-                            || !this->gametes[dip.second].n)
-                            {
-                                throw std::runtime_error("diploid refers to "
-                                                         "gamete marked as "
-                                                         "extinct");
-                            }
+                        this->validate_diploid_keys(dip.first, dip.second);
                         gcounts[dip.first]++;
                         gcounts[dip.second]++;
                     }
-                for (std::size_t i = 0; i < gcounts.size(); ++i)
-                    {
-                        if (gcounts[i] != this->gametes[i].n)
-                            {
-                                throw std::runtime_error(
-                                    "gamete count does not match number of "
-                                    "diploids referring to it");
-                            }
-                    }
+                this->validate_gamete_counts(gcounts);
             }
 
           public:

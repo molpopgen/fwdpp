@@ -116,6 +116,14 @@ BOOST_FIXTURE_TEST_CASE(test_metapop, metapop_objects)
     BOOST_REQUIRE_NO_THROW(poptype p(diploids, gametes, mutations););
 }
 
+BOOST_FIXTURE_TEST_CASE(test_metapop_deme_sizes, metapop_objects)
+{
+    poptype p(diploids, gametes, mutations);
+
+    BOOST_REQUIRE_EQUAL(p.Ns[0], 1);
+    BOOST_REQUIRE_EQUAL(p.Ns[1], 1);
+}
+
 BOOST_FIXTURE_TEST_CASE(test_metapop_bad_gamete_counts, metapop_objects)
 {
     // Now, make incorrect data to trigger exceptions
