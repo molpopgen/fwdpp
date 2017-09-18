@@ -84,6 +84,12 @@ BOOST_FIXTURE_TEST_CASE(test_singlepop, singlepop_objects)
     BOOST_REQUIRE_NO_THROW(poptype p(diploids, gametes, mutations););
 }
 
+BOOST_FIXTURE_TEST_CASE(test_singlepop_N, singlepop_objects)
+{
+    poptype p(diploids, gametes, mutations);
+    BOOST_REQUIRE_EQUAL(p.N, p.diploids.size());
+}
+
 BOOST_FIXTURE_TEST_CASE(test_singlepop_bad_gamete_counts, singlepop_objects)
 {
     // Now, make incorrect data to trigger exceptions
