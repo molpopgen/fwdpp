@@ -32,6 +32,18 @@ namespace KTfwd
             void
             process_diploid_input()
             {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&locus : diploids)
+                    {
+                        for (auto &&dip : locus)
+                            {
+                                this->validate_diploid_keys(dip.first,
+                                                            dip.second);
+                                gcounts[dip.first]++;
+                                gcounts[dip.second]++;
+                            }
+                    }
+                this->validate_gamete_counts(gcounts);
             }
 
           public:
@@ -88,6 +100,21 @@ namespace KTfwd
                                 this->locus_boundaries.emplace_back(i, i + 1);
                             }
                     }
+            }
+
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit multiloc(
+                diploids_input &&d, gametes_input &&g, mutations_input &&m,
+                const std::vector<std::pair<double, double>> &locus_boundaries_
+                = std::vector<std::pair<double, double>>())
+                : popbase_t(d.size()), N(d.size()),
+                  diploids(std::forward<diploids_input>(d))
+            {
+                this->gametes = std::forward<gametes_input>(g);
+                this->mutations = std::forward<mutations_input>(m);
+                this->fill_internal_structures();
+                this->process_diploid_input();
             }
 
             bool
