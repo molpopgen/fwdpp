@@ -432,13 +432,13 @@ Much of __fwdpp__'s flexibility comes from the fact that many different callable
 Two types of mutation function are possible.  First,
 
 ```cpp
-std::function<std::size_t(const recycling_bin_t &, mcont_t &)>
+std::function<std::size_t(recycling_bin_t &, mcont_t &)>
 ```
 
 Or,
 
 ```cpp
-std::function<std::size_t(const recycling_bin_t &, const gamete_t &,mcont_t &)>
+std::function<std::size_t(recycling_bin_t &, const gamete_t &,mcont_t &)>
 ```
 
 The function must generate a new mutation and return its key.  The key must be the index of the new mutation in the mutations container.  Further, fwdpp's recycling rules must be obeyed.
