@@ -176,7 +176,7 @@ namespace KTfwd
             template <typename queue_t, typename lookup_table_t,
                       typename mcont_t>
             inline result_type
-            make_mut(queue_t &recycling_bin, mcont_t &mutations,
+            operator()(queue_t &recycling_bin, mcont_t &mutations,
                      const gsl_rng *r, const double nmu, const double smu,
                      const unsigned *generation, lookup_table_t &lookup) const
             {
@@ -208,7 +208,7 @@ namespace KTfwd
 
         /*!
           Convenience function to return a function object
-          bound to KTfwd::extensions::discrete_mut_model::make_mut
+          bound to KTfwd::extensions::discrete_mut_model::operator()
 
           This simplifies life a lot!
 
@@ -220,14 +220,14 @@ namespace KTfwd
                  Args &&... args)
         {
             return std::bind(
-                &discrete_mut_model::make_mut<traits::recycling_bin_t<mcont_t>,
+                &discrete_mut_model::operator()<traits::recycling_bin_t<mcont_t>,
                                               lookup_t, mcont_t>,
                 &dm, std::placeholders::_1, std::placeholders::_2,
                 std::forward<Args>(args)..., std::ref(mut_lookup));
         }
 
         /*! Return a vector of callables bount
-         *  to KTfwd::extensions::discrete_mut_model::make_mut
+         *  to KTfwd::extensions::discrete_mut_model::operator()
          */
         template <typename mcont_t, typename lookup_t, class... Args>
         inline std::vector<traits::mmodel_t<mcont_t>>
