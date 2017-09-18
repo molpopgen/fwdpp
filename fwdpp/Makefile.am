@@ -21,7 +21,8 @@ pkginclude_HEADERS=debug.hpp \
 	util.hpp \
 	sugar.hpp \
 	demography.hpp \
-	version.hpp
+	version.hpp \
+	mutate_recombine.hpp
 
 
 

@@ -298,7 +298,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -328,7 +327,8 @@ pkginclude_HEADERS = debug.hpp \
 	util.hpp \
 	sugar.hpp \
 	demography.hpp \
-	version.hpp
+	version.hpp \
+	mutate_recombine.hpp
 
 all: all-recursive
 
