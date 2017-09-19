@@ -16,25 +16,25 @@ using namespace KTfwd;
 using poptype = singlepop_popgenmut_fixture::poptype;
 BOOST_FIXTURE_TEST_SUITE(test_extensions, singlepop_popgenmut_fixture)
 
-// Check that extensions::discrete_mut_model::make_mut compiles
+// Check that extensions::discrete_mut_model::operator() compiles
 BOOST_AUTO_TEST_CASE(discrete_mut_model_test_1)
 {
     // attempt
     extensions::discrete_mut_model dm({ 0, 1 }, { 1, 2 }, { 1, 0.5 }, {}, {},
                                       {}, {});
-    //Check copy-constructible:
+    // Check copy-constructible:
     decltype(dm) dm2(dm);
-    //move-constructible:
+    // move-constructible:
     decltype(dm) dm3(std::move(dm2));
     auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    auto x = dm.make_mut(rb, pop.mutations, rng.get(), 0.001, 0., &generation,
-                         pop.mut_lookup);
-    static_assert(
-        std::is_same<decltype(x), std::size_t>::value,
-        "extensions::discrete_mut_model::make_muts must return a std::size_t");
+    auto x = dm(rb, pop.mutations, rng.get(), 0.001, 0., &generation,
+                pop.mut_lookup);
+    static_assert(std::is_same<decltype(x), std::size_t>::value,
+                  "extensions::discrete_mut_model::operator() must return a "
+                  "std::size_t");
 }
-// Check that extensions::discrete_mut_model::make_mut can be bound
+// Check that extensions::discrete_mut_model::operator() can be bound
 BOOST_AUTO_TEST_CASE(discrete_mut_model_test_2)
 {
     // attempt
@@ -44,8 +44,8 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_2)
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     auto mmodel = std::bind(
         &extensions::discrete_mut_model::
-            make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
-                     decltype(pop.mut_lookup), decltype(pop.mutations)>,
+        operator()<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
+                   decltype(pop.mut_lookup), decltype(pop.mutations)>,
         &dm, rb, pop.mutations, rng.get(), 0.001, 0., &generation,
         std::ref(pop.mut_lookup));
     auto x = mmodel();
@@ -66,8 +66,8 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_3)
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     auto mmodel = std::bind(
         &extensions::discrete_mut_model::
-            make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
-                     decltype(pop.mut_lookup), decltype(pop.mutations)>,
+        operator()<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
+                   decltype(pop.mut_lookup), decltype(pop.mutations)>,
         &dm, std::placeholders::_1, std::placeholders::_2, rng.get(), 0.001,
         0., &generation, std::ref(pop.mut_lookup));
     static_assert(

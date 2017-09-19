@@ -176,7 +176,7 @@ namespace KTfwd
             template <typename queue_t, typename lookup_table_t,
                       typename mcont_t>
             inline result_type
-            make_mut(queue_t &recycling_bin, mcont_t &mutations,
+            operator()(queue_t &recycling_bin, mcont_t &mutations,
                      const gsl_rng *r, const double nmu, const double smu,
                      const unsigned *generation, lookup_table_t &lookup) const
             {
@@ -208,43 +208,35 @@ namespace KTfwd
 
         /*!
           Convenience function to return a function object
-          bound to KTfwd::extensions::discrete_mut_model::make_mut
+          bound to KTfwd::extensions::discrete_mut_model::operator()
 
           This simplifies life a lot!
 
           See unit test extensions.cc for an example of use.
         */
         template <typename mcont_t, typename lookup_t, class... Args>
-        inline auto
+        inline traits::mmodel_t<mcont_t> 
         bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t &mut_lookup,
                  Args &&... args)
-            -> decltype(std::bind(
-                &discrete_mut_model::make_mut<traits::recycling_bin_t<mcont_t>,
-                                              lookup_t, mcont_t>,
-                &dm, std::placeholders::_1, std::placeholders::_2,
-                std::forward<Args>(args)..., std::ref(mut_lookup)))
         {
             return std::bind(
-                &discrete_mut_model::make_mut<traits::recycling_bin_t<mcont_t>,
+                &discrete_mut_model::operator()<traits::recycling_bin_t<mcont_t>,
                                               lookup_t, mcont_t>,
                 &dm, std::placeholders::_1, std::placeholders::_2,
                 std::forward<Args>(args)..., std::ref(mut_lookup));
         }
 
         /*! Return a vector of callables bount
-         *  to KTfwd::extensions::discrete_mut_model::make_mut
+         *  to KTfwd::extensions::discrete_mut_model::operator()
          */
         template <typename mcont_t, typename lookup_t, class... Args>
-        inline auto
+        inline std::vector<traits::mmodel_t<mcont_t>>
         bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
                      mcont_t &mutations, lookup_t &mut_lookup,
                      const gsl_rng *r,
                      const std::vector<double> &neutral_mutrates,
                      const std::vector<double> &selected_mutrates,
                      Args &&... args)
-            -> std::vector<decltype(
-                bind_dmm(vdm[0], mutations, mut_lookup, r, neutral_mutrates[0],
-                         selected_mutrates[0], std::forward<Args>(args)...))>
         {
             if (vdm.size() != neutral_mutrates.size()
                 || vdm.size() != selected_mutrates.size())
@@ -366,14 +358,9 @@ namespace KTfwd
           See unit test extensions_regionsTest.cc for example usage.
          */
         template <typename gcont_t, typename mcont_t>
-        inline auto
+        inline traits::recmodel_t<gcont_t,mcont_t>
         bind_drm(const discrete_rec_model &drm, const gcont_t &,
                  const mcont_t &, const gsl_rng *r, const double recrate)
-            -> decltype(std::bind(&discrete_rec_model::operator() <
-                                      typename gcont_t::value_type,
-                                  mcont_t >, &drm, r, recrate,
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3))
         {
             return std::bind(
                 &discrete_rec_model::operator() < typename gcont_t::value_type,
@@ -385,12 +372,10 @@ namespace KTfwd
          *  discrete_rec_model::operator()
          */
         template <typename gcont_t, typename mcont_t>
-        inline auto
+        inline std::vector<traits::recmodel_t<gcont_t,mcont_t>>
         bind_vec_drm(const std::vector<discrete_rec_model> &vdrm,
                      const gcont_t &gametes, const mcont_t &mutations,
                      const gsl_rng *r, const std::vector<double> &recrates)
-            -> std::vector<decltype(bind_drm(vdrm[0], gametes, mutations, r,
-                                             recrates[0]))>
         {
             if (vdrm.size() != recrates.size())
                 {
