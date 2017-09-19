@@ -27,11 +27,17 @@ namespace KTfwd
             static_assert(typename KTfwd::traits::is_mutation<
                               typename mcont::value_type>::type(),
                           "mcont::value_type must be a mutation type");
+            /// This function is used to validate input
+            /// data.  It should be called from constructors
+            /// allowing the initialization of populations
+            /// from pre-calculated diploids, gametes, and mutations.
+            /// \version
+            /// Added in 0.5.7
             virtual void process_diploid_input() = 0;
             void check_mutation_keys(
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality);
-
+            void fill_internal_structures();
           protected:
             // Protected members introduced in 0.5.7 to help
             // derived classes implement constructors based
@@ -170,6 +176,19 @@ namespace KTfwd
                 selected.reserve(reserve_size);
             }
 
+            template <typename gametes_input, typename mutations_input>
+            explicit popbase(
+                gametes_input &&g, mutations_input &m,
+                typename gamete_t::mutation_container::size_type reserve_size)
+                : mutations(std::forward<mutations_input>(m)), mcounts{},
+                  gametes(std::forward<gametes_input>(g)), neutral{},
+                  selected{}, mut_lookup{}, fixations{}, fixation_times{}
+            {
+                this->fill_internal_structures();
+                neutral.reserve(reserve_size);
+                selected.reserve(reserve_size);
+            }
+
             bool
             is_equal(const popbase &rhs) const
             {
@@ -191,8 +210,6 @@ namespace KTfwd
                 fixations.clear();
                 fixation_times.clear();
             }
-
-            void fill_internal_structures();
         };
 
         template <typename mutation_type, typename mcont, typename gcont,

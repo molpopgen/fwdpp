@@ -108,12 +108,10 @@ namespace KTfwd
                 diploids_input &&d, gametes_input &&g, mutations_input &&m,
                 const std::vector<std::pair<double, double>> &locus_boundaries_
                 = std::vector<std::pair<double, double>>())
-                : popbase_t(d.size()), N(d.size()),
-                  diploids(std::forward<diploids_input>(d))
+                : popbase_t(std::forward<gametes_input>(g),
+                            std::forward<mutations_input>(m), 100),
+                  N(d.size()), diploids(std::forward<diploids_input>(d))
             {
-                this->gametes = std::forward<gametes_input>(g);
-                this->mutations = std::forward<mutations_input>(m);
-                this->fill_internal_structures();
                 this->process_diploid_input();
             }
 

@@ -1,7 +1,7 @@
 // Test the construction of populations
 // from user input data
 
-#include <iostream>
+#include <cassert>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
@@ -37,6 +37,8 @@ struct singlepop_objects
 
         // Add a diploid
         diploids.emplace_back(0, 1);
+        assert(gametes.size() == 2);
+        assert(mutations.size() == 3);
     }
 };
 
@@ -70,6 +72,8 @@ struct metapop_objects
         // Add a diploid
         diploids[0].emplace_back(0, 1);
         diploids[1].emplace_back(1, 1);
+        assert(gametes.size() == 2);
+        assert(mutations.size() == 3);
     }
 };
 
@@ -103,6 +107,8 @@ struct multiloc_objects
         // Add a diploid
         diploids[0].emplace_back(0, 1);
         diploids[1].emplace_back(1, 1);
+        assert(gametes.size() == 2);
+        assert(mutations.size() == 3);
     }
 };
 
@@ -129,9 +135,10 @@ BOOST_FIXTURE_TEST_CASE(test_singlepop_bad_gamete_counts, singlepop_objects)
     diploids[0].second = 0;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),
                         std::runtime_error);
+}
 
-    // restore
-    diploids[0].second = 1;
+BOOST_FIXTURE_TEST_CASE(test_singlepop_bad_gamete_counts2, singlepop_objects)
+{
     // make the gamete data incorrect
     gametes[0].n++;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),
@@ -169,9 +176,10 @@ BOOST_FIXTURE_TEST_CASE(test_metapop_bad_gamete_counts, metapop_objects)
     diploids[0][0].second = 0;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),
                         std::runtime_error);
+}
 
-    // restore
-    diploids[0][0].second = 1;
+BOOST_FIXTURE_TEST_CASE(test_metapop_bad_gamete_counts2, metapop_objects)
+{
     // make the gamete data incorrect
     gametes[0].n++;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),
@@ -208,9 +216,10 @@ BOOST_FIXTURE_TEST_CASE(test_multiloc_bad_gamete_counts, multiloc_objects)
     diploids[0][0].second = 0;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),
                         std::runtime_error);
+}
 
-    // restore
-    diploids[0][0].second = 1;
+BOOST_FIXTURE_TEST_CASE(test_multiloc_bad_gamete_counts2, multiloc_objects)
+{
     // make the gamete data incorrect
     gametes[0].n++;
     BOOST_REQUIRE_THROW(poptype p(diploids, gametes, mutations),

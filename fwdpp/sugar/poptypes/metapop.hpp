@@ -120,12 +120,11 @@ namespace KTfwd
                       typename mutations_input>
             explicit metapop(diploids_input &&d, gametes_input &&g,
                              mutations_input &&m)
-                : popbase_t(0), Ns{}, diploids(std::forward<diploids_input>(d))
+                : popbase_t(std::forward<gametes_input>(g),
+                            std::forward<mutations_input>(m), 100),
+                  Ns{}, diploids(std::forward<diploids_input>(d))
             //! Constructor for pre-determined population status
             {
-                this->gametes = std::forward<gametes_input>(g);
-                this->mutations = std::forward<mutations_input>(m);
-                this->fill_internal_structures();
                 this->process_diploid_input();
                 for (const auto &deme : diploids)
                     {
