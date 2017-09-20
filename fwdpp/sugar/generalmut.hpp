@@ -1,6 +1,7 @@
 #ifndef FWDPP_SUGAR_GENERALMUT_HPP
 #define FWDPP_SUGAR_GENERALMUT_HPP
 
+#include <tuple>
 #include <array>
 #include <algorithm>
 #include <memory>
@@ -49,17 +50,44 @@ namespace KTfwd
         array_t h;
         //! Generation when mutation arose
         uint_t g;
+        //! Tuple type useable for object construction
+        using constructor_tuple
+            = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
+
         //! Constructor
-        generalmut(array_t __s, array_t __h, double pos, uint_t gen)
+        generalmut(array_t __s, array_t __h, double pos, uint_t gen,
+                   std::uint16_t label = 0)
             : mutation_base(
-                  std::move(pos),
+                  pos,
                   // Mutation is neutral i.f.f. all values in __s == 0.
                   (std::find_if(std::begin(__s), std::end(__s),
                                 [](const double d) { return d != 0.; })
-                   == std::end(__s))),
+                   == std::end(__s)),
+                  label),
               s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
         {
         }
+
+        ///
+		/// Constructor from a tuple
+		///
+		/// \param t A tuple (s,g,pos,origin time, xtra)
+		///
+		/// \version
+		/// Added in fwdpp 0.5.7
+        generalmut(constructor_tuple t)
+            : mutation_base(
+                  std::get<2>(t),
+                  (std::find_if(std::begin(std::get<0>(t)),
+                                std::end(std::get<0>(t)),
+                                [](const double d) { return d != 0.; })
+                   == std::end(std::get<0>(t))),
+                  std::get<4>(t)),
+              s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
+              g(std::get<3>(t))
+        {
+        }
+
         bool
         operator==(const generalmut &rhs) const
         {
@@ -93,6 +121,9 @@ namespace KTfwd
         array_t h;
         //! Generation when mutation arose
         uint_t g;
+        //! Tuple type useable for object construction
+        using constructor_tuple
+            = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
         //! Constructor
         generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen)
             : KTfwd::mutation_base(
@@ -104,6 +135,27 @@ namespace KTfwd
               s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
         {
         }
+
+        ///
+		/// Constructor from a tuple
+		///
+		/// \param t A tuple (s,g,pos,origin time, xtra)
+		///
+		/// \version
+		/// Added in fwdpp 0.5.7
+        generalmut_vec(constructor_tuple t)
+            : mutation_base(
+                  std::get<2>(t),
+                  (std::find_if(std::begin(std::get<0>(t)),
+                                std::end(std::get<0>(t)),
+                                [](const double d) { return d != 0.; })
+                   == std::end(std::get<0>(t))),
+                  std::get<4>(t)),
+              s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
+              g(std::get<3>(t))
+        {
+        }
+
         bool
         operator==(const generalmut_vec &rhs) const
         {

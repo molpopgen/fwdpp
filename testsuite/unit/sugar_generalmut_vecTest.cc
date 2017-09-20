@@ -14,6 +14,20 @@
 #include <fwdpp/sugar/generalmut.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 
+struct generalmut_vec_tuple_wrapper
+{
+    KTfwd::generalmut_vec::constructor_tuple t;
+    KTfwd::generalmut_vec m;
+    static const std::vector<double> s, h;
+    generalmut_vec_tuple_wrapper()
+        : t(std::make_tuple(s, h, 2.2, 11, 17)), m(t)
+    {
+    }
+};
+
+const std::vector<double> generalmut_vec_tuple_wrapper::s = { { 0.0, -0.1 } };
+const std::vector<double> generalmut_vec_tuple_wrapper::h = { { 1.0, 0.25 } };
+
 BOOST_AUTO_TEST_SUITE(generalmut_vecTest)
 
 BOOST_AUTO_TEST_CASE(construct_2)
@@ -106,6 +120,16 @@ BOOST_AUTO_TEST_CASE(serialize_pop1)
     singlepop_t pop1(100);
     singlepop_t pop2(pop1);
     BOOST_REQUIRE_EQUAL(pop1 == pop2, true);
+}
+
+BOOST_FIXTURE_TEST_CASE(construct_from_tuple, generalmut_vec_tuple_wrapper)
+{
+    BOOST_REQUIRE(m.s == s);
+    BOOST_REQUIRE(m.h == h);
+    BOOST_REQUIRE_EQUAL(m.pos, 2.2);
+    BOOST_REQUIRE_EQUAL(m.g, 11);
+    BOOST_REQUIRE_EQUAL(m.xtra, 17);
+    BOOST_REQUIRE_EQUAL(m.neutral, false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
