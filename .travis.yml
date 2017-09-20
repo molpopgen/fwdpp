@@ -19,7 +19,7 @@ notifications:
     email: false
 
 install: 
-    ./travis_scripts/installation_script.sh
+    USECONDA=$USECONDA ./travis_scripts/installation_script.sh
 
 script:
     - export LD_LIBRARY_PATH=$HOME/miniconda/lib

@@ -2,7 +2,7 @@
 
 ## This is a complex script...
 
-echo $USECONDA $TRAVIS_OS_NAME
+echo "Variables = "$USECONDA $TRAVIS_OS_NAME
 
 if [ "$USECONDA" == "1" ];
 then
@@ -13,6 +13,7 @@ then
         then
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
     fi
+    echo "doo"
     bash miniconda.sh -b -p $HOME/miniconda
     export PATH="$HOME/miniconda/bin:$PATH"
     hash -r
