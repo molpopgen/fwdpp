@@ -6,8 +6,10 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.7
 
+* Population objects from sugar layer can now be constructed with pre-calculated diploids, gametes, and mutations.
+  [PR56](https://github.com/molpopgen/fwdpp/pull/56).
 * Mutation and recombination are now merged into one path.  See fwdpp/mutate_recombine.hpp.  The entry points into the
-  old API are marked deprecated.  This addresses issue #54 via pull request #55.
+  old API are marked deprecated.  This addresses issue [Issue 54](https://github.com/molpopgen/fwdpp/issues/54) via pull request [PR56](https://github.com/molpopgen/fwdpp/pull/56)
 * Travis builds now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
 
 ## 0.5.6
