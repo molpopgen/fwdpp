@@ -141,9 +141,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
         = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
     std::vector<std::function<std::size_t(std::queue<std::size_t> &,
                                           decltype(mutations) &)>>
-        mutation_models{ fake_mut_pol, fake_mut_pol };
+        mutation_models(3, fake_mut_pol);
 
-    double mu[2] = { 0.0, 0.0 };
+    double mu[3] = { 0.0, 0.0, 0.0 };
 
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
                                           decltype(mutations) &)>>
         mutation_models{ fake_mut_pol, fake_mut_pol };
 
-    double mu[2] = { 0.0, 0.0 };
+    double mu[3] = { 0.0, 0.0, 0.0 };
 
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
                                           decltype(mutations) &)>>
         mutation_models{ fake_mut_pol, fake_mut_pol };
 
-    double mu[2] = { 0.0, 0.0 };
+    double mu[3] = { 0.0, 0.0, 0.0 };
 
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
@@ -338,9 +338,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
         = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
     std::vector<std::function<std::size_t(std::queue<std::size_t> &,
                                           decltype(mutations) &)>>
-        mutation_models{ fake_mut_pol, fake_mut_pol };
+        mutation_models(3, fake_mut_pol);
 
-    double mu[2] = { 0.0, 0.0 };
+    double mu[3] = { 0.0, 0.0, 0.0 };
 
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
