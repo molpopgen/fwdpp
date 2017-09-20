@@ -25,10 +25,28 @@ namespace KTfwd
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
                   typename lookup_table_type>
-        struct multiloc
-            : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
-                             ftvector, lookup_table_type>
+        class multiloc : public popbase<mutation_type, mcont, gcont, dipvector,
+                                        mvector, ftvector, lookup_table_type>
         {
+          private:
+            void
+            process_diploid_input()
+            {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&locus : diploids)
+                    {
+                        for (auto &&dip : locus)
+                            {
+                                this->validate_diploid_keys(dip.first,
+                                                            dip.second);
+                                gcounts[dip.first]++;
+                                gcounts[dip.second]++;
+                            }
+                    }
+                this->validate_gamete_counts(gcounts);
+            }
+
+          public:
             virtual ~multiloc() = default;
             multiloc(multiloc &&) = default;
             multiloc(const multiloc &) = default;
@@ -82,6 +100,19 @@ namespace KTfwd
                                 this->locus_boundaries.emplace_back(i, i + 1);
                             }
                     }
+            }
+
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit multiloc(
+                diploids_input &&d, gametes_input &&g, mutations_input &&m,
+                const std::vector<std::pair<double, double>> &locus_boundaries_
+                = std::vector<std::pair<double, double>>())
+                : popbase_t(std::forward<gametes_input>(g),
+                            std::forward<mutations_input>(m), 100),
+                  N(d.size()), diploids(std::forward<diploids_input>(d))
+            {
+                this->process_diploid_input();
             }
 
             bool

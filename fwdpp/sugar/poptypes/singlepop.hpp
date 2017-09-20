@@ -29,6 +29,20 @@ namespace KTfwd
             : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
                              ftvector, lookup_table_type>
         {
+          private:
+            void
+            process_diploid_input()
+            {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&dip : diploids)
+                    {
+                        this->validate_diploid_keys(dip.first, dip.second);
+                        gcounts[dip.first]++;
+                        gcounts[dip.second]++;
+                    }
+                this->validate_gamete_counts(gcounts);
+            }
+
           public:
             virtual ~singlepop() = default;
             singlepop(singlepop &&) = default;
@@ -63,6 +77,19 @@ namespace KTfwd
                   diploids(typename popbase_t::dipvector_t(
                       popsize, typename popbase_t::diploid_t(0, 0)))
             {
+            }
+
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit singlepop(diploids_input &&d, gametes_input &&g,
+                               mutations_input &&m)
+                : popbase_t(std::forward<gametes_input>(g),
+                            std::forward<mutations_input>(m), 100),
+                  N{ static_cast<decltype(N)>(d.size()) },
+                  diploids(std::forward<diploids_input>(d))
+            //! Constructor for pre-determined population status
+            {
+                this->process_diploid_input();
             }
 
             bool

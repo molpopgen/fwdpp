@@ -38,10 +38,27 @@ namespace KTfwd
                     }
             }
 
+            void
+            process_diploid_input()
+            {
+                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                for (auto &&deme : diploids)
+                    {
+                        for (auto &&dip : deme)
+                            {
+                                this->validate_diploid_keys(dip.first,
+                                                            dip.second);
+                                gcounts[dip.first]++;
+                                gcounts[dip.second]++;
+                            }
+                    }
+                this->validate_gamete_counts(gcounts);
+            }
+
           public:
             virtual ~metapop() = default;
-			metapop(metapop &&) = default;
-			metapop(const metapop &) = default;
+            metapop(metapop &&) = default;
+            metapop(const metapop &) = default;
             metapop &operator=(metapop &&) = default;
             metapop &operator=(const metapop &) = default;
             //! Deme sizes
@@ -97,6 +114,22 @@ namespace KTfwd
                   diploids(vdipvector_t())
             {
                 init_vectors();
+            }
+
+            template <typename diploids_input, typename gametes_input,
+                      typename mutations_input>
+            explicit metapop(diploids_input &&d, gametes_input &&g,
+                             mutations_input &&m)
+                : popbase_t(std::forward<gametes_input>(g),
+                            std::forward<mutations_input>(m), 100),
+                  Ns{}, diploids(std::forward<diploids_input>(d))
+            //! Constructor for pre-determined population status
+            {
+                this->process_diploid_input();
+                for (const auto &deme : diploids)
+                    {
+                        Ns.push_back(deme.size());
+                    }
             }
 
             //! Copy construct from a singlepop based on the same basic types
