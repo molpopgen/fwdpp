@@ -6,6 +6,7 @@ matrix:
       env: USECONDA=1
    # works on Precise and Trusty
     - os: linux
+      dist: trusty
       addons:
         apt:
           sources:
@@ -17,6 +18,7 @@ matrix:
 
     # works on Precise and Trusty
     - os: linux
+      dist: trusty
       addons:
         apt:
           sources:
