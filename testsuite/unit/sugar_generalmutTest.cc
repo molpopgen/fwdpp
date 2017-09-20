@@ -19,12 +19,7 @@ struct generalmut_tuple_wrapper
     KTfwd::generalmut<2>::constructor_tuple t;
     KTfwd::generalmut<2> m;
     static const std::array<double, 2> s, h;
-    generalmut_tuple_wrapper()
-        : t(std::make_tuple(std::array<double, 2>{ s },
-                            std::array<double, 2>{ h }, 2.2, 11, 17)),
-          m(t)
-    {
-    }
+    generalmut_tuple_wrapper() : t(std::make_tuple(s, h, 2.2, 11, 17)), m(t) {}
 };
 
 const std::array<double, 2> generalmut_tuple_wrapper::s = { { 0.0, -0.1 } };

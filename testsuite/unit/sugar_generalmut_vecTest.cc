@@ -20,9 +20,7 @@ struct generalmut_vec_tuple_wrapper
     KTfwd::generalmut_vec m;
     static const std::vector<double> s, h;
     generalmut_vec_tuple_wrapper()
-        : t(std::make_tuple(std::vector<double>{ s }, std::vector<double>{ h },
-                            2.2, 11, 17)),
-          m(t)
+        : t(std::make_tuple(s, h, 2.2, 11, 17)), m(t)
     {
     }
 };
