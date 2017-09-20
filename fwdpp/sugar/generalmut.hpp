@@ -68,7 +68,13 @@ namespace KTfwd
         {
         }
 
-        //! Constructor takes a tuple of s,h,pos,label
+        ///
+		/// Constructor from a tuple
+		///
+		/// \param t A tuple (s,g,pos,origin time, xtra)
+		///
+		/// \version
+		/// Added in fwdpp 0.5.7
         generalmut(constructor_tuple t)
             : mutation_base(
                   std::get<2>(t),
@@ -115,6 +121,9 @@ namespace KTfwd
         array_t h;
         //! Generation when mutation arose
         uint_t g;
+        //! Tuple type useable for object construction
+        using constructor_tuple
+            = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
         //! Constructor
         generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen)
             : KTfwd::mutation_base(
@@ -126,6 +135,27 @@ namespace KTfwd
               s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
         {
         }
+
+        ///
+		/// Constructor from a tuple
+		///
+		/// \param t A tuple (s,g,pos,origin time, xtra)
+		///
+		/// \version
+		/// Added in fwdpp 0.5.7
+        generalmut_vec(constructor_tuple t)
+            : mutation_base(
+                  std::get<2>(t),
+                  (std::find_if(std::begin(std::get<0>(t)),
+                                std::end(std::get<0>(t)),
+                                [](const double d) { return d != 0.; })
+                   == std::end(std::get<0>(t))),
+                  std::get<4>(t)),
+              s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
+              g(std::get<3>(t))
+        {
+        }
+
         bool
         operator==(const generalmut_vec &rhs) const
         {
