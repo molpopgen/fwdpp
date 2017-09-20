@@ -4,6 +4,27 @@ matrix:
     - os: linux
       dist: trusty
       env: USECONDA=1
+   # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+
+    # works on Precise and Trusty
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-6
+      env:
+        - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 #     - os: osx 
 #       osx_image: xcode8.2
 #     - os: osx 
@@ -19,15 +40,10 @@ notifications:
     email: false
 
 install: 
-    USECONDA=$USECONDA ./travis_scripts/installation_script.sh
+    ./travis_scripts/installation_script.sh
 
 script:
-    - export LD_LIBRARY_PATH=$HOME/miniconda/lib
-    - export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
-    - export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
-    - LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make &&  make install
-    - fwdppConfig --version
-    - make check
+    ./travis_scripts/build_script.sh
     #- if [ "$TRAVIS_OS_NAME" == "linux" ]; then make check; fi
     #For some reason, make check on OS X + conda fails to respect LD_LIBRARY_PATH,
     #so we'll run the tests manually

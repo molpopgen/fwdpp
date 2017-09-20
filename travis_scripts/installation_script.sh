@@ -24,4 +24,7 @@ then
     conda install gcc zlib boost
     conda install -c asmeurer gsl
     conda install -c bioconda libsequence
+else
+    sudo apt-get update -qq
+    sudo apt-get -f install libboost-test*dev
 fi
