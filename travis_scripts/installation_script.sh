@@ -4,7 +4,7 @@
 
 echo $USECONDA $TRAVIS_OS_NAME
 
-if [ "$USECONDA" == 1 ]
+if [ "$USECONDA" == "1" ]
 then
     if [ "$TRAVIS_OS_NAME" == "linux" ]
     then 
