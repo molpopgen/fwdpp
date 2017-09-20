@@ -7,7 +7,7 @@ then
     export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
     LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
     else
-    ./configure --prefix=$HOME && make && make install
+    ./configure --prefix=$HOME && make -j 3 && make install
 fi
 
 fwdppConfig --version
