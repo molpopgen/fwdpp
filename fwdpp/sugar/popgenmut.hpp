@@ -4,6 +4,8 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
 #include <limits>
+#include <tuple>
+
 namespace KTfwd
 {
     /*!
@@ -21,6 +23,10 @@ namespace KTfwd
         double s;
         //! Dominance of the mutation
         double h;
+        //! Alias for tuple type that can be used for object construction
+        using constructor_tuple
+            = std::tuple<double, double, double, unsigned, std::uint16_t>;
+
         /*!
           \brief Constructor
           \param __pos Mutation position
@@ -35,6 +41,23 @@ namespace KTfwd
               g(__g),
               s(__s),
               h(__h)
+        {
+        }
+
+        ///
+        /// Construct from a tuple.
+        ///
+        /// \param t Elements must be pos, s, h, g, x
+        ///
+        /// \version
+        /// Added in fwdpp 0.5.7
+        popgenmut(constructor_tuple t) noexcept
+            : mutation_base(std::get<0>(t),
+                            (std::get<1>(t) == 0.) ? true : false,
+                            std::get<4>(t)),
+              g(std::get<3>(t)),
+              s(std::get<1>(t)),
+              h(std::get<2>(t))
         {
         }
 
