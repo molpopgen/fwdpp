@@ -2,6 +2,8 @@
 
 ## This is a complex script...
 
+echo $USECONDA $TRAVIS_OS_NAME
+
 if [ "$USECONDA" == 1 ]
 then
     if [ "$TRAVIS_OS_NAME" == "linux" ]
