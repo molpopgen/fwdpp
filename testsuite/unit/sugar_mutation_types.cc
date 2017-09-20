@@ -3,6 +3,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/sugar/generalmut.hpp>
 
 struct popgenmut_tuple_wrapper
 {
@@ -15,7 +16,7 @@ struct popgenmut_tuple_wrapper
 
 BOOST_AUTO_TEST_SUITE(test_popgenmut)
 
-BOOST_FIXTURE_TEST_CASE(test_popgenmut_from_tuple, popgenmut_tuple_wrapper)
+    BOOST_FIXTURE_TEST_CASE(test_popgenmut_from_tuple, popgenmut_tuple_wrapper)
 {
     BOOST_REQUIRE_EQUAL(m.pos, 0.1);
     BOOST_REQUIRE_EQUAL(m.s, -0.1);
