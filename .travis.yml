@@ -28,6 +28,19 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
+    # works on Precise and Trusty
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.8
+          packages:
+            - clang-3.8
+      env:
+        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8"
+
     - os: linux
       dist: trusty
       addons:
