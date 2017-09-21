@@ -12,7 +12,7 @@ then
     then
         CXXFLAGS+=" -stdlib=libc++"
     fi
-    ./configure CXXFLAGS=$CXXFLAGS --prefix=$HOME && make -j 3 && make install
+    ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
 fi
 
 fwdppConfig --version
