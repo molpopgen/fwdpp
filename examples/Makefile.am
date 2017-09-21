@@ -1,6 +1,3 @@
-if HAVE_SIMDATA_HPP
-if HAVE_LIBSEQ_RUNTIME
-
 noinst_PROGRAMS=	diploid_ind \
 	diploid_binaryIO_ind \
 	diploid_gzbinaryIO_ind \
@@ -29,12 +26,16 @@ HOC_ind_SOURCES=HOC_ind.cc
 
 AM_CPPFLAGS=-Wall -W -I.
 
+AM_CXXFLAGS=
+if HAVE_SIMDATA_HPP
+if HAVE_LIBSEQ_RUNTIME
+AM_CXXFLAGS+=-DHAVE_LIBSEQUENCE
+AM_LIBS=-lsequence
+endif
+endif
 if DEBUG
 else !DEBUG
 AM_CPPFLAGS+=-DNDEBUG
 endif
 LDADD=
-AM_LIBS=-lsequence
 LIBS+=$(AM_LIBS)
-endif
-endif

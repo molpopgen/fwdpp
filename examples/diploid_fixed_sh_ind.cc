@@ -6,7 +6,9 @@
  */
 
 #include <fwdpp/diploid.hh>
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
+#endif
 #include <numeric>
 #include <functional>
 #include <cassert>
@@ -89,7 +91,6 @@ main(int argc, char **argv)
                                             pop.mcounts, generation, 2 * N);
                     assert(KTfwd::check_sum(pop.gametes, 2 * N));
                 }
-            Sequence::SimData neutral_muts, selected_muts;
 
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
@@ -99,9 +100,12 @@ main(int argc, char **argv)
                 = ms_sample_separate(r.get(), pop.mutations, pop.gametes,
                                      pop.diploids, samplesize1);
 
+#ifdef HAVE_LIBSEQUENCE
+            Sequence::SimData neutral_muts, selected_muts;
             neutral_muts.assign(sample.first.begin(), sample.first.end());
             selected_muts.assign(sample.second.begin(), sample.second.end());
 
             std::cout << neutral_muts << '\n' << selected_muts << '\n';
+#endif
         }
 }

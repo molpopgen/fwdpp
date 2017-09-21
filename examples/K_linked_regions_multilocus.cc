@@ -5,7 +5,9 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
+#endif
 #include <vector>
 #include <list>
 #include <sstream>
@@ -150,6 +152,7 @@ main(int argc, char **argv)
     for (auto &f : pop.fixations)
         std::cout << f.pos << ' ';
     std::cout << '\n';
+#ifdef HAVE_LIBSEQUENCE
     for (auto &i : x)
         {
             Sequence::SimData a(i.begin(), i.end());
@@ -161,4 +164,5 @@ main(int argc, char **argv)
             Sequence::SimData a(i.begin(), i.end());
             std::cout << a << '\n';
         }
+#endif
 }

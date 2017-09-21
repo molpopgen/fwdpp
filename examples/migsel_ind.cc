@@ -15,9 +15,11 @@
 #include <iostream>
 #include <fwdpp/diploid.hh>
 
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
 #include <Sequence/FST.hpp>
+#endif
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 // the type of mutation
@@ -32,7 +34,9 @@ using gcont = poptype::gcont_t;
 
 using namespace std;
 using namespace KTfwd;
+#ifdef HAVE_LIBSEQUENCE
 using namespace Sequence;
+#endif
 
 size_t
 migpop(const size_t &source_pop, const gsl_rng *r, const double &mig_prob)
@@ -44,9 +48,11 @@ migpop(const size_t &source_pop, const gsl_rng *r, const double &mig_prob)
     return source_pop;
 }
 
+#ifdef HAVE_LIBSEQUENCE
 SimData merge(const std::vector<std::pair<double, std::string>> &sample1,
               const std::vector<std::pair<double, std::string>> &sample2,
               const unsigned &nsam);
+#endif
 
 // fitness model details -- s will be treated as -s in population 2
 struct multiplicative_diploid_minus
@@ -149,9 +155,6 @@ main(int argc, char **argv)
         spop2 = ms_sample_separate(r.get(), pop.mutations, pop.gametes,
                                    pop.diploids[1], n);
 
-    SimData neutral = merge(spop1.first, spop2.first, n);
-    SimData selected = merge(spop1.second, spop2.second, n);
-
     std::ofstream outstream(outfilename);
 
     // Write the metapop in binary format to outstream
@@ -162,14 +165,18 @@ main(int argc, char **argv)
                                 outstream);
 
     // Write the "ms" blocks
+#ifdef HAVE_LIBSEQUENCE
+    SimData neutral = merge(spop1.first, spop2.first, n);
+    SimData selected = merge(spop1.second, spop2.second, n);
+    Sequence::SimData neutral2, selected2;
     Sequence::write_SimData_binary(outstream, neutral);
     Sequence::write_SimData_binary(outstream, selected);
+#endif
     outstream.close();
 
     poptype::gcont_t metapop2;
     poptype::vdipvector_t diploids2;
     poptype::mcont_t mutations2;
-    Sequence::SimData neutral2, selected2;
 
     ifstream in(outfilename);
 
@@ -181,13 +188,14 @@ main(int argc, char **argv)
     assert(mutations2.size() == pop.mutations.size());
     assert(diploids2.size() == pop.diploids.size());
 
+#ifdef HAVE_LIBSEQUENCE
     neutral2 = Sequence::read_SimData_binary(in);
     selected2 = Sequence::read_SimData_binary(in);
-
-    in.close();
-
     std::cerr << (neutral == neutral2) << ' ' << (selected == selected2)
               << '\n';
+#endif
+    in.close();
+
     /*
       At this point, you could go through each deme and each diploid and make
       sure that all is cool.  However, if we weren't reading and
@@ -197,6 +205,7 @@ main(int argc, char **argv)
     */
 
     // For fun, we'll calculate some basic pop subdivision stats
+#ifdef HAVE_LIBSEQUENCE
     unsigned config[2] = { n, n };
     if (!neutral.empty())
         {
@@ -224,8 +233,10 @@ main(int argc, char **argv)
         {
             std::cout << "NA\t0\t0\t0\t0\n";
         }
+#endif
 }
 
+#ifdef HAVE_LIBSEQUENCE
 SimData
 merge(const std::vector<std::pair<double, std::string>> &sample1,
       const std::vector<std::pair<double, std::string>> &sample2,
@@ -262,3 +273,4 @@ merge(const std::vector<std::pair<double, std::string>> &sample1,
     });
     return SimData(rv.begin(), rv.end());
 }
+#endif

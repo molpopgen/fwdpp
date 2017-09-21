@@ -4,7 +4,9 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
+#endif
 #include <vector>
 #include <list>
 #include <sstream>
@@ -151,9 +153,11 @@ main(int argc, char **argv)
             // Take a sample and print it to screen.
             auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
                                       pop.diploids, samplesize1, true);
+#ifdef HAVE_LIBSEQUENCE
             Sequence::SimData l1(x[0].begin(), x[0].end()),
                 l2(x[1].begin(), x[1].end());
             std::cout << l1 << '\n' << l2 << '\n';
+#endif
         }
     return 0;
 }

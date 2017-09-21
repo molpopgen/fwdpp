@@ -19,7 +19,9 @@
 
 // Main fwdpp library header
 #include <fwdpp/diploid.hh>
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
+#endif
 // Include the necessary "sugar" components
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
@@ -343,7 +345,6 @@ main(int argc, char **argv)
                         pop.mutations, pop.fixations, pop.fixation_times,
                         pop.mut_lookup, pop.mcounts, generation, 2 * pop.N);
                 }
-            Sequence::SimData neutral_muts, selected_muts;
 
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
@@ -353,9 +354,11 @@ main(int argc, char **argv)
                                                    pop.gametes, pop.diploids,
                                                    samplesize1);
 
+#ifdef HAVE_LIBSEQUENCE
+            Sequence::SimData neutral_muts, selected_muts;
             neutral_muts.assign(sample.first.begin(), sample.first.end());
             selected_muts.assign(sample.second.begin(), sample.second.end());
-
+#endif
             std::cout << neutral_muts << '\n' << selected_muts << '\n';
         }
 }

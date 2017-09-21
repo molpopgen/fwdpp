@@ -10,7 +10,9 @@
 */
 #include <iostream>
 #include <vector>
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
+#endif
 #include <fwdpp/diploid.hh>
 // Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
@@ -133,7 +135,6 @@ main(int argc, char **argv)
                                             pop.mcounts, generation, twoN);
                     assert(KTfwd::check_sum(pop.gametes, twoN));
                 }
-            Sequence::SimData sdata;
 
             // Take a sample of size samplesize1 from the population
             std::vector<std::pair<double, std::string>> mslike
@@ -142,6 +143,8 @@ main(int argc, char **argv)
 
             // Write the sample date a to libsequence's Sequence::SimData and
             // print to screen
+#ifdef HAVE_LIBSEQUENCE
+            Sequence::SimData sdata;
             if (!mslike.empty())
                 {
                     sdata.assign(mslike.begin(), mslike.end());
@@ -151,6 +154,7 @@ main(int argc, char **argv)
                 {
                     std::cout << "//\nsegsites: 0\n";
                 }
+#endif
         }
     return 0;
 }
