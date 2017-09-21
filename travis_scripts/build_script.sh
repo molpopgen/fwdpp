@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "Standard = $STD"
+
 if [ "$USECONDA" == "1" ];
 then
     export LD_LIBRARY_PATH=$HOME/miniconda/lib
