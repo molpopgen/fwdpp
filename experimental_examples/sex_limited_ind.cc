@@ -358,7 +358,7 @@ main(int argc, char **argv)
             Sequence::SimData neutral_muts, selected_muts;
             neutral_muts.assign(sample.first.begin(), sample.first.end());
             selected_muts.assign(sample.second.begin(), sample.second.end());
-#endif
             std::cout << neutral_muts << '\n' << selected_muts << '\n';
+#endif
         }
 }
