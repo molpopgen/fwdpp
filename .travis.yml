@@ -16,6 +16,17 @@ matrix:
       env:
          - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
 
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5 && STD=14"
+
    # works on Precise and Trusty
     - os: linux
       dist: trusty
@@ -29,52 +40,52 @@ matrix:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
 
     # works on Precise and Trusty
-    - os: linux
-      dist: trusty
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-            - llvm-toolchain-precise-3.8
-          packages:
-            - clang-3.8
-      env:
-        - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8 && USECLANG=1"
+    # - os: linux
+    #   dist: trusty
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - ubuntu-toolchain-r-test
+    #         - llvm-toolchain-precise-3.8
+    #       packages:
+    #         - clang-3.8
+    #   env:
+    #     - MATRIX_EVAL="CC=clang-3.8 && CXX=clang++-3.8 && USECLANG=1"
 
-    - os: linux
-      dist: trusty
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-3.9
-          packages:
-            - clang-3.9
-      env:
-        - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
+    # - os: linux
+    #   dist: trusty
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - llvm-toolchain-trusty-3.9
+    #       packages:
+    #         - clang-3.9
+    #   env:
+    #     - MATRIX_EVAL="CC=clang-3.9 && CXX=clang++-3.9"
 
-    # works on Trusty
-    - os: linux
-      dist: trusty
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-4.0
-          packages:
-            - clang-4.0
-      env:
-        - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
+    # # works on Trusty
+    # - os: linux
+    #   dist: trusty
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - llvm-toolchain-trusty-4.0
+    #       packages:
+    #         - clang-4.0
+    #   env:
+    #     - MATRIX_EVAL="CC=clang-4.0 && CXX=clang++-4.0"
 
-    # works on Trusty
-    - os: linux
-      dist: trusty
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - clang-5.0
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+    # # works on Trusty
+    # - os: linux
+    #   dist: trusty
+    #   addons:
+    #     apt:
+    #       sources:
+    #         - llvm-toolchain-trusty-5.0
+    #       packages:
+    #         - clang-5.0
+    #   env:
+    #     - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
 
 before_install:
     - eval "${MATRIX_EVAL}"

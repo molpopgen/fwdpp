@@ -8,9 +8,9 @@ then
     LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
     else
     CXXFLAGS="-std=c++11 -O2"
-    if [ "$USECLANG" == "1" ];
+    if [ "$STD" == "14" ]l
     then
-        CXXFLAGS+=" -stdlib=libc++"
+        CXXFLAGS="-std=c++14 -O2"
     fi
     ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
 fi
