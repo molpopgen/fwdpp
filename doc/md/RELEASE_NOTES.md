@@ -6,14 +6,19 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.7
 
+* License change from GPL2 to GPL3
+* Gametes can now be constructed from tuples. [PR62](https://github.com/molpopgen/fwdpp/pull/62)
 * KTfwd::popgenmut, KTfwd::generalmut, and KTfwd::generalmut_vec may now be constructed from tuples. [PR59](https://github.com/molpopgen/fwdpp/pull/59)
 * Travis build system now skips OS X builds, tries more GCC versions as well as C++11 and C++14.
   [PR60](https://github.com/molpopgen/fwdpp/pull/60) and [PR61](https://github.com/molpopgen/fwdpp/pull/61)
+  We are skipping OS X because there have been stability problems with the Travis CI infrastructure for that platform.
+  We would liked to have included Linux/clang tests for this release, but hit road blocks that we cannot reproduce on our
+  local machines.
 * Population objects from sugar layer can now be constructed with pre-calculated diploids, gametes, and mutations.
   [PR56](https://github.com/molpopgen/fwdpp/pull/56).
 * Mutation and recombination are now merged into one path.  See fwdpp/mutate_recombine.hpp.  The entry points into the
   old API are marked deprecated.  This addresses issue [Issue 54](https://github.com/molpopgen/fwdpp/issues/54) via pull request [PR56](https://github.com/molpopgen/fwdpp/pull/56)
-* Travis builds now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
+* Travis builds using miniconda now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
 
 ## 0.5.6
 
