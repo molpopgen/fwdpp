@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "Standard = $STD"
+echo "Standard = "
 
 if [ "$USECONDA" == "1" ];
 then
@@ -9,11 +9,7 @@ then
     export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
     LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
     else
-    CXXFLAGS="-std=c++11 -O2"
-    if [ "$STD" == "14" ];
-    then
-        CXXFLAGS="-std=c++14 -O2"
-    fi
+    CXXFLAGS="-std=$CXXSTANDARD -O2"
     ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
 fi
 
