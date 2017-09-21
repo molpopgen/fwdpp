@@ -6,6 +6,9 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.5.7
 
+* KTfwd::popgenmut, KTfwd::generalmut, and KTfwd::generalmut_vec may now be constructed from tuples. [PR59](https://github.com/molpopgen/fwdpp/pull/59)
+* Travis build system now skips OS X builds, tries more GCC versions as well as C++11 and C++14.
+  [PR60](https://github.com/molpopgen/fwdpp/pull/60) and [PR61](https://github.com/molpopgen/fwdpp/pull/61)
 * Population objects from sugar layer can now be constructed with pre-calculated diploids, gametes, and mutations.
   [PR56](https://github.com/molpopgen/fwdpp/pull/56).
 * Mutation and recombination are now merged into one path.  See fwdpp/mutate_recombine.hpp.  The entry points into the
