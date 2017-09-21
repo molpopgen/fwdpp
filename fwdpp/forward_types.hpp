@@ -7,6 +7,7 @@
 #ifndef _FORWARD_TYPES_HPP_
 #define _FORWARD_TYPES_HPP_
 
+#include <tuple>
 #include <limits>
 #include <vector>
 #include <cmath>
@@ -42,9 +43,8 @@ namespace KTfwd
         /// Is the mutation neutral or not?
         bool neutral;
         mutation_base(const double &position, const bool &isneutral = true,
-                      const std::uint16_t x = 0) noexcept : pos(position),
-                                                            xtra(x),
-                                                            neutral(isneutral)
+                      const std::uint16_t x = 0) noexcept
+            : pos(position), xtra(x), neutral(isneutral)
         {
         }
         virtual ~mutation_base() noexcept {}
@@ -69,8 +69,7 @@ namespace KTfwd
         double h;
         mutation(const double &position, const double &sel_coeff,
                  const double &dominance = 0.5) noexcept
-            : mutation_base(position, (sel_coeff == 0)),
-              s(sel_coeff),
+            : mutation_base(position, (sel_coeff == 0)), s(sel_coeff),
               h(dominance)
         {
         }
@@ -118,13 +117,16 @@ namespace KTfwd
         //! mutations")
         mutation_container smutations;
 
+        //! Tuple type usable for construction
+        using constructor_tuple
+            = std::tuple<uint_t, mutation_container, mutation_container>;
+
         /*! @brief Constructor
           \param icount The number of occurrences of this gamete in the
           population
         */
         gamete_base(const uint_t &icount) noexcept
-            : n(icount),
-              mutations(mutation_container()),
+            : n(icount), mutations(mutation_container()),
               smutations(mutation_container())
         {
         }
@@ -137,11 +139,18 @@ namespace KTfwd
         */
         template <typename T>
         gamete_base(const uint_t &icount, T &&n, T &&s) noexcept
-            : n(icount),
-              mutations(std::forward<T>(n)),
+            : n(icount), mutations(std::forward<T>(n)),
               smutations(std::forward<T>(s))
         {
         }
+
+        //! Construct from n, mutations, smutations tuple
+        gamete_base(constructor_tuple t)
+            : n(std::get<0>(t)), mutations(std::move(std::get<1>(t))),
+              smutations(std::move(std::get<2>(t)))
+        {
+        }
+
         //! Destructor is virtual, so you may inherit from this type
         virtual ~gamete_base() noexcept {}
         //! Copy constructor
@@ -166,7 +175,8 @@ namespace KTfwd
                     && this->smutations == rhs.smutations);
         }
 // The following type traits are not implemented in GCC 4.
-#if (defined __GNUG__&& __GNUC__ >= 5) || !defined __GNUG__ || defined __clang__ 
+#if (defined __GNUG__ && __GNUC__ >= 5) || !defined __GNUG__                  \
+    || defined __clang__
         static_assert(std::is_trivially_constructible<gamete_tag>::value,
                       "Typename gamete_tag must refer to a "
                       "trivially-constrictible type");
