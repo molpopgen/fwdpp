@@ -50,4 +50,11 @@ BOOST_AUTO_TEST_CASE(move_assign)
     BOOST_CHECK_EQUAL(g3.smutations.size(), 1);
 }
 
+BOOST_AUTO_TEST_CASE(assign_from_tuple)
+{
+    gtype::mutation_container n{0,1,2},s{3,4,5};
+    auto t = std::make_tuple(1u,n,s);
+    gtype g(t);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
