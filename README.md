@@ -175,20 +175,10 @@ You must have the following on your system:
 1. A C++ compiler that supports the C++11 language standard.
 2. Ideally, one should have the [git](http://git-scm.com/book/en/Getting-Started-Installing-Git) command line tools installed.  These are likely already installed on many systems.
 
-I have tested the library on my development machine (64-bit Intel processor, Ubuntu 14.04) with the following compilers:
+We routinely test fwdpp on several different systems with different compilers.  The Travis CI build matrix for fwdpp includes:
 
-| Compiler | Version | Compatible? | Notes |
-|:-----:|:-----:|:-----:|:-----:|
-| GCC | 4.6.4 | __NO__ | Does not support the -std=c++11 flag|
-| GCC | 4.7.3 | __NO__ | Does not like one of the [libsequence](http://github.com/molpopgen/libsequence) headers.  Fails at ./configure |
-| GCC | 4.8.2 | __YES__ | |
-| GCC | 4.9.2 | __YES__ | |
-| GCC | 5.1 | __YES__ | |
-| GCC | 5.2 | __YES__ | |
-| clang++  | 3.5  | __YES__ | |
-| clang++  | 3.6  | __YES__ | |
-| clang++  | 3.7  | __YES__ | |
-
+* A miniconda3 environment using gcc 4.8.5 with [libsequence](http://github.com/molpopgen/libsequence) installed via [bioconda](https://bioconda.github.io/).
+* GCC 5 or 6 on Ubuntu, with either C++11 or C++14.  [libsequence](http://github.com/molpopgen/libsequence) is not used for these builds.
 
 ## Library dependencies
 
@@ -197,7 +187,7 @@ The minimal dependencies required to use the library to develop simulations are:
 1.  [GSL](http://gnu.org/software/gsl)
 2.  [zlib](http://zlib.net)
 
-In order to compile the example programs, you will also need:
+In order to compile the example programs, the following dependency is optional as of fwdpp 0.5.7: 
 
 1.  [libsequence](http://github.com/molpopgen/libsequence).
 

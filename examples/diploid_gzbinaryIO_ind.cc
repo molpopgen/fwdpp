@@ -11,12 +11,11 @@
   Also illustrates POSIX file locking via <fcntl.h>, which is super-useful on
   clusters.
 
-  Example use that runs quickly: ./diploid_hzbinaryIO 1000 10 10 10000 1 index
+  Example use that runs quickly: ./diploid_gzbinaryIO 1000 10 10 10000 1 index
   haps.bin.gz $RANDOM
 */
 
 #include <fwdpp/diploid.hh>
-#include <Sequence/SimData.hpp>
 #include <numeric>
 #include <functional>
 #include <cassert>

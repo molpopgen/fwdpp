@@ -18,7 +18,6 @@
 #include <sstream>
 #include <fstream>
 #include <fcntl.h>
-#include <Sequence/SimData.hpp>
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>

@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
-#include <Sequence/SimData.hpp>
 #include <vector>
 #include <list>
 #include <sstream>

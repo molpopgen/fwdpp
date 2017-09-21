@@ -16,9 +16,11 @@
 #include <iostream>
 #include <fwdpp/diploid.hh>
 
+#ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
 #include <Sequence/FST.hpp>
+#endif
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
@@ -28,7 +30,9 @@ using mtype = KTfwd::mutation;
 
 using namespace std;
 using namespace KTfwd;
+#ifdef HAVE_LIBSEQUENCE
 using namespace Sequence;
+#endif
 
 using poptype = metapop_t;
 using mcont = poptype::mcont_t;
@@ -45,9 +49,11 @@ migpop(const size_t &source_pop, gsl_rng *r, const double &mig_prob)
     return source_pop;
 }
 
+#ifdef HAVE_LIBSEQUENCE
 SimData merge(const std::vector<std::pair<double, std::string>> &sample1,
               const std::vector<std::pair<double, std::string>> &sample2,
               const unsigned &nsam);
+#endif 
 
 // fitness model details -- s will be treated as -s in population 2
 struct multiplicative_diploid_minus
@@ -186,9 +192,10 @@ main(int argc, char **argv)
         sample2 = ms_sample_separate(r, pop.mutations, pop.gametes,
                                      pop.diploids[1], n);
 
+#ifdef HAVE_LIBSEQUENCE
     auto neutral = merge(sample1.first, sample2.first, n),
          selected = merge(sample1.second, sample2.second, n);
-
+#endif
     // Write the metapop in binary format to outstream
     // std::ostringstream outstream;
     // KTfwd::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
@@ -263,6 +270,7 @@ main(int argc, char **argv)
     //   }
 }
 
+#ifdef HAVE_LIBSEQUENCE
 SimData
 merge(const std::vector<std::pair<double, std::string>> &sample1,
       const std::vector<std::pair<double, std::string>> &sample2,
@@ -299,3 +307,4 @@ merge(const std::vector<std::pair<double, std::string>> &sample1,
     });
     return SimData(rv.begin(), rv.end());
 }
+#endif
