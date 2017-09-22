@@ -148,7 +148,6 @@ struct sexSpecificRules
     w(const dipcont_t &diploids, gcont_t &gametes, mcont_t &mutations,
       const fitness_func &ff) const
     {
-        using diploid_geno_t = typename dipcont_t::value_type;
         unsigned N_curr = diploids.size();
         if (male_fitnesses.size() < N_curr)
             {

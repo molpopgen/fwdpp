@@ -45,8 +45,7 @@ namespace KTfwd
               template <typename, typename> class gamete_cont_type,
               template <typename, typename> class mutation_cont_type,
               template <typename, typename> class diploid_vector_type,
-              typename mutation_removal_policy = std::true_type,
-              typename gamete_insertion_policy = emplace_back>
+              typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -60,9 +59,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double f = 0.,
-        const mutation_removal_policy mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy mp = mutation_removal_policy());
 
     /*! \brief Sample the next generation of dipliods in an individual-based
       simulation.  Changing population size case.
@@ -101,8 +98,7 @@ namespace KTfwd
               template <typename, typename> class gamete_cont_type,
               template <typename, typename> class mutation_cont_type,
               template <typename, typename> class diploid_vector_type,
-              typename mutation_removal_policy = std::true_type,
-              typename gamete_insertion_policy = emplace_back>
+              typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -117,9 +113,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double f = 0.,
-        const mutation_removal_policy mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy mp = mutation_removal_policy());
 
     /*! \brief Evolve a metapopulation where demes are not changing size.  For
       individual-based sims.
@@ -172,8 +166,7 @@ namespace KTfwd
               template <typename, typename> class mutation_cont_type,
               template <typename, typename> class diploid_vector_type,
               template <typename, typename> class metapop_diploid_vector_type,
-              typename mutation_removal_policy = std::true_type,
-              typename gamete_insertion_policy = emplace_back>
+              typename mutation_removal_policy = std::true_type>
     std::vector<double> sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -190,9 +183,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double *f = nullptr,
-        const mutation_removal_policy &mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy &mp = mutation_removal_policy());
 
     /*! \brief Evolve a metapopulation where demes may be changing size.  For
       individual-based sims.
@@ -245,8 +236,7 @@ namespace KTfwd
               template <typename, typename> class mutation_cont_type,
               template <typename, typename> class diploid_vector_type,
               template <typename, typename> class metapop_diploid_vector_type,
-              typename mutation_removal_policy = std::true_type,
-              typename gamete_insertion_policy = emplace_back>
+              typename mutation_removal_policy = std::true_type>
     std::vector<double> sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -264,9 +254,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double *f = nullptr,
-        const mutation_removal_policy &mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy &mp = mutation_removal_policy());
 
     /*! \brief Single deme, multilocus model, changing population size
      */
@@ -282,8 +270,7 @@ namespace KTfwd
         template <typename, typename> class mutation_cont_type,
         template <typename, typename> class diploid_vector_type,
         template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy = std::true_type,
-        typename gamete_insertion_policy = emplace_back>
+        typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -301,9 +288,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double &f = 0,
-        const mutation_removal_policy &mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy &mp = mutation_removal_policy());
 
     /*! \brief Single deme, multilocus model, constant population size
       \example diploid_ind_2locus.cc
@@ -321,8 +306,7 @@ namespace KTfwd
         template <typename, typename> class mutation_cont_type,
         template <typename, typename> class diploid_vector_type,
         template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy = std::true_type,
-        typename gamete_insertion_policy = emplace_back>
+        typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
@@ -339,9 +323,7 @@ namespace KTfwd
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double &f = 0,
-        const mutation_removal_policy &mp = mutation_removal_policy(),
-        const gamete_insertion_policy &gpolicy_mut
-        = gamete_insertion_policy());
+        const mutation_removal_policy &mp = mutation_removal_policy());
 }
 
 #include <fwdpp/sample_diploid.tcc>

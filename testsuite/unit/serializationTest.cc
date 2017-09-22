@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(test_scalar_writer_exceptions)
     BOOST_REQUIRE_THROW(KTfwd::fwdpp_internal::scalar_writer()(foo2, &x),
                         std::runtime_error);
 
-    gzFile gzf;
+    gzFile gzf = nullptr;
     // Will throw on an invalid gzfile
     BOOST_REQUIRE_THROW(KTfwd::fwdpp_internal::scalar_writer()(gzf, &x),
                         std::runtime_error);

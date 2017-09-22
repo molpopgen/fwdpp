@@ -6,6 +6,8 @@
 #ifndef FWDPP_TESTSUITE_UTIL_QUICK_EVOLVE_SUGAR_HPP
 #define FWDPP_TESTSUITE_UTIL_QUICK_EVOLVE_SUGAR_HPP
 
+#include <exception>
+#include <cmath>
 #include <fwdpp/recombination.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
@@ -45,6 +47,10 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
                 pop.neutral, pop.selected);
+            if (!std::isfinite(wbar))
+                {
+                    throw std::runtime_error("fitness not finite");
+                }
             pop.N = popsize;
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
@@ -80,6 +86,10 @@ simulate_singlepop(singlepop_object_t &pop, const rng_type &rng,
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
                 pop.neutral, pop.selected);
+            if (!std::isfinite(wbar))
+                {
+                    throw std::runtime_error("fitness not finite");
+                }
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, g, 2 * pop.N);
@@ -136,9 +146,12 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
                 interlocus_rec,
-                std::bind(multilocus_additive(), std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3),
+                fitness,
                 pop.neutral, pop.selected);
+            if (!std::isfinite(wbar))
+                {
+                    throw std::runtime_error("fitness not finite");
+                }
             assert(check_sum(pop.gametes, 8000));
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
@@ -171,9 +184,12 @@ simulate_mlocuspop_experimental(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
                 interlocus_rec,
-                std::bind(multilocus_additive(), std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3),
+                fitness,
                 pop.neutral, pop.selected);
+            if (!std::isfinite(wbar))
+                {
+                    throw std::runtime_error("fitness not finite");
+                }
             assert(check_sum(pop.gametes, 8000));
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
@@ -187,14 +203,14 @@ void
 simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
 {
     // Evolve for 10 generations
-    std::vector<std::function<double(
-        const typename metapop_object::diploid_t &,
-        const typename metapop_object::gcont_t &,
-        const typename metapop_object::mcont_t &)>>
-        fitness_funcs(2,
-                      std::bind(KTfwd::multiplicative_diploid(),
-                                std::placeholders::_1, std::placeholders::_2,
-                                std::placeholders::_3, 2.));
+    std::
+        vector<std::function<double(const typename metapop_object::diploid_t &,
+                                    const typename metapop_object::gcont_t &,
+                                    const typename metapop_object::mcont_t &)>>
+            fitness_funcs(2, std::bind(KTfwd::multiplicative_diploid(),
+                                       std::placeholders::_1,
+                                       std::placeholders::_2,
+                                       std::placeholders::_3, 2.));
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     for (unsigned generation = 0; generation < simlen; ++generation)
         {
@@ -212,6 +228,13 @@ simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
                 fitness_funcs,
                 std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
                 pop.neutral, pop.selected);
+            for (auto wbar_i : wbar)
+                {
+                    if (!std::isfinite(wbar_i))
+                        {
+                            throw std::runtime_error("fitness not finite");
+                        }
+                }
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 4000);

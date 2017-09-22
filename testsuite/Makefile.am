@@ -24,7 +24,7 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 
 integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
 
-AM_CXXFLAGS=
+AM_CXXFLAGS=-W -Wall
 
 #AM_LIBS=-lboost_unit_test_framework
 
