@@ -7,6 +7,9 @@ milestones (target version numbers for these features to go live) because that i
 ## 0.5.7
 
 * License change from GPL2 to GPL3
+* The unit test suite is now compiled with warnings enabled.  As a result, several warnings were silenced, including one
+  introduced in [PR56](https://github.com/molpopgen/fwdpp/pull/56) that would have mattered!.  [PR63](https://github.com/molpopgen/fwdpp/pull/63)
+* API to KTfwd::sample_diploid was updated to removed an unused type as a result of [PR54](https://github.com/molpopgen/fwdpp/pull/54). [PR63](https://github.com/molpopgen/fwdpp/pull/63)
 * Gametes can now be constructed from tuples. [PR62](https://github.com/molpopgen/fwdpp/pull/62)
 * KTfwd::popgenmut, KTfwd::generalmut, and KTfwd::generalmut_vec may now be constructed from tuples. [PR59](https://github.com/molpopgen/fwdpp/pull/59)
 * Travis build system now skips OS X builds, tries more GCC versions as well as C++11 and C++14.
