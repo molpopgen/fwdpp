@@ -18,7 +18,8 @@
  * These fixtures are for the low-level fwdpp
  * API.  Thus, we need a bunch of typedefs
  * to maintain our sanity. "Real-world" use
- * of fwdpp make use of "sugar" types (fwdpp/sugar/*.hpp),
+ * of fwdpp make use of "sugar" types 
+ * (headers in fwdpp/sugar),
  * which handles a lot of this stuff for you.
  */
 using mtype = KTfwd::mutation;

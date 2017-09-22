@@ -36,7 +36,6 @@ namespace KTfwd
             w(const dipcont_t &diploids, gcont_t &gametes,
               const mcont_t &mutations, const fitness_func &ff)
             {
-                using diploid_geno_t = typename dipcont_t::value_type;
                 unsigned N_curr = diploids.size();
                 if (fitnesses.size() < N_curr)
                     fitnesses.resize(N_curr);
@@ -140,6 +139,10 @@ namespace KTfwd
           Changing N over time
         */
         {
+            if(N_curr != diploids.size())
+            {
+                throw std::runtime_error("N_curr != diploids.size()");
+            }
             auto gamete_recycling_bin
                 = fwdpp_internal::make_gamete_queue(gametes);
             auto mutation_recycling_bin

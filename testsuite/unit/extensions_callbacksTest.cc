@@ -1,6 +1,7 @@
 // This is really an API check
 
 #include <config.h>
+#include <cmath>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <boost/test/unit_test.hpp>
 
@@ -31,6 +32,8 @@ BOOST_AUTO_TEST_CASE(shmodel)
 
     auto __s = x.s(r);
     auto __h = x.h(r);
+    BOOST_REQUIRE_EQUAL(std::isfinite(__s), true);
+    BOOST_REQUIRE_EQUAL(std::isfinite(__h), true);
 }
 
 BOOST_AUTO_TEST_CASE(shmodel2)
@@ -42,6 +45,8 @@ BOOST_AUTO_TEST_CASE(shmodel2)
         KTfwd::extensions::gamma(1, 2));
     auto __s = x.s(r);
     auto __h = x.h(r);
+    BOOST_REQUIRE_EQUAL(std::isfinite(__s), true);
+    BOOST_REQUIRE_EQUAL(std::isfinite(__h), true);
 }
 
 BOOST_AUTO_TEST_CASE(point_mass_test1)

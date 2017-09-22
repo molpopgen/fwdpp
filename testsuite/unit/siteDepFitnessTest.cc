@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(stateful_additive_trait)
         const std::shared_ptr<const int> i;
         stateful_mapping_to_fitness(std::shared_ptr<const int> i_) : i(i_) {}
         inline double
-        operator()(const double g) const
+        operator()(const double) const
         {
             if (*(this->i))
                 return 1.0;

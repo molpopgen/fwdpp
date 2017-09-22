@@ -111,7 +111,8 @@ namespace KTfwd
                   template <typename, typename> class diploid_vector_type,
                   typename popmodel_rules = standardWFrules,
                   typename mutation_removal_policy = std::true_type>
-        double sample_diploid(
+        double
+        sample_diploid(
             const gsl_rng *r, gcont_t<gamete_type, gcont_t_allocator> &gametes,
             diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>
                 &diploids,
@@ -125,13 +126,16 @@ namespace KTfwd
             const double &f = 0., popmodel_rules &&pmr = popmodel_rules(),
             const mutation_removal_policy &mp = mutation_removal_policy())
         {
-            assert(N_curr == diploids.size());
-
+            if(N_curr != diploids.size())
+            {
+                throw std::runtime_error("N_curr != diploids.size()");
+            }
             auto gamete_recycling_bin
                 = fwdpp_internal::make_gamete_queue(gametes);
             auto mutation_recycling_bin
                 = fwdpp_internal::make_mut_queue(mcounts);
 
+            
             dispatch_w(pmr, diploids, gametes, mutations, ff);
 
 #ifndef NDEBUG
@@ -223,8 +227,8 @@ namespace KTfwd
             const mutation_removal_policy &mp = mutation_removal_policy())
         {
             return experimental::sample_diploid(
-                r, gametes, diploids, mutations, mcounts, N_curr, N_curr, mu,
-                mmodel, rec_pol, ff, neutral, selected, f, pmr, mp);
+                r, gametes, diploids, mutations, mcounts, N_curr, N_curr,mu, mmodel,
+                rec_pol, ff, neutral, selected, f, pmr, mp);
         }
     }
 }
