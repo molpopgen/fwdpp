@@ -110,10 +110,8 @@ namespace KTfwd
                   template <typename, typename> class mcont_t,
                   template <typename, typename> class diploid_vector_type,
                   typename popmodel_rules = standardWFrules,
-                  typename mutation_removal_policy = std::true_type,
-                  typename gamete_insertion_policy = KTfwd::emplace_back>
-        double
-        sample_diploid(
+                  typename mutation_removal_policy = std::true_type>
+        double sample_diploid(
             const gsl_rng *r, gcont_t<gamete_type, gcont_t_allocator> &gametes,
             diploid_vector_type<diploid_geno_t, diploid_vector_type_allocator>
                 &diploids,
@@ -125,9 +123,7 @@ namespace KTfwd
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
             const double &f = 0., popmodel_rules &&pmr = popmodel_rules(),
-            const mutation_removal_policy &mp = mutation_removal_policy(),
-            const gamete_insertion_policy &gpolicy_mut
-            = gamete_insertion_policy())
+            const mutation_removal_policy &mp = mutation_removal_policy())
         {
             assert(N_curr == diploids.size());
 
@@ -175,7 +171,7 @@ namespace KTfwd
                         std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pol,
                         mmodel, mu, gamete_recycling_bin,
                         mutation_recycling_bin, dip, neutral, selected);
-                    
+
                     dispatch_update(pmr, r, dip, parents[p1], parents[p2],
                                     gametes, mutations, ff);
                 }
@@ -210,8 +206,7 @@ namespace KTfwd
                   template <typename, typename> class mcont_t,
                   template <typename, typename> class diploid_vector_type,
                   typename popmodel_rules = standardWFrules,
-                  typename mutation_removal_policy = std::true_type,
-                  typename gamete_insertion_policy = KTfwd::emplace_back>
+                  typename mutation_removal_policy = std::true_type>
         double
         sample_diploid(
             const gsl_rng *r, gcont_t<gamete_type, gcont_t_allocator> &gametes,
@@ -225,14 +220,11 @@ namespace KTfwd
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
             const double &f = 0., popmodel_rules &&pmr = popmodel_rules(),
-            const mutation_removal_policy &mp = mutation_removal_policy(),
-            const gamete_insertion_policy &gpolicy_mut
-            = gamete_insertion_policy())
+            const mutation_removal_policy &mp = mutation_removal_policy())
         {
             return experimental::sample_diploid(
                 r, gametes, diploids, mutations, mcounts, N_curr, N_curr, mu,
-                mmodel, rec_pol, ff, neutral, selected, f, pmr, mp,
-                gpolicy_mut);
+                mmodel, rec_pol, ff, neutral, selected, f, pmr, mp);
         }
     }
 }

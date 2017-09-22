@@ -116,8 +116,7 @@ namespace KTfwd
                   template <typename, typename> class diploid_vector_type,
                   template <typename, typename> class locus_vector_type,
                   typename rules_type = standardWFrules_mloc,
-                  typename mutation_removal_policy = std::true_type,
-                  typename gamete_insertion_policy = emplace_back>
+                  typename mutation_removal_policy = std::true_type>
         double
         sample_diploid(
             const gsl_rng *r,
@@ -136,9 +135,7 @@ namespace KTfwd
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
             const double &f = 0, rules_type &&rules = rules_type(),
-            const mutation_removal_policy &mp = mutation_removal_policy(),
-            const gamete_insertion_policy &gpolicy_mut
-            = gamete_insertion_policy())
+            const mutation_removal_policy &mp = mutation_removal_policy())
         /*
           Changing N over time
         */
@@ -172,7 +169,7 @@ namespace KTfwd
                         gamete_recycling_bin, rec_policies, interlocus_rec,
                         ((gsl_rng_uniform(r) < 0.5) ? 1 : 0),
                         ((gsl_rng_uniform(r) < 0.5) ? 1 : 0), gametes,
-                        mutations, neutral, selected, mu, mmodel, gpolicy_mut);
+                        mutations, neutral, selected, mu, mmodel);
                     dispatch_update(rules, r, dip, parents[p1], parents[p2],
                                     gametes, mutations, ff);
                 }
@@ -197,8 +194,7 @@ namespace KTfwd
                   template <typename, typename> class diploid_vector_type,
                   template <typename, typename> class locus_vector_type,
                   typename rules_type = standardWFrules_mloc,
-                  typename mutation_removal_policy = std::true_type,
-                  typename gamete_insertion_policy = emplace_back>
+                  typename mutation_removal_policy = std::true_type>
         double
         sample_diploid(
             const gsl_rng *r,
@@ -216,9 +212,7 @@ namespace KTfwd
             typename gamete_type::mutation_container &neutral,
             typename gamete_type::mutation_container &selected,
             const double &f = 0, rules_type &&rules = rules_type(),
-            const mutation_removal_policy &mp = mutation_removal_policy(),
-            const gamete_insertion_policy &gpolicy_mut
-            = gamete_insertion_policy())
+            const mutation_removal_policy &mp = mutation_removal_policy())
         /*
           N constant
         */
@@ -226,7 +220,7 @@ namespace KTfwd
             return experimental::sample_diploid(
                 r, gametes, diploids, mutations, mcounts, N, N, mu, mmodel,
                 rec_policies, interlocus_rec, ff, neutral, selected, f, rules,
-                mp, gpolicy_mut);
+                mp);
         }
     }
 }

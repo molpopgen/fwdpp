@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models, KTfwd::emplace_back());
+        &mu[0], mutation_models);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 0);
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models, KTfwd::emplace_back());
+        &mu[0], mutation_models);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models, KTfwd::emplace_back());
+        &mu[0], mutation_models);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
     auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models, KTfwd::emplace_back());
+        &mu[0], mutation_models);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);

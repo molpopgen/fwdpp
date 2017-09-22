@@ -20,8 +20,7 @@ namespace KTfwd
         template <typename diploid_type,
                   typename recombination_policy_container, typename mqueue_t,
                   typename gqueue_t, typename mcont_t, typename gcont_t,
-                  typename mutation_model_container,
-                  typename gamete_insertion_policy>
+                  typename mutation_model_container>
         diploid_type
         multilocus_rec_mut(
             const gsl_rng *r, const diploid_type &parent1,
@@ -33,8 +32,7 @@ namespace KTfwd
             mcont_t &mutations,
             typename gcont_t::value_type::mutation_container &neutral,
             typename gcont_t::value_type::mutation_container &selected,
-            const double *mu, const mutation_model_container &mmodel,
-            const gamete_insertion_policy &gpolicy_mut)
+            const double *mu, const mutation_model_container &mmodel)
         {
             diploid_type offspring(parent1.size());
             unsigned s1 = iswitch1, s2 = iswitch2;
