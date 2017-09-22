@@ -8,7 +8,7 @@ milestones (target version numbers for these features to go live) because that i
 
 * License change from GPL2 to GPL3
 * The unit test suite is now compiled with warnings enabled.  As a result, several warnings were silenced, including one
-  introduced in [PR56](https://github.com/molpopgen/fwdpp/pull/56) that would have mattered!.  [PR63](https://github.com/molpopgen/fwdpp/pull/63)
+  introduced in [PR55](https://github.com/molpopgen/fwdpp/pull/56) that would have mattered!.  [PR63](https://github.com/molpopgen/fwdpp/pull/63)
 * API to KTfwd::sample_diploid was updated to removed an unused type as a result of [PR54](https://github.com/molpopgen/fwdpp/pull/54). [PR63](https://github.com/molpopgen/fwdpp/pull/63)
 * Gametes can now be constructed from tuples. [PR62](https://github.com/molpopgen/fwdpp/pull/62)
 * KTfwd::popgenmut, KTfwd::generalmut, and KTfwd::generalmut_vec may now be constructed from tuples. [PR59](https://github.com/molpopgen/fwdpp/pull/59)
@@ -20,7 +20,7 @@ milestones (target version numbers for these features to go live) because that i
 * Population objects from sugar layer can now be constructed with pre-calculated diploids, gametes, and mutations.
   [PR56](https://github.com/molpopgen/fwdpp/pull/56).
 * Mutation and recombination are now merged into one path.  See fwdpp/mutate_recombine.hpp.  The entry points into the
-  old API are marked deprecated.  This addresses issue [Issue 54](https://github.com/molpopgen/fwdpp/issues/54) via pull request [PR56](https://github.com/molpopgen/fwdpp/pull/56).
+  old API are marked deprecated.  This addresses issue [Issue 54](https://github.com/molpopgen/fwdpp/issues/54) via pull request [PR55](https://github.com/molpopgen/fwdpp/pull/55).
 * Travis builds using miniconda now use -Wl,-rpath when linking to dependencies, solving run-time link errors during "make check" on OS X.
 
 ## 0.5.6
