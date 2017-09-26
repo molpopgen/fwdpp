@@ -38,6 +38,7 @@ namespace KTfwd
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality);
             void fill_internal_structures();
+
           protected:
             // Protected members introduced in 0.5.7 to help
             // derived classes implement constructors based
@@ -222,6 +223,16 @@ namespace KTfwd
                 const typename gcont::value_type::mutation_container &m,
                 const mcont &mutations, const bool neutrality)
         {
+            if (!std::is_sorted(
+                    std::begin(m), std::end(m),
+                    [&mutations](const typename gcont::value_type::index_t a,
+                                 const typename gcont::value_type::index_t b) {
+                        return mutations[a].pos < mutations[b].pos;
+                    }))
+                {
+                    throw std::invalid_argument(
+                        "gamete contains unsorted keys");
+                }
             for (const auto &k : m)
                 {
                     mcounts.resize(mutations.size(), 0);
