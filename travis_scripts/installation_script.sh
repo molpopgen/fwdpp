@@ -19,7 +19,7 @@ then
     hash -r
     conda config --set always_yes yes --set changeps1 no
     conda update -q conda
-    Useful for debugging any issues with conda
+    # Useful for debugging any issues with conda
     conda info -a
     conda install gcc zlib boost
     conda install -c asmeurer gsl
