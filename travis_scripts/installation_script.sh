@@ -21,8 +21,7 @@ then
     conda update -q conda
     # Useful for debugging any issues with conda
     conda info -a
-    conda install gcc zlib boost
-    conda install -c asmeurer gsl
+    conda install gcc zlib boost gsl
     conda install -c bioconda libsequence
 else
     sudo apt-get update -qq
