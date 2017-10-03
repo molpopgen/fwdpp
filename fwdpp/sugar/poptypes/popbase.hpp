@@ -179,7 +179,7 @@ namespace KTfwd
 
             template <typename gametes_input, typename mutations_input>
             explicit popbase(
-                gametes_input &&g, mutations_input &m,
+                gametes_input &&g, mutations_input &&m,
                 typename gamete_t::mutation_container::size_type reserve_size)
                 : mutations(std::forward<mutations_input>(m)), mcounts{},
                   gametes(std::forward<gametes_input>(g)), neutral{},
