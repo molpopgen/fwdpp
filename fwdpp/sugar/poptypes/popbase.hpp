@@ -268,8 +268,14 @@ namespace KTfwd
                 }
             for (const auto &g : gametes)
                 {
-                    check_mutation_keys(g.mutations, mutations, true);
-                    check_mutation_keys(g.smutations, mutations, false);
+                    if (g.n)
+                        {
+                            //Fixed in 0.5.8: no need to check this for 
+                            //extinct gametes.
+                            check_mutation_keys(g.mutations, mutations, true);
+                            check_mutation_keys(g.smutations, mutations,
+                                                false);
+                        }
                 }
             fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         }
