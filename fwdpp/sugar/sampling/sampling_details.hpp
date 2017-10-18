@@ -174,7 +174,7 @@ namespace KTfwd
         const std::vector<std::pair<double, double>> &locus_boundaries)
     {
         auto temp = fwdpp_internal::ms_sample_separate_mlocus(
-            p.mutations, p.gamtes, p.diploids, individuals,
+            p.mutations, p.gametes, p.diploids, individuals,
             2 * individuals.size(), removeFixed);
         if (!removeFixed && temp.size() != locus_boundaries.size())
             {
@@ -189,8 +189,12 @@ namespace KTfwd
                 std::move(i.second.begin(), i.second.end(),
                           std::back_inserter(rv[j]));
             }
-        finish_sample(rv, p.fixations, 2 * individuals.size(), removeFixed,
-                      sugar::treat_neutral::ALL);
+        for(std::size_t i = 0 ; i < locus_boundaries.size() ; ++i)
+            {
+                finish_sample(rv.at(i), p.fixations, 2 * individuals.size(),
+                              removeFixed, sugar::treat_neutral::ALL,
+                              locus_boundaries.at(i));
+            }
         return rv;
     }
 }

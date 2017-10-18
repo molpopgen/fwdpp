@@ -210,7 +210,7 @@ namespace KTfwd
                     "locus boundaries required when adding fixations");
             }
         if (individuals.empty())
-            return sample_t();
+            return std::vector<sample_t>();
         if (std::find_if(
                 individuals.begin(), individuals.end(),
                 [&p](const unsigned &u) { return u >= p.diploids.size(); })
