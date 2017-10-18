@@ -93,13 +93,6 @@ namespace KTfwd
                                         0, 0))),
                   locus_boundaries(locus_boundaries_)
             {
-                if (locus_boundaries.empty())
-                    {
-                        for (uint_t i = 0; i < __nloci; ++i)
-                            {
-                                this->locus_boundaries.emplace_back(i, i + 1);
-                            }
-                    }
             }
 
             template <typename diploids_input, typename gametes_input,

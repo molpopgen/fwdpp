@@ -3,9 +3,11 @@
   \ingroup unit
   \brief Testing KTfwd::sample and KTfwd::sample_separate
 */
+
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
+#include <testsuite/util/quick_evolve_sugar.hpp>
 #include <fwdpp/sugar/sampling.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/debug.hpp>
@@ -236,6 +238,21 @@ BOOST_AUTO_TEST_CASE(multilocus_test_sep_empty)
             BOOST_REQUIRE(i.first.empty() == true);
             BOOST_REQUIRE(i.second.empty() == true);
         }
+}
+
+BOOST_AUTO_TEST_CASE(multilocus_test_sampling)
+{
+    simulate_mlocuspop(pop, rng, mutmodels, recmodels, multilocus_additive(),
+                       mu, rbw, generation);
+    auto s = KTfwd::sample_separate(rng.get(), pop, 20, true);
+    s = KTfwd::sample_separate(rng.get(), pop, 20, false);
+    auto s2 = KTfwd::sample(rng.get(), pop, 20, true);
+    s2 = KTfwd::sample(rng.get(), pop, 20, false);
+    pop.locus_boundaries.clear();
+    BOOST_REQUIRE_THROW(s = KTfwd::sample_separate(rng.get(), pop, 20, false),
+                        std::runtime_error);
+    BOOST_REQUIRE_THROW(s2 = KTfwd::sample(rng.get(), pop, 20, false),
+                        std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(multilocus_test_empty)
