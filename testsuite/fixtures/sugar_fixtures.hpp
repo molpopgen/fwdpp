@@ -79,7 +79,7 @@ class multiloc_popgenmut_fixture
 {
   private:
     std::vector<KTfwd::extensions::discrete_mut_model>
-    fill_vdmm()
+    fill_vdmm(std::vector<std::pair<double,double>> & locus_boundaries)
     {
         double length = 10.;
         // create a vector of extensions::discrete_mut_model
@@ -87,6 +87,7 @@ class multiloc_popgenmut_fixture
         for (unsigned i = 0; i < 4; ++i)
             {
                 double begin = static_cast<double>(i) * length;
+                locus_boundaries.push_back(std::make_pair(begin,begin+length));
                 KTfwd::extensions::discrete_mut_model dmm(
                     { begin }, { begin + length }, { 1. }, {}, {}, {}, {});
                 vdmm_.emplace_back(std::move(dmm));
@@ -219,7 +220,7 @@ class multiloc_popgenmut_fixture
                                 4., std::placeholders::_1,
                                 std::placeholders::_2,
                                 std::placeholders::_3) }),
-          vdmm(this->fill_vdmm()),
+          vdmm(this->fill_vdmm(pop.locus_boundaries)),
           vdrm(this->fill_vdrm())
     {
     }
