@@ -126,7 +126,7 @@ namespace KTfwd
         for (std::size_t i = 0; i < sample.size(); ++i)
             {
                 finish_sample(sample[i], fixations, nsam, removeFixed,
-                              sugar::treat_neutral::ALL, locus_boundaries[i]);
+                              sugar::treat_neutral::ALL, locus_boundaries.at(i));
             }
     }
 
@@ -142,10 +142,10 @@ namespace KTfwd
             {
                 finish_sample(sample[i].first, fixations, nsam, removeFixed,
                               sugar::treat_neutral::NEUTRAL,
-                              locus_boundaries[i]);
+                              locus_boundaries.at(i));
                 finish_sample(sample[i].second, fixations, nsam, removeFixed,
                               sugar::treat_neutral::SELECTED,
-                              locus_boundaries[i]);
+                              locus_boundaries.at(i));
             }
     }
 
