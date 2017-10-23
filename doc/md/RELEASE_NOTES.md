@@ -4,6 +4,21 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.5.8
+
+* Sampling routines in fwdpp/sugar/sampling.hpp now guard against the possibility of having fixations repeated in
+  samples. For example, this change will affect simulations where selected fixations are retained because they affect trait values. [PR71](https://github.com/molpopgen/fwdpp/pull/71) 
+* Issue [PR69](https://github.com/molpopgen/fwdpp/issues/69) [PR70](https://github.com/molpopgen/fwdpp/pull/70) 
+* Fixed template errors when sampling from multilocus populations using functions in fwdpp/sugar/sampling.hpp.  These
+  errors resulted in failure to compile and thus did not affect anyone's results.  [PR70](https://github.com/molpopgen/fwdpp/pull/70) 
+
+In fwdpp 0.5.7, [PR56](https://github.com/molpopgen/fwdpp/pull/56) had a few issues resolved in this release:
+
+* Do not require mutation keys to be sorted by position in extinct gametes. [PR66](https://github.com/molpopgen/fwdpp/pull/66)  
+* Fixed an error in a "perfect forwarding" constructor introduced in 0.5.7. [PR65](https://github.com/molpopgen/fwdpp/pull/65) 
+* When creating populations based on user data, 0.5.7 failed to enforce
+  proper sorting of mutation keys in gametes.  This issue was fixed via [PR64](https://github.com/molpopgen/fwdpp/pull/64).
+
 ## 0.5.7
 
 * License change from GPL2 to GPL3
