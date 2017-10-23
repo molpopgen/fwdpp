@@ -84,7 +84,13 @@ namespace KTfwd
                   [](const sample_site_t &a, const sample_site_t &b) noexcept {
                       return a.first < b.first;
                   });
+        if (!removeFixed)
+            {
+                sample.erase(std::unique(sample.begin(), sample.end()),
+                             sample.end());
+            }
     }
+
     template <typename vec_mutation_t>
     void
     finish_sample(sample_t &sample, const vec_mutation_t &fixations,
@@ -100,6 +106,11 @@ namespace KTfwd
                   [](const sample_site_t &a, const sample_site_t &b) noexcept {
                       return a.first < b.first;
                   });
+        if (!removeFixed)
+            {
+                sample.erase(std::unique(sample.begin(), sample.end()),
+                             sample.end());
+            }
     }
 
     template <typename vec_mutation_t>
@@ -126,7 +137,8 @@ namespace KTfwd
         for (std::size_t i = 0; i < sample.size(); ++i)
             {
                 finish_sample(sample[i], fixations, nsam, removeFixed,
-                              sugar::treat_neutral::ALL, locus_boundaries.at(i));
+                              sugar::treat_neutral::ALL,
+                              locus_boundaries.at(i));
             }
     }
 
@@ -189,7 +201,7 @@ namespace KTfwd
                 std::move(i.second.begin(), i.second.end(),
                           std::back_inserter(rv[j]));
             }
-        for(std::size_t i = 0 ; i < locus_boundaries.size() ; ++i)
+        for (std::size_t i = 0; i < locus_boundaries.size(); ++i)
             {
                 finish_sample(rv.at(i), p.fixations, 2 * individuals.size(),
                               removeFixed, sugar::treat_neutral::ALL,
