@@ -37,6 +37,9 @@
   more naturally.  This is in response to #49 on github.  This change
   does not break API compatibility.  The default is still to calculate
   "fitness".
+ 
+  KRT November 2 2017:
+  1. Simplified internals of KTfwd::site_dependent_genetic_value.
 */
 
 /*!
