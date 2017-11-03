@@ -183,10 +183,10 @@ namespace KTfwd
                         fpol_het(w, mutations[*first1]);
                     return w;
                 }
-            for (; first1 != last1; ++first1)
+            for (; first1 < last1; ++first1)
                 {
                     for (;
-                         first2 != last2 && *first1 != *first2
+                         first2 < last2 && *first1 != *first2
                          && !(mutations[*first2].pos > mutations[*first1].pos);
                          ++first2)
                         // All mutations in this range are Aa
@@ -195,22 +195,15 @@ namespace KTfwd
                                    < mutations[*first1].pos);
                             fpol_het(w, mutations[*first2]);
                         }
-                    if (first2 < last2 && *first1 == *first2) // mutation with
-                        // index first1
-                        // is homozygous
-                        {
-                            assert(mutations[*first2].pos
-                                   == mutations[*first1].pos);
-                            fpol_hom(w, mutations[*first1]);
-                            ++first2; // increment so that we don't re-process
-                            // this site as a het next time 'round
-                        }
-                    else // mutation first1 is heterozygous
+                    if (first2 == last2 || *first1 != *first2)
                         {
                             fpol_het(w, mutations[*first1]);
+                            continue;
                         }
+                    fpol_hom(w, mutations[*first1]);
+                    ++first2; // increment so that we don't re-process
                 }
-            for (; first2 != last2; ++first2)
+            for (; first2 < last2; ++first2)
                 {
                     fpol_het(w, mutations[*first2]);
                 }
