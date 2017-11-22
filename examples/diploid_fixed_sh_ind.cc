@@ -18,7 +18,7 @@
 // the type of mutation
 using mtype = KTfwd::mutation;
 #include <common_ind.hpp>
-
+#include <gsl/gsl_randist.h>
 using namespace KTfwd;
 
 int
@@ -76,7 +76,7 @@ main(int argc, char **argv)
                                   std::placeholders::_2, r.get(),
                                   std::ref(pop.mut_lookup), mu_neutral, mu_del,
                                   [&r]() { return gsl_rng_uniform(r.get()); },
-                                  [&s]() { return s; }, [&h]() { return h; }),
+                                  [&r,N]() { return gsl_ran_gamma(r.get(),1.,-5.0)/static_cast<double>(2*N); }, [&h]() { return h; }),
                         // The function to generation recombination positions:
                         std::bind(KTfwd::poisson_xover(), r.get(), littler, 0.,
                                   1., std::placeholders::_1,
@@ -84,14 +84,13 @@ main(int argc, char **argv)
                                   std::placeholders::_3),
                         std::bind(KTfwd::multiplicative_diploid(),
                                   std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3, 2.),
+                                  std::placeholders::_3, 1.),
                         pop.neutral, pop.selected);
                     KTfwd::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
                     assert(KTfwd::check_sum(pop.gametes, 2 * N));
                 }
-
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
             std::pair<std::vector<std::pair<double, std::string>>,

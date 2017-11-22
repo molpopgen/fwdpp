@@ -143,6 +143,12 @@ main(int argc, char **argv)
 
             // Write the sample date a to libsequence's Sequence::SimData and
             // print to screen
+			unsigned nextant=0;
+			for(auto && m : pop.mcounts)
+			{
+				if(m)++nextant;
+			}
+			std::cout << nextant << '\n';
 #ifdef HAVE_LIBSEQUENCE
             Sequence::SimData sdata;
             if (!mslike.empty())

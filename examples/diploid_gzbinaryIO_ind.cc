@@ -146,7 +146,7 @@ main(int argc, char **argv)
    */
     std::ifstream index_in(indexfile);
     unsigned long long rec_offset = 0, offset_i;
-    unsigned rid;
+    unsigned rid = std::numeric_limits<unsigned>::max();
     while (!index_in.eof())
         {
             index_in >> rid >> offset_i >> std::ws;
