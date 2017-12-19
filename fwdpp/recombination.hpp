@@ -15,24 +15,31 @@ namespace KTfwd
       are uniformly-distributed between \a minpos and \a maxpos
      */
     {
-        template <typename gamete_type, typename mcont_t>
-        std::vector<double>
-        operator()(const gsl_rng *r, const double littler, const double minpos,
-                   const double maxpos, const gamete_type &,
-                   const gamete_type &, const mcont_t &) const
+        const gsl_rng *r;
+        const double recrate, minpos, maxpos;
+
+        explicit poisson_xover(const gsl_rng *r_, const double recrate_,
+                               const double minpos_, const double maxpos_)
+            : r{ r_ }, recrate{ recrate_ }, minpos{ minpos_ },
+              maxpos{ maxpos_ }
         /*!
           \param r A gsl_rng
-          \param littler The recombination rate (per diploid, per region)
+          \param littler The recombination rate (per diploid_, per region)
           \param minpos The minimum recombination position allowed
           \param maxpos The maximum recombination position allowed
-
-          The remaining arguments are unnnamed and are API placeholders
-          for policies that need to know something about
           the gametes & mutations involve in an x-over.
          */
         {
+        }
+
+        poisson_xover(const poisson_xover &) = default;
+        poisson_xover(poisson_xover &&) = default;
+
+        std::vector<double>
+        operator()() const
+        {
             unsigned nbreaks
-                = (littler > 0) ? gsl_ran_poisson(r, littler) : 0u;
+                = (recrate > 0) ? gsl_ran_poisson(r, recrate) : 0u;
             if (!nbreaks)
                 return {};
 
@@ -48,9 +55,7 @@ namespace KTfwd
             return pos;
         }
 
-        template <typename gamete_t, typename mcont_t>
-        static std::function<std::vector<double>(
-            const gamete_t &, const gamete_t &, const mcont_t &)>
+        static std::function<std::vector<double>()>
         bind(const gsl_rng *r, const double recrate, const double minpos,
              const double maxpos)
         /*!
@@ -58,12 +63,10 @@ namespace KTfwd
          * of a recombination policy.
          */
         {
-            return [ p = poisson_xover(), r, recrate, minpos,
-                     maxpos ](const gamete_t &g1, const gamete_t &g2,
-                              const mcont_t &mutations)
+            return [p = poisson_xover(r, recrate, minpos, maxpos)]()
                 ->std::vector<double>
             {
-                return p(r, recrate, minpos, maxpos, g1, g2, mutations);
+                return p();
             };
         }
     };

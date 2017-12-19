@@ -9,6 +9,7 @@
   4.  Outputting a sample in "ms" format
 */
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
@@ -75,9 +76,8 @@ main(int argc, char **argv)
             unsigned generation;
             double wbar;
 
-            auto rec = KTfwd::poisson_xover::bind<singlepop_t::gamete_t,
-                                                  singlepop_t::mcont_t>(
-                r.get(), littler, 0., 1.);
+            auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
+
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
