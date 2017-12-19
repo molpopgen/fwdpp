@@ -47,6 +47,25 @@ namespace KTfwd
             pos.emplace_back(std::numeric_limits<double>::max());
             return pos;
         }
+
+        template <typename gamete_t, typename mcont_t>
+        static std::function<std::vector<double>(
+            const gamete_t &, const gamete_t &, const mcont_t &)>
+        bind(const gsl_rng *r, const double recrate, const double minpos,
+             const double maxpos)
+        /*!
+         * Generate a callable function that satisfies concept
+         * of a recombination policy.
+         */
+        {
+            return [ p = poisson_xover(), r, recrate, minpos,
+                     maxpos ](const gamete_t &g1, const gamete_t &g2,
+                              const mcont_t &mutations)
+                ->std::vector<double>
+            {
+                return p(r, recrate, minpos, maxpos, g1, g2, mutations);
+            };
+        }
     };
 
     /*!
@@ -68,7 +87,7 @@ namespace KTfwd
       \return A pair.  The first element is the index of the recombinant
       gamete.  The second element is the number of breakpoints
       where recombination occurred.  Typically, the latter is not needed.
-      
+
       \deprecated
       Deprecated in 0.5.7.
     */
@@ -79,7 +98,8 @@ namespace KTfwd
                   typename gcont_t::value_type::mutation_container &neutral,
                   typename gcont_t::value_type::mutation_container &selected,
                   const recpol_t &rec_pol, const std::size_t g1,
-                  const std::size_t g2, const mcont_t &mutations) __attribute__((deprecated));
+                  const std::size_t g2, const mcont_t &mutations)
+        __attribute__((deprecated));
 
     /*!
       Overload for fixed xover positions.
@@ -126,7 +146,8 @@ namespace KTfwd
         const std::size_t g1, const std::size_t g2,
         queue_t &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected) __attribute__((deprecated));
+        typename gcont_t::value_type::mutation_container &selected)
+        __attribute__((deprecated));
 }
 #endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>
