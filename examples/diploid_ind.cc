@@ -36,9 +36,9 @@ main(int argc, char **argv)
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
                                                  // mutation rate is per
                                                  // REGION, not SITE!!
-    const double rho = atof(argv[argument++]); // 4*n*recombination rate.
-                                               // Note: recombination rate is
-                                               // per REGION, not SITE!!
+    const double rho = atof(argv[argument++]);   // 4*n*recombination rate.
+                                                 // Note: recombination rate is
+                                                 // per REGION, not SITE!!
     const unsigned ngens = unsigned(
         atoi(argv[argument++])); // Number of generations to simulate
     const unsigned samplesize1 = unsigned(
@@ -141,14 +141,8 @@ main(int argc, char **argv)
                 = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
                                    pop.diploids, samplesize1, true);
 
-            // Write the sample date a to libsequence's Sequence::SimData and
-            // print to screen
-			unsigned nextant=0;
-			for(auto && m : pop.mcounts)
-			{
-				if(m)++nextant;
-			}
-			std::cout << nextant << '\n';
+// Write the sample date a to libsequence's Sequence::SimData and
+// print to screen
 #ifdef HAVE_LIBSEQUENCE
             Sequence::SimData sdata;
             if (!mslike.empty())
