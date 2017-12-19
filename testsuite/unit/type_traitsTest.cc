@@ -113,12 +113,9 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
 
 BOOST_AUTO_TEST_CASE(is_recmodel_test)
 {
-    auto rm = std::bind(KTfwd::poisson_xover(), r, 1e-2, 0., 1.,
-                        std::placeholders::_1, std::placeholders::_2,
-                        std::placeholders::_3);
-    // auto v =
-    // std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<singlepop_t::gcont_t,singlepop_t::mcont_t>
-    // >::value;
+
+    KTfwd::poisson_xover rm(r,1e-3,0.,1.);
+
     auto v = std::is_convertible<decltype(rm),
                                  KTfwd::traits::recmodel_t<gcont_t,
                                                            mcont_t>>::value;
