@@ -66,7 +66,7 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r.get());
+    auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -75,8 +75,6 @@ main(int argc, char **argv)
                 size_t(std::ceil(std::log(2 * N) * theta + 0.667 * theta)));
             unsigned generation;
             double wbar;
-
-            auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
 
             for (generation = 0; generation < ngens; ++generation)
                 {
