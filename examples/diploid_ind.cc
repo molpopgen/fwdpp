@@ -75,6 +75,9 @@ main(int argc, char **argv)
             unsigned generation;
             double wbar;
 
+            auto rec = KTfwd::poisson_xover::bind<singlepop_t::gamete_t,
+                                                  singlepop_t::mcont_t>(
+                r.get(), littler, 0., 1.);
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
@@ -98,10 +101,7 @@ main(int argc, char **argv)
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   []() { return 0.; }, []() { return 0.; }),
                         // The function to generation recombination positions:
-                        std::bind(KTfwd::poisson_xover(), r.get(), littler, 0.,
-                                  1., std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  std::placeholders::_3),
+                        rec,
                         /*
                           Fitness is multiplicative over sites.
 
