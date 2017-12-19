@@ -24,7 +24,7 @@ namespace KTfwd
     template <typename recombination_policy, typename... args>
     inline typename std::result_of<recombination_policy()>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  args &&... a)
+                                  args &&... )
     {
         return rec_pol();
     }
