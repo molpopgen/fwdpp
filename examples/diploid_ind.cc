@@ -66,7 +66,7 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
+    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {

@@ -97,17 +97,10 @@ main(int argc, char **argv)
             unsigned generation = 0;
             double wbar;
 
-            std::vector<std::function<std::vector<double>(
-                const multiloc_t::gamete_t &, const multiloc_t::gamete_t &,
-                const multiloc_t::mcont_t &)>>
-                recpols{
-                    std::bind(KTfwd::poisson_xover(), r.get(), littler, 0., 1.,
-                              std::placeholders::_1, std::placeholders::_2,
-                              std::placeholders::_3),
-                    std::bind(KTfwd::poisson_xover(), r.get(), littler, 1., 2.,
-                              std::placeholders::_1, std::placeholders::_2,
-                              std::placeholders::_3)
-                };
+            std::vector<std::function<std::vector<double>()>> recpols{
+                KTfwd::poisson_xover(r.get(), littler, 0., 1.),
+                KTfwd::poisson_xover(r.get(), littler, 1., 2.)
+            };
 
             std::vector<std::function<std::size_t(std::queue<std::size_t> &,
                                                   multiloc_t::mcont_t &)>>
@@ -127,7 +120,8 @@ main(int argc, char **argv)
                 };
 
             std::vector<std::function<unsigned(void)>> interlocus_rec{
-                std::bind(gsl_ran_binomial, r.get(), rbw, 1)};
+                std::bind(gsl_ran_binomial, r.get(), rbw, 1)
+            };
 
             for (generation = 0; generation < ngens; ++generation)
                 {

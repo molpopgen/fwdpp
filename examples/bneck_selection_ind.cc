@@ -77,7 +77,7 @@ main(int argc, char **argv)
     GSLrng r(seed);
 
     // recombination map is uniform[0,1)
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r.get());
+    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
 
     std::vector<unsigned> N_over_time(ngens, N + 1);
     N_over_time.push_back(N2);
@@ -113,10 +113,7 @@ main(int argc, char **argv)
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   [&s]() { return s; }, [&h]() { return h; }),
                         // The function to generation recombination positions:
-                        std::bind(KTfwd::poisson_xover(), r.get(), littler, 0.,
-                                  1., std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  std::placeholders::_3),
+                        rec,
                         std::bind(KTfwd::multiplicative_diploid(),
                                   std::placeholders::_1, std::placeholders::_2,
                                   std::placeholders::_3, 2.),
