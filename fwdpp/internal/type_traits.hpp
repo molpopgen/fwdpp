@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <functional>
 #include <utility>
+#include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/internal/void_t.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
@@ -34,11 +35,14 @@ namespace KTfwd
                 /* If T does not have member type name first_type and
                  * second_type, this will fail to compile, and the fallback
                  * template type will be used.
-				 *
-				 * If successful, this type evaluates to std::true_type
-				 * if and only if first_type and second_type are the same
-				 * integer types, thus passing the minimal API requirement
-				 * for a diploid.
+                                 *
+                                 * If successful, this type evaluates to
+                 * std::true_type
+                                 * if and only if first_type and second_type
+                 * are the same
+                                 * integer types, thus passing the minimal API
+                 * requirement
+                                 * for a diploid.
                  */
                 : std::integral_constant<bool,
                                          std::is_integral<
@@ -212,24 +216,29 @@ namespace KTfwd
             {
             };
 
-            template <typename recmodel_t, typename gamete_t, typename mcont_t,
-                      typename result_t = typename std::result_of<recmodel_t(
-                          const gamete_t &, const gamete_t &,
-                          const mcont_t &)>::type>
-            using is_rec_model_SFINAE_base = std::
-                integral_constant<bool,
-                                  check_mmodel_types<gamete_t,
-                                                     typename mcont_t::
-                                                         value_type>::value
-                                      && std::is_same<result_t,
-                                                      std::vector<double>>::
-                                             value>;
+            template <typename recmodel_t, typename gamete_t, typename mcont_t>
+            struct dispatchable_rec_model
+                : std::is_same<
+                      typename std::result_of<decltype (
+                          &dispatch_recombination_policy<const recmodel_t &,
+                                                         const gamete_t &,
+                                                         const gamete_t &,
+                                                         const mcont_t &>)(
+                          const recmodel_t &, const gamete_t &,
+                          const gamete_t &, const mcont_t &)>::type,
+                      std::vector<double>>
+            {
+            };
 
             template <typename recmodel_t, typename gamete_t, typename mcont_t>
             struct is_rec_model<recmodel_t, gamete_t, mcont_t,
                                 typename void_t<
                                     typename mcont_t::value_type>::type>
-                : is_rec_model_SFINAE_base<recmodel_t, gamete_t, mcont_t>
+                : std::
+                      integral_constant<bool,
+                                        dispatchable_rec_model<recmodel_t,
+                                                               gamete_t,
+                                                               mcont_t>::value>
             {
             };
 
