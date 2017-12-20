@@ -162,8 +162,8 @@ namespace KTfwd
 		 */
         // clang-format on
         template <typename gcont_t_or_gamete_t, typename mcont_t>
-        using recmodel_t =
-            typename traits::internal::recmodel_t<gcont_t_or_gamete_t,
+        using rich_recmodel_t =
+            typename traits::internal::rich_recmodel_t<gcont_t_or_gamete_t,
                                                   mcont_t>::type;
 
         // clang-format off

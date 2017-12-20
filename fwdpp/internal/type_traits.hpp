@@ -182,7 +182,7 @@ namespace KTfwd
 
             template <typename gcont_t_or_gamete_t, typename mcont_t,
                       typename = void>
-            struct recmodel_t
+            struct rich_recmodel_t
             {
                 using type = typename std::
                     conditional<is_gamete<gcont_t_or_gamete_t>::value,
@@ -194,7 +194,7 @@ namespace KTfwd
             };
 
             template <typename gcont_t_or_gamete_t, typename mcont_t>
-            struct recmodel_t<gcont_t_or_gamete_t, mcont_t,
+            struct rich_recmodel_t<gcont_t_or_gamete_t, mcont_t,
                               typename void_t<typename gcont_t_or_gamete_t::
                                                   value_type>::type>
             {

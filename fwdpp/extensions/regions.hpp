@@ -358,7 +358,7 @@ namespace KTfwd
           See unit test extensions_regionsTest.cc for example usage.
          */
         template <typename gcont_t, typename mcont_t>
-        inline traits::recmodel_t<gcont_t,mcont_t>
+        inline traits::rich_recmodel_t<gcont_t,mcont_t>
         bind_drm(const discrete_rec_model &drm, const gcont_t &,
                  const mcont_t &, const gsl_rng *r, const double recrate)
         {
@@ -372,7 +372,7 @@ namespace KTfwd
          *  discrete_rec_model::operator()
          */
         template <typename gcont_t, typename mcont_t>
-        inline std::vector<traits::recmodel_t<gcont_t,mcont_t>>
+        inline std::vector<traits::rich_recmodel_t<gcont_t,mcont_t>>
         bind_vec_drm(const std::vector<discrete_rec_model> &vdrm,
                      const gcont_t &gametes, const mcont_t &mutations,
                      const gsl_rng *r, const std::vector<double> &recrates)
