@@ -177,8 +177,9 @@ namespace KTfwd
                       typename mcont_t>
             inline result_type
             operator()(queue_t &recycling_bin, mcont_t &mutations,
-                     const gsl_rng *r, const double nmu, const double smu,
-                     const unsigned *generation, lookup_table_t &lookup) const
+                       const gsl_rng *r, const double nmu, const double smu,
+                       const unsigned *generation,
+                       lookup_table_t &lookup) const
             {
                 assert(nmu + smu > 0.);
                 bool is_neutral
@@ -215,15 +216,16 @@ namespace KTfwd
           See unit test extensions.cc for an example of use.
         */
         template <typename mcont_t, typename lookup_t, class... Args>
-        inline traits::mmodel_t<mcont_t> 
+        inline traits::mmodel_t<mcont_t>
         bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t &mut_lookup,
                  Args &&... args)
         {
-            return std::bind(
-                &discrete_mut_model::operator()<traits::recycling_bin_t<mcont_t>,
-                                              lookup_t, mcont_t>,
-                &dm, std::placeholders::_1, std::placeholders::_2,
-                std::forward<Args>(args)..., std::ref(mut_lookup));
+            return std::bind(&discrete_mut_model::
+                             operator()<traits::recycling_bin_t<mcont_t>,
+                                        lookup_t, mcont_t>,
+                             &dm, std::placeholders::_1, std::placeholders::_2,
+                             std::forward<Args>(args)...,
+                             std::ref(mut_lookup));
         }
 
         /*! Return a vector of callables bount
@@ -261,11 +263,15 @@ namespace KTfwd
 
         struct discrete_rec_model_data
         {
+            const gsl_rng *r;
+            const double recrate;
             std::vector<double> beg, end, weight;
-            discrete_rec_model_data(const std::vector<double> &&b,
+            discrete_rec_model_data(const gsl_rng *r_, const double recrate_,
+                                    const std::vector<double> &&b,
                                     const std::vector<double> &&e,
                                     const std::vector<double> &&w)
-                : beg(std::move(b)), end(std::move(e)), weight(std::move(w))
+                : r{ r_ }, recrate{ recrate_ }, beg(std::move(b)),
+                  end(std::move(e)), weight(std::move(w))
             {
                 if (beg.size() != end.size() || beg.size() != weight.size())
                     {
@@ -300,11 +306,13 @@ namespace KTfwd
               \param __end Region ends
               \param __weight Region weights
             */
-            discrete_rec_model(const std::vector<double> __beg,
+            discrete_rec_model(const gsl_rng *r, const double recrate,
+                               const std::vector<double> __beg,
                                const std::vector<double> __end,
                                const std::vector<double> __weight)
                 : data(new discrete_rec_model_data(
-                      std::move(__beg), std::move(__end), std::move(__weight)))
+                      r, recrate, std::move(__beg), std::move(__end),
+                      std::move(__weight)))
             {
                 assign_weights();
             }
@@ -327,23 +335,21 @@ namespace KTfwd
               the
               assert macro.
             */
-            template <typename gamete_t, typename mcont_t>
             inline result_type
-            operator()(const gsl_rng *r, const double recrate,
-                       const gamete_t &, const gamete_t &,
-                       const mcont_t &) const
+            operator()() const
             {
-                assert(!(recrate == 0.
+                assert(!(data->recrate == 0.
                          && (data->beg.empty() || data->end.empty())));
-                auto nbreaks = gsl_ran_poisson(r, recrate);
+                auto nbreaks = gsl_ran_poisson(data->r, data->recrate);
                 if (!nbreaks)
                     return {};
 
                 result_type rv;
                 for (unsigned i = 0; i < nbreaks; ++i)
                     {
-                        size_t region = gsl_ran_discrete(r, lookup.get());
-                        rv.push_back(gsl_ran_flat(r, data->beg[region],
+                        size_t region
+                            = gsl_ran_discrete(data->r, lookup.get());
+                        rv.push_back(gsl_ran_flat(data->r, data->beg[region],
                                                   data->end[region]));
                     }
                 std::sort(rv.begin(), rv.end());
@@ -357,43 +363,30 @@ namespace KTfwd
 
           See unit test extensions_regionsTest.cc for example usage.
          */
-        template <typename gcont_t, typename mcont_t>
-        inline traits::rich_recmodel_t<gcont_t,mcont_t>
-        bind_drm(const discrete_rec_model &drm, const gcont_t &,
-                 const mcont_t &, const gsl_rng *r, const double recrate)
+        inline std::function<std::vector<double>()>
+        bind_drm(const discrete_rec_model &drm)
         {
-            return std::bind(
-                &discrete_rec_model::operator() < typename gcont_t::value_type,
-                mcont_t >, &drm, r, recrate, std::placeholders::_1,
-                std::placeholders::_2, std::placeholders::_3);
+            return [&drm]() { return drm(); };
         }
 
         /*! Returns a vector of function calls bound to
          *  discrete_rec_model::operator()
          */
         template <typename gcont_t, typename mcont_t>
-        inline std::vector<traits::rich_recmodel_t<gcont_t,mcont_t>>
-        bind_vec_drm(const std::vector<discrete_rec_model> &vdrm,
-                     const gcont_t &gametes, const mcont_t &mutations,
-                     const gsl_rng *r, const std::vector<double> &recrates)
+        inline std::vector<std::function<std::vector<double>()>>
+        bind_vec_drm(const std::vector<discrete_rec_model> &vdrm)
         {
-            if (vdrm.size() != recrates.size())
-                {
-                    throw std::invalid_argument("unequal container sizes");
-                }
-            std::vector<decltype(
-                bind_drm(vdrm[0], gametes, mutations, r, recrates[0]))>
-                rv;
-            static_assert(
-                traits::is_rec_model<typename decltype(rv)::value_type,
-                                     typename gcont_t::value_type,
-                                     mcont_t>::value,
-                "bound object must be a valid recombination model");
+            std::vector<std::function<std::vector<double>()>> rv;
+            //static_assert(
+            //    traits::is_rec_model<typename decltype(rv)::value_type,
+            //                         typename gcont_t::value_type,
+            //                         mcont_t>::value,
+            //    "bound object must be a valid recombination model");
             std::size_t i = 0;
             for (auto &&drm : vdrm)
                 {
                     rv.emplace_back(
-                        bind_drm(drm, gametes, mutations, r, recrates[i++]));
+                        bind_drm(drm));//, gametes, mutations, r, recrates[i++]));
                 }
             return rv;
         }
