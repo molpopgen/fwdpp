@@ -145,19 +145,18 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
     // create a set of bound callbacks.
     // We use the fixture's mu to imply that
     // mutation rate = recombination rate per region.
-    auto bound_recmodels = extensions::bind_vec_drm(vdrm);
 
-    // the mutation rates to neutra/selected variants
+    // the mutation rates to neutral/selected variants
     std::vector<double> neutral_mutrates(4, 1e-3), selected_mutrates(4, 0.);
     // create the bound callbacks
     auto bound_mutmodels = extensions::bind_vec_dmm(
-        vdmm, pop.mutations, pop.mut_lookup, rng.get(), neutral_mutrates,
-        selected_mutrates, &generation);
+       vdmm, pop.mutations, pop.mut_lookup, rng.get(), neutral_mutrates,
+       selected_mutrates, &generation);
     auto interlocus_rec = KTfwd::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
     double wbar = sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-        pop.N, &mu[0], bound_mutmodels, bound_recmodels, interlocus_rec,
+        pop.N, &mu[0], bound_mutmodels, vdrm, interlocus_rec,
         std::bind(multilocus_additive(), std::placeholders::_1,
                   std::placeholders::_2, std::placeholders::_3),
         pop.neutral, pop.selected);

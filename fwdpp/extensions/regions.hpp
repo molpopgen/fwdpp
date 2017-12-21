@@ -357,31 +357,6 @@ namespace KTfwd
                 return rv;
             }
         };
-
-        /*!
-          Returns a function call bound to discrete_rec_model::operator().
-
-          See unit test extensions_regionsTest.cc for example usage.
-         */
-        inline std::function<std::vector<double>()>
-        bind_drm(const discrete_rec_model &drm)
-        {
-            return [&drm]() { return drm(); };
-        }
-
-        /*! Returns a vector of function calls bound to
-         *  discrete_rec_model::operator()
-         */
-        inline std::vector<std::function<std::vector<double>()>>
-        bind_vec_drm(const std::vector<discrete_rec_model> &vdrm)
-        {
-            std::vector<std::function<std::vector<double>()>> rv;
-            for (auto &&drm : vdrm)
-                {
-                    rv.emplace_back(bind_drm(drm));
-                }
-            return rv;
-        }
     }
 }
 #endif

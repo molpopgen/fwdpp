@@ -97,27 +97,17 @@ BOOST_AUTO_TEST_CASE(discrete_rec_model_test_1)
                   || (x.back() == std::numeric_limits<double>::max()));
 }
 
-// test binding of extensions::discrete_rec_model::operator()
-BOOST_AUTO_TEST_CASE(discrete_rec_model_test_2)
-{
-    extensions::discrete_rec_model drm(rng.get(), 1e-3, { 0, 1 }, { 1, 2 },
-                                       { 1, 2 });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    auto bound = KTfwd::extensions::bind_drm(drm);
-    auto x = bound();
-    static_assert(std::is_same<decltype(x), std::vector<double>>::value,
-                  "extensions::dicrete_rec_model::operator() must return "
-                  "std::vector<double>");
-}
-
 BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
 {
     extensions::discrete_rec_model drm(rng.get(), 1e-3, { 0, 1 }, { 1, 2 },
                                        { 1, 1 });
-    auto bound = extensions::bind_drm(drm);
+    static_assert(std::is_convertible<extensions::discrete_rec_model,
+            std::function<std::vector<double>()>>::value,
+            "extensions::discrete_rec_model must be convertible to std::function");
+
     static_assert(
         KTfwd::traits::
-            is_rec_model<decltype(bound),
+            is_rec_model<decltype(drm),
                          singlepop_popgenmut_fixture::poptype::gamete_t,
                          singlepop_popgenmut_fixture::poptype::mcont_t>::value,
         "bound object must be valid recombination model");
