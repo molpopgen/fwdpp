@@ -97,6 +97,17 @@ BOOST_AUTO_TEST_CASE(discrete_rec_model_test_1)
                   || (x.back() == std::numeric_limits<double>::max()));
 }
 
+BOOST_AUTO_TEST_CASE(discrete_rec_model_pass_as_fxn)
+{
+    const auto f = [](const std::function<std::vector<double>()> & )
+    {
+    };
+
+    extensions::discrete_rec_model drm(rng.get(), 50., { 0, 1 }, { 1, 2 },
+                                       { 1, 2 });
+    f(drm);
+}
+
 BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
 {
     extensions::discrete_rec_model drm(rng.get(), 1e-3, { 0, 1 }, { 1, 2 },
