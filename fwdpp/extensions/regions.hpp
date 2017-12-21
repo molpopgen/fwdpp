@@ -372,21 +372,13 @@ namespace KTfwd
         /*! Returns a vector of function calls bound to
          *  discrete_rec_model::operator()
          */
-        template <typename gcont_t, typename mcont_t>
         inline std::vector<std::function<std::vector<double>()>>
         bind_vec_drm(const std::vector<discrete_rec_model> &vdrm)
         {
             std::vector<std::function<std::vector<double>()>> rv;
-            static_assert(
-                traits::is_rec_model<typename decltype(rv)::value_type,
-                                     typename gcont_t::value_type,
-                                     mcont_t>::value,
-                "bound object must be a valid recombination model");
-            std::size_t i = 0;
             for (auto &&drm : vdrm)
                 {
-                    rv.emplace_back(
-                        bind_drm(drm));//, gametes, mutations, r, recrates[i++]));
+                    rv.emplace_back(bind_drm(drm));
                 }
             return rv;
         }
