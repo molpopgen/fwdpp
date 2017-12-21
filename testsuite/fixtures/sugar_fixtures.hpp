@@ -111,7 +111,7 @@ class multiloc_popgenmut_fixture
      * per diploid, per generation.
      */
     std::vector<KTfwd::extensions::discrete_rec_model>
-    fill_vdrm()
+    fill_vdrm(const gsl_rng *r)
     {
         // set up a vector of extensions::discrete_rec_model
         // with different regions sizes and weights
@@ -121,7 +121,7 @@ class multiloc_popgenmut_fixture
             {
                 double begin = static_cast<double>(i) * length;
                 KTfwd::extensions::discrete_rec_model drm(
-                    { begin, begin + 3., begin + 7. },
+                    r, 1e-3, { begin, begin + 3., begin + 7. },
                     { begin + 3., begin + 7., begin + length },
                     { 1., 10., 1. });
                 vdrm_.emplace_back(std::move(drm));
@@ -211,7 +211,7 @@ class multiloc_popgenmut_fixture
                       KTfwd::poisson_xover(rng.get(), 0.005, 2., 3.),
                       KTfwd::poisson_xover(rng.get(), 0.005, 3., 4.) }),
           vdmm(this->fill_vdmm(pop.locus_boundaries)),
-          vdrm(this->fill_vdrm())
+          vdrm(this->fill_vdrm(rng.get()))
     {
     }
 };
