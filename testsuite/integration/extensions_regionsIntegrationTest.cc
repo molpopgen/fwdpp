@@ -145,8 +145,7 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
     // create a set of bound callbacks.
     // We use the fixture's mu to imply that
     // mutation rate = recombination rate per region.
-    auto bound_recmodels = extensions::bind_vec_drm(
-        vdrm, pop.gametes, pop.mutations, rng.get(), mu);
+    auto bound_recmodels = extensions::bind_vec_drm(vdrm);
 
     // the mutation rates to neutra/selected variants
     std::vector<double> neutral_mutrates(4, 1e-3), selected_mutrates(4, 0.);
