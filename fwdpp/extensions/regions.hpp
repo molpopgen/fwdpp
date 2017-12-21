@@ -377,11 +377,11 @@ namespace KTfwd
         bind_vec_drm(const std::vector<discrete_rec_model> &vdrm)
         {
             std::vector<std::function<std::vector<double>()>> rv;
-            //static_assert(
-            //    traits::is_rec_model<typename decltype(rv)::value_type,
-            //                         typename gcont_t::value_type,
-            //                         mcont_t>::value,
-            //    "bound object must be a valid recombination model");
+            static_assert(
+                traits::is_rec_model<typename decltype(rv)::value_type,
+                                     typename gcont_t::value_type,
+                                     mcont_t>::value,
+                "bound object must be a valid recombination model");
             std::size_t i = 0;
             for (auto &&drm : vdrm)
                 {
