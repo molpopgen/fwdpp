@@ -40,9 +40,7 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
                           std::ref(pop.mut_lookup), generation, 0.0025, 0.0025,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
-                std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
+                KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.),
                 std::bind(KTfwd::multiplicative_diploid(),
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
@@ -79,9 +77,7 @@ simulate_singlepop(singlepop_object_t &pop, const rng_type &rng,
                           std::ref(pop.mut_lookup), g, 0.0025, 0.0025,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
-                std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
+                KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.),
                 std::bind(KTfwd::multiplicative_diploid(),
                           std::placeholders::_1, std::placeholders::_2,
                           std::placeholders::_3, 2),
@@ -145,9 +141,7 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
             double wbar = KTfwd::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
-                interlocus_rec,
-                fitness,
-                pop.neutral, pop.selected);
+                interlocus_rec, fitness, pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
@@ -183,9 +177,7 @@ simulate_mlocuspop_experimental(
             double wbar = KTfwd::experimental::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
-                interlocus_rec,
-                fitness,
-                pop.neutral, pop.selected);
+                interlocus_rec, fitness, pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
@@ -222,10 +214,7 @@ simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
                           std::ref(pop.mut_lookup), generation, 0.005, 0.,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return 0.; }, []() { return 0.; }),
-                std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                fitness_funcs,
+                KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
                 std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
                 pop.neutral, pop.selected);
             for (auto wbar_i : wbar)

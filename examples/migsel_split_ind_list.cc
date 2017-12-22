@@ -53,7 +53,7 @@ migpop(const size_t &source_pop, gsl_rng *r, const double &mig_prob)
 SimData merge(const std::vector<std::pair<double, std::string>> &sample1,
               const std::vector<std::pair<double, std::string>> &sample2,
               const unsigned &nsam);
-#endif 
+#endif
 
 // fitness model details -- s will be treated as -s in population 2
 struct multiplicative_diploid_minus
@@ -123,6 +123,8 @@ main(int argc, char **argv)
                          + 0.667 * (theta_neut + theta_del))));
     std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r);
     unsigned generation = 0;
+    KTfwd::poisson_xover rec(r, littler, 0., 1.);
+
     for (unsigned i = 0; i < ngens; ++i, ++generation)
         {
             double wbar = KTfwd::sample_diploid(
@@ -139,12 +141,9 @@ main(int argc, char **argv)
                           [&r]() { return gsl_rng_uniform(r); },
                           [&s]() { return s; }, [&h]() { return h; }),
                 // The function to generation recombination positions:
-                std::bind(KTfwd::poisson_xover(), r, littler, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                std::bind(KTfwd::multiplicative_diploid(),
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3, 2.),
+                rec, std::bind(KTfwd::multiplicative_diploid(),
+                               std::placeholders::_1, std::placeholders::_2,
+                               std::placeholders::_3, 2.),
                 pop.neutral, pop.selected);
             // 4*N b/c it needs to be fixed in the metapopulation
             update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
@@ -176,9 +175,7 @@ main(int argc, char **argv)
                           mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r); },
                           [&s]() { return s; }, [&h]() { return h; }),
-                std::bind(KTfwd::poisson_xover(), r, littler, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
+                rec,
                 vbf, std::bind(migpop, std::placeholders::_1, r, m),
                 pop.neutral, pop.selected, &fs[0]);
             // 4*N b/c it needs to be fixed in the metapopulation

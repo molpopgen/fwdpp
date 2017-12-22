@@ -302,9 +302,8 @@ main(int argc, char **argv)
 
     double theta = 4. * (double(N)) * (mu_male + mu_female);
     GSLrng rng(seed);
-    std::function<double(void)> recmap
-        = std::bind(gsl_rng_uniform, rng.get()); // uniform crossover map
     const double mu_total = mu_neutral + mu_male + mu_female;
+    KTfwd::poisson_xover rec(rng.get(),recrate,0.,1.);
     sexSpecificRules rules;
     for (unsigned rep = 0; rep < nreps; ++rep)
         {
@@ -328,10 +327,7 @@ main(int argc, char **argv)
                                   std::placeholders::_1, std::placeholders::_2,
                                   rng.get(), std::ref(pop.mut_lookup),
                                   mu_total, mu_male, mu_female, sigma),
-                        std::bind(KTfwd::poisson_xover(), rng.get(), recrate,
-                                  0., 1., std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  std::placeholders::_3),
+                        rec,
                         std::bind(sex_specific_fitness, std::placeholders::_1,
                                   std::placeholders::_2, std::placeholders::_3,
                                   rng.get(), sigmaE),

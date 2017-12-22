@@ -158,14 +158,11 @@ main(int argc, char **argv)
             locus_ends.push_back(i + 1);
             locus_weights.push_back(rbw);
         }
-    KTfwd::extensions::discrete_rec_model recmap(locus_starts, locus_ends,
-                                                 locus_weights);
+    const double ttl_recrate
+        = double(K) * recrate_region + double(K - 1) * rbw;
+    KTfwd::extensions::discrete_rec_model recmap(
+        r.get(), ttl_recrate, locus_starts, locus_ends, locus_weights);
 
-    // Now, synthesize a function that binds to the operator() and recmap
-
-    const auto recpolicy = KTfwd::extensions::bind_drm(
-        recmap, pop.gametes, pop.mutations, r.get(),
-        double(K) * recrate_region + double(K - 1) * rbw);
     const auto bound_mmodels = KTfwd::extensions::bind_dmm(
         mmodels, pop.mutations, pop.mut_lookup, r.get(),
         double(K * mutrate_region), double(K * mutrate_del_region),
@@ -179,7 +176,7 @@ main(int argc, char **argv)
                 N, double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
                 // mmodels:
-                bound_mmodels, recpolicy,
+                bound_mmodels, recmap,
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);

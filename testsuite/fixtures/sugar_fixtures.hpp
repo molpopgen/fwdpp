@@ -24,7 +24,7 @@ struct singlepop_popgenmut_fixture
     rng_t rng;
     unsigned generation;
     singlepop_popgenmut_fixture(const unsigned seed = 0)
-        : pop(poptype(1000)), rng(rng_t(seed)),generation(0)
+        : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
 };
@@ -40,7 +40,7 @@ struct singlepop_popgenmut_custom_fixture
     rng_t rng;
     unsigned generation;
     singlepop_popgenmut_custom_fixture(const unsigned seed = 0)
-        : pop(poptype(1000)), rng(rng_t(seed)),generation(0)
+        : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
 };
@@ -55,7 +55,7 @@ struct metapop_popgenmut_fixture
     rng_t rng;
     unsigned generation;
     metapop_popgenmut_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)),generation(0)
+        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
     {
     }
 };
@@ -70,7 +70,7 @@ struct metapop_popgenmut_custom_fixture
     rng_t rng;
     unsigned generation;
     metapop_popgenmut_custom_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)),generation(0)
+        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
     {
     }
 };
@@ -79,7 +79,7 @@ class multiloc_popgenmut_fixture
 {
   private:
     std::vector<KTfwd::extensions::discrete_mut_model>
-    fill_vdmm(std::vector<std::pair<double,double>> & locus_boundaries)
+    fill_vdmm(std::vector<std::pair<double, double>> &locus_boundaries)
     {
         double length = 10.;
         // create a vector of extensions::discrete_mut_model
@@ -87,7 +87,8 @@ class multiloc_popgenmut_fixture
         for (unsigned i = 0; i < 4; ++i)
             {
                 double begin = static_cast<double>(i) * length;
-                locus_boundaries.push_back(std::make_pair(begin,begin+length));
+                locus_boundaries.push_back(
+                    std::make_pair(begin, begin + length));
                 KTfwd::extensions::discrete_mut_model dmm(
                     { begin }, { begin + length }, { 1. }, {}, {}, {}, {});
                 vdmm_.emplace_back(std::move(dmm));
@@ -110,7 +111,7 @@ class multiloc_popgenmut_fixture
      * per diploid, per generation.
      */
     std::vector<KTfwd::extensions::discrete_rec_model>
-    fill_vdrm()
+    fill_vdrm(const gsl_rng *r)
     {
         // set up a vector of extensions::discrete_rec_model
         // with different regions sizes and weights
@@ -120,7 +121,7 @@ class multiloc_popgenmut_fixture
             {
                 double begin = static_cast<double>(i) * length;
                 KTfwd::extensions::discrete_rec_model drm(
-                    { begin, begin + 3., begin + 7. },
+                    r, 1e-3, { begin, begin + 3., begin + 7. },
                     { begin + 3., begin + 7., begin + length },
                     { 1., 10., 1. });
                 vdrm_.emplace_back(std::move(drm));
@@ -133,9 +134,7 @@ class multiloc_popgenmut_fixture
     using rng_t = KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2>;
     using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
                                                poptype::mcont_t &)>;
-    using recmodel = std::function<std::vector<double>(
-        const poptype::gamete_t &, const poptype::gamete_t &,
-        const poptype::mcont_t &)>;
+    using recmodel = std::function<std::vector<double>()>;
     using mwriter = KTfwd::mutation_writer;
     using mreader = KTfwd::mutation_reader<KTfwd::popgenmut>;
     // Fitness function
@@ -207,21 +206,12 @@ class multiloc_popgenmut_fixture
                           0.0025,
                           [this]() { return gsl_ran_flat(rng.get(), 3., 4.); },
                           []() { return -0.01; }, []() { return 1.; }) }),
-          recmodels({ std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0.,
-                                1., std::placeholders::_1,
-                                std::placeholders::_2, std::placeholders::_3),
-                      std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 1.,
-                                2., std::placeholders::_1,
-                                std::placeholders::_2, std::placeholders::_3),
-                      std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 2.,
-                                3., std::placeholders::_1,
-                                std::placeholders::_2, std::placeholders::_3),
-                      std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 3.,
-                                4., std::placeholders::_1,
-                                std::placeholders::_2,
-                                std::placeholders::_3) }),
+          recmodels({ KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.),
+                      KTfwd::poisson_xover(rng.get(), 0.005, 1., 2.),
+                      KTfwd::poisson_xover(rng.get(), 0.005, 2., 3.),
+                      KTfwd::poisson_xover(rng.get(), 0.005, 3., 4.) }),
           vdmm(this->fill_vdmm(pop.locus_boundaries)),
-          vdrm(this->fill_vdrm())
+          vdrm(this->fill_vdrm(rng.get()))
     {
     }
 };

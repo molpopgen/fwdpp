@@ -84,12 +84,12 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_3)
 // check return type of extensions::discrete_rec_model
 BOOST_AUTO_TEST_CASE(discrete_rec_model_test_1)
 {
-    extensions::discrete_rec_model drm({ 0, 1 }, { 1, 2 }, { 1, 2 });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     // use really big recombination rate here to ensure that return value is
     // not empty
-    auto x
-        = drm(rng.get(), 10.0, pop.gametes[0], pop.gametes[0], pop.mutations);
+    extensions::discrete_rec_model drm(rng.get(), 50., { 0, 1 }, { 1, 2 },
+                                       { 1, 2 });
+    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    auto x = drm();
     static_assert(std::is_same<decltype(x), std::vector<double>>::value,
                   "extensions::dicrete_rec_model::operator() must return "
                   "std::vector<double>");
@@ -97,161 +97,51 @@ BOOST_AUTO_TEST_CASE(discrete_rec_model_test_1)
                   || (x.back() == std::numeric_limits<double>::max()));
 }
 
-// test binding of extensions::discrete_rec_model::operator()
-BOOST_AUTO_TEST_CASE(discrete_rec_model_test_2)
+BOOST_AUTO_TEST_CASE(discrete_rec_model_pass_as_fxn)
 {
-    extensions::discrete_rec_model drm({ 0, 1 }, { 1, 2 }, { 1, 2 });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    auto bound = std::bind(
-        &extensions::discrete_rec_model::
-        operator()<poptype::gamete_t, decltype(pop.mutations)>,
-        &drm, rng.get(), 0.001, pop.gametes[0], pop.gametes[0], pop.mutations);
-    auto x = bound();
-    static_assert(std::is_same<decltype(x), std::vector<double>>::value,
-                  "extensions::dicrete_rec_model::operator() must return "
-                  "std::vector<double>");
-}
+    const auto f = [](const std::function<std::vector<double>()> & )
+    {
+    };
 
-// test binding of extensions::discrete_rec_model::operator()
-BOOST_AUTO_TEST_CASE(discrete_rec_model_test_3)
-{
-    extensions::discrete_rec_model drm({ 0, 1 }, { 1, 2 }, { 1, 2 });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-    auto bound
-        = std::bind(&extensions::discrete_rec_model::
-                    operator()<poptype::gamete_t, decltype(pop.mutations)>,
-                    &drm, rng.get(), 0.001, std::placeholders::_1,
-                    std::placeholders::_2, std::placeholders::_3);
-    static_assert(traits::is_rec_model<decltype(bound), poptype::gamete_t,
-                                       poptype::mcont_t>::value,
-                  "extensions::discrete_rec_model::operator() is not a valid "
-                  "recombination policy");
-    auto x = bound(pop.gametes[0], pop.gametes[0], pop.mutations);
-    static_assert(std::is_same<decltype(x), std::vector<double>>::value,
-                  "extensions::dicrete_rec_model::operator() must return "
-                  "std::vector<double>");
+    extensions::discrete_rec_model drm(rng.get(), 50., { 0, 1 }, { 1, 2 },
+                                       { 1, 2 });
+    f(drm);
 }
 
 BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
 {
-    extensions::discrete_rec_model drm({ 0, 1 }, { 1, 2 }, { 1, 1 });
-    auto bound = extensions::bind_drm(drm, pop.gametes, pop.mutations,
-                                      rng.get(), 0.001);
+    extensions::discrete_rec_model drm(rng.get(), 1e-3, { 0, 1 }, { 1, 2 },
+                                       { 1, 1 });
+    static_assert(std::is_convertible<extensions::discrete_rec_model,
+            std::function<std::vector<double>()>>::value,
+            "extensions::discrete_rec_model must be convertible to std::function");
+
     static_assert(
         KTfwd::traits::
-            is_rec_model<decltype(bound),
+            is_rec_model<decltype(drm),
                          singlepop_popgenmut_fixture::poptype::gamete_t,
                          singlepop_popgenmut_fixture::poptype::mcont_t>::value,
         "bound object must be valid recombination model");
 }
 
-// Put it all together into a call to KTfwd::sample_diploid
-/*
-BOOST_AUTO_TEST_CASE( discrete_rec_model_test_4 )
-{
-  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-
-  extensions::discrete_mut_model dm({0,1},
-                                    {1,2},
-                                    {1,0.5},
-                                    {},
-                                    {},
-                                    {},
-                                    {}
-                                    );
-
-  auto mmodel =
-std::bind(&extensions::discrete_mut_model::make_mut<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,decltype(pop.mut_lookup),decltype(pop.mutations)>,
-                          &dm,std::placeholders::_1,std::placeholders::_2,rng.get(),0.001,0.,0u,std::ref(pop.mut_lookup));
-
-  extensions::discrete_rec_model drm( {0,1},
-                                      {1,2},
-                                      {1,2}
-                                      );
-
-  auto bound =
-std::bind(&extensions::discrete_rec_model::operator()<poptype::gamete_t,decltype(pop.mutations)>,
-                         &drm,
-                         rng.get(),0.001,std::placeholders::_1,std::placeholders::_2,std::placeholders::_3);
-  static_assert(
-traits::is_rec_model<decltype(bound),poptype::gamete_t,poptype::mcont_t>::value,
-                 "extensions::discrete_rec_model::operator() is not a valid
-recombination policy" );
-  auto x = bound(pop.gametes[0],pop.gametes[0],pop.mutations);
-  static_assert(std::is_same<decltype(x),std::vector<double>>::value,
-                "extensions::dicrete_rec_model::operator() must return
-std::vector<double>");
-
-  auto wbar = KTfwd::sample_diploid(rng.get(),
-                                    pop.gametes,
-                                    pop.diploids,
-                                    pop.mutations,
-                                    pop.mcounts,
-                                    1000,
-                                    0.001,
-                                    mmodel,
-                                    bound,
-                                    std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
-                                              std::placeholders::_3,2.),
-                                    pop.neutral,
-                                    pop.selected);
-}
-*/
-// Put it all together into a call to KTfwd::sample_diploid,
-// using both convenience fxns instead of the nasty templates
-/*
-BOOST_AUTO_TEST_CASE( discrete_rec_model_test_5 )
-{
-  KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
-
-  extensions::discrete_mut_model dm({0,1},
-                                    {1,2},
-                                    {1,0.5},
-                                    {},
-                                    {},
-                                    {},
-                                    {}
-                                    );
-
-  extensions::discrete_rec_model drm( {0,1},
-                                      {1,2},
-                                      {1,2}
-                                      );
-
-  auto wbar = KTfwd::sample_diploid(rng.get(),
-                                    pop.gametes,
-                                    pop.diploids,
-                                    pop.mutations,
-                                    pop.mcounts,
-                                    1000,
-                                    0.001,
-                                    extensions::bind_dmm(dm,pop.mutations,pop.mut_lookup,
-                                                         rng.get(),0.001,0.,0u),
-                                    extensions::bind_drm(drm,pop.gametes,pop.mutations,
-                                                         rng.get(),0.001),
-                                    std::bind(KTfwd::multiplicative_diploid(),std::placeholders::_1,std::placeholders::_2,
-                                              std::placeholders::_3,2.),
-                                    pop.neutral,
-                                    pop.selected);
-}
-*/
 // Tests of raising exceptions
 BOOST_AUTO_TEST_CASE(discrete_rec_model_constructor_should_throw)
 {
     {
-        BOOST_REQUIRE_THROW(
-            extensions::discrete_rec_model drm({ 0 }, { 1, 2 }, { 1, 2 }),
-            std::invalid_argument);
-    }
-    {
-        BOOST_REQUIRE_THROW(
-            extensions::discrete_rec_model drm({ 0, 1 }, { 1 }, { 1, 2 }),
-            std::invalid_argument);
+        BOOST_REQUIRE_THROW(extensions::discrete_rec_model drm(
+                                rng.get(), 1e-3, { 0 }, { 1, 2 }, { 1, 2 }),
+                            std::invalid_argument);
     }
     {
         BOOST_REQUIRE_THROW(extensions::discrete_rec_model drm(
-                                { 0, 1 }, { 1, 2 }, { 1, 2, 3 }),
+                                rng.get(), 1e-3, { 0, 1 }, { 1 }, { 1, 2 }),
                             std::invalid_argument);
+    }
+    {
+        BOOST_REQUIRE_THROW(
+            extensions::discrete_rec_model drm(rng.get(), 1e-3, { 0, 1 },
+                                               { 1, 2 }, { 1, 2, 3 }),
+            std::invalid_argument);
     }
 }
 
@@ -281,19 +171,3 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_constructor_should_throw)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(unit_test_bind_vectors_regions,
-                         multiloc_popgenmut_fixture)
-
-BOOST_AUTO_TEST_CASE(bind_vec_drm_test_exceptions)
-{
-    {
-        std::vector<double> recrates(3, 1e-4);
-
-        BOOST_REQUIRE_THROW(
-            auto bound = extensions::bind_vec_drm(
-                vdrm, pop.gametes, pop.mutations, rng.get(), recrates),
-            std::invalid_argument);
-    }
-}
-
-BOOST_AUTO_TEST_SUITE_END()

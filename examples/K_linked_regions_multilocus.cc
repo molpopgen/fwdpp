@@ -52,7 +52,7 @@ main(int argc, char **argv)
                       << "seed = seed value for random number generations\n";
             std::exit(0);
         }
-    const unsigned N = atoi(argv[argument++]); // Number of diploids
+    const unsigned N = atoi(argv[argument++]);   // Number of diploids
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
     // mutation rate is per
     // REGION, not SITE!!
@@ -84,19 +84,14 @@ main(int argc, char **argv)
     unsigned generation = 0;
     double wbar;
 
-    std::vector<std::function<std::vector<double>(
-        const multiloc_t::gamete_t &, const multiloc_t::gamete_t &,
-        const multiloc_t::mcont_t &)>>
-        recpols;
+    std::vector<std::function<std::vector<double>()>> recpols;
     std::vector<std::function<std::size_t(std::queue<std::size_t> &,
                                           multiloc_t::mcont_t &)>>
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
-            recpols.push_back(
-                std::bind(KTfwd::poisson_xover(), r.get(), littler, double(i),
-                          double(i) + 1.0, std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3));
+            recpols.emplace_back(KTfwd::poisson_xover(
+                r.get(), littler, double(i), double(i) + 1.0));
             mmodels.push_back(std::bind(
                 KTfwd::infsites(), std::placeholders::_1,
                 std::placeholders::_2, r.get(), std::ref(pop.mut_lookup),
@@ -107,7 +102,7 @@ main(int argc, char **argv)
                 []() { return 0.; }, []() { return 0.; }));
         }
     std::vector<std::function<unsigned(void)>> interlocus_rec(
-        K - 1,std::bind(gsl_ran_binomial,r.get(),rbw,1)); 
+        K - 1, std::bind(gsl_ran_binomial, r.get(), rbw, 1));
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation

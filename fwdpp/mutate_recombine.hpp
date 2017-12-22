@@ -21,6 +21,22 @@
 
 namespace KTfwd
 {
+    template <typename recombination_policy, typename... args>
+    inline typename std::result_of<recombination_policy()>::type
+    dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                  args &&... )
+    {
+        return rec_pol();
+    }
+
+    template <typename recombination_policy, typename... args>
+    inline typename std::result_of<recombination_policy(args &&...)>::type
+    dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                  args &&... a)
+    {
+        return rec_pol(std::forward<args>(a)...);
+    }
+
     template <typename recombination_policy, typename gcont_t,
               typename mcont_t>
     std::vector<double>
@@ -50,7 +66,9 @@ namespace KTfwd
             {
                 return {};
             }
-        return rec_pol(gametes[g1], gametes[g2], mutations);
+        return dispatch_recombination_policy(
+            std::cref(rec_pol), std::cref(gametes[g1]), std::cref(gametes[g2]),
+            std::cref(mutations));
     }
 
     template <typename queue_type, typename mutation_model, typename gcont_t,
@@ -136,7 +154,7 @@ namespace KTfwd
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///
-    /// Update apply new mutations and recombination events to 
+    /// Update apply new mutations and recombination events to
     /// an offspring's gamete.
     ///
     /// \param new_mutations Keys to new mutations
@@ -152,11 +170,12 @@ namespace KTfwd
     /// \return The index of the new offspring gamete in \a gametes.
     ///
     /// \note For efficiency, it is helpful if \a new_mutations is sorted
-    /// by mutation position.  KTfwd::generate_new_mutations exists to help in that
+    /// by mutation position.  KTfwd::generate_new_mutations exists to help in
+    /// that
     /// regard. Many of the evolve functions used in this library and other
-    /// packages by the author will use KTfwd::generate_breakpoints to 
+    /// packages by the author will use KTfwd::generate_breakpoints to
     /// generate \a breakpoints.  That is not, however, required.
-    /// 
+    ///
     /// \version
     /// This function was added in fwdpp 0.5.7.
     {
@@ -266,9 +285,9 @@ namespace KTfwd
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///
-    /// "Convenience" function for generating offspring gametes.  
-    /// 
-    /// This function calls KTfwd::generate_breakpoints, 
+    /// "Convenience" function for generating offspring gametes.
+    ///
+    /// This function calls KTfwd::generate_breakpoints,
     /// KTfwd::generate_new_mutations, and KTfwd::mutate_recombine,
     /// resulting in two offspring gametes.
     ///
@@ -288,10 +307,10 @@ namespace KTfwd
     /// gamete.
     ///
     /// \note
-    /// \a parental_gametes should contain parent one/gamete one, 
-    /// parent one/gamete two, parent two/gamete one, 
+    /// \a parental_gametes should contain parent one/gamete one,
+    /// parent one/gamete two, parent two/gamete one,
     /// and parent two/gamete two, in that order.
-    /// 
+    ///
     /// \version
     /// Added in fwdpp 0.5.7.
     {

@@ -108,7 +108,7 @@ main(int argc, char **argv)
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> r(seed);
 
     // recombination map is uniform[0,1)
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r.get());
+    auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -140,10 +140,7 @@ main(int argc, char **argv)
                         std::bind(HOChap(), std::placeholders::_1,
                                   std::placeholders::_2, std::placeholders::_3,
                                   r.get(), std::ref(pop.mut_lookup), sigmu),
-                        std::bind(KTfwd::poisson_xover(), r.get(), littler, 0.,
-                                  1., std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  std::placeholders::_3),
+                        rec,
                         std::bind(KTfwd::haplotype_dependent_fitness(),
                                   std::placeholders::_1, std::placeholders::_2,
                                   std::placeholders::_3, addEsizes,

@@ -125,6 +125,7 @@ main(int argc, char **argv)
                             std::placeholders::_1, std::placeholders::_2,
                             std::placeholders::_3, 2.));
 
+    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
     for (unsigned generation = 0; generation < ngens; ++generation)
         {
             std::vector<double> wbars = sample_diploid(
@@ -135,10 +136,7 @@ main(int argc, char **argv)
                           std::ref(pop.mut_lookup), mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r.get()); },
                           [&s]() { return s; }, [&h]() { return h; }),
-                std::bind(KTfwd::poisson_xover(), r.get(), littler, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                vbf, std::bind(migpop, std::placeholders::_1, r.get(), m),
+                rec, vbf, std::bind(migpop, std::placeholders::_1, r.get(), m),
                 pop.neutral, pop.selected, &fs[0]);
             // 4*N b/c it needs to be fixed in the metapopulation
             update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
@@ -164,7 +162,7 @@ main(int argc, char **argv)
                                           std::placeholders::_2),
                                 outstream);
 
-    // Write the "ms" blocks
+// Write the "ms" blocks
 #ifdef HAVE_LIBSEQUENCE
     SimData neutral = merge(spop1.first, spop2.first, n);
     SimData selected = merge(spop1.second, spop2.second, n);
@@ -196,15 +194,15 @@ main(int argc, char **argv)
 #endif
     in.close();
 
-    /*
-      At this point, you could go through each deme and each diploid and make
-      sure that all is cool.  However, if we weren't reading and
-      writing the metapop correctly, there's no way we'd be able
-      to write and then read in the ms blocks correctly, as we'd have
-      run into some binary gibberish along the way.
-    */
+/*
+  At this point, you could go through each deme and each diploid and make
+  sure that all is cool.  However, if we weren't reading and
+  writing the metapop correctly, there's no way we'd be able
+  to write and then read in the ms blocks correctly, as we'd have
+  run into some binary gibberish along the way.
+*/
 
-    // For fun, we'll calculate some basic pop subdivision stats
+// For fun, we'll calculate some basic pop subdivision stats
 #ifdef HAVE_LIBSEQUENCE
     unsigned config[2] = { n, n };
     if (!neutral.empty())

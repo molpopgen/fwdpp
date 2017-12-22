@@ -72,10 +72,7 @@ simulate(poptype &pop)
                           std::ref(pop.mut_lookup), generation, 0.005, 0.,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return 0.; }, []() { return 0.; }),
-                std::bind(KTfwd::poisson_xover(), rng.get(), 0.005, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                fitness_funcs,
+                KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
                 std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
                 pop.neutral, pop.selected);
             KTfwd::update_mutations(pop.mutations, pop.fixations,

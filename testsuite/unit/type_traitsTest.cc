@@ -113,21 +113,31 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
 
 BOOST_AUTO_TEST_CASE(is_recmodel_test)
 {
-    auto rm = std::bind(KTfwd::poisson_xover(), r, 1e-2, 0., 1.,
-                        std::placeholders::_1, std::placeholders::_2,
-                        std::placeholders::_3);
-    // auto v =
-    // std::is_convertible<decltype(rm),KTfwd::traits::recmodel_t<singlepop_t::gcont_t,singlepop_t::mcont_t>
-    // >::value;
-    auto v = std::is_convertible<decltype(rm),
-                                 KTfwd::traits::recmodel_t<gcont_t,
+
+    KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
+
+    auto v
+        = std::is_convertible<decltype(rm),
+                              KTfwd::traits::rich_recmodel_t<gcont_t,
+                                                             mcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, false);
+    v = std::is_convertible<decltype(rm),
+                            KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
+                                                           mcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, false);
+    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t::value_type,
+                                    mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+
+    auto mock_rec
+        = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
+                const mcont_t &) -> decltype(rm()) { return rm(); };
+
+    v = std::is_convertible<decltype(mock_rec),
+                            KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
                                                            mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = std::is_convertible<decltype(rm),
-                            KTfwd::traits::recmodel_t<gcont_t::value_type,
-                                                      mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t::value_type,
+    v = KTfwd::traits::is_rec_model<decltype(mock_rec), gcont_t::value_type,
                                     mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }

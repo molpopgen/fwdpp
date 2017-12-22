@@ -15,24 +15,31 @@ namespace KTfwd
       are uniformly-distributed between \a minpos and \a maxpos
      */
     {
-        template <typename gamete_type, typename mcont_t>
-        std::vector<double>
-        operator()(const gsl_rng *r, const double littler, const double minpos,
-                   const double maxpos, const gamete_type &,
-                   const gamete_type &, const mcont_t &) const
+        const gsl_rng *r;
+        const double recrate, minpos, maxpos;
+
+        explicit poisson_xover(const gsl_rng *r_, const double recrate_,
+                               const double minpos_, const double maxpos_)
+            : r{ r_ }, recrate{ recrate_ }, minpos{ minpos_ },
+              maxpos{ maxpos_ }
         /*!
           \param r A gsl_rng
-          \param littler The recombination rate (per diploid, per region)
+          \param littler The recombination rate (per diploid_, per region)
           \param minpos The minimum recombination position allowed
           \param maxpos The maximum recombination position allowed
-
-          The remaining arguments are unnnamed and are API placeholders
-          for policies that need to know something about
           the gametes & mutations involve in an x-over.
          */
         {
+        }
+
+        poisson_xover(const poisson_xover &) = default;
+        poisson_xover(poisson_xover &&) = default;
+
+        std::vector<double>
+        operator()() const
+        {
             unsigned nbreaks
-                = (littler > 0) ? gsl_ran_poisson(r, littler) : 0u;
+                = (recrate > 0) ? gsl_ran_poisson(r, recrate) : 0u;
             if (!nbreaks)
                 return {};
 
@@ -46,6 +53,21 @@ namespace KTfwd
             // Note: this is required for all vectors of breakpoints!
             pos.emplace_back(std::numeric_limits<double>::max());
             return pos;
+        }
+
+        static std::function<std::vector<double>()>
+        bind(const gsl_rng *r, const double recrate, const double minpos,
+             const double maxpos)
+        /*!
+         * Generate a callable function that satisfies concept
+         * of a recombination policy.
+         */
+        {
+            return [p = poisson_xover(r, recrate, minpos, maxpos)]()
+                ->std::vector<double>
+            {
+                return p();
+            };
         }
     };
 
@@ -68,7 +90,7 @@ namespace KTfwd
       \return A pair.  The first element is the index of the recombinant
       gamete.  The second element is the number of breakpoints
       where recombination occurred.  Typically, the latter is not needed.
-      
+
       \deprecated
       Deprecated in 0.5.7.
     */
@@ -79,7 +101,8 @@ namespace KTfwd
                   typename gcont_t::value_type::mutation_container &neutral,
                   typename gcont_t::value_type::mutation_container &selected,
                   const recpol_t &rec_pol, const std::size_t g1,
-                  const std::size_t g2, const mcont_t &mutations) __attribute__((deprecated));
+                  const std::size_t g2, const mcont_t &mutations)
+        __attribute__((deprecated));
 
     /*!
       Overload for fixed xover positions.
@@ -126,7 +149,8 @@ namespace KTfwd
         const std::size_t g1, const std::size_t g2,
         queue_t &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected) __attribute__((deprecated));
+        typename gcont_t::value_type::mutation_container &selected)
+        __attribute__((deprecated));
 }
 #endif // __FWDPP_RECOMBINATION_HPP__
 #include <fwdpp/recombination.tcc>

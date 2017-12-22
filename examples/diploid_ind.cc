@@ -9,6 +9,7 @@
   4.  Outputting a sample in "ms" format
 */
 #include <iostream>
+#include <type_traits>
 #include <vector>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
@@ -65,7 +66,7 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r.get());
+    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -98,10 +99,7 @@ main(int argc, char **argv)
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   []() { return 0.; }, []() { return 0.; }),
                         // The function to generation recombination positions:
-                        std::bind(KTfwd::poisson_xover(), r.get(), littler, 0.,
-                                  1., std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  std::placeholders::_3),
+                        rec,
                         /*
                           Fitness is multiplicative over sites.
 

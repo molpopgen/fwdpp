@@ -67,7 +67,7 @@ main(int argc, char **argv)
     double wbar;
 
     // recombination map is uniform[0,1)
-    std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r.get());
+    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
 
     for (generation = 0; generation < ngens; ++generation)
         {
@@ -79,12 +79,9 @@ main(int argc, char **argv)
                                  [&r]() { return gsl_rng_uniform(r.get()); },
                                  []() { return 0.; }, []() { return 0.; }),
                 // The function to generation recombination positions:
-                std::bind(KTfwd::poisson_xover(), r.get(), littler, 0., 1.,
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3),
-                std::bind(KTfwd::multiplicative_diploid(),
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3, 2.),
+                rec, std::bind(KTfwd::multiplicative_diploid(),
+                               std::placeholders::_1, std::placeholders::_2,
+                               std::placeholders::_3, 2.),
                 pop.neutral, pop.selected);
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
