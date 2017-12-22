@@ -57,16 +57,19 @@ SimData merge(const std::vector<std::pair<double, std::string>> &sample1,
 // fitness model details -- s will be treated as -s in population 2
 struct multiplicative_diploid_minus
 {
+    const double scaling;
+    multiplicative_diploid_minus(const double scaling_) : scaling{ scaling_ }
+    {
+    }
     typedef double result_type;
     inline double
     operator()(const poptype::diploid_t &dip, const poptype::gcont_t &gametes,
-               const poptype::mcont_t &mutations,
-               const double scaling = 1.) const
+               const poptype::mcont_t &mutations) const
     {
         using mut_t = poptype::mcont_t::value_type;
         return site_dependent_fitness()(
             gametes[dip.first], gametes[dip.second], mutations,
-            [&](double &fitness, const mut_t &mut) {
+            [this](double &fitness, const mut_t &mut) {
                 fitness *= (1. - scaling * mut.s);
             },
             [](double &fitness, const mut_t &mut) {
@@ -119,11 +122,8 @@ main(int argc, char **argv)
                                      const poptype::gcont_t &,
                                      const poptype::mcont_t &)>>
         vbf;
-    vbf.push_back(std::bind(multiplicative_diploid(), std::placeholders::_1,
-                            std::placeholders::_2, std::placeholders::_3, 2.));
-    vbf.push_back(std::bind(multiplicative_diploid_minus(),
-                            std::placeholders::_1, std::placeholders::_2,
-                            std::placeholders::_3, 2.));
+    vbf.push_back(multiplicative_diploid(2.));
+    vbf.push_back(multiplicative_diploid_minus(2.));
 
     KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
     for (unsigned generation = 0; generation < ngens; ++generation)
