@@ -58,16 +58,17 @@ SimData merge(const std::vector<std::pair<double, std::string>> &sample1,
 // fitness model details -- s will be treated as -s in population 2
 struct multiplicative_diploid_minus
 {
+    const double scaling;
     typedef double result_type;
+    multiplicative_diploid_minus(const double scaling_) : scaling(scaling_) {}
     inline double
     operator()(const poptype::diploid_t &dip, const poptype::gcont_t &gametes,
-               const poptype::mcont_t &mutations,
-               const double scaling = 1.) const
+               const poptype::mcont_t &mutations) const
     {
         using mut_t = poptype::mcont_t::value_type;
         return site_dependent_fitness()(
             dip, gametes, mutations,
-            [&](double &fitness, const mut_t &mut) {
+            [this](double &fitness, const mut_t &mut) {
                 fitness *= (1. - scaling * mut.s);
             },
             [](double &fitness, const mut_t &mut) {
@@ -141,10 +142,8 @@ main(int argc, char **argv)
                           [&r]() { return gsl_rng_uniform(r); },
                           [&s]() { return s; }, [&h]() { return h; }),
                 // The function to generation recombination positions:
-                rec, std::bind(KTfwd::multiplicative_diploid(),
-                               std::placeholders::_1, std::placeholders::_2,
-                               std::placeholders::_3, 2.),
-                pop.neutral, pop.selected);
+                rec, KTfwd::multiplicative_diploid(2.), pop.neutral,
+                pop.selected);
             // 4*N b/c it needs to be fixed in the metapopulation
             update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
                              pop.mut_lookup, pop.mcounts, generation, 4 * N);
@@ -157,11 +156,8 @@ main(int argc, char **argv)
                                      const poptype::gcont_t &,
                                      const poptype::mcont_t &)>>
         vbf;
-    vbf.push_back(std::bind(multiplicative_diploid(), std::placeholders::_1,
-                            std::placeholders::_2, std::placeholders::_3, 2.));
-    vbf.push_back(std::bind(multiplicative_diploid_minus(),
-                            std::placeholders::_1, std::placeholders::_2,
-                            std::placeholders::_3, 2.));
+    vbf.push_back(multiplicative_diploid(2.));
+    vbf.push_back(multiplicative_diploid_minus(2.));
 
     unsigned Ns[2] = { N, N };
     double fs[2] = { f1, f2 };
@@ -175,8 +171,7 @@ main(int argc, char **argv)
                           mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r); },
                           [&s]() { return s; }, [&h]() { return h; }),
-                rec,
-                vbf, std::bind(migpop, std::placeholders::_1, r, m),
+                rec, vbf, std::bind(migpop, std::placeholders::_1, r, m),
                 pop.neutral, pop.selected, &fs[0]);
             // 4*N b/c it needs to be fixed in the metapopulation
             update_mutations(pop.mutations, pop.fixations, pop.fixation_times,

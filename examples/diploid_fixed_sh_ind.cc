@@ -78,11 +78,8 @@ main(int argc, char **argv)
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   [&s]() { return s; }, [&h]() { return h; }),
                         // The function to generation recombination positions:
-                        rec,
-                        std::bind(KTfwd::multiplicative_diploid(),
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3, 1.),
-                        pop.neutral, pop.selected);
+                        rec, KTfwd::multiplicative_diploid(1.), pop.neutral,
+                        pop.selected);
                     KTfwd::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);

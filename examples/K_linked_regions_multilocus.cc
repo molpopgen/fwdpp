@@ -109,9 +109,7 @@ main(int argc, char **argv)
             KTfwd::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, mu.data(), mmodels, recpols, interlocus_rec,
-                std::bind(no_selection_multi(), std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3),
-                pop.neutral, pop.selected);
+                no_selection_multi(), pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,

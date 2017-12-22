@@ -396,10 +396,13 @@ namespace KTfwd
     /// \ingroup fitness
     struct multiplicative_diploid
     {
+        const double scaling;
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
-        multiplicative_diploid(std::function<double(double)> f_ = KTfwd::mw())
-            : make_return_value{ std::move(f_) }
+        multiplicative_diploid(const double scaling_ = 1.0,
+                               std::function<double(double)> f_ = KTfwd::mw())
+            : scaling{ scaling_ }, make_return_value{ std::move(f_) }
+		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or trait
         /// value.
         ///
@@ -424,14 +427,13 @@ namespace KTfwd
         template <typename iterator_t, typename mcont_t>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations,
-                   const double scaling = 1.) const noexcept
+                   iterator_t last2, const mcont_t &mutations) const noexcept
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
             return make_return_value(site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
-                [&](double &value, const __mtype &mut) noexcept {
+                [this](double &value, const __mtype &mut) noexcept {
                     value *= (1. + scaling * mut.s);
                 },
                 [](double &value, const __mtype &mut) noexcept {
@@ -443,8 +445,7 @@ namespace KTfwd
         template <typename gamete_type, typename mcont_t>
         inline double
         operator()(const gamete_type &g1, const gamete_type &g2,
-                   const mcont_t &mutations, const double scaling = 1.) const
-            noexcept
+                   const mcont_t &mutations) const noexcept
         ///  \param g1 A gamete
         ///  \param g2 A gamete
         ///  \param mutation Container of mutations
@@ -458,7 +459,7 @@ namespace KTfwd
             using __mtype = typename mcont_t::value_type;
             return make_return_value(site_dependent_genetic_value()(
                 g1, g2, mutations,
-                [&](double &value, const __mtype &mut) noexcept {
+                [this](double &value, const __mtype &mut) noexcept {
                     value *= (1. + scaling * mut.s);
                 },
                 [](double &value, const __mtype &mut) noexcept {
@@ -470,13 +471,12 @@ namespace KTfwd
         template <typename diploid, typename gcont_t, typename mcont_t>
         inline result_type
         operator()(const diploid &dip, const gcont_t &gametes,
-                   const mcont_t &mutations, const double scaling = 1.) const
-            noexcept
+                   const mcont_t &mutations) const noexcept
         ///  \brief Overload for diploids.  This is what a programmer's
         ///  functions will call.
         {
             return this->operator()(gametes[dip.first], gametes[dip.second],
-                                    mutations, scaling);
+                                    mutations);
         }
     };
 
@@ -515,10 +515,13 @@ namespace KTfwd
     /// \ingroup fitness
     struct additive_diploid
     {
+        const double scaling;
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
-        additive_diploid(std::function<double(double)> f_ = KTfwd::aw())
-            : make_return_value{ std::move(f_) }
+        additive_diploid(const double scaling_ = 1.0,
+                         std::function<double(double)> f_ = KTfwd::aw())
+            : scaling{ scaling_ }, make_return_value{ std::move(f_) }
+		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or
         /// trait
         /// value.
@@ -559,14 +562,13 @@ namespace KTfwd
         template <typename iterator_t, typename mcont_t>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations,
-                   const double scaling = 1.) const noexcept
+                   iterator_t last2, const mcont_t &mutations) const noexcept
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
             return make_return_value(site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
-                [&](double &value, const __mtype &mut) noexcept {
+                [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
                 },
                 [](double &value, const __mtype &mut) noexcept {
@@ -578,8 +580,7 @@ namespace KTfwd
         template <typename gamete_type, typename mcont_t>
         inline result_type
         operator()(const gamete_type &g1, const gamete_type &g2,
-                   const mcont_t &mutations, const double scaling = 1.) const
-            noexcept
+                   const mcont_t &mutations) const noexcept
         ///  \param g1 A gamete
         ///  \param g2 A gamete
         ///  \param mutations A container of mutations
@@ -595,7 +596,7 @@ namespace KTfwd
             using __mtype = typename mcont_t::value_type;
             return make_return_value(site_dependent_genetic_value()(
                 g1, g2, mutations,
-                [=](double &value, const __mtype &mut) noexcept {
+                [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
                 },
                 [](double &value, const __mtype &mut) noexcept {
@@ -609,11 +610,10 @@ namespace KTfwd
         template <typename diploid, typename gcont_t, typename mcont_t>
         inline result_type
         operator()(const diploid &dip, const gcont_t &gametes,
-                   const mcont_t &mutations, const double scaling = 1.) const
-            noexcept
+                   const mcont_t &mutations) const noexcept
         {
             return this->operator()(gametes[dip.first], gametes[dip.second],
-                                    mutations, scaling);
+                                    mutations);
         }
     };
 }

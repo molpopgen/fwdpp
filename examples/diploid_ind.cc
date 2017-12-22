@@ -124,10 +124,8 @@ main(int argc, char **argv)
                           multiplicative
                           models are very common in population genetics
                         */
-                        std::bind(KTfwd::multiplicative_diploid(),
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3, 2.),
-                        pop.neutral, pop.selected);
+                        KTfwd::multiplicative_diploid(), pop.neutral,
+                        pop.selected);
                     KTfwd::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);

@@ -86,8 +86,7 @@ BOOST_AUTO_TEST_CASE(is_mmodel_test)
 
 BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
 {
-    auto fp = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3, 2.);
+    auto fp = KTfwd::multiplicative_diploid(2.);
     auto v = std::is_convertible<decltype(fp),
                                  KTfwd::traits::fitness_fxn_t<dipvector_t,
                                                               gcont_t,

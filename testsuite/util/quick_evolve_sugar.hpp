@@ -41,10 +41,7 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
                 KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.),
-                std::bind(KTfwd::multiplicative_diploid(),
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3, 2),
-                pop.neutral, pop.selected);
+                KTfwd::multiplicative_diploid(2.), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
@@ -78,10 +75,7 @@ simulate_singlepop(singlepop_object_t &pop, const rng_type &rng,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
                 KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.),
-                std::bind(KTfwd::multiplicative_diploid(),
-                          std::placeholders::_1, std::placeholders::_2,
-                          std::placeholders::_3, 2),
-                pop.neutral, pop.selected);
+                KTfwd::multiplicative_diploid(2.), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
@@ -195,14 +189,11 @@ void
 simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
 {
     // Evolve for 10 generations
-    std::
-        vector<std::function<double(const typename metapop_object::diploid_t &,
-                                    const typename metapop_object::gcont_t &,
-                                    const typename metapop_object::mcont_t &)>>
-            fitness_funcs(2, std::bind(KTfwd::multiplicative_diploid(),
-                                       std::placeholders::_1,
-                                       std::placeholders::_2,
-                                       std::placeholders::_3, 2.));
+    std::vector<std::function<double(
+        const typename metapop_object::diploid_t &,
+        const typename metapop_object::gcont_t &,
+        const typename metapop_object::mcont_t &)>>
+        fitness_funcs(2, KTfwd::multiplicative_diploid(2.));
     KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
     for (unsigned generation = 0; generation < simlen; ++generation)
         {
