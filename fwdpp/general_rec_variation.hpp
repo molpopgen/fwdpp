@@ -44,8 +44,10 @@ namespace KTfwd
                 }
         }
 
+        template <typename... args>
         inline void
-        operator()(std::vector<double>& breakpoints) const
+        operator()(std::vector<double>& breakpoints, args&&...) const
+        /// Variadic to be combatible with richer recombination policy requirements
         {
             auto nbreaks = gsl_ran_poisson(r, mean);
             for (decltype(nbreaks) i = 0; i < nbreaks; ++i)
@@ -98,8 +100,10 @@ namespace KTfwd
                 }
         }
 
+        template <typename... args>
         inline void
-        operator()(std::vector<double>& breakpoints) const
+        operator()(std::vector<double>& breakpoints, args&&...) const
+        /// Variadic to be combatible with richer recombination policy requirements
         {
             if (gsl_ran_binomial(r, prob, 1))
                 {
