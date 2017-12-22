@@ -10,6 +10,7 @@
 #include <config.h>
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include <fwdpp/fitness_models.hpp>
+#include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recombination.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/type_traits.hpp>
