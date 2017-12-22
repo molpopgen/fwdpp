@@ -35,9 +35,10 @@ namespace KTfwd
 
     struct poisson_point
     {
+        const gsl_rng* r;
         const double prob, pos;
-        poisson_point(const double rate, const double pos_)
-            : prob{ 0.5 * (1. - std::exp(-2.0 * rate)) }, pos{ pos_ }
+        poisson_point(const gsl_rng* r_, const double rate, const double pos_)
+            : r{ r_ }, prob{ 0.5 * (1. - std::exp(-2.0 * rate)) }, pos{ pos_ }
         {
         }
 
@@ -53,9 +54,10 @@ namespace KTfwd
 
     struct binomial_point
     {
+        const gsl_rng* r;
         const double prob, pos;
-        poisson_point(const double prob_, const double pos_)
-            : prob{ prob_ }, pos{ pos_ }
+        binomial_point(const gsl_rng* r_, const double prob_, const double pos_)
+            : r{ r_ }, prob{ prob_ }, pos{ pos_ }
         {
         }
 
@@ -81,7 +83,7 @@ namespace KTfwd
                 {
                     f(breakpoints);
                 }
-            std::sort(f.begin(), f.end());
+            std::sort(breakpoints.begin(), breakpoints.end());
             breakpoints.push_back(std::numeric_limits<double>::max());
             return breakpoints;
         }
