@@ -76,11 +76,7 @@ main(int argc, char **argv)
                                   std::placeholders::_2, r.get(),
                                   std::ref(pop.mut_lookup), mu_neutral, mu_del,
                                   [&r]() { return gsl_rng_uniform(r.get()); },
-                                  [&r, N]() {
-                                      return gsl_ran_gamma(r.get(), 1., -5.0)
-                                             / static_cast<double>(2 * N);
-                                  },
-                                  [&h]() { return h; }),
+                                  [&s]() { return s; }, [&h]() { return h; }),
                         // The function to generation recombination positions:
                         rec,
                         std::bind(KTfwd::multiplicative_diploid(),
