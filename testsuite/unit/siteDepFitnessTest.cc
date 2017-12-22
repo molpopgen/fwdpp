@@ -57,8 +57,8 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative_trait)
     BOOST_CHECK_EQUAL(g1.smutations.size(), 1);
 
     gcont_t g{ g1, g2 };
-    double w = KTfwd::multiplicative_diploid(KTfwd::mtrait())(g[0], g[1],
-                                                              mutations);
+    double w = KTfwd::multiplicative_diploid(1., KTfwd::mtrait())(g[0], g[1],
+                                                                  mutations);
 
     BOOST_CHECK_CLOSE(w, -0.05, 1e-8);
 }
@@ -90,8 +90,8 @@ BOOST_AUTO_TEST_CASE(gss_multiplicative_trait) // Gaussian stab sel
     // so that the genetic value is a trait value
     // mapped to fitness via a "gss" model with
     // params optimum and VS
-    double w
-        = KTfwd::multiplicative_diploid(gss_closure)(g[0], g[1], mutations);
+    double w = KTfwd::multiplicative_diploid(1., gss_closure)(g[0], g[1],
+                                                              mutations);
 
     BOOST_CHECK_CLOSE(w, std::exp(-std::pow(-0.05 - optimum, 2.0) / (2. * VS)),
                       1e-8);
@@ -208,7 +208,8 @@ BOOST_AUTO_TEST_CASE(simple_additive_trait)
 
     gcont_t g{ g1, g2 };
 
-    double w = KTfwd::additive_diploid(KTfwd::atrait())(g[0], g[1], mutations);
+    double w
+        = KTfwd::additive_diploid(1., KTfwd::atrait())(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, -0.1);
 }
 
@@ -238,11 +239,11 @@ BOOST_AUTO_TEST_CASE(stateful_additive_trait)
         // into the genetic value calculator.
         // Thus, we need to hold pointers
         // to external data.
-		// Here, we use std::shared_ptr
-		// because we do things the right way
-		// and don't use bare pointers.
-		// A shared_ptr/weak_ptr pairing
-		// would also be cool.
+        // Here, we use std::shared_ptr
+        // because we do things the right way
+        // and don't use bare pointers.
+        // A shared_ptr/weak_ptr pairing
+        // would also be cool.
         const std::shared_ptr<const int> i;
         stateful_mapping_to_fitness(std::shared_ptr<const int> i_) : i(i_) {}
         inline double
@@ -255,11 +256,11 @@ BOOST_AUTO_TEST_CASE(stateful_additive_trait)
     };
 
     stateful_mapping_to_fitness sm(i);
-	//Here, a COPY of sm is move-constructed
-	//into an instance of additive_diploid,
-	//which is why we need to use a pointer
-	//for our stateful object above.
-    auto a = KTfwd::additive_diploid(sm);
+    //Here, a COPY of sm is move-constructed
+    //into an instance of additive_diploid,
+    //which is why we need to use a pointer
+    //for our stateful object above.
+    auto a = KTfwd::additive_diploid(1, sm);
     double w = a(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, 0.0);
 
@@ -302,9 +303,7 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
 
         auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it with scaling = 2.
-        dipfit
-            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::multiplicative_diploid(2.);
         auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
 
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
@@ -316,12 +315,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
 
         // assign a fitness model with default scaling = 1.
         fitness_model_t dipfit
-            = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
+            = KTfwd::additive_diploid();
         auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it with scaling = 2.
-        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                           std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::additive_diploid(2.);
         auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
@@ -332,13 +329,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
         // that wants to decide which model to use based on parameters
         // passed in by a user.
 
-        fitness_model_t dipfit
-            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
+        fitness_model_t dipfit = KTfwd::multiplicative_diploid();
         auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it to addtive model with scaling = 2.
-        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                           std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::additive_diploid(2.0);
         auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // With only 1 mutation in play, additive & multiplicative will give
         // same result:
@@ -370,14 +364,11 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
 
         // assign a fitness model with default scaling = 1.
         fitness_model_t dipfit
-            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
+            = KTfwd::multiplicative_diploid();
         auto a = dipfit(cdiploids[0], gametes, mutations);
 
         // Now, reassign it with scaling = 2.
-        dipfit
-            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::multiplicative_diploid(2.);
         auto b = dipfit(cdiploids[0], gametes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
@@ -387,13 +378,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
         // Now the additive model
 
         // assign a fitness model with default scaling = 1.
-        fitness_model_t dipfit
-            = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
+        fitness_model_t dipfit = KTfwd::additive_diploid();
         auto a = dipfit(cdiploids[0], gametes, mutations);
         // Now, reassign it with scaling = 2.
-        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                           std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::additive_diploid(2.);
         auto b = dipfit(cdiploids[0], gametes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
@@ -404,13 +392,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
         // that wants to decide which model to use based on parameters
         // passed in by a user.
 
-        fitness_model_t dipfit
-            = std::bind(KTfwd::multiplicative_diploid(), std::placeholders::_1,
-                        std::placeholders::_2, std::placeholders::_3);
+        fitness_model_t dipfit = KTfwd::multiplicative_diploid();
         auto a = dipfit(cdiploids[0], gametes, mutations);
         // Now, reassign it to addtive model with scaling = 2.
-        dipfit = std::bind(KTfwd::additive_diploid(), std::placeholders::_1,
-                           std::placeholders::_2, std::placeholders::_3, 2.);
+        dipfit = KTfwd::additive_diploid(2.);
         auto b = dipfit(cdiploids[0], gametes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
