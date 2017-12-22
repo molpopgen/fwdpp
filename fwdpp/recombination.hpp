@@ -55,21 +55,7 @@ namespace KTfwd
             return pos;
         }
 
-        static std::function<std::vector<double>()>
-        bind(const gsl_rng *r, const double recrate, const double minpos,
-             const double maxpos)
-        /*!
-         * Generate a callable function that satisfies concept
-         * of a recombination policy.
-         */
-        {
-            return [p = poisson_xover(r, recrate, minpos, maxpos)]()
-                ->std::vector<double>
-            {
-                return p();
-            };
-        }
-    };
+};
 
     /*!
       Recombine gametes[g1] and gametes[g2] at positions determined by rec_pol
