@@ -30,6 +30,10 @@ namespace KTfwd
                 {
                     throw std::invalid_argument("rng cannot be null pointer");
                 }
+            if (mean < 0.)
+                {
+                    throw std::invalid_argument("mean must be non-negative");
+                }
             if (!std::isfinite(mean))
                 {
                     throw std::invalid_argument("mean must be finite");
@@ -82,6 +86,11 @@ namespace KTfwd
               prob{ (poisson) ? 0.5 * (1. - std::exp(-2.0 * rate)) : rate },
               pos{ pos_ }
         {
+            if (rate < 0. || prob < 0.)
+                {
+                    throw std::invalid_argument(
+                        "recombination probability must be non-negative");
+                }
             if (r == nullptr)
                 {
                     throw std::invalid_argument("rng cannot be null pointer");
