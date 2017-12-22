@@ -12,6 +12,7 @@ pkginclude_HEADERS=debug.hpp \
 	mutation.hpp \
 	mutation.tcc \
 	poisson_xover.hpp \
+	general_rec_variation.hpp \
 	recombination.hpp \
 	recombination.tcc \
 	sample_diploid.hpp \
