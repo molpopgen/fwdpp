@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <limits>
 #include <cmath>
+#include <stdexcept>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -19,6 +20,22 @@ namespace KTfwd
                          const double minpos_, const double maxpos_)
             : r{ r_ }, mean{ mean_ }, minpos{ minpos_ }, maxpos{ maxpos_ }
         {
+            if (r == nullptr)
+                {
+                    throw std::invalid_argument("rng cannot be null pointer");
+                }
+            if (!std::isfinite(mean))
+                {
+                    throw std::invalid_argument("mean must be finite");
+                }
+            if (!std::isfinite(minpos))
+                {
+                    throw std::invalid_argument("minpos must be finite");
+                }
+            if (!std::isfinite(maxpos))
+                {
+                    throw std::invalid_argument("maxpos must be finite");
+                }
         }
 
         inline void
@@ -33,32 +50,32 @@ namespace KTfwd
         }
     };
 
-    struct poisson_point
+    struct crossover_point
     {
         const gsl_rng* r;
         const double prob, pos;
-        poisson_point(const gsl_rng* r_, const double rate, const double pos_)
-            : r{ r_ }, prob{ 0.5 * (1. - std::exp(-2.0 * rate)) }, pos{ pos_ }
+        crossover_point(const gsl_rng* r_, const double rate,
+                        const double pos_, const double poisson = true)
+            : r{ r_ },
+              prob{ (poisson) ? 0.5 * (1. - std::exp(-2.0 * rate)) : rate },
+              pos{ pos_ }
         {
-        }
-
-        inline void
-        operator()(std::vector<double>& breakpoints) const
-        {
-            if (gsl_ran_binomial(r, prob, 1))
+            if (r == nullptr)
                 {
-                    breakpoints.push_back(pos);
+                    throw std::invalid_argument("rng cannot be null pointer");
                 }
-        }
-    };
-
-    struct binomial_point
-    {
-        const gsl_rng* r;
-        const double prob, pos;
-        binomial_point(const gsl_rng* r_, const double prob_, const double pos_)
-            : r{ r_ }, prob{ prob_ }, pos{ pos_ }
-        {
+            if (!std::isfinite(rate))
+                {
+                    throw std::invalid_argument("rate must be finite");
+                }
+            if (!std::isfinite(prob))
+                {
+                    throw std::invalid_argument("prob must be finite");
+                }
+            if (!std::isfinite(pos))
+                {
+                    throw std::invalid_argument("pos must be finite");
+                }
         }
 
         inline void
