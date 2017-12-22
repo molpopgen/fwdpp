@@ -83,11 +83,8 @@ main(int argc, char **argv)
                                   std::ref(pop.mut_lookup), mu_neutral, mu_del,
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   [&s]() { return s; }, [&h]() { return h; }),
-                        rec,
-                        std::bind(KTfwd::multiplicative_diploid(),
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3, 2.),
-                        pop.neutral, pop.selected);
+                        rec, KTfwd::multiplicative_diploid(2), pop.neutral,
+                        pop.selected);
                     KTfwd::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
