@@ -12,10 +12,21 @@ struct fixture
 {
     const gsl_rng* r;
     const double not_a_num, inf;
+    KTfwd::general_rec_variation recvar;
+    KTfwd::poisson_interval pi;
+    KTfwd::crossover_point ci1;
+    KTfwd::crossover_point ci2;
+    KTfwd::crossover_point ci3;
+
     fixture()
         : r{ gsl_rng_alloc(gsl_rng_taus) },
           not_a_num{ std::numeric_limits<double>::quiet_NaN() },
-          inf{ std::numeric_limits<double>::infinity() }
+          inf{ std::numeric_limits<double>::infinity() },
+          recvar{},
+          pi{r,1e-3,0.,1.},
+          ci1{r,1e-3,0.5},
+          ci2{r,1e-3,0.5,true},
+          ci3{r,1e-3,0.5,false}
     {
         gsl_rng_set(r, 42);
     }
@@ -47,14 +58,11 @@ BOOST_AUTO_TEST_CASE(test_crossover_point)
 
 BOOST_AUTO_TEST_CASE(test_basic_use)
 {
-    KTfwd::general_rec_variation rv;
-
-    rv.recmap.push_back(KTfwd::poisson_interval(r, 1e-3, 0., 1.));
-    rv.recmap.push_back(KTfwd::crossover_point(r, 1e-3, 0.5));
-    rv.recmap.push_back(KTfwd::crossover_point(r, 1e-3, 0.5, true));
-    rv.recmap.push_back(KTfwd::crossover_point(r, 1e-3, 0.5, false));
-
-    auto x = rv();
+    recvar.recmap.push_back(pi);
+    recvar.recmap.push_back(ci1);
+    recvar.recmap.push_back(ci2);
+    recvar.recmap.push_back(ci3);
+    auto x = recvar();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
