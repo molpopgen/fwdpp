@@ -1,11 +1,14 @@
 /*!
   \file test_general_rec_variation.cc
   \ingroup unit
-  \brief Unit tests for KTfwd::general_rec_variation.  Also tests the built-in policies accompanying this type.
+  \brief Unit tests for KTfwd::general_rec_variation.  Also tests the built-in
+  policies accompanying this type.
 */
 
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/general_rec_variation.hpp>
+#include <fwdpp/forward_types.hpp>
+#include <fwdpp/mutate_recombine.hpp>
 #include <config.h>
 
 struct fixture
@@ -17,16 +20,16 @@ struct fixture
     KTfwd::crossover_point ci1;
     KTfwd::crossover_point ci2;
     KTfwd::crossover_point ci3;
+    KTfwd::gamete g;
+    std::vector<KTfwd::mutation> mutations;
 
     fixture()
         : r{ gsl_rng_alloc(gsl_rng_taus) },
           not_a_num{ std::numeric_limits<double>::quiet_NaN() },
-          inf{ std::numeric_limits<double>::infinity() },
-          recvar{},
-          pi{r,1e-3,0.,1.},
-          ci1{r,1e-3,0.5},
-          ci2{r,1e-3,0.5,true},
-          ci3{r,1e-3,0.5,false}
+          inf{ std::numeric_limits<double>::infinity() }, recvar{},
+          pi{ r, 1e-3, 0., 1. }, ci1{ r, 1e-3, 0.5 },
+          ci2{ r, 1e-3, 0.5, true }, ci3{ r, 1e-3, 0.5, false }, g{ 0 },
+          mutations{}
     {
         gsl_rng_set(r, 42);
     }
@@ -63,6 +66,12 @@ BOOST_AUTO_TEST_CASE(test_basic_use)
     recvar.recmap.push_back(ci2);
     recvar.recmap.push_back(ci3);
     auto x = recvar();
+}
+
+BOOST_AUTO_TEST_CASE(test_dispatch)
+{
+    auto x = KTfwd::dispatch_recombination_policy(
+        std::cref(recvar), std::cref(g), std::cref(g), std::cref(mutations));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
