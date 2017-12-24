@@ -15,7 +15,6 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 
@@ -24,7 +23,7 @@ namespace KTfwd
     template <typename recombination_policy, typename... args>
     inline typename std::result_of<recombination_policy()>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  args &&... )
+                                  args &&...)
     {
         return rec_pol();
     }
@@ -36,7 +35,12 @@ namespace KTfwd
     {
         return rec_pol(std::forward<args>(a)...);
     }
+}
 
+#include <fwdpp/type_traits.hpp>
+
+namespace KTfwd
+{
     template <typename recombination_policy, typename gcont_t,
               typename mcont_t>
     std::vector<double>
