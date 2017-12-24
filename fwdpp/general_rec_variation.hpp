@@ -131,6 +131,10 @@ namespace KTfwd
     {
         std::vector<std::function<void(std::vector<double>&)>> recmap;
 
+        general_rec_variation() : recmap{}
+        {
+        }
+
         inline std::vector<double>
         operator()() const
         {
