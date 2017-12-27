@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
         "foo");
 }
 
-BOOST_AUTO_TEST_CASE(is_recmodel_test)
+BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
 {
 
     KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
@@ -128,49 +128,65 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
     v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
                                     gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-
-    auto mock_rec
-        = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
-                const mcont_t &) -> decltype(rm()) { return rm(); };
-
-    v = std::is_convertible<decltype(mock_rec),
-                            KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
-                                                           mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(mock_rec),
-                                    dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-
-    auto mock_rec_diploid
-        = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
-                const gcont_t::value_type &,
-                const mcont_t &) -> decltype(rm()) { return rm(); };
-
-    v = KTfwd::traits::is_rec_model<decltype(mock_rec_diploid),
-                                    dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-
-    // Test that this is not a valid rec policy
-    auto mock_not_rec = [&rm](const int, int, const mcont_t &) -> decltype(
-        rm()) { return rm(); };
-    v = KTfwd::traits::is_rec_model<decltype(mock_not_rec),
-                                    dipvector_t::value_type, int,
-                                    mcont_t>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-
     // Now, we test that the types can be dispatched
     auto r1 = KTfwd::dispatch_recombination_policy(
         rm, dipvector_t::value_type(), gcont_t::value_type(0),
         gcont_t::value_type(0), mcont_t());
     v = std::is_same<decltype(r1), std::vector<double>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
+}
+
+BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
+{
+    KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
+    auto mock_rec
+        = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
+                const mcont_t &) -> decltype(rm()) { return rm(); };
+
+    auto v = std::
+        is_convertible<decltype(mock_rec),
+                       KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
+                                                      mcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+    v = KTfwd::traits::is_rec_model<decltype(mock_rec),
+                                    dipvector_t::value_type,
+                                    gcont_t::value_type, mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
     auto r2 = KTfwd::dispatch_recombination_policy(
         mock_rec, dipvector_t::value_type(), gcont_t::value_type(0),
         gcont_t::value_type(0), mcont_t());
     v = std::is_same<decltype(r2), std::vector<double>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
+}
+
+BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
+{
+    KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
+    auto mock_rec_diploid
+        = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
+                const gcont_t::value_type &,
+                const mcont_t &) -> decltype(rm()) { return rm(); };
+
+    auto v = KTfwd::traits::is_rec_model<decltype(mock_rec_diploid),
+                                         dipvector_t::value_type,
+                                         gcont_t::value_type, mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+    auto r2 = KTfwd::dispatch_recombination_policy(
+        mock_rec_diploid, dipvector_t::value_type(), gcont_t::value_type(0),
+        gcont_t::value_type(0), mcont_t());
+    v = std::is_same<decltype(r2), std::vector<double>>::value;
+}
+
+BOOST_AUTO_TEST_CASE(is_not_recmodel_test)
+{
+    KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
+    // Test that this is not a valid rec policy
+    auto mock_not_rec = [&rm](const int, int, const mcont_t &) -> decltype(
+        rm()) { return rm(); };
+    auto v = KTfwd::traits::is_rec_model<decltype(mock_not_rec),
+                                         dipvector_t::value_type, int,
+                                         mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
