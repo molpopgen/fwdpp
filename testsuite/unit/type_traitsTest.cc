@@ -140,6 +140,13 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
     v = KTfwd::traits::is_rec_model<decltype(mock_rec), gcont_t::value_type,
                                     mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
+
+    // Test that this is not a valid rec policy
+    auto mock_not_rec = [&rm](const int, int, const mcont_t &) -> decltype(
+        rm()) { return rm(); };
+    v = KTfwd::traits::is_rec_model<decltype(mock_not_rec), int,
+                                    mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, false);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

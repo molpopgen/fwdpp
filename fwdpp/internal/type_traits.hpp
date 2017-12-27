@@ -195,8 +195,9 @@ namespace KTfwd
 
             template <typename gcont_t_or_gamete_t, typename mcont_t>
             struct rich_recmodel_t<gcont_t_or_gamete_t, mcont_t,
-                              typename void_t<typename gcont_t_or_gamete_t::
-                                                  value_type>::type>
+                                   typename void_t<
+                                       typename gcont_t_or_gamete_t::
+                                           value_type>::type>
             {
                 using type = typename std::
                     conditional<is_gamete<typename gcont_t_or_gamete_t::
@@ -211,34 +212,36 @@ namespace KTfwd
             };
 
             template <typename recmodel_t, typename gamete_t, typename mcont_t,
-                      typename = void>
+                      typename = void, typename = void, typename = void>
             struct is_rec_model : std::false_type
-            {
-            };
-
-            template <typename recmodel_t, typename gamete_t, typename mcont_t>
-            struct dispatchable_rec_model
-                : std::is_same<
-                      typename std::result_of<decltype (
-                          &dispatch_recombination_policy<const recmodel_t &,
-                                                         const gamete_t &,
-                                                         const gamete_t &,
-                                                         const mcont_t &>)(
-                          const recmodel_t &, const gamete_t &,
-                          const gamete_t &, const mcont_t &)>::type,
-                      std::vector<double>>
             {
             };
 
             template <typename recmodel_t, typename gamete_t, typename mcont_t>
             struct is_rec_model<recmodel_t, gamete_t, mcont_t,
                                 typename void_t<
-                                    typename mcont_t::value_type>::type>
-                : std::
-                      integral_constant<bool,
-                                        dispatchable_rec_model<recmodel_t,
-                                                               gamete_t,
-                                                               mcont_t>::value>
+                                    typename std::result_of<recmodel_t()>::
+                                        type>::type,
+                                typename std::enable_if<is_gamete<gamete_t>::
+                                                            value>::type,
+                                typename std::enable_if<is_mutation<
+                                    typename mcont_t::value_type>::value>::
+                                    type> : std::true_type
+            {
+            };
+
+            template <typename recmodel_t, typename gamete_t, typename mcont_t>
+            struct is_rec_model<recmodel_t, gamete_t, mcont_t,
+                                typename void_t<
+                                    typename std::result_of<recmodel_t(
+                                        const gamete_t &, const gamete_t &,
+                                        const mcont_t &)>::type>::type,
+                                typename std::enable_if<is_gamete<gamete_t>::
+                                                            value>::type,
+                                typename std::enable_if<is_mutation<
+                                    typename mcont_t::value_type>::value>::
+                                    type> : std::true_type
+
             {
             };
 
