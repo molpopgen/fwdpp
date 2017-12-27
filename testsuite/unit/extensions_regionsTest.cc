@@ -119,6 +119,7 @@ BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
     static_assert(
         KTfwd::traits::
             is_rec_model<decltype(drm),
+                         singlepop_popgenmut_fixture::poptype::diploid_t,
                          singlepop_popgenmut_fixture::poptype::gamete_t,
                          singlepop_popgenmut_fixture::poptype::mcont_t>::value,
         "bound object must be valid recombination model");

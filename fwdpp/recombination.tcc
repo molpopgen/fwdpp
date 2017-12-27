@@ -50,10 +50,10 @@ namespace KTfwd
                   const recpol_t &rec_pol, const std::size_t g1,
                   const std::size_t g2, const mcont_t &mutations)
     {
-        static_assert(
-            traits::is_rec_model<recpol_t, typename gcont_t::value_type,
-                                 mcont_t>::value,
-            "type recpol_t is not a valid recombination policy");
+        // static_assert(
+        //    traits::is_rec_model<recpol_t, typename gcont_t::value_type,
+        //                         mcont_t>::value,
+        //    "type recpol_t is not a valid recombination policy");
         if (g1 == g2)
             {
                 return std::make_pair(g1, 0u);

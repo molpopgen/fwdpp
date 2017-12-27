@@ -21,6 +21,7 @@ struct fixture
     KTfwd::crossover_point ci2;
     KTfwd::crossover_point ci3;
     KTfwd::gamete g;
+    std::pair<std::size_t, std::size_t> diploid;
     std::vector<KTfwd::mutation> mutations;
 
     fixture()
@@ -29,7 +30,7 @@ struct fixture
           inf{ std::numeric_limits<double>::infinity() }, recvar{},
           pi{ r, 1e-3, 0., 1. }, ci1{ r, 1e-3, 0.5 },
           ci2{ r, 1e-3, 0.5, true }, ci3{ r, 1e-3, 0.5, false }, g{ 0 },
-          mutations{}
+          diploid{ 0, 0 }, mutations{}
     {
         gsl_rng_set(r, 42);
     }
@@ -71,7 +72,8 @@ BOOST_AUTO_TEST_CASE(test_basic_use)
 BOOST_AUTO_TEST_CASE(test_dispatch)
 {
     auto x = KTfwd::dispatch_recombination_policy(
-        std::cref(recvar), std::cref(g), std::cref(g), std::cref(mutations));
+        std::cref(recvar), std::cref(diploid), std::cref(g), std::cref(g),
+        std::cref(mutations));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

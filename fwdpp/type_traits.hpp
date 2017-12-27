@@ -102,17 +102,20 @@ namespace KTfwd
          * Wraps a static constant to test that recmodel_t is a valid
          * recombination function/policy
          */
-        template <typename recmodel_t, typename gamete_t, typename mcont_t>
+        template <typename recmodel_t, typename diploid_t, typename gamete_t,
+                  typename mcont_t>
         using is_rec_model
-            = traits::internal::is_rec_model<recmodel_t, gamete_t, mcont_t>;
+            = traits::internal::is_rec_model<recmodel_t, diploid_t, gamete_t,
+                                             mcont_t>;
 
         /*!
          * Convenience wrapper for
          * KTfwd::traits::is_rec_model<recmodel_t,gamete_c,mcont_t>::type
          */
-        template <typename recmodel_t, typename gamete_t, typename mcont_t>
-        using is_rec_model_t =
-            typename is_rec_model<recmodel_t, gamete_t, mcont_t>::type;
+        template <typename recmodel_t, typename diploid_t, typename gamete_t,
+                  typename mcont_t>
+        using is_rec_model_t = typename is_rec_model<recmodel_t, diploid_t,
+                                                     gamete_t, mcont_t>::type;
 
         /*!
          * Defines a struct with a single member typedef called type.
@@ -164,7 +167,7 @@ namespace KTfwd
         template <typename gcont_t_or_gamete_t, typename mcont_t>
         using rich_recmodel_t =
             typename traits::internal::rich_recmodel_t<gcont_t_or_gamete_t,
-                                                  mcont_t>::type;
+                                                       mcont_t>::type;
 
         // clang-format off
         /*!

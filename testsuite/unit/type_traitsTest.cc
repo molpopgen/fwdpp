@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
                             KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
                                                            mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, false);
-    v = KTfwd::traits::is_rec_model<decltype(rm), gcont_t::value_type,
-                                    mcont_t>::value;
+    v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
+                                    gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
     auto mock_rec
@@ -137,24 +137,38 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
                             KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
                                                            mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(mock_rec), gcont_t::value_type,
-                                    mcont_t>::value;
+    v = KTfwd::traits::is_rec_model<decltype(mock_rec),
+                                    dipvector_t::value_type,
+                                    gcont_t::value_type, mcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+
+    auto mock_rec_diploid
+        = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
+                const gcont_t::value_type &,
+                const mcont_t &) -> decltype(rm()) { return rm(); };
+
+    v = KTfwd::traits::is_rec_model<decltype(mock_rec_diploid),
+                                    dipvector_t::value_type,
+                                    gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
     // Test that this is not a valid rec policy
     auto mock_not_rec = [&rm](const int, int, const mcont_t &) -> decltype(
         rm()) { return rm(); };
-    v = KTfwd::traits::is_rec_model<decltype(mock_not_rec), int,
+    v = KTfwd::traits::is_rec_model<decltype(mock_not_rec),
+                                    dipvector_t::value_type, int,
                                     mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 
     // Now, we test that the types can be dispatched
     auto r1 = KTfwd::dispatch_recombination_policy(
-        rm, gcont_t::value_type(0), gcont_t::value_type(0), mcont_t());
+        rm, dipvector_t::value_type(), gcont_t::value_type(0),
+        gcont_t::value_type(0), mcont_t());
     v = std::is_same<decltype(r1), std::vector<double>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
     auto r2 = KTfwd::dispatch_recombination_policy(
-        mock_rec, gcont_t::value_type(0), gcont_t::value_type(0), mcont_t());
+        mock_rec, dipvector_t::value_type(), gcont_t::value_type(0),
+        gcont_t::value_type(0), mcont_t());
     v = std::is_same<decltype(r2), std::vector<double>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }

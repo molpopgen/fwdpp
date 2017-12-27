@@ -211,17 +211,21 @@ namespace KTfwd
                                 void>::type;
             };
 
-            template <typename recmodel_t, typename gamete_t, typename mcont_t,
+            template <typename recmodel_t, typename diploid_t,
+                      typename gamete_t, typename mcont_t, typename = void,
                       typename = void, typename = void, typename = void>
             struct is_rec_model : std::false_type
             {
             };
 
-            template <typename recmodel_t, typename gamete_t, typename mcont_t>
-            struct is_rec_model<recmodel_t, gamete_t, mcont_t,
+            template <typename recmodel_t, typename diploid_t,
+                      typename gamete_t, typename mcont_t>
+            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
                                 typename void_t<
                                     typename std::result_of<recmodel_t()>::
                                         type>::type,
+                                typename std::enable_if<is_diploid<diploid_t>::
+                                                            value>::type,
                                 typename std::enable_if<is_gamete<gamete_t>::
                                                             value>::type,
                                 typename std::enable_if<is_mutation<
@@ -230,18 +234,38 @@ namespace KTfwd
             {
             };
 
-            template <typename recmodel_t, typename gamete_t, typename mcont_t>
-            struct is_rec_model<recmodel_t, gamete_t, mcont_t,
+            template <typename recmodel_t, typename diploid_t,
+                      typename gamete_t, typename mcont_t>
+            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
                                 typename void_t<
                                     typename std::result_of<recmodel_t(
                                         const gamete_t &, const gamete_t &,
                                         const mcont_t &)>::type>::type,
+                                typename std::enable_if<is_diploid<diploid_t>::
+                                                            value>::type,
                                 typename std::enable_if<is_gamete<gamete_t>::
                                                             value>::type,
                                 typename std::enable_if<is_mutation<
                                     typename mcont_t::value_type>::value>::
                                     type> : std::true_type
+            {
+            };
 
+            template <typename recmodel_t, typename diploid_t,
+                      typename gamete_t, typename mcont_t>
+            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
+                                typename void_t<
+                                    typename std::result_of<recmodel_t(
+                                        const diploid_t &, const gamete_t &,
+                                        const gamete_t &,
+                                        const mcont_t &)>::type>::type,
+                                typename std::enable_if<is_diploid<diploid_t>::
+                                                            value>::type,
+                                typename std::enable_if<is_gamete<gamete_t>::
+                                                            value>::type,
+                                typename std::enable_if<is_mutation<
+                                    typename mcont_t::value_type>::value>::
+                                    type> : std::true_type
             {
             };
 

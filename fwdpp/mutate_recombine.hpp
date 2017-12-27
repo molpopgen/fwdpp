@@ -21,33 +21,48 @@
 
 namespace KTfwd
 {
-    template <typename recombination_policy, typename gamete_t,
-              typename mcont_t>
+    template <typename recombination_policy, typename diploid_t,
+              typename gamete_t, typename mcont_t>
     inline typename std::result_of<recombination_policy()>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  gamete_t &&, gamete_t &&, mcont_t &&)
+                                  diploid_t &&, gamete_t &&, gamete_t &&,
+                                  mcont_t &&)
     {
         return rec_pol();
     }
 
-    template <typename recombination_policy, typename gamete_t,
-              typename mcont_t>
+    template <typename recombination_policy, typename diploid_t,
+              typename gamete_t, typename mcont_t>
     inline
         typename std::result_of<recombination_policy(gamete_t &&, gamete_t &&,
                                                      mcont_t &&)>::type
         dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                      gamete_t &&g1, gamete_t &&g2,
-                                      mcont_t &&mutations)
+                                      diploid_t &&, gamete_t &&g1,
+                                      gamete_t &&g2, mcont_t &&mutations)
     {
         return rec_pol(std::forward<gamete_t>(g1), std::forward<gamete_t>(g2),
                        std::forward<mcont_t>(mutations));
     }
 
-    template <typename recombination_policy, typename gcont_t,
-              typename mcont_t>
+    template <typename recombination_policy, typename diploid_t,
+              typename gamete_t, typename mcont_t>
+    inline typename std::result_of<recombination_policy(
+        diploid_t &&, gamete_t &&, gamete_t &&, mcont_t &&)>::type
+    dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                  diploid_t &&diploid, gamete_t &&g1,
+                                  gamete_t &&g2, mcont_t &&mutations)
+    {
+        return rec_pol(std::forward<diploid_t>(diploid),
+                       std::forward<gamete_t>(g1), std::forward<gamete_t>(g2),
+                       std::forward<mcont_t>(mutations));
+    }
+
+    template <typename recombination_policy, typename diploid_t,
+              typename gcont_t, typename mcont_t>
     std::vector<double>
-    generate_breakpoints(const std::size_t g1, const std::size_t g2,
-                         const gcont_t &gametes, const mcont_t &mutations,
+    generate_breakpoints(const diploid_t &diploid, const std::size_t g1,
+                         const std::size_t g2, const gcont_t &gametes,
+                         const mcont_t &mutations,
                          const recombination_policy &rec_pol)
     /// Generate vector of recombination breakpoints
     ///
@@ -73,8 +88,8 @@ namespace KTfwd
                 return {};
             }
         return dispatch_recombination_policy(
-            std::cref(rec_pol), std::cref(gametes[g1]), std::cref(gametes[g2]),
-            std::cref(mutations));
+            std::cref(rec_pol), std::cref(diploid), std::cref(gametes[g1]),
+            std::cref(gametes[g2]), std::cref(mutations));
     }
 
     template <typename queue_type, typename mutation_model, typename gcont_t,
@@ -334,10 +349,10 @@ namespace KTfwd
         // the integers representing the locations of the new mutations
         // in "mutations".
 
-        auto breakpoints
-            = generate_breakpoints(p1g1, p1g2, gametes, mutations, rec_pol);
-        auto breakpoints2
-            = generate_breakpoints(p2g1, p2g2, gametes, mutations, rec_pol);
+        auto breakpoints = generate_breakpoints(dip, p1g1, p1g2, gametes,
+                                                mutations, rec_pol);
+        auto breakpoints2 = generate_breakpoints(dip, p2g1, p2g2, gametes,
+                                                 mutations, rec_pol);
         auto new_mutations = generate_new_mutations(
             mutation_recycling_bin, r, mu, gametes, mutations, p1g1, mmodel);
         auto new_mutations2 = generate_new_mutations(
