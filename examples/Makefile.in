@@ -91,7 +91,8 @@ noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_binaryIO_ind$(EXEEXT) \
 	migsel_ind$(EXEEXT) migsel_split_ind_list$(EXEEXT) \
 	bneck_selection_ind$(EXEEXT) diploid_ind_2locus$(EXEEXT) \
 	K_linked_regions_multilocus$(EXEEXT) \
-	K_linked_regions_extensions$(EXEEXT) HOC_ind$(EXEEXT)
+	K_linked_regions_extensions$(EXEEXT) \
+	K_linked_regions_generalized_rec$(EXEEXT) HOC_ind$(EXEEXT)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DHAVE_LIBSEQUENCE
 @DEBUG_FALSE@am__append_2 = -DNDEBUG
 subdir = examples
@@ -116,6 +117,12 @@ K_linked_regions_extensions_OBJECTS =  \
 	$(am_K_linked_regions_extensions_OBJECTS)
 K_linked_regions_extensions_LDADD = $(LDADD)
 K_linked_regions_extensions_DEPENDENCIES =
+am_K_linked_regions_generalized_rec_OBJECTS =  \
+	K_linked_regions_generalized_rec.$(OBJEXT)
+K_linked_regions_generalized_rec_OBJECTS =  \
+	$(am_K_linked_regions_generalized_rec_OBJECTS)
+K_linked_regions_generalized_rec_LDADD = $(LDADD)
+K_linked_regions_generalized_rec_DEPENDENCIES =
 am_K_linked_regions_multilocus_OBJECTS =  \
 	K_linked_regions_multilocus.$(OBJEXT)
 K_linked_regions_multilocus_OBJECTS =  \
@@ -196,6 +203,7 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(HOC_ind_SOURCES) $(K_linked_regions_extensions_SOURCES) \
+	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) \
@@ -204,6 +212,7 @@ SOURCES = $(HOC_ind_SOURCES) $(K_linked_regions_extensions_SOURCES) \
 	$(migsel_split_ind_list_SOURCES)
 DIST_SOURCES = $(HOC_ind_SOURCES) \
 	$(K_linked_regions_extensions_SOURCES) \
+	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) \
@@ -346,6 +355,7 @@ bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
 K_linked_regions_multilocus_SOURCES = K_linked_regions_multilocus.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES = K_linked_regions_extensions.cc common_ind.hpp
+K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc common_ind.hpp
 HOC_ind_SOURCES = HOC_ind.cc
 AM_CPPFLAGS = -Wall -W -I. $(am__append_2)
 AM_CXXFLAGS = $(am__append_1)
@@ -396,6 +406,10 @@ K_linked_regions_extensions$(EXEEXT): $(K_linked_regions_extensions_OBJECTS) $(K
 	@rm -f K_linked_regions_extensions$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_extensions_OBJECTS) $(K_linked_regions_extensions_LDADD) $(LIBS)
 
+K_linked_regions_generalized_rec$(EXEEXT): $(K_linked_regions_generalized_rec_OBJECTS) $(K_linked_regions_generalized_rec_DEPENDENCIES) $(EXTRA_K_linked_regions_generalized_rec_DEPENDENCIES) 
+	@rm -f K_linked_regions_generalized_rec$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_generalized_rec_OBJECTS) $(K_linked_regions_generalized_rec_LDADD) $(LIBS)
+
 K_linked_regions_multilocus$(EXEEXT): $(K_linked_regions_multilocus_OBJECTS) $(K_linked_regions_multilocus_DEPENDENCIES) $(EXTRA_K_linked_regions_multilocus_DEPENDENCIES) 
 	@rm -f K_linked_regions_multilocus$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_multilocus_OBJECTS) $(K_linked_regions_multilocus_LDADD) $(LIBS)
@@ -440,6 +454,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HOC_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_extensions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_generalized_rec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_multilocus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bneck_selection_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_binaryIO_ind.Po@am__quote@
