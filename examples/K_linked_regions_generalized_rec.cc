@@ -93,9 +93,7 @@ main(int argc, char **argv)
                              std::ref(pop.mut_lookup), generation, mu, 0.,
                              [&r,K]() { return gsl_ran_flat(r.get(),0.,double(K)); },
                              []() { return 0.; }, []() { return 0.; }),
-                recvar, std::bind(KTfwd::multiplicative_diploid(),
-                                  std::placeholders::_1, std::placeholders::_2,
-                                  std::placeholders::_3, 2.),
+                recvar, KTfwd::multiplicative_diploid(),
                 pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
             KTfwd::update_mutations(pop.mutations, pop.fixations,
