@@ -243,9 +243,9 @@ namespace KTfwd
             = is_mutation_model<mmodel_t, mcont_t, gcont_t>::value;
 
         //! \ingroup Cpp14
-        template <typename recmodel_t, typename gamete_t, typename mcont_t>
+        template <typename recmodel_t, typename diploid_t, typename gamete_t, typename mcont_t>
         constexpr bool is_rec_model_v
-            = is_rec_model<recmodel_t, gamete_t, mcont_t>::value;
+            = is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t>::value;
 
         //! \ingroup Cpp14
         template <typename ff, typename dipvector_t, typename gcont_t,
