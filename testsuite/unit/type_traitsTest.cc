@@ -147,6 +147,16 @@ BOOST_AUTO_TEST_CASE(is_recmodel_test)
     v = KTfwd::traits::is_rec_model<decltype(mock_not_rec), int,
                                     mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, false);
+
+    // Now, we test that the types can be dispatched
+    auto r1 = KTfwd::dispatch_recombination_policy(
+        rm, gcont_t::value_type(0), gcont_t::value_type(0), mcont_t());
+    v = std::is_same<decltype(r1), std::vector<double>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+    auto r2 = KTfwd::dispatch_recombination_policy(
+        mock_rec, gcont_t::value_type(0), gcont_t::value_type(0), mcont_t());
+    v = std::is_same<decltype(r2), std::vector<double>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

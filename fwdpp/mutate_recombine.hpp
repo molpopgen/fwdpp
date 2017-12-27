@@ -21,20 +21,26 @@
 
 namespace KTfwd
 {
-    template <typename recombination_policy, typename... args>
+    template <typename recombination_policy, typename gamete_t,
+              typename mcont_t>
     inline typename std::result_of<recombination_policy()>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  args &&...)
+                                  gamete_t &&, gamete_t &&, mcont_t &&)
     {
         return rec_pol();
     }
 
-    template <typename recombination_policy, typename... args>
-    inline typename std::result_of<recombination_policy(args &&...)>::type
-    dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  args &&... a)
+    template <typename recombination_policy, typename gamete_t,
+              typename mcont_t>
+    inline
+        typename std::result_of<recombination_policy(gamete_t &&, gamete_t &&,
+                                                     mcont_t &&)>::type
+        dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                      gamete_t &&g1, gamete_t &&g2,
+                                      mcont_t &&mutations)
     {
-        return rec_pol(std::forward<args>(a)...);
+        return rec_pol(std::forward<gamete_t>(g1), std::forward<gamete_t>(g2),
+                       std::forward<mcont_t>(mutations));
     }
 
     template <typename recombination_policy, typename gcont_t,
