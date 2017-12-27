@@ -142,17 +142,8 @@ main(int argc, char **argv)
         }
     auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
                               pop.diploids, 10, true);
-    for (auto &f : pop.fixations)
-        std::cout << f.pos << ' ';
-    std::cout << '\n';
 #ifdef HAVE_LIBSEQUENCE
     for (auto &i : x)
-        {
-            Sequence::SimData a(i.begin(), i.end());
-            std::cout << a << '\n';
-        }
-    auto y = KTfwd::sample(r.get(), pop, 10, false);
-    for (auto &&i : y)
         {
             Sequence::SimData a(i.begin(), i.end());
             std::cout << a << '\n';
