@@ -34,6 +34,7 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/IO.hpp>
 #include <fwdpp/recombination.hpp>
+#include <fwdpp/general_rec_variation.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sample_diploid.hpp>
