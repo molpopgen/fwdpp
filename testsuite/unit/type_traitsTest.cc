@@ -101,6 +101,30 @@ BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
+// Mocks a custom diploid
+struct fake_dip
+{
+    using first_type = std::size_t;
+    using second_type = first_type;
+    first_type first;
+    second_type second;
+};
+
+BOOST_AUTO_TEST_CASE(is_mmodel_diploid_test)
+{
+    // Fake a mutation model requiring a diploid.
+    // The function itself is invalid in implementation,
+    // but the purpose here is to test the signature.
+    auto m = [](KTfwd::traits::recycling_bin_t<mcont_t> &, const fake_dip &,
+                const gcont_t::value_type &,
+                const mcont_t &) -> std::size_t { return 1; };
+    auto v = std::
+        is_convertible<decltype(m),
+                       KTfwd::traits::mutation_model_diploid<fake_dip, mcont_t,
+                                                            gcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+}
+
 BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
 {
     auto fp = KTfwd::multiplicative_diploid(2.);

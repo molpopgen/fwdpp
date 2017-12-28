@@ -259,8 +259,32 @@ namespace KTfwd
                                                  value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    recycling_bin_t<mcont_t> &, typename gcont_t::value_type &,
-                    mcont_t &)>;
+                    recycling_bin_t<mcont_t> &,
+                    const typename gcont_t::value_type &, mcont_t &)>;
+            };
+
+            template <typename diploid_t, typename mcont_t, typename gcont_t,
+                      typename = void, typename = void, typename = void>
+            struct mutation_model_diploid
+            {
+                using type = void;
+            };
+
+            template <typename diploid_t, typename mcont_t, typename gcont_t>
+            struct mutation_model_diploid<diploid_t, mcont_t, gcont_t,
+                                          typename std::
+                                              enable_if<is_diploid<diploid_t>::
+                                                            value>::type,
+                                          typename std::enable_if<is_mutation<
+                                              typename mcont_t::
+                                                  value_type>::value>::type,
+                                          typename std::enable_if<is_gamete<
+                                              typename gcont_t::
+                                                  value_type>::value>::type>
+            {
+                using type = std::function<std::size_t(
+                    recycling_bin_t<mcont_t> &, const diploid_t &,
+                    const typename gcont_t::value_type &, mcont_t &)>;
             };
         }
     }
