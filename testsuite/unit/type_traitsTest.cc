@@ -10,6 +10,7 @@
 #include <config.h>
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include <fwdpp/fitness_models.hpp>
+#include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recombination.hpp>
 #include <boost/test/unit_test.hpp>
@@ -76,12 +77,28 @@ BOOST_AUTO_TEST_CASE(is_mmodel_test)
         return KTfwd::fwdpp_internal::recycle_mutation_helper(
             rbin, __mvector, next_mut_pos[i++], 0.);
     };
-    auto v = std::is_convertible<decltype(mmodel),
-                                 KTfwd::traits::mmodel_t<mcont_t>>::value;
+    auto v
+        = std::is_convertible<decltype(mmodel),
+                              KTfwd::traits::mutation_model<mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
     v = KTfwd::traits::is_mutation_model<decltype(mmodel), mcont_t,
                                          gcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+}
+
+BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
+{
+    // Fake a mutation model requiring a gamete.
+    // The function itself is invalid in implementation,
+    // but the purpose here is to test the signature.
+    auto m = [](KTfwd::traits::recycling_bin_t<mcont_t> &,
+                const gcont_t::value_type &,
+                const mcont_t &) -> std::size_t { return 1; };
+    auto v = std::
+        is_convertible<decltype(m),
+                       KTfwd::traits::mutation_model_gamete<mcont_t,
+                                                            gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
@@ -116,17 +133,8 @@ BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
 
     KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
 
-    auto v
-        = std::is_convertible<decltype(rm),
-                              KTfwd::traits::rich_recmodel_t<gcont_t,
-                                                             mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-    v = std::is_convertible<decltype(rm),
-                            KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
-                                                           mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-    v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
+    auto v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
+                                         gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
     // Now, we test that the types can be dispatched
     auto r1 = KTfwd::dispatch_recombination_policy(
@@ -143,14 +151,9 @@ BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
         = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
                 const mcont_t &) -> decltype(rm()) { return rm(); };
 
-    auto v = std::
-        is_convertible<decltype(mock_rec),
-                       KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
-                                                      mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(mock_rec),
-                                    dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
+    auto v = KTfwd::traits::is_rec_model<decltype(mock_rec),
+                                         dipvector_t::value_type,
+                                         gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
     auto r2 = KTfwd::dispatch_recombination_policy(
         mock_rec, dipvector_t::value_type(), gcont_t::value_type(0),

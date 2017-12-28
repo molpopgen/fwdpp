@@ -8,9 +8,7 @@
 #include <type_traits>
 #include <functional>
 #include <utility>
-#include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/internal/void_t.hpp>
-#include <fwdpp/internal/mutation_internal.hpp>
 
 namespace KTfwd
 {
@@ -91,6 +89,7 @@ namespace KTfwd
             };
 
             template <typename dipvector_t, typename gcont_t, typename mcont_t,
+                      typename = void, typename = void, typename = void,
                       typename = void>
             struct fitness_fxn
             {
@@ -102,22 +101,19 @@ namespace KTfwd
                                typename void_t<
                                    typename dipvector_t::value_type,
                                    typename gcont_t::value_type,
-                                   typename mcont_t::value_type>::type>
+                                   typename mcont_t::value_type>::type,
+                               typename std::enable_if<is_diploid<
+                                   typename dipvector_t::value_type>::value>::
+                                   type,
+                               typename std::enable_if<is_gamete<
+                                   typename gcont_t::value_type>::value>::type,
+                               typename std::enable_if<is_mutation<
+                                   typename mcont_t::value_type>::value>::type>
+
             {
-                using type = typename std::
-                    conditional<(is_diploid<
-                                     typename dipvector_t::value_type>::value
-                                 || is_multilocus_diploid<
-                                        typename dipvector_t::value_type>::
-                                        value)
-                                    && is_gamete<
-                                           typename gcont_t::value_type>::value
-                                    && is_mutation<typename mcont_t::
-                                                       value_type>::value,
-                                std::function<double(
-                                    const typename dipvector_t::value_type &,
-                                    const gcont_t &, const mcont_t &)>,
-                                void>::type;
+                using type = std::function<double(
+                    const typename dipvector_t::value_type &, const gcont_t &,
+                    const mcont_t &)>;
             };
 
             template <
@@ -135,80 +131,42 @@ namespace KTfwd
             };
 
             template <typename mmodel_t, typename mcont_t, typename gcont_t,
-                      typename = void>
+                      typename = void, typename = void, typename = void>
             struct is_mutation_model : std::false_type
-            {
-            };
-
-            template <typename gamete_t, typename mutation_t>
-            struct check_mmodel_types
-                : std::integral_constant<bool,
-                                         is_gamete<gamete_t>::value
-                                             && is_mutation<mutation_t>::value>
-            {
-            };
-
-            template <typename mmodel_t, typename gcont_t, typename mcont_t,
-                      typename gamete_t = typename gcont_t::value_type,
-                      typename mutation_t = typename mcont_t::value_type,
-                      typename recbin = recycling_bin_t<mcont_t>>
-            struct dispatchable_mmodel
-                : std::is_same<
-                      typename std::result_of<decltype (
-                          &fwdpp_internal::mmodel_dispatcher<mmodel_t,
-                                                             gamete_t, mcont_t,
-                                                             recbin>)(
-                          mmodel_t &, gamete_t &, mcont_t &, recbin &)>::type,
-                      std::size_t>
             {
             };
 
             template <typename mmodel_t, typename mcont_t, typename gcont_t>
             struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
                                      typename void_t<
-                                         typename mcont_t::value_type,
-                                         typename gcont_t::value_type>::type>
-                : std::integral_constant<bool,
-                                         check_mmodel_types<
-                                             typename gcont_t::value_type,
-                                             typename mcont_t::value_type>::
-                                                 value
-                                             && dispatchable_mmodel<mmodel_t,
-                                                                    gcont_t,
-                                                                    mcont_t>::
-                                                    value>
+                                         typename std::result_of<mmodel_t(
+                                             recycling_bin_t<mcont_t> &,
+                                             mcont_t &)>::type>::type,
+                                     typename std::enable_if<is_mutation<
+                                         typename mcont_t::value_type>::
+                                                                 value>::type,
+                                     typename std::enable_if<is_gamete<
+                                         typename gcont_t::value_type>::
+                                                                 value>::type>
+                : std::true_type
             {
             };
 
-            template <typename gcont_t_or_gamete_t, typename mcont_t,
-                      typename = void>
-            struct rich_recmodel_t
+            template <typename mmodel_t, typename mcont_t, typename gcont_t>
+            struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
+                                     typename void_t<
+                                         typename std::result_of<mmodel_t(
+                                             recycling_bin_t<mcont_t> &,
+                                             typename gcont_t::value_type &,
+                                             mcont_t &)>::type>::type,
+                                     typename std::enable_if<is_mutation<
+                                         typename mcont_t::value_type>::
+                                                                 value>::type,
+                                     typename std::enable_if<is_gamete<
+                                         typename gcont_t::value_type>::
+                                                                 value>::type>
+                : std::true_type
             {
-                using type = typename std::
-                    conditional<is_gamete<gcont_t_or_gamete_t>::value,
-                                std::function<std::vector<double>(
-                                    const gcont_t_or_gamete_t &,
-                                    const gcont_t_or_gamete_t &,
-                                    const mcont_t &)>,
-                                void>::type;
-            };
-
-            template <typename gcont_t_or_gamete_t, typename mcont_t>
-            struct rich_recmodel_t<gcont_t_or_gamete_t, mcont_t,
-                                   typename void_t<
-                                       typename gcont_t_or_gamete_t::
-                                           value_type>::type>
-            {
-                using type = typename std::
-                    conditional<is_gamete<typename gcont_t_or_gamete_t::
-                                              value_type>::value,
-                                std::function<std::vector<double>(
-                                    const typename gcont_t_or_gamete_t::
-                                        value_type &,
-                                    const typename gcont_t_or_gamete_t::
-                                        value_type &,
-                                    const mcont_t &)>,
-                                void>::type;
             };
 
             template <typename recmodel_t, typename diploid_t,
@@ -269,45 +227,40 @@ namespace KTfwd
             {
             };
 
-            template <typename mcont_t, typename = void> struct mmodel_t
+            template <typename mcont_t, typename = void> struct mutation_model
             {
                 using type = void;
             };
 
             template <typename mcont_t>
-            struct mmodel_t<mcont_t, typename void_t<
-                                         typename mcont_t::value_type>::type>
+            struct mutation_model<mcont_t,
+                                  typename std::enable_if<is_mutation<
+                                      typename mcont_t::value_type>::value>::
+                                      type>
             {
-                using type = typename std::
-                    conditional<is_mutation<
-                                    typename mcont_t::value_type>::value,
-                                std::function<std::size_t(
-                                    recycling_bin_t<mcont_t> &, mcont_t &)>,
-                                void>::type;
+                using type = std::function<std::size_t(
+                    recycling_bin_t<mcont_t> &, mcont_t &)>;
             };
 
-            template <typename mcont_t, typename gcont_t, typename = void>
-            struct mmodel_gamete_t
+            template <typename mcont_t, typename gcont_t, typename = void,
+                      typename = void>
+            struct mutation_model_gamete
             {
                 using type = void;
             };
 
             template <typename mcont_t, typename gcont_t>
-            struct mmodel_gamete_t<mcont_t, gcont_t,
-                                   typename void_t<
-                                       typename mcont_t::value_type,
-                                       typename gcont_t::value_type>::type>
+            struct mutation_model_gamete<mcont_t, gcont_t,
+                                         typename std::enable_if<is_mutation<
+                                             typename mcont_t::
+                                                 value_type>::value>::type,
+                                         typename std::enable_if<is_gamete<
+                                             typename gcont_t::
+                                                 value_type>::value>::type>
             {
-                using type = typename std::
-                    conditional<is_mutation<
-                                    typename mcont_t::value_type>::value
-                                    && is_gamete<typename gcont_t::
-                                                     value_type>::value,
-                                std::function<std::size_t(
-                                    recycling_bin_t<mcont_t> &,
-                                    typename gcont_t::value_type &,
-                                    mcont_t &)>,
-                                void>::type;
+                using type = std::function<std::size_t(
+                    recycling_bin_t<mcont_t> &, typename gcont_t::value_type &,
+                    mcont_t &)>;
             };
         }
     }

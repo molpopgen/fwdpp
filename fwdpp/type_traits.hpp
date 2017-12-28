@@ -157,20 +157,6 @@ namespace KTfwd
 
         // clang-format off
         /*!
-		 * Infers the signature of a recombination function compatible
-		 * with the template type parameters.
-		 *
-		 * If such a function signature cannot be inferred, this
-		 * evaluates to void.
-		 */
-        // clang-format on
-        template <typename gcont_t_or_gamete_t, typename mcont_t>
-        using rich_recmodel_t =
-            typename traits::internal::rich_recmodel_t<gcont_t_or_gamete_t,
-                                                       mcont_t>::type;
-
-        // clang-format off
-        /*!
 		 * Gives the mutation model function signature corresponding to
          * mcont_t.
 		 * Applies to mutation policies that only take recycling bins
@@ -186,7 +172,7 @@ namespace KTfwd
          */
         // clang-format on
         template <typename mcont_t>
-        using mmodel_t = typename traits::internal::mmodel_t<mcont_t>::type;
+        using mutation_model = typename traits::internal::mutation_model<mcont_t>::type;
 
         // clang-format off
 		/*!
@@ -205,8 +191,8 @@ namespace KTfwd
         */
         // clang-format on
         template <typename mcont_t, typename gcont_t>
-        using mmodel_gamete_t =
-            typename traits::internal::mmodel_gamete_t<mcont_t, gcont_t>::type;
+        using mutation_model_gamete =
+            typename traits::internal::mutation_model_gamete<mcont_t, gcont_t>::type;
 
 /*! \defgroup Cpp14
  * \brief C++14 features

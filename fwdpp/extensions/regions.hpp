@@ -216,7 +216,7 @@ namespace KTfwd
           See unit test extensions.cc for an example of use.
         */
         template <typename mcont_t, typename lookup_t, class... Args>
-        inline traits::mmodel_t<mcont_t>
+        inline traits::mutation_model<mcont_t>
         bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t &mut_lookup,
                  Args &&... args)
         {
@@ -232,7 +232,7 @@ namespace KTfwd
          *  to KTfwd::extensions::discrete_mut_model::operator()
          */
         template <typename mcont_t, typename lookup_t, class... Args>
-        inline std::vector<traits::mmodel_t<mcont_t>>
+        inline std::vector<traits::mutation_model<mcont_t>>
         bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
                      mcont_t &mutations, lookup_t &mut_lookup,
                      const gsl_rng *r,
