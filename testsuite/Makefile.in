@@ -141,18 +141,16 @@ unit_extensions_unit_tests_OBJECTS =  \
 unit_extensions_unit_tests_LDADD = $(LDADD)
 am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc \
-	unit/type_traitsTest.cc unit/recombinationTest.cc \
-	unit/demographyTest.cc unit/siteDepFitnessTest.cc \
-	unit/serializationTest.cc unit/ms_samplingTest.cc \
-	unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc \
-	unit/test_general_rec_variation.cc
+	unit/type_traitsTest.cc unit/demographyTest.cc \
+	unit/siteDepFitnessTest.cc unit/serializationTest.cc \
+	unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc \
+	unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/gameteTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/utilTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/type_traitsTest.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/recombinationTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/demographyTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/siteDepFitnessTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/serializationTest.$(OBJEXT) \
@@ -552,7 +550,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@TESTS = $(check_PROGRAMS)
 
 #Unit test targets:
-@BUNIT_TEST_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/recombinationTest.cc unit/demographyTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc
+@BUNIT_TEST_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/demographyTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/ms_samplingTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_GSLrngTest.cc \
@@ -670,8 +668,6 @@ unit/utilTest.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/type_traitsTest.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
-unit/recombinationTest.$(OBJEXT): unit/$(am__dirstamp) \
-	unit/$(DEPDIR)/$(am__dirstamp)
 unit/demographyTest.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/siteDepFitnessTest.$(OBJEXT): unit/$(am__dirstamp) \
@@ -740,7 +736,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/mlocusCrossoverTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/ms_samplingTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/mutateTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/recombinationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/serializationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/siteDepFitnessTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_GSLrngTest.Po@am__quote@

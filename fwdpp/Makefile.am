@@ -9,12 +9,8 @@ pkginclude_HEADERS=debug.hpp \
 	insertion_policies.hpp \
 	IO.hpp \
 	IO.tcc \
-	mutation.hpp \
-	mutation.tcc \
 	poisson_xover.hpp \
 	general_rec_variation.hpp \
-	recombination.hpp \
-	recombination.tcc \
 	sample_diploid.hpp \
 	sample_diploid.tcc \
 	sampling_functions.hpp \

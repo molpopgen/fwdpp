@@ -8,7 +8,6 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/poisson_xover.hpp>
-#include <fwdpp/recombination.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
 #include <fwdpp/sugar/serialization.hpp>

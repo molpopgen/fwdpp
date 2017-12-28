@@ -10,7 +10,6 @@
 #define __FWDPP_SAMPLE_DIPLOID_TCC__
 
 #include <fwdpp/debug.hpp>
-#include <fwdpp/mutation.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
