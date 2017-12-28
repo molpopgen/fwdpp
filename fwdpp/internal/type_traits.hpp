@@ -234,15 +234,12 @@ namespace KTfwd
 
             template <typename mcont_t>
             struct mutation_model<mcont_t,
-                                  typename void_t<
-                                      typename mcont_t::value_type>::type>
+                                  typename std::enable_if<is_mutation<
+                                      typename mcont_t::value_type>::value>::
+                                      type>
             {
-                using type = typename std::
-                    conditional<is_mutation<
-                                    typename mcont_t::value_type>::value,
-                                std::function<std::size_t(
-                                    recycling_bin_t<mcont_t> &, mcont_t &)>,
-                                void>::type;
+                using type = std::function<std::size_t(
+                    recycling_bin_t<mcont_t> &, mcont_t &)>;
             };
 
             template <typename mcont_t, typename gcont_t, typename = void,
