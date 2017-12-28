@@ -12,7 +12,6 @@
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/poisson_xover.hpp>
-#include <fwdpp/recombination.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <gsl/gsl_rng.h>
