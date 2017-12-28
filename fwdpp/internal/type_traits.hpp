@@ -170,37 +170,6 @@ namespace KTfwd
             {
             };
 
-            template <typename gcont_t_or_gamete_t, typename mcont_t,
-                      typename = void>
-            struct rich_recmodel_t
-            {
-                using type = typename std::
-                    conditional<is_gamete<gcont_t_or_gamete_t>::value,
-                                std::function<std::vector<double>(
-                                    const gcont_t_or_gamete_t &,
-                                    const gcont_t_or_gamete_t &,
-                                    const mcont_t &)>,
-                                void>::type;
-            };
-
-            template <typename gcont_t_or_gamete_t, typename mcont_t>
-            struct rich_recmodel_t<gcont_t_or_gamete_t, mcont_t,
-                                   typename void_t<
-                                       typename gcont_t_or_gamete_t::
-                                           value_type>::type>
-            {
-                using type = typename std::
-                    conditional<is_gamete<typename gcont_t_or_gamete_t::
-                                              value_type>::value,
-                                std::function<std::vector<double>(
-                                    const typename gcont_t_or_gamete_t::
-                                        value_type &,
-                                    const typename gcont_t_or_gamete_t::
-                                        value_type &,
-                                    const mcont_t &)>,
-                                void>::type;
-            };
-
             template <typename recmodel_t, typename diploid_t,
                       typename gamete_t, typename mcont_t, typename = void,
                       typename = void, typename = void, typename = void>

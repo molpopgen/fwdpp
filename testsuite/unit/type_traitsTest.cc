@@ -117,17 +117,8 @@ BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
 
     KTfwd::poisson_xover rm(r, 1e-3, 0., 1.);
 
-    auto v
-        = std::is_convertible<decltype(rm),
-                              KTfwd::traits::rich_recmodel_t<gcont_t,
-                                                             mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-    v = std::is_convertible<decltype(rm),
-                            KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
-                                                           mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, false);
-    v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
+    auto v = KTfwd::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
+                                         gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
     // Now, we test that the types can be dispatched
     auto r1 = KTfwd::dispatch_recombination_policy(
@@ -144,14 +135,9 @@ BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
         = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
                 const mcont_t &) -> decltype(rm()) { return rm(); };
 
-    auto v = std::
-        is_convertible<decltype(mock_rec),
-                       KTfwd::traits::rich_recmodel_t<gcont_t::value_type,
-                                                      mcont_t>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    v = KTfwd::traits::is_rec_model<decltype(mock_rec),
-                                    dipvector_t::value_type,
-                                    gcont_t::value_type, mcont_t>::value;
+    auto v = KTfwd::traits::is_rec_model<decltype(mock_rec),
+                                         dipvector_t::value_type,
+                                         gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
     auto r2 = KTfwd::dispatch_recombination_policy(
         mock_rec, dipvector_t::value_type(), gcont_t::value_type(0),
