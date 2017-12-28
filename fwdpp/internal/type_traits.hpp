@@ -228,13 +228,13 @@ namespace KTfwd
             {
             };
 
-            template <typename mcont_t, typename = void> struct mmodel_t
+            template <typename mcont_t, typename = void> struct mutation_model
             {
                 using type = void;
             };
 
             template <typename mcont_t>
-            struct mmodel_t<mcont_t, typename void_t<
+            struct mutation_model<mcont_t, typename void_t<
                                          typename mcont_t::value_type>::type>
             {
                 using type = typename std::
@@ -245,28 +245,25 @@ namespace KTfwd
                                 void>::type;
             };
 
-            template <typename mcont_t, typename gcont_t, typename = void>
-            struct mmodel_gamete_t
+            template <typename mcont_t, typename gcont_t, typename = void,
+                      typename = void>
+            struct mutation_model_gamete
             {
                 using type = void;
             };
 
             template <typename mcont_t, typename gcont_t>
-            struct mmodel_gamete_t<mcont_t, gcont_t,
-                                   typename void_t<
-                                       typename mcont_t::value_type,
-                                       typename gcont_t::value_type>::type>
+            struct mutation_model_gamete<mcont_t, gcont_t,
+                                   typename std::enable_if<is_mutation<
+                                       typename mcont_t::value_type>::value>::
+                                       type,
+                                   typename std::enable_if<is_gamete<
+                                       typename gcont_t::value_type>::value>::
+                                       type>
             {
-                using type = typename std::
-                    conditional<is_mutation<
-                                    typename mcont_t::value_type>::value
-                                    && is_gamete<typename gcont_t::
-                                                     value_type>::value,
-                                std::function<std::size_t(
-                                    recycling_bin_t<mcont_t> &,
-                                    typename gcont_t::value_type &,
-                                    mcont_t &)>,
-                                void>::type;
+                using type = std::function<std::size_t(
+                    recycling_bin_t<mcont_t> &, typename gcont_t::value_type &,
+                    mcont_t &)>;
             };
         }
     }

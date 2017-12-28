@@ -77,12 +77,28 @@ BOOST_AUTO_TEST_CASE(is_mmodel_test)
         return KTfwd::fwdpp_internal::recycle_mutation_helper(
             rbin, __mvector, next_mut_pos[i++], 0.);
     };
-    auto v = std::is_convertible<decltype(mmodel),
-                                 KTfwd::traits::mmodel_t<mcont_t>>::value;
+    auto v
+        = std::is_convertible<decltype(mmodel),
+                              KTfwd::traits::mutation_model<mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
     v = KTfwd::traits::is_mutation_model<decltype(mmodel), mcont_t,
                                          gcont_t>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
+}
+
+BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
+{
+    // Fake a mutation model requiring a gamete.
+    // The function itself is invalid in implementation,
+    // but the purpose here is to test the signature.
+    auto m = [](KTfwd::traits::recycling_bin_t<mcont_t> &,
+                const gcont_t::value_type &,
+                const mcont_t &) -> std::size_t { return 1; };
+    auto v = std::
+        is_convertible<decltype(m),
+                       KTfwd::traits::mutation_model_gamete<mcont_t,
+                                                            gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 

@@ -172,7 +172,7 @@ namespace KTfwd
          */
         // clang-format on
         template <typename mcont_t>
-        using mmodel_t = typename traits::internal::mmodel_t<mcont_t>::type;
+        using mutation_model = typename traits::internal::mutation_model<mcont_t>::type;
 
         // clang-format off
 		/*!
@@ -191,8 +191,8 @@ namespace KTfwd
         */
         // clang-format on
         template <typename mcont_t, typename gcont_t>
-        using mmodel_gamete_t =
-            typename traits::internal::mmodel_gamete_t<mcont_t, gcont_t>::type;
+        using mutation_model_gamete =
+            typename traits::internal::mutation_model_gamete<mcont_t, gcont_t>::type;
 
 /*! \defgroup Cpp14
  * \brief C++14 features
