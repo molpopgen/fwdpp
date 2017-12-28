@@ -14,7 +14,6 @@ AC_SUBST(FWDPP_REVISION_VERSION,[FWDPP_REVISION])
 AC_SUBST(FWDPP_VERSION_STRING,[FWDPP_MAJOR"."FWDPP_MINOR"."FWDPP_REVISION])
 AC_CONFIG_SRCDIR([fwdpp/diploid.hh])
 AC_CONFIG_SRCDIR([examples/diploid_ind.cc])
-AC_CONFIG_SRCDIR([experimental_examples/sex_limited_ind.cc])
 AC_CONFIG_SRCDIR([testsuite/unit/fwdpp_unit_tests.cc])
 AM_INIT_AUTOMAKE([subdir-objects])
 AC_CONFIG_HEADERS([config.h])
@@ -32,8 +31,8 @@ AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile
 				 fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile
-				 fwdpp/experimental/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile
-				 experimental_examples/Makefile src/Makefile doc/fwdpp.doxygen])
+				 fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile
+				 src/Makefile doc/fwdpp.doxygen])
 
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
