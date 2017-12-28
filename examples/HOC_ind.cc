@@ -18,7 +18,7 @@ struct HOChap
 {
     template <typename mqueue_t>
     std::size_t
-    operator()(mqueue_t &mut_recycling_bin, poptype::gamete_t &g,
+    operator()(mqueue_t &mut_recycling_bin, const poptype::gamete_t &g,
                singlepop_t::mcont_t &mutations, const gsl_rng *r,
                poptype::lookup_table_t &lookup, const double &sigmu) const
     {

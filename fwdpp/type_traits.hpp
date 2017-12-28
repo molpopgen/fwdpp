@@ -172,7 +172,8 @@ namespace KTfwd
          */
         // clang-format on
         template <typename mcont_t>
-        using mutation_model = typename traits::internal::mutation_model<mcont_t>::type;
+        using mutation_model =
+            typename traits::internal::mutation_model<mcont_t>::type;
 
         // clang-format off
 		/*!
@@ -186,13 +187,34 @@ namespace KTfwd
 		 *
 		 * Otherwise, it will evaluate to
 		 * std::function<std::size_t(recycling_bin_t<mcont_t> &,
-		 * typename gcont_t::value_type &,
+		 * const typename gcont_t::value_type &,
 	     * mcont_t &)>;
         */
         // clang-format on
         template <typename mcont_t, typename gcont_t>
         using mutation_model_gamete =
-            typename traits::internal::mutation_model_gamete<mcont_t, gcont_t>::type;
+            typename traits::internal::mutation_model_gamete<mcont_t,
+                                                             gcont_t>::type;
+
+        // clang-format off
+		/*!
+         * Gives mutation model function signature for models requiring
+         * diploids
+         * as arguments. If mcont_t is not a container of mutations and/or
+         * gcont_t is
+		 * not a container of gametes, them mmodel_gamete_t will
+         * evaluate to
+		 * void.
+		 *
+		 * Otherwise, it will evaluate to
+		 * std::function<std::size_t(recycling_bin_t<mcont_t> &,
+		 * const diploid_t &,const typename gcont_t::value_type &,
+	     * mcont_t &)>;
+        */
+        // clang-format on
+        template <typename diploid_t, typename mcont_t, typename gcont_t>
+        using mutation_model_diploid = typename traits::internal::
+            mutation_model_diploid<diploid_t, mcont_t, gcont_t>::type;
 
 /*! \defgroup Cpp14
  * \brief C++14 features
@@ -229,7 +251,8 @@ namespace KTfwd
             = is_mutation_model<mmodel_t, mcont_t, gcont_t>::value;
 
         //! \ingroup Cpp14
-        template <typename recmodel_t, typename diploid_t, typename gamete_t, typename mcont_t>
+        template <typename recmodel_t, typename diploid_t, typename gamete_t,
+                  typename mcont_t>
         constexpr bool is_rec_model_v
             = is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t>::value;
 

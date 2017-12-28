@@ -92,13 +92,13 @@ namespace KTfwd
             std::cref(gametes[g2]), std::cref(mutations));
     }
 
-    template <typename queue_type, typename mutation_model, typename gcont_t,
-              typename mcont_t>
+    template <typename queue_type, typename mutation_model, typename diploid_t,
+              typename gcont_t, typename mcont_t>
     std::vector<uint_t>
     generate_new_mutations(queue_type &recycling_bin, const gsl_rng *r,
-                           const double &mu, gcont_t &gametes,
-                           mcont_t &mutations, const std::size_t g,
-                           const mutation_model &mmodel)
+                           const double &mu, const diploid_t &dip,
+                           gcont_t &gametes, mcont_t &mutations,
+                           const std::size_t g, const mutation_model &mmodel)
     ///
     /// Return a vector of keys to new mutations.  The keys
     /// will be sorted according to mutation postition.
@@ -120,7 +120,7 @@ namespace KTfwd
         for (unsigned i = 0; i < nm; ++i)
             {
                 rv.emplace_back(fwdpp_internal::mmodel_dispatcher(
-                    mmodel, gametes[g], mutations, recycling_bin));
+                    mmodel, dip, gametes[g], mutations, recycling_bin));
             }
         std::sort(rv.begin(), rv.end(),
                   [&mutations](const uint_t a, const uint_t b) {
@@ -353,10 +353,12 @@ namespace KTfwd
                                                 mutations, rec_pol);
         auto breakpoints2 = generate_breakpoints(dip, p2g1, p2g2, gametes,
                                                  mutations, rec_pol);
-        auto new_mutations = generate_new_mutations(
-            mutation_recycling_bin, r, mu, gametes, mutations, p1g1, mmodel);
-        auto new_mutations2 = generate_new_mutations(
-            mutation_recycling_bin, r, mu, gametes, mutations, p2g1, mmodel);
+        auto new_mutations
+            = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
+                                     gametes, mutations, p1g1, mmodel);
+        auto new_mutations2
+            = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
+                                     gametes, mutations, p2g1, mmodel);
 
         // Pass the breakpoints and new mutation keys on to
         // KTfwd::mutate_recombine (defined in
