@@ -15,7 +15,6 @@
 #include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-#include <fwdpp/experimental/sample_diploid_mloc.hpp>
 #include <testsuite/util/migpop.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
@@ -133,42 +132,6 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
     for (; generation < g + simlen; ++generation)
         {
             double wbar = KTfwd::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
-                interlocus_rec, fitness, pop.neutral, pop.selected);
-            if (!std::isfinite(wbar))
-                {
-                    throw std::runtime_error("fitness not finite");
-                }
-            assert(check_sum(pop.gametes, 8000));
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
-                                    pop.fixation_times, pop.mut_lookup,
-                                    pop.mcounts, generation, 2000);
-        }
-    return g + simlen;
-}
-
-template <typename poptype, typename rng_type, typename mmodel_vec,
-          typename recmodel_vec, typename fitness_fxn>
-inline unsigned
-simulate_mlocuspop_experimental(
-    poptype &pop, const rng_type &rng, const mmodel_vec &mutmodels,
-    const recmodel_vec &recmodels, const fitness_fxn &fitness,
-    const std::vector<double> &mu, const std::vector<double> &rbw,
-    unsigned &generation, const unsigned simlen = 10)
-/*!
-  \brief Quick function for evolving a multilocus deme simulation using
-  KTfwd::experimental
-  \ingroup testing
-  \note this version CAN be used on the same population object
- */
-{
-    unsigned g = generation;
-    auto interlocus_rec = KTfwd::make_binomial_interlocus_rec(
-        rng.get(), rbw.data(), rbw.size());
-    for (; generation < g + simlen; ++generation)
-        {
-            double wbar = KTfwd::experimental::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
                 interlocus_rec, fitness, pop.neutral, pop.selected);
