@@ -1,6 +1,6 @@
-/*! \include K_linked_regions_multilocus.cc
-  Simple example building up a K-locus simulation using the
-  mulitlocus API
+/*! \include K_linked_regions_generalized_rec.cc
+  Simple example building up variation in recombination
+  rate using KTfwd::general_rec_variation
 */
 
 #include <iostream>
@@ -15,20 +15,8 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/sampling.hpp>
 using mtype = KTfwd::popgenmut;
-#define MULTILOCUS_SIM
+#define SINGLEPOP_SIM
 #include <common_ind.hpp>
-
-// Fitness function
-struct no_selection_multi
-{
-    typedef double result_type;
-    inline double
-    operator()(const multiloc_t::dipvector_t::value_type &,
-               const multiloc_t::gcont_t &, const multiloc_t::mcont_t &) const
-    {
-        return 1.;
-    }
-};
 
 int
 main(int argc, char **argv)
@@ -65,8 +53,7 @@ main(int argc, char **argv)
     const unsigned seed
         = atoi(argv[argument++]); // Number of loci in simulation
 
-    const std::vector<double> mu(
-        K, theta / double(4 * N * K)); // per-gamete mutation rate per locus
+	const double mu = theta/double(4*N);
 
     /*
       littler r is the recombination rate per region per generation.
@@ -78,75 +65,45 @@ main(int argc, char **argv)
 
     unsigned twoN = 2 * N;
 
-    multiloc_t pop(N, K);
+    singlepop_t pop(N);
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
     double wbar;
 
-    std::vector<std::function<std::vector<double>()>> recpols;
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          multiloc_t::mcont_t &)>>
-        mmodels;
+    KTfwd::general_rec_variation recvar;
     for (unsigned i = 0; i < K; ++i)
         {
-            recpols.emplace_back(KTfwd::poisson_xover(
-                r.get(), littler, double(i), double(i) + 1.0));
-            mmodels.push_back(std::bind(
-                KTfwd::infsites(), std::placeholders::_1,
-                std::placeholders::_2, r.get(), std::ref(pop.mut_lookup),
-                &generation, mu[i], 0.,
-                [&r, i]() {
-                    return gsl_ran_flat(r.get(), double(i), double(i) + 1.0);
-                },
-                []() { return 0.; }, []() { return 0.; }));
+            recvar.recmap.push_back(
+                KTfwd::poisson_interval(r.get(), littler, i, i + 1.0));
+            if (i)
+                {
+                    recvar.recmap.push_back(
+                        KTfwd::crossover_point(r.get(), rbw, i + 1.0, false));
+                }
         }
-    std::vector<std::function<unsigned(void)>> interlocus_rec(
-        K - 1, std::bind(gsl_ran_binomial, r.get(), rbw, 1));
+
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
             KTfwd::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu.data(), mmodels, recpols, interlocus_rec,
-                no_selection_multi(), pop.neutral, pop.selected);
+                N,mu, std::bind(KTfwd::infsites(), std::placeholders::_1,
+                             std::placeholders::_2, r.get(),
+                             std::ref(pop.mut_lookup), generation, mu, 0.,
+                             [&r,K]() { return gsl_ran_flat(r.get(),0.,double(K)); },
+                             []() { return 0.; }, []() { return 0.; }),
+                recvar, KTfwd::multiplicative_diploid(),
+                pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
             KTfwd::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            assert(popdata_sane_multilocus(pop.diploids, pop.gametes,
-                                           pop.mutations, pop.mcounts));
-#ifndef NDEBUG
-            /*
-            Useful block for long-run testing.
-
-            Make sure that all mutation positions are in the "right" locus.
-                 */
-            for (const auto &dip : pop.diploids)
-                {
-                    for (unsigned locus = 0; locus < dip.size(); ++locus)
-                        {
-                            assert(!std::any_of(
-                                pop.gametes[dip[locus].first]
-                                    .mutations.begin(),
-                                pop.gametes[dip[locus].first].mutations.end(),
-                                [&pop, locus](const std::size_t mi) {
-                                    return !(pop.mutations[mi].pos
-                                                 >= double(locus)
-                                             && pop.mutations[mi].pos
-                                                    < double(locus) + 1.0);
-                                }));
-                        }
-                }
-#endif
         }
     auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
                               pop.diploids, 10, true);
 #ifdef HAVE_LIBSEQUENCE
-    for (auto &i : x)
-        {
-            Sequence::SimData a(i.begin(), i.end());
-            std::cout << a << '\n';
-        }
+    Sequence::SimData a(x.begin(), x.end());
+    std::cout << a << '\n';
 #endif
 }

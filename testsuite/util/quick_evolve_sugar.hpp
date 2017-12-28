@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <cmath>
+#include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recombination.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
