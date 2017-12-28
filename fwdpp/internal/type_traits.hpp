@@ -89,6 +89,7 @@ namespace KTfwd
             };
 
             template <typename dipvector_t, typename gcont_t, typename mcont_t,
+                      typename = void, typename = void, typename = void,
                       typename = void>
             struct fitness_fxn
             {
@@ -100,22 +101,19 @@ namespace KTfwd
                                typename void_t<
                                    typename dipvector_t::value_type,
                                    typename gcont_t::value_type,
-                                   typename mcont_t::value_type>::type>
+                                   typename mcont_t::value_type>::type,
+                               typename std::enable_if<is_diploid<
+                                   typename dipvector_t::value_type>::value>::
+                                   type,
+                               typename std::enable_if<is_gamete<
+                                   typename gcont_t::value_type>::value>::type,
+                               typename std::enable_if<is_mutation<
+                                   typename mcont_t::value_type>::value>::type>
+
             {
-                using type = typename std::
-                    conditional<(is_diploid<
-                                     typename dipvector_t::value_type>::value
-                                 || is_multilocus_diploid<
-                                        typename dipvector_t::value_type>::
-                                        value)
-                                    && is_gamete<
-                                           typename gcont_t::value_type>::value
-                                    && is_mutation<typename mcont_t::
-                                                       value_type>::value,
-                                std::function<double(
-                                    const typename dipvector_t::value_type &,
-                                    const gcont_t &, const mcont_t &)>,
-                                void>::type;
+                using type = std::function<double(
+                    const typename dipvector_t::value_type &, const gcont_t &,
+                    const mcont_t &)>;
             };
 
             template <
@@ -153,6 +151,7 @@ namespace KTfwd
                 : std::true_type
             {
             };
+
             template <typename mmodel_t, typename mcont_t, typename gcont_t>
             struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
                                      typename void_t<
@@ -234,8 +233,9 @@ namespace KTfwd
             };
 
             template <typename mcont_t>
-            struct mutation_model<mcont_t, typename void_t<
-                                         typename mcont_t::value_type>::type>
+            struct mutation_model<mcont_t,
+                                  typename void_t<
+                                      typename mcont_t::value_type>::type>
             {
                 using type = typename std::
                     conditional<is_mutation<
@@ -254,12 +254,12 @@ namespace KTfwd
 
             template <typename mcont_t, typename gcont_t>
             struct mutation_model_gamete<mcont_t, gcont_t,
-                                   typename std::enable_if<is_mutation<
-                                       typename mcont_t::value_type>::value>::
-                                       type,
-                                   typename std::enable_if<is_gamete<
-                                       typename gcont_t::value_type>::value>::
-                                       type>
+                                         typename std::enable_if<is_mutation<
+                                             typename mcont_t::
+                                                 value_type>::value>::type,
+                                         typename std::enable_if<is_gamete<
+                                             typename gcont_t::
+                                                 value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
                     recycling_bin_t<mcont_t> &, typename gcont_t::value_type &,
