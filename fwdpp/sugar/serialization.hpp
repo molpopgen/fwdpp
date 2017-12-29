@@ -108,7 +108,7 @@ namespace fwdpp
                                        result_type>::type
         operator()(streamtype &in) const
         {
-            uint_t g;
+            std::size_t g;
             double pos, s, h;
             io::scalar_reader reader;
             reader(in, &g);
@@ -140,7 +140,7 @@ namespace fwdpp
                       result_type>::type
             operator()(streamtype &in) const
         {
-            uint_t g;
+            std::size_t g;
             double pos;
             using value_t = typename U::array_t::value_type;
             io::scalar_reader reader;
@@ -161,7 +161,7 @@ namespace fwdpp
                                        result_type>::type
         operator()(streamtype &in) const
         {
-            uint_t g;
+            std::size_t g;
             double pos;
             io::scalar_reader reader;
             reader(in, &g);
@@ -213,17 +213,12 @@ namespace fwdpp
             writer(buffer, &pop.N);
             write_binary_pop(pop.gametes, pop.mutations, pop.diploids, buffer);
             // Step 2: output fixations
-            uint_t temp = uint_t(pop.fixations.size());
-            writer(buffer, &temp);
-            serialize_mutation<typename sugarpop_t::mutation_t> mutwriter;
-            if (temp)
+            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    std::for_each(pop.fixations.begin(), pop.fixations.end(),
-                                  std::bind(std::cref(mutwriter),
-                                            std::placeholders::_1,
-                                            std::ref(buffer)));
                     // Step 3:the fixation times
-                    writer(buffer, &pop.fixation_times[0], temp);
+                    writer(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
         }
 
@@ -238,21 +233,16 @@ namespace fwdpp
             write_binary_pop_mloc(pop.gametes, pop.mutations, pop.diploids,
                                   buffer);
             // Step 2: output fixations
-            uint_t temp = uint_t(pop.fixations.size());
-            writer(buffer, &temp);
-            serialize_mutation<typename sugarpop_t::mutation_t> mutwriter;
-            if (temp)
+            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    std::for_each(pop.fixations.begin(), pop.fixations.end(),
-                                  std::bind(std::cref(mutwriter),
-                                            std::placeholders::_1,
-                                            std::ref(buffer)));
                     // Step 3:the fixation times
-                    writer(buffer, &pop.fixation_times[0], temp);
+                    writer(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
-            temp = uint_t(pop.locus_boundaries.size());
+            std::size_t temp = std::size_t(pop.locus_boundaries.size());
             writer(buffer, &temp);
-            for (uint_t i = 0; i < temp; ++i)
+            for (std::size_t i = 0; i < temp; ++i)
                 {
                     writer(buffer, &pop.locus_boundaries[i].first);
                     writer(buffer, &pop.locus_boundaries[i].second);
@@ -269,23 +259,18 @@ namespace fwdpp
                       result_type>::type
             operator()(streamtype &buffer, const sugarpop_t &pop) const
         {
-            uint_t npops = uint_t(pop.Ns.size());
+            std::size_t npops = std::size_t(pop.Ns.size());
             writer(buffer, &npops);
             writer(buffer, &pop.Ns[0], npops);
             write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
                                  buffer);
             // Step 2: output fixations
-            uint_t temp = uint_t(pop.fixations.size());
-            writer(buffer, &temp);
-            serialize_mutation<typename sugarpop_t::mutation_t> mutwriter;
-            if (temp)
+            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    std::for_each(pop.fixations.begin(), pop.fixations.end(),
-                                  std::bind(std::cref(mutwriter),
-                                            std::placeholders::_1,
-                                            std::ref(buffer)));
                     // Step 3:the fixation times
-                    writer(buffer, &pop.fixation_times[0], temp);
+                    writer(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
         }
     };
@@ -318,17 +303,14 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            uint_t temp;
+            std::size_t temp;
             reader(buffer, &temp);
-            deserialize_mutation<typename sugarpop_t::mutation_t> mutreader;
-            for (uint_t m = 0; m < temp; ++m)
+            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    pop.fixations.emplace_back(mutreader(buffer));
-                }
-            pop.fixation_times.resize(temp);
-            if (temp)
-                {
-                    reader(buffer, &pop.fixation_times[0], temp);
+                    pop.fixation_times.resize(pop.fixations.size());
+                    reader(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
 
             // Finally, fill the lookup table:
@@ -355,24 +337,19 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            uint_t temp;
-            reader(buffer, &temp);
-            deserialize_mutation<typename sugarpop_t::mutation_t> mutreader;
-            for (uint_t m = 0; m < temp; ++m)
+            std::size_t temp;
+            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    pop.fixations.emplace_back(mutreader(buffer));
+                    pop.fixation_times.resize(pop.fixations.size());
+                    reader(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
-            pop.fixation_times.resize(temp);
-            if (temp)
-                {
-                    reader(buffer, &pop.fixation_times[0], temp);
-                }
-
             reader(buffer, &temp);
             if (temp)
                 {
                     double x[2];
-                    for (uint_t i = 0; i < temp; ++i)
+                    for (std::size_t i = 0; i < temp; ++i)
                         {
                             reader(buffer, &x[0], 2);
                             pop.locus_boundaries.emplace_back(x[0], x[1]);
@@ -400,7 +377,7 @@ namespace fwdpp
             pop.clear();
             io::scalar_reader reader;
             // Step 0: read N
-            uint_t numNs;
+            std::size_t numNs;
             reader(buffer, &numNs);
             pop.Ns.resize(numNs);
             reader(buffer, &pop.Ns[0], numNs);
@@ -410,13 +387,9 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            uint_t temp;
+            std::size_t temp;
             reader(buffer, &temp);
-            deserialize_mutation<typename sugarpop_t::mutation_t> mutreader;
-            for (uint_t m = 0; m < temp; ++m)
-                {
-                    pop.fixations.emplace_back(mutreader(buffer));
-                }
+            fwdpp::fwdpp_internal::read_mutations()(pop.mutations, buffer);
             pop.fixation_times.resize(temp);
             if (temp)
                 {
