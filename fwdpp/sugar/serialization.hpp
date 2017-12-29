@@ -262,18 +262,17 @@ namespace fwdpp
         /*!
           \brief Overload for metapopulation simulations
          */
-        template <typename streamtype, typename sugarpop_t, typename writer_t>
+        template <typename streamtype, typename sugarpop_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
                       result_type>::type
-            operator()(streamtype &buffer, const sugarpop_t &pop,
-                       const writer_t &wt) const
+            operator()(streamtype &buffer, const sugarpop_t &pop) const
         {
             uint_t npops = uint_t(pop.Ns.size());
             writer(buffer, &npops);
             writer(buffer, &pop.Ns[0], npops);
-            write_binary_metapop(pop.gametes, pop.mutations, pop.diploids, wt,
+            write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
                                  buffer);
             // Step 2: output fixations
             uint_t temp = uint_t(pop.fixations.size());
@@ -340,13 +339,12 @@ namespace fwdpp
                 }
         }
 
-        template <typename streamtype, typename sugarpop_t, typename reader_t>
+        template <typename streamtype, typename sugarpop_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer,
-                       const reader_t &rt) const
+            operator()(sugarpop_t &pop, streamtype &buffer) const
         {
             pop.clear();
             io::scalar_reader reader;
