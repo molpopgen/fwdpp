@@ -44,27 +44,31 @@ static_assert(
 // specialization for ADL
 namespace fwdpp
 {
-    template <>
-    inline void
-    serialize_diploid<std::stringstream, custom_diploid_testing_t>(
-        const custom_diploid_testing_t &dip, std::stringstream &buffer)
+    template <> struct serialize_diploid<custom_diploid_testing_t>
     {
-        fwdpp::fwdpp_internal::scalar_writer w;
-        w(buffer, &dip.first);
-        w(buffer, &dip.second);
-        w(buffer, &dip.i);
-    }
+        template <typename streamtype>
+        inline void
+        operator()(const custom_diploid_testing_t &dip,
+                   streamtype &buffer) const
+        {
+            fwdpp::fwdpp_internal::scalar_writer w;
+            w(buffer, &dip.first);
+            w(buffer, &dip.second);
+            w(buffer, &dip.i);
+        }
+    };
 
-    template <>
-    inline void
-    deserialize_diploid<std::stringstream, custom_diploid_testing_t>(
-        custom_diploid_testing_t &dip, std::stringstream &buffer)
+    template <> struct deserialize_diploid<custom_diploid_testing_t>
     {
-        fwdpp::fwdpp_internal::scalar_reader r;
-        r(buffer, &dip.first);
-        r(buffer, &dip.second);
-        r(buffer, &dip.i);
-    }
+        template <typename streamtype>
+        inline void
+        operator()(custom_diploid_testing_t &dip, streamtype &buffer)
+        {
+            fwdpp::fwdpp_internal::scalar_reader r;
+            r(buffer, &dip.first);
+            r(buffer, &dip.second);
+            r(buffer, &dip.i);
+        }
+    };
 }
-
 #endif

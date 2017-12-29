@@ -6,26 +6,34 @@
 
 namespace fwdpp
 {
-    template <typename ostreamtype, typename T>
-    inline void
-    serialize_diploid(const T &dip, ostreamtype &buffer)
+    template <typename T> struct serialize_diploid
     {
         fwdpp_internal::scalar_writer writer;
-        writer(buffer, &dip.first);
-        writer(buffer, &dip.second);
-    }
+        serialize_diploid() : writer{} {}
+        template <typename ostreamtype>
+        inline void
+        operator()(const T &dip, ostreamtype &buffer) const
+        {
+            writer(buffer, &dip.first);
+            writer(buffer, &dip.second);
+        }
+    };
 
-    template <typename istreamtype, typename T>
-    inline void
-    deserialize_diploid(T &dip, istreamtype &buffer)
+    template <typename T> struct deserialize_diploid
     {
-        typename T::first_type c;
         fwdpp_internal::scalar_reader reader;
-        reader(buffer, &c);
-        dip.first = c;
-        reader(buffer, &c);
-        dip.second = c;
-    }
+        deserialize_diploid() : reader{} {}
+        template <typename istreamtype>
+        inline void
+        operator()(T &dip, istreamtype &buffer) const
+        {
+            typename T::first_type c;
+            reader(buffer, &c);
+            dip.first = c;
+            reader(buffer, &c);
+            dip.second = c;
+        }
+    };
 
     /*! \brief Write population to binary-format file for individual-based
       simulations

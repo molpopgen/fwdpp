@@ -26,9 +26,10 @@ namespace fwdpp
         std::size_t NDIPS = diploids.size();
         fwdpp_internal::scalar_writer writer;
         writer(buffer, &NDIPS);
+        serialize_diploid<typename dipvector_t::value_type> dipwriter;
         for (const auto &dip : diploids)
             {
-                serialize_diploid(dip, buffer);
+                dipwriter(dip, buffer);
             }
     }
 
@@ -47,9 +48,10 @@ namespace fwdpp
         std::size_t NDIPS;
         fwdpp_internal::scalar_reader()(in, &NDIPS);
         diploids.resize(NDIPS);
+        deserialize_diploid<typename dipvector_t::value_type> dipreader;
         for (auto &dip : diploids)
             {
-                deserialize_diploid(dip, in);
+                dipreader(dip, in);
             }
     }
 
@@ -70,11 +72,12 @@ namespace fwdpp
         fwdpp_internal::write_haplotypes()(mlocus_gametes, buffer);
         unsigned ndips = unsigned(diploids.size());
         writer(buffer, &ndips);
+        serialize_diploid<typename dipvector_t::value_type::value_type> dipwriter;
         for (const auto &dip : diploids)
             {
                 for (const auto &genotype : dip)
                     {
-                        serialize_diploid(genotype, buffer);
+                        dipwriter(genotype, buffer);
                     }
             }
     }
@@ -99,12 +102,13 @@ namespace fwdpp
         unsigned ndips;
         fwdpp_internal::scalar_reader()(in, &ndips);
         diploids.resize(ndips, typename dipvector_t::value_type(nloci));
+        deserialize_diploid<typename dipvector_t::value_type::value_type> dipreader;
         for (auto &dip : diploids)
             {
                 assert(dip.size() == nloci);
                 for (auto &genotype : dip)
                     {
-                        deserialize_diploid(genotype, in);
+                        dipreader(genotype, in);
                     }
             }
     }
@@ -121,13 +125,14 @@ namespace fwdpp
         writer(buffer, &i);
         fwdpp_internal::write_mutations()(mutations, mw, buffer);
         fwdpp_internal::write_haplotypes()(gametes, buffer);
+        serialize_diploid<typename dipvector_t::value_type::value_type> dipwriter;
         for (const auto &deme : diploids)
             {
                 i = deme.size();
                 writer(buffer, &i);
                 for (const auto &dip : deme)
                     {
-                        serialize_diploid(dip, buffer);
+                        dipwriter(dip, buffer);
                     }
             }
     }
@@ -148,6 +153,7 @@ namespace fwdpp
         diploids.resize(i);
         fwdpp_internal::read_mutations()(mutations, mr, in);
         fwdpp_internal::read_haplotypes()(gametes, in);
+        deserialize_diploid<typename dipvector_t::value_type::value_type> dipreader;
         for (auto &deme : diploids)
             {
                 fwdpp_internal::scalar_reader()(in, &i);
@@ -156,7 +162,7 @@ namespace fwdpp
                         deme.resize(i);
                         for (auto &dip : deme)
                             {
-                                deserialize_diploid(dip, in);
+                                dipreader(dip, in);
                             }
                     }
             }
