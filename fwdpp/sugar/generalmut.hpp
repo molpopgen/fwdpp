@@ -7,6 +7,8 @@
 #include <memory>
 #include <limits>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
+#include <fwdpp/io/mutation.hpp>
 #include <fwdpp/tags/tags.hpp>
 
 namespace fwdpp
@@ -165,5 +167,63 @@ namespace fwdpp
                    && this->s == rhs.s && this->h == rhs.h;
         }
     };
+
+    namespace io
+    {
+        template <> struct serialize_mutation<generalmut_vec>
+        {
+            io::scalar_writer writer;
+            serialize_mutation<generalmut_vec>() : writer{} {}
+            template <typename streamtype>
+            inline void
+            operator()(const generalmut_vec &m, streamtype &buffer) const
+            {
+                writer(buffer, &m.pos);
+                writer(buffer, &m.g);
+                writer(buffer, &m.xtra);
+                // Write mutation types
+                using array_t_size_t =
+                    typename generalmut_vec::array_t::size_type;
+                array_t_size_t ns = m.s.size(), nh = m.h.size();
+                writer(buffer, &ns);
+                writer(buffer, &nh);
+                writer(buffer, m.s.data(), ns);
+                writer(buffer, m.h.data(), nh);
+            }
+        };
+
+        template <> struct deserialize_mutation<generalmut_vec>
+        {
+            io::scalar_reader reader;
+            deserialize_mutation<generalmut_vec>() : reader{} {}
+            template <typename streamtype>
+            inline generalmut_vec
+            operator()(streamtype &buffer) const
+            {
+                double pos;
+                decltype(generalmut_vec::g) g;
+                decltype(generalmut_vec::xtra) xtra;
+                io::scalar_reader reader;
+                reader(buffer, &pos);
+                reader(buffer, &g);
+                reader(buffer, &xtra);
+                typename generalmut_vec::array_t::size_type ns, nh;
+                reader(buffer, &ns);
+                reader(buffer, &nh);
+                typename generalmut_vec::array_t s(ns), h(nh);
+                // Write mutation types
+                if (ns)
+                    {
+                        reader(buffer, s.data(), ns);
+                    }
+                if (nh)
+                    {
+                        reader(buffer, h.data(), nh);
+                    }
+                return generalmut_vec(std::move(s), std::move(h), pos, g,
+                                      xtra);
+            }
+        };
+    }
 }
 #endif
