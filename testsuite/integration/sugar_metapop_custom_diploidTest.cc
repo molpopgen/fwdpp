@@ -100,8 +100,8 @@ BOOST_AUTO_TEST_CASE(metapop_sugar_custom_test2)
     poptype pop2{ 0, 0 };
     fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop, mwriter());
-    fwdpp::deserialize()(pop2, buffer, mreader());
+    s(buffer, pop);
+    fwdpp::deserialize()(pop2, buffer);
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 

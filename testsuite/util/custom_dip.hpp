@@ -51,7 +51,7 @@ namespace fwdpp
         operator()(const custom_diploid_testing_t &dip,
                    streamtype &buffer) const
         {
-            fwdpp::fwdpp_internal::scalar_writer w;
+            fwdpp::io::scalar_writer w;
             w(buffer, &dip.first);
             w(buffer, &dip.second);
             w(buffer, &dip.i);
@@ -64,7 +64,7 @@ namespace fwdpp
         inline void
         operator()(custom_diploid_testing_t &dip, streamtype &buffer)
         {
-            fwdpp::fwdpp_internal::scalar_reader r;
+            fwdpp::io::scalar_reader r;
             r(buffer, &dip.first);
             r(buffer, &dip.second);
             r(buffer, &dip.i);
