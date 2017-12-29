@@ -303,8 +303,6 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            std::size_t temp;
-            reader(buffer, &temp);
             fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
@@ -387,13 +385,12 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            std::size_t temp;
-            reader(buffer, &temp);
-            fwdpp::fwdpp_internal::read_mutations()(pop.mutations, buffer);
-            pop.fixation_times.resize(temp);
-            if (temp)
+            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            if (!pop.fixations.empty())
                 {
-                    reader(buffer, &pop.fixation_times[0], temp);
+                    pop.fixation_times.resize(pop.fixations.size());
+                    reader(buffer, &pop.fixation_times[0],
+                           pop.fixations.size());
                 }
 
             // Finally, fill the lookup table:
