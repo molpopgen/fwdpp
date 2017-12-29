@@ -50,7 +50,7 @@ namespace fwdpp
     {
         template <typename ostreamtype>
         inline T
-        operator()(const T &, ostreamtype &) const
+        operator()(ostreamtype &) const
         {
             throw std::runtime_error(
                 "deserializtion not implemented for this mutation type");
