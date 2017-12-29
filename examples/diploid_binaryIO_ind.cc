@@ -79,17 +79,14 @@ main(int argc, char **argv)
                                  [&r]() { return gsl_rng_uniform(r.get()); },
                                  []() { return 0.; }, []() { return 0.; }),
                 // The function to generation recombination positions:
-                rec, fwdpp::multiplicative_diploid(2.),
-                pop.neutral, pop.selected);
+                rec, fwdpp::multiplicative_diploid(2.), pop.neutral,
+                pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, twoN);
         }
     std::ostringstream buffer;
     fwdpp::write_binary_pop(pop.gametes, pop.mutations, pop.diploids,
-                            std::bind(fwdpp::mutation_writer(),
-                                      std::placeholders::_1,
-                                      std::placeholders::_2),
                             buffer);
 
     // establish POSIX file locks for output
@@ -168,9 +165,7 @@ main(int argc, char **argv)
 
     std::ifstream in(hapfile, std::ios_base::in | std::ios_base::binary);
     in.seekg(offset);
-    fwdpp::read_binary_pop(
-        gametes2, mutations2, diploids2,
-        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1), in);
+    fwdpp::read_binary_pop(gametes2, mutations2, diploids2, in);
     for (std::size_t i = 0; i < pop.diploids.size(); ++i)
         {
             std::cout << "Diploid no. " << i << ": " << pop.diploids[i].first

@@ -73,8 +73,8 @@ main(int argc, char **argv)
                                  [&r]() { return gsl_rng_uniform(r.get()); },
                                  []() { return 0.; }, []() { return 0.; }),
                 // The function to generation recombination positions:
-                rec, fwdpp::multiplicative_diploid(2.),
-                pop.neutral, pop.selected);
+                rec, fwdpp::multiplicative_diploid(2.), pop.neutral,
+                pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
@@ -116,8 +116,7 @@ main(int argc, char **argv)
     gzFile gzout = gzopen(hapfile, "ab"); // open in append mode.  The b =
                                           // binary mode.  Not required on all
                                           // systems, but never hurts.
-    long long written
-        = fwdpp::gzserialize()(gzout, pop, fwdpp::mutation_writer());
+    long long written = fwdpp::gzserialize()(gzout, pop);
     // write info to index file
     fprintf(index_fh, "%u %ld\n", replicate_no, gztell(gzout));
     gzclose(gzout);
@@ -168,9 +167,7 @@ main(int argc, char **argv)
         = gzopen(hapfile, "rb"); // open it for reading.  Again, binary mode.
     gzseek(gzin, rec_offset, SEEK_CUR); // seek to position
 
-    fwdpp::gzdeserialize()(
-        pop2, gzin,
-        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1));
+    fwdpp::gzdeserialize()(pop2, gzin);
 
     for (std::size_t i = 0; i < pop.diploids.size(); ++i)
         {
