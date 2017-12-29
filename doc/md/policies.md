@@ -58,7 +58,7 @@ Just like the STL, custom functions modify the behavior of simulations.  These p
 recombination, and selection all work.  Additionally, policies may affect how mutations are removed from gametes and/or
 the entire population at the end of each generation.  For example, consider a neutral mutation that fixed in the most
 recent generation.  There is really no point in keeping a key to it in every gamete.  Rather, we may prefer to remove it
-from each gamete and store it in a vector of fixations.  Doing so requires a policy passed to KTfwd::sample_diploid
+from each gamete and store it in a vector of fixations.  Doing so requires a policy passed to fwdpp::sample_diploid
 telling it to remove neutral mutations.  In the case of selected mutations, we may or may not want to remove such fixed
 variants from gametes, depending on the context of our simulation (standard pop-gen where fixed selective mutations no
 longer affect relative fitness	vs quantitative trait simulations where they do contribute to trait values, and thus
@@ -82,34 +82,34 @@ The former is used when the current state of a gamete doesn't matter.  The infin
 The latter is used whn the current state of a gamete does matter.  A finite-sites model would be an example.
 Internally, the library detects which type is being used.  The return value is the index in the mutation container where
 the new mutation was placed.  This location may have been generated via recycling, and the library provides
-KTfwd::internal::recycle_mutation_helper to facilitate this operation.
+fwdpp::internal::recycle_mutation_helper to facilitate this operation.
 
 Additional model parameters are possible via the usual mechanisms: class members, std::bind, etc.
 
-A valid mutation policy passes a static assertion involving KTfwd::traits::valid_mutation_model at compile time. See
+A valid mutation policy passes a static assertion involving fwdpp::traits::valid_mutation_model at compile time. See
 type_traitsTest.cc for an example of this assertion.
 
-* KTfwd::infsites
+* fwdpp::infsites
 
 \subsection TutRec Recombination policies
 
-The function signature of a recombination policy must be equivalent to KTfwd::traits::recmodel_t.  If so, then a static
-assertion involving KTfwd::traits::valid_rec_model will pass at compile time. See type_traitsTest.cc for an example of
+The function signature of a recombination policy must be equivalent to fwdpp::traits::recmodel_t.  If so, then a static
+assertion involving fwdpp::traits::valid_rec_model will pass at compile time. See type_traitsTest.cc for an example of
 this assertion. 
 
 Additional model parameters are possible via the usual mechanisms: class members, std::bind, etc.
 
-* KTfwd::poisson_xover
+* fwdpp::poisson_xover
 
 \subsection TutFitness Genetic value policies
 
-* KTfwd::site_dependent_genetic_value
-* KTfwd::additive_diploid
-* KTfwd::multiplicative_diploid
+* fwdpp::site_dependent_genetic_value
+* fwdpp::additive_diploid
+* fwdpp::multiplicative_diploid
 
 \subsection TutRemoval "Removal policies"
 
 The default is std::true_type, which means that all fixations are removed from gametes.
 
-* KTfwd::remove_nothing
-* KTfwd::remove_neutral
+* fwdpp::remove_nothing
+* fwdpp::remove_neutral

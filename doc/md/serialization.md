@@ -11,15 +11,15 @@ This tutorial covers the following topics:
 
 For single-deme simulations, the library provides the following functions:
 
-* KTfwd::write_binary_pop 
-* KTfwd::read_binary_pop
+* fwdpp::write_binary_pop 
+* fwdpp::read_binary_pop
 
 These functions write and read simulated populations in a binary (_e.g._ not human-readable) format.
 
 For multi-deme simulations, we have:
 
-* KTfwd::write_binary_metapop 
-* KTfwd::read_binary_metapop
+* fwdpp::write_binary_metapop 
+* fwdpp::read_binary_metapop
 
 As with the rest of the library, these functions are implemented using a combination of templates + function overloading.
 
@@ -44,9 +44,9 @@ You need to tell these functions how to read/write mutation objects.  Specifical
 * Define a mutation read function, taking an input stream type as an object
 
 For a concrete example of implementing "mutation readers" and "mutation writers", see the implementation of
-KTfwd::mutation_writer and KTfwd::mutation_writer.
+fwdpp::mutation_writer and fwdpp::mutation_writer.
 
-Below, you will see how to pass these to KTfwd::write_binary_pop and KTfwd::read_binary_pop.
+Below, you will see how to pass these to fwdpp::write_binary_pop and fwdpp::read_binary_pop.
 
 ## Reading and writing diploids.
 
@@ -67,11 +67,11 @@ struct diploid_writer {
 
 The arguments should be an iterator pointing to one of your custom diploids, and a reference to an output stream (including a gzFile!).  A function object of the same form should also be written to read the data back in.
 
-These custom serialization objects may be passed as the last arguments to the functions discussed in the next section.  By default, they are implicitly passed KTfwd::diploidIOplaceholder, which is essentially an empty object.
+These custom serialization objects may be passed as the last arguments to the functions discussed in the next section.  By default, they are implicitly passed fwdpp::diploidIOplaceholder, which is essentially an empty object.
 
 ## In-memory copying
 
-It may be desirable to be able to restore a population from a previous state.  For example, you may wish to repeatedly introduce a mutation at a position, and then simulate until it is fixed.  For replicates where it is lost, you will restore the population to the state it was in when you introduced the mutation.  You may do this using KTfwd::write_binary_pop  or KTfwd::write_binary_metapop, and write the population to an in-memory buffer such as [std::ostringstream](http://www.cplusplus.com/reference/sstream/ostringstream/).  You may restore the population by reading the data from a [std::istringstream](http://www.cplusplus.com/reference/sstream/istringstream/).
+It may be desirable to be able to restore a population from a previous state.  For example, you may wish to repeatedly introduce a mutation at a position, and then simulate until it is fixed.  For replicates where it is lost, you will restore the population to the state it was in when you introduced the mutation.  You may do this using fwdpp::write_binary_pop  or fwdpp::write_binary_metapop, and write the population to an in-memory buffer such as [std::ostringstream](http://www.cplusplus.com/reference/sstream/ostringstream/).  You may restore the population by reading the data from a [std::istringstream](http://www.cplusplus.com/reference/sstream/istringstream/).
 
 Here is some pseudocode for an single-deme simulation:
 
@@ -80,21 +80,21 @@ Here is some pseudocode for an single-deme simulation:
 
 //write it to a buffer:
 std::ostringstream buffer;
-KTfwd::write_binary_pop(gametes,mutations,diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
+fwdpp::write_binary_pop(gametes,mutations,diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
 
 //Now, if you want to restore it:
 std::istringstream inbuffer(buffer.str());
 decltype(mutations) mutations2;
 decltype(gametes) gametes2;
 decltype(diploids) diploids2;
-KTfwd::read_binary_pop(gametes2,
+fwdpp::read_binary_pop(gametes2,
 			 mutations2,
 			 diploids2,
 			 std::bind(mreader(),std::placeholders::_1),
 			 inbuffer);
 ~~~
 
-This approach works because KTfwd::write_binary_pop and KTfwd::write_binary_metapop perform "deep copies" of the data, allowing the complete restoration of all the pointers, etc., stored in the containers.
+This approach works because fwdpp::write_binary_pop and fwdpp::write_binary_metapop perform "deep copies" of the data, allowing the complete restoration of all the pointers, etc., stored in the containers.
 
 ## Writing to files
 

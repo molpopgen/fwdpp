@@ -27,5 +27,5 @@ For concrete examples, see the following files:
 
 # Limitations
 
-The overload of KTfwd::sample_diploid for multi-region simulations is limited to modeling inter-locus recombination as
+The overload of fwdpp::sample_diploid for multi-region simulations is limited to modeling inter-locus recombination as
 either Poisson or binomial, and not as a mixture.  This will addressed in a future version of the library.

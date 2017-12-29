@@ -18,7 +18,7 @@ __Note:__ this document only covers single-population, individual-based simulati
 
 ## Mutation types
 
-The most basic type determining the behavior of a simulation is a mutation.  Any __fwdpp__-based simulation must define a mutation type that publicy inherits from KTfwd::mutation_base.  This base class contains several public data types:
+The most basic type determining the behavior of a simulation is a mutation.  Any __fwdpp__-based simulation must define a mutation type that publicy inherits from fwdpp::mutation_base.  This base class contains several public data types:
 
 ~~~{.cpp}
 //The mutation position
@@ -31,17 +31,17 @@ bool neutral;
 bool checked;
 ~~~
 
-This type is usable in a simulation, but not in an interesting simulation, as there is no selection coefficient, etc.  In order to add things to a mutation type, you extend KTfwd::mutation_base via public inheritance.  You may find an example of that in the next tutorial (@ref md_md_policies) and in the following types provided by the library:
+This type is usable in a simulation, but not in an interesting simulation, as there is no selection coefficient, etc.  In order to add things to a mutation type, you extend fwdpp::mutation_base via public inheritance.  You may find an example of that in the next tutorial (@ref md_md_policies) and in the following types provided by the library:
 
-* KTfwd::mutation
-* KTfwd::popgenmut
-* KTfwd::generalmut
-* KTfwd::generalmut_vec
+* fwdpp::mutation
+* fwdpp::popgenmut
+* fwdpp::generalmut
+* fwdpp::generalmut_vec
 
 ### Notes
 
 * Remember to _properly_ initialize the base class from your derived mutation classes!
-* All fitness models provided by the library require a mutation type to contain a double called \f$s\f$ representing the selection coefficient (or effect size).  For example, see KTfwd::site_dependent_genetic_value.  Hoewever, if you write your own fitness models, then your mutations can contain whatever they want. 
+* All fitness models provided by the library require a mutation type to contain a double called \f$s\f$ representing the selection coefficient (or effect size).  For example, see fwdpp::site_dependent_genetic_value.  Hoewever, if you write your own fitness models, then your mutations can contain whatever they want. 
 
 ## Mutation containers
 
@@ -53,12 +53,12 @@ For example:
 #include <fwdpp/diploid.hh>
 
 //Create a typedef for a container of mutations:
-using mcont_t = std::vector<KTfwd::mutation>;
+using mcont_t = std::vector<fwdpp::mutation>;
 ~~~
 
 ## Gamete types
 
-The basic gamete type is KTfwd::gamete_base, which is a template type. A gamete contains two std::vector<std::size_t>
+The basic gamete type is fwdpp::gamete_base, which is a template type. A gamete contains two std::vector<std::size_t>
 called _mutations_ and _smutations_.  The values contained in these vectors correspond to the mutations present in the
 gamete, and are used as indexes into the mutation container described above.  The containers _mutations_ and
 _smutations_ contain indexes (or "keys") to neutral and non-neutral mutations, respectively.
@@ -108,9 +108,9 @@ With the above definitions, we are ready to access all of the information in a p
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <iostream>
 
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 using mcont_t = std::vector<mtype>;
-using gamete_t = KTfwd::gamete;
+using gamete_t = fwdpp::gamete;
 using gcont_t = std::vector<gamete_t>;
 using diploid_t = std::pair<std::size_t,std::size_t>;
 using dipcont_t = std::vector<diploid_t>;
