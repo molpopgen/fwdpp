@@ -3,6 +3,8 @@
 
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
+#include <fwdpp/io/mutation.hpp>
 #include <limits>
 #include <tuple>
 
@@ -37,10 +39,8 @@ namespace fwdpp
         */
         popgenmut(const double &__pos, const double &__s, const double &__h,
                   const unsigned &__g, const std::uint16_t x = 0) noexcept
-            : mutation_base(__pos, (__s == 0.) ? true : false, x),
-              g(__g),
-              s(__s),
-              h(__h)
+            : mutation_base(__pos, (__s == 0.) ? true : false, x), g(__g),
+              s(__s), h(__h)
         {
         }
 
@@ -55,9 +55,7 @@ namespace fwdpp
             : mutation_base(std::get<0>(t),
                             (std::get<1>(t) == 0.) ? true : false,
                             std::get<4>(t)),
-              g(std::get<3>(t)),
-              s(std::get<1>(t)),
-              h(std::get<2>(t))
+              g(std::get<3>(t)), s(std::get<1>(t)), h(std::get<2>(t))
         {
         }
 
@@ -68,5 +66,45 @@ namespace fwdpp
                    && this->g == rhs.g && this->neutral == rhs.neutral;
         }
     };
+
+    namespace io
+    {
+        template <> struct serialize_mutation<popgenmut>
+        {
+            io::scalar_writer writer;
+            serialize_mutation<popgenmut>() : writer{} {}
+            template <typename streamtype>
+            inline void
+            operator()(const popgenmut &m, streamtype &buffer) const
+            {
+                writer(buffer, &m.g);
+                writer(buffer, &m.pos);
+                writer(buffer, &m.s);
+                writer(buffer, &m.h);
+                writer(buffer, &m.xtra);
+            }
+        };
+
+        template <> struct deserialize_mutation<popgenmut>
+        {
+            io::scalar_reader reader;
+            deserialize_mutation<popgenmut>() : reader{} {}
+            template <typename streamtype>
+            inline popgenmut
+            operator()(streamtype &buffer) const
+            {
+                std::size_t g;
+                double pos, s, h;
+                decltype(popgenmut::xtra) xtra;
+                io::scalar_reader reader;
+                reader(buffer, &g);
+                reader(buffer, &pos);
+                reader(buffer, &s);
+                reader(buffer, &h);
+                reader(buffer, &xtra);
+                return popgenmut(pos, s, h, g, xtra);
+            }
+        };
+    }
 }
 #endif
