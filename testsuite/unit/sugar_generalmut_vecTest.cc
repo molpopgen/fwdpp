@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(serialize_gz)
     unlink("test_generalmut_vec_file.gz");
 }
 
-BOOST_AUTO_TEST_CASE(serialize_pop1)
+BOOST_AUTO_TEST_CASE(copy_pop1)
 {
     using mtype = fwdpp::generalmut_vec;
     using singlepop_t = fwdpp::singlepop<mtype>;
