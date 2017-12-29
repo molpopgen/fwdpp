@@ -35,6 +35,28 @@ namespace fwdpp
         }
     };
 
+    template <typename T> struct serialize_mutation
+    {
+        template <typename istreamtype>
+        inline void
+        operator()(const T &, istreamtype &) const
+        {
+            throw std::runtime_error(
+                "serializtion not implemented for this mutation type");
+        }
+    };
+
+    template <typename T> struct deserialize_mutation
+    {
+        template <typename ostreamtype>
+        inline void
+        operator()(const T &, ostreamtype &) const
+        {
+            throw std::runtime_error(
+                "deserializtion not implemented for this mutation type");
+        }
+    };
+
     /*! \brief Write population to binary-format file for individual-based
       simulations
       \param gametes  The gamete container.
