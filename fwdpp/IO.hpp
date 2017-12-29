@@ -2,13 +2,13 @@
 #define __FWDPP_IO_HPP__
 
 #include <utility>
-#include <fwdpp/internal/IOhelp.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
 
 namespace fwdpp
 {
     template <typename T> struct serialize_diploid
     {
-        fwdpp_internal::scalar_writer writer;
+        io::scalar_writer writer;
         serialize_diploid() : writer{} {}
         template <typename ostreamtype>
         inline void
@@ -21,7 +21,7 @@ namespace fwdpp
 
     template <typename T> struct deserialize_diploid
     {
-        fwdpp_internal::scalar_reader reader;
+        io::scalar_reader reader;
         deserialize_diploid() : reader{} {}
         template <typename istreamtype>
         inline void
@@ -49,7 +49,7 @@ namespace fwdpp
     template <typename T> struct deserialize_mutation
     {
         template <typename ostreamtype>
-        inline void
+        inline T
         operator()(const T &, ostreamtype &) const
         {
             throw std::runtime_error(
@@ -74,10 +74,9 @@ namespace fwdpp
       serialization for, e.g. MPI.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_writer_type, typename ostreamtype>
+              typename ostreamtype>
     void write_binary_pop(const gcont_t &gametes, const mcont_t &mutations,
-                          const dipvector_t &diploids,
-                          const mutation_writer_type &mw, ostreamtype &buffer);
+                          const dipvector_t &diploids, ostreamtype &buffer);
 
     /*! \brief Read the population back from a binary-format file for
       individual-based simulations
@@ -91,10 +90,9 @@ namespace fwdpp
       to std::istream types or be a gzFile from zlib.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype>
+              typename istreamtype>
     void read_binary_pop(gcont_t &gametes, mcont_t &mutations,
-                         dipvector_t &diploids, const mutation_reader_type &mr,
-                         istreamtype &in);
+                         dipvector_t &diploids, istreamtype &in);
 
     /*! \brief Write the population to a binary-format file for
       individual-based multilocus simulations.
@@ -107,11 +105,10 @@ namespace fwdpp
       std::ostream or is a gzFile
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_writer_type, typename ostreamtype>
+              typename ostreamtype>
     void write_binary_pop_mloc(const gcont_t &mlocus_gametes,
                                const mcont_t &mutations,
                                const dipvector_t &diploids,
-                               const mutation_writer_type &mw,
                                ostreamtype &buffer);
 
     /*! \brief Read the population back from a binary-format file for
@@ -125,10 +122,9 @@ namespace fwdpp
       std::ostream or is a gzFile.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype>
+              typename istreamtype>
     void read_binary_pop_mloc(gcont_t &mlocus_gametes, mcont_t &mutations,
-                              dipvector_t &diploids,
-                              const mutation_reader_type &mr, istreamtype &in);
+                              dipvector_t &diploids, istreamtype &in);
 
     /*! \brief Write the metapopulation to a compact binary-format output file
       for individual-based simulations.
@@ -168,10 +164,9 @@ namespace fwdpp
       to std::istream types or be a gzFile from zlib.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype>
+              typename istreamtype>
     void read_binary_metapop(gcont_t &metapop, mcont_t &mutations,
-                             dipvector_t &diploids,
-                             const mutation_reader_type &mr, istreamtype &in);
+                             dipvector_t &diploids, istreamtype &in);
 }
 #endif
 #include <fwdpp/IO.tcc>

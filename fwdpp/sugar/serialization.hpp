@@ -33,7 +33,7 @@ namespace fwdpp
                                     result_type>::type
             operator()(const mutation_t &m, streamtype &buffer) const
         {
-            fwdpp_internal::scalar_writer writer;
+            io::scalar_writer writer;
             writer(buffer, &m.g);
             writer(buffer, &m.pos);
             writer(buffer, &m.s);
@@ -46,7 +46,7 @@ namespace fwdpp
                                     result_type>::type
             operator()(const mutation_t &m, streamtype &buffer) const
         {
-            fwdpp_internal::scalar_writer writer;
+            io::scalar_writer writer;
             writer(buffer, &m.pos);
             writer(buffer, &m.s);
             writer(buffer, &m.h);
@@ -60,7 +60,7 @@ namespace fwdpp
                                        result_type>::type
         operator()(const mutation_t &t, streamtype &buffer) const
         {
-            fwdpp_internal::scalar_writer writer;
+            io::scalar_writer writer;
             writer(buffer, &t.g);
             writer(buffer, &t.pos);
             // Write mutation types
@@ -75,7 +75,7 @@ namespace fwdpp
                                        result_type>::type
         operator()(const mutation_t &t, streamtype &buffer) const
         {
-            fwdpp_internal::scalar_writer writer;
+            io::scalar_writer writer;
             writer(buffer, &t.g);
             writer(buffer, &t.pos);
             // Write mutation types
@@ -110,7 +110,7 @@ namespace fwdpp
         {
             uint_t g;
             double pos, s, h;
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             reader(in, &g);
             reader(in, &pos);
             reader(in, &s);
@@ -126,7 +126,7 @@ namespace fwdpp
         operator()(streamtype &in) const
         {
             double pos, s, h;
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             reader(in, &pos);
             reader(in, &s);
             reader(in, &h);
@@ -143,7 +143,7 @@ namespace fwdpp
             uint_t g;
             double pos;
             using value_t = typename U::array_t::value_type;
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             std::array<value_t, std::tuple_size<typename U::array_t>::value> s,
                 h;
             reader(in, &g);
@@ -163,7 +163,7 @@ namespace fwdpp
         {
             uint_t g;
             double pos;
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             reader(in, &g);
             reader(in, &pos);
             typename U::array_t::size_type ns, nh;
@@ -190,9 +190,9 @@ namespace fwdpp
     struct serialize
     {
         using result_type = void;
-        fwdpp_internal::scalar_writer writer;
+        io::scalar_writer writer;
         //! Default constructor
-        serialize() : writer(fwdpp_internal::scalar_writer()) {}
+        serialize() : writer(io::scalar_writer()) {}
 
         //! Move constructor.  Req'd for this to be a member type of another
         //! class
@@ -311,7 +311,7 @@ namespace fwdpp
                        const reader_t &rt) const
         {
             pop.clear();
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
             fwdpp::read_binary_pop(pop.gametes, pop.mutations, pop.diploids,
@@ -350,7 +350,7 @@ namespace fwdpp
                        const reader_t &rt) const
         {
             pop.clear();
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
             fwdpp::read_binary_pop_mloc(pop.gametes, pop.mutations,
@@ -402,7 +402,7 @@ namespace fwdpp
                        const reader_t &rt) const
         {
             pop.clear();
-            fwdpp_internal::scalar_reader reader;
+            io::scalar_reader reader;
             // Step 0: read N
             uint_t numNs;
             reader(buffer, &numNs);

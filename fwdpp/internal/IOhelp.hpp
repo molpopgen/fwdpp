@@ -11,93 +11,29 @@
 #include <cstdint>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
 
 namespace fwdpp
 {
     namespace fwdpp_internal
     {
 
-        struct scalar_reader
-        {
-            template <typename streamtype, typename T>
-            inline void
-            operator()(streamtype &i, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Read binary data
-                 */
-                i.read(reinterpret_cast<char *>(__t), n * sizeof(T));
-            }
-            template <typename T>
-            inline void
-            operator()(gzFile &gzin, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Read binary data
-                 */
-                gzread(gzin, __t, n * sizeof(T));
-            }
-        };
-
-        struct scalar_writer
-        {
-            using result_type = std::uint64_t;
-            template <typename streamtype, typename T>
-            inline result_type
-            operator()(streamtype &i, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Write binary data
-                 * \throw std::runtime_error
-                 */
-                if (!i)
-                    {
-                        throw std::runtime_error("serialization error on line "
-                                                 + std::to_string(__LINE__)
-                                                 + " of "
-                                                 + std::string(__FILE__));
-                    }
-                i.write(reinterpret_cast<const char *>(__t), n * sizeof(T));
-                if (!i)
-                    {
-                        throw std::runtime_error("serialization error on line "
-                                                 + std::to_string(__LINE__)
-                                                 + " of "
-                                                 + std::string(__FILE__));
-                    }
-                return result_type(n * sizeof(T));
-            }
-            template <typename T>
-            inline result_type
-            operator()(gzFile &gzout, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Write binary data
-                 * \throw std::runtime_error
-                 */
-                auto rv = gzwrite(gzout, __t, n * sizeof(T));
-                if (!rv)
-                    {
-                        throw std::runtime_error("serialization error on line "
-                                                 + std::to_string(__LINE__)
-                                                 + " of "
-                                                 + std::string(__FILE__));
-                    }
-                return result_type(rv);
-            }
-        };
-
         struct write_mutations
         {
             template <typename mutation_type,
                       typename container_type_allocator,
                       template <typename, typename> class container_type,
-                      typename mutation_writer_type, typename ostreamtype>
+                      typename ostreamtype>
             void
             operator()(
                 const container_type<mutation_type, container_type_allocator>
                     &mutations,
-                const mutation_writer_type &mw, ostreamtype &buffer) const
+                ostreamtype &buffer) const
             {
                 std::size_t MUTNO = mutations.size();
-                scalar_writer()(buffer, &MUTNO);
+                fwdpp::io::scalar_writer()(buffer, &MUTNO);
                 // write the mutation data to the buffer
+                fwdpp::serialize_mutation<mutation_type> mw;
                 for (const auto &m : mutations)
                     mw(m, buffer);
             }
@@ -114,7 +50,7 @@ namespace fwdpp
                        ostreamtype &buffer) const
             {
                 std::size_t N = gametes.size();
-                scalar_writer writer;
+                fwdpp::io::scalar_writer writer;
                 writer(buffer, &N);
                 for (const auto &g : gametes)
                     {
@@ -140,14 +76,15 @@ namespace fwdpp
             template <typename mutation_type,
                       typename container_type_allocator,
                       template <typename, typename> class container_type,
-                      typename mutation_reader, typename istreamtype>
+                      typename istreamtype>
             void
             operator()(container_type<mutation_type, container_type_allocator>
                            &mutations,
-                       const mutation_reader &mr, istreamtype &in) const
+                       istreamtype &in) const
             {
                 std::size_t NMUTS;
-                scalar_reader()(in, &NMUTS);
+                fwdpp::io::scalar_reader()(in, &NMUTS);
+                deserialize_mutation<mutation_type> mr;
                 for (uint_t i = 0; i < NMUTS; ++i)
                     {
                         mutations.emplace_back(mr(in));
@@ -165,7 +102,7 @@ namespace fwdpp
                 container_type<gamete_type, container_type_allocator> &gametes,
                 istreamtype &in) const
             {
-                scalar_reader reader;
+                fwdpp::io::scalar_reader reader;
                 std::size_t NHAPS;
                 reader(in, &NHAPS);
                 uint_t N;
