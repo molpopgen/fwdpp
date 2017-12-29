@@ -46,7 +46,7 @@
   remaining fixations.
 */
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {
@@ -200,14 +200,14 @@ namespace KTfwd
         /*! \brief Handles removal of indexes to mutations from gametes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
-          KTfwd::remove_nothing >::type is true.
-          Called by KTfwd::sample_diploid
+          fwdpp::remove_nothing >::type is true.
+          Called by fwdpp::sample_diploid
         */
         template <typename gcont_t, typename mcont_t,
                   typename mutation_removal_policy>
         inline typename std::
             enable_if<std::is_same<mutation_removal_policy,
-                                   KTfwd::remove_nothing>::value>::type
+                                   fwdpp::remove_nothing>::value>::type
             gamete_cleaner(gcont_t &, const mcont_t &,
                            const std::vector<uint_t> &, const uint_t,
                            const mutation_removal_policy &)
@@ -344,8 +344,8 @@ namespace KTfwd
         /*! \brief Handles removal of indexes to mutations from gametes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
-          KTfwd::true_type >::type is true.
-          Called by KTfwd::sample_diploid
+          fwdpp::true_type >::type is true.
+          Called by fwdpp::sample_diploid
         */
         template <typename gcont_t, typename mcont_t,
                   typename mutation_removal_policy>
@@ -368,7 +368,7 @@ namespace KTfwd
           sampling
           This overload handles truly custom policies, which must take a
           mutation type as an argument.
-          Called by KTfwd::sample_diploid
+          Called by fwdpp::sample_diploid
         */
         template <typename gcont_t, typename mcont_t,
                   typename mutation_removal_policy>
@@ -376,7 +376,7 @@ namespace KTfwd
             enable_if<!std::is_same<mutation_removal_policy,
                                     std::true_type>::value
                       && !std::is_same<mutation_removal_policy,
-                                       KTfwd::remove_nothing>::value>::type
+                                       fwdpp::remove_nothing>::value>::type
             gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN,
@@ -395,8 +395,8 @@ namespace KTfwd
         /*! \brief Handles removal of indexes to mutations from gametes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
-          KTfwd::true_type >::type is true.
-          Called by KTfwd::sample_diploid
+          fwdpp::true_type >::type is true.
+          Called by fwdpp::sample_diploid
 
           \note Added in 0.5.0 to deal with issue #41 involving multi-locus
           sims
@@ -423,7 +423,7 @@ namespace KTfwd
           sampling
           This overload handles truly custom policies, which must take a
           mutation type as an argument.
-          Called by KTfwd::sample_diploid
+          Called by fwdpp::sample_diploid
 
           \note Added in 0.5.0 to deal with issue #41 involving multi-locus
           sims
@@ -434,7 +434,7 @@ namespace KTfwd
             enable_if<!std::is_same<mutation_removal_policy,
                                     std::true_type>::value
                       && !std::is_same<mutation_removal_policy,
-                                       KTfwd::remove_nothing>::value>::type
+                                       fwdpp::remove_nothing>::value>::type
             gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN,

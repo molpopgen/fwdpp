@@ -1,7 +1,7 @@
 /*!
  * \file fwdpp/internal/type_traits.hpp
  * \not This file is not self-contained and cannot be included directly
- * Nasty SFINAE details of namespace KTfwd::traits
+ * Nasty SFINAE details of namespace fwdpp::traits
  */
 #ifndef FWDPP_INTERNAL_TYPE_TRAITS_HPP
 #define FWDPP_INTERNAL_TYPE_TRAITS_HPP
@@ -10,7 +10,7 @@
 #include <utility>
 #include <fwdpp/internal/void_t.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace traits
     {

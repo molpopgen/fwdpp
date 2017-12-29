@@ -4,7 +4,7 @@
 #include <gsl/gsl_rng.h>
 #include <memory>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace sugar
     {

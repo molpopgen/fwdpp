@@ -1,12 +1,12 @@
-#ifndef __KTFWD_DEBUG_HPP__
-#define __KTFWD_DEBUG_HPP__
+#ifndef __FWDPP_DEBUG_HPP__
+#define __FWDPP_DEBUG_HPP__
 
 #include <algorithm>
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
 
     /*! \brief Returns true if the sum of counts in gametes equals twoN, false

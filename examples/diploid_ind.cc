@@ -18,7 +18,7 @@
 // Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
 // typedef mutation_with_age mtype;
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
@@ -66,7 +66,7 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
+    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -79,7 +79,7 @@ main(int argc, char **argv)
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
-                    wbar = KTfwd::sample_diploid(
+                    wbar = fwdpp::sample_diploid(
                         r.get(),
                         pop.gametes,   // non-const reference to gametes
                         pop.diploids,  // non-const reference to diploids
@@ -88,12 +88,12 @@ main(int argc, char **argv)
                         N,  // current pop size, remains constant
                         mu, // mutation rate per gamete
                         /*
-                          The mutation model (KTfwd::infsites) will be applied
+                          The mutation model (fwdpp::infsites) will be applied
                           by
                           sample_diploid in order to add mutations to gametes
                           each generation.
                         */
-                        std::bind(KTfwd::infsites(), std::placeholders::_1,
+                        std::bind(fwdpp::infsites(), std::placeholders::_1,
                                   std::placeholders::_2, r.get(),
                                   std::ref(pop.mut_lookup), generation, mu, 0.,
                                   [&r]() { return gsl_rng_uniform(r.get()); },
@@ -106,7 +106,7 @@ main(int argc, char **argv)
                           The fitness model takes two gametes and a
                           vector of mutations as arguments.
                           The gametes are passed to this function by
-                          KTfwd::sample_diploid, and the _1 and _2 are
+                          fwdpp::sample_diploid, and the _1 and _2 are
                           placeholders for
                           those gametes (see documentation for boost/bind.hpp
                           for details).
@@ -124,17 +124,17 @@ main(int argc, char **argv)
                           multiplicative
                           models are very common in population genetics
                         */
-                        KTfwd::multiplicative_diploid(), pop.neutral,
+                        fwdpp::multiplicative_diploid(), pop.neutral,
                         pop.selected);
-                    KTfwd::update_mutations(pop.mutations, pop.fixations,
+                    fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);
-                    assert(KTfwd::check_sum(pop.gametes, twoN));
+                    assert(fwdpp::check_sum(pop.gametes, twoN));
                 }
 
             // Take a sample of size samplesize1 from the population
             std::vector<std::pair<double, std::string>> mslike
-                = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
+                = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
                                    pop.diploids, samplesize1, true);
 
 // Write the sample date a to libsequence's Sequence::SimData and

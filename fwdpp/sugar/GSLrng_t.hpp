@@ -11,7 +11,7 @@
 #include <fwdpp/sugar/gsl/tags.hpp>
 #include <fwdpp/sugar/gsl/deleter.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
 
     //! Distpatch tag to signal GSLrng_t to instantiate in terms of
@@ -26,9 +26,9 @@ namespace KTfwd
       \brief A wrapper around gsl_rng * objects.
 
       The template instantiation type must be a model of
-      KTfwd::sugar::GSL_RNG_TYPE_TAG, which specifies the
+      fwdpp::sugar::GSL_RNG_TYPE_TAG, which specifies the
       gsl_rng type.
-      This type holds an object of type KTfwd::sugar::gsl_rng_ptr_t,
+      This type holds an object of type fwdpp::sugar::gsl_rng_ptr_t,
       which is a smart pointer that manages freeing the gsl_rng * upon
       destruction.
      */

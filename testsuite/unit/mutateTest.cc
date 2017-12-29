@@ -1,16 +1,16 @@
 /*!
   \file mutateTest.cc
   \ingroup unit
-  \brief Tests KTfwd::mutation, KTfwd::gamete
+  \brief Tests fwdpp::mutation, fwdpp::gamete
 */
 
 #include <config.h>
 #include <fwdpp/forward_types.hpp>
 #include <boost/test/unit_test.hpp>
 
-// trivial ways to play with the KTfwd::mutation type
-using mut = KTfwd::mutation;
-using gtype = KTfwd::gamete;
+// trivial ways to play with the fwdpp::mutation type
+using mut = fwdpp::mutation;
+using gtype = fwdpp::gamete;
 
 BOOST_AUTO_TEST_CASE(make_mutation_1)
 {
@@ -62,8 +62,8 @@ BOOST_AUTO_TEST_CASE(assign_1)
 //   decltype(next_mut_pos)::size_type i = 0;
 
 //   std::vector<mut> mvector;
-//   std::vector<KTfwd::uint_t> mcounts;
-//   auto mut_recycling_bin = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+//   std::vector<fwdpp::uint_t> mcounts;
+//   auto mut_recycling_bin = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
 //   //This is the mutation model.  Return a mutation at the next position
 //   //Positions are deterministic for the sake of testing.
 //   auto mmodel = [&next_mut_pos,&i]( decltype(mut_recycling_bin) &
@@ -71,11 +71,11 @@ BOOST_AUTO_TEST_CASE(assign_1)
 //     {
 //       //mutations are all neutral
 //       return
-//       KTfwd::fwdpp_internal::recycle_mutation_helper(rbin,__mvector,next_mut_pos[i++],
+//       fwdpp::fwdpp_internal::recycle_mutation_helper(rbin,__mvector,next_mut_pos[i++],
 //       0. );
 //     };
 
-//   KTfwd::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
+//   fwdpp::fwdpp_internal::add_N_mutations_recycle(mut_recycling_bin,
 // 						 mmodel,
 // 						 next_mut_pos.size(),
 // 						 mvector,

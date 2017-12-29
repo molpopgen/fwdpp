@@ -25,11 +25,11 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 #define METAPOP_SIM
-using mtype = KTfwd::mutation;
+using mtype = fwdpp::mutation;
 #include <common_ind.hpp>
 
 using namespace std;
-using namespace KTfwd;
+using namespace fwdpp;
 #ifdef HAVE_LIBSEQUENCE
 using namespace Sequence;
 #endif
@@ -124,11 +124,11 @@ main(int argc, char **argv)
                          + 0.667 * (theta_neut + theta_del))));
     std::function<double(void)> recmap = std::bind(gsl_rng_uniform, r);
     unsigned generation = 0;
-    KTfwd::poisson_xover rec(r, littler, 0., 1.);
+    fwdpp::poisson_xover rec(r, littler, 0., 1.);
 
     for (unsigned i = 0; i < ngens; ++i, ++generation)
         {
-            double wbar = KTfwd::sample_diploid(
+            double wbar = fwdpp::sample_diploid(
                 r,
                 pop.gametes,     // non-const reference to gametes
                 pop.diploids[0], // non-const reference to diploids
@@ -136,13 +136,13 @@ main(int argc, char **argv)
                 pop.mcounts,
                 N,                   // current pop size, remains constant
                 mu_neutral + mu_del, // mutation rate per gamete
-                std::bind(KTfwd::infsites(), std::placeholders::_1,
+                std::bind(fwdpp::infsites(), std::placeholders::_1,
                           std::placeholders::_2, r, std::ref(pop.mut_lookup),
                           mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r); },
                           [&s]() { return s; }, [&h]() { return h; }),
                 // The function to generation recombination positions:
-                rec, KTfwd::multiplicative_diploid(2.), pop.neutral,
+                rec, fwdpp::multiplicative_diploid(2.), pop.neutral,
                 pop.selected);
             // 4*N b/c it needs to be fixed in the metapopulation
             update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
@@ -166,7 +166,7 @@ main(int argc, char **argv)
             std::vector<double> wbars = sample_diploid(
                 r, pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 &Ns[0], mu_neutral + mu_del,
-                std::bind(KTfwd::infsites(), std::placeholders::_1,
+                std::bind(fwdpp::infsites(), std::placeholders::_1,
                           std::placeholders::_2, r, std::ref(pop.mut_lookup),
                           mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r); },
@@ -190,8 +190,8 @@ main(int argc, char **argv)
 #endif
     // Write the metapop in binary format to outstream
     // std::ostringstream outstream;
-    // KTfwd::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
-    // 			      std::bind(KTfwd::mutation_writer(),std::placeholders::_1,std::placeholders::_2),
+    // fwdpp::write_binary_metapop(&pop.gametes,&pop.mutations,&pop.diploids,
+    // 			      std::bind(fwdpp::mutation_writer(),std::placeholders::_1,std::placeholders::_2),
     // 			      outstream);
 
     // std::istringstream instream(outstream.str());
@@ -199,8 +199,8 @@ main(int argc, char **argv)
     // diploid_bucket_vec metapop_diploids2;
     // mlist mutations2;
 
-    // KTfwd::read_binary_metapop(&metapop_gametes2,&mutations2,&metapop_diploids2,
-    // 			     std::bind(KTfwd::mutation_reader<mtype>(),std::placeholders::_1),
+    // fwdpp::read_binary_metapop(&metapop_gametes2,&mutations2,&metapop_diploids2,
+    // 			     std::bind(fwdpp::mutation_reader<mtype>(),std::placeholders::_1),
     // 			     instream);
 
     // //Make sure that the output and the input are the same

@@ -18,18 +18,18 @@
 #include <fwdpp/sugar/serialization.hpp>
 #ifdef SINGLEPOP_SIM
 #include <fwdpp/sugar/singlepop.hpp>
-using singlepop_t = KTfwd::singlepop<mtype>;
+using singlepop_t = fwdpp::singlepop<mtype>;
 #elif defined(METAPOP_SIM)
 #include <fwdpp/sugar/metapop.hpp>
-using metapop_t = KTfwd::metapop<mtype>;
+using metapop_t = fwdpp::metapop<mtype>;
 #elif defined(MULTILOCUS_SIM)
 #include <fwdpp/sugar/multiloc.hpp>
-using multiloc_t = KTfwd::multiloc<mtype>;
+using multiloc_t = fwdpp::multiloc<mtype>;
 #endif
 
 // RNG type
 #include <fwdpp/sugar/GSLrng_t.hpp>
 
-using GSLrng = KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937>;
+using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 #endif

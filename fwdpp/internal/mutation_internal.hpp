@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <cassert>
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

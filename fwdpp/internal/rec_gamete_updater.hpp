@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <functional>
 #include <cassert>
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

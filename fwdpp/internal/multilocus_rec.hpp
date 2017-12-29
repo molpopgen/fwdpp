@@ -8,7 +8,7 @@
 #include <gsl/gsl_rng.h>
 #include <fwdpp/mutate_recombine.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

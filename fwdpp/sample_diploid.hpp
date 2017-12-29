@@ -5,7 +5,7 @@
 #include <vector>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/insertion_policies.hpp>
-namespace KTfwd
+namespace fwdpp
 {
     /*! \brief Sample the next generation of dipliods in an individual-based
       simulation.  Constant population size case.

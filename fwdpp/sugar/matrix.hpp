@@ -16,7 +16,7 @@
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <gsl/gsl_matrix_char.h>
 
-namespace KTfwd
+namespace fwdpp
 {
     struct data_matrix
     /*!
@@ -95,7 +95,7 @@ namespace KTfwd
 // implementing functions defined below.
 #include "matrix_details.hpp"
 
-namespace KTfwd
+namespace fwdpp
 {
     template <typename poptype>
     std::pair<std::vector<std::pair<std::size_t, uint_t>>,
@@ -117,7 +117,7 @@ namespace KTfwd
      *
      * \return A pair of vectors representing neutral and selected keys,
      * respectively.  The value
-     * type of each vector is std::pair<std::size_t,KTfwd::uint_t>.  The first
+     * type of each vector is std::pair<std::size_t,fwdpp::uint_t>.  The first
      * value is the mutation
      * key, and the second is its frequency in the sample.
      *
@@ -152,18 +152,18 @@ namespace KTfwd
         const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
         const std::size_t deme = 0)
     /*!
-     * Calculate a KTfwd::data_matrix representing genotypes encoded as
+     * Calculate a fwdpp::data_matrix representing genotypes encoded as
      * 0,1, or 2 copies of the derived mutation.
      *
      * \param pop The population
      * \param individuals The indexes of individuals in \a pop forming the
      * sample.
-     * \param neutral_keys See documentation of KTfwd::mutation_keys
-     * \param selected_keys See documentation of KTfwd::mutation_keys
+     * \param neutral_keys See documentation of fwdpp::mutation_keys
+     * \param selected_keys See documentation of fwdpp::mutation_keys
      * \param deme If pop is a metapopulation, this is the deme containing the
      * sample
      *
-     * \return KTfwd::data_matrix
+     * \return fwdpp::data_matrix
      *
      * \note Return values representing samples from different demes must be
      * combined
@@ -183,18 +183,18 @@ namespace KTfwd
         const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
         const std::size_t deme = 0)
     /*!
-     * Calculate a KTfwd::data_matrix representing haplotypes encoded as
+     * Calculate a fwdpp::data_matrix representing haplotypes encoded as
      * 0 or 1 copies of the derived mutation.
      *
      * \param pop The population
      * \param individuals The indexes of individuals in \a pop forming the
      * sample.
-     * \param neutral_keys See documentation of KTfwd::mutation_keys
-     * \param selected_keys See documentation of KTfwd::mutation_keys
+     * \param neutral_keys See documentation of fwdpp::mutation_keys
+     * \param selected_keys See documentation of fwdpp::mutation_keys
      * \param deme If pop is a metapopulation, this is the deme containing the
      * sample
      *
-     * \return KTfwd::data_matrix
+     * \return fwdpp::data_matrix
      *
      * \note Return values representing samples from different demes must be
      * combined
@@ -209,7 +209,7 @@ namespace KTfwd
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     row_sums(const data_matrix &m)
     /*!
-     * Calculate the row sums of a KTfwd::data_matrix
+     * Calculate the row sums of a fwdpp::data_matrix
      *
      * \return A pair of vectors of unsigned integers representing row sums
      * for neutral and selected sites in the matrix, respectively.
@@ -225,7 +225,7 @@ namespace KTfwd
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     col_sums(const data_matrix &m)
     /*!
-         * Calculate the column sums of a KTfwd::data_matrix
+         * Calculate the column sums of a fwdpp::data_matrix
          *
          * \return A pair of vectors of unsigned integers representing column
      * sums

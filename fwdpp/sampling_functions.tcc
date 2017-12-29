@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <algorithm>
 
-namespace KTfwd
+namespace fwdpp
 {
     template <typename gamete_type, typename allocator_t,
               template <typename, typename> class container_type>

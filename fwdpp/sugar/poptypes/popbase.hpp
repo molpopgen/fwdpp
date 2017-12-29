@@ -7,7 +7,7 @@
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace sugar
     {
@@ -21,10 +21,10 @@ namespace KTfwd
           \note Added in fwdpp 0.5.0
          */
         {
-            static_assert(typename KTfwd::traits::is_gamete<
+            static_assert(typename fwdpp::traits::is_gamete<
                               typename gcont::value_type>::type(),
                           "gcont::value_type must be a gamete type");
-            static_assert(typename KTfwd::traits::is_mutation<
+            static_assert(typename fwdpp::traits::is_mutation<
                               typename mcont::value_type>::type(),
                           "mcont::value_type must be a mutation type");
             /// This function is used to validate input

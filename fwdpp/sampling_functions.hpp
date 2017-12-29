@@ -19,8 +19,8 @@
   2N\f$ from
   a simulated population.
 
-  The library provides several overloads of the functions KTfwd::ms_sample and
-  KTfwd::ms_sample_separate.
+  The library provides several overloads of the functions fwdpp::ms_sample and
+  fwdpp::ms_sample_separate.
 
   The following features are in common to all versions of these functions:
 
@@ -36,15 +36,15 @@
   to populate a polymorphism table from the
   [libsequence](http://molpopgen.github.io/libsequence/) library:
   \code
-  auto x = KTfwd::ms_sample( appropriate arguments );
+  auto x = fwdpp::ms_sample( appropriate arguments );
   Sequence::SimData xx(x.begin(),x.end());
   \endcode
   When a SimData object is written to a stream, its output format is the same
   as that used by Dick Hudson's coalescent simulation
   program [ms](http://home.uchicago.edu/~rhudson1/source/mksamples.html)
-  3. All versions of KTfwd::ms_sample return vectors where the mutations
+  3. All versions of fwdpp::ms_sample return vectors where the mutations
   affecting fitness and those not affecting fitness are intermingled.
-  4. All versions of KTfwd::ms_sample_separate return pairs of vectors
+  4. All versions of fwdpp::ms_sample_separate return pairs of vectors
   separating the mutations not affecting fitness from those that do.
   The first member of each pair is a vector of "neutral" mutations, and the
   second member is the vector of "selected" mutations.
@@ -87,7 +87,7 @@
   frequency in the population.
 
   The object passed to these functions is the container of gametes (e.g, some
-  container of type KTfwd::gamete_base).
+  container of type fwdpp::gamete_base).
 
   The return values have no relation to any actual diploid individual in the
   population. Each haplotype
@@ -117,7 +117,7 @@
   were sampled.
 */
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       A variable site in a sample is a pair (pos,genotypes).

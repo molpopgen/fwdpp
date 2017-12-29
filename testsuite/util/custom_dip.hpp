@@ -37,7 +37,7 @@ struct custom_diploid_testing_t
     }
 };
 
-static_assert(KTfwd::traits::is_custom_diploid_t<custom_diploid_testing_t>::value,
+static_assert(fwdpp::traits::is_custom_diploid_t<custom_diploid_testing_t>::value,
 		"custom_diploid_testing_t must pass as a custom diploid.");
 
 struct diploid_writer

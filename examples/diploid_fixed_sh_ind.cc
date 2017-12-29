@@ -16,10 +16,10 @@
 #include <fwdpp/sugar/infsites.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation
-using mtype = KTfwd::mutation;
+using mtype = fwdpp::mutation;
 #include <common_ind.hpp>
 #include <gsl/gsl_randist.h>
-using namespace KTfwd;
+using namespace fwdpp;
 
 int
 main(int argc, char **argv)
@@ -55,7 +55,7 @@ main(int argc, char **argv)
     GSLrng r(seed);
 
     // recombination map is uniform[0,1)
-    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
+    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -68,22 +68,22 @@ main(int argc, char **argv)
             double wbar = 1;
             for (generation = 0; generation < ngens; ++generation)
                 {
-                    assert(KTfwd::check_sum(pop.gametes, 2 * N));
-                    wbar = KTfwd::sample_diploid(
+                    assert(fwdpp::check_sum(pop.gametes, 2 * N));
+                    wbar = fwdpp::sample_diploid(
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
                         pop.mcounts, N, mu_neutral + mu_del,
-                        std::bind(KTfwd::infsites(), std::placeholders::_1,
+                        std::bind(fwdpp::infsites(), std::placeholders::_1,
                                   std::placeholders::_2, r.get(),
                                   std::ref(pop.mut_lookup), mu_neutral, mu_del,
                                   [&r]() { return gsl_rng_uniform(r.get()); },
                                   [&s]() { return s; }, [&h]() { return h; }),
                         // The function to generation recombination positions:
-                        rec, KTfwd::multiplicative_diploid(1.), pop.neutral,
+                        rec, fwdpp::multiplicative_diploid(1.), pop.neutral,
                         pop.selected);
-                    KTfwd::update_mutations(pop.mutations, pop.fixations,
+                    fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
-                    assert(KTfwd::check_sum(pop.gametes, 2 * N));
+                    assert(fwdpp::check_sum(pop.gametes, 2 * N));
                 }
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected

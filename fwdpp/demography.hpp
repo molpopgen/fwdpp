@@ -23,7 +23,7 @@
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 #include <fwdpp/internal/demography_details.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*! \brief Copy a deme
 
@@ -129,7 +129,7 @@ namespace KTfwd
                 gametes[dip.second].n--;
             }
         diploids.erase(diploids.begin() + i);
-        KTfwd::fwdpp_internal::process_gametes(
+        fwdpp::fwdpp_internal::process_gametes(
             gametes, mutations, mcounts); // update mutation counts
         return 0;
     }

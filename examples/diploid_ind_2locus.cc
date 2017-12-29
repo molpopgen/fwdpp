@@ -13,7 +13,7 @@
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/infsites.hpp>
 
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define MULTILOCUS_SIM
 #include <common_ind.hpp>
 
@@ -98,21 +98,21 @@ main(int argc, char **argv)
             double wbar;
 
             std::vector<std::function<std::vector<double>()>> recpols{
-                KTfwd::poisson_xover(r.get(), littler, 0., 1.),
-                KTfwd::poisson_xover(r.get(), littler, 1., 2.)
+                fwdpp::poisson_xover(r.get(), littler, 0., 1.),
+                fwdpp::poisson_xover(r.get(), littler, 1., 2.)
             };
 
             std::vector<std::function<std::size_t(std::queue<std::size_t> &,
                                                   multiloc_t::mcont_t &)>>
                 mmodels{
                     // Locus 0: positions Uniform [0,1)
-                    std::bind(KTfwd::infsites(), std::placeholders::_1,
+                    std::bind(fwdpp::infsites(), std::placeholders::_1,
                               std::placeholders::_2, r.get(),
                               std::ref(pop.mut_lookup), &generation, mu[0], 0.,
                               [&r]() { return gsl_rng_uniform(r.get()); },
                               []() { return 0.; }, []() { return 0.; }),
                     // Locus 1: positions Uniform [1,2)
-                    std::bind(KTfwd::infsites(), std::placeholders::_1,
+                    std::bind(fwdpp::infsites(), std::placeholders::_1,
                               std::placeholders::_2, r.get(),
                               std::ref(pop.mut_lookup), &generation, mu[1], 0.,
                               [&r]() { return gsl_ran_flat(r.get(), 1., 2.); },
@@ -126,7 +126,7 @@ main(int argc, char **argv)
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
-                    KTfwd::sample_diploid(
+                    fwdpp::sample_diploid(
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
                         pop.mcounts, N, &mu[0], mmodels, recpols,
                         interlocus_rec,
@@ -135,7 +135,7 @@ main(int argc, char **argv)
                                   std::placeholders::_3),
                         pop.neutral, pop.selected);
                     assert(check_sum(pop.gametes, 2 * twoN));
-                    KTfwd::update_mutations(pop.mutations, pop.fixations,
+                    fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
                     assert(popdata_sane_multilocus(pop.diploids, pop.gametes,
@@ -145,7 +145,7 @@ main(int argc, char **argv)
             // For giggles, make sure that the pop. is copy-constructible...
             multiloc_t pop2(pop);
             // Take a sample and print it to screen.
-            auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
+            auto x = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
                                       pop.diploids, samplesize1, true);
 #ifdef HAVE_LIBSEQUENCE
             Sequence::SimData l1(x[0].begin(), x[0].end()),

@@ -39,23 +39,23 @@
 #include <fwdpp/demography.hpp>
 #endif
 
-/*! \namespace KTfwd
+/*! \namespace fwdpp
   \brief The primary namespace defined by this library.
  */
 
-/*! \namespace KTfwd::fwdpp_internal
+/*! \namespace fwdpp::fwdpp_internal
   \brief Nested namespace for nuts and bolts of certain library functions
 */
 
-/*! \namespace KTfwd::traits
+/*! \namespace fwdpp::traits
   \brief Nested namespace type traits
 */
 
-/*! \namespace KTfwd::traits::internal
+/*! \namespace fwdpp::traits::internal
   \brief Nested namespace implementation details of type traits
 */
 
-/*! \namespace KTfwd::tags
+/*! \namespace fwdpp::tags
   \brief Nested namespace for dispatch tags for template functions.
 */
 
@@ -70,7 +70,7 @@
  * \brief Functions related to modeling multi-locus/region simulations
  */
 
-/*! \namespace KTfwd::sugar
+/*! \namespace fwdpp::sugar
   \brief Nested namespace for sugar layer.
 
   This namespace provides the implementation details for @ref sugar.

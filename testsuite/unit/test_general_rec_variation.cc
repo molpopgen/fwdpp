@@ -1,7 +1,7 @@
 /*!
   \file test_general_rec_variation.cc
   \ingroup unit
-  \brief Unit tests for KTfwd::general_rec_variation.  Also tests the built-in
+  \brief Unit tests for fwdpp::general_rec_variation.  Also tests the built-in
   policies accompanying this type.
 */
 
@@ -15,14 +15,14 @@ struct fixture
 {
     const gsl_rng* r;
     const double not_a_num, inf;
-    KTfwd::general_rec_variation recvar;
-    KTfwd::poisson_interval pi;
-    KTfwd::crossover_point ci1;
-    KTfwd::crossover_point ci2;
-    KTfwd::crossover_point ci3;
-    KTfwd::gamete g;
+    fwdpp::general_rec_variation recvar;
+    fwdpp::poisson_interval pi;
+    fwdpp::crossover_point ci1;
+    fwdpp::crossover_point ci2;
+    fwdpp::crossover_point ci3;
+    fwdpp::gamete g;
     std::pair<std::size_t, std::size_t> diploid;
-    std::vector<KTfwd::mutation> mutations;
+    std::vector<fwdpp::mutation> mutations;
 
     fixture()
         : r{ gsl_rng_alloc(gsl_rng_taus) },
@@ -40,23 +40,23 @@ BOOST_FIXTURE_TEST_SUITE(test_general_rec_variation, fixture)
 
 BOOST_AUTO_TEST_CASE(test_poisson_interval)
 {
-    BOOST_REQUIRE_THROW(KTfwd::poisson_interval(NULL, 1e-3, 0., 1.),
+    BOOST_REQUIRE_THROW(fwdpp::poisson_interval(NULL, 1e-3, 0., 1.),
                         std::invalid_argument);
-    BOOST_REQUIRE_THROW(KTfwd::poisson_interval(r, not_a_num, 0., 1.),
+    BOOST_REQUIRE_THROW(fwdpp::poisson_interval(r, not_a_num, 0., 1.),
                         std::invalid_argument);
-    BOOST_REQUIRE_THROW(KTfwd::poisson_interval(r, 1e-3, not_a_num, 1.),
+    BOOST_REQUIRE_THROW(fwdpp::poisson_interval(r, 1e-3, not_a_num, 1.),
                         std::invalid_argument);
-    BOOST_REQUIRE_THROW(KTfwd::poisson_interval(r, 1e-3, 0., not_a_num),
+    BOOST_REQUIRE_THROW(fwdpp::poisson_interval(r, 1e-3, 0., not_a_num),
                         std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_crossover_point)
 {
-    BOOST_REQUIRE_THROW(KTfwd::crossover_point(NULL, 1e-3, -2),
+    BOOST_REQUIRE_THROW(fwdpp::crossover_point(NULL, 1e-3, -2),
                         std::invalid_argument);
-    BOOST_REQUIRE_THROW(KTfwd::crossover_point(r, inf, -2),
+    BOOST_REQUIRE_THROW(fwdpp::crossover_point(r, inf, -2),
                         std::invalid_argument);
-    BOOST_REQUIRE_THROW(KTfwd::crossover_point(r, -2, not_a_num),
+    BOOST_REQUIRE_THROW(fwdpp::crossover_point(r, -2, not_a_num),
                         std::invalid_argument);
 }
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_basic_use)
 
 BOOST_AUTO_TEST_CASE(test_dispatch)
 {
-    auto x = KTfwd::dispatch_recombination_policy(
+    auto x = fwdpp::dispatch_recombination_policy(
         std::cref(recvar), std::cref(diploid), std::cref(g), std::cref(g),
         std::cref(mutations));
 }

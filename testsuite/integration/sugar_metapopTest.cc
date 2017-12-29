@@ -1,6 +1,6 @@
 /*! \file sugar_metapop.cc
   \ingroup unit
-  \brief Testing KTfwd::metapop
+  \brief Testing fwdpp::metapop
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>

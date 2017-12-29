@@ -7,7 +7,7 @@
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace traits
     {
@@ -19,30 +19,30 @@ namespace KTfwd
         {
         };
 
-        //! Convenience wrapper for KTfwd::traits::is_gamete<T>::type.
+        //! Convenience wrapper for fwdpp::traits::is_gamete<T>::type.
         template <typename T> using is_gamete_t = typename is_gamete<T>::type;
 
         //! Wraps a static constant allowing a test that T is a mutation
         template <typename T>
         struct is_mutation
             : std::integral_constant<bool,
-                                     std::is_base_of<KTfwd::mutation_base,
+                                     std::is_base_of<fwdpp::mutation_base,
                                                      T>::value>
         {
         };
 
-        //! Convenience wrapper for KTfwd::traits::is_mutation<T>::Type.
+        //! Convenience wrapper for fwdpp::traits::is_mutation<T>::Type.
         template <typename T>
         using is_mutation_t = typename is_mutation<T>::type;
 
         //! Gives the "recycling bin" type corresponding to cont_t
         template <typename cont_t> struct recycling_bin_type
         {
-            using type = KTfwd::fwdpp_internal::recycling_bin_t<
+            using type = fwdpp::fwdpp_internal::recycling_bin_t<
                 typename cont_t::size_type>;
         };
 
-        // Evaluates to KTfwd::traits::recycling_bin_type<T>::type
+        // Evaluates to fwdpp::traits::recycling_bin_type<T>::type
         template <typename T>
         using recycling_bin_t = typename recycling_bin_type<T>::type;
     }
@@ -50,7 +50,7 @@ namespace KTfwd
 
 #include <fwdpp/internal/type_traits.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace traits
     {
@@ -65,7 +65,7 @@ namespace KTfwd
             = traits::internal::is_multilocus_diploid<T>;
 
         //! Convenience wrapper for
-        //! KTfwd::traits::is_multilocus_diploid<T>::type
+        //! fwdpp::traits::is_multilocus_diploid<T>::type
         template <typename T>
         using is_multilocus_diploid_t =
             typename is_multilocus_diploid<T>::type;
@@ -74,11 +74,11 @@ namespace KTfwd
         template <typename T>
         using is_custom_diploid = traits::internal::is_custom_diploid<T>;
 
-        //! Convenience wrapper for KTfwd::traits::is_diploid<T>::type
+        //! Convenience wrapper for fwdpp::traits::is_diploid<T>::type
         template <typename T>
         using is_diploid_t = typename is_diploid<T>::type;
 
-        //! Convenience wrapper for KTfwd::traits::is_custom_diploid<T>::type
+        //! Convenience wrapper for fwdpp::traits::is_custom_diploid<T>::type
         template <typename T>
         using is_custom_diploid_t = typename is_custom_diploid<T>::type;
 
@@ -92,7 +92,7 @@ namespace KTfwd
 
         /*!
          * Convenience wrapper for
-         * KTfwd::traits::is_mutation_model<mmodel_t,mcont_t,gcont_t>::type
+         * fwdpp::traits::is_mutation_model<mmodel_t,mcont_t,gcont_t>::type
          */
         template <typename mmodel_t, typename mcont_t, typename gcont_t>
         using is_mutation_model_t =
@@ -110,7 +110,7 @@ namespace KTfwd
 
         /*!
          * Convenience wrapper for
-         * KTfwd::traits::is_rec_model<recmodel_t,gamete_c,mcont_t>::type
+         * fwdpp::traits::is_rec_model<recmodel_t,gamete_c,mcont_t>::type
          */
         template <typename recmodel_t, typename diploid_t, typename gamete_t,
                   typename mcont_t>
@@ -148,7 +148,7 @@ namespace KTfwd
 
         /*!
          * Conveneince wrapper for
-         * KTfwd::traits::is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>::type
+         * fwdpp::traits::is_fitness_fxn<ff,dipvector_t,gcont_t,mcont_t>::type
          */
         template <typename ff, typename dipvector_t, typename gcont_t,
                   typename mcont_t>

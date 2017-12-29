@@ -7,7 +7,7 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/sugar/poptypes/singlepop.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief Single locus, single population object
@@ -20,6 +20,6 @@ namespace KTfwd
                            std::vector<diploid_t>, std::vector<mtype>,
                            std::vector<uint_t>,
                            std::unordered_set<double, std::hash<double>,
-                                              KTfwd::equal_eps>>;
+                                              fwdpp::equal_eps>>;
 }
 #endif

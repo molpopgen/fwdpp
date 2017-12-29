@@ -12,7 +12,7 @@
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/sampling/sampling_details.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     template <typename poptype>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
@@ -177,7 +177,7 @@ namespace KTfwd
             != individuals.end())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: individual index out of range");
+                    "fwdpp::sample_separate: individual index out of range");
             }
 
         auto rv = sample_details(p, individuals, removeFixed);
@@ -217,7 +217,7 @@ namespace KTfwd
             != individuals.end())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: individual index out of range");
+                    "fwdpp::sample_separate: individual index out of range");
             }
 
         return sample_details(p, individuals, removeFixed, p.locus_boundaries);
@@ -255,7 +255,7 @@ namespace KTfwd
             != individuals.end())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: individual index out of range");
+                    "fwdpp::sample_separate: individual index out of range");
             }
         auto rv = fwdpp_internal::ms_sample_separate_single_deme(
             p.mutations, p.gametes, p.diploids, individuals,
@@ -302,7 +302,7 @@ namespace KTfwd
             != individuals.end())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: individual index out of range");
+                    "fwdpp::sample_separate: individual index out of range");
             }
         auto rv = fwdpp_internal::ms_sample_separate_mlocus(
             p.mutations, p.gametes, p.diploids, individuals,
@@ -341,7 +341,7 @@ namespace KTfwd
         if (deme >= p.diploids.size())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: deme index out of range");
+                    "fwdpp::sample_separate: deme index out of range");
             }
         auto temp = ms_sample_separate(r, p.mutations, p.gametes,
                                        p.diploids[deme], nsam, removeFixed);
@@ -377,7 +377,7 @@ namespace KTfwd
         if (deme >= p.diploids.size())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: deme index out of range");
+                    "fwdpp::sample_separate: deme index out of range");
             }
         auto x = ms_sample_separate(r, p.mutations, p.gametes,
                                     p.diploids[deme], nsam, removeFixed);
@@ -411,7 +411,7 @@ namespace KTfwd
         if (deme >= p.diploids.size())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: deme index out of range");
+                    "fwdpp::sample_separate: deme index out of range");
             }
         if (individuals.empty())
             return sample_t();
@@ -419,7 +419,7 @@ namespace KTfwd
             {
                 if (i >= p.diploids[deme].size())
                     {
-                        throw std::out_of_range("KTfwd::sample_separate: "
+                        throw std::out_of_range("fwdpp::sample_separate: "
                                                 "individual index out of "
                                                 "range");
                     }
@@ -459,7 +459,7 @@ namespace KTfwd
         if (deme >= p.diploids.size())
             {
                 throw std::out_of_range(
-                    "KTfwd::sample_separate: deme index out of range");
+                    "fwdpp::sample_separate: deme index out of range");
             }
         if (individuals.empty())
             return sep_sample_t();
@@ -467,7 +467,7 @@ namespace KTfwd
             {
                 if (i >= p.diploids[deme].size())
                     {
-                        throw std::out_of_range("KTfwd::sample_separate: "
+                        throw std::out_of_range("fwdpp::sample_separate: "
                                                 "individual index out of "
                                                 "range");
                     }

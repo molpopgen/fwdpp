@@ -15,7 +15,7 @@
 #include <type_traits>
 #include <fwdpp/tags/tags.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     //! The unsigned integer type is 32 bits
     using uint_t = std::uint32_t;
@@ -97,7 +97,7 @@ namespace KTfwd
       type (see @ref md_md_policies)
       and then use a typedef to define your gamete type in the simulations:
       \code
-      using gamete_t = KTfwd::gamete_base<mutation_type>
+      using gamete_t = fwdpp::gamete_base<mutation_type>
       \endcode
       See @ref md_md_policies for examples of this.
       \ingroup basicTypes

@@ -7,7 +7,7 @@
 #include <gsl/gsl_randist.h>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

@@ -10,7 +10,7 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
-namespace KTfwd
+namespace fwdpp
 {
     struct poisson_interval
     /*!
@@ -126,7 +126,7 @@ namespace KTfwd
 	 * A generalized genetic map.
 	 * It holds a vector of functions that add recombination
 	 * breakpoints to a vector.  Examples of such functions
-	 * are KTfwd::poisson_interval and KTfwd::crossover_point.
+	 * are fwdpp::poisson_interval and fwdpp::crossover_point.
 	 */
     {
         std::vector<std::function<void(std::vector<double>&)>> recmap;

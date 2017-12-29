@@ -19,7 +19,7 @@
 // sample of diploids.  We tests that row and sum columns from the two
 // matrix types agree.  Once those agreement tests pass, we compare the
 // haplotype matrix to the row/sum columns of a sample based on
-// KTfwd::sample_separate (fwdpp/sugar/sampling.hpp) for the same diploids.
+// fwdpp::sample_separate (fwdpp/sugar/sampling.hpp) for the same diploids.
 // These last checks ensure that two independent pieces of code, written
 // at different times, give the same results.
 //
@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
 {
     using spoptype = singlepop_popgenmut_fixture::poptype;
     spoptype pop(1000);
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     auto generation = simulate_singlepop(pop, rng, 0, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
@@ -40,14 +40,14 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
             auto keys = mutation_keys(pop, indlist, true, true);
             // keys come out unsorted, so we have to sort for this test:
             std::sort(keys.first.begin(), keys.first.end(),
-                      [&pop](const std::pair<std::size_t, KTfwd::uint_t> &a,
-                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                      [&pop](const std::pair<std::size_t, fwdpp::uint_t> &a,
+                             const std::pair<std::size_t, fwdpp::uint_t> &b) {
                           return pop.mutations[a.first].pos
                                  < pop.mutations[b.first].pos;
                       });
             std::sort(keys.second.begin(), keys.second.end(),
-                      [&pop](const std::pair<std::size_t, KTfwd::uint_t> &a,
-                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                      [&pop](const std::pair<std::size_t, fwdpp::uint_t> &a,
+                             const std::pair<std::size_t, fwdpp::uint_t> &b) {
                           return pop.mutations[a.first].pos
                                  < pop.mutations[b.first].pos;
                       });
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                 std::remove_if(
                     keys.first.begin(), keys.first.end(),
                     [&indlist](
-                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        const std::pair<std::size_t, fwdpp::uint_t> &a) {
                         return a.second == 2 * indlist.size();
                     }),
                 keys.first.end());
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                 std::remove_if(
                     keys.second.begin(), keys.second.end(),
                     [&indlist](
-                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        const std::pair<std::size_t, fwdpp::uint_t> &a) {
                         return a.second == 2 * indlist.size();
                     }),
                 keys.second.end());
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
 
             // Now, compare to an independent calculation of the genotypes
             // for same individuals
-            auto s = KTfwd::sample_separate(pop, indlist, true);
+            auto s = fwdpp::sample_separate(pop, indlist, true);
             // Check same total # of mutations
             BOOST_REQUIRE_EQUAL(s.first.size(), m.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(s.second.size(), m.selected_positions.size());
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                     BOOST_REQUIRE_EQUAL(pos[i], m.selected_positions[i]);
                     BOOST_REQUIRE_EQUAL(pos[i], gm.selected_positions[i]);
                 }
-            auto sums = KTfwd::col_sums(m);
-            auto gm_sums = KTfwd::col_sums(gm);
+            auto sums = fwdpp::col_sums(m);
+            auto gm_sums = fwdpp::col_sums(gm);
             BOOST_REQUIRE_EQUAL(sums.first.size(), m.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(sums.second.size(),
                                 m.selected_positions.size());
@@ -168,8 +168,8 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                     BOOST_REQUIRE_EQUAL(sums.second[c], sum2);
                 }
             // Now, row sums.
-            sums = KTfwd::row_sums(m);
-            gm_sums = KTfwd::row_sums(gm);
+            sums = fwdpp::row_sums(m);
+            gm_sums = fwdpp::row_sums(gm);
             // Compare row sums from haplotype and genotype matrix.
             for (std::size_t hi = 0, gi = 0; hi < sums.first.size();
                  hi += 2, gi += 1)
@@ -226,14 +226,14 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
         {
             auto keys = mutation_keys(mpf.pop, indlist, true, true);
             std::sort(keys.first.begin(), keys.first.end(),
-                      [&mpf](const std::pair<std::size_t, KTfwd::uint_t> &a,
-                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                      [&mpf](const std::pair<std::size_t, fwdpp::uint_t> &a,
+                             const std::pair<std::size_t, fwdpp::uint_t> &b) {
                           return mpf.pop.mutations[a.first].pos
                                  < mpf.pop.mutations[b.first].pos;
                       });
             std::sort(keys.second.begin(), keys.second.end(),
-                      [&mpf](const std::pair<std::size_t, KTfwd::uint_t> &a,
-                             const std::pair<std::size_t, KTfwd::uint_t> &b) {
+                      [&mpf](const std::pair<std::size_t, fwdpp::uint_t> &a,
+                             const std::pair<std::size_t, fwdpp::uint_t> &b) {
                           return mpf.pop.mutations[a.first].pos
                                  < mpf.pop.mutations[b.first].pos;
                       });
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                 std::remove_if(
                     keys.first.begin(), keys.first.end(),
                     [&indlist](
-                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        const std::pair<std::size_t, fwdpp::uint_t> &a) {
                         return a.second == 2 * indlist.size();
                     }),
                 keys.first.end());
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                 std::remove_if(
                     keys.second.begin(), keys.second.end(),
                     [&indlist](
-                        const std::pair<std::size_t, KTfwd::uint_t> &a) {
+                        const std::pair<std::size_t, fwdpp::uint_t> &a) {
                         return a.second == 2 * indlist.size();
                     }),
                 keys.second.end());
@@ -260,8 +260,8 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
             auto gm
                 = genotype_matrix(mpf.pop, indlist, keys.first, keys.second);
 
-            auto sums = KTfwd::row_sums(m);
-            auto gm_sums = KTfwd::row_sums(gm);
+            auto sums = fwdpp::row_sums(m);
+            auto gm_sums = fwdpp::row_sums(gm);
             // Compare row sums from haplotype and genotype matrix.
             for (std::size_t hi = 0, gi = 0; hi < sums.first.size();
                  hi += 2, gi += 1)
@@ -279,9 +279,9 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                 }
 
             // Get a sample
-            auto s = KTfwd::sample_separate(mpf.pop, indlist, true);
+            auto s = fwdpp::sample_separate(mpf.pop, indlist, true);
             // multi-locus samples are tricky, so let's simplify
-            KTfwd::sample_t neutral, selected;
+            fwdpp::sample_t neutral, selected;
             for (auto &&si : s)
                 {
                     neutral.insert(neutral.end(), si.first.begin(),

@@ -14,7 +14,7 @@
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace extensions
     {
@@ -22,7 +22,7 @@ namespace KTfwd
         {
             std::vector<double> nbeg, nend, sbeg, send, nweights, sweights;
             std::vector<shmodel> shmodels;
-            using vec_xtra = std::vector<decltype(KTfwd::mutation_base::xtra)>;
+            using vec_xtra = std::vector<decltype(fwdpp::mutation_base::xtra)>;
             vec_xtra nlabels, slabels;
             discrete_mut_model_data(
                 std::vector<double> __nbeg, std::vector<double> __nend,
@@ -71,7 +71,7 @@ namespace KTfwd
           Class allowing the simulation of discrete variation
           in mutation models along a region.
 
-          Implemented in terms of KTfwd::popgenmut.
+          Implemented in terms of fwdpp::popgenmut.
 
           Intended to be used with the callbacks in
           fwdpp/extensions/callbacks.hpp
@@ -79,16 +79,16 @@ namespace KTfwd
         {
           private:
             std::unique_ptr<discrete_mut_model_data> data;
-            KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup, slookup;
+            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup, slookup;
             inline void
             assign_weights()
             {
                 if (data->nweights.size())
-                    nlookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                    nlookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
                         gsl_ran_discrete_preproc(data->nweights.size(),
                                                  data->nweights.data()));
                 if (data->sweights.size())
-                    slookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                    slookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
                         gsl_ran_discrete_preproc(data->sweights.size(),
                                                  data->sweights.data()));
             }
@@ -120,7 +120,7 @@ namespace KTfwd
               \param __sbeg Positions of beginnings of 'selected' regions
               \param __send Positions of ends of 'selected' regions
               \param sweights Weights on 'selected' regions
-              \param __shmodels Vector of KTfwd::experimenta::shmodel
+              \param __shmodels Vector of fwdpp::experimenta::shmodel
             */
             discrete_mut_model(std::vector<double> __nbeg,
                                std::vector<double> __nend,
@@ -150,7 +150,7 @@ namespace KTfwd
             }
 
             /*!
-              Return a KTfwd::popgenmut
+              Return a fwdpp::popgenmut
 
               \param r A gsl_rng
               \param nmu Neutral mutation rate (per gamete, per generation)
@@ -209,7 +209,7 @@ namespace KTfwd
 
         /*!
           Convenience function to return a function object
-          bound to KTfwd::extensions::discrete_mut_model::operator()
+          bound to fwdpp::extensions::discrete_mut_model::operator()
 
           This simplifies life a lot!
 
@@ -229,7 +229,7 @@ namespace KTfwd
         }
 
         /*! Return a vector of callables bount
-         *  to KTfwd::extensions::discrete_mut_model::operator()
+         *  to fwdpp::extensions::discrete_mut_model::operator()
          */
         template <typename mcont_t, typename lookup_t, class... Args>
         inline std::vector<traits::mutation_model<mcont_t>>
@@ -290,12 +290,12 @@ namespace KTfwd
           private:
             using result_type = std::vector<double>;
             std::unique_ptr<discrete_rec_model_data> data;
-            KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
             void
             assign_weights()
             {
                 if (data->weight.size())
-                    lookup = KTfwd::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                    lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
                         gsl_ran_discrete_preproc(data->weight.size(),
                                                  data->weight.data()));
             }

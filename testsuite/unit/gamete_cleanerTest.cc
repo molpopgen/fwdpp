@@ -1,7 +1,7 @@
 /*!
   \file gamete_cleanerTest.cc
   \ingroup unit
-  \brief Testing KTfwd::fwdpp_internal::gamete_cleaner
+  \brief Testing fwdpp::fwdpp_internal::gamete_cleaner
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>
@@ -23,10 +23,10 @@ BOOST_AUTO_TEST_CASE(test_remove_all)
     gametes[0].n = 1999;
     gametes.push_back(gcont_t::value_type(1));
     gametes[1].mutations.push_back(1);
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(gametes, 2000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(
-        KTfwd::popdata_sane(diploids, gametes, mutations, mcounts), true);
-    KTfwd::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
+        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
                                           std::true_type());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 0);
 }
@@ -43,11 +43,11 @@ BOOST_AUTO_TEST_CASE(test_remove_nothing)
     gametes[0].n = 1999;
     gametes.push_back(gcont_t::value_type(1));
     gametes[1].mutations.push_back(1);
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(gametes, 2000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(
-        KTfwd::popdata_sane(diploids, gametes, mutations, mcounts), true);
-    KTfwd::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
-                                          KTfwd::remove_nothing());
+        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
+                                          fwdpp::remove_nothing());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 1);
 }
 
@@ -64,11 +64,11 @@ BOOST_AUTO_TEST_CASE(test_remove_neutral)
     gametes[0].n = 2000;
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(gametes[0].smutations.size(), 1);
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(gametes, 2000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(
-        KTfwd::popdata_sane(diploids, gametes, mutations, mcounts), true);
-    KTfwd::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
-                                          KTfwd::remove_neutral());
+        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
+                                          fwdpp::remove_neutral());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 0);
     BOOST_REQUIRE_EQUAL(gametes[0].smutations.size(), 1);
 }

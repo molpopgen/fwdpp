@@ -1,7 +1,7 @@
 /*!
   \file sugar_multilocus.cc
   \ingroup unit
-  \brief Testing KTfwd::multiloc
+  \brief Testing fwdpp::multiloc
 */
 #include <unistd.h>
 #include <config.h>
@@ -38,10 +38,10 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
                        multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
                        f.rbw, f.generation);
     poptype pop2(0, 0);
-    KTfwd::serialize s;
+    fwdpp::serialize s;
     std::stringstream buffer;
     s(buffer, f.pop, multiloc_popgenmut_fixture::mwriter());
-    KTfwd::deserialize()(pop2, buffer, multiloc_popgenmut_fixture::mreader());
+    fwdpp::deserialize()(pop2, buffer, multiloc_popgenmut_fixture::mreader());
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
 
@@ -53,10 +53,10 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
                        f.rbw, f.generation);
     poptype pop2(0, 0);
     gzFile gzf = gzopen("sugar_multilocus_out.gz", "wb");
-    KTfwd::gzserialize()(gzf, f.pop, multiloc_popgenmut_fixture::mwriter());
+    fwdpp::gzserialize()(gzf, f.pop, multiloc_popgenmut_fixture::mwriter());
     gzclose(gzf);
     gzf = gzopen("sugar_multilocus_out.gz", "rb");
-    KTfwd::gzdeserialize()(pop2, gzf,
+    fwdpp::gzdeserialize()(pop2, gzf,
                            std::bind(multiloc_popgenmut_fixture::mreader(),
                                      std::placeholders::_1));
     gzclose(gzf);

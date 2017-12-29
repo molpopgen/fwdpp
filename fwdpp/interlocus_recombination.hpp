@@ -29,7 +29,7 @@
 #include <functional>
 #include <fwdpp/fwd_functional.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     inline std::vector<std::function<unsigned(void)>>
     make_poisson_interlocus_rec(const gsl_rng* r, const double* means,
@@ -42,7 +42,7 @@ namespace KTfwd
     /// \code
     /// std::vector<double> recrates_bw_loci{1e-3};
     /// auto interlocus_rec =
-    /// KTfwd::make_poisson_interlocus_rec(r,recrates_bw_loci.data(),recrates_bw_loci.size());
+    /// fwdpp::make_poisson_interlocus_rec(r,recrates_bw_loci.data(),recrates_bw_loci.size());
     /// \endcode
     ///
     /// \ingroup mlocus
@@ -67,7 +67,7 @@ namespace KTfwd
     /// \code
     /// std::vector<double> recrates{0.25,0.5};
     /// auto interlocus_rec =
-    /// KTfwd::make_binomial_interlocus_rec(r,recrates.data(),recrates.size());
+    /// fwdpp::make_binomial_interlocus_rec(r,recrates.data(),recrates.size());
     /// \endcode
     ///
     /// \ingroup mlocus

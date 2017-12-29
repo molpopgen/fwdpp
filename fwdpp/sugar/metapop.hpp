@@ -6,7 +6,7 @@
 #include <vector>
 #include <unordered_set>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief Single locus metapopulation simulation object
@@ -20,6 +20,6 @@ namespace KTfwd
                          std::vector<std::vector<diploid_t>>,
                          std::vector<mtype>, std::vector<uint_t>,
                          std::unordered_set<double, std::hash<double>,
-                                            KTfwd::equal_eps>>;
+                                            fwdpp::equal_eps>>;
 }
 #endif

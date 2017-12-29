@@ -3,7 +3,7 @@
 
 #include <vector>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

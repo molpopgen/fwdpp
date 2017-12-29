@@ -4,7 +4,7 @@
 #include <gsl/gsl_randist.h>
 #include <memory>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

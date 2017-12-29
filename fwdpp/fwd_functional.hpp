@@ -11,7 +11,7 @@
   Defines several function objects used both internally and by library users
 */
 
-namespace KTfwd
+namespace fwdpp
 {
     /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
     /// std::numeric_limits<T>::epsilon()

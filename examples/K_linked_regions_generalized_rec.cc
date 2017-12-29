@@ -1,6 +1,6 @@
 /*! \include K_linked_regions_generalized_rec.cc
   Simple example building up variation in recombination
-  rate using KTfwd::general_rec_variation
+  rate using fwdpp::general_rec_variation
 */
 
 #include <iostream>
@@ -14,7 +14,7 @@
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/sampling.hpp>
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
@@ -71,36 +71,36 @@ main(int argc, char **argv)
     unsigned generation = 0;
     double wbar;
 
-    KTfwd::general_rec_variation recvar;
+    fwdpp::general_rec_variation recvar;
     for (unsigned i = 0; i < K; ++i)
         {
             recvar.recmap.push_back(
-                KTfwd::poisson_interval(r.get(), littler, i, i + 1.0));
+                fwdpp::poisson_interval(r.get(), littler, i, i + 1.0));
             if (i)
                 {
                     recvar.recmap.push_back(
-                        KTfwd::crossover_point(r.get(), rbw, i + 1.0, false));
+                        fwdpp::crossover_point(r.get(), rbw, i + 1.0, false));
                 }
         }
 
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
-            KTfwd::sample_diploid(
+            fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N,mu, std::bind(KTfwd::infsites(), std::placeholders::_1,
+                N,mu, std::bind(fwdpp::infsites(), std::placeholders::_1,
                              std::placeholders::_2, r.get(),
                              std::ref(pop.mut_lookup), generation, mu, 0.,
                              [&r,K]() { return gsl_ran_flat(r.get(),0.,double(K)); },
                              []() { return 0.; }, []() { return 0.; }),
-                recvar, KTfwd::multiplicative_diploid(),
+                recvar, fwdpp::multiplicative_diploid(),
                 pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
         }
-    auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
+    auto x = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
                               pop.diploids, 10, true);
 #ifdef HAVE_LIBSEQUENCE
     Sequence::SimData a(x.begin(), x.end());

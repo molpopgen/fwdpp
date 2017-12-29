@@ -9,7 +9,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief Mutation type allowing arbitray number of "s,h" pairs representing
@@ -37,7 +37,7 @@ namespace KTfwd
 
       The disadvantage of this type is that it is not easy to have the number
       of 's,h' pairs be flexible
-      at run-time.  For that use case, see KTfwd::generalmut_vec, which uses
+      at run-time.  For that use case, see fwdpp::generalmut_vec, which uses
       std::vector<double> instead of
       std::array to store the 's,h' values.
     */
@@ -104,12 +104,12 @@ namespace KTfwd
       This type represents a mutation with a number of 's' and 'h' parameters
       that are determined at run time.
 
-      This type complements KTfwd::generalmut.  The use cases will be similar.
+      This type complements fwdpp::generalmut.  The use cases will be similar.
       This type will show better performance
       for large numbers of categories (e.g., large sizes of member variables s
       and h).
 
-      This type differs from KTfwd::generalmut in that the sizes of the s and h
+      This type differs from fwdpp::generalmut in that the sizes of the s and h
       vectors do not have to be the same.
      */
     struct generalmut_vec : public mutation_base
@@ -126,7 +126,7 @@ namespace KTfwd
             = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
         //! Constructor
         generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen)
-            : KTfwd::mutation_base(
+            : fwdpp::mutation_base(
                   std::move(pos),
                   // Mutation is neutral i.f.f. all values in __s == 0.
                   (std::find_if(std::begin(__s), std::end(__s),

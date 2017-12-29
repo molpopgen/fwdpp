@@ -13,7 +13,7 @@
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/extensions/regions.hpp>
 
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
@@ -65,7 +65,7 @@ struct additive_over_loci
                         return mutations[i].pos < val;
                     });
 
-                rv += KTfwd::multiplicative_diploid(2.0)(start1, stop1, start2,
+                rv += fwdpp::multiplicative_diploid(2.0)(start1, stop1, start2,
                                                          stop2, mutations) - 1.0;
             }
         return std::max(1.0 + rv, 0.0);
@@ -134,10 +134,10 @@ main(int argc, char **argv)
     std::vector<double> locus_weights(K, 1.0); // all loci will have equal
                                                // weight for both mutation and
                                                // recombination
-    std::vector<KTfwd::extensions::shmodel> shmodels(
-        K, KTfwd::extensions::shmodel(KTfwd::extensions::constant(-0.1),
-                                      KTfwd::extensions::constant(1.0)));
-    KTfwd::extensions::discrete_mut_model mmodels(
+    std::vector<fwdpp::extensions::shmodel> shmodels(
+        K, fwdpp::extensions::shmodel(fwdpp::extensions::constant(-0.1),
+                                      fwdpp::extensions::constant(1.0)));
+    fwdpp::extensions::discrete_mut_model mmodels(
         locus_starts, locus_ends, locus_weights, locus_starts, locus_ends,
         locus_weights, shmodels);
 
@@ -159,10 +159,10 @@ main(int argc, char **argv)
         }
     const double ttl_recrate
         = double(K) * recrate_region + double(K - 1) * rbw;
-    KTfwd::extensions::discrete_rec_model recmap(
+    fwdpp::extensions::discrete_rec_model recmap(
         r.get(), ttl_recrate, locus_starts, locus_ends, locus_weights);
 
-    const auto bound_mmodels = KTfwd::extensions::bind_dmm(
+    const auto bound_mmodels = fwdpp::extensions::bind_dmm(
         mmodels, pop.mutations, pop.mut_lookup, r.get(),
         double(K * mutrate_region), double(K * mutrate_del_region),
         &generation);
@@ -170,7 +170,7 @@ main(int argc, char **argv)
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
-            KTfwd::sample_diploid(
+            fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
@@ -180,7 +180,7 @@ main(int argc, char **argv)
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
             assert(popdata_sane(pop.diploids, pop.gametes, pop.mutations,

@@ -6,7 +6,7 @@
 #include <cassert>
 #include <type_traits>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

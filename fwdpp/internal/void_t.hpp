@@ -2,7 +2,7 @@
 #define FWDPP_INTERNAL_VOID_T_HPP__
 #include <type_traits>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace traits
     {

@@ -14,7 +14,7 @@
 #include <fwdpp/sugar/generalmut.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief Facilitates serialization of mutation
@@ -24,7 +24,7 @@ namespace KTfwd
     struct mutation_writer
     {
         /*!
-          \brief overload for KTfwd::popgenmut and ostreams
+          \brief overload for fwdpp::popgenmut and ostreams
          */
         using result_type = void;
         template <typename streamtype, typename mutation_t>
@@ -51,7 +51,7 @@ namespace KTfwd
             writer(buffer, &m.s);
             writer(buffer, &m.h);
         }
-        //! \brief overload for KTfwd::generalmut and ostream
+        //! \brief overload for fwdpp::generalmut and ostream
         template <typename streamtype, typename mutation_t,
                   std::size_t N
                   = std::tuple_size<typename mutation_t::array_t>::value>
@@ -68,7 +68,7 @@ namespace KTfwd
             writer(buffer, &t.h[0], N);
         }
 
-        //! \brief overload for KTfwd::generalmut_vec and ostream
+        //! \brief overload for fwdpp::generalmut_vec and ostream
         template <typename streamtype, typename mutation_t>
         inline typename std::enable_if<std::is_same<mutation_t,
                                                     generalmut_vec>::value,
@@ -92,7 +92,7 @@ namespace KTfwd
       types supported by the fwdpp sugar library.
 
       The template parameter must be derived from
-      KTfwd::mutation_base
+      fwdpp::mutation_base
 
       \ingroup sugar
     */
@@ -101,7 +101,7 @@ namespace KTfwd
         //! The return value of operator()
         using result_type = mutation_t;
         /*!
-          \brief overload for KTfwd::popgenmut and istreams
+          \brief overload for fwdpp::popgenmut and istreams
          */
         template <typename streamtype, typename U = mutation_t>
         inline typename std::enable_if<std::is_same<U, popgenmut>::value,
@@ -118,7 +118,7 @@ namespace KTfwd
             return result_type(pos, s, h, g);
         }
         /*!
-          \brief overload for KTfwd::mutation and istreams
+          \brief overload for fwdpp::mutation and istreams
          */
         template <typename streamtype, typename U = mutation_t>
         inline typename std::enable_if<std::is_same<U, mutation>::value,
@@ -132,7 +132,7 @@ namespace KTfwd
             reader(in, &h);
             return result_type(pos, s, h);
         }
-        //! \brief overalod for KTfwd::generalmut and std::istream
+        //! \brief overalod for fwdpp::generalmut and std::istream
         template <typename streamtype, typename U = mutation_t>
         inline typename std::
             enable_if<std::is_same<U, generalmut<std::tuple_size<
@@ -155,7 +155,7 @@ namespace KTfwd
                 s, h, pos, g);
         }
 
-        //! \brief overalod for KTfwd::generalmut_vec and std::istream
+        //! \brief overalod for fwdpp::generalmut_vec and std::istream
         template <typename streamtype, typename U = mutation_t>
         inline typename std::enable_if<std::is_same<U, generalmut_vec>::value,
                                        result_type>::type
@@ -321,7 +321,7 @@ namespace KTfwd
             fwdpp_internal::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
-            KTfwd::read_binary_pop(pop.gametes, pop.mutations, pop.diploids,
+            fwdpp::read_binary_pop(pop.gametes, pop.mutations, pop.diploids,
                                    rt, buffer, dr);
 
             // update the mutation counts
@@ -361,7 +361,7 @@ namespace KTfwd
             fwdpp_internal::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
-            KTfwd::read_binary_pop_mloc(pop.gametes, pop.mutations,
+            fwdpp::read_binary_pop_mloc(pop.gametes, pop.mutations,
                                         pop.diploids, rt, buffer, dr);
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
@@ -418,7 +418,7 @@ namespace KTfwd
             pop.Ns.resize(numNs);
             reader(buffer, &pop.Ns[0], numNs);
             // Step 1: write the mutations, diploids, gametes to the stream
-            KTfwd::read_binary_metapop(pop.gametes, pop.mutations,
+            fwdpp::read_binary_metapop(pop.gametes, pop.mutations,
                                        pop.diploids, rt, buffer, dr);
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,

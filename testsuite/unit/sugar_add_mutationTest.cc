@@ -1,7 +1,7 @@
 /*!
   \file test_sugar_add_mutation.cc
 
-  \brief test KTfwd::add_mutation
+  \brief test fwdpp::add_mutation
 */
 
 #include <config.h>
@@ -29,7 +29,7 @@ BOOST_FIXTURE_TEST_SUITE(test_add_mutation_singlepop,
 BOOST_AUTO_TEST_CASE(test_add_mutation)
 {
     // singlepop_t pop(1000);
-    KTfwd::add_mutation(pop,
+    fwdpp::add_mutation(pop,
                         // individuals where we want to place the mutation
                         { 0, 1, 3, 5, 7, 9 },
                         /*
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation)
                         { 0, 1, 0, 2, 2, 0 },
                         // Parameters to pass on to create a new mutation
                         0.1, -0.1, 1, 0);
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes, 2000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(test_add_mutation)
 
 BOOST_AUTO_TEST_CASE(test_add_mutation_from_object)
 {
-    KTfwd::popgenmut m(0.1, -0.1, 1, 0);
-    KTfwd::add_mutation(pop,
+    fwdpp::popgenmut m(0.1, -0.1, 1, 0);
+    fwdpp::add_mutation(pop,
                         // individuals where we want to place the mutation
                         { 0, 1, 3, 5, 7, 9 },
                         /*
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_from_object)
                         { 0, 1, 0, 2, 2, 0 },
                         // move it right into place:
                         std::move(m));
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes, 2000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutations_singlepop)
     // We are going to add mutations 0 and 2 to individuals 9, 10, and 23.
     // These individuals will be heterozygotes, which these mutations
     // added to the first gamete in each diploid.
-    KTfwd::add_mutations(pop, { 9, 10, 23 }, { 0, 0, 0 }, { 0, 2 });
+    fwdpp::add_mutations(pop, { 9, 10, 23 }, { 0, 0, 0 }, { 0, 2 });
 
     // Make sure what we expect is what we got
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutations_singlepop)
     std::vector<std::size_t> first100(100);
     std::size_t i = 0;
     std::generate(first100.begin(), first100.end(), [&i]() { return i++; });
-    KTfwd::add_mutations(pop, first100, std::vector<short>(100, 2), { 1 });
+    fwdpp::add_mutations(pop, first100, std::vector<short>(100, 2), { 1 });
     /*
       This next test is tricky:
       1. The gametes created above will now go extinct b/c they get a new
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_metapop)
       Note: for meta-pops, function takes vectors and vectors of vectors,
       so use via an initializer list has an extra bracket around it...
     */
-    KTfwd::add_mutation(pop,
+    fwdpp::add_mutation(pop,
                         // deme index...
                         { DEME },
                         // individuals where we want to place the mutation
@@ -218,8 +218,8 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_metapop)
                         */
                         { { { 0, 1, 0, 2, 2, 0 } } },
                         // For fun, pass in new mutation as a temporary
-                        KTfwd::popgenmut(0.1, -0.1, 1, 0));
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes, 4000), true);
+                        fwdpp::popgenmut(0.1, -0.1, 1, 0));
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 4000), true);
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
@@ -259,7 +259,7 @@ BOOST_FIXTURE_TEST_SUITE(test_add_mutation_multiloc,
 BOOST_AUTO_TEST_CASE(test_add_mutation_multiloc)
 {
     const std::size_t LOCUS = 3; // we'll add mutations into the 4th locus
-    KTfwd::add_mutation(pop,
+    fwdpp::add_mutation(pop,
                         // locus index...
                         LOCUS,
                         // individuals where we want to place the mutation
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_multiloc)
                         { 0, 1, 0, 2, 2, 0 },
                         // params for new mutation
                         0.1, -0.1, 1, 0);
-    BOOST_REQUIRE_EQUAL(KTfwd::check_sum(pop.gametes, 8000), true);
+    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 8000), true);
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);

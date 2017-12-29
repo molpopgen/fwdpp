@@ -8,7 +8,7 @@
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 #include <testsuite/util/quick_evolve_sugar.hpp>
 
-using mutation_t = KTfwd::popgenmut;
+using mutation_t = fwdpp::popgenmut;
 
 BOOST_FIXTURE_TEST_SUITE(test_singlepop_custom,
                          singlepop_popgenmut_custom_fixture)
