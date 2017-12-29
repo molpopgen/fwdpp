@@ -9,7 +9,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/IOhelp.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     // Binary I/O for individual-based simulation
 
@@ -187,6 +187,6 @@ namespace KTfwd
             }
     }
 
-} // ns KTfwd
+} // ns fwdpp
 
 #endif

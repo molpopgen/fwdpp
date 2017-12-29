@@ -5,13 +5,13 @@
 #include <fwdpp/demography.hpp>
 #include <fwdpp/sugar/metapop.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
-      Ensure that KTfwd::sugar::metapop::Ns contain sizes of all
-      elements in KTfwd::sugar::metapop::diploids
+      Ensure that fwdpp::sugar::metapop::Ns contain sizes of all
+      elements in fwdpp::sugar::metapop::diploids
 
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
     */
     template <typename mpoptype>
     void
@@ -19,8 +19,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         mpop.Ns.clear();
         for (const auto &dip : mpop.diploids)
             {
@@ -31,10 +31,10 @@ namespace KTfwd
     /*! \brief Copy a deme
       Make an exact copy of the i-th population
 
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
       \param i The deme to copy.
 
-      \note Implemented in terms of KTfwd::copy_deme. See documentation of that
+      \note Implemented in terms of fwdpp::copy_deme. See documentation of that
       function for details.
     */
     template <typename mpoptype>
@@ -43,8 +43,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         auto rv = copy_deme(mpop.mutations, mpop.mcounts, mpop.gametes,
                             mpop.diploids, i);
         if (rv)
@@ -57,11 +57,11 @@ namespace KTfwd
 
       Merge two demes into one
 
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
       \param i One deme to merge
       \param j The other deme to merge
 
-      \note Implemented in terms of KTfwd::merge_demes. See documentation of
+      \note Implemented in terms of fwdpp::merge_demes. See documentation of
       that function for details.
     */
     template <typename mpoptype>
@@ -70,8 +70,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         auto rv = merge_demes(mpop.diploids, i, j);
         if (rv)
             return rv;   // there was an error
@@ -83,10 +83,10 @@ namespace KTfwd
 
       Delete a deme and remove it from the metapopulation
 
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
       \param i The deme to remove
 
-      \note Implemented in terms of KTfwd::remove_deme. See documentation of
+      \note Implemented in terms of fwdpp::remove_deme. See documentation of
       that function for details.
     */
     template <typename mpoptype>
@@ -95,8 +95,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         auto rv = remove_deme(mpop.mutations, mpop.mcounts, mpop.gametes,
                               mpop.diploids, i);
         if (rv)
@@ -109,11 +109,11 @@ namespace KTfwd
 
       Swap two sub-populations
 
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
       \param i One deme to swap
       \param j The other deme to swap
 
-      \note Implemented in terms of KTfwd::swap_demes. See documentation of
+      \note Implemented in terms of fwdpp::swap_demes. See documentation of
       that function for details.
     */
     template <typename mpoptype>
@@ -122,8 +122,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         auto rv = swap_demes(mpop.diploids, i, j);
         if (rv)
             return rv;                     // error
@@ -134,12 +134,12 @@ namespace KTfwd
     /*! \brief "Bud" off a new sub-population
 
       \param r Pointer to a const gsl_rng object
-      \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+      \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
       \param i The parental deme
       \param N_new The size of the new deme
       \param replacement Sample parents from \c i with or without replacement
 
-      \note Implemented in terms of KTfwd::split_deme. See documentation of
+      \note Implemented in terms of fwdpp::split_deme. See documentation of
       that function for details.
      */
     template <typename mpoptype>
@@ -149,8 +149,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         assert(i < mpop.diploids.size());
         auto rv = split_deme(r, mpop.mutations, mpop.mcounts, mpop.gametes,
                              mpop.diploids, i, N_new, replacement);
@@ -163,7 +163,7 @@ namespace KTfwd
     /*! \brief Create an admixed population
 
     \param r Pointer to a const gsl_rng object
-    \param mpop An object of type KTfwd::metapop or KTfwd::sugar::metapop
+    \param mpop An object of type fwdpp::metapop or fwdpp::sugar::metapop
     \param i One parental deme
     \param j The other parental deme
     \param pi The fraction of parents in the new deme originating from deme \c
@@ -171,7 +171,7 @@ namespace KTfwd
     \param N_new The size of the new deme
     \param replacement Sample parents from \c i with or without replacement
 
-    \note Implemented in terms of KTfwd::admix_demes. See documentation of that
+    \note Implemented in terms of fwdpp::admix_demes. See documentation of that
     function for details.
    */
     template <typename mpoptype>
@@ -182,8 +182,8 @@ namespace KTfwd
     {
         static_assert(std::is_same<typename mpoptype::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
-                      "mpoptype must be an object of type KTfwd::metapop or "
-                      "KTfwd::sugar::metapop");
+                      "mpoptype must be an object of type fwdpp::metapop or "
+                      "fwdpp::sugar::metapop");
         auto rv = admix_demes(r, mpop.mutations, mpop.mcounts, mpop.gametes,
                               mpop.diploids, i, j, pi, N_new, replacement);
         if (rv)

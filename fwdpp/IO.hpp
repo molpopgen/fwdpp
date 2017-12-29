@@ -3,7 +3,7 @@
 
 #include <utility>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief placeholder IO policy for standard diploid types

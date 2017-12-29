@@ -43,10 +43,10 @@
   \defgroup fitness Policies for calculating fitnesses and trait values.
   This group contains the following data structures to help you implement
   custom fitness policies:
-  1. KTfwd::site_dependent_genetic_value for implementing typical
+  1. fwdpp::site_dependent_genetic_value for implementing typical
   population-genetic-like models where trait values are a function of the
   properties of individual mutations
-  2. KTfwd::haplotype_dependent_fitness for implementing models where trait
+  2. fwdpp::haplotype_dependent_fitness for implementing models where trait
   values are the functions properties of haplotypes.
 
   Truthfully, latter is so trivial that a library user may never see any need
@@ -54,16 +54,16 @@
 
   The library also defines two site-dependent fitness models, which may also
   be used for trait value calculations:
-  1. KTfwd::multiplicative_diploid
-  2. KTfwd::additive_diploid
+  1. fwdpp::multiplicative_diploid
+  2. fwdpp::additive_diploid
 
   These are arguably the "standard" models of the field as far as selection is
   concerned.
 
-  Finally, KTfwd::no_selection is provided to force all diploid fitnesses to be
+  Finally, fwdpp::no_selection is provided to force all diploid fitnesses to be
   equal to 1.
 */
-namespace KTfwd
+namespace fwdpp
 {
     /*! \brief Returns a fitness of 1
       \return A fitness of 1
@@ -112,7 +112,7 @@ namespace KTfwd
     ///  mechanism
     ///  such as std::bind and a function object, or via a lambda expression.
     ///  See
-    ///  KTfwd::multiplicative_diploid for an example implementation.
+    ///  fwdpp::multiplicative_diploid for an example implementation.
     ///  \ingroup fitness
     struct site_dependent_genetic_value
     {
@@ -387,7 +387,7 @@ namespace KTfwd
     /// with dominance effects per mutation.
     ///
     /// The genetic value is calculated via
-    /// KTfwd::site_dependent_genetic_value.
+    /// fwdpp::site_dependent_genetic_value.
     ///
     /// The genetic value may be treated as a fitness
     /// or as a trait value based on arguments passed
@@ -400,19 +400,19 @@ namespace KTfwd
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
         multiplicative_diploid(const double scaling_ = 1.0,
-                               std::function<double(double)> f_ = KTfwd::mw())
+                               std::function<double(double)> f_ = fwdpp::mw())
             : scaling{ scaling_ }, make_return_value{ std::move(f_) }
 		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or trait
         /// value.
         ///
-        /// The default for f_ is KTfwd::mw, which returns a closure
+        /// The default for f_ is fwdpp::mw, which returns a closure
         /// mapping a genetic value to max(0,genetic_value), which
         /// is a mapping from genetic_value onto fitness.
         ///
         /// For simulations of traits, the genetic_value would be
         /// the genetic component of the trait value.  To enable
-        /// this, pass KTfwd::mtrait() to the constructor.
+        /// this, pass fwdpp::mtrait() to the constructor.
         ///
         /// Any valid mapping from double to double is allowed.
         ///
@@ -506,7 +506,7 @@ namespace KTfwd
     /// with dominance effects per mutation.
     ///
     /// The genetic value is calculated via
-    /// KTfwd::site_dependent_genetic_value.
+    /// fwdpp::site_dependent_genetic_value.
     ///
     /// The genetic value may be treated as a fitness
     /// or as a trait value based on arguments passed
@@ -519,20 +519,20 @@ namespace KTfwd
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
         additive_diploid(const double scaling_ = 1.0,
-                         std::function<double(double)> f_ = KTfwd::aw())
+                         std::function<double(double)> f_ = fwdpp::aw())
             : scaling{ scaling_ }, make_return_value{ std::move(f_) }
 		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or
         /// trait
         /// value.
         ///
-        /// The default for f_ is KTfwd::aw, which returns a closure
+        /// The default for f_ is fwdpp::aw, which returns a closure
         /// mapping a genetic value to max(0,genetic_value), which
         /// is a mapping from genetic_value onto fitness.
         ///
         /// For simulations of traits, the genetic_value would be
         /// the genetic component of the trait value.  To enable
-        /// this, pass KTfwd::atrait() to the constructor.
+        /// this, pass fwdpp::atrait() to the constructor.
         ///
         /// Any mapping function is possible. For example, the
         /// following lambda closure would map genetic value
@@ -555,7 +555,7 @@ namespace KTfwd
         ///
         /// Note that the calculation of genetic value starts with
         /// an initial value of 0, which has implications for treating
-        /// it as a fitness.  See implementation of KTfwd::aw for
+        /// it as a fitness.  See implementation of fwdpp::aw for
         /// details (which involving adding 1.0).
         {
         }

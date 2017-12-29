@@ -16,7 +16,7 @@
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace sugar
     {
@@ -25,7 +25,7 @@ namespace KTfwd
         get_mut_index(mcont_t &mutations, mcounts_t &mcounts,
                       typename mcont_t::value_type &new_mutation)
         /*!
-          \brief Helper function for implementing KTfwd::add_mutation
+          \brief Helper function for implementing fwdpp::add_mutation
 
           If \a new_mutation already exists in \a mutations, its location is
           returned.
@@ -149,7 +149,7 @@ namespace KTfwd
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        KTfwd::sugar::SINGLEPOP_TAG>::value>>
+                                        fwdpp::sugar::SINGLEPOP_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<
                                typename poptype::diploid_t::first_type *>>
@@ -185,7 +185,7 @@ namespace KTfwd
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        KTfwd::sugar::MULTILOCPOP_TAG>::value>>
+                                        fwdpp::sugar::MULTILOCPOP_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<typename poptype::diploid_t::
                                            value_type::first_type *>>
@@ -224,7 +224,7 @@ namespace KTfwd
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        KTfwd::sugar::METAPOP_TAG>::value>>
+                                        fwdpp::sugar::METAPOP_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<
                                typename poptype::diploid_t::first_type *>>
@@ -315,7 +315,7 @@ namespace KTfwd
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   KTfwd::sugar::SINGLEPOP_TAG>::value,
+                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
                       "poptype must be a single-deme object type");
 
         // Before we go deep into creating objects, let's do some checks
@@ -534,7 +534,7 @@ namespace KTfwd
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   KTfwd::sugar::SINGLEPOP_TAG>::value,
+                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
                       "poptype must be a single-deme object type");
 
         // Before we go deep into creating objects, let's do some checks

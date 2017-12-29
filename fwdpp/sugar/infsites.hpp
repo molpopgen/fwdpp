@@ -6,7 +6,7 @@
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
 #include <type_traits>
-namespace KTfwd
+namespace fwdpp
 {
 
     /*!
@@ -79,8 +79,8 @@ namespace KTfwd
                        const hdist_t &hmaker) const
         {
             static_assert(std::is_same<typename mcont_t::value_type,
-                                       KTfwd::popgenmut>::value,
-                          "mcont_t::value_type must be KTfwd::popgenmut");
+                                       fwdpp::popgenmut>::value,
+                          "mcont_t::value_type must be fwdpp::popgenmut");
             // Establish position of new mutation
             auto pos = this->generate_mut_pos(posmaker, lookup);
             bool selected
@@ -277,8 +277,8 @@ namespace KTfwd
                        const hdist_t &hmaker) const
         {
             static_assert(std::is_same<typename mcont_t::value_type,
-                                       KTfwd::mutation>::value,
-                          "mcont_t::value_type must be KTfwd::mutation");
+                                       fwdpp::mutation>::value,
+                          "mcont_t::value_type must be fwdpp::mutation");
             // Establish position of new mutation
             auto pos = this->generate_mut_pos(posmaker, lookup);
             bool selected

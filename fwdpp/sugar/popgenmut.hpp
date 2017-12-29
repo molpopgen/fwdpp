@@ -6,7 +6,7 @@
 #include <limits>
 #include <tuple>
 
-namespace KTfwd
+namespace fwdpp
 {
     /*!
       \brief Mutations with selection, dominance, and tracking age of origin

@@ -11,7 +11,7 @@
 #include <exception>
 #include <fwdpp/debug.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace sugar
     {

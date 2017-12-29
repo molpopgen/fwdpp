@@ -23,7 +23,7 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
 // the type of mutation
-using mtype = KTfwd::mutation;
+using mtype = fwdpp::mutation;
 #define METAPOP_SIM
 #include <common_ind.hpp>
 
@@ -33,7 +33,7 @@ using gtype = poptype::gamete_t;
 using gcont = poptype::gcont_t;
 
 using namespace std;
-using namespace KTfwd;
+using namespace fwdpp;
 #ifdef HAVE_LIBSEQUENCE
 using namespace Sequence;
 #endif
@@ -125,13 +125,13 @@ main(int argc, char **argv)
     vbf.push_back(multiplicative_diploid(2.));
     vbf.push_back(multiplicative_diploid_minus(2.));
 
-    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
+    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
     for (unsigned generation = 0; generation < ngens; ++generation)
         {
             std::vector<double> wbars = sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 &Ns[0], mu_neutral + mu_del,
-                std::bind(KTfwd::infsites(), std::placeholders::_1,
+                std::bind(fwdpp::infsites(), std::placeholders::_1,
                           std::placeholders::_2, r.get(),
                           std::ref(pop.mut_lookup), mu_neutral, mu_del,
                           [&r]() { return gsl_rng_uniform(r.get()); },
@@ -156,8 +156,8 @@ main(int argc, char **argv)
     std::ofstream outstream(outfilename);
 
     // Write the metapop in binary format to outstream
-    KTfwd::write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
-                                std::bind(KTfwd::mutation_writer(),
+    fwdpp::write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
+                                std::bind(fwdpp::mutation_writer(),
                                           std::placeholders::_1,
                                           std::placeholders::_2),
                                 outstream);
@@ -178,9 +178,9 @@ main(int argc, char **argv)
 
     ifstream in(outfilename);
 
-    KTfwd::read_binary_metapop(
+    fwdpp::read_binary_metapop(
         metapop2, mutations2, diploids2,
-        std::bind(KTfwd::mutation_reader<mtype>(), std::placeholders::_1), in);
+        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1), in);
 
     assert(metapop2.size() == pop.gametes.size());
     assert(mutations2.size() == pop.mutations.size());

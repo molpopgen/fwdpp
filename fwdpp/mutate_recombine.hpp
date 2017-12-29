@@ -19,7 +19,7 @@
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     template <typename recombination_policy, typename diploid_t,
               typename gamete_t, typename mcont_t>
@@ -191,10 +191,10 @@ namespace KTfwd
     /// \return The index of the new offspring gamete in \a gametes.
     ///
     /// \note For efficiency, it is helpful if \a new_mutations is sorted
-    /// by mutation position.  KTfwd::generate_new_mutations exists to help in
+    /// by mutation position.  fwdpp::generate_new_mutations exists to help in
     /// that
     /// regard. Many of the evolve functions used in this library and other
-    /// packages by the author will use KTfwd::generate_breakpoints to
+    /// packages by the author will use fwdpp::generate_breakpoints to
     /// generate \a breakpoints.  That is not, however, required.
     ///
     /// \version
@@ -308,8 +308,8 @@ namespace KTfwd
     ///
     /// "Convenience" function for generating offspring gametes.
     ///
-    /// This function calls KTfwd::generate_breakpoints,
-    /// KTfwd::generate_new_mutations, and KTfwd::mutate_recombine,
+    /// This function calls fwdpp::generate_breakpoints,
+    /// fwdpp::generate_new_mutations, and fwdpp::mutate_recombine,
     /// resulting in two offspring gametes.
     ///
     /// \param r A gsl_rng *
@@ -345,7 +345,7 @@ namespace KTfwd
         // is done to ensure the exact same output as fwdpp 0.5.6 and
         // earlier.
         // The breakpoints are of type std::vector<double>, and
-        // the new_mutations are std::vector<KTfwd::uint_t>, with
+        // the new_mutations are std::vector<fwdpp::uint_t>, with
         // the integers representing the locations of the new mutations
         // in "mutations".
 
@@ -361,7 +361,7 @@ namespace KTfwd
                                      gametes, mutations, p2g1, mmodel);
 
         // Pass the breakpoints and new mutation keys on to
-        // KTfwd::mutate_recombine (defined in
+        // fwdpp::mutate_recombine (defined in
         // fwdpp/mutate_recombine.hpp),
         // which splices together the offspring gamete and returns its
         // location in gametes.  The location of the offspring gamete

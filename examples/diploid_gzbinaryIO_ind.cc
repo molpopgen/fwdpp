@@ -22,7 +22,7 @@
 #include <fstream>
 #include <fcntl.h>
 #include <fwdpp/sugar/infsites.hpp>
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
@@ -61,21 +61,21 @@ main(int argc, char **argv)
     double wbar;
 
     // recombination map is uniform[0,1)
-    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
+    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
 
     for (generation = 0; generation < ngens; ++generation)
         {
-            wbar = KTfwd::sample_diploid(
+            wbar = fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu, std::bind(KTfwd::infsites(), std::placeholders::_1,
+                N, mu, std::bind(fwdpp::infsites(), std::placeholders::_1,
                                  std::placeholders::_2, r.get(),
                                  std::ref(pop.mut_lookup), generation, mu, 0.,
                                  [&r]() { return gsl_rng_uniform(r.get()); },
                                  []() { return 0.; }, []() { return 0.; }),
                 // The function to generation recombination positions:
-                rec, KTfwd::multiplicative_diploid(2.),
+                rec, fwdpp::multiplicative_diploid(2.),
                 pop.neutral, pop.selected);
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
         }
@@ -117,7 +117,7 @@ main(int argc, char **argv)
                                           // binary mode.  Not required on all
                                           // systems, but never hurts.
     long long written
-        = KTfwd::gzserialize()(gzout, pop, KTfwd::mutation_writer());
+        = fwdpp::gzserialize()(gzout, pop, fwdpp::mutation_writer());
     // write info to index file
     fprintf(index_fh, "%u %ld\n", replicate_no, gztell(gzout));
     gzclose(gzout);
@@ -168,9 +168,9 @@ main(int argc, char **argv)
         = gzopen(hapfile, "rb"); // open it for reading.  Again, binary mode.
     gzseek(gzin, rec_offset, SEEK_CUR); // seek to position
 
-    KTfwd::gzdeserialize()(
+    fwdpp::gzdeserialize()(
         pop2, gzin,
-        std::bind(KTfwd::mutation_reader<mtype>(), std::placeholders::_1));
+        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1));
 
     for (std::size_t i = 0; i < pop.diploids.size(); ++i)
         {

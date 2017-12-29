@@ -11,7 +11,7 @@
 #include <limits>
 #include "../fixtures/sugar_fixtures.hpp"
 
-using namespace KTfwd;
+using namespace fwdpp;
 
 using poptype = singlepop_popgenmut_fixture::poptype;
 BOOST_FIXTURE_TEST_SUITE(test_extensions, singlepop_popgenmut_fixture)
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_1)
     // move-constructible:
     decltype(dm) dm3(std::move(dm2));
     auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     auto x = dm(rb, pop.mutations, rng.get(), 0.001, 0., &generation,
                 pop.mut_lookup);
     static_assert(std::is_same<decltype(x), std::size_t>::value,
@@ -41,10 +41,10 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_2)
     extensions::discrete_mut_model dm({ 0, 1 }, { 1, 2 }, { 1, 0.5 }, {}, {},
                                       {}, {});
     auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     auto mmodel = std::bind(
         &extensions::discrete_mut_model::
-        operator()<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
+        operator()<fwdpp::traits::recycling_bin_t<decltype(pop.mutations)>,
                    decltype(pop.mut_lookup), decltype(pop.mutations)>,
         &dm, rb, pop.mutations, rng.get(), 0.001, 0., &generation,
         std::ref(pop.mut_lookup));
@@ -63,10 +63,10 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_3)
     extensions::discrete_mut_model dm({ 0, 1 }, { 1, 2 }, { 1, 0.5 }, {}, {},
                                       {}, {});
     auto rb = fwdpp_internal::make_mut_queue(pop.mcounts);
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     auto mmodel = std::bind(
         &extensions::discrete_mut_model::
-        operator()<KTfwd::traits::recycling_bin_t<decltype(pop.mutations)>,
+        operator()<fwdpp::traits::recycling_bin_t<decltype(pop.mutations)>,
                    decltype(pop.mut_lookup), decltype(pop.mutations)>,
         &dm, std::placeholders::_1, std::placeholders::_2, rng.get(), 0.001,
         0., &generation, std::ref(pop.mut_lookup));
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(discrete_rec_model_test_1)
     // not empty
     extensions::discrete_rec_model drm(rng.get(), 50., { 0, 1 }, { 1, 2 },
                                        { 1, 2 });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     auto x = drm();
     static_assert(std::is_same<decltype(x), std::vector<double>>::value,
                   "extensions::dicrete_rec_model::operator() must return "
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
             "extensions::discrete_rec_model must be convertible to std::function");
 
     static_assert(
-        KTfwd::traits::
+        fwdpp::traits::
             is_rec_model<decltype(drm),
                          singlepop_popgenmut_fixture::poptype::diploid_t,
                          singlepop_popgenmut_fixture::poptype::gamete_t,

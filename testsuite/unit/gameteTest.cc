@@ -1,15 +1,15 @@
 /*!
   \file gameteTest.cc
   \ingroup unit
-  \brief Tests construction and assigment to KTfwd::gamete via std::move
+  \brief Tests construction and assigment to fwdpp::gamete via std::move
 */
 
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <config.h>
 
-using mut = KTfwd::mutation;
-using gtype = KTfwd::gamete;
+using mut = fwdpp::mutation;
+using gtype = fwdpp::gamete;
 
 BOOST_AUTO_TEST_SUITE(test_gamete_base)
 

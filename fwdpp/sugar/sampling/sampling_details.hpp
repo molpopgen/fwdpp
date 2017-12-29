@@ -5,7 +5,7 @@
 #include <string>
 #include <algorithm>
 
-namespace KTfwd
+namespace fwdpp
 {
 
     namespace sugar

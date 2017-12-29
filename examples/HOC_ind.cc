@@ -9,7 +9,7 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 
-using mtype = KTfwd::mutation;
+using mtype = fwdpp::mutation;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 using poptype = singlepop_t;
@@ -38,7 +38,7 @@ struct HOChap
                               });
         double esize
             = (E > sum) ? std::fabs(E - sum) : -1. * std::fabs(E - sum);
-        return KTfwd::fwdpp_internal::recycle_mutation_helper(
+        return fwdpp::fwdpp_internal::recycle_mutation_helper(
             mut_recycling_bin, mutations, pos, esize, 1);
     }
 };
@@ -105,10 +105,10 @@ main(int argc, char **argv)
     std::cerr << '\n';
 
     // Initiate random number generation system from sugar layer
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_MT19937> r(seed);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937> r(seed);
 
     // recombination map is uniform[0,1)
-    auto rec = KTfwd::poisson_xover(r.get(), littler, 0., 1.);
+    auto rec = fwdpp::poisson_xover(r.get(), littler, 0., 1.);
 
     while (nreps--)
         {
@@ -120,7 +120,7 @@ main(int argc, char **argv)
             for (unsigned generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
-                    double wbar = KTfwd::sample_diploid(
+                    double wbar = fwdpp::sample_diploid(
                         r.get(),
                         pop.gametes,   // non-const pointer to gametes
                         pop.diploids,  // non-const pointer to diploids
@@ -141,19 +141,19 @@ main(int argc, char **argv)
                                   std::placeholders::_2, std::placeholders::_3,
                                   r.get(), std::ref(pop.mut_lookup), sigmu),
                         rec,
-                        std::bind(KTfwd::haplotype_dependent_fitness(),
+                        std::bind(fwdpp::haplotype_dependent_fitness(),
                                   std::placeholders::_1, std::placeholders::_2,
                                   std::placeholders::_3, addEsizes,
                                   gaussianFitness),
                         pop.neutral, pop.selected, 0.,
-                        KTfwd::remove_nothing());
+                        fwdpp::remove_nothing());
                     assert(popdata_sane(pop.diploids, pop.gametes,
                                         pop.mutations, pop.mcounts));
-                    KTfwd::update_mutations(pop.mutations, pop.mut_lookup,
+                    fwdpp::update_mutations(pop.mutations, pop.mut_lookup,
                                             pop.mcounts);
                     assert(popdata_sane(pop.diploids, pop.gametes,
                                         pop.mutations, pop.mcounts));
-                    assert(KTfwd::check_sum(pop.gametes, 2 * N));
+                    assert(fwdpp::check_sum(pop.gametes, 2 * N));
                 }
             // Get VG for this replicate
             // Note: this can be done more efficiently via the boost

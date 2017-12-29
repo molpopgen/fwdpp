@@ -1,6 +1,6 @@
 /*! \file sugar_metapop_custom_diploid.cc
   \ingroup unit
-  \brief Testing KTfwd::metapop with custom diploid type
+  \brief Testing fwdpp::metapop with custom diploid type
 */
 #include <config.h>
 #include <memory>
@@ -15,12 +15,12 @@
 #include <testsuite/util/custom_dip.hpp>
 #include <testsuite/util/migpop.hpp>
 
-using mutation_t = KTfwd::popgenmut;
-using mwriter = KTfwd::mutation_writer;
-using mreader = KTfwd::mutation_reader<mutation_t>;
+using mutation_t = fwdpp::popgenmut;
+using mwriter = fwdpp::mutation_writer;
+using mreader = fwdpp::mutation_reader<mutation_t>;
 
-using spoptype = KTfwd::singlepop<mutation_t, custom_diploid_testing_t>;
-using poptype = KTfwd::metapop<mutation_t, custom_diploid_testing_t>;
+using spoptype = fwdpp::singlepop<mutation_t, custom_diploid_testing_t>;
+using poptype = fwdpp::metapop<mutation_t, custom_diploid_testing_t>;
 
 /*
   These next two derived classes mimic what software
@@ -59,23 +59,23 @@ simulate(poptype &pop)
         fitness_funcs(2, [](const poptype::diploid_t &d,
                             const poptype::gcont_t &g,
                             const poptype::mcont_t &m) {
-            return KTfwd::multiplicative_diploid()(g[d.first], g[d.second], m);
+            return fwdpp::multiplicative_diploid()(g[d.first], g[d.second], m);
         });
-    KTfwd::GSLrng_t<KTfwd::GSL_RNG_TAUS2> rng(0u);
+    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     for (unsigned generation = 0; generation < 10; ++generation)
         {
-            std::vector<double> wbar = KTfwd::sample_diploid(
+            std::vector<double> wbar = fwdpp::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, &pop.Ns[0], 0.005,
-                std::bind(KTfwd::infsites(), std::placeholders::_1,
+                std::bind(fwdpp::infsites(), std::placeholders::_1,
                           std::placeholders::_2, rng.get(),
                           std::ref(pop.mut_lookup), generation, 0.005, 0.,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return 0.; }, []() { return 0.; }),
-                KTfwd::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
+                fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
                 std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
                 pop.neutral, pop.selected);
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 4000);
         }
@@ -94,10 +94,10 @@ BOOST_AUTO_TEST_CASE(metapop_sugar_custom_test2)
     poptype pop({ 1000, 1000 });
     simulate(pop);
     poptype pop2{ 0, 0 };
-    KTfwd::serialize s;
+    fwdpp::serialize s;
     std::stringstream buffer;
     s(buffer, pop, mwriter(), diploid_writer());
-    KTfwd::deserialize()(pop2, buffer, mreader(), diploid_reader());
+    fwdpp::deserialize()(pop2, buffer, mreader(), diploid_reader());
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 

@@ -4,7 +4,7 @@
 #include <fwdpp/debug.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
 #include <cassert>
-namespace KTfwd
+namespace fwdpp
 {
 
     namespace fwdpp_internal

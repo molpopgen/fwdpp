@@ -7,7 +7,7 @@
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/sugar/poptypes/popbase.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace sugar
     {
@@ -76,7 +76,7 @@ namespace KTfwd
 
             //! Fitness function signature compatible with this type
             using fitness_t
-                = KTfwd::traits::fitness_fxn_t<typename popbase_t::dipvector_t,
+                = fwdpp::traits::fitness_fxn_t<typename popbase_t::dipvector_t,
                                                typename popbase_t::gcont_t,
                                                typename popbase_t::mcont_t>;
             //! Metapops can be constructed from singlepops of this type

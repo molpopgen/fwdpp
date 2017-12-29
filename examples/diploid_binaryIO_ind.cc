@@ -21,7 +21,7 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/serialization.hpp>
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
 
@@ -67,27 +67,27 @@ main(int argc, char **argv)
     double wbar;
 
     // recombination map is uniform[0,1)
-    KTfwd::poisson_xover rec(r.get(), littler, 0., 1.);
+    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
 
     for (generation = 0; generation < ngens; ++generation)
         {
-            wbar = KTfwd::sample_diploid(
+            wbar = fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu, std::bind(KTfwd::infsites(), std::placeholders::_1,
+                N, mu, std::bind(fwdpp::infsites(), std::placeholders::_1,
                                  std::placeholders::_2, r.get(),
                                  std::ref(pop.mut_lookup), generation, mu, 0.,
                                  [&r]() { return gsl_rng_uniform(r.get()); },
                                  []() { return 0.; }, []() { return 0.; }),
                 // The function to generation recombination positions:
-                rec, KTfwd::multiplicative_diploid(2.),
+                rec, fwdpp::multiplicative_diploid(2.),
                 pop.neutral, pop.selected);
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, twoN);
         }
     std::ostringstream buffer;
-    KTfwd::write_binary_pop(pop.gametes, pop.mutations, pop.diploids,
-                            std::bind(KTfwd::mutation_writer(),
+    fwdpp::write_binary_pop(pop.gametes, pop.mutations, pop.diploids,
+                            std::bind(fwdpp::mutation_writer(),
                                       std::placeholders::_1,
                                       std::placeholders::_2),
                             buffer);
@@ -168,9 +168,9 @@ main(int argc, char **argv)
 
     std::ifstream in(hapfile, std::ios_base::in | std::ios_base::binary);
     in.seekg(offset);
-    KTfwd::read_binary_pop(
+    fwdpp::read_binary_pop(
         gametes2, mutations2, diploids2,
-        std::bind(KTfwd::mutation_reader<mtype>(), std::placeholders::_1), in);
+        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1), in);
     for (std::size_t i = 0; i < pop.diploids.size(); ++i)
         {
             std::cout << "Diploid no. " << i << ": " << pop.diploids[i].first

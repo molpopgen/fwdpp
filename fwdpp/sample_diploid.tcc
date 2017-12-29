@@ -17,7 +17,7 @@
 #include <fwdpp/internal/multilocus_rec.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     // single deme, constant N
     template <typename gamete_type, typename gamete_cont_type_allocator,
@@ -111,7 +111,7 @@ namespace KTfwd
           if a new object needs to be 'emplace-back'-ed into a container.
 
           The type of the FIFO queue is abstracted with the name
-          KTfwd::fwdpp_internal::recycling_bin_t,
+          fwdpp::fwdpp_internal::recycling_bin_t,
           which is a C++11 template alias.
 
           The details of recycling are implemented in
@@ -141,7 +141,7 @@ namespace KTfwd
 
                   ff is a "fitness function", which returns a double.  For
                   examples, see
-                  KTfwd::multiplicative_diploid, which is a "standard" type of
+                  fwdpp::multiplicative_diploid, which is a "standard" type of
                   fitness function
                   used in population genetics.  "Standard" types of models are
                   defined in
@@ -278,7 +278,7 @@ namespace KTfwd
           in the population at
           the moment.
 
-          Example policies are KTfwd::remove_nothing and KTfwd::remove_neutral,
+          Example policies are fwdpp::remove_nothing and fwdpp::remove_neutral,
           both found
           in fwdpp/fwd_functional.hpp.  If mp is std::true_type, then all
           fixations (e.g., neutral

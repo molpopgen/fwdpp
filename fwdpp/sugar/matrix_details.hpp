@@ -2,7 +2,7 @@
 /*
  * This header is not meant to be included directly.
  */
-namespace KTfwd
+namespace fwdpp
 {
     namespace data_matrix_details
     {
@@ -170,7 +170,7 @@ namespace KTfwd
 
         inline void
         update_row(std::vector<std::int8_t> &v,
-                   const std::vector<KTfwd::uint_t> &mut_keys,
+                   const std::vector<fwdpp::uint_t> &mut_keys,
                    const std::vector<std::pair<std::size_t, uint_t>> &indexes)
         {
             if (v.size() != indexes.size())

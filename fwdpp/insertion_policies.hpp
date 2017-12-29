@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <fwdpp/fwd_functional.hpp>
-namespace KTfwd
+namespace fwdpp
 {
     /*! \brief     An insertion policy
       Uses object forwarding to add an object of

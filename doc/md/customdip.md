@@ -34,9 +34,9 @@ To check that a custom diploid type is acceptable, you can use fwdpp's type trai
 ~~~{.cpp}
 #include <fwdpp/traits.hpp>
 
-static_assert(KTfwd::traits::is_diploid<my_custom_diploid>::value,"Oops!");
+static_assert(fwdpp::traits::is_diploid<my_custom_diploid>::value,"Oops!");
 ~~~
 
-An additional type trait function exists to detect custom diploids (KTfwd::traits::is_custom_diploid).  It checks that the minimum API requirements are met, but that the type is not identical to a std::pair.
+An additional type trait function exists to detect custom diploids (fwdpp::traits::is_custom_diploid).  It checks that the minimum API requirements are met, but that the type is not identical to a std::pair.
 
 See testsuite/unit/type_traitsTest.cc for minimal examples.

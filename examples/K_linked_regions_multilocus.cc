@@ -14,7 +14,7 @@
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/sampling.hpp>
-using mtype = KTfwd::popgenmut;
+using mtype = fwdpp::popgenmut;
 #define MULTILOCUS_SIM
 #include <common_ind.hpp>
 
@@ -90,10 +90,10 @@ main(int argc, char **argv)
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
-            recpols.emplace_back(KTfwd::poisson_xover(
+            recpols.emplace_back(fwdpp::poisson_xover(
                 r.get(), littler, double(i), double(i) + 1.0));
             mmodels.push_back(std::bind(
-                KTfwd::infsites(), std::placeholders::_1,
+                fwdpp::infsites(), std::placeholders::_1,
                 std::placeholders::_2, r.get(), std::ref(pop.mut_lookup),
                 &generation, mu[i], 0.,
                 [&r, i]() {
@@ -106,12 +106,12 @@ main(int argc, char **argv)
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
-            KTfwd::sample_diploid(
+            fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, mu.data(), mmodels, recpols, interlocus_rec,
                 no_selection_multi(), pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
-            KTfwd::update_mutations(pop.mutations, pop.fixations,
+            fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
             assert(popdata_sane_multilocus(pop.diploids, pop.gametes,
@@ -140,7 +140,7 @@ main(int argc, char **argv)
                 }
 #endif
         }
-    auto x = KTfwd::ms_sample(r.get(), pop.mutations, pop.gametes,
+    auto x = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
                               pop.diploids, 10, true);
 #ifdef HAVE_LIBSEQUENCE
     for (auto &i : x)

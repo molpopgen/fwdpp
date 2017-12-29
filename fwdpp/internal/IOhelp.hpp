@@ -12,7 +12,7 @@
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 
-namespace KTfwd
+namespace fwdpp
 {
     namespace fwdpp_internal
     {

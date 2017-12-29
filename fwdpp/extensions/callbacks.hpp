@@ -20,7 +20,7 @@
 #include <stdexcept>
 #include <cmath>
 
-namespace KTfwd
+namespace fwdpp
 {
 
     /*!

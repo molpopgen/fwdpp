@@ -7,8 +7,8 @@
 
 struct popgenmut_tuple_wrapper
 {
-    KTfwd::popgenmut::constructor_tuple t;
-    KTfwd::popgenmut m;
+    fwdpp::popgenmut::constructor_tuple t;
+    fwdpp::popgenmut m;
     popgenmut_tuple_wrapper() : t(std::make_tuple(0.1, -0.1, 0.5, 3, 1)), m(t)
     {
     }

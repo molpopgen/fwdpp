@@ -1,12 +1,12 @@
 /*!
   \file mlocusCrossoverTest.cc
   \ingroup unit
-  \brief Tests KTfwd::fwdpp_internal::multilocus_rec
+  \brief Tests fwdpp::fwdpp_internal::multilocus_rec
 */
 #include <config.h>
 #include <iostream>
 // For this unit test, this symbol eliminates the mutation-related part of
-// KTfwd::fwdpp_internal::multiloc_rec_mut,
+// fwdpp::fwdpp_internal::multiloc_rec_mut,
 // which means we don't have to write as much boilerplate code to test the more
 // complex logic.
 // Plus, mutation stuff is unit-tested elsewhere
@@ -89,7 +89,7 @@ BOOST_FIXTURE_TEST_SUITE(multilocus_rec_mutTest,
 BOOST_AUTO_TEST_CASE(test_flexibility)
 {
     std::vector<double> rates{ 1e-3, 0.1 };
-    auto x = KTfwd::make_poisson_interlocus_rec(r, rates.data(), rates.size());
+    auto x = fwdpp::make_poisson_interlocus_rec(r, rates.data(), rates.size());
     x.emplace_back(always_recombine());
 }
 
@@ -112,11 +112,11 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
     std::vector<diploid_t> diploids({ diploid });
 
     // auto gamete_lookup =
-    // KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mutations);
+    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
     auto mutation_recycling_bin
-        = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin
-        = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
 
     double mu[3] = { 0.0, 0.0, 0.0 };
 
-    auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
+    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
         &mu[0], mutation_models);
@@ -176,11 +176,11 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
     std::vector<diploid_t> diploids({ diploid });
 
     // auto gamete_lookup =
-    // KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mutations);
+    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
     auto mutation_recycling_bin
-        = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin
-        = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
 
     double mu[3] = { 0.0, 0.0, 0.0 };
 
-    auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
+    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
         &mu[0], mutation_models);
@@ -244,11 +244,11 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
     std::vector<diploid_t> diploids({ diploid });
 
     // auto gamete_lookup =
-    // KTfwd::fwdpp_internal::gamete_lookup_table(gametes,mutations);
+    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
     auto mutation_recycling_bin
-        = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin
-        = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
 
     double mu[3] = { 0.0, 0.0, 0.0 };
 
-    auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
+    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
         &mu[0], mutation_models);
@@ -312,9 +312,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
     std::vector<diploid_t> diploids({ diploid });
 
     auto mutation_recycling_bin
-        = KTfwd::fwdpp_internal::make_mut_queue(mcounts);
+        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
     auto gamete_recycling_bin
-        = KTfwd::fwdpp_internal::make_gamete_queue(gametes);
+        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
 
     double mu[3] = { 0.0, 0.0, 0.0 };
 
-    auto offspring = KTfwd::fwdpp_internal::multilocus_rec_mut(
+    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
         recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
         &mu[0], mutation_models);
