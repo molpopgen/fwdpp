@@ -69,12 +69,12 @@ namespace fwdpp
         }
 
         ///
-		/// Constructor from a tuple
-		///
-		/// \param t A tuple (s,g,pos,origin time, xtra)
-		///
-		/// \version
-		/// Added in fwdpp 0.5.7
+        /// Constructor from a tuple
+        ///
+        /// \param t A tuple (s,g,pos,origin time, xtra)
+        ///
+        /// \version
+        /// Added in fwdpp 0.5.7
         generalmut(constructor_tuple t)
             : mutation_base(
                   std::get<2>(t),
@@ -125,13 +125,14 @@ namespace fwdpp
         using constructor_tuple
             = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
         //! Constructor
-        generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen)
+        generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen, const std::uint16_t x = 0)
             : fwdpp::mutation_base(
                   std::move(pos),
                   // Mutation is neutral i.f.f. all values in __s == 0.
                   (std::find_if(std::begin(__s), std::end(__s),
-                                [](const double d) { return d != 0.; })
-                   == std::end(__s))),
+                                [](const double d) {
+            return d != 0.; })
+                   == std::end(__s),x),
               s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
         {
         }
@@ -148,7 +149,8 @@ namespace fwdpp
                   std::get<2>(t),
                   (std::find_if(std::begin(std::get<0>(t)),
                                 std::end(std::get<0>(t)),
-                                [](const double d) { return d != 0.; })
+                                [](const double d) {
+            return d != 0.; })
                    == std::end(std::get<0>(t))),
                   std::get<4>(t)),
               s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
