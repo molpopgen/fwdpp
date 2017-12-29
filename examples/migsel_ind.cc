@@ -157,9 +157,6 @@ main(int argc, char **argv)
 
     // Write the metapop in binary format to outstream
     fwdpp::write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
-                                std::bind(fwdpp::mutation_writer(),
-                                          std::placeholders::_1,
-                                          std::placeholders::_2),
                                 outstream);
 
 // Write the "ms" blocks
@@ -178,9 +175,7 @@ main(int argc, char **argv)
 
     ifstream in(outfilename);
 
-    fwdpp::read_binary_metapop(
-        metapop2, mutations2, diploids2,
-        std::bind(fwdpp::mutation_reader<mtype>(), std::placeholders::_1), in);
+    fwdpp::read_binary_metapop(metapop2, mutations2, diploids2, in);
 
     assert(metapop2.size() == pop.gametes.size());
     assert(mutations2.size() == pop.mutations.size());
