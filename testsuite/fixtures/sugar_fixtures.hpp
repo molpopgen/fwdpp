@@ -18,8 +18,6 @@ struct singlepop_popgenmut_fixture
 {
     using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    using mwriter = fwdpp::mutation_writer;
-    using mreader = fwdpp::mutation_reader<fwdpp::popgenmut>;
     poptype pop;
     rng_t rng;
     unsigned generation;
@@ -34,8 +32,6 @@ struct singlepop_popgenmut_custom_fixture
     using poptype
         = fwdpp::singlepop<fwdpp::popgenmut, custom_diploid_testing_t>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    using mwriter = fwdpp::mutation_writer;
-    using mreader = fwdpp::mutation_reader<fwdpp::popgenmut>;
     poptype pop;
     rng_t rng;
     unsigned generation;
@@ -49,8 +45,6 @@ struct metapop_popgenmut_fixture
 {
     using poptype = fwdpp::metapop<fwdpp::popgenmut>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    using mwriter = fwdpp::mutation_writer;
-    using mreader = fwdpp::mutation_reader<fwdpp::popgenmut>;
     poptype pop;
     rng_t rng;
     unsigned generation;
@@ -64,8 +58,6 @@ struct metapop_popgenmut_custom_fixture
 {
     using poptype = fwdpp::metapop<fwdpp::popgenmut, custom_diploid_testing_t>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    using mwriter = fwdpp::mutation_writer;
-    using mreader = fwdpp::mutation_reader<fwdpp::popgenmut>;
     poptype pop;
     rng_t rng;
     unsigned generation;
@@ -135,8 +127,6 @@ class multiloc_popgenmut_fixture
     using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
                                                poptype::mcont_t &)>;
     using recmodel = std::function<std::vector<double>()>;
-    using mwriter = fwdpp::mutation_writer;
-    using mreader = fwdpp::mutation_reader<fwdpp::popgenmut>;
     // Fitness function
     struct multilocus_additive
     {

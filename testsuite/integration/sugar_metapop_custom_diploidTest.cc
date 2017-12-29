@@ -16,8 +16,6 @@
 #include <testsuite/util/migpop.hpp>
 
 using mutation_t = fwdpp::popgenmut;
-using mwriter = fwdpp::mutation_writer;
-using mreader = fwdpp::mutation_reader<mutation_t>;
 
 using spoptype = fwdpp::singlepop<mutation_t, custom_diploid_testing_t>;
 using poptype = fwdpp::metapop<mutation_t, custom_diploid_testing_t>;
