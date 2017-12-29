@@ -93,7 +93,7 @@ namespace fwdpp
             inline popgenmut
             operator()(streamtype &buffer) const
             {
-                std::size_t g;
+                uint_t g;
                 double pos, s, h;
                 decltype(popgenmut::xtra) xtra;
                 io::scalar_reader reader;
@@ -102,6 +102,7 @@ namespace fwdpp
                 reader(buffer, &s);
                 reader(buffer, &h);
                 reader(buffer, &xtra);
+
                 return popgenmut(pos, s, h, g, xtra);
             }
         };
