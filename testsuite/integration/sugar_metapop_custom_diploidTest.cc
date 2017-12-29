@@ -93,11 +93,15 @@ BOOST_AUTO_TEST_CASE(metapop_sugar_custom_test2)
 {
     poptype pop({ 1000, 1000 });
     simulate(pop);
+    for (unsigned i = 0; i < pop.diploids[0].size(); ++i)
+        {
+            pop.diploids[0][i].i = i;
+        }
     poptype pop2{ 0, 0 };
     fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop, mwriter(), diploid_writer());
-    fwdpp::deserialize()(pop2, buffer, mreader(), diploid_reader());
+    s(buffer, pop, mwriter());
+    fwdpp::deserialize()(pop2, buffer, mreader());
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 

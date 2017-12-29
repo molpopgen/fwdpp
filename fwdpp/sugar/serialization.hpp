@@ -203,19 +203,17 @@ namespace fwdpp
         /*!
           \brief Overload for single population simulations
          */
-        template <typename streamtype, typename sugarpop_t, typename writer_t,
-                  typename diploid_writer_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename writer_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::SINGLEPOP_TAG>::value,
                       result_type>::type
             operator()(streamtype &buffer, const sugarpop_t &pop,
-                       const writer_t &wt,
-                       const diploid_writer_t &dw = diploid_writer_t()) const
+                       const writer_t &wt) const
         {
             writer(buffer, &pop.N);
             write_binary_pop(pop.gametes, pop.mutations, pop.diploids, wt,
-                             buffer, dw);
+                             buffer);
             // Step 2: output fixations
             uint_t temp = uint_t(pop.fixations.size());
             writer(buffer, &temp);
@@ -230,19 +228,17 @@ namespace fwdpp
                 }
         }
 
-        template <typename streamtype, typename sugarpop_t, typename writer_t,
-                  typename diploid_writer_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename writer_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       result_type>::type
             operator()(streamtype &buffer, const sugarpop_t &pop,
-                       const writer_t &wt,
-                       const diploid_writer_t &dw = diploid_writer_t()) const
+                       const writer_t &wt) const
         {
             writer(buffer, &pop.N);
             write_binary_pop_mloc(pop.gametes, pop.mutations, pop.diploids, wt,
-                                  buffer, dw);
+                                  buffer);
             // Step 2: output fixations
             uint_t temp = uint_t(pop.fixations.size());
             writer(buffer, &temp);
@@ -257,31 +253,29 @@ namespace fwdpp
                 }
             temp = uint_t(pop.locus_boundaries.size());
             writer(buffer, &temp);
-            for(uint_t i=0;i<temp;++i)
-            {
-                writer(buffer,&pop.locus_boundaries[i].first);
-                writer(buffer,&pop.locus_boundaries[i].second);
-            }
+            for (uint_t i = 0; i < temp; ++i)
+                {
+                    writer(buffer, &pop.locus_boundaries[i].first);
+                    writer(buffer, &pop.locus_boundaries[i].second);
+                }
         }
 
         /*!
           \brief Overload for metapopulation simulations
          */
-        template <typename streamtype, typename sugarpop_t, typename writer_t,
-                  typename diploid_writer_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename writer_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
                       result_type>::type
             operator()(streamtype &buffer, const sugarpop_t &pop,
-                       const writer_t &wt,
-                       const diploid_writer_t &dw = diploid_writer_t()) const
+                       const writer_t &wt) const
         {
             uint_t npops = uint_t(pop.Ns.size());
             writer(buffer, &npops);
             writer(buffer, &pop.Ns[0], npops);
             write_binary_metapop(pop.gametes, pop.mutations, pop.diploids, wt,
-                                 buffer, dw);
+                                 buffer);
             // Step 2: output fixations
             uint_t temp = uint_t(pop.fixations.size());
             writer(buffer, &temp);
@@ -308,21 +302,20 @@ namespace fwdpp
         /*!
           \brief Overload for single population simulations
          */
-        template <typename streamtype, typename sugarpop_t, typename reader_t,
-                  typename diploid_reader_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename reader_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::SINGLEPOP_TAG>::value,
                       result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer, const reader_t &rt,
-                       const diploid_reader_t &dr = diploid_reader_t()) const
+            operator()(sugarpop_t &pop, streamtype &buffer,
+                       const reader_t &rt) const
         {
             pop.clear();
             fwdpp_internal::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
             fwdpp::read_binary_pop(pop.gametes, pop.mutations, pop.diploids,
-                                   rt, buffer, dr);
+                                   rt, buffer);
 
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
@@ -348,21 +341,20 @@ namespace fwdpp
                 }
         }
 
-        template <typename streamtype, typename sugarpop_t, typename reader_t,
-                  typename diploid_reader_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename reader_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::MULTILOCPOP_TAG>::value,
                       result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer, const reader_t &rt,
-                       const diploid_reader_t &dr = diploid_reader_t()) const
+            operator()(sugarpop_t &pop, streamtype &buffer,
+                       const reader_t &rt) const
         {
             pop.clear();
             fwdpp_internal::scalar_reader reader;
             // Step 0: read N
             reader(buffer, &pop.N);
             fwdpp::read_binary_pop_mloc(pop.gametes, pop.mutations,
-                                        pop.diploids, rt, buffer, dr);
+                                        pop.diploids, rt, buffer);
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
@@ -379,16 +371,16 @@ namespace fwdpp
                     reader(buffer, &pop.fixation_times[0], temp);
                 }
 
-            reader(buffer,&temp);
-            if(temp)
-            {
-                double x[2];
-                for(uint_t i=0;i<temp;++i)
+            reader(buffer, &temp);
+            if (temp)
                 {
-                    reader(buffer,&x[0],2);
-                    pop.locus_boundaries.emplace_back(x[0],x[1]);
+                    double x[2];
+                    for (uint_t i = 0; i < temp; ++i)
+                        {
+                            reader(buffer, &x[0], 2);
+                            pop.locus_boundaries.emplace_back(x[0], x[1]);
+                        }
                 }
-            }
 
             // Finally, fill the lookup table:
             for (unsigned i = 0; i < pop.mcounts.size(); ++i)
@@ -401,14 +393,13 @@ namespace fwdpp
         /*!
           \brief Overload for metapopulation simulations
          */
-        template <typename streamtype, typename sugarpop_t, typename reader_t,
-                  typename diploid_reader_t = diploidIOplaceholder>
+        template <typename streamtype, typename sugarpop_t, typename reader_t>
         inline typename std::
             enable_if<std::is_same<typename sugarpop_t::popmodel_t,
                                    sugar::METAPOP_TAG>::value,
                       result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer, const reader_t &rt,
-                       const diploid_reader_t &dr = diploid_reader_t()) const
+            operator()(sugarpop_t &pop, streamtype &buffer,
+                       const reader_t &rt) const
         {
             pop.clear();
             fwdpp_internal::scalar_reader reader;
@@ -419,7 +410,7 @@ namespace fwdpp
             reader(buffer, &pop.Ns[0], numNs);
             // Step 1: write the mutations, diploids, gametes to the stream
             fwdpp::read_binary_metapop(pop.gametes, pop.mutations,
-                                       pop.diploids, rt, buffer, dr);
+                                       pop.diploids, rt, buffer);
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
@@ -456,14 +447,13 @@ namespace fwdpp
           \brief Call operator
           \note gzout must already be opened, and with a mode involving 'b'
          */
-        template <typename sugarpop_t, typename writer_t,
-                  typename diploid_writer_t = diploidIOplaceholder>
+        template <typename sugarpop_t, typename writer_t>
         inline result_type
-        operator()(gzFile gzout, const sugarpop_t &pop, const writer_t &wt,
-                   const diploid_writer_t &dw = diploid_writer_t()) const
+        operator()(gzFile gzout, const sugarpop_t &pop,
+                   const writer_t &wt) const
         {
             std::ostringstream buffer;
-            serialize()(buffer, pop, wt, dw);
+            serialize()(buffer, pop, wt);
             return gzwrite(gzout, buffer.str().c_str(),
                            unsigned(buffer.str().size()));
         }

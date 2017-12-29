@@ -15,13 +15,11 @@ namespace fwdpp
 
     // Single-locus sims, single pop
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_writer_type, typename ostreamtype,
-              typename diploid_writer_t>
+              typename mutation_writer_type, typename ostreamtype>
     void
     write_binary_pop(const gcont_t &gametes, const mcont_t &mutations,
                      const dipvector_t &diploids,
-                     const mutation_writer_type &mw, ostreamtype &buffer,
-                     const diploid_writer_t &dw)
+                     const mutation_writer_type &mw, ostreamtype &buffer)
     {
         fwdpp_internal::write_mutations()(mutations, mw, buffer);
         fwdpp_internal::write_haplotypes()(gametes, buffer);
@@ -30,48 +28,39 @@ namespace fwdpp
         writer(buffer, &NDIPS);
         for (const auto &dip : diploids)
             {
-                writer(buffer, &dip.first);
-                writer(buffer, &dip.second);
-                dw(dip, buffer);
+                serialize_diploid(dip, buffer);
             }
     }
 
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype,
-              typename diploid_reader_t>
+              typename mutation_reader_type, typename istreamtype>
     void
     read_binary_pop(gcont_t &gametes, mcont_t &mutations,
                     dipvector_t &diploids, const mutation_reader_type &mr,
-                    istreamtype &in, const diploid_reader_t &dr)
+                    istreamtype &in)
     {
         gametes.clear();
         mutations.clear();
         diploids.clear();
         fwdpp_internal::read_mutations()(mutations, mr, in);
         fwdpp_internal::read_haplotypes()(gametes, in);
-        std::size_t NDIPS, c;
+        std::size_t NDIPS;
         fwdpp_internal::scalar_reader()(in, &NDIPS);
         diploids.resize(NDIPS);
         for (auto &dip : diploids)
             {
-                fwdpp_internal::scalar_reader()(in, &c);
-                dip.first = c;
-                fwdpp_internal::scalar_reader()(in, &c);
-                dip.second = c;
-                dr(dip, in);
+                deserialize_diploid(dip, in);
             }
     }
 
     // multi-locus, single pop, ostream
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_writer_type, typename ostreamtype,
-              typename diploid_writer_t>
+              typename mutation_writer_type, typename ostreamtype>
     void
     write_binary_pop_mloc(const gcont_t &mlocus_gametes,
                           const mcont_t &mutations,
                           const dipvector_t &diploids,
-                          const mutation_writer_type &mw, ostreamtype &buffer,
-                          const diploid_writer_t &dw)
+                          const mutation_writer_type &mw, ostreamtype &buffer)
     {
         unsigned nloci = unsigned(diploids[0].size());
         fwdpp_internal::scalar_writer writer;
@@ -85,21 +74,18 @@ namespace fwdpp
             {
                 for (const auto &genotype : dip)
                     {
-                        writer(buffer, &genotype.first);
-                        writer(buffer, &genotype.second);
-                        dw(genotype, buffer);
+                        serialize_diploid(genotype, buffer);
                     }
             }
     }
 
     // Multilocus, single-population, istream
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype,
-              typename diploid_reader_t>
+              typename mutation_reader_type, typename istreamtype>
     void
     read_binary_pop_mloc(gcont_t &mlocus_gametes, mcont_t &mutations,
                          dipvector_t &diploids, const mutation_reader_type &mr,
-                         istreamtype &in, const diploid_reader_t &dr)
+                         istreamtype &in)
     {
         mlocus_gametes.clear();
         mutations.clear();
@@ -118,21 +104,17 @@ namespace fwdpp
                 assert(dip.size() == nloci);
                 for (auto &genotype : dip)
                     {
-                        fwdpp_internal::scalar_reader()(in, &genotype.first);
-                        fwdpp_internal::scalar_reader()(in, &genotype.second);
-                        dr(genotype, in);
+                        deserialize_diploid(genotype, in);
                     }
             }
     }
 
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_writer_type, typename ostreamtype,
-              typename diploid_writer_t>
+              typename mutation_writer_type, typename ostreamtype>
     void
     write_binary_metapop(const gcont_t &gametes, const mcont_t &mutations,
                          const dipvector_t &diploids,
-                         const mutation_writer_type &mw, ostreamtype &buffer,
-                         const diploid_writer_t &dw)
+                         const mutation_writer_type &mw, ostreamtype &buffer)
     {
         std::size_t i = unsigned(diploids.size());
         fwdpp_internal::scalar_writer writer;
@@ -145,20 +127,17 @@ namespace fwdpp
                 writer(buffer, &i);
                 for (const auto &dip : deme)
                     {
-                        writer(buffer, &dip.first);
-                        writer(buffer, &dip.second);
-                        dw(dip, buffer);
+                        serialize_diploid(dip, buffer);
                     }
             }
     }
 
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
-              typename mutation_reader_type, typename istreamtype,
-              typename diploid_reader_t>
+              typename mutation_reader_type, typename istreamtype>
     void
     read_binary_metapop(gcont_t &gametes, mcont_t &mutations,
                         dipvector_t &diploids, const mutation_reader_type &mr,
-                        istreamtype &in, const diploid_reader_t &dr)
+                        istreamtype &in)
     {
         gametes.clear();
         mutations.clear();
@@ -177,11 +156,7 @@ namespace fwdpp
                         deme.resize(i);
                         for (auto &dip : deme)
                             {
-                                fwdpp_internal::scalar_reader()(in,
-                                                                &dip.first);
-                                fwdpp_internal::scalar_reader()(in,
-                                                                &dip.second);
-                                dr(dip, in);
+                                deserialize_diploid(dip, in);
                             }
                     }
             }
