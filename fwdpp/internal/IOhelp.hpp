@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/io/mutation.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
 
 namespace fwdpp
@@ -33,7 +34,7 @@ namespace fwdpp
                 std::size_t MUTNO = mutations.size();
                 fwdpp::io::scalar_writer()(buffer, &MUTNO);
                 // write the mutation data to the buffer
-                fwdpp::serialize_mutation<mutation_type> mw;
+                fwdpp::io::serialize_mutation<mutation_type> mw;
                 for (const auto &m : mutations)
                     mw(m, buffer);
             }
@@ -84,7 +85,7 @@ namespace fwdpp
             {
                 std::size_t NMUTS;
                 fwdpp::io::scalar_reader()(in, &NMUTS);
-                deserialize_mutation<mutation_type> mr;
+                fwdpp::io::deserialize_mutation<mutation_type> mr;
                 for (uint_t i = 0; i < NMUTS; ++i)
                     {
                         mutations.emplace_back(mr(in));
