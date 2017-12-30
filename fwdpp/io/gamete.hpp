@@ -2,6 +2,7 @@
 #define FWDPP_IO_GAMETE_HPP__
 
 #include <cstddef>
+#include <fwdpp/type_traits.hpp>
 #include "scalar_serialization.hpp"
 
 namespace fwdpp
@@ -12,9 +13,9 @@ namespace fwdpp
         /// \brief Serialize a gamete
         ///
         /// Serialize a gamete. The implementation
-		/// assumes fwdpp::gamete.  If you have derived
-		/// a gamete from this type, then you must specialize
-		/// this struct.
+        /// assumes fwdpp::gamete.  If you have derived
+        /// a gamete from this type, then you must specialize
+        /// this struct.
         {
             scalar_writer writer;
             serialize_gamete() : writer{} {}
@@ -42,9 +43,9 @@ namespace fwdpp
         /// \brief Deserialize a gamete
         ///
         /// Deserialize a gamete. The implementation
-		/// assumes fwdpp::gamete.  If you have derived
-		/// a gamete from this type, then you must specialize
-		/// this struct.
+        /// assumes fwdpp::gamete.  If you have derived
+        /// a gamete from this type, then you must specialize
+        /// this struct.
         {
             scalar_reader reader;
             deserialize_gamete() : reader{} {}
@@ -79,6 +80,9 @@ namespace fwdpp
         ///
         /// Works via argument-dependent lookup of serialize_gamete.
         {
+            static_assert(
+                traits::is_gamete<typename gcont_t::value_type>::value,
+                "gcont_t must be a container of gametes");
             std::size_t ngametes = gametes.size();
             scalar_writer writer;
             writer(buffer, &ngametes);
@@ -96,6 +100,9 @@ namespace fwdpp
         ///
         /// Works via argument-dependent lookup of deserialize_gamete.
         {
+            static_assert(
+                traits::is_gamete<typename gcont_t::value_type>::value,
+                "gcont_t must be a container of gametes");
             std::size_t ngametes;
             scalar_reader reader;
             reader(buffer, &ngametes);

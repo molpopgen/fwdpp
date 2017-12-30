@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <stdexcept>
+#include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
 #include "scalar_serialization.hpp"
 
@@ -61,6 +62,9 @@ namespace fwdpp
         ///
         /// Works via argument-dependent lookup of serialize_mutation.
         {
+            static_assert(
+                traits::is_mutation<typename mcont_t::value_type>::value,
+                "mcont_t must be a container of mutations");
             std::size_t MUTNO = mutations.size();
             fwdpp::io::scalar_writer()(buffer, &MUTNO);
             // write the mutation data to the buffer
@@ -76,6 +80,9 @@ namespace fwdpp
         ///
         /// Works via argument-dependent lookup of deserialize_mutation.
         {
+            static_assert(
+                traits::is_mutation<typename mcont_t::value_type>::value,
+                "mcont_t must be a container of mutations");
             std::size_t NMUTS;
             fwdpp::io::scalar_reader()(in, &NMUTS);
             fwdpp::io::deserialize_mutation<typename mcont_t::value_type> mr;
