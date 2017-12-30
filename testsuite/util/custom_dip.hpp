@@ -4,7 +4,8 @@
 #include <iosfwd>
 #include <limits>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/IO.hpp>
+#include <fwdpp/io/diploid.hpp>
+
 // Custom diploid type.
 struct custom_diploid_testing_t
 /*!
@@ -44,31 +45,34 @@ static_assert(
 // specialization for ADL
 namespace fwdpp
 {
-    template <> struct serialize_diploid<custom_diploid_testing_t>
+    namespace io
     {
-        template <typename streamtype>
-        inline void
-        operator()(const custom_diploid_testing_t &dip,
-                   streamtype &buffer) const
+        template <> struct serialize_diploid<custom_diploid_testing_t>
         {
-            fwdpp::io::scalar_writer w;
-            w(buffer, &dip.first);
-            w(buffer, &dip.second);
-            w(buffer, &dip.i);
-        }
-    };
+            template <typename streamtype>
+            inline void
+            operator()(const custom_diploid_testing_t &dip,
+                       streamtype &buffer) const
+            {
+                fwdpp::io::scalar_writer w;
+                w(buffer, &dip.first);
+                w(buffer, &dip.second);
+                w(buffer, &dip.i);
+            }
+        };
 
-    template <> struct deserialize_diploid<custom_diploid_testing_t>
-    {
-        template <typename streamtype>
-        inline void
-        operator()(custom_diploid_testing_t &dip, streamtype &buffer)
+        template <> struct deserialize_diploid<custom_diploid_testing_t>
         {
-            fwdpp::io::scalar_reader r;
-            r(buffer, &dip.first);
-            r(buffer, &dip.second);
-            r(buffer, &dip.i);
-        }
-    };
+            template <typename streamtype>
+            inline void
+            operator()(custom_diploid_testing_t &dip, streamtype &buffer)
+            {
+                fwdpp::io::scalar_reader r;
+                r(buffer, &dip.first);
+                r(buffer, &dip.second);
+                r(buffer, &dip.i);
+            }
+        };
+    }
 }
 #endif

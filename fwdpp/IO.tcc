@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
+#include <fwdpp/io/diploid.hpp>
 #include <fwdpp/internal/IOhelp.hpp>
 
 namespace fwdpp
@@ -26,7 +27,7 @@ namespace fwdpp
         std::size_t NDIPS = diploids.size();
         io::scalar_writer writer;
         writer(buffer, &NDIPS);
-        serialize_diploid<typename dipvector_t::value_type> dipwriter;
+		io::serialize_diploid<typename dipvector_t::value_type> dipwriter;
         for (const auto &dip : diploids)
             {
                 dipwriter(dip, buffer);
@@ -47,7 +48,7 @@ namespace fwdpp
         std::size_t NDIPS;
         io::scalar_reader()(in, &NDIPS);
         diploids.resize(NDIPS);
-        deserialize_diploid<typename dipvector_t::value_type> dipreader;
+		io::deserialize_diploid<typename dipvector_t::value_type> dipreader;
         for (auto &dip : diploids)
             {
                 dipreader(dip, in);
@@ -70,7 +71,7 @@ namespace fwdpp
         fwdpp_internal::write_haplotypes()(mlocus_gametes, buffer);
         unsigned ndips = unsigned(diploids.size());
         writer(buffer, &ndips);
-        serialize_diploid<typename dipvector_t::value_type::value_type>
+		io::serialize_diploid<typename dipvector_t::value_type::value_type>
             dipwriter;
         for (const auto &dip : diploids)
             {
@@ -100,7 +101,7 @@ namespace fwdpp
         unsigned ndips;
         io::scalar_reader()(in, &ndips);
         diploids.resize(ndips, typename dipvector_t::value_type(nloci));
-        deserialize_diploid<typename dipvector_t::value_type::value_type>
+		io::deserialize_diploid<typename dipvector_t::value_type::value_type>
             dipreader;
         for (auto &dip : diploids)
             {
@@ -123,7 +124,7 @@ namespace fwdpp
         writer(buffer, &i);
         fwdpp_internal::write_mutations()(mutations, buffer);
         fwdpp_internal::write_haplotypes()(gametes, buffer);
-        serialize_diploid<typename dipvector_t::value_type::value_type>
+		io::serialize_diploid<typename dipvector_t::value_type::value_type>
             dipwriter;
         for (const auto &deme : diploids)
             {
@@ -151,7 +152,7 @@ namespace fwdpp
         diploids.resize(i);
         fwdpp_internal::read_mutations()(mutations, in);
         fwdpp_internal::read_haplotypes()(gametes, in);
-        deserialize_diploid<typename dipvector_t::value_type::value_type>
+		io::deserialize_diploid<typename dipvector_t::value_type::value_type>
             dipreader;
         for (auto &deme : diploids)
             {
