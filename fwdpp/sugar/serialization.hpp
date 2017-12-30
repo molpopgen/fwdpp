@@ -16,31 +16,14 @@
 
 namespace fwdpp
 {
-    /*!
-      \brief Serialize populations.
-      \ingroup sugar
-     */
-    struct serialize
+    namespace detail
     {
-        using result_type = void;
-        io::scalar_writer writer;
-        //! Default constructor
-        serialize() : writer(io::scalar_writer()) {}
-
-        //! Move constructor.  Req'd for this to be a member type of another
-        //! class
-        serialize(serialize &&) = default;
-
-        /*!
-          \brief Overload for single population simulations
-         */
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      result_type>::type
-            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        template <typename streamtype, typename poptype>
+        inline void
+        serialize_population_details(streamtype &buffer, const poptype &pop,
+                                     sugar::SINGLEPOP_TAG)
         {
+            io::scalar_writer writer;
             writer(buffer, &pop.N);
             write_binary_pop(pop.gametes, pop.mutations, pop.diploids, buffer);
             // Step 2: output fixations
@@ -53,13 +36,12 @@ namespace fwdpp
                 }
         }
 
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      result_type>::type
-            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        template <typename streamtype, typename poptype>
+        inline void
+        serialize_population_details(streamtype &buffer, const poptype &pop,
+                                     sugar::MULTILOCPOP_TAG)
         {
+            io::scalar_writer writer;
             writer(buffer, &pop.N);
             write_binary_pop_mloc(pop.gametes, pop.mutations, pop.diploids,
                                   buffer);
@@ -80,16 +62,12 @@ namespace fwdpp
                 }
         }
 
-        /*!
-          \brief Overload for metapopulation simulations
-         */
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::METAPOP_TAG>::value,
-                      result_type>::type
-            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        template <typename streamtype, typename poptype>
+        inline void
+        serialize_population_details(streamtype &buffer, const poptype &pop,
+                                     sugar::METAPOP_TAG)
         {
+            io::scalar_writer writer;
             std::size_t npops = std::size_t(pop.Ns.size());
             writer(buffer, &npops);
             writer(buffer, &pop.Ns[0], npops);
@@ -104,25 +82,11 @@ namespace fwdpp
                            pop.fixations.size());
                 }
         }
-    };
 
-    /*!
-      \brief Deserialize population objects
-      \ingroup sugar
-     */
-    struct deserialize
-    {
-        //! The return type for operator()
-        using result_type = void;
-        /*!
-          \brief Overload for single population simulations
-         */
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer) const
+        template <typename streamtype, typename poptype>
+        inline void
+        deserialize_population_details(poptype &pop, streamtype &buffer,
+                                       sugar::SINGLEPOP_TAG)
         {
             pop.clear();
             io::scalar_reader reader;
@@ -150,12 +114,10 @@ namespace fwdpp
                 }
         }
 
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer) const
+        template <typename streamtype, typename poptype>
+        inline void
+        deserialize_population_details(poptype &pop, streamtype &buffer,
+                                       sugar::MULTILOCPOP_TAG)
         {
             pop.clear();
             io::scalar_reader reader;
@@ -193,15 +155,10 @@ namespace fwdpp
                 }
         }
 
-        /*!
-          \brief Overload for metapopulation simulations
-         */
-        template <typename streamtype, typename sugarpop_t>
-        inline typename std::
-            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
-                                   sugar::METAPOP_TAG>::value,
-                      result_type>::type
-            operator()(sugarpop_t &pop, streamtype &buffer) const
+        template <typename streamtype, typename poptype>
+        inline void
+        deserialize_population_details(poptype &pop, streamtype &buffer,
+                                       sugar::METAPOP_TAG)
         {
             pop.clear();
             io::scalar_reader reader;
@@ -230,6 +187,126 @@ namespace fwdpp
                     if (pop.mcounts[i])
                         pop.mut_lookup.insert(pop.mutations[i].pos);
                 }
+        }
+    }
+
+    template <typename streamtype, typename poptype>
+    inline void
+    serialize_population(streamtype &buffer, const poptype &pop)
+	/// Write a population in binary format to a stream.
+	///
+	/// \param buffer A model of std::ostream.
+	/// \param pop A population.
+    {
+        detail::serialize_population_details(buffer, pop,
+                                             typename poptype::popmodel_t());
+    }
+
+    template <typename streamtype, typename poptype>
+    inline void
+    deserialize_population(poptype &pop, streamtype &buffer)
+	/// Read a binary representation of a population from a stream.
+	/// 
+	/// \param pop A population to fill from \a buffer
+	/// \param buffer A model of std::istream.
+    {
+        detail::deserialize_population_details(pop, buffer,
+                                               typename poptype::popmodel_t());
+    }
+
+    /*!
+      \brief Serialize populations.
+      \ingroup sugar
+     */
+    struct serialize
+    {
+        using result_type = void;
+        //! Default constructor
+        serialize() {}
+
+        //! Move constructor.  Req'd for this to be a member type of another
+        //! class
+        serialize(serialize &&) = default;
+
+        /*!
+          \brief Overload for single population simulations
+         */
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::SINGLEPOP_TAG>::value,
+                      result_type>::type
+            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        {
+            serialize_population(buffer, pop);
+        }
+
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::MULTILOCPOP_TAG>::value,
+                      result_type>::type
+            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        {
+            serialize_population(buffer, pop);
+        }
+        /*!
+          \brief Overload for metapopulation simulations
+         */
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::METAPOP_TAG>::value,
+                      result_type>::type
+            operator()(streamtype &buffer, const sugarpop_t &pop) const
+        {
+            serialize_population(buffer, pop);
+        }
+    };
+
+    /*!
+    \brief Deserialize population objects
+      \ingroup sugar
+         */
+
+    struct deserialize
+    {
+        //! The return type for operator()
+        using result_type = void;
+        /*!
+          \brief Overload for single population simulations
+         */
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::SINGLEPOP_TAG>::value,
+                      result_type>::type
+            operator()(sugarpop_t &pop, streamtype &buffer) const
+        {
+            deserialize_population(pop, buffer);
+        }
+
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::MULTILOCPOP_TAG>::value,
+                      result_type>::type
+            operator()(sugarpop_t &pop, streamtype &buffer) const
+        {
+            deserialize_population(pop, buffer);
+        }
+
+        /*!
+          \brief Overload for metapopulation simulations
+         */
+        template <typename streamtype, typename sugarpop_t>
+        inline typename std::
+            enable_if<std::is_same<typename sugarpop_t::popmodel_t,
+                                   sugar::METAPOP_TAG>::value,
+                      result_type>::type
+            operator()(sugarpop_t &pop, streamtype &buffer) const
+        {
+            deserialize_population(pop, buffer);
         }
     };
 
