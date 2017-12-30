@@ -8,7 +8,6 @@
 #include <sstream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
-#include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
