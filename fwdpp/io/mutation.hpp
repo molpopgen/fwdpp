@@ -60,7 +60,7 @@ namespace fwdpp
         write_mutations(const mcont_t &mutations, ostreamtype &buffer)
         /// \brief Serialize a container of mutations.
         ///
-        /// Works via argument-dependent lookup of serialize_mutation.
+        /// Works via specialization of serialize_mutation.
         {
             static_assert(
                 traits::is_mutation<typename mcont_t::value_type>::value,
@@ -78,7 +78,7 @@ namespace fwdpp
         read_mutations(mcont_t &mutations, istreamtype &in)
         /// \brief Deserialize a container of mutations.
         ///
-        /// Works via argument-dependent lookup of deserialize_mutation.
+        /// Works via specialization of deserialize_mutation.
         {
             static_assert(
                 traits::is_mutation<typename mcont_t::value_type>::value,

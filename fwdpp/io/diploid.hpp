@@ -54,7 +54,7 @@ namespace fwdpp
         write_diploids(const dipvector_t &diploids, ostreamtype &buffer)
         /// \brief Serialize a container of diploids.
         ///
-        /// Works via argument-dependent lookup of serialize_diploid.
+        /// Works via specialization of serialize_diploid.
         {
             static_assert(
                 traits::is_diploid<typename dipvector_t::value_type>::value,
@@ -74,7 +74,7 @@ namespace fwdpp
         read_diploids(dipvector_t &diploids, istreamtype &buffer)
         /// \brief Deserialize a container of diploids.
         ///
-        /// Works via argument-dependent lookup of deserialize_diploid.
+        /// Works via specialization of deserialize_diploid.
         {
             static_assert(
                 traits::is_diploid<typename dipvector_t::value_type>::value,

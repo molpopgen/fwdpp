@@ -78,7 +78,7 @@ namespace fwdpp
         write_gametes(const gcont_t& gametes, ostreamtype& buffer)
         /// \brief Serialize a container of gametes.
         ///
-        /// Works via argument-dependent lookup of serialize_gamete.
+        /// Works via specialization of serialize_gamete.
         {
             static_assert(
                 traits::is_gamete<typename gcont_t::value_type>::value,
@@ -98,7 +98,7 @@ namespace fwdpp
         read_gametes(gcont_t& gametes, istreamtype& buffer)
         /// \brief Deserialize a container of gametes.
         ///
-        /// Works via argument-dependent lookup of deserialize_gamete.
+        /// Works via specialization of deserialize_gamete.
         {
             static_assert(
                 traits::is_gamete<typename gcont_t::value_type>::value,
