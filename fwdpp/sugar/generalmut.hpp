@@ -226,4 +226,37 @@ namespace fwdpp
         };
     }
 }
+#define SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(N)                      \
+    template <typename streamtype>                                            \
+    inline void operator()(const generalmut<N> &m, streamtype &buffer) const  \
+    {                                                                         \
+        io::scalar_writer writer;                                             \
+        writer(buffer, &m.g);                                                 \
+        writer(buffer, &m.pos);                                               \
+        writer(buffer, &m.xtra);                                              \
+        writer(buffer, &m.s[0], N);                                           \
+        writer(buffer, &m.h[0], N);                                           \
+    }
+
+#define SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(N)                    \
+    template <typename streamtype>                                            \
+    inline generalmut<N> operator()(streamtype &buffer) const                 \
+    {                                                                         \
+        uint_t g;                                                             \
+        double pos;                                                           \
+        decltype(generalmut<N>::xtra) xtra;                                   \
+        using value_t = generalmut<N>::array_t::value_type;                   \
+        io::scalar_reader reader;                                             \
+        std::array<value_t, std::tuple_size<generalmut<N>::array_t>::value>   \
+            s, h;                                                             \
+        reader(buffer, &g);                                                   \
+        reader(buffer, &pos);                                                 \
+        reader(buffer, &xtra);                                                \
+        reader(buffer, &s[0],                                                 \
+               std::tuple_size<generalmut<N>::array_t>::value);               \
+        reader(buffer, &h[0],                                                 \
+               std::tuple_size<generalmut<N>::array_t>::value);    \
+        return generalmut<N>(s, h, pos, g, xtra);                             \
+    }
+
 #endif
