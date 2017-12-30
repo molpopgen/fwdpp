@@ -6,6 +6,10 @@
 #include <fwdpp/forward_types.hpp>
 #include "scalar_serialization.hpp"
 
+/*! \namespace fwdpp::io
+ * \brief I/O types and functions
+ */
+
 namespace fwdpp
 {
     namespace io
