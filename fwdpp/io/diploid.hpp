@@ -1,6 +1,7 @@
 #ifndef FWDPP_IO_DIPLOID_HPP__
 #define FWDPP_IO_DIPLOID_HPP__
 
+#include <fwdpp/type_traits.hpp>
 #include "scalar_serialization.hpp"
 
 namespace fwdpp
@@ -47,6 +48,48 @@ namespace fwdpp
                 dip.second = c;
             }
         };
+
+        template <typename dipvector_t, typename ostreamtype>
+        void
+        write_diploids(const dipvector_t &diploids, ostreamtype &buffer)
+        /// \brief Serialize a container of diploids.
+        ///
+        /// Works via argument-dependent lookup of serialize_diploid.
+        {
+            static_assert(
+                traits::is_diploid<typename dipvector_t::value_type>::value,
+                "dipvector_t must be a container of diploids");
+            std::size_t NDIPS = diploids.size();
+            io::scalar_writer writer;
+            writer(buffer, &NDIPS);
+            io::serialize_diploid<typename dipvector_t::value_type> dipwriter;
+            for (const auto &dip : diploids)
+                {
+                    dipwriter(dip, buffer);
+                }
+        }
+
+        template <typename dipvector_t, typename istreamtype>
+        void
+        read_diploids(dipvector_t &diploids, istreamtype &buffer)
+        /// \brief Deserialize a container of diploids.
+        ///
+        /// Works via argument-dependent lookup of deserialize_diploid.
+        {
+            static_assert(
+                traits::is_diploid<typename dipvector_t::value_type>::value,
+                "dipvector_t must be a container of diploids");
+            std::size_t NDIPS;
+            io::scalar_reader reader;
+            reader(buffer, &NDIPS);
+            diploids.resize(NDIPS);
+            io::deserialize_diploid<typename dipvector_t::value_type>
+                dipreader;
+            for (auto &dip : diploids)
+                {
+                    dipreader(dip, buffer);
+                }
+        }
     }
 }
 
