@@ -33,6 +33,7 @@ namespace fwdpp
         /// requiring a new specialization.  This example
         /// is for a size of 4.  The macro call below
         /// generates the call operator.
+        /// \ingroup testing
         {
             SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(4);
         };
@@ -44,6 +45,7 @@ namespace fwdpp
         /// requiring a new specialization.  This example
         /// is for a size of 4.  The macro call below
         /// generates the call operator.
+        /// \ingroup testing
         {
             SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(4);
         };

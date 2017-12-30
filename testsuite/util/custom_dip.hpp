@@ -14,6 +14,7 @@ struct custom_diploid_testing_t
   but this forces fwdpp to assume that it is a custom type, which we exploit
   for
   testing.
+  \ingroup testing
  */
 {
     using first_type = std::size_t;
@@ -48,6 +49,8 @@ namespace fwdpp
     namespace io
     {
         template <> struct serialize_diploid<custom_diploid_testing_t>
+        /// Specialization for custom_diploid_testing_t
+        /// \ingroup testing
         {
             template <typename streamtype>
             inline void
@@ -62,6 +65,8 @@ namespace fwdpp
         };
 
         template <> struct deserialize_diploid<custom_diploid_testing_t>
+        /// Specialization for custom_diploid_testing_t
+        /// \ingroup testing
         {
             template <typename streamtype>
             inline void
