@@ -1,5 +1,5 @@
-#ifndef FWDPP_OP_DIPLOID_HPP__
-#define FWDPP_OP_DIPLOID_HPP__
+#ifndef FWDPP_IO_DIPLOID_HPP__
+#define FWDPP_IO_DIPLOID_HPP__
 
 #include "scalar_serialization.hpp"
 
