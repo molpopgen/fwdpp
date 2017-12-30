@@ -7,7 +7,11 @@
 #include "scalar_serialization.hpp"
 
 /*! \namespace fwdpp::io
- * \brief I/O types and functions
+ * \brief I/O types and functions.
+ *
+ * Template typenames referring to streams assume input
+ * or output streams compatible with those from namespace
+ * std.
  */
 
 namespace fwdpp
@@ -15,6 +19,13 @@ namespace fwdpp
     namespace io
     {
         template <typename T> struct serialize_mutation
+        /// \brief Serialize a mutation
+        ///
+        /// Serialize a mutation.
+        /// This *must* be specialized for a specific mutation type,
+        /// otherwise std::runtime_error will be thrown.
+        /// The type T must be a valid mutation type.
+        /// See serialize_mutation<popgenmut> for example implementation
         {
             template <typename istreamtype>
             inline void
@@ -26,6 +37,13 @@ namespace fwdpp
         };
 
         template <typename T> struct deserialize_mutation
+        /// \brief Deserialize a mutation
+        ///
+        /// Deserialize a mutation.
+        /// This *must* be specialized for a specific mutation type,
+        /// otherwise std::runtime_error will be thrown.
+        /// The type T must be a valid mutation type.
+        /// See deserialize_mutation<popgenmut> for example implementation
         {
             template <typename ostreamtype>
             inline T
@@ -39,6 +57,9 @@ namespace fwdpp
         template <typename mcont_t, typename ostreamtype>
         void
         write_mutations(const mcont_t &mutations, ostreamtype &buffer)
+        /// \brief Serialize a container of mutations.
+        ///
+        /// Works via argument-dependent lookup of serialize_mutation.
         {
             std::size_t MUTNO = mutations.size();
             fwdpp::io::scalar_writer()(buffer, &MUTNO);
@@ -51,6 +72,9 @@ namespace fwdpp
         template <typename mcont_t, typename istreamtype>
         void
         read_mutations(mcont_t &mutations, istreamtype &in)
+        /// \brief Deserialize a container of mutations.
+        ///
+        /// Works via argument-dependent lookup of deserialize_mutation.
         {
             std::size_t NMUTS;
             fwdpp::io::scalar_reader()(in, &NMUTS);

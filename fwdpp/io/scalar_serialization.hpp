@@ -9,9 +9,10 @@
 
 namespace fwdpp
 {
-	namespace io
-	{
+    namespace io
+    {
         struct scalar_reader
+        /// Serialize POD and contiguous arrays of POD
         {
             template <typename streamtype, typename T>
             inline void
@@ -32,6 +33,7 @@ namespace fwdpp
         };
 
         struct scalar_writer
+        /// Deserialize POD and contiguous arrays of POD
         {
             using result_type = std::uint64_t;
             template <typename streamtype, typename T>
@@ -76,7 +78,7 @@ namespace fwdpp
                 return result_type(rv);
             }
         };
-	}
+    }
 }
 
 #endif

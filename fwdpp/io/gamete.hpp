@@ -8,10 +8,16 @@ namespace fwdpp
 {
     namespace io
     {
-        template <typename T> struct serlialize_gamete
+        template <typename T> struct serialize_gamete
+        /// \brief Serialize a gamete
+        ///
+        /// Serialize a gamete. The implementation
+		/// assumes fwdpp::gamete.  If you have derived
+		/// a gamete from this type, then you must specialize
+		/// this struct.
         {
             scalar_writer writer;
-            serlialize_gamete() : writer{} {}
+            serialize_gamete() : writer{} {}
             template <typename streamtype>
             inline void
             operator()(const T& g, streamtype& buffer) const
@@ -32,10 +38,16 @@ namespace fwdpp
             }
         };
 
-        template <typename T> struct deserlialize_gamete
+        template <typename T> struct deserialize_gamete
+        /// \brief Deserialize a gamete
+        ///
+        /// Deserialize a gamete. The implementation
+		/// assumes fwdpp::gamete.  If you have derived
+		/// a gamete from this type, then you must specialize
+		/// this struct.
         {
             scalar_reader reader;
-            deserlialize_gamete() : reader{} {}
+            deserialize_gamete() : reader{} {}
             template <typename streamtype>
             inline T
             operator()(streamtype& buffer) const
@@ -63,11 +75,14 @@ namespace fwdpp
         template <typename gcont_t, typename ostreamtype>
         void
         write_gametes(const gcont_t& gametes, ostreamtype& buffer)
+        /// \brief Serialize a container of gametes.
+        ///
+        /// Works via argument-dependent lookup of serialize_gamete.
         {
             std::size_t ngametes = gametes.size();
             scalar_writer writer;
             writer(buffer, &ngametes);
-            serlialize_gamete<typename gcont_t::value_type> gamete_writer;
+            serialize_gamete<typename gcont_t::value_type> gamete_writer;
             for (const auto& g : gametes)
                 {
                     gamete_writer(g, buffer);
@@ -77,14 +92,17 @@ namespace fwdpp
         template <typename gcont_t, typename istreamtype>
         void
         read_gametes(gcont_t& gametes, istreamtype& buffer)
+        /// \brief Deserialize a container of gametes.
+        ///
+        /// Works via argument-dependent lookup of deserialize_gamete.
         {
             std::size_t ngametes;
             scalar_reader reader;
             reader(buffer, &ngametes);
-            deserlialize_gamete<typename gcont_t::value_type> gamete_reader;
+            deserialize_gamete<typename gcont_t::value_type> gamete_reader;
             for (std::size_t i = 0; i < ngametes; ++i)
                 {
-					gametes.emplace_back(gamete_reader(buffer));
+                    gametes.emplace_back(gamete_reader(buffer));
                 }
         }
     }

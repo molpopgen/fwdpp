@@ -171,6 +171,7 @@ namespace fwdpp
     namespace io
     {
         template <> struct serialize_mutation<generalmut_vec>
+        /// Specialization for fwdpp::generalmut_vec
         {
             io::scalar_writer writer;
             serialize_mutation<generalmut_vec>() : writer{} {}
@@ -193,6 +194,7 @@ namespace fwdpp
         };
 
         template <> struct deserialize_mutation<generalmut_vec>
+        /// Specialization for fwdpp::generalmut_vec
         {
             io::scalar_reader reader;
             deserialize_mutation<generalmut_vec>() : reader{} {}

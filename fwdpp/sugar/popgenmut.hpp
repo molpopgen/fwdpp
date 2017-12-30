@@ -70,6 +70,7 @@ namespace fwdpp
     namespace io
     {
         template <> struct serialize_mutation<popgenmut>
+        /// Specialization for fwdpp::popgenmut
         {
             io::scalar_writer writer;
             serialize_mutation<popgenmut>() : writer{} {}
@@ -86,6 +87,7 @@ namespace fwdpp
         };
 
         template <> struct deserialize_mutation<popgenmut>
+        /// Specialization for fwdpp::popgenmut
         {
             io::scalar_reader reader;
             deserialize_mutation<popgenmut>() : reader{} {}

@@ -27,10 +27,23 @@ namespace fwdpp
     namespace io
     {
         template <> struct serialize_mutation<generalmut<4>>
+        /// \brief Example specializing fwdpp::generalmut
+        ///
+        /// Every different size parameter is a new type,
+        /// requiring a new specialization.  This example
+        /// is for a size of 4.  The macro call below
+        /// generates the call operator.
         {
             SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(4);
         };
+
         template <> struct deserialize_mutation<generalmut<4>>
+        /// \brief Example specializing fwdpp::generalmut
+        ///
+        /// Every different size parameter is a new type,
+        /// requiring a new specialization.  This example
+        /// is for a size of 4.  The macro call below
+        /// generates the call operator.
         {
             SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(4);
         };
