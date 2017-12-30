@@ -21,20 +21,14 @@ namespace fwdpp
 
         struct write_mutations
         {
-            template <typename mutation_type,
-                      typename container_type_allocator,
-                      template <typename, typename> class container_type,
-                      typename ostreamtype>
+            template <typename mcont_t, typename ostreamtype>
             void
-            operator()(
-                const container_type<mutation_type, container_type_allocator>
-                    &mutations,
-                ostreamtype &buffer) const
+            operator()(const mcont_t &mutations, ostreamtype &buffer) const
             {
                 std::size_t MUTNO = mutations.size();
                 fwdpp::io::scalar_writer()(buffer, &MUTNO);
                 // write the mutation data to the buffer
-                fwdpp::io::serialize_mutation<mutation_type> mw;
+                fwdpp::io::serialize_mutation<typename mcont_t::value_type> mw;
                 for (const auto &m : mutations)
                     mw(m, buffer);
             }
@@ -42,13 +36,9 @@ namespace fwdpp
 
         struct write_haplotypes
         {
-            template <typename gamete_type, typename... gamete_cont_t_details,
-                      template <typename, typename...> class gamete_cont_t,
-                      typename ostreamtype>
+            template <typename gcont_t, typename ostreamtype>
             void
-            operator()(const gamete_cont_t<gamete_type,
-                                           gamete_cont_t_details...> &gametes,
-                       ostreamtype &buffer) const
+            operator()(const gcont_t &gametes, ostreamtype &buffer) const
             {
                 std::size_t N = gametes.size();
                 fwdpp::io::scalar_writer writer;
@@ -74,18 +64,14 @@ namespace fwdpp
 
         struct read_mutations
         {
-            template <typename mutation_type,
-                      typename container_type_allocator,
-                      template <typename, typename> class container_type,
-                      typename istreamtype>
+            template <typename mcont_t, typename istreamtype>
             void
-            operator()(container_type<mutation_type, container_type_allocator>
-                           &mutations,
-                       istreamtype &in) const
+            operator()(mcont_t &mutations, istreamtype &in) const
             {
                 std::size_t NMUTS;
                 fwdpp::io::scalar_reader()(in, &NMUTS);
-                fwdpp::io::deserialize_mutation<mutation_type> mr;
+                fwdpp::io::deserialize_mutation<typename mcont_t::value_type>
+                    mr;
                 for (uint_t i = 0; i < NMUTS; ++i)
                     {
                         mutations.emplace_back(mr(in));
@@ -95,13 +81,9 @@ namespace fwdpp
 
         struct read_haplotypes
         {
-            template <typename gamete_type, typename container_type_allocator,
-                      template <typename, typename> class container_type,
-                      typename istreamtype>
+            template <typename gcont_t, typename istreamtype>
             void
-            operator()(
-                container_type<gamete_type, container_type_allocator> &gametes,
-                istreamtype &in) const
+            operator()(gcont_t &gametes, istreamtype &in) const
             {
                 fwdpp::io::scalar_reader reader;
                 std::size_t NHAPS;
@@ -111,7 +93,7 @@ namespace fwdpp
                 for (uint_t i = 0; i < NHAPS; ++i)
                     {
                         reader(in, &N);
-                        gamete_type g(N);
+                        typename gcont_t::value_type g(N);
                         reader(in, &nm);
                         if (nm)
                             {
