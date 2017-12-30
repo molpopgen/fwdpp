@@ -132,8 +132,6 @@ namespace fwdpp
         diploids.resize(i);
         io::read_mutations(mutations, in);
         io::read_gametes(gametes, in);
-        io::deserialize_diploid<typename dipvector_t::value_type::value_type>
-            dipreader;
         for (auto &deme : diploids)
             {
                 io::read_diploids(deme, in);
