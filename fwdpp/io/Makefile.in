@@ -266,6 +266,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = scalar_serialization.hpp \
 				   mutation.hpp \
+				   gamete.hpp \
 				   diploid.hpp 
 
 all: all-am
