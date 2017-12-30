@@ -12,7 +12,6 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 
 struct generalmut_tuple_wrapper
 {
