@@ -9,8 +9,8 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <fwdpp/io/diploid.hpp>
+#include <fwdpp/io/mutation.hpp>
 #include <fwdpp/io/gamete.hpp>
-#include <fwdpp/internal/IOhelp.hpp>
 
 namespace fwdpp
 {
@@ -23,7 +23,7 @@ namespace fwdpp
     write_binary_pop(const gcont_t &gametes, const mcont_t &mutations,
                      const dipvector_t &diploids, ostreamtype &buffer)
     {
-        fwdpp_internal::write_mutations()(mutations, buffer);
+        io::write_mutations(mutations, buffer);
         io::write_gametes(gametes, buffer);
         std::size_t NDIPS = diploids.size();
         io::scalar_writer writer;
@@ -44,7 +44,7 @@ namespace fwdpp
         gametes.clear();
         mutations.clear();
         diploids.clear();
-        fwdpp_internal::read_mutations()(mutations, in);
+        io::read_mutations(mutations, in);
         io::read_gametes(gametes, in);
         std::size_t NDIPS;
         io::scalar_reader()(in, &NDIPS);
@@ -68,7 +68,7 @@ namespace fwdpp
         io::scalar_writer writer;
         writer(buffer, &nloci);
         // write mutations
-        fwdpp_internal::write_mutations()(mutations, buffer);
+        io::write_mutations(mutations, buffer);
         io::write_gametes(mlocus_gametes, buffer);
         unsigned ndips = unsigned(diploids.size());
         writer(buffer, &ndips);
@@ -97,7 +97,7 @@ namespace fwdpp
         unsigned nloci;
         io::scalar_reader()(in, &nloci);
         // Read the mutations from the buffer
-        fwdpp_internal::read_mutations()(mutations, in);
+        io::read_mutations(mutations, in);
         io::read_gametes(mlocus_gametes, in);
         unsigned ndips;
         io::scalar_reader()(in, &ndips);
@@ -123,7 +123,7 @@ namespace fwdpp
         std::size_t i = unsigned(diploids.size());
         io::scalar_writer writer;
         writer(buffer, &i);
-        fwdpp_internal::write_mutations()(mutations, buffer);
+        io::write_mutations(mutations, buffer);
         io::write_gametes(gametes, buffer);
 		io::serialize_diploid<typename dipvector_t::value_type::value_type>
             dipwriter;
@@ -151,7 +151,7 @@ namespace fwdpp
         std::size_t i;
         io::scalar_reader()(in, &i);
         diploids.resize(i);
-        fwdpp_internal::read_mutations()(mutations, in);
+        io::read_mutations(mutations, in);
         io::read_gametes(gametes, in);
 		io::deserialize_diploid<typename dipvector_t::value_type::value_type>
             dipreader;

@@ -213,7 +213,7 @@ namespace fwdpp
             writer(buffer, &pop.N);
             write_binary_pop(pop.gametes, pop.mutations, pop.diploids, buffer);
             // Step 2: output fixations
-            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            fwdpp::io::write_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     // Step 3:the fixation times
@@ -233,7 +233,7 @@ namespace fwdpp
             write_binary_pop_mloc(pop.gametes, pop.mutations, pop.diploids,
                                   buffer);
             // Step 2: output fixations
-            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            fwdpp::io::write_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     // Step 3:the fixation times
@@ -265,7 +265,7 @@ namespace fwdpp
             write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
                                  buffer);
             // Step 2: output fixations
-            fwdpp::fwdpp_internal::write_mutations()(pop.fixations, buffer);
+            fwdpp::io::write_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     // Step 3:the fixation times
@@ -303,7 +303,7 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            fwdpp::io::read_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     pop.fixation_times.resize(pop.fixations.size());
@@ -336,7 +336,7 @@ namespace fwdpp
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
             std::size_t temp;
-            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            fwdpp::io::read_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     pop.fixation_times.resize(pop.fixations.size());
@@ -385,7 +385,7 @@ namespace fwdpp
             // update the mutation counts
             fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                             pop.mcounts);
-            fwdpp::fwdpp_internal::read_mutations()(pop.fixations, buffer);
+            fwdpp::io::read_mutations(pop.fixations, buffer);
             if (!pop.fixations.empty())
                 {
                     pop.fixation_times.resize(pop.fixations.size());
