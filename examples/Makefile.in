@@ -87,9 +87,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_binaryIO_ind$(EXEEXT) \
-	diploid_gzbinaryIO_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
-	migsel_ind$(EXEEXT) migsel_split_ind_list$(EXEEXT) \
-	bneck_selection_ind$(EXEEXT) diploid_ind_2locus$(EXEEXT) \
+	diploid_fixed_sh_ind$(EXEEXT) migsel_ind$(EXEEXT) \
+	migsel_split_ind_list$(EXEEXT) bneck_selection_ind$(EXEEXT) \
+	diploid_ind_2locus$(EXEEXT) \
 	K_linked_regions_multilocus$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
 	K_linked_regions_generalized_rec$(EXEEXT) HOC_ind$(EXEEXT)
@@ -141,10 +141,6 @@ am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
 diploid_fixed_sh_ind_DEPENDENCIES =
-am_diploid_gzbinaryIO_ind_OBJECTS = diploid_gzbinaryIO_ind.$(OBJEXT)
-diploid_gzbinaryIO_ind_OBJECTS = $(am_diploid_gzbinaryIO_ind_OBJECTS)
-diploid_gzbinaryIO_ind_LDADD = $(LDADD)
-diploid_gzbinaryIO_ind_DEPENDENCIES =
 am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
 diploid_ind_OBJECTS = $(am_diploid_ind_OBJECTS)
 diploid_ind_LDADD = $(LDADD)
@@ -206,8 +202,7 @@ SOURCES = $(HOC_ind_SOURCES) $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
-	$(diploid_fixed_sh_ind_SOURCES) \
-	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
+	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(migsel_ind_SOURCES) \
 	$(migsel_split_ind_list_SOURCES)
 DIST_SOURCES = $(HOC_ind_SOURCES) \
@@ -215,8 +210,7 @@ DIST_SOURCES = $(HOC_ind_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_binaryIO_ind_SOURCES) \
-	$(diploid_fixed_sh_ind_SOURCES) \
-	$(diploid_gzbinaryIO_ind_SOURCES) $(diploid_ind_SOURCES) \
+	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(diploid_ind_2locus_SOURCES) $(migsel_ind_SOURCES) \
 	$(migsel_split_ind_list_SOURCES)
 am__can_run_installinfo = \
@@ -346,7 +340,6 @@ top_srcdir = @top_srcdir@
 #	migsel_split_ind 
 diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
 diploid_binaryIO_ind_SOURCES = diploid_binaryIO_ind.cc common_ind.hpp
-diploid_gzbinaryIO_ind_SOURCES = diploid_gzbinaryIO_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
 migsel_ind_SOURCES = migsel_ind.cc common_ind.hpp
 migsel_split_ind_list_SOURCES = migsel_split_ind_list.cc common_ind.hpp
@@ -425,10 +418,6 @@ diploid_fixed_sh_ind$(EXEEXT): $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_s
 	@rm -f diploid_fixed_sh_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_LDADD) $(LIBS)
 
-diploid_gzbinaryIO_ind$(EXEEXT): $(diploid_gzbinaryIO_ind_OBJECTS) $(diploid_gzbinaryIO_ind_DEPENDENCIES) $(EXTRA_diploid_gzbinaryIO_ind_DEPENDENCIES) 
-	@rm -f diploid_gzbinaryIO_ind$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(diploid_gzbinaryIO_ind_OBJECTS) $(diploid_gzbinaryIO_ind_LDADD) $(LIBS)
-
 diploid_ind$(EXEEXT): $(diploid_ind_OBJECTS) $(diploid_ind_DEPENDENCIES) $(EXTRA_diploid_ind_DEPENDENCIES) 
 	@rm -f diploid_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_OBJECTS) $(diploid_ind_LDADD) $(LIBS)
@@ -458,7 +447,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bneck_selection_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_binaryIO_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_gzbinaryIO_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind_2locus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_ind.Po@am__quote@

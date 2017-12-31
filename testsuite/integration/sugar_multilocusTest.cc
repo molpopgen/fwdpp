@@ -38,30 +38,13 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
                        multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
                        f.rbw, f.generation);
     poptype pop2(0, 0);
-    fwdpp::serialize s;
     std::stringstream buffer;
-
-    s(buffer, f.pop);
-    fwdpp::deserialize()(pop2, buffer);
+	fwdpp::serialize_population(buffer,f.pop);
+    fwdpp::deserialize_population(pop2, buffer);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
 
-BOOST_AUTO_TEST_CASE(multiloc_sugar_test2_gz)
-{
-    multiloc_popgenmut_fixture f;
-    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
-                       multiloc_popgenmut_fixture::multilocus_additive(), f.mu,
-                       f.rbw, f.generation);
-    poptype pop2(0, 0);
-    gzFile gzf = gzopen("sugar_multilocus_out.gz", "wb");
-    fwdpp::gzserialize()(gzf, f.pop);
-    gzclose(gzf);
-    gzf = gzopen("sugar_multilocus_out.gz", "rb");
-    fwdpp::gzdeserialize()(pop2, gzf);
-    gzclose(gzf);
-    unlink("sugar_multilocus_out.gz");
-    BOOST_CHECK_EQUAL(f.pop == pop2, true);
-}
+
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test3)
 {

@@ -45,33 +45,30 @@ BOOST_AUTO_TEST_CASE(singlepop_sugar_test4)
 BOOST_AUTO_TEST_CASE(singlepop_serialize_smallN)
 {
 	simulate_singlepop(pop,1000,1000);
-	fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop);
+	fwdpp::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize()(pop2,buffer);
+	fwdpp::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
 BOOST_AUTO_TEST_CASE(singlepop_serialize_mediumN)
 {
 	simulate_singlepop(pop,5000,5000);
-	fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop);
+	fwdpp::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize()(pop2,buffer);
+	fwdpp::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
 BOOST_AUTO_TEST_CASE(singlepop_serialize_largeN)
 {
 	simulate_singlepop(pop,10000,10000);
-	fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop);
+	fwdpp::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize()(pop2,buffer);
+	fwdpp::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
