@@ -5,7 +5,6 @@
 */
 #include <unistd.h>
 #include <config.h>
-#include <zlib.h>
 #include <iostream>
 #include <functional>
 #include <algorithm>

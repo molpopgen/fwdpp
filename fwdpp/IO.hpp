@@ -36,7 +36,7 @@ namespace fwdpp
       \param mr A function object to read in the mutation information. Takes an
       istreamtype as argument. Must be provided by library user.
       \param in Input stream. Must either support .read() in a manner similar
-      to std::istream types or be a gzFile from zlib.
+      to std::istream types.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
               typename istreamtype>
@@ -110,7 +110,7 @@ namespace fwdpp
       \param mr A function object to read in the mutation information. Takes an
       istreamtype as argument. Must be provided by library user.
       \param in Input stream.  Must either support .read() in a manner similar
-      to std::istream types or be a gzFile from zlib.
+      to std::istream types.
      */
     template <typename gcont_t, typename mcont_t, typename dipvector_t,
               typename istreamtype>

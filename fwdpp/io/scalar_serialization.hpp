@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <stdexcept>
 #include <string>
-#include <zlib.h>
 
 namespace fwdpp
 {
@@ -21,14 +20,6 @@ namespace fwdpp
                 /*! \brief Read binary data
                  */
                 i.read(reinterpret_cast<char *>(__t), n * sizeof(T));
-            }
-            template <typename T>
-            inline void
-            operator()(gzFile &gzin, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Read binary data
-                 */
-                gzread(gzin, __t, n * sizeof(T));
             }
         };
 
@@ -59,23 +50,6 @@ namespace fwdpp
                                                  + std::string(__FILE__));
                     }
                 return result_type(n * sizeof(T));
-            }
-            template <typename T>
-            inline result_type
-            operator()(gzFile &gzout, T *__t, std::size_t n = 1) const
-            {
-                /*! \brief Write binary data
-                 * \throw std::runtime_error
-                 */
-                auto rv = gzwrite(gzout, __t, n * sizeof(T));
-                if (!rv)
-                    {
-                        throw std::runtime_error("serialization error on line "
-                                                 + std::to_string(__LINE__)
-                                                 + " of "
-                                                 + std::string(__FILE__));
-                    }
-                return result_type(rv);
             }
         };
     }
