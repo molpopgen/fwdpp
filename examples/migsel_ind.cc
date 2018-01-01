@@ -20,8 +20,8 @@
 #include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
 #include <Sequence/FST.hpp>
 #endif
+#include <fwdpp/io/serialize_population.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 // the type of mutation
 using mtype = fwdpp::mutation;
 #define METAPOP_SIM
@@ -156,8 +156,7 @@ main(int argc, char **argv)
     std::ofstream outstream(outfilename);
 
     // Write the metapop in binary format to outstream
-    fwdpp::write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
-                                outstream);
+    fwdpp::io::serialize_population(outstream, pop);
 
 // Write the "ms" blocks
 #ifdef HAVE_LIBSEQUENCE
@@ -169,17 +168,12 @@ main(int argc, char **argv)
 #endif
     outstream.close();
 
-    poptype::gcont_t metapop2;
-    poptype::vdipvector_t diploids2;
-    poptype::mcont_t mutations2;
+	poptype metapop2{{0,0}};
 
     ifstream in(outfilename);
 
-    fwdpp::read_binary_metapop(metapop2, mutations2, diploids2, in);
+    fwdpp::io::deserialize_population(metapop2, in);
 
-    assert(metapop2.size() == pop.gametes.size());
-    assert(mutations2.size() == pop.mutations.size());
-    assert(diploids2.size() == pop.diploids.size());
 
 #ifdef HAVE_LIBSEQUENCE
     neutral2 = Sequence::read_SimData_binary(in);
