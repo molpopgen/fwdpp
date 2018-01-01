@@ -10,7 +10,6 @@
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <functional>
 
