@@ -14,7 +14,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/io/serialize_population.hpp>
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"
 
@@ -38,8 +38,8 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
                        f.rbw, f.generation);
     poptype pop2(0, 0);
     std::stringstream buffer;
-	fwdpp::serialize_population(buffer,f.pop);
-    fwdpp::deserialize_population(pop2, buffer);
+	fwdpp::io::serialize_population(buffer,f.pop);
+    fwdpp::io::deserialize_population(pop2, buffer);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
 

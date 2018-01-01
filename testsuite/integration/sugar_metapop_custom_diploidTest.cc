@@ -11,7 +11,7 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/io/serialize_population.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <testsuite/util/migpop.hpp>
 
@@ -97,8 +97,8 @@ BOOST_AUTO_TEST_CASE(metapop_sugar_custom_test2)
         }
     poptype pop2{ 0, 0 };
     std::stringstream buffer;
-	fwdpp::serialize_population(buffer, pop);
-    fwdpp::deserialize_population(pop2, buffer);
+	fwdpp::io::serialize_population(buffer, pop);
+    fwdpp::io::deserialize_population(pop2, buffer);
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 

@@ -5,7 +5,7 @@
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/io/serialize_population.hpp>
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"
 
@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE(singlepop_serialize_smallN)
 {
 	simulate_singlepop(pop,1000,1000);
     std::stringstream buffer;
-	fwdpp::serialize_population(buffer, pop);
+	fwdpp::io::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize_population(pop2,buffer);
+	fwdpp::io::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
@@ -56,9 +56,9 @@ BOOST_AUTO_TEST_CASE(singlepop_serialize_mediumN)
 {
 	simulate_singlepop(pop,5000,5000);
     std::stringstream buffer;
-	fwdpp::serialize_population(buffer, pop);
+	fwdpp::io::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize_population(pop2,buffer);
+	fwdpp::io::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
@@ -66,9 +66,9 @@ BOOST_AUTO_TEST_CASE(singlepop_serialize_largeN)
 {
 	simulate_singlepop(pop,10000,10000);
     std::stringstream buffer;
-	fwdpp::serialize_population(buffer, pop);
+	fwdpp::io::serialize_population(buffer, pop);
 	singlepop_popgenmut_fixture::poptype pop2(0);
-	fwdpp::deserialize_population(pop2,buffer);
+	fwdpp::io::deserialize_population(pop2,buffer);
 	BOOST_CHECK_EQUAL(pop==pop2,true);
 }
 
