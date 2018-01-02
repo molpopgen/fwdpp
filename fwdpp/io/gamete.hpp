@@ -21,7 +21,7 @@ namespace fwdpp
             serialize_gamete() : writer{} {}
             template <typename streamtype>
             inline void
-            operator()(const T& g, streamtype& buffer) const
+            operator()(streamtype& buffer, const T& g) const
             {
                 writer(buffer, &g.n);
                 std::size_t nm = g.mutations.size();
@@ -75,7 +75,7 @@ namespace fwdpp
 
         template <typename gcont_t, typename ostreamtype>
         void
-        write_gametes(const gcont_t& gametes, ostreamtype& buffer)
+        write_gametes(ostreamtype& buffer, const gcont_t& gametes)
         /// \brief Serialize a container of gametes.
         ///
         /// Works via specialization of serialize_gamete.
@@ -89,13 +89,13 @@ namespace fwdpp
             serialize_gamete<typename gcont_t::value_type> gamete_writer;
             for (const auto& g : gametes)
                 {
-                    gamete_writer(g, buffer);
+                    gamete_writer(buffer, g);
                 }
         }
 
         template <typename gcont_t, typename istreamtype>
         void
-        read_gametes(gcont_t& gametes, istreamtype& buffer)
+        read_gametes(istreamtype& buffer, gcont_t& gametes)
         /// \brief Deserialize a container of gametes.
         ///
         /// Works via specialization of deserialize_gamete.

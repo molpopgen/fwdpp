@@ -76,7 +76,7 @@ namespace fwdpp
             serialize_mutation<popgenmut>() : writer{} {}
             template <typename streamtype>
             inline void
-            operator()(const popgenmut &m, streamtype &buffer) const
+            operator()(streamtype &buffer, const popgenmut &m) const
             {
                 writer(buffer, &m.g);
                 writer(buffer, &m.pos);

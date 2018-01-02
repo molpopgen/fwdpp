@@ -20,7 +20,7 @@ namespace fwdpp
             serialize_diploid() : writer{} {}
             template <typename ostreamtype>
             inline void
-            operator()(const T &dip, ostreamtype &buffer) const
+            operator()(ostreamtype &buffer, const T &dip) const
             {
                 writer(buffer, &dip.first);
                 writer(buffer, &dip.second);
@@ -39,7 +39,7 @@ namespace fwdpp
             deserialize_diploid() : reader{} {}
             template <typename istreamtype>
             inline void
-            operator()(T &dip, istreamtype &buffer) const
+            operator()(istreamtype &buffer, T &dip) const
             {
                 typename T::first_type c;
                 reader(buffer, &c);
@@ -51,7 +51,7 @@ namespace fwdpp
 
         template <typename dipvector_t, typename ostreamtype>
         void
-        write_diploids(const dipvector_t &diploids, ostreamtype &buffer)
+        write_diploids(ostreamtype &buffer, const dipvector_t &diploids)
         /// \brief Serialize a container of diploids.
         ///
         /// Works via specialization of serialize_diploid.
@@ -65,13 +65,13 @@ namespace fwdpp
             io::serialize_diploid<typename dipvector_t::value_type> dipwriter;
             for (const auto &dip : diploids)
                 {
-                    dipwriter(dip, buffer);
+                    dipwriter(buffer, dip);
                 }
         }
 
         template <typename dipvector_t, typename istreamtype>
         void
-        read_diploids(dipvector_t &diploids, istreamtype &buffer)
+        read_diploids(istreamtype &buffer, dipvector_t &diploids)
         /// \brief Deserialize a container of diploids.
         ///
         /// Works via specialization of deserialize_diploid.
@@ -87,7 +87,7 @@ namespace fwdpp
                 dipreader;
             for (auto &dip : diploids)
                 {
-                    dipreader(dip, buffer);
+                    dipreader(buffer, dip);
                 }
         }
     }

@@ -30,7 +30,7 @@ namespace fwdpp
         {
             template <typename istreamtype>
             inline void
-            operator()(const T &, istreamtype &) const
+            operator()(istreamtype &, const T &) const
             {
                 throw std::runtime_error(
                     "serializtion not implemented for this mutation type");
@@ -57,7 +57,7 @@ namespace fwdpp
 
         template <typename mcont_t, typename ostreamtype>
         void
-        write_mutations(const mcont_t &mutations, ostreamtype &buffer)
+        write_mutations(ostreamtype &buffer, const mcont_t &mutations)
         /// \brief Serialize a container of mutations.
         ///
         /// Works via specialization of serialize_mutation.
@@ -70,12 +70,12 @@ namespace fwdpp
             // write the mutation data to the buffer
             fwdpp::io::serialize_mutation<typename mcont_t::value_type> mw;
             for (const auto &m : mutations)
-                mw(m, buffer);
+                mw(buffer, m);
         }
 
         template <typename mcont_t, typename istreamtype>
         void
-        read_mutations(mcont_t &mutations, istreamtype &in)
+        read_mutations(istreamtype &in, mcont_t &mutations)
         /// \brief Deserialize a container of mutations.
         ///
         /// Works via specialization of deserialize_mutation.

@@ -22,11 +22,11 @@ namespace fwdpp
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
-                io::write_mutations(pop.mutations, buffer);
-                io::write_gametes(pop.gametes, buffer);
-                io::write_diploids(pop.diploids, buffer);
+                io::write_mutations(buffer, pop.mutations);
+                io::write_gametes(buffer, pop.gametes);
+                io::write_diploids(buffer, pop.diploids);
                 // Step 2: output fixations
-                fwdpp::io::write_mutations(pop.fixations, buffer);
+                fwdpp::io::write_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         // Step 3:the fixation times
@@ -46,8 +46,8 @@ namespace fwdpp
                 unsigned nloci = unsigned(pop.diploids[0].size());
                 writer(buffer, &nloci);
                 // write mutations
-                io::write_mutations(pop.mutations, buffer);
-                io::write_gametes(pop.gametes, buffer);
+                io::write_mutations(buffer, pop.mutations);
+                io::write_gametes(buffer, pop.gametes);
                 unsigned ndips = unsigned(pop.diploids.size());
                 writer(buffer, &ndips);
                 io::serialize_diploid<
@@ -57,11 +57,11 @@ namespace fwdpp
                     {
                         for (const auto &genotype : dip)
                             {
-                                dipwriter(genotype, buffer);
+                                dipwriter(buffer, genotype);
                             }
                     }
                 // Step 2: output fixations
-                fwdpp::io::write_mutations(pop.fixations, buffer);
+                fwdpp::io::write_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         // Step 3:the fixation times
@@ -89,14 +89,14 @@ namespace fwdpp
                 writer(buffer, &pop.Ns[0], npops);
                 size_t i = unsigned(pop.diploids.size());
                 writer(buffer, &i);
-                io::write_mutations(pop.mutations, buffer);
-                io::write_gametes(pop.gametes, buffer);
+                io::write_mutations(buffer, pop.mutations);
+                io::write_gametes(buffer, pop.gametes);
                 for (const auto &deme : pop.diploids)
                     {
-                        io::write_diploids(deme, buffer);
+                        io::write_diploids(buffer, deme);
                     }
                 // Step 2: output fixations
-                fwdpp::io::write_mutations(pop.fixations, buffer);
+                fwdpp::io::write_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         // Step 3:the fixation times
@@ -114,14 +114,14 @@ namespace fwdpp
                 io::scalar_reader reader;
                 // Step 0: read N
                 reader(buffer, &pop.N);
-                io::read_mutations(pop.mutations, buffer);
-                io::read_gametes(pop.gametes, buffer);
-                io::read_diploids(pop.diploids, buffer);
+                io::read_mutations(buffer, pop.mutations);
+                io::read_gametes(buffer, pop.gametes);
+                io::read_diploids(buffer, pop.diploids);
 
                 // update the mutation counts
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                                 pop.mcounts);
-                fwdpp::io::read_mutations(pop.fixations, buffer);
+                fwdpp::io::read_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         pop.fixation_times.resize(pop.fixations.size());
@@ -147,12 +147,12 @@ namespace fwdpp
                 // Step 0: read N
                 reader(buffer, &pop.N);
                 unsigned nloci;
-                io::scalar_reader()(buffer, &nloci);
+                reader(buffer, &nloci);
                 // Read the mutations from the buffer
-                io::read_mutations(pop.mutations, buffer);
-                io::read_gametes(pop.gametes, buffer);
+                io::read_mutations(buffer, pop.mutations);
+                io::read_gametes(buffer, pop.gametes);
                 unsigned ndips;
-                io::scalar_reader()(buffer, &ndips);
+                reader(buffer, &ndips);
                 pop.diploids.resize(
                     ndips, typename poptype::dipvector_t::value_type(nloci));
                 io::deserialize_diploid<
@@ -163,7 +163,7 @@ namespace fwdpp
                         assert(dip.size() == nloci);
                         for (auto &genotype : dip)
                             {
-                                dipreader(genotype, buffer);
+                                dipreader(buffer, genotype);
                             }
                     }
 
@@ -171,7 +171,7 @@ namespace fwdpp
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                                 pop.mcounts);
                 std::size_t temp;
-                fwdpp::io::read_mutations(pop.fixations, buffer);
+                fwdpp::io::read_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         pop.fixation_times.resize(pop.fixations.size());
@@ -212,21 +212,21 @@ namespace fwdpp
 
                 // Read diploids, mutations, gametes
                 std::size_t i;
-                reader(buffer, & i);
+                reader(buffer, &i);
                 pop.diploids.resize(i);
-                io::read_mutations(pop.mutations, buffer);
-                io::read_gametes(pop.gametes, buffer);
+                io::read_mutations(buffer, pop.mutations);
+                io::read_gametes(buffer, pop.gametes);
 
                 for (auto &deme : pop.diploids)
                     {
-                        io::read_diploids(deme, buffer);
+                        io::read_diploids(buffer, deme);
                     }
                 // update the mutation counts
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                                 pop.mcounts);
 
                 // read fixations
-                fwdpp::io::read_mutations(pop.fixations, buffer);
+                fwdpp::io::read_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         pop.fixation_times.resize(pop.fixations.size());

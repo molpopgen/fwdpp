@@ -177,7 +177,7 @@ namespace fwdpp
             serialize_mutation<generalmut_vec>() : writer{} {}
             template <typename streamtype>
             inline void
-            operator()(const generalmut_vec &m, streamtype &buffer) const
+            operator()(streamtype &buffer, const generalmut_vec &m) const
             {
                 writer(buffer, &m.pos);
                 writer(buffer, &m.g);
@@ -230,7 +230,7 @@ namespace fwdpp
 }
 #define SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(N)                      \
     template <typename streamtype>                                            \
-    inline void operator()(const generalmut<N> &m, streamtype &buffer) const  \
+    inline void operator()(streamtype &buffer, const generalmut<N> &m) const  \
     {                                                                         \
         io::scalar_writer writer;                                             \
         writer(buffer, &m.g);                                                 \
@@ -257,7 +257,7 @@ namespace fwdpp
         reader(buffer, &s[0],                                                 \
                std::tuple_size<generalmut<N>::array_t>::value);               \
         reader(buffer, &h[0],                                                 \
-               std::tuple_size<generalmut<N>::array_t>::value);    \
+               std::tuple_size<generalmut<N>::array_t>::value);               \
         return generalmut<N>(s, h, pos, g, xtra);                             \
     }
 

@@ -168,12 +168,11 @@ main(int argc, char **argv)
 #endif
     outstream.close();
 
-	poptype metapop2{{0,0}};
+    poptype metapop2{ { 0, 0 } };
 
     ifstream in(outfilename);
 
-    fwdpp::io::deserialize_population(metapop2, in);
-
+    fwdpp::io::deserialize_population(in, metapop2);
 
 #ifdef HAVE_LIBSEQUENCE
     neutral2 = Sequence::read_SimData_binary(in);

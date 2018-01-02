@@ -8,8 +8,8 @@ namespace fwdpp
     namespace io
     {
         template <typename streamtype, typename poptype>
-        inline void serialize_population(streamtype & buffer,
-                                         const poptype &pop)
+        inline void
+        serialize_population(streamtype &buffer, const poptype &pop)
         /// Write a population in binary format to a stream.
         ///
         /// \param buffer A model of std::ostream.
@@ -20,7 +20,8 @@ namespace fwdpp
         }
 
         template <typename streamtype, typename poptype>
-        inline void deserialize_population(poptype & pop, streamtype & buffer)
+        inline void
+        deserialize_population(streamtype &buffer, poptype &pop)
         /// Read a binary representation of a population from a stream.
         ///
         /// \param pop A population to fill from \a buffer

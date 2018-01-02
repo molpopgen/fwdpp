@@ -54,8 +54,8 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline void
-            operator()(const custom_diploid_testing_t &dip,
-                       streamtype &buffer) const
+            operator()(streamtype &buffer,
+                       const custom_diploid_testing_t &dip) const
             {
                 fwdpp::io::scalar_writer w;
                 w(buffer, &dip.first);
@@ -70,7 +70,7 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline void
-            operator()(custom_diploid_testing_t &dip, streamtype &buffer)
+            operator()(streamtype &buffer, custom_diploid_testing_t &dip)
             {
                 fwdpp::io::scalar_reader r;
                 r(buffer, &dip.first);

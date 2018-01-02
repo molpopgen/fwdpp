@@ -38,12 +38,10 @@ BOOST_AUTO_TEST_CASE(multiloc_sugar_test2)
                        f.rbw, f.generation);
     poptype pop2(0, 0);
     std::stringstream buffer;
-	fwdpp::io::serialize_population(buffer,f.pop);
-    fwdpp::io::deserialize_population(pop2, buffer);
+    fwdpp::io::serialize_population(buffer, f.pop);
+    fwdpp::io::deserialize_population(buffer, pop2);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
 }
-
-
 
 BOOST_AUTO_TEST_CASE(multiloc_sugar_test3)
 {

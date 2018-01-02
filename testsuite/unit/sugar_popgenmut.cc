@@ -30,7 +30,7 @@ BOOST_FIXTURE_TEST_CASE(test_popgenmut_from_tuple, popgenmut_tuple_wrapper)
 BOOST_FIXTURE_TEST_CASE(test_serialize_popgenmut, popgenmut_tuple_wrapper)
 {
     std::ostringstream o;
-    fwdpp::io::serialize_mutation<fwdpp::popgenmut>()(m,o);
+    fwdpp::io::serialize_mutation<fwdpp::popgenmut>()(o, m);
     std::istringstream i(o.str());
     auto m2 = fwdpp::io::deserialize_mutation<fwdpp::popgenmut>()(i);
 

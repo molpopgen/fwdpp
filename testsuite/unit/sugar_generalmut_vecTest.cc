@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(serialize)
     fwdpp::generalmut_vec p({ { 0.5, -1 } }, { { 1, 0 } }, 0.001, 1);
 
     std::ostringstream o;
-    fwdpp::io::serialize_mutation<fwdpp::generalmut_vec>()(p,o);
+    fwdpp::io::serialize_mutation<fwdpp::generalmut_vec>()(o, p);
 
     std::istringstream i(o.str());
     auto p2 = fwdpp::io::deserialize_mutation<fwdpp::generalmut_vec>()(i);

@@ -107,7 +107,7 @@ BOOST_AUTO_TEST_CASE(serialize)
 {
     fwdpp::generalmut<4> p({ { 0.5 } }, { { 1, 0, -1, 1 } }, 0.001, 1, 14);
     std::ostringstream o;
-    fwdpp::io::serialize_mutation<fwdpp::generalmut<4>>()(p, o);
+    fwdpp::io::serialize_mutation<fwdpp::generalmut<4>>()(o, p);
     std::istringstream i(o.str());
     auto p2 = fwdpp::io::deserialize_mutation<fwdpp::generalmut<4>>()(i);
     BOOST_REQUIRE(p == p2);
