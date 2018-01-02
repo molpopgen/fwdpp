@@ -33,36 +33,7 @@ Example:
 ~~~
 
 
-#### diploid\_binaryIO_ind (diploid_binaryIO_ind.cc)
-
-The next program is called diploid\_binaryIO\_ind. This program is identical to diploid, except that it only simulates one replicate at a time, creates two output files, and outputs the entire population rather than a sample of size n << 2N. The first file is an index file, containing an integer representing the replicate number of the output and the position in the haplotypes file where this record begins. The second file is the haplotypes file, which contains the entire population in binary format. 
-
-Usage:
-
-~~~
-./diploid_binaryIO N theta rho g replicate\_number index\_filename haplotype\_filename seed.
-~~~
-
-Example for Open Grid Engine compute clusters:
-
-~~~{.sh}
-#!sh
-#$ -t 1-100
-#$ -N DIPBIN
-
-seed=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
-~~~
-
-\#note: the below assumes that the binary is in the users's $PATH and that the GE system knows how to link it to the relevant dynamic libraries
-
-~~~
-diploid_binaryIO_ind 10000 10 10 100000 $SGE_TASK_ID indexfile hapfile $seed
-~~~
-
-The above script, when submitted to a Grid Engine queue, will result in 100 populations of size N=10,000 being written to hapfile. Further, “indexfile” will contain the ID number and position of each file. Records are not over-written because the program uses POSIX file locking to ensure that only 1 process at a time can do the writing. This is a complex program, as it mixes C++ objects with output streams such that they can be written to C-style file descriptors, which is required in order to use file locking (which is a C feature with no C++ analog). However, the advantage is that you write all data to one large file, avoiding the plague of lots of small files that can bring distributed file systems to their knees.
-
-
-#### diploid\_fixed\_sh\_ind (diploid_fixed_sh\_ind.cc) and diploid\_fixed\_sh\_ind_lambda (diploid_fixed_sh_ind_lambda.cc)
+#### diploid\_fixed\_sh\_ind (diploid_fixed_sh\_ind.cc)
 
 This program is similar to diploid_ind, but adds an additional mutation rate (theta\_selected = 4Nu\_s, where u\_s is the mutation rate per gamete per generation to mutations with selection coefficient s) to mutations with selection coefficient s and dominance h. Fitness across sites is multiplicative. The output is in "ms" format--one block for neutral mutations followed by one block for selected mutations.
 
@@ -73,30 +44,6 @@ Usage:
 ~~~
 
 For this program, s can be positive or negative, as can h.
-
-#### diploid\_twopop\_mig\_ind (diploid_twopop_mig_ind.cc)
-
-This program simulates an ancestral population for g generations, at which point a daughter population of size N is “budded” off from the ancestral population. Evolution continues for g2 more generations, with symmetric migration at rate M = 4Nm, where m is the migration rate per diploid per generation. The output is in "ms" format, with n haplotypes per sample just like how ms outputs data for multi-population models.
-
-Usage:
-
-~~~
-./diploid_twopop_mig_ind N theta rho g g2 M n nreps seed | gzip > outfile.gz
-~~~
-
-Note: the demographic model here implemented may be viewed as biologically bizarre, as it mimics the default behavior of “ms” for population split models. Let’s compare a specific example vs. the equivalent ms command line:
-
-~~~
-./diploid_twopop_mig 10000 50 50 100000 1000 1 50 1 $RANDOM | gzip > outfile.gz
-~~~
-
-and
-
-~~~
-ms 100 1 -t 50 -r 50 1000 -I 2 2 1 -ej 0.025 2 1 -em 0.025 1 2 0.
-~~~
-
-Why may this be considered odd? In ms, when two populations are merged, the rate of coalescence is unaffected by default (this behavior is documented, and it is up to the user to adjust population sizes when population merge and split in ms). That means when the two populations, each of size N merge, the merged (ancestral) population is still of size N. diploid\_twopop\_mig is doing the same thing forwards in time: an ancestral population of size N magically changes into two populations of size N. 
 
 #### migsel\_ind (migsel_ind.cc)
 
@@ -133,45 +80,6 @@ The output file contains the following:
 2. Two "ms"-format blocks of size 2*n. These are for neutral and selected mutations, respectively. Within each block, the first n haplotypes are from deme 1 and the second n are from deme 2.
 
 The program writes the data to the output file and then reads it in again. This is mainly to illustrate the binary I/O routines for individual-based metapopulation simulations.
-
-#### migsel\_split\_ind (migsel_split_ind.cc) and migsel\_split\_ind\_list (migsel_split_ind_list.cc)
-
-__NOTE:__ migsel_split_ind is not longer compiled as of fwdpp 0.3.0.  It may be resurrected in the future.
-
-Simulates a constant-sized population of N diploids with selection at strength s and dominance h for ngens generations. Then, a copy is made of the population, and the two demes are simulated with migration for another ngens2 generations.
-
-These two programs also serialize their data, read the copied data back, and make sure that input equals output.
-
-These two examples are hints on how to code up "IM"-like models.
-
-Usage:
-
-~~~
-./migsel_split_ind N 4Nu_neut 4Nu_sel 4Nr 4Nm s h f1 f2 ngens ngens2 n seed
-~~~
-
-~~~
-./migsel_split_ind_list N 4Nu_neut 4Nu_sel 4Nr 4Nm s h f1 f2 ngens ngens2 n seed
-~~~
-
-where:
-
-* N = population number for each deme.
-* 4Nu\_neut = 4N times the neutral mutation rate per gamete
-* 4Nu\_sel = 4N times the mutation rate per gamete to selected mutations
-* 4Nr = 4N times the recombination rate per diploid per region per generation
-* 4Nm = 4N times the probability of migration per diploid per generation
-* s = the selection coefficient of newly-arising selected mutations
-* h = dominance of newly-arising selected mutations
-* f1 and f2 are the probabilities of inbreeding in deme 1 and 2, respectively
-* ngens = # of generations to simulate
-* ngens2 = # of generations to simulate after the split
-* n = sample size to take from each deme @ end of simulation (must be even #)
-* seed = random number seed.
-
-Notes: s is taken to be s in deme 1 and -s in deme 2. This lets me illustrate how different fitness functions can be passed to different demes using fwdpp.
-
-
 
 #### bneck\_selection\_ind (bneck_selection_ind.cc)
 
