@@ -13,6 +13,8 @@
  * Template typenames referring to streams assume input
  * or output streams compatible with those from namespace
  * std.
+ *
+ * See @ref md_md_serialization for details.
  */
 
 namespace fwdpp
