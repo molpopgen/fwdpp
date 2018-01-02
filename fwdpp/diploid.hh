@@ -31,7 +31,6 @@
 #include <fwdpp/insertion_policies.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/util.hpp>
-#include <fwdpp/IO.hpp>
 #include <fwdpp/general_rec_variation.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/interlocus_recombination.hpp>

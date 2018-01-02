@@ -7,8 +7,6 @@ pkginclude_HEADERS=debug.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
 	insertion_policies.hpp \
-	IO.hpp \
-	IO.tcc \
 	poisson_xover.hpp \
 	general_rec_variation.hpp \
 	sample_diploid.hpp \

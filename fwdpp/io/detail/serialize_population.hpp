@@ -1,7 +1,10 @@
 #ifndef FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 #define FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 
-#include <fwdpp/IO.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
+#include <fwdpp/io/mutation.hpp>
+#include <fwdpp/io/gamete.hpp>
+#include <fwdpp/io/diploid.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
@@ -19,8 +22,9 @@ namespace fwdpp
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
-                write_binary_pop(pop.gametes, pop.mutations, pop.diploids,
-                                 buffer);
+                io::write_mutations(pop.mutations, buffer);
+                io::write_gametes(pop.gametes, buffer);
+                io::write_diploids(pop.diploids, buffer);
                 // Step 2: output fixations
                 fwdpp::io::write_mutations(pop.fixations, buffer);
                 if (!pop.fixations.empty())
@@ -39,8 +43,23 @@ namespace fwdpp
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
-                write_binary_pop_mloc(pop.gametes, pop.mutations, pop.diploids,
-                                      buffer);
+                unsigned nloci = unsigned(pop.diploids[0].size());
+                writer(buffer, &nloci);
+                // write mutations
+                io::write_mutations(pop.mutations, buffer);
+                io::write_gametes(pop.gametes, buffer);
+                unsigned ndips = unsigned(pop.diploids.size());
+                writer(buffer, &ndips);
+                io::serialize_diploid<
+                    typename poptype::dipvector_t::value_type::value_type>
+                    dipwriter;
+                for (const auto &dip : pop.diploids)
+                    {
+                        for (const auto &genotype : dip)
+                            {
+                                dipwriter(genotype, buffer);
+                            }
+                    }
                 // Step 2: output fixations
                 fwdpp::io::write_mutations(pop.fixations, buffer);
                 if (!pop.fixations.empty())
@@ -68,8 +87,14 @@ namespace fwdpp
                 std::size_t npops = std::size_t(pop.Ns.size());
                 writer(buffer, &npops);
                 writer(buffer, &pop.Ns[0], npops);
-                write_binary_metapop(pop.gametes, pop.mutations, pop.diploids,
-                                     buffer);
+                size_t i = unsigned(pop.diploids.size());
+                writer(buffer, &i);
+                io::write_mutations(pop.mutations, buffer);
+                io::write_gametes(pop.gametes, buffer);
+                for (const auto &deme : pop.diploids)
+                    {
+                        io::write_diploids(deme, buffer);
+                    }
                 // Step 2: output fixations
                 fwdpp::io::write_mutations(pop.fixations, buffer);
                 if (!pop.fixations.empty())
@@ -89,8 +114,9 @@ namespace fwdpp
                 io::scalar_reader reader;
                 // Step 0: read N
                 reader(buffer, &pop.N);
-                fwdpp::read_binary_pop(pop.gametes, pop.mutations,
-                                       pop.diploids, buffer);
+                io::read_mutations(pop.mutations, buffer);
+                io::read_gametes(pop.gametes, buffer);
+                io::read_diploids(pop.diploids, buffer);
 
                 // update the mutation counts
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
@@ -120,8 +146,27 @@ namespace fwdpp
                 io::scalar_reader reader;
                 // Step 0: read N
                 reader(buffer, &pop.N);
-                fwdpp::read_binary_pop_mloc(pop.gametes, pop.mutations,
-                                            pop.diploids, buffer);
+                unsigned nloci;
+                io::scalar_reader()(buffer, &nloci);
+                // Read the mutations from the buffer
+                io::read_mutations(pop.mutations, buffer);
+                io::read_gametes(pop.gametes, buffer);
+                unsigned ndips;
+                io::scalar_reader()(buffer, &ndips);
+                pop.diploids.resize(
+                    ndips, typename poptype::dipvector_t::value_type(nloci));
+                io::deserialize_diploid<
+                    typename poptype::dipvector_t::value_type::value_type>
+                    dipreader;
+                for (auto &dip : pop.diploids)
+                    {
+                        assert(dip.size() == nloci);
+                        for (auto &genotype : dip)
+                            {
+                                dipreader(genotype, buffer);
+                            }
+                    }
+
                 // update the mutation counts
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                                 pop.mcounts);
@@ -164,12 +209,24 @@ namespace fwdpp
                 reader(buffer, &numNs);
                 pop.Ns.resize(numNs);
                 reader(buffer, &pop.Ns[0], numNs);
-                // Step 1: write the mutations, diploids, gametes to the stream
-                fwdpp::read_binary_metapop(pop.gametes, pop.mutations,
-                                           pop.diploids, buffer);
+
+                // Read diploids, mutaions, gametes
+                std::size_t i;
+                reader(buffer, & i);
+                pop.diploids.resize(i);
+                io::read_mutations(pop.mutations, buffer);
+                io::read_gametes(pop.gametes, buffer);
+
+                io::scalar_reader()(buffer, &i);
+                for (auto &deme : pop.diploids)
+                    {
+                        io::read_diploids(deme, buffer);
+                    }
                 // update the mutation counts
                 fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
                                                 pop.mcounts);
+
+                // read fixations
                 fwdpp::io::read_mutations(pop.fixations, buffer);
                 if (!pop.fixations.empty())
                     {
