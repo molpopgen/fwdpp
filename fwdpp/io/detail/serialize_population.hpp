@@ -210,14 +210,13 @@ namespace fwdpp
                 pop.Ns.resize(numNs);
                 reader(buffer, &pop.Ns[0], numNs);
 
-                // Read diploids, mutaions, gametes
+                // Read diploids, mutations, gametes
                 std::size_t i;
                 reader(buffer, & i);
                 pop.diploids.resize(i);
                 io::read_mutations(pop.mutations, buffer);
                 io::read_gametes(pop.gametes, buffer);
 
-                io::scalar_reader()(buffer, &i);
                 for (auto &deme : pop.diploids)
                     {
                         io::read_diploids(deme, buffer);
