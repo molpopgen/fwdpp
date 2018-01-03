@@ -4,7 +4,6 @@
 #include <sstream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/generalmut.hpp>
 
 struct popgenmut_tuple_wrapper
 {
@@ -25,6 +24,14 @@ BOOST_FIXTURE_TEST_CASE(test_popgenmut_from_tuple, popgenmut_tuple_wrapper)
     BOOST_REQUIRE_EQUAL(m.g, 3);
     BOOST_REQUIRE_EQUAL(m.xtra, 1);
     BOOST_REQUIRE_EQUAL(m.neutral, false);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_popgenmut_comparison, popgenmut_tuple_wrapper)
+{
+    auto m2 = m;
+    BOOST_REQUIRE(m == m2);
+    m.xtra = 17;
+    BOOST_REQUIRE(!(m == m2));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_serialize_popgenmut, popgenmut_tuple_wrapper)

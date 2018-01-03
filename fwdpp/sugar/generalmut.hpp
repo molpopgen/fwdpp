@@ -94,8 +94,7 @@ namespace fwdpp
         bool
         operator==(const generalmut &rhs) const
         {
-            return this->pos == rhs.pos && this->neutral == rhs.neutral
-                   && this->sh == rhs.sh;
+            return this->g == rhs.g && this->sh == rhs.sh && is_equal(rhs);
         }
     };
 
@@ -149,24 +148,22 @@ namespace fwdpp
         /// \version
         /// Added in fwdpp 0.5.7
         generalmut_vec(constructor_tuple t)
-            : mutation_base(
-                  std::get<1>(t),
-                  (std::find_if(std::begin(std::get<0>(t)),
-                                std::end(std::get<0>(t)),
-                                [](const array_t::value_type t) {
-                                    return std::get<0>(t) != 0.;})
-                   == std::end(std::get<0>(t))),
-                  std::get<3>(t)),
-              sh(std::move(std::get<0>(t))),
-              g(std::get<2>(t))
+            : mutation_base(std::get<1>(t),
+                            (std::find_if(std::begin(std::get<0>(t)),
+                                          std::end(std::get<0>(t)),
+                                          [](const array_t::value_type t) {
+                                              return std::get<0>(t) != 0.;
+                                          })
+                             == std::end(std::get<0>(t))),
+                            std::get<3>(t)),
+              sh(std::move(std::get<0>(t))), g(std::get<2>(t))
         {
         }
 
         bool
         operator==(const generalmut_vec &rhs) const
         {
-            return this->pos == rhs.pos && this->neutral == rhs.neutral
-                   && this->sh == rhs.sh;
+            return this->g == rhs.g && this->sh == rhs.sh && is_equal(rhs);
         }
     };
 

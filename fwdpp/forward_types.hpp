@@ -54,6 +54,13 @@ namespace fwdpp
         mutation_base &operator=(mutation_base &) = default;
         mutation_base &operator=(mutation_base const &) = default;
         mutation_base &operator=(mutation_base &&) = default;
+
+        inline bool
+        is_equal(const mutation_base &rhs) const
+        {
+            return this->pos == rhs.pos && this->xtra == rhs.xtra
+                   && this->neutral == rhs.neutral;
+        }
     };
 
     struct mutation : public mutation_base
@@ -76,9 +83,8 @@ namespace fwdpp
         bool
         operator==(const mutation &rhs) const
         {
-            return (std::fabs(this->pos - rhs.pos)
-                        <= std::numeric_limits<double>::epsilon()
-                    && this->s == rhs.s);
+            return std::tie(this->s, this->h) == std::tie(rhs.s, rhs.h)
+                   && is_equal(rhs);
         }
     };
 
