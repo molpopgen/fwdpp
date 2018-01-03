@@ -4,6 +4,7 @@
 #include <iosfwd>
 #include <limits>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/io/diploid.hpp>
 
 // Custom diploid type.
 struct custom_diploid_testing_t
@@ -13,6 +14,7 @@ struct custom_diploid_testing_t
   but this forces fwdpp to assume that it is a custom type, which we exploit
   for
   testing.
+  \ingroup testing
  */
 {
     using first_type = std::size_t;
@@ -37,29 +39,45 @@ struct custom_diploid_testing_t
     }
 };
 
-static_assert(fwdpp::traits::is_custom_diploid_t<custom_diploid_testing_t>::value,
-		"custom_diploid_testing_t must pass as a custom diploid.");
+static_assert(
+    fwdpp::traits::is_custom_diploid_t<custom_diploid_testing_t>::value,
+    "custom_diploid_testing_t must pass as a custom diploid.");
 
-struct diploid_writer
+// specialization for ADL
+namespace fwdpp
 {
-    using result_type = void;
-    template <typename itr, typename streamtype>
-    inline result_type
-    operator()(itr i, streamtype &o) const
+    namespace io
     {
-        o.write(reinterpret_cast<const char *>(&i.i), sizeof(unsigned));
-    }
-};
+        template <> struct serialize_diploid<custom_diploid_testing_t>
+        /// Specialization for custom_diploid_testing_t
+        /// \ingroup testing
+        {
+            template <typename streamtype>
+            inline void
+            operator()(streamtype &buffer,
+                       const custom_diploid_testing_t &dip) const
+            {
+                fwdpp::io::scalar_writer w;
+                w(buffer, &dip.first);
+                w(buffer, &dip.second);
+                w(buffer, &dip.i);
+            }
+        };
 
-struct diploid_reader
-{
-    using result_type = void;
-    template <typename itr, typename streamtype>
-    inline result_type
-    operator()(itr i, streamtype &in) const
-    {
-        in.read(reinterpret_cast<char *>(&i.i), sizeof(unsigned));
+        template <> struct deserialize_diploid<custom_diploid_testing_t>
+        /// Specialization for custom_diploid_testing_t
+        /// \ingroup testing
+        {
+            template <typename streamtype>
+            inline void
+            operator()(streamtype &buffer, custom_diploid_testing_t &dip)
+            {
+                fwdpp::io::scalar_reader r;
+                r(buffer, &dip.first);
+                r(buffer, &dip.second);
+                r(buffer, &dip.i);
+            }
+        };
     }
-};
-
+}
 #endif

@@ -1,14 +1,12 @@
 pkgincludedir=$(prefix)/include/fwdpp
 
-SUBDIRS=internal tags sugar extensions
+SUBDIRS=internal tags sugar extensions io
 pkginclude_HEADERS=debug.hpp \
 	diploid.hh \
 	fitness_models.hpp \
 	forward_types.hpp \
 	fwd_functional.hpp \
 	insertion_policies.hpp \
-	IO.hpp \
-	IO.tcc \
 	poisson_xover.hpp \
 	general_rec_variation.hpp \
 	sample_diploid.hpp \

@@ -29,10 +29,7 @@ AM_MAINTAINER_MODE([disable])
 AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
-AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile
-				 fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile
-				 fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile
-				 src/Makefile doc/fwdpp.doxygen])
+AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/io/detail/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/poptypes/Makefile fwdpp/sugar/gsl/Makefile fwdpp/sugar/sampling/Makefile fwdpp/extensions/Makefile examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen]) 
 
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)
@@ -45,7 +42,7 @@ dnl check for things that are required to compile all examples and/or use librar
 AC_CHECK_HEADER(Sequence/SimData.hpp, SIMDATAFOUND=1 , [AC_MSG_WARN([Sequence/SimData.hpp not found. Example programs will not be compiled.])])
 AC_CHECK_HEADER(gsl/gsl_rng.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
 AC_CHECK_HEADER(gsl/gsl_randist.h,HAVE_GSL=1,[AC_MSG_ERROR([gsl/gsl_rng.h not found.  Please install the GNU Scientific Library])])
-AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requred])])
+dnl AC_CHECK_HEADER(zlib.h,,[AC_MSG_ERROR([zlib.h not found.  zlib >= 1.2.5 is requred])])
 
 AM_CONDITIONAL([HAVE_SIMDATA_HPP],test x$SIMDATAFOUND = x1)
 
@@ -66,7 +63,7 @@ AM_CONDITIONAL([BUNIT_TEST_PRESENT], test x$BUNITTEST = x1)
 
 
 dnl check for C run-time libraries
-AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR([zlib run time library not found])])
+dnl AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR([zlib run time library not found])])
 AC_CHECK_LIB([gslcblas],[cblas_dgemm],,[AC_MSG_ERROR([gslcblas run-time library not found])])
 AC_CHECK_LIB([gsl],[gsl_blas_dgemm],,[AC_MSG_ERROR([gsl run-time library not found])])
 dnl check for tcmalloc if desired

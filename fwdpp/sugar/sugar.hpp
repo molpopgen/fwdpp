@@ -11,7 +11,6 @@
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/demography.hpp>
 #include <fwdpp/sugar/sampling.hpp>

@@ -743,7 +743,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../fwdpp ../fwdpp/tags ../fwdpp/sugar ../fwdpp/sugar/gsl ../fwdpp/sugar/poptypes ../fwdpp/sugar/singlepop ../fwdpp/sugar/metapop ../fwdpp/sugar/multiloc ../fwdpp/internal ../fwdpp/experimental ../fwdpp/extensions ../testsuite/unit ../testsuite/integration ../testsuite/fixtures ../examples ../ md
+INPUT                  = ../fwdpp ../fwdpp/io ../fwdpp/tags ../fwdpp/sugar ../fwdpp/sugar/gsl ../fwdpp/sugar/poptypes ../fwdpp/sugar/singlepop ../fwdpp/sugar/metapop ../fwdpp/sugar/multiloc ../fwdpp/internal ../fwdpp/experimental ../fwdpp/extensions ../testsuite/unit ../testsuite/integration ../testsuite/fixtures ../testsuite/util ../examples ../ md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

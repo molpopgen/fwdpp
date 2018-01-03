@@ -10,9 +10,7 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 
 struct generalmut_vec_tuple_wrapper
 {
@@ -79,12 +77,10 @@ BOOST_AUTO_TEST_CASE(serialize)
     fwdpp::generalmut_vec p({ { 0.5, -1 } }, { { 1, 0 } }, 0.001, 1);
 
     std::ostringstream o;
-    fwdpp::mutation_writer w;
-    w(p, o);
+    fwdpp::io::serialize_mutation<fwdpp::generalmut_vec>()(o, p);
 
-    fwdpp::mutation_reader<decltype(p)> r;
     std::istringstream i(o.str());
-    auto p2 = r(i);
+    auto p2 = fwdpp::io::deserialize_mutation<fwdpp::generalmut_vec>()(i);
 
     BOOST_CHECK_EQUAL(p.s.size(), p2.s.size());
     BOOST_CHECK_EQUAL(p.h.size(), p2.h.size());
@@ -92,28 +88,7 @@ BOOST_AUTO_TEST_CASE(serialize)
     BOOST_CHECK_EQUAL(p.pos, p2.pos);
 }
 
-BOOST_AUTO_TEST_CASE(serialize_gz)
-{
-    fwdpp::generalmut_vec p({ { 0.5, -1 } }, { { 1, 0 } }, 0.001, 1);
-
-    gzFile out = gzopen("test_generalmut_vec_file.gz", "w");
-    fwdpp::mutation_writer w;
-    w(p, out);
-    gzclose(out);
-
-    fwdpp::mutation_reader<decltype(p)> r;
-    out = gzopen("test_generalmut_vec_file.gz", "r");
-    auto p2 = r(out);
-
-    BOOST_CHECK_EQUAL(p.s.size(), p2.s.size());
-    BOOST_CHECK_EQUAL(p.h.size(), p2.h.size());
-    BOOST_CHECK_EQUAL(p.g, p2.g);
-    BOOST_CHECK_EQUAL(p.pos, p2.pos);
-
-    unlink("test_generalmut_vec_file.gz");
-}
-
-BOOST_AUTO_TEST_CASE(serialize_pop1)
+BOOST_AUTO_TEST_CASE(copy_pop1)
 {
     using mtype = fwdpp::generalmut_vec;
     using singlepop_t = fwdpp::singlepop<mtype>;

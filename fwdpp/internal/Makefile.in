@@ -256,7 +256,6 @@ pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
 psdir = @psdir@
-runstatedir = @runstatedir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
@@ -270,7 +269,6 @@ pkginclude_HEADERS = mutation_internal.hpp \
 	recombination_common.hpp \
 	gsl_discrete.hpp \
 	multilocus_rec.hpp \
-	IOhelp.hpp \
 	ms_sampling.hpp \
 	gamete_cleaner.hpp \
 	recycling.hpp \

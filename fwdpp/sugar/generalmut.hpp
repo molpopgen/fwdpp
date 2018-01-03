@@ -7,6 +7,8 @@
 #include <memory>
 #include <limits>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
+#include <fwdpp/io/mutation.hpp>
 #include <fwdpp/tags/tags.hpp>
 
 namespace fwdpp
@@ -69,12 +71,12 @@ namespace fwdpp
         }
 
         ///
-		/// Constructor from a tuple
-		///
-		/// \param t A tuple (s,g,pos,origin time, xtra)
-		///
-		/// \version
-		/// Added in fwdpp 0.5.7
+        /// Constructor from a tuple
+        ///
+        /// \param t A tuple (s,g,pos,origin time, xtra)
+        ///
+        /// \version
+        /// Added in fwdpp 0.5.7
         generalmut(constructor_tuple t)
             : mutation_base(
                   std::get<2>(t),
@@ -125,24 +127,26 @@ namespace fwdpp
         using constructor_tuple
             = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
         //! Constructor
-        generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen)
+        generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen,
+                       const std::uint16_t x = 0)
             : fwdpp::mutation_base(
                   std::move(pos),
                   // Mutation is neutral i.f.f. all values in __s == 0.
                   (std::find_if(std::begin(__s), std::end(__s),
                                 [](const double d) { return d != 0.; })
-                   == std::end(__s))),
+                   == std::end(__s)),
+                  x),
               s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
         {
         }
 
         ///
-		/// Constructor from a tuple
-		///
-		/// \param t A tuple (s,g,pos,origin time, xtra)
-		///
-		/// \version
-		/// Added in fwdpp 0.5.7
+        /// Constructor from a tuple
+        ///
+        /// \param t A tuple (s,g,pos,origin time, xtra)
+        ///
+        /// \version
+        /// Added in fwdpp 0.5.7
         generalmut_vec(constructor_tuple t)
             : mutation_base(
                   std::get<2>(t),
@@ -163,5 +167,98 @@ namespace fwdpp
                    && this->s == rhs.s && this->h == rhs.h;
         }
     };
+
+    namespace io
+    {
+        template <> struct serialize_mutation<generalmut_vec>
+        /// Specialization for fwdpp::generalmut_vec
+        {
+            io::scalar_writer writer;
+            serialize_mutation<generalmut_vec>() : writer{} {}
+            template <typename streamtype>
+            inline void
+            operator()(streamtype &buffer, const generalmut_vec &m) const
+            {
+                writer(buffer, &m.pos);
+                writer(buffer, &m.g);
+                writer(buffer, &m.xtra);
+                // Write mutation types
+                using array_t_size_t =
+                    typename generalmut_vec::array_t::size_type;
+                array_t_size_t ns = m.s.size(), nh = m.h.size();
+                writer(buffer, &ns);
+                writer(buffer, &nh);
+                writer(buffer, m.s.data(), ns);
+                writer(buffer, m.h.data(), nh);
+            }
+        };
+
+        template <> struct deserialize_mutation<generalmut_vec>
+        /// Specialization for fwdpp::generalmut_vec
+        {
+            io::scalar_reader reader;
+            deserialize_mutation<generalmut_vec>() : reader{} {}
+            template <typename streamtype>
+            inline generalmut_vec
+            operator()(streamtype &buffer) const
+            {
+                double pos;
+                decltype(generalmut_vec::g) g;
+                decltype(generalmut_vec::xtra) xtra;
+                io::scalar_reader reader;
+                reader(buffer, &pos);
+                reader(buffer, &g);
+                reader(buffer, &xtra);
+                typename generalmut_vec::array_t::size_type ns, nh;
+                reader(buffer, &ns);
+                reader(buffer, &nh);
+                typename generalmut_vec::array_t s(ns), h(nh);
+                // Write mutation types
+                if (ns)
+                    {
+                        reader(buffer, s.data(), ns);
+                    }
+                if (nh)
+                    {
+                        reader(buffer, h.data(), nh);
+                    }
+                return generalmut_vec(std::move(s), std::move(h), pos, g,
+                                      xtra);
+            }
+        };
+    }
 }
+#define SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(N)                      \
+    template <typename streamtype>                                            \
+    inline void operator()(streamtype &buffer, const generalmut<N> &m) const  \
+    {                                                                         \
+        io::scalar_writer writer;                                             \
+        writer(buffer, &m.g);                                                 \
+        writer(buffer, &m.pos);                                               \
+        writer(buffer, &m.xtra);                                              \
+        writer(buffer, &m.s[0], N);                                           \
+        writer(buffer, &m.h[0], N);                                           \
+    }
+
+#define SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(N)                    \
+    template <typename streamtype>                                            \
+    inline generalmut<N> operator()(streamtype &buffer) const                 \
+    {                                                                         \
+        uint_t g;                                                             \
+        double pos;                                                           \
+        decltype(generalmut<N>::xtra) xtra;                                   \
+        using value_t = generalmut<N>::array_t::value_type;                   \
+        io::scalar_reader reader;                                             \
+        std::array<value_t, std::tuple_size<generalmut<N>::array_t>::value>   \
+            s, h;                                                             \
+        reader(buffer, &g);                                                   \
+        reader(buffer, &pos);                                                 \
+        reader(buffer, &xtra);                                                \
+        reader(buffer, &s[0],                                                 \
+               std::tuple_size<generalmut<N>::array_t>::value);               \
+        reader(buffer, &h[0],                                                 \
+               std::tuple_size<generalmut<N>::array_t>::value);               \
+        return generalmut<N>(s, h, pos, g, xtra);                             \
+    }
+
 #endif

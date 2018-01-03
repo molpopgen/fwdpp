@@ -7,12 +7,9 @@
 #include <config.h>
 #include <sstream>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
-#include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
-#include <fwdpp/sugar/serialization.hpp>
 
 struct generalmut_tuple_wrapper
 {
@@ -24,6 +21,36 @@ struct generalmut_tuple_wrapper
 
 const std::array<double, 2> generalmut_tuple_wrapper::s = { { 0.0, -0.1 } };
 const std::array<double, 2> generalmut_tuple_wrapper::h = { { 1.0, 0.25 } };
+
+namespace fwdpp
+{
+    namespace io
+    {
+        template <> struct serialize_mutation<generalmut<4>>
+        /// \brief Example specializing fwdpp::generalmut
+        ///
+        /// Every different size parameter is a new type,
+        /// requiring a new specialization.  This example
+        /// is for a size of 4.  The macro call below
+        /// generates the call operator.
+        /// \ingroup testing
+        {
+            SPECIALIZE_SERIALIZE_MUTATION_GENERALMUT_BODY(4);
+        };
+
+        template <> struct deserialize_mutation<generalmut<4>>
+        /// \brief Example specializing fwdpp::generalmut
+        ///
+        /// Every different size parameter is a new type,
+        /// requiring a new specialization.  This example
+        /// is for a size of 4.  The macro call below
+        /// generates the call operator.
+        /// \ingroup testing
+        {
+            SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(4);
+        };
+    }
+}
 
 BOOST_AUTO_TEST_SUITE(generalmutTest)
 
@@ -78,44 +105,15 @@ BOOST_AUTO_TEST_CASE(construct_4c)
 
 BOOST_AUTO_TEST_CASE(serialize)
 {
-    fwdpp::generalmut<2> p({ { 0.5, -1 } }, { { 1, 0 } }, 0.001, 1);
-
+    fwdpp::generalmut<4> p({ { 0.5 } }, { { 1, 0, -1, 1 } }, 0.001, 1, 14);
     std::ostringstream o;
-    fwdpp::mutation_writer w;
-    w(p, o);
-
-    fwdpp::mutation_reader<decltype(p)> r;
+    fwdpp::io::serialize_mutation<fwdpp::generalmut<4>>()(o, p);
     std::istringstream i(o.str());
-    auto p2 = r(i);
-
-    BOOST_CHECK_EQUAL(p.s.size(), p2.s.size());
-    BOOST_CHECK_EQUAL(p.h.size(), p2.h.size());
-    BOOST_CHECK_EQUAL(p.g, p2.g);
-    BOOST_CHECK_EQUAL(p.pos, p2.pos);
+    auto p2 = fwdpp::io::deserialize_mutation<fwdpp::generalmut<4>>()(i);
+    BOOST_REQUIRE(p == p2);
 }
 
-BOOST_AUTO_TEST_CASE(serialize_gz)
-{
-    fwdpp::generalmut<2> p({ { 0.5, -1 } }, { { 1, 0 } }, 0.001, 1);
-
-    gzFile out = gzopen("test_generalmut_file.gz", "w");
-    fwdpp::mutation_writer w;
-    w(p, out);
-    gzclose(out);
-
-    fwdpp::mutation_reader<decltype(p)> r;
-    out = gzopen("test_generalmut_file.gz", "r");
-    auto p2 = r(out);
-
-    BOOST_CHECK_EQUAL(p.s.size(), p2.s.size());
-    BOOST_CHECK_EQUAL(p.h.size(), p2.h.size());
-    BOOST_CHECK_EQUAL(p.g, p2.g);
-    BOOST_CHECK_EQUAL(p.pos, p2.pos);
-
-    unlink("test_generalmut_file.gz");
-}
-
-BOOST_AUTO_TEST_CASE(serialize_pop1)
+BOOST_AUTO_TEST_CASE(copy_pop1)
 {
     using mtype = fwdpp::generalmut<2>;
     using singlepop_t = fwdpp::singlepop<mtype>;

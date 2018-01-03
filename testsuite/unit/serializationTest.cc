@@ -3,57 +3,38 @@
   \brief Tests of low-level serialization functionality.
 */
 
-/*
- * TODO: check how to test for error when writing to closed gzFile
- */
-
 #include <config.h>
-#include <fstream>
 #include <sstream>
-#include <unistd.h>
-#include <zlib.h>
+#include <array>
+#include <limits>
 #include "../fixtures/fwdpp_fixtures.hpp"
-#include <fwdpp/internal/IOhelp.hpp>
+#include <fwdpp/io/scalar_serialization.hpp>
 #include <boost/test/unit_test.hpp>
 
 using gtype = fwdpp::gamete;
 
+struct scalar_fixture
+{
+    std::array<double, 2> ad2, ad2_2;
+
+    scalar_fixture()
+        : ad2{ { -1, 1 } },
+          ad2_2{ { std::numeric_limits<double>::quiet_NaN(),
+                   std::numeric_limits<double>::quiet_NaN() } }
+    {
+    }
+};
+
 BOOST_AUTO_TEST_SUITE(test_scalar_writer)
 
-BOOST_AUTO_TEST_CASE(test_scalar_writer_exceptions)
-/* The low-level function object fwdpp::fwdpp_internal::scalar_writer
- * will throw std::runtime_error from its operator() if an error is
- * encountered when writing.
- *
- * Note: attempting to write 0 bytes is considered an error as
- * far as this object is concerned!
- */
+BOOST_FIXTURE_TEST_CASE(serialize_std_array, scalar_fixture)
 {
-    std::ofstream foo;
-    double x = 1.0;
-    // Trying to write to invalid stream should throw
-    BOOST_REQUIRE_THROW(fwdpp::fwdpp_internal::scalar_writer()(foo, &x),
-                        std::runtime_error);
-
-    std::ostringstream foo2;
-    BOOST_REQUIRE_NO_THROW(fwdpp::fwdpp_internal::scalar_writer()(foo2, &x));
-    // Should also throw when failbit, etc., is true
-    foo2.setstate(std::ios::failbit);
-    BOOST_REQUIRE_THROW(fwdpp::fwdpp_internal::scalar_writer()(foo2, &x),
-                        std::runtime_error);
-
-    gzFile gzf = nullptr;
-    // Will throw on an invalid gzfile
-    BOOST_REQUIRE_THROW(fwdpp::fwdpp_internal::scalar_writer()(gzf, &x),
-                        std::runtime_error);
-    gzf = gzopen("test_scalar_writer_exceptions.gz", "wb");
-    // Will throw if you attempt to write 0 bytes!!
-    BOOST_REQUIRE_THROW(fwdpp::fwdpp_internal::scalar_writer()(gzf, &x, 0),
-                        std::runtime_error);
-    gzclose(gzf);
-    // Throw when writing to closed file
-    // BOOST_REQUIRE_THROW(fwdpp::fwdpp_internal::scalar_writer()(gzf,&x),std::runtime_error);
-    // unlink("test_scalar_writer_exceptions.gz");
+    fwdpp::io::scalar_writer writer;
+    fwdpp::io::scalar_reader reader;
+    std::stringstream buffer;
+    writer(buffer,&ad2[0],2);
+    reader(buffer,&ad2_2[0],2);
+    BOOST_REQUIRE(ad2 == ad2_2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

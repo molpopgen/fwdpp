@@ -15,7 +15,6 @@
    to including this header, and is an alias to the simulation's
    mutation type
 */
-#include <fwdpp/sugar/serialization.hpp>
 #ifdef SINGLEPOP_SIM
 #include <fwdpp/sugar/singlepop.hpp>
 using singlepop_t = fwdpp::singlepop<mtype>;

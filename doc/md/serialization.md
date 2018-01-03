@@ -1,109 +1,73 @@
-# Tutorial 3: Data serialization
+# Writing data to binary formats
 
-## Intro
+It is often useful to be able to serialize a population into a binary format and re-construct a serialized population.
+The namespace fwdpp::io provides the following functions for these operations:
 
-This tutorial covers the following topics:
+* fwdpp::io::serialize_population
+* fwdpp::io::deserialize_population
 
-* Writing simulated populations to files, and reading them back in
-* Copying simulated population in memory
+## Required specializations
 
-## The basic functions
+**Note** This section is only required if you use functions in namespace fwdpp::io.
 
-For single-deme simulations, the library provides the following functions:
+The above functions are templates that require certain specializations to be visible at compile time in order to work
+properly.  These specializations are of function objects to serialize/deserialize mutations, gametes, and diploids.
+Their names are:
 
-* fwdpp::write_binary_pop 
-* fwdpp::read_binary_pop
+* fwdpp::io::serialize_mutation and fwdpp::io::deserialize_mutation
+* fwdpp::io::serialize_gamete and fwdpp::io::deserialize_gamete
+* fwdpp::io::serialize_diploid and fwdpp::io::deserialize_diploid
 
-These functions write and read simulated populations in a binary (_e.g._ not human-readable) format.
+The default definitions of these types have the following behaviors:
 
-For multi-deme simulations, we have:
+* fwdpp::io::serialize_mutation and fwdpp::io::deserialize_mutation throw an exception.  Therefore, you *must*
+  specialize them for your mutation type.  The built-in mutation types already have such specializations, which you may
+  study if you develop your own mutation type.  See fwdpp::io::serialize_mutation\<fwdpp::popgenmut\> and
+  fwdpp::io::deserialize_mutation\<fwdpp::popgenmut\> for examples.
+* The gamete serialization objects assume the gamete type is fwdpp::gamete.  If this is not true, code may fail to
+  compile and you need a specialization.
+* The diploid serialization code only deals with the `first` and `second` data fields.  If your diploid type requires
+  additional meta-data, then you need a specialization. See fwdpp::io::serialize_diploid\<custom_diploid_testing_t\> and
+  fwdpp::io::deserialize_diploid\<custom_diploid_testing_t\>, which are part of the fwdpp unit test suite.
 
-* fwdpp::write_binary_metapop 
-* fwdpp::read_binary_metapop
+## Low-level functions
 
-As with the rest of the library, these functions are implemented using a combination of templates + function overloading.
+The functions fwdpp::io::serialize_population and fwdpp::io::deserialize_population discussed above are implemented in
+terms of the following low-level functions:
 
-Currently, these functions support the following types of simulations:
+* fwdpp::io::write_mutations and fwdpp::io::read_mutations
+* fwdpp::io::write_gametes and fwdpp::io::read_gametes
+* fwdpp::io::write_diploids and fwdpp::io::read_diploids
 
-* single-locus, single-deme
-* single-locus, multi-deme
-* multi-locus, single-deme
+You may find these functions useful for more nuanced approaches to serialization.
 
-The type requirements for these functions are:
+## Streams
 
-* Containers of objects used in fwdpp-based simulations (containers of gametes, mutations, diploids, etc.)
-* Output streams compatible with the public interface of [std::ostream](http://www.cplusplus.com/reference/ostream/ostream/)
-* Input streams compatible with the public interfact of [std::istream](http://www.cplusplus.com/reference/istream/istream/)
-* Input via the gzFile type defined by [zlib](http://zlib.net)
+The stream template types all assume interfaces that are modeled after
+[std::basic_iostream](http://en.cppreference.com/w/cpp/io/basic_iostream).  The boost
+[iostreams](http://www.boost.org/doc/libs/1_66_0/libs/iostreams/doc/index.html) library will satisfy this criterion.
 
-## Writing and reading mutations
+## General guidelines
 
-You need to tell these functions how to read/write mutation objects.  Specifically, you need to:
+Working with streams is a C++ topic rather than a fwdpp topic.  However, keep the following in mind:
 
-* Define a mutation write function, which takes a mutation object and an output stream type as an object.
-* Define a mutation read function, taking an input stream type as an object
+* The [sstream](http://en.cppreference.com/w/cpp/header/sstream) header may be used to serialize in-memory.
+* The objects in [sstream](http://en.cppreference.com/w/cpp/header/sstream) return a `std::string` via the `str()`
+  member function.  Further, a `std::string`'s `c_str()` member function returns the underlying C-like `char *`.
+* Most compression libraries ([zlib](http://zlib.net), [bzip2](http://bzip2.org)) expect a `char *`.
 
-For a concrete example of implementing "mutation readers" and "mutation writers", see the implementation of
-fwdpp::mutation_writer and fwdpp::mutation_writer.
+Therefore, you may serialize in-memory and then write the results to a compressed file.
 
-Below, you will see how to pass these to fwdpp::write_binary_pop and fwdpp::read_binary_pop.
+## Limitations
 
-## Reading and writing diploids.
+### Large populations
 
-Version 0.3.1 allowed the use of custom diploid genotype objects (@ref md_md_customdip).  Such objects can be serialized with no additional effort. _However, doing so will result in custom data associated with these custom types not being serialized._
+When simulating very large populations, it is conceivalbe that you could run out of RAM if you attempt to serialize
+in-memory.  One current workaround is to use the low-level object writing types (fwdpp::io::serialize_mutation *et al.*)
+to roll your own serialization code that flushes buffers more often.  If you take a look at the current serialization
+code, you'll see that doing this would not be a difficult task.  Another workaround may be to simply serialize to an
+uncompressed temporary file.
 
-In order to solve this, define your own custom structures for writing and reading:
+Future library versions may provide built-in functions
+to facilitate serialization in "chunks".
 
-~~~{.cpp}
-struct diploid_writer {
-	using result_type = void;
-	template<typename dip_itr, typename streamtype >
-	inline result_type( dip_itr i, streamtype & o ) const
-	{
-		//Do the right thing here.
-	}
-};
-~~~
-
-The arguments should be an iterator pointing to one of your custom diploids, and a reference to an output stream (including a gzFile!).  A function object of the same form should also be written to read the data back in.
-
-These custom serialization objects may be passed as the last arguments to the functions discussed in the next section.  By default, they are implicitly passed fwdpp::diploidIOplaceholder, which is essentially an empty object.
-
-## In-memory copying
-
-It may be desirable to be able to restore a population from a previous state.  For example, you may wish to repeatedly introduce a mutation at a position, and then simulate until it is fixed.  For replicates where it is lost, you will restore the population to the state it was in when you introduced the mutation.  You may do this using fwdpp::write_binary_pop  or fwdpp::write_binary_metapop, and write the population to an in-memory buffer such as [std::ostringstream](http://www.cplusplus.com/reference/sstream/ostringstream/).  You may restore the population by reading the data from a [std::istringstream](http://www.cplusplus.com/reference/sstream/istringstream/).
-
-Here is some pseudocode for an single-deme simulation:
-
-~~~{.cpp}
-//run a simulation...
-
-//write it to a buffer:
-std::ostringstream buffer;
-fwdpp::write_binary_pop(gametes,mutations,diploids,std::bind(mwriter(),std::placeholders::_1,std::placeholders::_2),buffer);
-
-//Now, if you want to restore it:
-std::istringstream inbuffer(buffer.str());
-decltype(mutations) mutations2;
-decltype(gametes) gametes2;
-decltype(diploids) diploids2;
-fwdpp::read_binary_pop(gametes2,
-			 mutations2,
-			 diploids2,
-			 std::bind(mreader(),std::placeholders::_1),
-			 inbuffer);
-~~~
-
-This approach works because fwdpp::write_binary_pop and fwdpp::write_binary_metapop perform "deep copies" of the data, allowing the complete restoration of all the pointers, etc., stored in the containers.
-
-## Writing to files
-
-You may use the same functions to write/read to from files.  You may use and sort of [std::ostream](http://www.cplusplus.com/reference/ostream/ostream/)-compatible object for output.  You may use either a [std::istream](http://www.cplusplus.com/reference/istream/istream/)-compatible object for input or a gzFile object from [zlib](http://zlib.net).
-
-## Managing output from multiple independent processes
-
-In practice, we often implement simulations with the idea that one replicate will be run per process, and that we will spread a large number of processes across our cluster.  Typically, we collect the output of these simulations into a single file.  To do this, we implement POSIX-style advisory file locking.  See [here](https://github.com/molpopgen/BigDataFormats) for a discussion of how to do that using the low-level C functions found in <fcntl.h>.   A more modern C++-based approach would be to use the [boost](http://www.boost.org) synchronization library.  See [here](https://gist.github.com/molpopgen/651e4ac81253f34364f7) for simple examples.
-
-### Why not use boost serialization?
-
-Cliff's notes version: this approach would work well for a single process writing lots of replicates to one file.  However, the archives that this library creates do not support appending on to an existing library.  This limitation is unfortunate, as being able to use this library would simplify some of the implementation.

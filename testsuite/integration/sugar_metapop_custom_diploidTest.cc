@@ -11,13 +11,11 @@
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
-#include <fwdpp/sugar/serialization.hpp>
+#include <fwdpp/io/serialize_population.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <testsuite/util/migpop.hpp>
 
 using mutation_t = fwdpp::popgenmut;
-using mwriter = fwdpp::mutation_writer;
-using mreader = fwdpp::mutation_reader<mutation_t>;
 
 using spoptype = fwdpp::singlepop<mutation_t, custom_diploid_testing_t>;
 using poptype = fwdpp::metapop<mutation_t, custom_diploid_testing_t>;
@@ -93,11 +91,14 @@ BOOST_AUTO_TEST_CASE(metapop_sugar_custom_test2)
 {
     poptype pop({ 1000, 1000 });
     simulate(pop);
+    for (unsigned i = 0; i < pop.diploids[0].size(); ++i)
+        {
+            pop.diploids[0][i].i = i;
+        }
     poptype pop2{ 0, 0 };
-    fwdpp::serialize s;
     std::stringstream buffer;
-    s(buffer, pop, mwriter(), diploid_writer());
-    fwdpp::deserialize()(pop2, buffer, mreader(), diploid_reader());
+    fwdpp::io::serialize_population(buffer, pop);
+    fwdpp::io::deserialize_population(buffer, pop2);
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 
