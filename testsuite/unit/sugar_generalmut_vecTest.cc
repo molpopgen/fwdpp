@@ -3,12 +3,9 @@
   \ingroup unit
   \brief Testing fwdpp::generalmut_vec
 */
-#include <unistd.h>
 #include <config.h>
 #include <sstream>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
-#include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
 
