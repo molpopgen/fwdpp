@@ -45,28 +45,28 @@ namespace fwdpp
     */
     template <std::size_t N> struct generalmut : public mutation_base
     {
-        using array_t = std::array<double, N>;
-        //! Selection coefficients and/or effect sizes
-        array_t s;
-        //! Dominances associated w/values in 's'.
-        array_t h;
+        using array_t = std::array<std::tuple<double, double>, N>;
+        //! Effect sizes and dominance
+        array_t sh;
         //! Generation when mutation arose
         uint_t g;
         //! Tuple type useable for object construction
         using constructor_tuple
-            = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
+            = std::tuple<array_t, double, uint_t, std::uint16_t>;
 
         //! Constructor
-        generalmut(array_t __s, array_t __h, double pos, uint_t gen,
+        generalmut(array_t __sh, double pos, uint_t gen,
                    std::uint16_t label = 0)
             : mutation_base(
                   pos,
                   // Mutation is neutral i.f.f. all values in __s == 0.
-                  (std::find_if(std::begin(__s), std::end(__s),
-                                [](const double d) { return d != 0.; })
-                   == std::end(__s)),
+                  (std::find_if(std::begin(__sh), std::end(__sh),
+                                [](const typename array_t::value_type &t) {
+                                    return std::get<0>(t) != 0.;
+                                })
+                   == std::end(__sh)),
                   label),
-              s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
+              sh(std::move(__sh)), g{ gen }
         {
         }
 
@@ -79,14 +79,15 @@ namespace fwdpp
         /// Added in fwdpp 0.5.7
         generalmut(constructor_tuple t)
             : mutation_base(
-                  std::get<2>(t),
+                  std::get<1>(t),
                   (std::find_if(std::begin(std::get<0>(t)),
                                 std::end(std::get<0>(t)),
-                                [](const double d) { return d != 0.; })
+                                [](const std::tuple<double, double> &t) {
+                                    return std::get<0>(t) != 0.;
+                                })
                    == std::end(std::get<0>(t))),
-                  std::get<4>(t)),
-              s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
-              g(std::get<3>(t))
+                  std::get<3>(t)),
+              sh(std::move(std::get<0>(t))), g(std::get<2>(t))
         {
         }
 
@@ -94,7 +95,7 @@ namespace fwdpp
         operator==(const generalmut &rhs) const
         {
             return this->pos == rhs.pos && this->neutral == rhs.neutral
-                   && this->s == rhs.s && this->h == rhs.h;
+                   && this->sh == rhs.sh;
         }
     };
 
@@ -236,8 +237,11 @@ namespace fwdpp
         writer(buffer, &m.g);                                                 \
         writer(buffer, &m.pos);                                               \
         writer(buffer, &m.xtra);                                              \
-        writer(buffer, &m.s[0], N);                                           \
-        writer(buffer, &m.h[0], N);                                           \
+        for (auto &&sh : m.sh)                                                \
+            {                                                                 \
+                writer(buffer, &std::get<0>(sh));                             \
+                writer(buffer, &std::get<1>(sh));                             \
+            }                                                                 \
     }
 
 #define SPECIALIZE_DESERIALIZE_MUTATION_GENERALMUT_BODY(N)                    \
@@ -250,15 +254,17 @@ namespace fwdpp
         using value_t = generalmut<N>::array_t::value_type;                   \
         io::scalar_reader reader;                                             \
         std::array<value_t, std::tuple_size<generalmut<N>::array_t>::value>   \
-            s, h;                                                             \
+            sh;                                                               \
         reader(buffer, &g);                                                   \
         reader(buffer, &pos);                                                 \
         reader(buffer, &xtra);                                                \
-        reader(buffer, &s[0],                                                 \
-               std::tuple_size<generalmut<N>::array_t>::value);               \
-        reader(buffer, &h[0],                                                 \
-               std::tuple_size<generalmut<N>::array_t>::value);               \
-        return generalmut<N>(s, h, pos, g, xtra);                             \
+        for (auto &sh_i : sh)                                                 \
+            {                                                                 \
+                reader(buffer, &std::get<0>(sh_i));                           \
+                                                                              \
+                reader(buffer, &std::get<1>(sh_i));                           \
+            }                                                                 \
+        return generalmut<N>(sh, pos, g, xtra);                               \
     }
 
 #endif
