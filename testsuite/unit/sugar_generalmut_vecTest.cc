@@ -45,6 +45,7 @@ BOOST_AUTO_TEST_CASE(serialize)
     std::istringstream i(o.str());
     auto p2 = fwdpp::io::deserialize_mutation<fwdpp::generalmut_vec>()(i);
 
+    BOOST_REQUIRE(p.sh == p2.sh);
     BOOST_CHECK_EQUAL(p.sh.size(), p2.sh.size());
     BOOST_CHECK_EQUAL(p.g, p2.g);
     BOOST_CHECK_EQUAL(p.pos, p2.pos);
