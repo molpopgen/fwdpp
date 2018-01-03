@@ -117,27 +117,27 @@ namespace fwdpp
      */
     struct generalmut_vec : public mutation_base
     {
-        using array_t = std::vector<double>;
-        //! Selection coefficients and/or effect sizes
-        array_t s;
-        //! Dominances associated w/values in 's'.
-        array_t h;
+        using array_t = std::vector<std::tuple<double, double>>;
+        //! Effect size and dominance tuples:
+        array_t sh;
         //! Generation when mutation arose
         uint_t g;
         //! Tuple type useable for object construction
         using constructor_tuple
-            = std::tuple<array_t, array_t, double, uint_t, std::uint16_t>;
+            = std::tuple<array_t, double, uint_t, std::uint16_t>;
         //! Constructor
-        generalmut_vec(array_t &&__s, array_t &&__h, double pos, uint_t gen,
+        generalmut_vec(array_t __sh, double pos, uint_t gen,
                        const std::uint16_t x = 0)
             : fwdpp::mutation_base(
                   std::move(pos),
                   // Mutation is neutral i.f.f. all values in __s == 0.
-                  (std::find_if(std::begin(__s), std::end(__s),
-                                [](const double d) { return d != 0.; })
-                   == std::end(__s)),
+                  (std::find_if(std::begin(__sh), std::end(__sh),
+                                [](const array_t::value_type t) {
+                                    return std::get<0>(t) != 0.;
+                                })
+                   == std::end(__sh)),
                   x),
-              s(std::move(__s)), h(std::move(__h)), g(std::move(gen))
+              sh(std::move(__sh)), g(std::move(gen))
         {
         }
 
@@ -150,14 +150,15 @@ namespace fwdpp
         /// Added in fwdpp 0.5.7
         generalmut_vec(constructor_tuple t)
             : mutation_base(
-                  std::get<2>(t),
+                  std::get<1>(t),
                   (std::find_if(std::begin(std::get<0>(t)),
                                 std::end(std::get<0>(t)),
-                                [](const double d) { return d != 0.; })
+                                [](const array_t::value_type t) {
+                                    return std::get<0>(t) != 0.;})
                    == std::end(std::get<0>(t))),
-                  std::get<4>(t)),
-              s(std::move(std::get<0>(t))), h(std::move(std::get<1>(t))),
-              g(std::get<3>(t))
+                  std::get<3>(t)),
+              sh(std::move(std::get<0>(t))),
+              g(std::get<2>(t))
         {
         }
 
@@ -165,7 +166,7 @@ namespace fwdpp
         operator==(const generalmut_vec &rhs) const
         {
             return this->pos == rhs.pos && this->neutral == rhs.neutral
-                   && this->s == rhs.s && this->h == rhs.h;
+                   && this->sh == rhs.sh;
         }
     };
 
@@ -186,11 +187,13 @@ namespace fwdpp
                 // Write mutation types
                 using array_t_size_t =
                     typename generalmut_vec::array_t::size_type;
-                array_t_size_t ns = m.s.size(), nh = m.h.size();
+                array_t_size_t ns = m.sh.size();
                 writer(buffer, &ns);
-                writer(buffer, &nh);
-                writer(buffer, m.s.data(), ns);
-                writer(buffer, m.h.data(), nh);
+                for (auto &&sh : m.sh)
+                    {
+                        writer(buffer, &std::get<0>(sh));
+                        writer(buffer, &std::get<1>(sh));
+                    }
             }
         };
 
@@ -210,21 +213,19 @@ namespace fwdpp
                 reader(buffer, &pos);
                 reader(buffer, &g);
                 reader(buffer, &xtra);
-                typename generalmut_vec::array_t::size_type ns, nh;
+                typename generalmut_vec::array_t::size_type ns;
                 reader(buffer, &ns);
-                reader(buffer, &nh);
-                typename generalmut_vec::array_t s(ns), h(nh);
+                typename generalmut_vec::array_t sh(ns);
                 // Write mutation types
                 if (ns)
                     {
-                        reader(buffer, s.data(), ns);
+                        for (auto &i : sh)
+                            {
+                                reader(buffer, &std::get<0>(i));
+                                reader(buffer, &std::get<1>(i));
+                            }
                     }
-                if (nh)
-                    {
-                        reader(buffer, h.data(), nh);
-                    }
-                return generalmut_vec(std::move(s), std::move(h), pos, g,
-                                      xtra);
+                return generalmut_vec(std::move(sh), pos, g, xtra);
             }
         };
     }
