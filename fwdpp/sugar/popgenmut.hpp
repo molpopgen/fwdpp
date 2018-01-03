@@ -62,8 +62,9 @@ namespace fwdpp
         bool
         operator==(const popgenmut &rhs) const
         {
-            return this->pos == rhs.pos && this->s == rhs.s && this->h == rhs.h
-                   && this->g == rhs.g && this->neutral == rhs.neutral;
+            return std::tie(this->g, this->s, this->h)
+                       == std::tie(rhs.g, rhs.s, rhs.h)
+                   && is_equal(rhs);
         }
     };
 
