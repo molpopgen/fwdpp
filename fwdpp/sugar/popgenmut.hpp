@@ -76,7 +76,7 @@ namespace fwdpp
                  lookup_table_t &lookup, uint_t &generation, posmaker p,
                  smaker s, hmaker h)
         {
-            auto mutation_model = [&r, &generation, &lookup, psel, p, s, h](
+            auto mutation_model = [r, &generation, &lookup, psel, p, s, h](
                 fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
                 mcont_t &mutations) {
                 auto pos = p();
