@@ -53,9 +53,9 @@ namespace fwdpp
             return sugar::gsl_rng_ptr_t(gsl_rng_clone(r));
         }
 
-      public:
         //! Smart pointer wrapping the gsl_rng *
         sugar::gsl_rng_ptr_t r;
+      public:
 
         //! Typedef for RNG type, if needed
         using rngtype = T;
@@ -66,7 +66,7 @@ namespace fwdpp
             gsl_rng_set(r.get(), seed);
         }
 
-        GSLrng_t(const GSLrng_t &rng) = default;
+        GSLrng_t(const GSLrng_t &rng) = delete;
 
         GSLrng_t(GSLrng_t &&) = default;
 
