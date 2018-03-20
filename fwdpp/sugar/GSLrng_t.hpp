@@ -37,12 +37,14 @@ namespace fwdpp
       private:
         sugar::gsl_rng_ptr_t setup(GSL_RNG_MT19937)
         {
-            return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937));
+            return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_mt19937),
+                                        [](gsl_rng *r) { gsl_rng_free(r); });
         }
 
         sugar::gsl_rng_ptr_t setup(GSL_RNG_TAUS2)
         {
-            return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2));
+            return sugar::gsl_rng_ptr_t(gsl_rng_alloc(gsl_rng_taus2),
+                                        [](gsl_rng *r) { gsl_rng_free(r); });
         }
 
         sugar::gsl_rng_ptr_t
@@ -64,7 +66,7 @@ namespace fwdpp
             gsl_rng_set(r.get(), seed);
         }
 
-        GSLrng_t(const GSLrng_t &rng) = default; 
+        GSLrng_t(const GSLrng_t &rng) = default;
 
         GSLrng_t(GSLrng_t &&) = default;
 
