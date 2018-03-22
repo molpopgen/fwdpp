@@ -26,7 +26,7 @@ namespace fwdpp
      * representing the genotypes for a set of diploids.
      *
      * For a haplotype matrix of n individuals, the data represent
-     * 2n rows with a 0/1 encoding representing ancetral/derived.
+     * 2n rows with a 0/1 encoding representing ancestral/derived.
      *
      * For a genotype matrix of n individuals, the data represent
      * n rows with a 0/1/2 encoding for the number of copies of the
@@ -35,13 +35,13 @@ namespace fwdpp
      * The data layout is row-major (aka "C-style") ordering,
      * facilitating compatibility with GSL matrix types,
      * NumPy 2D arrays, etc.  Note that GSL matrices may be
-         * constructed using gsl_matrix_view_array or
-         * gsl_matrix_const_view_array for cases where a matrix of
-         * only neutral or only selected mutations is needed.
-         *
-         * We use the 8-bit integer type to save space.  In practice,
-         * one may convert (via copy) to other types for operations like
-         * regression.
+     * constructed using gsl_matrix_view_array or
+     * gsl_matrix_const_view_array for cases where a matrix of
+     * only neutral or only selected mutations is needed.
+     *
+     * We use the 8-bit integer type to save space.  In practice,
+     * one may convert (via copy) to other types for operations like
+     * regression.
      *
      * \note This type is not constructed directly, but rather returned
      * by other functions.
@@ -79,13 +79,8 @@ namespace fwdpp
              * data_matrix::nrow
              * is set correctly.
              */
-            : neutral{},
-              selected{},
-              neutral_positions{},
-              selected_positions{},
-              neutral_popfreq{},
-              selected_popfreq{},
-              nrow{ nrow_ }
+            : neutral{}, selected{}, neutral_positions{}, selected_positions{},
+              neutral_popfreq{}, selected_popfreq{}, nrow{ nrow_ }
         {
         }
     };
@@ -225,12 +220,12 @@ namespace fwdpp
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
     col_sums(const data_matrix &m)
     /*!
-         * Calculate the column sums of a fwdpp::data_matrix
-         *
-         * \return A pair of vectors of unsigned integers representing column
+     * Calculate the column sums of a fwdpp::data_matrix
+     *
+     * \return A pair of vectors of unsigned integers representing column
      * sums
-         * for neutral and selected sites in the matrix, respectively.
-         */
+     * for neutral and selected sites in the matrix, respectively.
+     */
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
