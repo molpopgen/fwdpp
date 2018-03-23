@@ -4,6 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/type_traits.hpp>
+#include <stdexcept>
 #include <cassert>
 #include <type_traits>
 #include <algorithm>
@@ -153,18 +154,18 @@ namespace fwdpp
                 traits::is_mutation<typename mcont_t::value_type>::value,
                 "mcont_t::value_type must be a mutation type");
             static_assert(
-                std::is_convertible<updating_policy_hom,
-                                    std::function<void(
-                                        double &, const typename mcont_t::
-                                                      value_type &)>>::value,
+                std::is_convertible<
+                    updating_policy_hom,
+                    std::function<void(double &, const typename mcont_t::
+                                                     value_type &)>>::value,
                 "decltype(fpol_hom) must be convertible to "
                 "std::function<void(double &,const typename "
                 "mcont_t::value_type");
             static_assert(
-                std::is_convertible<updating_policy_het,
-                                    std::function<void(
-                                        double &, const typename mcont_t::
-                                                      value_type &)>>::value,
+                std::is_convertible<
+                    updating_policy_het,
+                    std::function<void(double &, const typename mcont_t::
+                                                     value_type &)>>::value,
                 "decltype(fpol_het) must be convertible to "
                 "std::function<void(double &,const typename "
                 "mcont_t::value_type");
@@ -402,7 +403,7 @@ namespace fwdpp
         multiplicative_diploid(const double scaling_ = 1.0,
                                std::function<double(double)> f_ = fwdpp::mw())
             : scaling{ scaling_ }, make_return_value{ std::move(f_) }
-		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
+        /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or trait
         /// value.
         ///
@@ -480,25 +481,25 @@ namespace fwdpp
         }
     };
 
-    struct aw
-    {
-        inline double
-        operator()(const double genetic_value) const noexcept
-        //! Return a closure mapping additive genetic effects to fitness.
-        {
-            return std::max(0., 1. + genetic_value);
-        }
-    };
+    // struct aw
+    // {
+    //     inline double
+    //     operator()(const double genetic_value) const noexcept
+    //     //! Return a closure mapping additive genetic effects to fitness.
+    //     {
+    //         return std::max(0., 1. + genetic_value);
+    //     }
+    // };
 
-    struct atrait
-    //! A callable mapping additive genetic effects to trait values.
-    {
-        inline double
-        operator()(const double genetic_value) const noexcept
-        {
-            return genetic_value;
-        }
-    };
+    // struct atrait
+    // //! A callable mapping additive genetic effects to trait values.
+    // {
+    //     inline double
+    //     operator()(const double genetic_value) const noexcept
+    //     {
+    //         return genetic_value;
+    //     }
+    // };
 
     /// \brief Additive fitness or trait value across sites
     /// This function object calculate the genetic
@@ -515,13 +516,52 @@ namespace fwdpp
     /// \ingroup fitness
     struct additive_diploid
     {
+        enum class policy : std::int8_t
+        {
+            aw,
+            atrait,
+            custom
+        };
+        class final_genetic_value
+        {
+          private:
+            static std::function<double(double)>
+            assign_f(policy p_)
+            {
+                if (p_ == policy::custom)
+                    {
+                        throw std::invalid_argument(
+                            "custom policy not a valid value");
+                    }
+                if (p_ == policy::atrait)
+                    {
+                        return [](const double d) { return d; };
+                    }
+                return [](const double d) { return std::max(0.0, 1.0 + d); };
+            }
+            const std::function<double(double)> f;
+
+          public:
+            policy p;
+            final_genetic_value(policy p_) : f{ assign_f(p_) }, p{ p_ } {}
+            final_genetic_value(std::function<double(double)> &&f_)
+                : f{ std::move(f_) }, p{ policy::custom }
+            {
+            }
+            inline double
+            operator()(const double d) const noexcept
+            {
+                return f(d);
+            }
+        };
         const double scaling;
         using result_type = site_dependent_genetic_value::result_type;
-        const std::function<double(double)> make_return_value;
+        const final_genetic_value make_return_value;
         additive_diploid(const double scaling_ = 1.0,
-                         std::function<double(double)> f_ = fwdpp::aw())
-            : scaling{ scaling_ }, make_return_value{ std::move(f_) }
-		/// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
+                         const policy p = policy::aw)
+            : scaling{ scaling_ }, make_return_value{ final_genetic_value{
+                                       p } }
+        /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or
         /// trait
         /// value.
@@ -557,6 +597,12 @@ namespace fwdpp
         /// an initial value of 0, which has implications for treating
         /// it as a fitness.  See implementation of fwdpp::aw for
         /// details (which involving adding 1.0).
+        {
+        }
+        additive_diploid(const double scaling_,
+                         std::function<double(double)> f)
+            : scaling{ scaling_ }, make_return_value{ final_genetic_value{
+                                       std::move(f) } }
         {
         }
         template <typename iterator_t, typename mcont_t>

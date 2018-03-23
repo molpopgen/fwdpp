@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(simple_additive_trait)
     gcont_t g{ g1, g2 };
 
     double w
-        = fwdpp::additive_diploid(1., fwdpp::atrait())(g[0], g[1], mutations);
+        = fwdpp::additive_diploid(1., fwdpp::additive_diploid::policy::atrait)(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, -0.1);
 }
 
