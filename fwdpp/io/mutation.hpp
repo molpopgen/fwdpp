@@ -29,7 +29,7 @@ namespace fwdpp
         ///
         /// Serialize a mutation.
         /// This *must* be specialized for a specific mutation type,
-        /// otherwise std::runtime_error will be thrown.
+        /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See serialize_mutation<popgenmut> for example implementation
         {
@@ -49,7 +49,7 @@ namespace fwdpp
         ///
         /// Deserialize a mutation.
         /// This *must* be specialized for a specific mutation type,
-        /// otherwise std::runtime_error will be thrown.
+        /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See deserialize_mutation<popgenmut> for example implementation
         {
@@ -57,8 +57,10 @@ namespace fwdpp
             inline T
             operator()(ostreamtype &) const
             {
-                throw std::runtime_error(
-                    "deserializtion not implemented for this mutation type");
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::deserialize_mutation "
+                              "not implemented for this "
+                              "type");
             }
         };
 
