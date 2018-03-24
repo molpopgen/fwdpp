@@ -2,7 +2,6 @@
 #define FWDPP_IO_MUTATION_HPP__
 
 #include <cstddef>
-#include <stdexcept>
 #include <typeinfo>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
@@ -33,9 +32,9 @@ namespace fwdpp
         /// The type T must be a valid mutation type.
         /// See serialize_mutation<popgenmut> for example implementation
         {
-            template <typename istreamtype>
+            template <typename ostreamtype>
             inline void
-            operator()(istreamtype &, const T &) const
+            operator()(ostreamtype &, const T &) const
             {
                 static_assert(meta::always_false<T>::value,
                               "fwdpp::io::serialize_mutation "
@@ -53,9 +52,9 @@ namespace fwdpp
         /// The type T must be a valid mutation type.
         /// See deserialize_mutation<popgenmut> for example implementation
         {
-            template <typename ostreamtype>
+            template <typename istreamtype>
             inline T
-            operator()(ostreamtype &) const
+            operator()(istreamtype &) const
             {
                 static_assert(meta::always_false<T>::value,
                               "fwdpp::io::deserialize_mutation "
