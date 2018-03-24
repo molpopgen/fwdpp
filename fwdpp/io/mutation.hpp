@@ -3,8 +3,10 @@
 
 #include <cstddef>
 #include <stdexcept>
+#include <typeinfo>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/meta/always_false.hpp>
 #include "scalar_serialization.hpp"
 
 /*! \namespace fwdpp::io
@@ -21,6 +23,7 @@ namespace fwdpp
 {
     namespace io
     {
+
         template <typename T> struct serialize_mutation
         /// \brief Serialize a mutation
         ///
@@ -34,8 +37,10 @@ namespace fwdpp
             inline void
             operator()(istreamtype &, const T &) const
             {
-                throw std::runtime_error(
-                    "serializtion not implemented for this mutation type");
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::serialize_mutation "
+                              "not implemented for this "
+                              "type");
             }
         };
 
