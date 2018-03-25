@@ -221,59 +221,6 @@ namespace fwdpp
                 }
             return gams;
         }
-
-        template <typename poptype, typename = std::enable_if<std::is_same<
-                                        typename poptype::popmodel_t,
-                                        fwdpp::sugar::METAPOP_TAG>::value>>
-        std::unordered_map<std::size_t,
-                           std::vector<
-                               typename poptype::diploid_t::first_type *>>
-        collect_gametes(poptype &p, const std::vector<std::size_t> demes,
-                        const std::vector<std::vector<std::size_t>> &indlist,
-                        const std::vector<std::vector<short>> &clist)
-        /*!
-          \brief Helper function for add_mutation and add_mutations.
-
-          Collects together all the gametes that will be updated, to minimize
-          the number of
-          new gametes created.
-        */
-        {
-            // collect gametes that are to be updated
-            std::unordered_map<std::size_t,
-                               std::vector<
-                                   typename poptype::diploid_t::first_type *>>
-                gams;
-            for (std::size_t deme = 0; deme < demes.size(); ++deme)
-                {
-                    for (std::size_t ind = 0; ind < indlist[deme].size();
-                         ++ind)
-                        {
-                            auto c = clist[deme][ind];
-                            if (c == 0 || c == 2)
-                                {
-                                    gams[p.diploids[demes[deme]]
-                                                   [indlist[deme][ind]]
-                                                       .first]
-                                        .push_back(
-                                            &p.diploids[demes[deme]]
-                                                       [indlist[deme][ind]]
-                                                           .first);
-                                }
-                            if (c > 0)
-                                {
-                                    gams[p.diploids[demes[deme]]
-                                                   [indlist[deme][ind]]
-                                                       .second]
-                                        .push_back(
-                                            &p.diploids[demes[deme]]
-                                                       [indlist[deme][ind]]
-                                                           .second);
-                                }
-                        }
-                }
-            return gams;
-        }
     }
 
     template <typename poptype, class... Args>

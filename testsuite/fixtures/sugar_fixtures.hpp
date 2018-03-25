@@ -3,7 +3,6 @@
 
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
@@ -36,32 +35,6 @@ struct singlepop_popgenmut_custom_fixture
     unsigned generation;
     singlepop_popgenmut_custom_fixture(const unsigned seed = 0)
         : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
-    {
-    }
-};
-
-struct metapop_popgenmut_fixture
-{
-    using poptype = fwdpp::metapop<fwdpp::popgenmut>;
-    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    poptype pop;
-    rng_t rng;
-    unsigned generation;
-    metapop_popgenmut_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
-    {
-    }
-};
-
-struct metapop_popgenmut_custom_fixture
-{
-    using poptype = fwdpp::metapop<fwdpp::popgenmut, custom_diploid_testing_t>;
-    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    poptype pop;
-    rng_t rng;
-    unsigned generation;
-    metapop_popgenmut_custom_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
     {
     }
 };

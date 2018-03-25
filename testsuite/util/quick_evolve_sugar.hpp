@@ -147,41 +147,4 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
     return g + simlen;
 }
 
-template <typename metapop_object>
-void
-simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
-{
-    // Evolve for 10 generations
-    std::vector<std::function<double(
-        const typename metapop_object::diploid_t &,
-        const typename metapop_object::gcont_t &,
-        const typename metapop_object::mcont_t &)>>
-        fitness_funcs(2, fwdpp::multiplicative_diploid(2.));
-    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
-    for (unsigned generation = 0; generation < simlen; ++generation)
-        {
-            std::vector<double> wbar = fwdpp::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, &pop.Ns[0], 0.005,
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, rng.get(),
-                          std::ref(pop.mut_lookup), generation, 0.005, 0.,
-                          [&rng]() { return gsl_rng_uniform(rng.get()); },
-                          []() { return 0.; }, []() { return 0.; }),
-                fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
-                std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
-                pop.neutral, pop.selected);
-            for (auto wbar_i : wbar)
-                {
-                    if (!std::isfinite(wbar_i))
-                        {
-                            throw std::runtime_error("fitness not finite");
-                        }
-                }
-            fwdpp::update_mutations(pop.mutations, pop.fixations,
-                                    pop.fixation_times, pop.mut_lookup,
-                                    pop.mcounts, generation, 4000);
-        }
-}
-
 #endif
