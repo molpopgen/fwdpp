@@ -20,6 +20,7 @@
 #include <Sequence/SimDataIO.hpp> //for writing & reading SimData objects in binary format
 #include <Sequence/FST.hpp>
 #endif
+#include <fwdpp/forward_types_serialization.hpp>
 #include <fwdpp/io/serialize_population.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 // the type of mutation
@@ -115,8 +116,9 @@ main(int argc, char **argv)
     double fs[2] = { f1, f2 };
     poptype pop({ N, N });
     pop.mutations.reserve(
-        2 * size_t(std::ceil(std::log(2 * N) * (theta_neut + theta_del)
-                             + 0.667 * (theta_neut + theta_del))));
+        2
+        * size_t(std::ceil(std::log(2 * N) * (theta_neut + theta_del)
+                           + 0.667 * (theta_neut + theta_del))));
     // create a vector of fitness functions for each population
     std::vector<std::function<double(const poptype::diploid_t &,
                                      const poptype::gcont_t &,
@@ -174,6 +176,8 @@ main(int argc, char **argv)
 
     fwdpp::io::deserialize_population(in, metapop2);
 
+    if(!(pop==metapop2))
+        throw std::runtime_error("serialization failure");
 #ifdef HAVE_LIBSEQUENCE
     neutral2 = Sequence::read_SimData_binary(in);
     selected2 = Sequence::read_SimData_binary(in);
@@ -253,10 +257,11 @@ merge(const std::vector<std::pair<double, std::string>> &sample1,
                 }
         }
     std::vector<std::pair<double, std::string>> rv(temp.begin(), temp.end());
-    std::sort(rv.begin(), rv.end(), [](std::pair<double, std::string> lhs,
-                                       std::pair<double, std::string> rhs) {
-        return lhs.first < rhs.first;
-    });
+    std::sort(rv.begin(), rv.end(),
+              [](std::pair<double, std::string> lhs,
+                 std::pair<double, std::string> rhs) {
+                  return lhs.first < rhs.first;
+              });
     return SimData(rv.begin(), rv.end());
 }
 #endif

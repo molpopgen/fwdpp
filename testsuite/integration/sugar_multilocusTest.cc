@@ -14,6 +14,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/forward_types_serialization.hpp>
 #include <fwdpp/io/serialize_population.hpp>
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"

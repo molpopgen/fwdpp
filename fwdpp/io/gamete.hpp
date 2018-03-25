@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/meta/always_false.hpp>
 #include "scalar_serialization.hpp"
 
 namespace fwdpp
@@ -12,64 +13,52 @@ namespace fwdpp
         template <typename T> struct serialize_gamete
         /// \brief Serialize a gamete
         ///
-        /// Serialize a gamete. The implementation
-        /// assumes fwdpp::gamete.  If you have derived
-        /// a gamete from this type, then you must specialize
-        /// this struct.
+        /// Serialize a gamete. Specialize this for
+        /// your gamete type, else a static_assert
+        /// will fail.  See implementation of
+        /// serialize_gamete<gamete> for example.
         {
-            scalar_writer writer;
-            serialize_gamete() : writer{} {}
             template <typename streamtype>
             inline void
             operator()(streamtype& buffer, const T& g) const
             {
-                writer(buffer, &g.n);
-                std::size_t nm = g.mutations.size();
-                writer(buffer, &nm);
-                if (nm)
-                    {
-                        writer(buffer, g.mutations.data(), nm);
-                    }
-                nm = g.smutations.size();
-                writer(buffer, &nm);
-                if (nm)
-                    {
-                        writer(buffer, g.smutations.data(), nm);
-                    }
+                static_assert(meta::always_false<T>::value,
+                              "serialize_gamete not implemented for type");
             }
         };
 
         template <typename T> struct deserialize_gamete
         /// \brief Deserialize a gamete
         ///
-        /// Deserialize a gamete. The implementation
-        /// assumes fwdpp::gamete.  If you have derived
-        /// a gamete from this type, then you must specialize
-        /// this struct.
+        /// Deserialize a gamete. Specialize this for
+        /// your gamete type, else a static_assert will
+        /// fail.  See implementation of
+        /// deserialize_gamete<gamete> for example.
         {
-            scalar_reader reader;
-            deserialize_gamete() : reader{} {}
             template <typename streamtype>
             inline T
             operator()(streamtype& buffer) const
             {
-                decltype(T::n) n;
-                std::size_t nm;
-                decltype(T::mutations) mutations, smutations;
-                reader(buffer, &n);
-                reader(buffer, &nm);
-                if (nm)
-                    {
-                        mutations.resize(nm);
-                        reader(buffer, mutations.data(), nm);
-                    }
-                reader(buffer, &nm);
-                if (nm)
-                    {
-                        smutations.resize(nm);
-                        reader(buffer, smutations.data(), nm);
-                    }
-                return T(n, std::move(mutations), std::move(smutations));
+                static_assert(meta::always_false<T>::value,
+                              "deserialize_gamete not implemented for type");
+                // scalar_reader reader;
+                // decltype(T::n) n;
+                // std::size_t nm;
+                // decltype(T::mutations) mutations, smutations;
+                // reader(buffer, &n);
+                // reader(buffer, &nm);
+                // if (nm)
+                //    {
+                //        mutations.resize(nm);
+                //        reader(buffer, mutations.data(), nm);
+                //    }
+                // reader(buffer, &nm);
+                // if (nm)
+                //    {
+                //        smutations.resize(nm);
+                //        reader(buffer, smutations.data(), nm);
+                //    }
+                // return T(n, std::move(mutations), std::move(smutations));
             }
         };
 

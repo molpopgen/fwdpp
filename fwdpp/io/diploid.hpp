@@ -1,8 +1,13 @@
 #ifndef FWDPP_IO_DIPLOID_HPP__
 #define FWDPP_IO_DIPLOID_HPP__
 
+#include <cstdint>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/meta/always_false.hpp>
 #include "scalar_serialization.hpp"
+
+// This file relies on std::uint32_t == fwdpp::uint_t,
+// which prevents us from having to include that header.
 
 namespace fwdpp
 {
@@ -16,11 +21,47 @@ namespace fwdpp
         /// to a stream.  If your diploid type contains more data,
         /// then specialize this struct.
         {
+            template <typename ostreamtype>
+            inline void
+            operator()(ostreamtype &buffer, const T &dip) const
+            {
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::serialize_diploid not implemented "
+                              "for this type");
+            }
+        };
+
+        template <>
+        struct serialize_diploid<std::pair<std::uint32_t, std::uint32_t>>
+        /// \brief Serialize a diploid
+        ///
+        /// Serialize a diploid type std::pair<std::uint32_t, std::uint32_t>
+        {
             io::scalar_writer writer;
             serialize_diploid() : writer{} {}
             template <typename ostreamtype>
             inline void
-            operator()(ostreamtype &buffer, const T &dip) const
+            operator()(
+                ostreamtype &buffer,
+                const std::pair<std::uint32_t, std::uint32_t> &dip) const
+            {
+                writer(buffer, &dip.first);
+                writer(buffer, &dip.second);
+            }
+        };
+
+        template <>
+        struct serialize_diploid<std::pair<std::size_t, std::size_t>>
+        /// \brief Serialize a diploid
+        ///
+        /// Serialize a diploid type std::pair<std::size_t, std::size_t>
+        {
+            io::scalar_writer writer;
+            serialize_diploid() : writer{} {}
+            template <typename ostreamtype>
+            inline void
+            operator()(ostreamtype &buffer,
+                       const std::pair<std::size_t, std::size_t> &dip) const
             {
                 writer(buffer, &dip.first);
                 writer(buffer, &dip.second);
@@ -31,17 +72,50 @@ namespace fwdpp
         /// \brief Deserialize a diploid
         ///
         /// Deserialize a diploid.
-        /// This type simply reads T::first and T::second
-        /// from a stream.  If your diploid type contains more data,
-        /// then specialize this struct.
         {
-            io::scalar_reader reader;
-            deserialize_diploid() : reader{} {}
             template <typename istreamtype>
             inline void
             operator()(istreamtype &buffer, T &dip) const
             {
-                typename T::first_type c;
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::deserialize_diploid not implemented "
+                              "for this type");
+            }
+        };
+
+        template <>
+        struct deserialize_diploid<std::pair<std::uint32_t, std::uint32_t>>
+        /// \brief Deserialize a diploid
+        ///
+        /// Deserialize a diploid type std::pair<std::uint32_t,std::uint32_t>
+        {
+            template <typename istreamtype>
+            inline void
+            operator()(istreamtype &buffer,
+                       std::pair<std::uint32_t, std::uint32_t> &dip) const
+            {
+                io::scalar_reader reader;
+                std::uint32_t c;
+                reader(buffer, &c);
+                dip.first = c;
+                reader(buffer, &c);
+                dip.second = c;
+            }
+        };
+
+        template <>
+        struct deserialize_diploid<std::pair<std::size_t, std::size_t>>
+        /// \brief Deserialize a diploid
+        ///
+        /// Deserialize a diploid type std::pair<std::size_t,std::size_t>
+        {
+            template <typename istreamtype>
+            inline void
+            operator()(istreamtype &buffer,
+                       std::pair<std::size_t, std::size_t> &dip) const
+            {
+                io::scalar_reader reader;
+                std::size_t c;
                 reader(buffer, &c);
                 dip.first = c;
                 reader(buffer, &c);
