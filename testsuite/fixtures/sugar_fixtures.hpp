@@ -11,6 +11,7 @@
 #include <fwdpp/extensions/regions.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <functional>
+#include <numeric>
 
 struct singlepop_popgenmut_fixture
 {
