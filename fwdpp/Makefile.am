@@ -5,6 +5,7 @@ pkginclude_HEADERS=debug.hpp \
 	diploid.hh \
 	fitness_models.hpp \
 	forward_types.hpp \
+	forward_types_serialization.hpp \
 	fwd_functional.hpp \
 	insertion_policies.hpp \
 	poisson_xover.hpp \
