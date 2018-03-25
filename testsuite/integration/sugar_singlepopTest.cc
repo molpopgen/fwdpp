@@ -5,6 +5,7 @@
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>
+#include <fwdpp/forward_types_serialization.hpp>
 #include <fwdpp/io/serialize_population.hpp>
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"

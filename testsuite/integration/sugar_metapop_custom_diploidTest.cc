@@ -12,6 +12,7 @@
 #include <fwdpp/sugar/metapop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/io/serialize_population.hpp>
+#include <fwdpp/forward_types_serialization.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <testsuite/util/migpop.hpp>
 
