@@ -176,13 +176,8 @@ main(int argc, char **argv)
 
     fwdpp::io::deserialize_population(in, metapop2);
 
-    if (pop.diploids != metapop2.diploids)
+    if(!(pop==metapop2))
         throw std::runtime_error("serialization failure");
-    if (pop.mutations != metapop2.mutations)
-        throw std::runtime_error("serialization failure");
-    if (pop.gametes != metapop2.gametes)
-        throw std::runtime_error("serialization failure");
-
 #ifdef HAVE_LIBSEQUENCE
     neutral2 = Sequence::read_SimData_binary(in);
     selected2 = Sequence::read_SimData_binary(in);
