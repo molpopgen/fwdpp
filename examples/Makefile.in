@@ -87,8 +87,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
-	migsel_ind$(EXEEXT) bneck_selection_ind$(EXEEXT) \
-	diploid_ind_2locus$(EXEEXT) \
+	bneck_selection_ind$(EXEEXT) diploid_ind_2locus$(EXEEXT) \
 	K_linked_regions_multilocus$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
 	K_linked_regions_generalized_rec$(EXEEXT) HOC_ind$(EXEEXT)
@@ -144,10 +143,6 @@ am_diploid_ind_2locus_OBJECTS = diploid_ind_2locus.$(OBJEXT)
 diploid_ind_2locus_OBJECTS = $(am_diploid_ind_2locus_OBJECTS)
 diploid_ind_2locus_LDADD = $(LDADD)
 diploid_ind_2locus_DEPENDENCIES =
-am_migsel_ind_OBJECTS = migsel_ind.$(OBJEXT)
-migsel_ind_OBJECTS = $(am_migsel_ind_OBJECTS)
-migsel_ind_LDADD = $(LDADD)
-migsel_ind_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -193,15 +188,13 @@ SOURCES = $(HOC_ind_SOURCES) $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
-	$(diploid_ind_SOURCES) $(diploid_ind_2locus_SOURCES) \
-	$(migsel_ind_SOURCES)
+	$(diploid_ind_SOURCES) $(diploid_ind_2locus_SOURCES)
 DIST_SOURCES = $(HOC_ind_SOURCES) \
 	$(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(bneck_selection_ind_SOURCES) $(diploid_fixed_sh_ind_SOURCES) \
-	$(diploid_ind_SOURCES) $(diploid_ind_2locus_SOURCES) \
-	$(migsel_ind_SOURCES)
+	$(diploid_ind_SOURCES) $(diploid_ind_2locus_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -327,7 +320,6 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
-migsel_ind_SOURCES = migsel_ind.cc common_ind.hpp
 bneck_selection_ind_SOURCES = bneck_selection_ind.cc common_ind.hpp
 diploid_ind_2locus_SOURCES = diploid_ind_2locus.cc common_ind.hpp
 K_linked_regions_multilocus_SOURCES = K_linked_regions_multilocus.cc common_ind.hpp
@@ -407,10 +399,6 @@ diploid_ind_2locus$(EXEEXT): $(diploid_ind_2locus_OBJECTS) $(diploid_ind_2locus_
 	@rm -f diploid_ind_2locus$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_2locus_OBJECTS) $(diploid_ind_2locus_LDADD) $(LIBS)
 
-migsel_ind$(EXEEXT): $(migsel_ind_OBJECTS) $(migsel_ind_DEPENDENCIES) $(EXTRA_migsel_ind_DEPENDENCIES) 
-	@rm -f migsel_ind$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(migsel_ind_OBJECTS) $(migsel_ind_LDADD) $(LIBS)
-
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -425,7 +413,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind_2locus.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/migsel_ind.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
