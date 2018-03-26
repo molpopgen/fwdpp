@@ -300,7 +300,7 @@ namespace fwdpp
       \brief Add a mutation into a population at a given frequency at in a
       specific locus.
 
-      \param p A population object. Meta- or multi-locus.
+      \param p A multi-locus population object.
       \param locus Index of the locus in which to add mutation.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
@@ -368,7 +368,7 @@ namespace fwdpp
     /*!
       \brief Add a set of mutations into a set of individuals in a population.
 
-      \param p A population object. Meta- or multi-locus.
+	  \param p A multi-locus population object.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
       \param clist A list of gametes. See below.
@@ -439,7 +439,7 @@ namespace fwdpp
       \brief Add a set of mutations into a given locus of a multi-locus
       simulation.
 
-      \param p A population object. Meta- or multi-locus.
+      \param p A multi-locus population object.
       \param locus Index of the locus in which to add mutation.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
