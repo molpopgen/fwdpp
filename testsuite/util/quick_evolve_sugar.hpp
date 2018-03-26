@@ -18,9 +18,9 @@
 #include <testsuite/util/migpop.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
-template <typename singlepop_object_t>
+template <typename slocuspop_object_t>
 void
-simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
+simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
                    const unsigned popsize = 5000)
 /*!
   \brief Quick function for evolving a single-deme simulation
@@ -52,9 +52,9 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
         }
 }
 
-template <typename singlepop_object_t, typename rng_type>
+template <typename slocuspop_object_t, typename rng_type>
 unsigned
-simulate_singlepop(singlepop_object_t &pop, const rng_type &rng,
+simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
                    const unsigned generation, const unsigned simlen)
 /*!
   \brief Quick function for evolving a single-deme simulation
@@ -92,12 +92,12 @@ struct multilocus_additive
     using result_type = double;
     inline double
     operator()(
-        const multiloc_popgenmut_fixture::poptype::dipvector_t::value_type
+        const mlocuspop_popgenmut_fixture::poptype::dipvector_t::value_type
             &diploid,
-        const multiloc_popgenmut_fixture::poptype::gcont_t &gametes,
-        const multiloc_popgenmut_fixture::poptype::mcont_t &mutations) const
+        const mlocuspop_popgenmut_fixture::poptype::gcont_t &gametes,
+        const mlocuspop_popgenmut_fixture::poptype::mcont_t &mutations) const
     {
-        using dip_t = multiloc_popgenmut_fixture::poptype::dipvector_t::
+        using dip_t = mlocuspop_popgenmut_fixture::poptype::dipvector_t::
             value_type::value_type;
         return std::max(
             0., 1. + std::accumulate(diploid.begin(), diploid.end(), 0.,

@@ -9,7 +9,7 @@
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 // #include <fwdpp/diploid.hh>
 // #include <fwdpp/sugar/GSLrng_t.hpp>
-// #include <fwdpp/sugar/singlepop.hpp>
+// #include <fwdpp/sugar/slocuspop.hpp>
 // #include <fwdpp/sugar/multiloc.hpp>
 // #include <fwdpp/sugar/infsites.hpp>
 // #include <fwdpp/sugar/serialization.hpp>
@@ -22,12 +22,12 @@
   during a simulation.
 */
 
-BOOST_FIXTURE_TEST_SUITE(test_add_mutation_singlepop,
-                         singlepop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_add_mutation_slocuspop,
+                         slocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(test_add_mutation)
 {
-    // singlepop_t pop(1000);
+    // slocuspop_t pop(1000);
     fwdpp::add_mutation(pop,
                         // individuals where we want to place the mutation
                         { 0, 1, 3, 5, 7, 9 },
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_from_object)
   from a pre-existing set of data, perhaps existing in a file somewhere.
 */
 
-BOOST_AUTO_TEST_CASE(test_add_mutations_singlepop)
+BOOST_AUTO_TEST_CASE(test_add_mutations_slocuspop)
 /*
   Note: this unit tests updates the same diploids at different steps.
 
@@ -194,10 +194,10 @@ BOOST_AUTO_TEST_CASE(test_add_mutations_singlepop)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(test_add_mutation_multiloc,
-                         multiloc_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_add_mutation_mlocuspop,
+                         mlocuspop_popgenmut_fixture)
 
-BOOST_AUTO_TEST_CASE(test_add_mutation_multiloc)
+BOOST_AUTO_TEST_CASE(test_add_mutation_mlocuspop)
 {
     const std::size_t LOCUS = 3; // we'll add mutations into the 4th locus
     fwdpp::add_mutation(pop,

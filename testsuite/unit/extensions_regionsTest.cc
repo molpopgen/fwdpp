@@ -13,8 +13,8 @@
 
 using namespace fwdpp;
 
-using poptype = singlepop_popgenmut_fixture::poptype;
-BOOST_FIXTURE_TEST_SUITE(test_extensions, singlepop_popgenmut_fixture)
+using poptype = slocuspop_popgenmut_fixture::poptype;
+BOOST_FIXTURE_TEST_SUITE(test_extensions, slocuspop_popgenmut_fixture)
 
 // Check that extensions::discrete_mut_model::operator() compiles
 BOOST_AUTO_TEST_CASE(discrete_mut_model_test_1)
@@ -119,9 +119,9 @@ BOOST_AUTO_TEST_CASE(bound_drm_is_recmodel)
     static_assert(
         fwdpp::traits::
             is_rec_model<decltype(drm),
-                         singlepop_popgenmut_fixture::poptype::diploid_t,
-                         singlepop_popgenmut_fixture::poptype::gamete_t,
-                         singlepop_popgenmut_fixture::poptype::mcont_t>::value,
+                         slocuspop_popgenmut_fixture::poptype::diploid_t,
+                         slocuspop_popgenmut_fixture::poptype::gamete_t,
+                         slocuspop_popgenmut_fixture::poptype::mcont_t>::value,
         "bound object must be valid recombination model");
 }
 

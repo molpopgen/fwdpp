@@ -14,7 +14,7 @@
 
 fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
 
-BOOST_FIXTURE_TEST_SUITE(test_singlepop_sampling, singlepop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_slocuspop_sampling, slocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(singledeme_test_sep_empty)
 {
@@ -45,16 +45,16 @@ BOOST_AUTO_TEST_CASE(singledeme_test_throw)
 
 // Correctness tests
 
-BOOST_AUTO_TEST_CASE(singlepop_1)
+BOOST_AUTO_TEST_CASE(slocuspop_1)
 {
     pop.mutations.emplace_back(0.1, 0, 0, 0);
     pop.mcounts.emplace_back(1);
     pop.gametes.emplace_back(
         1,
-        std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{
+        std::vector<slocuspop_popgenmut_fixture::poptype::gamete_t::index_t>{
             0 },
         std::
-            vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{});
+            vector<slocuspop_popgenmut_fixture::poptype::gamete_t::index_t>{});
     pop.gametes[0].n--;
     BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(fwdpp::popdata_sane(pop.diploids, pop.gametes,
@@ -120,8 +120,8 @@ BOOST_AUTO_TEST_CASE(singlepop_1)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(test_singlepop_custom_sampling,
-                         singlepop_popgenmut_custom_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_slocuspop_custom_sampling,
+                         slocuspop_popgenmut_custom_fixture)
 
 BOOST_AUTO_TEST_CASE(singledeme_test_sep_empty)
 {
@@ -152,16 +152,16 @@ BOOST_AUTO_TEST_CASE(singledeme_test_throw)
 
 // Correctness tests
 
-BOOST_AUTO_TEST_CASE(singlepop_1)
+BOOST_AUTO_TEST_CASE(slocuspop_1)
 {
     pop.mutations.emplace_back(0.1, 0, 0, 0);
     pop.mcounts.emplace_back(1);
     pop.gametes.emplace_back(
         1,
-        std::vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{
+        std::vector<slocuspop_popgenmut_fixture::poptype::gamete_t::index_t>{
             0 },
         std::
-            vector<singlepop_popgenmut_fixture::poptype::gamete_t::index_t>{});
+            vector<slocuspop_popgenmut_fixture::poptype::gamete_t::index_t>{});
     pop.gametes[0].n--;
     BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
     BOOST_REQUIRE_EQUAL(fwdpp::popdata_sane(pop.diploids, pop.gametes,
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(singlepop_1)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(test_multilocus_sampling, multiloc_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_multilocus_sampling, mlocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(multilocus_test_sep_empty)
 {
