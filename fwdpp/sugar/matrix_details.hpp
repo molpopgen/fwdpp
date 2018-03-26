@@ -73,7 +73,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      const std::size_t, sugar::SINGLEPOP_TAG)
+                      const std::size_t, sugar::SINGLELOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
@@ -109,7 +109,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      const std::size_t, sugar::MULTILOCPOP_TAG)
+                      const std::size_t, sugar::MULTILOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
@@ -251,7 +251,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const std::size_t, sugar::SINGLEPOP_TAG, matrix_type mtype)
+            const std::size_t, sugar::SINGLELOC_TAG, matrix_type mtype)
         {
             matrix_helper h(neutral_keys, selected_keys);
             for (auto &&ind : individuals)
@@ -300,7 +300,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const std::size_t, sugar::MULTILOCPOP_TAG, matrix_type mtype)
+            const std::size_t, sugar::MULTILOC_TAG, matrix_type mtype)
         {
             matrix_helper h(neutral_keys, selected_keys);
             for (auto &&ind : individuals)

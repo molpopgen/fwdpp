@@ -149,7 +149,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::SINGLEPOP_TAG>::value>>
+                                        fwdpp::sugar::SINGLELOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<
                                typename poptype::diploid_t::first_type *>>
@@ -185,7 +185,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::MULTILOCPOP_TAG>::value>>
+                                        fwdpp::sugar::MULTILOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<typename poptype::diploid_t::
                                            value_type::first_type *>>
@@ -262,7 +262,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
+                                   fwdpp::sugar::SINGLELOC_TAG>::value,
                       "poptype must be a single-deme object type");
 
         // Before we go deep into creating objects, let's do some checks
@@ -481,7 +481,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
+                                   fwdpp::sugar::SINGLELOC_TAG>::value,
                       "poptype must be a single-deme object type");
 
         // Before we go deep into creating objects, let's do some checks

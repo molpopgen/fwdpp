@@ -10,7 +10,7 @@ namespace fwdpp
         //! Types of populations supported by sugar layer \ingroup sugar
         enum class FWDPP_SUGAR_POPTYPE
         {
-            SINGLE,
+            SINGLELOC,
             MULTILOC
         };
         //! Dispatch tag template for population types supported by sugar layer
@@ -18,10 +18,10 @@ namespace fwdpp
         template <FWDPP_SUGAR_POPTYPE> struct FWDPP_SUGAR_POPTAG
         {
         };
-        //! Single-population simulations \ingroup sugar
-        using SINGLEPOP_TAG = FWDPP_SUGAR_POPTAG<FWDPP_SUGAR_POPTYPE::SINGLE>;
-        //! Single-population, multi-locus simulations \ingroup sugar
-        using MULTILOCPOP_TAG
+        //! Single-locus simulations \ingroup sugar
+        using SINGLELOC_TAG = FWDPP_SUGAR_POPTAG<FWDPP_SUGAR_POPTYPE::SINGLELOC>;
+        //! Multi-locus simulations \ingroup sugar
+        using MULTILOC_TAG
             = FWDPP_SUGAR_POPTAG<FWDPP_SUGAR_POPTYPE::MULTILOC>;
     }
 }

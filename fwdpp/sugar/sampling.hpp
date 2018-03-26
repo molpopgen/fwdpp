@@ -15,7 +15,7 @@ namespace fwdpp
 {
     template <typename poptype>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::SINGLEPOP_TAG>::value,
+                                         sugar::SINGLELOC_TAG>::value,
                             sample_t>::type
     sample(const gsl_rng *r, const poptype &p, const unsigned nsam,
            const bool removeFixed)
@@ -32,8 +32,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be SINGLEPOP_TAG");
+                                   sugar::SINGLELOC_TAG>::value,
+                      "poptype must be SINGLELOC_TAG");
         auto rv = ms_sample(r, p.mutations, p.gametes, p.diploids, nsam,
                             removeFixed);
         finish_sample(rv, p.fixations, nsam, removeFixed,
@@ -43,7 +43,7 @@ namespace fwdpp
 
     template <typename poptype>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::MULTILOCPOP_TAG>::value,
+                                         sugar::MULTILOC_TAG>::value,
                             std::vector<sample_t>>::type
     sample(const gsl_rng *r, const poptype &p, const unsigned nsam,
            const bool removeFixed)
@@ -60,8 +60,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      "poptype must be MULTILOCPOP_TAG");
+                                   sugar::MULTILOC_TAG>::value,
+                      "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
@@ -81,7 +81,7 @@ namespace fwdpp
 
     template <typename poptype>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::MULTILOCPOP_TAG>::value,
+                                         sugar::MULTILOC_TAG>::value,
                             std::vector<sep_sample_t>>::type
     sample_separate(
         const gsl_rng *r, const poptype &p, const unsigned nsam,
@@ -100,8 +100,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      "poptype must be MULTILOCPOP_TAG");
+                                   sugar::MULTILOC_TAG>::value,
+                      "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
@@ -121,7 +121,7 @@ namespace fwdpp
 
     template <typename poptype>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::SINGLEPOP_TAG>::value,
+                                         sugar::SINGLELOC_TAG>::value,
                             sep_sample_t>::type
     sample_separate(const gsl_rng *r, const poptype &p, const unsigned nsam,
                     const bool removeFixed)
@@ -139,8 +139,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be SINGLEPOP_TAG");
+                                   sugar::SINGLELOC_TAG>::value,
+                      "poptype must be SINGLELOC_TAG");
         auto rv = ms_sample_separate(r, p.mutations, p.gametes, p.diploids,
                                      nsam, removeFixed);
         finish_sample(rv, p.fixations, nsam, removeFixed,
@@ -150,7 +150,7 @@ namespace fwdpp
 
     template <typename poptype, typename integer_type = std::size_t>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::SINGLEPOP_TAG>::value,
+                                         sugar::SINGLELOC_TAG>::value,
                             sample_t>::type
     sample(const poptype &p, const std::vector<integer_type> &individuals,
            const bool removeFixed)
@@ -166,8 +166,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be SINGLEPOP_TAG");
+                                   sugar::SINGLELOC_TAG>::value,
+                      "poptype must be SINGLELOC_TAG");
         if (individuals.empty())
             return sample_t();
         if (std::find_if(
@@ -185,7 +185,7 @@ namespace fwdpp
 
     template <typename poptype, typename integer_type = std::size_t>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::MULTILOCPOP_TAG>::value,
+                                         sugar::MULTILOC_TAG>::value,
                             std::vector<sample_t>>::type
     sample(const poptype &p, const std::vector<integer_type> &individuals,
            const bool removeFixed)
@@ -201,8 +201,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      "poptype must be MULTILOCPOP_TAG");
+                                   sugar::MULTILOC_TAG>::value,
+                      "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
@@ -224,7 +224,7 @@ namespace fwdpp
 
     template <typename poptype, typename integer_type = std::size_t>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::SINGLEPOP_TAG>::value,
+                                         sugar::SINGLELOC_TAG>::value,
                             sep_sample_t>::type
     sample_separate(const poptype &p,
                     const std::vector<integer_type> &individuals,
@@ -244,8 +244,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be SINGLEPOP_TAG");
+                                   sugar::SINGLELOC_TAG>::value,
+                      "poptype must be SINGLELOC_TAG");
         if (individuals.empty())
             return sep_sample_t();
         if (std::find_if(
@@ -266,7 +266,7 @@ namespace fwdpp
 
     template <typename poptype, typename integer_type = std::size_t>
     typename std::enable_if<std::is_same<typename poptype::popmodel_t,
-                                         sugar::MULTILOCPOP_TAG>::value,
+                                         sugar::MULTILOC_TAG>::value,
                             std::vector<sep_sample_t>>::type
     sample_separate(
         const poptype &p, const std::vector<integer_type> &individuals,
@@ -286,8 +286,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   sugar::MULTILOCPOP_TAG>::value,
-                      "poptype must be MULTILOCPOP_TAG or MULTILOCPOP_TAG");
+                                   sugar::MULTILOC_TAG>::value,
+                      "poptype must be MULTILOC_TAG or MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(

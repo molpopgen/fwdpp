@@ -56,7 +56,7 @@ namespace fwdpp
             using popbase_t = popbase<mutation_type, mcont, gcont, dipvector,
                                       mvector, ftvector, lookup_table_type>;
             //! Dispatch tag for other parts of sugar layer
-            using popmodel_t = sugar::SINGLEPOP_TAG;
+            using popmodel_t = sugar::SINGLELOC_TAG;
             //! Fitness function signature compatible with this type
             using fitness_t
                 = fwdpp::traits::fitness_fxn_t<typename popbase_t::dipvector_t,
