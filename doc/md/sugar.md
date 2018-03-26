@@ -81,41 +81,27 @@ The sugar layer allows you to set up a simulation only having to decide on your 
 Let's assume that you want to do a simulation implemented in terms of fwdpp::popgenmut.  You may set up various types of simulations like this:
 
 ~~~{.cpp}
-//Single population, single locus
+//Single-locus population
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
+#include <fwdpp/sugar/slocuspop.hpp>
 
-using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
+using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 ~~~
 
-~~~{.cpp}
-//Metapopulation, single locus
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/metapop.hpp>
-
-using poptype = fwdpp::metapop<fwdpp::popgenmut>;
-~~~
 
 ~~~{.cpp}
-//Single population, multi locus
+//Multi-locus population
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
+#include <fwdpp/sugar/mlocuspop.hpp>
 
-using poptype = fwdpp::multiloc<fwdpp::popgenmut>;
+using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
 ~~~
 
 The code chunks above will result in the following:
 
 * All containers are from namespace std
 * Populations are copy- and move-constructible
-* Populations are serializable via fwdpp::serialize, fwdpp::deserialize, and fwdpp::gzdeserialize.
-
-~~~{.cpp}
-//Single population, single locus
-#include <fwdpp/sugar/popgenmut.hpp>
-
-using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
-~~~
+* Populations are serializable via fwdpp::io::serialize_population
 
 #### Details
 
@@ -125,7 +111,6 @@ See the following files for concrete working examples:
 
 * diploid_ind.cc
 * diploid_ind_2locus.cc
-* migsel_ind.cc
 * diploid_fixed_sh_ind.cc
 * bneck_selection_ind.cc
 
@@ -133,11 +118,10 @@ See the following files for concrete working examples:
 
 It you aren't happy with how I've set up the "poptypes", you may provide your own typedefs in terms of the following classes:
 
-* fwdpp::sugar::singlepop
-* fwdpp::sugar::metapop 
-* fwdpp::sugar::multiloc 
+* fwdpp::sugar::slocuspop
+* fwdpp::sugar::mlocuspop 
 
-You should also be able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
+You are able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
 
 __fwdpp__ 0.3.1 added support for custom diploid types (see @ref md_md_customdip).  The template aliases for population types were updated accordingly.
 

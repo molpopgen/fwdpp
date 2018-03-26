@@ -7,7 +7,7 @@
 #include <config.h>
 #include <sstream>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
+#include <fwdpp/sugar/slocuspop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
 #include <iostream>
@@ -105,9 +105,9 @@ BOOST_AUTO_TEST_CASE(serialize)
 BOOST_AUTO_TEST_CASE(copy_pop1)
 {
     using mtype = fwdpp::generalmut<2>;
-    using singlepop_t = fwdpp::singlepop<mtype>;
-    singlepop_t pop1(100);
-    singlepop_t pop2(pop1);
+    using slocuspop_t = fwdpp::slocuspop<mtype>;
+    slocuspop_t pop1(100);
+    slocuspop_t pop2(pop1);
     BOOST_REQUIRE_EQUAL(pop1 == pop2, true);
 }
 

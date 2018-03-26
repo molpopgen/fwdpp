@@ -12,7 +12,7 @@
 
 using namespace fwdpp;
 
-BOOST_FIXTURE_TEST_SUITE(test_regions, singlepop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_regions, slocuspop_popgenmut_fixture)
 
 // Check that extensions::discrete_mut_model::operator() can be bound
 // with placeholders, that the resulting type is a valid
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(discrete_mut_model_test_6)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(test_multilocus_regions, multiloc_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_multilocus_regions, mlocuspop_popgenmut_fixture)
 BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
 /* Test vectors of mutation/recombination regions
  * The recombination region scheme is same as unit

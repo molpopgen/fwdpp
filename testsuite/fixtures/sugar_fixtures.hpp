@@ -2,9 +2,8 @@
 #define FWDPP_TESTSUITE_SUGAR_FIXTURES_HPP
 
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/metapop.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
+#include <fwdpp/sugar/slocuspop.hpp>
+#include <fwdpp/sugar/mlocuspop.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/poisson_xover.hpp>
@@ -12,61 +11,36 @@
 #include <fwdpp/extensions/regions.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <functional>
+#include <numeric>
 
-struct singlepop_popgenmut_fixture
+struct slocuspop_popgenmut_fixture
 {
-    using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
+    using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     poptype pop;
     rng_t rng;
     unsigned generation;
-    singlepop_popgenmut_fixture(const unsigned seed = 0)
+    slocuspop_popgenmut_fixture(const unsigned seed = 0)
         : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
 };
 
-struct singlepop_popgenmut_custom_fixture
+struct slocuspop_popgenmut_custom_fixture
 {
     using poptype
-        = fwdpp::singlepop<fwdpp::popgenmut, custom_diploid_testing_t>;
+        = fwdpp::slocuspop<fwdpp::popgenmut, custom_diploid_testing_t>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     poptype pop;
     rng_t rng;
     unsigned generation;
-    singlepop_popgenmut_custom_fixture(const unsigned seed = 0)
+    slocuspop_popgenmut_custom_fixture(const unsigned seed = 0)
         : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
 };
 
-struct metapop_popgenmut_fixture
-{
-    using poptype = fwdpp::metapop<fwdpp::popgenmut>;
-    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    poptype pop;
-    rng_t rng;
-    unsigned generation;
-    metapop_popgenmut_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
-    {
-    }
-};
-
-struct metapop_popgenmut_custom_fixture
-{
-    using poptype = fwdpp::metapop<fwdpp::popgenmut, custom_diploid_testing_t>;
-    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
-    poptype pop;
-    rng_t rng;
-    unsigned generation;
-    metapop_popgenmut_custom_fixture(const unsigned seed = 0)
-        : pop(poptype{ 1000, 1000 }), rng(rng_t(seed)), generation(0)
-    {
-    }
-};
-
-class multiloc_popgenmut_fixture
+class mlocuspop_popgenmut_fixture
 {
   private:
     std::vector<fwdpp::extensions::discrete_mut_model>
@@ -121,7 +95,7 @@ class multiloc_popgenmut_fixture
     }
 
   public:
-    using poptype = fwdpp::multiloc<fwdpp::popgenmut>;
+    using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
                                                poptype::mcont_t &)>;
@@ -157,7 +131,7 @@ class multiloc_popgenmut_fixture
     std::vector<recmodel> recmodels;
     std::vector<fwdpp::extensions::discrete_mut_model> vdmm;
     std::vector<fwdpp::extensions::discrete_rec_model> vdrm;
-    multiloc_popgenmut_fixture(const unsigned seed = 0)
+    mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
         : pop(poptype(1000, 4)),
           generation(0),

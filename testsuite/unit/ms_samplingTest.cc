@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(sample_properties_test)
     diploids.resize(10, std::make_pair(0, 0));
     gametes.emplace_back(20);
     add_mutations(mutations, gametes, diploids);
-    auto sample = fwdpp::fwdpp_internal::ms_sample_separate_single_deme(
+    auto sample = fwdpp::fwdpp_internal::ms_sample_separate_single_locus_pop(
         mutations, gametes, diploids,
         std::vector<unsigned>({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), 20, true);
     BOOST_REQUIRE_EQUAL(sample.second.empty(), true); // no selected mutations
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(odd)
     diploids.resize(10, std::make_pair(0, 0));
     gametes.emplace_back(20);
     add_mutations(mutations, gametes, diploids);
-    auto sample = fwdpp::fwdpp_internal::ms_sample_separate_single_deme(
+    auto sample = fwdpp::fwdpp_internal::ms_sample_separate_single_locus_pop(
         mutations, gametes, diploids,
         std::vector<unsigned>({ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }), 19, true);
     BOOST_REQUIRE_EQUAL(sample.second.empty(), true); // no selected mutations

@@ -97,8 +97,7 @@ namespace fwdpp
               std::vector<std::pair<std::size_t, uint_t>>>
     mutation_keys(const poptype &pop,
                   const std::vector<std::size_t> &individuals,
-                  const bool include_neutral, const bool include_selected,
-                  const std::size_t deme = 0)
+                  const bool include_neutral, const bool include_selected)
     /*!
      * For a sample defined by a set of diploids, obtain the keys corresponding
      * to all mutations in that sample.
@@ -107,8 +106,6 @@ namespace fwdpp
      * \param individuals The indexes of individuals in the sample
      * \param include_neutral If true, obtain keys for neutral sites
      * \param include_selected If true, obtain keys for selected sites
-     * \param deme If poptype represents a metapopulation object, the
-     * individuals come from this deme.
      *
      * \return A pair of vectors representing neutral and selected keys,
      * respectively.  The value
@@ -128,14 +125,12 @@ namespace fwdpp
      * "erase/remove" idiom.
      * 3. Keys from multiple samples can be merged to form new vectors where
      * the key elements are unique and
-     * the frequencies are summed, all using standard C++.  Example use case is
-     * combining samples from
-     * multiple demes.
+     * the frequencies are summed, all using standard C++.
      */
     {
         return data_matrix_details::mutation_keys(
             pop.diploids, individuals, pop.gametes, pop.mcounts,
-            include_neutral, include_selected, deme,
+            include_neutral, include_selected,
             typename poptype::popmodel_t());
     }
 
@@ -144,8 +139,7 @@ namespace fwdpp
     genotype_matrix(
         const poptype &pop, const std::vector<std::size_t> &individuals,
         const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-        const std::size_t deme = 0)
+        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
     /*!
      * Calculate a fwdpp::data_matrix representing genotypes encoded as
      * 0,1, or 2 copies of the derived mutation.
@@ -155,18 +149,12 @@ namespace fwdpp
      * sample.
      * \param neutral_keys See documentation of fwdpp::mutation_keys
      * \param selected_keys See documentation of fwdpp::mutation_keys
-     * \param deme If pop is a metapopulation, this is the deme containing the
-     * sample
      *
      * \return fwdpp::data_matrix
-     *
-     * \note Return values representing samples from different demes must be
-     * combined
-     * by the user.
      */
     {
         return data_matrix_details::fill_matrix(
-            pop, individuals, neutral_keys, selected_keys, deme,
+            pop, individuals, neutral_keys, selected_keys,
             data_matrix_details::matrix_type::genotype);
     }
 
@@ -175,8 +163,7 @@ namespace fwdpp
     haplotype_matrix(
         const poptype &pop, const std::vector<std::size_t> &individuals,
         const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-        const std::size_t deme = 0)
+        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
     /*!
      * Calculate a fwdpp::data_matrix representing haplotypes encoded as
      * 0 or 1 copies of the derived mutation.
@@ -186,18 +173,12 @@ namespace fwdpp
      * sample.
      * \param neutral_keys See documentation of fwdpp::mutation_keys
      * \param selected_keys See documentation of fwdpp::mutation_keys
-     * \param deme If pop is a metapopulation, this is the deme containing the
-     * sample
      *
      * \return fwdpp::data_matrix
-     *
-     * \note Return values representing samples from different demes must be
-     * combined
-     * by the user.
      */
     {
         return data_matrix_details::fill_matrix(
-            pop, individuals, neutral_keys, selected_keys, deme,
+            pop, individuals, neutral_keys, selected_keys,
             data_matrix_details::matrix_type::haplotype);
     }
 

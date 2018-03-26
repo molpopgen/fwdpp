@@ -15,12 +15,11 @@
 #include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-#include <testsuite/util/migpop.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
-template <typename singlepop_object_t>
+template <typename slocuspop_object_t>
 void
-simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
+simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
                    const unsigned popsize = 5000)
 /*!
   \brief Quick function for evolving a single-deme simulation
@@ -52,9 +51,9 @@ simulate_singlepop(singlepop_object_t &pop, const unsigned simlen = 10,
         }
 }
 
-template <typename singlepop_object_t, typename rng_type>
+template <typename slocuspop_object_t, typename rng_type>
 unsigned
-simulate_singlepop(singlepop_object_t &pop, const rng_type &rng,
+simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
                    const unsigned generation, const unsigned simlen)
 /*!
   \brief Quick function for evolving a single-deme simulation
@@ -92,12 +91,12 @@ struct multilocus_additive
     using result_type = double;
     inline double
     operator()(
-        const multiloc_popgenmut_fixture::poptype::dipvector_t::value_type
+        const mlocuspop_popgenmut_fixture::poptype::dipvector_t::value_type
             &diploid,
-        const multiloc_popgenmut_fixture::poptype::gcont_t &gametes,
-        const multiloc_popgenmut_fixture::poptype::mcont_t &mutations) const
+        const mlocuspop_popgenmut_fixture::poptype::gcont_t &gametes,
+        const mlocuspop_popgenmut_fixture::poptype::mcont_t &mutations) const
     {
-        using dip_t = multiloc_popgenmut_fixture::poptype::dipvector_t::
+        using dip_t = mlocuspop_popgenmut_fixture::poptype::dipvector_t::
             value_type::value_type;
         return std::max(
             0., 1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
@@ -145,43 +144,6 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
                                     pop.mcounts, generation, 2000);
         }
     return g + simlen;
-}
-
-template <typename metapop_object>
-void
-simulate_metapop(metapop_object &pop, const unsigned simlen = 10)
-{
-    // Evolve for 10 generations
-    std::vector<std::function<double(
-        const typename metapop_object::diploid_t &,
-        const typename metapop_object::gcont_t &,
-        const typename metapop_object::mcont_t &)>>
-        fitness_funcs(2, fwdpp::multiplicative_diploid(2.));
-    fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
-    for (unsigned generation = 0; generation < simlen; ++generation)
-        {
-            std::vector<double> wbar = fwdpp::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, &pop.Ns[0], 0.005,
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, rng.get(),
-                          std::ref(pop.mut_lookup), generation, 0.005, 0.,
-                          [&rng]() { return gsl_rng_uniform(rng.get()); },
-                          []() { return 0.; }, []() { return 0.; }),
-                fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.), fitness_funcs,
-                std::bind(migpop, std::placeholders::_1, rng.get(), 0.001),
-                pop.neutral, pop.selected);
-            for (auto wbar_i : wbar)
-                {
-                    if (!std::isfinite(wbar_i))
-                        {
-                            throw std::runtime_error("fitness not finite");
-                        }
-                }
-            fwdpp::update_mutations(pop.mutations, pop.fixations,
-                                    pop.fixation_times, pop.mut_lookup,
-                                    pop.mcounts, generation, 4000);
-        }
 }
 
 #endif
