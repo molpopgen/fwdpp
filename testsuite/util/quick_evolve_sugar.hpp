@@ -15,7 +15,6 @@
 #include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
-#include <testsuite/util/migpop.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
 template <typename slocuspop_object_t>
