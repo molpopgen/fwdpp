@@ -2,7 +2,7 @@
 #define __FWDPP_SUGAR_SINGLEPOP_SINGLEPOP_HPP__
 
 /*
-  A structure representing a single Wright-Fisher population.
+  A structure representing a single-locus population.
   The user initizializes it with a population size, N
 */
 
@@ -13,8 +13,8 @@ namespace fwdpp
     namespace sugar
     {
         /*!
-          \brief Abstraction of what is needed to simulate a single population
-          using an individual-based sampler from fwdpp
+          \brief Abstraction of what is needed to simulate a 
+          single-locus population.
 
           All that is missing is the mutation_type and the container types.
 

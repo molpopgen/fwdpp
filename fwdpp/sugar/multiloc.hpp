@@ -9,7 +9,7 @@
 namespace fwdpp
 {
     /*!
-      \brief Single population, multilocus simulation.
+      \brief Multilocus simulation.
       See @ref md_md_sugar for rationale, etc.
       \ingroup sugar
     */
