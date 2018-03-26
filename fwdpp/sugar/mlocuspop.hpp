@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_set>
-#include <fwdpp/sugar/poptypes/multiloc.hpp>
+#include <fwdpp/sugar/poptypes/mlocuspop.hpp>
 #include <fwdpp/fwd_functional.hpp>
 
 namespace fwdpp
@@ -15,8 +15,8 @@ namespace fwdpp
     */
     template <typename mtype,
               typename diploid_t = std::pair<std::size_t, std::size_t>>
-    using multiloc
-        = sugar::multiloc<mtype, std::vector<mtype>, std::vector<gamete>,
+    using mlocuspop
+        = sugar::mlocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
                           std::vector<std::vector<diploid_t>>,
                           std::vector<mtype>, std::vector<uint_t>,
                           std::unordered_set<double, std::hash<double>,

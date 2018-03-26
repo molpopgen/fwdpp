@@ -25,7 +25,7 @@ namespace fwdpp
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
                   typename lookup_table_type>
-        class singlepop
+        class slocuspop
             : public popbase<mutation_type, mcont, gcont, dipvector, mvector,
                              ftvector, lookup_table_type>
         {
@@ -44,11 +44,11 @@ namespace fwdpp
             }
 
           public:
-            virtual ~singlepop() = default;
-            singlepop(singlepop &&) = default;
-            singlepop(const singlepop &) = default;
-            singlepop &operator=(singlepop &&) = default;
-            singlepop &operator=(const singlepop &) = default;
+            virtual ~slocuspop() = default;
+            slocuspop(slocuspop &&) = default;
+            slocuspop(const slocuspop &) = default;
+            slocuspop &operator=(slocuspop &&) = default;
+            slocuspop &operator=(const slocuspop &) = default;
             //! Population size
             uint_t N;
 
@@ -67,7 +67,7 @@ namespace fwdpp
             typename popbase_t::dipvector_t diploids;
 
             //! Constructor
-            explicit singlepop(
+            explicit slocuspop(
                 const uint_t &popsize,
                 typename popbase_t::gamete_t::mutation_container::size_type
                     reserve_size
@@ -81,7 +81,7 @@ namespace fwdpp
 
             template <typename diploids_input, typename gametes_input,
                       typename mutations_input>
-            explicit singlepop(diploids_input &&d, gametes_input &&g,
+            explicit slocuspop(diploids_input &&d, gametes_input &&g,
                                mutations_input &&m)
                 : popbase_t(std::forward<gametes_input>(g),
                             std::forward<mutations_input>(m), 100),
@@ -93,7 +93,7 @@ namespace fwdpp
             }
 
             bool
-            operator==(const singlepop &rhs) const
+            operator==(const slocuspop &rhs) const
             {
                 return this->diploids == rhs.diploids
                        && popbase_t::is_equal(rhs);
