@@ -67,7 +67,7 @@ namespace fwdpp
                 diplist.push_back(std::vector<unsigned>::value_type(
                     gsl_ran_flat(r, 0., double(diploids.size()))));
             }
-        return fwdpp_internal::ms_sample_separate_single_deme(
+        return fwdpp_internal::ms_sample_separate_single_locus_pop(
             mutations, gametes, diploids, diplist, n, remove_fixed);
     }
 

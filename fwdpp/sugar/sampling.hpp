@@ -256,7 +256,7 @@ namespace fwdpp
                 throw std::out_of_range(
                     "fwdpp::sample_separate: individual index out of range");
             }
-        auto rv = fwdpp_internal::ms_sample_separate_single_deme(
+        auto rv = fwdpp_internal::ms_sample_separate_single_locus_pop(
             p.mutations, p.gametes, p.diploids, individuals,
             2 * individuals.size(), removeFixed);
         finish_sample(rv, p.fixations, 2 * individuals.size(), removeFixed,

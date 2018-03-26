@@ -73,7 +73,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      const std::size_t, sugar::SINGLELOC_TAG)
+                      sugar::SINGLELOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
@@ -101,7 +101,7 @@ namespace fwdpp
                                       s.begin(), s.end()));
         }
 
-       template <typename dipvector_t, typename gcont_t>
+        template <typename dipvector_t, typename gcont_t>
         std::pair<std::vector<std::pair<std::size_t, uint_t>>,
                   std::vector<std::pair<std::size_t, uint_t>>>
         mutation_keys(const dipvector_t &diploids,
@@ -109,7 +109,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      const std::size_t, sugar::MULTILOC_TAG)
+                      sugar::MULTILOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             using gamete_t = typename gcont_t::value_type;
@@ -231,11 +231,12 @@ namespace fwdpp
                 {
                     std::transform(h.neutral_row2.begin(),
                                    h.neutral_row2.end(), h.neutral_row.begin(),
-                                   h.neutral_row.begin(), std::plus<std::int8_t>());
-                    std::transform(h.selected_row2.begin(),
-                                   h.selected_row2.end(),
-                                   h.selected_row.begin(),
-                                   h.selected_row.begin(), std::plus<std::int8_t>());
+                                   h.neutral_row.begin(),
+                                   std::plus<std::int8_t>());
+                    std::transform(
+                        h.selected_row2.begin(), h.selected_row2.end(),
+                        h.selected_row.begin(), h.selected_row.begin(),
+                        std::plus<std::int8_t>());
                     m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
                                      h.neutral_row.end());
                     m.selected.insert(m.selected.end(), h.selected_row.begin(),
@@ -251,7 +252,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const std::size_t, sugar::SINGLELOC_TAG, matrix_type mtype)
+            sugar::SINGLELOC_TAG, matrix_type mtype)
         {
             matrix_helper h(neutral_keys, selected_keys);
             for (auto &&ind : individuals)
@@ -293,14 +294,14 @@ namespace fwdpp
                 }
         }
 
-       template <typename poptype>
+        template <typename poptype>
         void
         fill_matrix(
             const poptype &pop, data_matrix &m,
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const std::size_t, sugar::MULTILOC_TAG, matrix_type mtype)
+            sugar::MULTILOC_TAG, matrix_type mtype)
         {
             matrix_helper h(neutral_keys, selected_keys);
             for (auto &&ind : individuals)
@@ -343,14 +344,14 @@ namespace fwdpp
             const poptype &pop, const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const std::size_t deme, const matrix_type mtype)
+            const matrix_type mtype)
         {
             data_matrix rv((mtype == matrix_type::genotype)
                                ? individuals.size()
                                : 2 * individuals.size());
             // dispatch details out depending on population type
             fill_matrix(pop, rv, individuals, neutral_keys, selected_keys,
-                        deme, typename poptype::popmodel_t(), mtype);
+                        typename poptype::popmodel_t(), mtype);
             return rv;
         }
 
