@@ -7,8 +7,8 @@
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/sampling_functions.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
+#include <fwdpp/sugar/slocuspop.hpp>
+#include <fwdpp/sugar/mlocuspop.hpp>
 #include <fwdpp/sugar/sampling/sampling_details.hpp>
 
 namespace fwdpp
