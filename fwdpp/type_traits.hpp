@@ -216,7 +216,7 @@ namespace fwdpp
         using mutation_model_diploid = typename traits::internal::
             mutation_model_diploid<diploid_t, mcont_t, gcont_t>::type;
 
-/*! \defgroup Cpp14
+/*! \defgroup Cpp14 C++14 features
  * \brief C++14 features
  */
 

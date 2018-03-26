@@ -1,5 +1,5 @@
 /*!
-  \file sugar_slocuspop_custom_diploid.cc
+  \file sugar_singlepop_custom_diploidTest.cc
   \ingroup unit
   \brief Testing single-deme sugar functionality with custom diploids
 */

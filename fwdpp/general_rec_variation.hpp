@@ -75,7 +75,7 @@ namespace fwdpp
                         const double pos_, const double poisson = true)
             /*!
 			 * \param r_ A gsl_rng that must be initialized.
-			 * \param rate_ The crossover rate. See note below.
+			 * \param rate The crossover rate. See note below.
 			 * \param pos_ The crossover position to return.
 			 * \param poisson Whether \a rate represents a Poisson process (true) or a binomial process (false).
 			 *

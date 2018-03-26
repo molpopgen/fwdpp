@@ -235,7 +235,6 @@ namespace fwdpp
       \param p A population
       \param individuals The indexes of the diploids to 'view' from the
       population
-      \param nsam The sample size
       \param removeFixed Whether or not to remove variants present in all nsam
       chromosomes
 
@@ -277,7 +276,6 @@ namespace fwdpp
       \param p A population
       \param individuals The indexes of the diploids to 'view' from the
       population
-      \param nsam The sample size
       \param removeFixed Whether or not to remove variants present in all nsam
       chromosomes
 

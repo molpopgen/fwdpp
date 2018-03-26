@@ -444,7 +444,7 @@ namespace fwdpp
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
       \param clist A list of gametes. See below.
-      \param mutaton_indexes Keys to mutations in p.mutations.
+      \param mutation_indexes Keys to mutations in p.mutations.
 
       \return Nothing (void)
 

@@ -1,5 +1,5 @@
 /*!
-  \file sugar_slocuspop.cc
+  \file sugar_singlepopTest.cc
   \ingroup unit
   \brief Testing fwdpp::slocuspop
 */

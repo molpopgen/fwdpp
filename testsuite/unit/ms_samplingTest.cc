@@ -1,5 +1,5 @@
 /*!
-  \file ms_sampling.cc
+  \file ms_samplingTest.cc
   \ingroup unit
   \brief Testing fwdpp::ms_sample
 */

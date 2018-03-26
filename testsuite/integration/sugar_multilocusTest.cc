@@ -1,5 +1,5 @@
 /*!
-  \file sugar_multilocus.cc
+  \file sugar_multilocusTest.cc
   \ingroup unit
   \brief Testing fwdpp::mlocuspop
 */

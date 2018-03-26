@@ -1,5 +1,5 @@
 /*!
-  \file test_generalmut_vec.cc
+  \file sugar_generalmut_vecTest.cc
   \ingroup unit
   \brief Testing fwdpp::generalmut_vec
 */

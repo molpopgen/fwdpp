@@ -1,5 +1,5 @@
 /*!
-  \file test_sugar_change_neutral.cc
+  \file sugar_change_neutralTest.cc
 
   \brief test fwdpp::change_neutral
 */

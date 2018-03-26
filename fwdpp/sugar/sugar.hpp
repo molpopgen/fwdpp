@@ -1,5 +1,5 @@
 /*! 
- * \file sugar.hpp
+ * \file fwdpp/sugar/sugar.hpp
  * \brief Lazy header for fwdpp/sugar features
  */
 #ifndef __FWDPP_SUGAR_SUGAR_HPP__

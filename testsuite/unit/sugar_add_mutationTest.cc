@@ -1,5 +1,5 @@
 /*!
-  \file test_sugar_add_mutation.cc
+  \file sugar_add_mutationTest.cc
 
   \brief test fwdpp::add_mutation
 */

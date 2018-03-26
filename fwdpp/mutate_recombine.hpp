@@ -66,10 +66,11 @@ namespace fwdpp
                          const recombination_policy &rec_pol)
     /// Generate vector of recombination breakpoints
     ///
+	/// \param diploid A single-locus diploid.
     /// \param g1 Index of gamete 1
     /// \param g2 Index of gamete 2
     /// \param gametes Vector of gametes
-    /// \param mutation Vector of mutations
+    /// \param mutations Vector of mutations
     /// \param rec_pol Function to generate breakpoints
     ///
     /// \return std::vector<double> containing sorted breakpoints
@@ -106,6 +107,7 @@ namespace fwdpp
     /// \param recycling_bin The queue for recycling mutations
     /// \param r A random number generator
     /// \param mu The total mutation rate
+	/// \param dip A single-locus diploid
     /// \param gametes Vector of gametes
     /// \param mutations Vector of mutations
     /// \param g index of gamete to mutate
@@ -183,7 +185,7 @@ namespace fwdpp
     /// \param g1 Parental gamete 1
     /// \param g2 Parental gamete 2
     /// \param gametes The vector of gametes in the population
-    /// \param mutation The vector of mutations in the population
+    /// \param mutations The vector of mutations in the population
     /// \param gamete_recycling_bin FIFO queue for gamete recycling
     /// \param neutral Temporary container for updating neutral mutations
     /// \param selected Temporary container for updatng selected positions
@@ -318,6 +320,7 @@ namespace fwdpp
     /// \param parental_gametes Tuple of gamete keys for each parent
     /// \param rec_pol Policy to generate recombination breakpoints
     /// \param mmodel Policy to generate new mutations
+	/// \param mu Total mutation rate (per gamete).
     /// \param gamete_recycling_bin FIFO queue for gamete recycling
     /// \param mutation_recycling_bin FIFO queue for mutation recycling
     /// \param dip The offspring

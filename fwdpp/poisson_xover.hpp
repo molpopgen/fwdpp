@@ -24,10 +24,10 @@ namespace fwdpp
             : r{ r_ }, recrate{ recrate_ }, minpos{ minpos_ },
               maxpos{ maxpos_ }
         /*!
-          \param r A gsl_rng
-          \param littler The recombination rate (per diploid_, per region)
-          \param minpos The minimum recombination position allowed
-          \param maxpos The maximum recombination position allowed
+          \param r_ A gsl_rng
+          \param recrate_ The recombination rate (per diploid_, per region)
+          \param minpos_ The minimum recombination position allowed
+          \param maxpos_ The maximum recombination position allowed
           the gametes & mutations involve in an x-over.
          */
         {

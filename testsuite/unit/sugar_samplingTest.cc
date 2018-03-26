@@ -1,5 +1,5 @@
 /*!
-  \file sugar_sampling.cc
+  \file sugar_samplingTest.cc
   \ingroup unit
   \brief Testing fwdpp::sample and fwdpp::sample_separate
 */

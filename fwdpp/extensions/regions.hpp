@@ -120,7 +120,9 @@ namespace fwdpp
               \param __sbeg Positions of beginnings of 'selected' regions
               \param __send Positions of ends of 'selected' regions
               \param sweights Weights on 'selected' regions
-              \param __shmodels Vector of fwdpp::experimenta::shmodel
+              \param __shmodels Vector of fwdpp::experimental::shmodel
+			  \param __nlabels Vector of data to add to mutation_base::xtra for neutral variants
+			  \param __slabels Vector of data to add to mutation_base::xtra for selected variants
             */
             discrete_mut_model(std::vector<double> __nbeg,
                                std::vector<double> __nend,
@@ -302,6 +304,8 @@ namespace fwdpp
 
           public:
             /*!
+			  \param r A random number generator
+			  \param recrate Expected number of breakpoints per diploid
               \param __beg Region beginnings
               \param __end Region ends
               \param __weight Region weights
