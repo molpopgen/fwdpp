@@ -65,7 +65,7 @@ namespace fwdpp
                        mcont_t &mutations) const
             {
                 auto region = gsl_ran_discrete(r, lookup.get());
-                return functions[region](mutation_recycling_bin, mutations);
+                return functions.at(region)(mutation_recycling_bin, mutations);
             }
         };
 
