@@ -130,39 +130,18 @@ main(int argc, char **argv)
     std::vector<double> locus_weights;
     std::vector<fwdpp::traits::mutation_model<singlepop_t::mcont_t>> functions;
 
-    const auto posmaker = [&r, &pop](double a, double b) {
-        auto pos = gsl_ran_flat(r.get(), a, b);
-        while (pop.mut_lookup.find(pos) != pop.mut_lookup.end())
-            {
-                pos = gsl_ran_flat(r.get(), a, b);
-            }
-        return pos;
-    };
-
     for (unsigned i = 0; i < K; ++i)
         {
-            locus_weights.push_back(mutrate_region);
-            locus_weights.push_back(mutrate_del_region);
-            functions.push_back([&r, &generation, &pop, posmaker, i,
+            locus_weights.push_back(1.0);
+            functions.push_back([&r, &generation, &pop, i,
                                  mutrate_region, mutrate_del_region](
                 fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
                     &mutation_recycling_bin,
                 singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites()(
                     mutation_recycling_bin, mutations, r.get(), pop.mut_lookup,
-                    generation, mutrate_region, 0.0,
-                    [posmaker, i]() { return posmaker(i, i + 1); },
-                    []() { return 0.0; }, []() { return 1.; });
-            });
-            functions.push_back([&r, &generation, &pop, posmaker, i,
-                                 mutrate_region, mutrate_del_region](
-                fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
-                    &mutation_recycling_bin,
-                singlepop_t::mcont_t &mutations) {
-                return fwdpp::infsites()(
-                    mutation_recycling_bin, mutations, r.get(), pop.mut_lookup,
-                    generation, 0.0, mutrate_del_region,
-                    [posmaker, i]() { return posmaker(i, i + 1); },
+                    generation, mutrate_region, mutrate_del_region,
+                    [&r,i]() { return gsl_ran_flat(r.get(),i,i+1); },
                     []() { return -0.1; }, []() { return 1.; });
             });
         }
@@ -226,5 +205,5 @@ main(int argc, char **argv)
                               << pop.mutations[i].g << ' '
                               << pop.mutations[i].neutral << '\n';
                 }
-		}
+        }
 }
