@@ -133,15 +133,15 @@ main(int argc, char **argv)
     for (unsigned i = 0; i < K; ++i)
         {
             locus_weights.push_back(1.0);
-            functions.push_back([&r, &generation, &pop, i,
-                                 mutrate_region, mutrate_del_region](
+            functions.push_back([&r, &generation, &pop, i, mutrate_region,
+                                 mutrate_del_region](
                 fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
                     &mutation_recycling_bin,
                 singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites()(
                     mutation_recycling_bin, mutations, r.get(), pop.mut_lookup,
                     generation, mutrate_region, mutrate_del_region,
-                    [&r,i]() { return gsl_ran_flat(r.get(),i,i+1); },
+                    [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
                     []() { return -0.1; }, []() { return 1.; });
             });
         }
@@ -202,8 +202,8 @@ main(int argc, char **argv)
                 {
                     std::cout << pop.mutations[i].pos << ' '
                               << pop.mutations[i].s << ' '
-                              << pop.mutations[i].g << ' '
-                              << pop.mutations[i].neutral << '\n';
+                              << pop.mutations[i].g << ' ' << pop.mcounts[i]
+                              << '\n';
                 }
         }
 }
