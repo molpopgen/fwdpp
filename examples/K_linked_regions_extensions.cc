@@ -189,7 +189,7 @@ main(int argc, char **argv)
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, K * twoN));
+            assert(check_sum(pop.gametes, twoN));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
