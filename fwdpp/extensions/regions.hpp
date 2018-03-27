@@ -18,194 +18,54 @@ namespace fwdpp
 {
     namespace extensions
     {
-        struct discrete_mut_model_data
-        {
-            std::vector<double> nbeg, nend, sbeg, send, nweights, sweights;
-            std::vector<shmodel> shmodels;
-            using vec_xtra = std::vector<decltype(fwdpp::mutation_base::xtra)>;
-            vec_xtra nlabels, slabels;
-            discrete_mut_model_data(
-                std::vector<double> __nbeg, std::vector<double> __nend,
-                std::vector<double> __nweights, // the weights
-                std::vector<double> __sbeg, std::vector<double> __send,
-                std::vector<double> __sweights, // the weights
-                std::vector<shmodel> __shmodels, vec_xtra __nlabels,
-                vec_xtra __slabels)
-                : nbeg(std::move(__nbeg)), nend(std::move(__nend)),
-                  sbeg(std::move(__sbeg)), send(std::move(__send)),
-                  nweights(std::move(__nweights)),
-                  sweights(std::move(__sweights)),
-                  shmodels(std::move(__shmodels)),
-                  nlabels(std::move(__nlabels)), slabels(std::move(__slabels))
-            {
-                if (nbeg.size() != nend.size()
-                    || nbeg.size() != nweights.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-                if (sbeg.size() != send.size()
-                    || sbeg.size() != sweights.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-                if (!sweights.empty() && sweights.size() != shmodels.size())
-                    {
-                        throw std::invalid_argument(
-                            "incorrect number of shmodels");
-                    }
-                if (slabels.empty())
-                    {
-                        slabels.resize(sbeg.size(), 0);
-                    }
-                if (nlabels.empty())
-                    {
-                        nlabels.resize(nend.size(), 0);
-                    }
-            }
-        };
-
+        template <typename mcont_t,
+                  typename mutation_model_signature =
+                      typename fwdpp::traits::mutation_model<mcont_t>>
         class discrete_mut_model
         /*!
-          Class allowing the simulation of discrete variation
-          in mutation models along a region.
-
-          Implemented in terms of fwdpp::popgenmut.
-
-          Intended to be used with the callbacks in
-          fwdpp/extensions/callbacks.hpp
         */
         {
           private:
-            std::unique_ptr<discrete_mut_model_data> data;
-            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr nlookup, slookup;
-            inline void
-            assign_weights()
-            {
-                if (data->nweights.size())
-                    nlookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(data->nweights.size(),
-                                                 data->nweights.data()));
-                if (data->sweights.size())
-                    slookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(data->sweights.size(),
-                                                 data->sweights.data()));
-            }
-
-            /*!
-              Helper function.  Not to be called externally.
-            */
-            template <typename lookup_table_t>
-            inline double
-            posmaker(const gsl_rng *r, const double &beg, const double &end,
-                     lookup_table_t &lookup) const
-            {
-                double pos = gsl_ran_flat(r, beg, end);
-                while (lookup.find(pos) != lookup.end())
-                    {
-                        pos = gsl_ran_flat(r, beg, end);
-                    }
-                lookup.insert(pos);
-                return pos;
-            }
+            std::vector<mutation_model_signature> functions;
+            std::vector<double> weights;
+            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
 
           public:
-            using result_type = std::size_t;
+            using function_type = mutation_model_signature;
 
-            /*!
-              \param __nbeg Positions of beginnings of 'neutral' regions
-              \param __nend Positions of ends of 'neutral' regions
-              \param nweights Weights on 'neutral' regions
-              \param __sbeg Positions of beginnings of 'selected' regions
-              \param __send Positions of ends of 'selected' regions
-              \param sweights Weights on 'selected' regions
-              \param __shmodels Vector of fwdpp::experimental::shmodel
-			  \param __nlabels Vector of data to add to mutation_base::xtra for neutral variants
-			  \param __slabels Vector of data to add to mutation_base::xtra for selected variants
-            */
-            discrete_mut_model(std::vector<double> __nbeg,
-                               std::vector<double> __nend,
-                               std::vector<double> nweights, // the weights
-                               std::vector<double> __sbeg,
-                               std::vector<double> __send,
-                               std::vector<double> sweights, // the weights
-                               std::vector<shmodel> __shmodels,
-                               discrete_mut_model_data::vec_xtra __nlabels
-                               = discrete_mut_model_data::vec_xtra(),
-                               discrete_mut_model_data::vec_xtra __slabels
-                               = discrete_mut_model_data::vec_xtra())
-                : data(new discrete_mut_model_data(
-                      std::move(__nbeg), std::move(__nend),
-                      std::move(nweights), std::move(__sbeg),
-                      std::move(__send), std::move(sweights),
-                      std::move(__shmodels), std::move(__nlabels),
-                      std::move(__slabels)))
+            template <typename function_container, typename weight_container>
+            discrete_mut_model(function_container &&functions_,
+                               weight_container &&weights_)
+                : functions{ std::forward<function_container>(functions_) },
+                  weights{ std::forward<weight_container>(weights_) }, lookup{
+                      nullptr
+                  }
             {
-                assign_weights();
-            }
-
-            discrete_mut_model(const discrete_mut_model &dmm)
-                : data(new discrete_mut_model_data(*dmm.data))
-            {
-                assign_weights();
-            }
-
-            /*!
-              Return a fwdpp::popgenmut
-
-              \param r A gsl_rng
-              \param nmu Neutral mutation rate (per gamete, per generation)
-              \param smu Selected mutation rate (per gamete, per
-              generation)
-              \param generation The current generation
-              \param recycling_bin A recycling bin for mutations
-              \param mutations A container of mutations
-              \param lookup Lookup table for mutations
-
-              \precondition If nmu == 0, then nbeg/nend cannot be empty.
-              Similarly,
-              if smu == 0, then sbeg,end cannot be empty.  These conditions
-              are
-              checked in debug
-              mode via the assert macro.  It is up to the calling
-              environment
-              to prevent this situation
-              from arising.  Also, nmu+smu must be > 0, and is also checked
-              by
-              assert.
-            */
-            template <typename queue_t, typename lookup_table_t,
-                      typename mcont_t>
-            inline result_type
-            operator()(queue_t &recycling_bin, mcont_t &mutations,
-                       const gsl_rng *r, const double nmu, const double smu,
-                       const unsigned *generation,
-                       lookup_table_t &lookup) const
-            {
-                assert(nmu + smu > 0.);
-                bool is_neutral
-                    = (gsl_rng_uniform(r) < nmu / (nmu + smu)) ? true : false;
-                if (is_neutral)
+                if (functions.size() != weights.size())
                     {
-                        assert(!data->nbeg.empty());
-                        assert(!data->nend.empty());
-                        size_t region = gsl_ran_discrete(r, nlookup.get());
-                        double pos = posmaker(r, data->nbeg[region],
-                                              data->nend[region], lookup);
-                        return fwdpp_internal::recycle_mutation_helper(
-                            recycling_bin, mutations, pos, 0., 0., *generation,
-                            data->nlabels[region]);
+                        throw std::invalid_argument("number of functions must "
+                                                    "equal number of weights");
                     }
-                assert(!data->sbeg.empty());
-                assert(!data->send.empty());
-                size_t region = gsl_ran_discrete(r, slookup.get());
-                double pos = posmaker(r, data->sbeg[region],
-                                      data->send[region], lookup);
-                return fwdpp_internal::recycle_mutation_helper(
-                    recycling_bin, mutations, pos, data->shmodels[region].s(r),
-                    data->shmodels[region].h(r), *generation,
-                    data->slabels[region]);
+                if (!weights.empty())
+                    {
+                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                            gsl_ran_discrete_preproc(weights.size(),
+                                                     weights.data()));
+                    }
+                else
+                    {
+                        throw std::invalid_argument("weights cannot be empty");
+                    }
+            }
+
+            inline typename function_type::result_type
+            operator()(const gsl_rng *r,
+                       typename fwdpp::traits::recycling_bin_t<mcont_t>
+                           &mutation_recycling_bin,
+                       mcont_t &mutations) const
+            {
+                auto region = gsl_ran_discrete(r, lookup.get());
+                return functions[region](mutation_recycling_bin, mutations);
             }
         };
 
@@ -217,51 +77,55 @@ namespace fwdpp
 
           See unit test extensions.cc for an example of use.
         */
-        template <typename mcont_t, typename lookup_t, class... Args>
-        inline traits::mutation_model<mcont_t>
-        bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t &mut_lookup,
-                 Args &&... args)
-        {
-            return std::bind(&discrete_mut_model::
-                             operator()<traits::recycling_bin_t<mcont_t>,
-                                        lookup_t, mcont_t>,
-                             &dm, std::placeholders::_1, std::placeholders::_2,
-                             std::forward<Args>(args)...,
-                             std::ref(mut_lookup));
-        }
+        // template <typename mcont_t, typename lookup_t, class... Args>
+        // inline traits::mutation_model<mcont_t>
+        // bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t
+        // &mut_lookup,
+        //          Args &&... args)
+        // {
+        //     return std::bind(&discrete_mut_model::
+        //                      operator()<traits::recycling_bin_t<mcont_t>,
+        //                                 lookup_t, mcont_t>,
+        //                      &dm, std::placeholders::_1,
+        //                      std::placeholders::_2,
+        //                      std::forward<Args>(args)...,
+        //                      std::ref(mut_lookup));
+        // }
 
-        /*! Return a vector of callables bount
-         *  to fwdpp::extensions::discrete_mut_model::operator()
-         */
-        template <typename mcont_t, typename lookup_t, class... Args>
-        inline std::vector<traits::mutation_model<mcont_t>>
-        bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
-                     mcont_t &mutations, lookup_t &mut_lookup,
-                     const gsl_rng *r,
-                     const std::vector<double> &neutral_mutrates,
-                     const std::vector<double> &selected_mutrates,
-                     Args &&... args)
-        {
-            if (vdm.size() != neutral_mutrates.size()
-                || vdm.size() != selected_mutrates.size())
-                {
-                    throw std::invalid_argument(
-                        "container sizes must all be equal");
-                }
-            std::vector<decltype(
-                bind_dmm(vdm[0], mutations, mut_lookup, r, neutral_mutrates[0],
-                         selected_mutrates[0], std::forward<Args>(args)...))>
-                rv;
-            std::size_t i = 0;
-            for (auto &&dm : vdm)
-                {
-                    rv.emplace_back(bind_dmm(
-                        dm, mutations, mut_lookup, r, neutral_mutrates[i],
-                        selected_mutrates[i], std::forward<Args>(args)...));
-                    ++i;
-                }
-            return rv;
-        }
+        // /*! Return a vector of callables bount
+        //  *  to fwdpp::extensions::discrete_mut_model::operator()
+        //  */
+        // template <typename mcont_t, typename lookup_t, class... Args>
+        // inline std::vector<traits::mutation_model<mcont_t>>
+        // bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
+        //              mcont_t &mutations, lookup_t &mut_lookup,
+        //              const gsl_rng *r,
+        //              const std::vector<double> &neutral_mutrates,
+        //              const std::vector<double> &selected_mutrates,
+        //              Args &&... args)
+        // {
+        //     if (vdm.size() != neutral_mutrates.size()
+        //         || vdm.size() != selected_mutrates.size())
+        //         {
+        //             throw std::invalid_argument(
+        //                 "container sizes must all be equal");
+        //         }
+        //     std::vector<decltype(
+        //         bind_dmm(vdm[0], mutations, mut_lookup, r,
+        //         neutral_mutrates[0],
+        //                  selected_mutrates[0],
+        //                  std::forward<Args>(args)...))>
+        //         rv;
+        //     std::size_t i = 0;
+        //     for (auto &&dm : vdm)
+        //         {
+        //             rv.emplace_back(bind_dmm(
+        //                 dm, mutations, mut_lookup, r, neutral_mutrates[i],
+        //                 selected_mutrates[i], std::forward<Args>(args)...));
+        //             ++i;
+        //         }
+        //     return rv;
+        // }
 
         struct discrete_rec_model_data
         {
@@ -304,8 +168,9 @@ namespace fwdpp
 
           public:
             /*!
-			  \param r A random number generator
-			  \param recrate Expected number of breakpoints per diploid
+                          \param r A random number generator
+                          \param recrate Expected number of breakpoints per
+              diploid
               \param __beg Region beginnings
               \param __end Region ends
               \param __weight Region weights
