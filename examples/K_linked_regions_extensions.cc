@@ -150,7 +150,7 @@ main(int argc, char **argv)
         std::move(functions), std::move(locus_weights));
 
     const auto bound_mmodels
-        = fwdpp::extensions::bind_dmm<singlepop_t::mcont_t>(r.get(), mmodels);
+        = fwdpp::extensions::bind_dmm(r.get(), mmodels);
 
     // Set up recombination rates
     locus_starts.clear();

@@ -18,9 +18,13 @@ namespace fwdpp
 {
     namespace extensions
     {
-        template <typename mcont_t,
-                  typename mutation_model_signature =
-                      typename fwdpp::traits::mutation_model<mcont_t>>
+        template <
+            typename mcont_t, typename gcont_t = void,
+            typename mutation_model_signature = typename std::
+                conditional<std::is_void<gcont_t>::value,
+                            typename fwdpp::traits::mutation_model<mcont_t>,
+                            typename fwdpp::traits::
+                                mutation_model_gamete<mcont_t, gcont_t>>::type>
         class discrete_mut_model
         /*!
         */
@@ -36,6 +40,10 @@ namespace fwdpp
 
           public:
             using function_type = mutation_model_signature;
+            using mutation_container = mcont_t;
+            using gamete_container = gcont_t;
+            using recycling_bin_type =
+                typename fwdpp::traits::recycling_bin_t<mcont_t>;
 
             template <typename function_container, typename weight_container>
             discrete_mut_model(function_container &&functions_,
@@ -79,40 +87,28 @@ namespace fwdpp
           This simplifies life a lot!
 
         */
-        template <typename mcont_t,
-                  typename mutation_model_signature
-                  = typename fwdpp::traits::mutation_model<mcont_t>>
-        inline mutation_model_signature
-        bind_dmm(const gsl_rng *r,
-                 discrete_mut_model<mcont_t, mutation_model_signature> &dmm)
+        template <typename dmm_type>
+        inline typename dmm_type::function_type
+        bind_dmm(const gsl_rng *r, dmm_type &dmm)
         {
-            return [r, &dmm](
-                fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
-                mcont_t &mutations) {
-                return dmm(r, recycling_bin, mutations);
-            };
+            return
+                [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
+                          typename dmm_type::mutation_container &mutations) {
+                    return dmm(r, recycling_bin, mutations);
+                };
         }
 
         /*! Return a vector of callables bound
          *  to fwdpp::extensions::discrete_mut_model::operator()
          */
-        template <typename mcont_t,
-                  typename mutation_model_signature
-                  = typename fwdpp::traits::mutation_model<mcont_t>>
-        inline std::vector<mutation_model_signature>
-        bind_vec_dmm(
-            const gsl_rng *r,
-            std::vector<discrete_mut_model<mcont_t, mutation_model_signature>>
-                &vdm)
+        template <typename dmm_type>
+        inline std::vector<typename dmm_type::function_type>
+        bind_vec_dmm(const gsl_rng *r, std::vector<dmm_type> &vdm)
         {
-            std::vector<mutation_model_signature> rv;
+            std::vector<typename dmm_type::function_type> rv;
             for (auto &i : vdm)
                 {
-                    rv.emplace_back([r, &i](
-                        fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
-                        mcont_t &mutations) {
-                        return i(r, recycling_bin, mutations);
-                    });
+                    rv.emplace_back(bind_dmm(r,i));
                 }
             return rv;
         }
