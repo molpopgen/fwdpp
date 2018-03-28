@@ -78,22 +78,20 @@ namespace fwdpp
 
           This simplifies life a lot!
 
-          See unit test extensions.cc for an example of use.
         */
-        // template <typename mcont_t, typename lookup_t, class... Args>
-        // inline traits::mutation_model<mcont_t>
-        // bind_dmm(const discrete_mut_model &dm, mcont_t &, lookup_t
-        // &mut_lookup,
-        //          Args &&... args)
-        // {
-        //     return std::bind(&discrete_mut_model::
-        //                      operator()<traits::recycling_bin_t<mcont_t>,
-        //                                 lookup_t, mcont_t>,
-        //                      &dm, std::placeholders::_1,
-        //                      std::placeholders::_2,
-        //                      std::forward<Args>(args)...,
-        //                      std::ref(mut_lookup));
-        // }
+        template <typename mcont_t,
+                  typename mutation_model_signature
+                  = typename fwdpp::traits::mutation_model<mcont_t>>
+        inline mutation_model_signature
+        bind_dmm(const gsl_rng *r,
+                 discrete_mut_model<mcont_t, mutation_model_signature> &dmm)
+        {
+            return [r, &dmm](
+                fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
+                mcont_t &mutations) {
+                return dmm(r, recycling_bin, mutations);
+            };
+        }
 
         // /*! Return a vector of callables bount
         //  *  to fwdpp::extensions::discrete_mut_model::operator()

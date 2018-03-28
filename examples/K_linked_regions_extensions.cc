@@ -109,7 +109,7 @@ main(int argc, char **argv)
         = atoi(argv[argument++]); // Number of loci in simulation
 
     const double mutrate_region = theta / double(4 * N * K);
-    const double mutrate_del_region = 0.1 * mutrate_region;
+    const double mutrate_del_region = 0. * mutrate_region;
     const double recrate_region = rho / double(4 * N * K);
 
     std::vector<double> RBW(K, rbw);
@@ -140,7 +140,7 @@ main(int argc, char **argv)
                 singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites()(
                     mutation_recycling_bin, mutations, r.get(), pop.mut_lookup,
-                    generation, mutrate_region, mutrate_del_region,
+                    generation, mutrate_region, 0.0, // mutrate_del_region,
                     [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
                     []() { return -0.1; }, []() { return 1.; });
             });
@@ -150,11 +150,7 @@ main(int argc, char **argv)
         std::move(functions), std::move(locus_weights));
 
     const auto bound_mmodels
-        = [&r, &mmodels](fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
-                             &mutation_recycling_bin,
-                         singlepop_t::mcont_t &mutations) {
-              return mmodels(r.get(), mutation_recycling_bin, mutations);
-          };
+        = fwdpp::extensions::bind_dmm<singlepop_t::mcont_t>(r.get(), mmodels);
 
     // Set up recombination rates
     locus_starts.clear();
