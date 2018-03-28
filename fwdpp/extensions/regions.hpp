@@ -25,6 +25,10 @@ namespace fwdpp
         /*!
         */
         {
+            static_assert(fwdpp::traits::is_mutation<
+                              typename mcont_t::value_type>::value,
+                          "mcont_t::value_type must be a mutation type");
+
           private:
             std::vector<mutation_model_signature> functions;
             std::vector<double> weights;
