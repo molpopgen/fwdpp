@@ -175,20 +175,21 @@ class mlocuspop_popgenmut_fixture
                       fwdpp::poisson_xover(rng.get(), 0.005, 2., 3.),
                       fwdpp::poisson_xover(rng.get(), 0.005, 3., 4.) }),
           vdmm(this->fill_vdmm(mutmodels)),
+		  bound_mmodels(fwdpp::extensions::bind_vec_dmm(rng.get(),vdmm)),
           vdrm(this->fill_vdrm(rng.get()))
     {
         for (unsigned i = 0; i < vdrm.size(); ++i)
             {
                 pop.locus_boundaries.emplace_back(i, i + 1);
             }
-        for (auto &i : vdmm)
-            {
-                auto bound_mm = [&i, this](std::queue<std::size_t> &bin,
-                                           poptype::mcont_t &mutations) {
-                    return i(rng.get(), bin, mutations);
-                };
-                bound_mmodels.emplace_back(std::move(bound_mm));
-            }
+        //for (auto &i : vdmm)
+        //    {
+        //        auto bound_mm = [&i, this](std::queue<std::size_t> &bin,
+        //                                   poptype::mcont_t &mutations) {
+        //            return i(rng.get(), bin, mutations);
+        //        };
+        //        bound_mmodels.emplace_back(std::move(bound_mm));
+        //    }
     }
 };
 

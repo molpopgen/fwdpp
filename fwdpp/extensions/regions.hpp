@@ -93,40 +93,29 @@ namespace fwdpp
             };
         }
 
-        // /*! Return a vector of callables bount
-        //  *  to fwdpp::extensions::discrete_mut_model::operator()
-        //  */
-        // template <typename mcont_t, typename lookup_t, class... Args>
-        // inline std::vector<traits::mutation_model<mcont_t>>
-        // bind_vec_dmm(const std::vector<discrete_mut_model> &vdm,
-        //              mcont_t &mutations, lookup_t &mut_lookup,
-        //              const gsl_rng *r,
-        //              const std::vector<double> &neutral_mutrates,
-        //              const std::vector<double> &selected_mutrates,
-        //              Args &&... args)
-        // {
-        //     if (vdm.size() != neutral_mutrates.size()
-        //         || vdm.size() != selected_mutrates.size())
-        //         {
-        //             throw std::invalid_argument(
-        //                 "container sizes must all be equal");
-        //         }
-        //     std::vector<decltype(
-        //         bind_dmm(vdm[0], mutations, mut_lookup, r,
-        //         neutral_mutrates[0],
-        //                  selected_mutrates[0],
-        //                  std::forward<Args>(args)...))>
-        //         rv;
-        //     std::size_t i = 0;
-        //     for (auto &&dm : vdm)
-        //         {
-        //             rv.emplace_back(bind_dmm(
-        //                 dm, mutations, mut_lookup, r, neutral_mutrates[i],
-        //                 selected_mutrates[i], std::forward<Args>(args)...));
-        //             ++i;
-        //         }
-        //     return rv;
-        // }
+        /*! Return a vector of callables bound
+         *  to fwdpp::extensions::discrete_mut_model::operator()
+         */
+        template <typename mcont_t,
+                  typename mutation_model_signature
+                  = typename fwdpp::traits::mutation_model<mcont_t>>
+        inline std::vector<mutation_model_signature>
+        bind_vec_dmm(
+            const gsl_rng *r,
+            std::vector<discrete_mut_model<mcont_t, mutation_model_signature>>
+                &vdm)
+        {
+            std::vector<mutation_model_signature> rv;
+            for (auto &i : vdm)
+                {
+                    rv.emplace_back([r, &i](
+                        fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
+                        mcont_t &mutations) {
+                        return i(r, recycling_bin, mutations);
+                    });
+                }
+            return rv;
+        }
 
         struct discrete_rec_model_data
         {
