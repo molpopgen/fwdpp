@@ -20,14 +20,14 @@ namespace fwdpp
     {
         template <
             typename mcont_t, typename gcont_t = void,
-            typename mutation_model_signature = typename std::
-                conditional<std::is_void<gcont_t>::value,
-                            typename fwdpp::traits::mutation_model<mcont_t>,
-                            typename fwdpp::traits::
-                                mutation_model_gamete<mcont_t, gcont_t>>::type>
+            typename mutation_model_signature = typename std::conditional<
+                std::is_void<gcont_t>::value,
+                typename fwdpp::traits::mutation_model<mcont_t>,
+                typename fwdpp::traits::mutation_model_gamete<mcont_t,
+                                                              gcont_t>>::type>
         class discrete_mut_model
         /*!
-        */
+         */
         {
             static_assert(fwdpp::traits::is_mutation<
                               typename mcont_t::value_type>::value,
@@ -80,6 +80,29 @@ namespace fwdpp
             }
         };
 
+        template <typename dmm_type>
+        inline typename dmm_type::function_type
+        bind_dmm_wrapper(const gsl_rng *r, dmm_type &dmm, std::true_type)
+        {
+            return
+                [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
+                          typename dmm_type::mutation_container &mutations) {
+                    return dmm(r, recycling_bin, mutations);
+                };
+        }
+
+        template <typename dmm_type>
+        inline typename dmm_type::function_type
+        bind_dmm_wrapper(const gsl_rng *r, dmm_type &dmm, std::false_type)
+        {
+            return
+                [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
+                          typename dmm_type::gcont_t::value_type &gamete,
+                          typename dmm_type::mutation_container &mutations) {
+                    return dmm(r, recycling_bin, gamete, mutations);
+                };
+        }
+
         /*!
           Convenience function to return a function object
           bound to fwdpp::extensions::discrete_mut_model::operator()
@@ -91,11 +114,10 @@ namespace fwdpp
         inline typename dmm_type::function_type
         bind_dmm(const gsl_rng *r, dmm_type &dmm)
         {
-            return
-                [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
-                          typename dmm_type::mutation_container &mutations) {
-                    return dmm(r, recycling_bin, mutations);
-                };
+            return bind_dmm_wrapper(
+                r, dmm,
+                typename std::is_void<
+                    typename dmm_type::gamete_container>::type());
         }
 
         /*! Return a vector of callables bound
@@ -108,7 +130,7 @@ namespace fwdpp
             std::vector<typename dmm_type::function_type> rv;
             for (auto &i : vdm)
                 {
-                    rv.emplace_back(bind_dmm(r,i));
+                    rv.emplace_back(bind_dmm(r, i));
                 }
             return rv;
         }
