@@ -50,13 +50,14 @@ namespace fwdpp
         sugar::gsl_rng_ptr_t
         setup(const gsl_rng *r)
         {
-            return sugar::gsl_rng_ptr_t(gsl_rng_clone(r));
+            return sugar::gsl_rng_ptr_t(gsl_rng_clone(r),
+                                        [](gsl_rng *r) { gsl_rng_free(r); });
         }
 
         //! Smart pointer wrapping the gsl_rng *
         sugar::gsl_rng_ptr_t r;
-      public:
 
+      public:
         //! Typedef for RNG type, if needed
         using rngtype = T;
 
