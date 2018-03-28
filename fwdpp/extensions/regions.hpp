@@ -58,14 +58,13 @@ namespace fwdpp
                     }
             }
 
+            template <typename... function_type_args>
             inline typename function_type::result_type
-            operator()(const gsl_rng *r,
-                       typename fwdpp::traits::recycling_bin_t<mcont_t>
-                           &mutation_recycling_bin,
-                       mcont_t &mutations) const
+            operator()(const gsl_rng *r, function_type_args &&... args) const
             {
                 auto region = gsl_ran_discrete(r, lookup.get());
-                return functions.at(region)(mutation_recycling_bin, mutations);
+                return functions.at(region)(
+                    std::forward<function_type_args>(args)...);
             }
         };
 
