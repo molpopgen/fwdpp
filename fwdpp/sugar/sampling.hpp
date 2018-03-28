@@ -285,7 +285,7 @@ namespace fwdpp
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
                                    sugar::MULTILOC_TAG>::value,
-                      "poptype must be MULTILOC_TAG or MULTILOC_TAG");
+                      "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
                 throw std::runtime_error(
