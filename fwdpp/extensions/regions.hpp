@@ -97,7 +97,8 @@ namespace fwdpp
         {
             return
                 [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
-                          typename dmm_type::gcont_t::value_type &gamete,
+                          const typename dmm_type::gamete_container::value_type
+                              &gamete,
                           typename dmm_type::mutation_container &mutations) {
                     return dmm(r, recycling_bin, gamete, mutations);
                 };
