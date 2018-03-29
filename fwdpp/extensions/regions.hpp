@@ -151,26 +151,6 @@ namespace fwdpp
             return rv;
         }
 
-        struct discrete_rec_model_data
-        {
-            const gsl_rng *r;
-            const double recrate;
-            std::vector<double> beg, end, weight;
-            discrete_rec_model_data(const gsl_rng *r_, const double recrate_,
-                                    const std::vector<double> &&b,
-                                    const std::vector<double> &&e,
-                                    const std::vector<double> &&w)
-                : r{ r_ }, recrate{ recrate_ }, beg(std::move(b)),
-                  end(std::move(e)), weight(std::move(w))
-            {
-                if (beg.size() != end.size() || beg.size() != weight.size())
-                    {
-                        throw std::invalid_argument(
-                            "input vectors must all be the same size");
-                    }
-            }
-        };
-
         class discrete_rec_model
         /*!
           Class allowing the simulation of discrete variation
@@ -178,72 +158,56 @@ namespace fwdpp
         */
         {
           private:
-            using result_type = std::vector<double>;
-            std::unique_ptr<discrete_rec_model_data> data;
+            double recrate;
+            std::vector<std::function<void(std::vector<double> &)>> functions;
+            std::vector<double> weights;
             fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
-            void
-            assign_weights()
-            {
-                if (data->weight.size())
-                    lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
-                        gsl_ran_discrete_preproc(data->weight.size(),
-                                                 data->weight.data()));
-            }
 
           public:
+            using result_type = std::vector<double>;
+            using function_type = std::function<void(std::vector<double> &)>;
             /*!
-                          \param r A random number generator
-                          \param recrate Expected number of breakpoints per
-              diploid
-              \param __beg Region beginnings
-              \param __end Region ends
-              \param __weight Region weights
-            */
-            discrete_rec_model(const gsl_rng *r, const double recrate,
-                               const std::vector<double> __beg,
-                               const std::vector<double> __end,
-                               const std::vector<double> __weight)
-                : data(new discrete_rec_model_data(
-                      r, recrate, std::move(__beg), std::move(__end),
-                      std::move(__weight)))
+             */
+            template <typename function_container, typename weight_container>
+            discrete_rec_model(const double recrate_,
+                               function_container &&functions_,
+                               weight_container &&weights_)
+                : recrate{ recrate_ },
+                  functions(std::forward<function_container>(functions_)),
+                  weights(std::forward<weight_container>(weights_)),
+                  lookup(nullptr)
             {
-                assign_weights();
+                if (functions.size() != weights.size())
+                    {
+                        throw std::invalid_argument("number of functions must "
+                                                    "equal number of weights");
+                    }
+                if (!weights.empty())
+                    {
+                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                            gsl_ran_discrete_preproc(weights.size(),
+                                                     weights.data()));
+                    }
+                else
+                    {
+                        throw std::invalid_argument("weights cannot be empty");
+                    }
             }
 
-            discrete_rec_model(const discrete_rec_model &drm)
-                : data(new discrete_rec_model_data(*drm.data))
-            {
-                assign_weights();
-            }
-
             /*!
-              Returns a position from a region that is chosen based on
-              region
-              weights.
-
-              \precondition If recrate == 0, then beg and end cannot be
-              empty.
-              It is up to the calling environment to make sure
-              that this cannot happen.  This is checked in debug mode via
-              the
-              assert macro.
-            */
+             */
             inline result_type
-            operator()() const
+            operator()(const gsl_rng *r) const
             {
-                assert(!(data->recrate == 0.
-                         && (data->beg.empty() || data->end.empty())));
-                auto nbreaks = gsl_ran_poisson(data->r, data->recrate);
+                unsigned nbreaks = gsl_ran_poisson(r, recrate);
                 if (!nbreaks)
                     return {};
 
-                result_type rv;
+                std::vector<double> rv;
                 for (unsigned i = 0; i < nbreaks; ++i)
                     {
-                        size_t region
-                            = gsl_ran_discrete(data->r, lookup.get());
-                        rv.push_back(gsl_ran_flat(data->r, data->beg[region],
-                                                  data->end[region]));
+                        auto region = gsl_ran_discrete(r, lookup.get());
+                        functions.at(region)(rv);
                     }
                 std::sort(rv.begin(), rv.end());
                 rv.push_back(std::numeric_limits<double>::max());
