@@ -66,7 +66,7 @@ class mlocuspop_popgenmut_fixture
     /* We are going to generate a set of recombination
      * regions for a multi-locus
      * simulation.  There will be four loci total.  Each locus
-     * (i=0 through 4) will have recombination occurring on
+     * (i=0 through 3) will have recombination occurring on
      * the continuous inerval [i,i+1).  Further,
      * each locus will have three regions of different
      * relative recombination rates.  The positions of each
