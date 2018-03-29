@@ -13,8 +13,52 @@
 
 using namespace fwdpp;
 
-using poptype = slocuspop_popgenmut_fixture::poptype;
 BOOST_FIXTURE_TEST_SUITE(test_extensions, slocuspop_popgenmut_fixture)
 
-BOOST_AUTO_TEST_SUITE_END()
+// The next two test cases use a simple dependency injection to test concepts.
+// The function types defined have the correct signature (args + return value),
+// but do not do the correct operations within, which is fine for the purposes
+// here.
 
+BOOST_AUTO_TEST_CASE(bind_mutation_model)
+{
+    using poptype = slocuspop_popgenmut_fixture::poptype;
+    using mmodel_type = fwdpp::traits::mutation_model<poptype::mcont_t>;
+    rng_t rng{ 42 };
+    const auto mmodel
+        = [&rng](std::queue<std::size_t> &,
+                 poptype::mcont_t &) -> std::size_t { return 1; };
+
+    fwdpp::extensions::discrete_mut_model<poptype::mcont_t> m(
+        std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });
+
+    auto bound_mmodel = fwdpp::extensions::bind_dmm(rng.get(), m);
+
+    auto is_a_mutation_model = fwdpp::traits::is_mutation_model<
+        decltype(bound_mmodel), poptype::mcont_t, poptype::gcont_t>::value;
+
+    BOOST_REQUIRE(is_a_mutation_model);
+}
+
+BOOST_AUTO_TEST_CASE(bind_gamete_dependent_mutation_model)
+{
+    using poptype = slocuspop_popgenmut_fixture::poptype;
+    using mmodel_type = fwdpp::traits::mutation_model_gamete<poptype::mcont_t,
+                                                             poptype::gcont_t>;
+    rng_t rng{ 42 };
+    const auto mmodel
+        = [&rng](std::queue<std::size_t> &, const poptype::gamete_t &,
+                 poptype::mcont_t &) -> std::size_t { return 1; };
+
+    fwdpp::extensions::discrete_mut_model<poptype::mcont_t, poptype::gcont_t>
+        m(std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });
+
+    auto bound_mmodel = fwdpp::extensions::bind_dmm(rng.get(), m);
+
+    auto is_a_mutation_model = fwdpp::traits::is_mutation_model<
+        decltype(bound_mmodel), poptype::mcont_t, poptype::gcont_t>::value;
+
+    BOOST_REQUIRE(is_a_mutation_model);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
