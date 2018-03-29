@@ -18,7 +18,7 @@ namespace fwdpp
         /*!
           \ingroup sugar
           \brief Base class for population objects
-          \note Added in fwdpp 0.5.0
+          \note Added in fwdpp 0.5.0.  Changed in 0.6.0 to be independent of ploidy.
          */
         {
             static_assert(typename fwdpp::traits::is_gamete<
