@@ -1,5 +1,5 @@
 /*
-  \file extensions.cc
+  \file extensions_regionsTest.cc
   API checks on fwdpp's extensions sub-library.
 */
 

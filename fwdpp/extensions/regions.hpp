@@ -27,6 +27,19 @@ namespace fwdpp
                                                               gcont_t>>::type>
         class discrete_mut_model
         /*!
+         *  A container of mutation models + weights.
+         *  When called, specific model functions are applied according
+         *  to their weights.
+         *
+         *  Can be used to model regional variation in mutational
+         *  processes and/or mixtures of different distributions
+         *  of effect sizes.
+         *
+         *  fwdpp 0.6.0 generalized the implementation to be
+         *  in terms of std::function.
+         *
+         *  See extensions_regionsTest.cc and
+         *  K_linked_regions_extensions.cc for examples.
          */
         {
             static_assert(fwdpp::traits::is_mutation<
@@ -108,8 +121,8 @@ namespace fwdpp
           Convenience function to return a function object
           bound to fwdpp::extensions::discrete_mut_model::operator()
 
-          This simplifies life a lot!
-
+          See extensions_regionsTest.cc and
+          K_linked_regions_extensions.cc for examples.
         */
         template <typename dmm_type>
         inline typename dmm_type::function_type
@@ -123,6 +136,8 @@ namespace fwdpp
 
         /*! Return a vector of callables bound
          *  to fwdpp::extensions::discrete_mut_model::operator()
+         *  See extensions_regionsTest.cc and
+         *  K_linked_regions_extensions.cc for examples.
          */
         template <typename dmm_type>
         inline std::vector<typename dmm_type::function_type>
