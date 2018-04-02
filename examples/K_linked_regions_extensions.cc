@@ -95,7 +95,7 @@ main(int argc, char **argv)
                       << "seed = seed value for random number generations\n";
             std::exit(0);
         }
-    const unsigned N = atoi(argv[argument++]); // Number of diploids
+    const unsigned N = atoi(argv[argument++]);   // Number of diploids
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
     // mutation rate is per
     // REGION, not SITE!!
@@ -127,51 +127,53 @@ main(int argc, char **argv)
     // Set up mutation models
     std::vector<double> locus_starts(K);
     std::vector<double> locus_ends(K);
-    std::vector<double> locus_weights;
+    std::vector<double> locus_weights, locus_rec_weights;
     std::vector<fwdpp::traits::mutation_model<singlepop_t::mcont_t>> functions;
+    std::vector<fwdpp::extensions::discrete_rec_model::function_type>
+        rec_functions;
 
     for (unsigned i = 0; i < K; ++i)
         {
             locus_weights.push_back(1.0);
-            functions.push_back([&r, &generation, &pop, i, mutrate_region,
-                                 mutrate_del_region](
-                fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
-                    &mutation_recycling_bin,
-                singlepop_t::mcont_t &mutations) {
-                return fwdpp::infsites()(
-                    mutation_recycling_bin, mutations, r.get(), pop.mut_lookup,
-                    generation, mutrate_region, 0.0, // mutrate_del_region,
-                    [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
-                    []() { return -0.1; }, []() { return 1.; });
+            functions.push_back(
+                [&r, &generation, &pop, i, mutrate_region, mutrate_del_region](
+                    fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
+                        &mutation_recycling_bin,
+                    singlepop_t::mcont_t &mutations) {
+                    return fwdpp::infsites()(
+                        mutation_recycling_bin, mutations, r.get(),
+                        pop.mut_lookup, generation, mutrate_region,
+                        0.0, // mutrate_del_region,
+                        [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
+                        []() { return -0.1; }, []() { return 1.; });
+                });
+
+            rec_functions.push_back([i, &r](std::vector<double> &breakpoints) {
+                breakpoints.push_back(gsl_ran_flat(r.get(), i, i + 1));
             });
+            locus_rec_weights.push_back(recrate_region);
+            if (i < K - 1)
+                {
+                    rec_functions.push_back(
+                        [i](std::vector<double> &breakpoints) {
+                            breakpoints.push_back(i + 1);
+                        });
+                    locus_rec_weights.push_back(rbw);
+                }
         }
 
     fwdpp::extensions::discrete_mut_model<singlepop_t::mcont_t> mmodels(
         std::move(functions), std::move(locus_weights));
 
-    const auto bound_mmodels
-        = fwdpp::extensions::bind_dmm(r.get(), mmodels);
+    const auto bound_mmodels = fwdpp::extensions::bind_dmm(r.get(), mmodels);
 
-    // Set up recombination rates
-    locus_starts.clear();
-    locus_ends.clear();
-    locus_weights.clear();
-    for (unsigned i = 0; i < K; ++i)
-        {
-            // start, end, and weight associated w/crossover w/in region i
-            locus_starts.push_back(i);
-            locus_ends.push_back(i + 1);
-            locus_weights.push_back(recrate_region);
-
-            // values associated w/crossover b/w region i and i+1
-            locus_starts.push_back(i + 1);
-            locus_ends.push_back(i + 1);
-            locus_weights.push_back(rbw);
-        }
     const double ttl_recrate
         = double(K) * recrate_region + double(K - 1) * rbw;
+
     fwdpp::extensions::discrete_rec_model recmap(
-        r.get(), ttl_recrate, locus_starts, locus_ends, locus_weights);
+        ttl_recrate, std::move(rec_functions), std::move(locus_rec_weights));
+
+    auto bound_recmap = [&recmap, &r]() { return recmap(r.get()); };
 
     for (generation = 0; generation < ngens; ++generation)
         {
@@ -181,7 +183,7 @@ main(int argc, char **argv)
                 N, double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
                 // mmodels:
-                bound_mmodels, recmap,
+                bound_mmodels, bound_recmap,
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
