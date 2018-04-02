@@ -12,19 +12,16 @@ namespace fwdpp
     /*!
       \brief Simple model of crossing-over.
       Generates a Poisson-distributed number of recombination breakpoints with
-      mean \a littler that
+      mean \a recrate that
       are uniformly-distributed between \a minpos and \a maxpos
      */
     {
-        const gsl_rng *r;
         const double recrate, minpos, maxpos;
 
-        explicit poisson_xover(const gsl_rng *r_, const double recrate_,
-                               const double minpos_, const double maxpos_)
-            : r{ r_ }, recrate{ recrate_ }, minpos{ minpos_ },
-              maxpos{ maxpos_ }
+        explicit poisson_xover(const double recrate_, const double minpos_,
+                               const double maxpos_)
+            : recrate{ recrate_ }, minpos{ minpos_ }, maxpos{ maxpos_ }
         /*!
-          \param r_ A gsl_rng
           \param recrate_ The recombination rate (per diploid_, per region)
           \param minpos_ The minimum recombination position allowed
           \param maxpos_ The maximum recombination position allowed
@@ -37,7 +34,7 @@ namespace fwdpp
         poisson_xover(poisson_xover &&) = default;
 
         std::vector<double>
-        operator()() const
+        operator()(const gsl_rng * r) const
         {
             unsigned nbreaks
                 = (recrate > 0) ? gsl_ran_poisson(r, recrate) : 0u;
