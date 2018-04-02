@@ -7,6 +7,7 @@
 #include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
 #include <testsuite/util/custom_dip.hpp>
@@ -152,7 +153,7 @@ class mlocuspop_popgenmut_fixture
     std::vector<std::function<std::vector<double>(void)>> bound_recmodels;
     mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
-        : pop(poptype(1000, 4)), generation(0), rng(rng_t(seed)),
+        : pop(poptype(1000, 4)), generation(0), rng{seed},
           mu(std::vector<double>(4, 0.005)),
           rbw(std::vector<double>(3, 0.005)),
           mutmodels(
@@ -185,10 +186,14 @@ class mlocuspop_popgenmut_fixture
                           0.0025,
                           [this]() { return gsl_ran_flat(rng.get(), 3., 4.); },
                           []() { return -0.01; }, []() { return 1.; }) }),
-          recmodels({ fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.),
-                      fwdpp::poisson_xover(rng.get(), 0.005, 1., 2.),
-                      fwdpp::poisson_xover(rng.get(), 0.005, 2., 3.),
-                      fwdpp::poisson_xover(rng.get(), 0.005, 3., 4.) }),
+          recmodels{ fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
+                                      this->rng.get()),
+                     fwdpp::recbinder(fwdpp::poisson_xover(0.005, 1., 2.),
+                                      this->rng.get()),
+                     fwdpp::recbinder(fwdpp::poisson_xover(0.005, 2., 3.),
+                                      this->rng.get()),
+                     fwdpp::recbinder(fwdpp::poisson_xover(0.005, 3., 4.),
+                                      this->rng.get()) },
           vdmm(this->fill_vdmm(mutmodels)),
           bound_mmodels(fwdpp::extensions::bind_vec_dmm(rng.get(), vdmm)),
           vdrm(this->fill_vdrm(rng.get())), bound_recmodels{}

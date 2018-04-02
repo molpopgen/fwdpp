@@ -22,7 +22,7 @@ then
     # Useful for debugging any issues with conda
     conda info -a
     conda install gcc zlib boost gsl
-    conda install -c bioconda libsequence
+    # conda install -c bioconda libsequence
 else
     sudo apt-get update -qq
     sudo apt-get -f install libboost-test-dev libgsl*-dev

@@ -11,6 +11,7 @@
 #include <fwdpp/sugar/sampling.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/debug.hpp>
+#include <iostream>
 
 fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
 
@@ -242,17 +243,24 @@ BOOST_AUTO_TEST_CASE(multilocus_test_sep_empty)
 
 BOOST_AUTO_TEST_CASE(multilocus_test_sampling)
 {
-    simulate_mlocuspop(pop, rng, mutmodels, recmodels, multilocus_additive(),
-                       mu, rbw, generation);
-    auto s = fwdpp::sample_separate(rng.get(), pop, 20, true);
-    s = fwdpp::sample_separate(rng.get(), pop, 20, false);
-    auto s2 = fwdpp::sample(rng.get(), pop, 20, true);
-    s2 = fwdpp::sample(rng.get(), pop, 20, false);
-    pop.locus_boundaries.clear();
-    BOOST_REQUIRE_THROW(s = fwdpp::sample_separate(rng.get(), pop, 20, false),
-                        std::runtime_error);
-    BOOST_REQUIRE_THROW(s2 = fwdpp::sample(rng.get(), pop, 20, false),
-                        std::runtime_error);
+	std::cout << recmodels.size() << '\n';
+	for(auto i=0;i<recmodels.size();++i)
+	{
+		std::cout << i << std::endl;
+		auto x = recmodels.at(2)();
+		std::cout << x.size() << std::endl;
+	}
+    //simulate_mlocuspop(pop, rng, mutmodels, recmodels, multilocus_additive(),
+    //                   mu, rbw, generation);
+    //auto s = fwdpp::sample_separate(rng.get(), pop, 20, true);
+    //s = fwdpp::sample_separate(rng.get(), pop, 20, false);
+    //auto s2 = fwdpp::sample(rng.get(), pop, 20, true);
+    //s2 = fwdpp::sample(rng.get(), pop, 20, false);
+    //pop.locus_boundaries.clear();
+    //BOOST_REQUIRE_THROW(s = fwdpp::sample_separate(rng.get(), pop, 20, false),
+    //                    std::runtime_error);
+    //BOOST_REQUIRE_THROW(s2 = fwdpp::sample(rng.get(), pop, 20, false),
+    //                    std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(multilocus_test_empty)

@@ -15,6 +15,7 @@
 #include <Sequence/SimData.hpp>
 #endif
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 // Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
 // typedef mutation_with_age mtype;
@@ -66,7 +67,8 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
+    const auto rec
+        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
     while (nreps--)
         {

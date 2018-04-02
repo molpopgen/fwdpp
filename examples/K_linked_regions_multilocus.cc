@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #endif
@@ -90,8 +91,8 @@ main(int argc, char **argv)
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
-            recpols.emplace_back(fwdpp::poisson_xover(
-                r.get(), littler, double(i), double(i) + 1.0));
+            recpols.emplace_back(fwdpp::recbinder(
+                fwdpp::poisson_xover(littler, i, i + 1), r.get()));
             mmodels.push_back(std::bind(
                 fwdpp::infsites(), std::placeholders::_1,
                 std::placeholders::_2, r.get(), std::ref(pop.mut_lookup),
