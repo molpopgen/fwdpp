@@ -7,6 +7,7 @@
 #include <iostream>
 #include <gsl/gsl_statistics_double.h>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 
 using mtype = fwdpp::mutation;
@@ -108,7 +109,8 @@ main(int argc, char **argv)
     fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937> r(seed);
 
     // recombination map is uniform[0,1)
-    auto rec = fwdpp::poisson_xover(r.get(), littler, 0., 1.);
+    const auto rec
+        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
     while (nreps--)
         {

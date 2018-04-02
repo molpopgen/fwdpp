@@ -13,6 +13,7 @@
 #include <Sequence/SimData.hpp>
 #endif
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 // Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
 #include <fwdpp/sugar/infsites.hpp>
 
@@ -77,8 +78,9 @@ main(int argc, char **argv)
     GSLrng r(seed);
 
     // recombination map is uniform[0,1)
-    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
-
+    fwdpp::poisson_xover recmap(littler, 0., 1.);
+    const auto rec = [recmap, &r]() { return recmap(r.get()); };
+   
     std::vector<unsigned> N_over_time(ngens, N + 1);
     N_over_time.push_back(N2);
     // Figure out the growth rate, etc.

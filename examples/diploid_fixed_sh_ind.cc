@@ -6,6 +6,7 @@
  */
 
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #endif
@@ -55,7 +56,8 @@ main(int argc, char **argv)
     GSLrng r(seed);
 
     // recombination map is uniform[0,1)
-    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
+    const auto rec
+        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
     while (nreps--)
         {

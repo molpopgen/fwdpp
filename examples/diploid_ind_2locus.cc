@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #endif
@@ -98,8 +99,10 @@ main(int argc, char **argv)
             double wbar;
 
             std::vector<std::function<std::vector<double>()>> recpols{
-                fwdpp::poisson_xover(r.get(), littler, 0., 1.),
-                fwdpp::poisson_xover(r.get(), littler, 1., 2.)
+                fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.),
+                                 r.get()),
+                fwdpp::recbinder(fwdpp::poisson_xover(littler, 1., 2.),
+                                 r.get())
             };
 
             std::vector<std::function<std::size_t(std::queue<std::size_t> &,
