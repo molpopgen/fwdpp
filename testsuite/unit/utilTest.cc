@@ -87,9 +87,23 @@ BOOST_FIXTURE_TEST_CASE(only_recycle_neutral_fixations,
     BOOST_REQUIRE_EQUAL(mcounts[0], 0);
     BOOST_REQUIRE_EQUAL(mcounts[1], 2 * N);
     BOOST_REQUIRE_EQUAL(mutations.size(), 2);
-    BOOST_REQUIRE_EQUAL(fixations.size(), 1);
-    BOOST_REQUIRE_EQUAL(fixation_times.size(), 1);
+    BOOST_REQUIRE_EQUAL(fixations.size(), 2);
+    BOOST_REQUIRE_EQUAL(fixation_times.size(), 2);
     BOOST_REQUIRE_EQUAL(fixation_times[0], 2);
+    // Do it again, but
+    // use generation = 3
+    fwdpp::update_mutations_n(mutations, fixations, fixation_times, mut_lookup,
+                              mcounts, 3, 2 * N);
+	// This will not change the data b/c
+	// the neutral variant is already flagged to recycle
+	// and the selected one is already entered into fixations.
+    BOOST_REQUIRE_EQUAL(mcounts[0], 0);
+    BOOST_REQUIRE_EQUAL(mcounts[1], 2 * N);
+    BOOST_REQUIRE_EQUAL(mutations.size(), 2);
+    BOOST_REQUIRE_EQUAL(fixations.size(), 2);
+    BOOST_REQUIRE_EQUAL(fixation_times.size(), 2);
+    BOOST_REQUIRE_EQUAL(fixation_times[0], 2);
+    BOOST_REQUIRE_EQUAL(fixation_times[1], 2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
