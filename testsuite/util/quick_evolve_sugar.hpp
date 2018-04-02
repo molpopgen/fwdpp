@@ -9,6 +9,7 @@
 #include <exception>
 #include <cmath>
 #include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
@@ -38,7 +39,8 @@ simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
                           std::ref(pop.mut_lookup), generation, 0.0025, 0.0025,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
-                fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.),
+                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
+                                 rng.get()),
                 fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
@@ -72,7 +74,8 @@ simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
                           std::ref(pop.mut_lookup), g, 0.0025, 0.0025,
                           [&rng]() { return gsl_rng_uniform(rng.get()); },
                           []() { return -0.01; }, []() { return 1.; }),
-                fwdpp::poisson_xover(rng.get(), 0.005, 0., 1.),
+                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
+                                 rng.get()),
                 fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
@@ -99,15 +102,17 @@ struct multilocus_additive
         using dip_t = mlocuspop_popgenmut_fixture::poptype::dipvector_t::
             value_type::value_type;
         return std::max(
-            0., 1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
-                                     [&gametes, &mutations](const double d,
-                                                            const dip_t &dip) {
-                                         return d + fwdpp::additive_diploid()(
-                                                        gametes[dip.first],
-                                                        gametes[dip.second],
-                                                        mutations)
-                                                - 1.;
-                                     }));
+            0., 1.
+                    + std::accumulate(diploid.begin(), diploid.end(), 0.,
+                                      [&gametes, &mutations](
+                                          const double d, const dip_t &dip) {
+                                          return d
+                                                 + fwdpp::additive_diploid()(
+                                                       gametes[dip.first],
+                                                       gametes[dip.second],
+                                                       mutations)
+                                                 - 1.;
+                                      }));
     }
 };
 
