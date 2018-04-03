@@ -107,6 +107,7 @@ namespace fwdpp
             {
                 pos = posmaker();
             }
+        lookup.insert(pos);
         bool selected = (gsl_rng_uniform(r) < pselected);
         return fwdpp_internal::recycle_mutation_helper(
             recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
