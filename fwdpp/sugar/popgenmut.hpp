@@ -68,6 +68,28 @@ namespace fwdpp
         }
     };
 
+    template <typename queue_t, typename mcont_t, typename lookup_table_t,
+              typename position_function, typename effect_size_function,
+              typename dominance_function>
+    std::size_t
+    infsites_popgenmut(queue_t &recycling_bin, mcont_t &mutations,
+                       const gsl_rng *r, lookup_table_t &lookup,
+                       const uint_t &generation, const double pselected,
+                       const position_function &posmaker,
+                       const effect_size_function &esize_maker,
+                       const dominance_function &hmaker)
+    {
+        auto pos = posmaker();
+        while (lookup.find(pos) != lookup.end())
+            {
+                pos = posmaker();
+            }
+        bool selected = (gsl_rng_uniform(r) < pselected);
+        return fwdpp_internal::recycle_mutation_helper(
+            recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
+            (selected) ? hmaker() : 0., generation);
+    }
+
     namespace io
     {
         template <> struct serialize_mutation<popgenmut>
