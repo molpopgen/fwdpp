@@ -9,7 +9,7 @@ These functions are only relevant to _indivdual-based_ simulations.  The gamete-
 The intention of the "sugar layer" is to:
 
 * Provide a path to more rapid development of simulations, which is accomplished by providing a set of C++11 template aliases for structures defining population objects.
-* Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include fwdpp::mutation (which has been in the library "forever"), fwdpp::popgenmut, which is implemented over and over again as mutation_with_age in the examples (@ref md_md_examples), and fwdpp::infsites, which implements an infinitely-many sites mutation scheme that can return either of these two types of mutation.
+* Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include fwdpp::mutation (which has been in the library "forever"), fwdpp::popgenmut, which is implemented overm, which is used in the examples (@ref md_md_examples), and fwdpp::infsites_popgenmut, which implements an infinitely-many sites mutation scheme generate the latter mutation type. 
 * Provide data types wrapping the serialization methods in __fwdpp__ (see @ref md_md_serialization).  The relevant sugar components are fwdpp::serialize and fwdpp::deserialize.
 * Make sure that all types defined in the sugar layer are properly-defined so that they may be used in conjunction with tools like [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) to enable running/processing simulations within R, [boost](http://www.boost.org)'s "boost.python" library to enable processing/running simulations in python, and [pybind11](https://github.com/pybind/pybind11), a C++11/c++14 reimagining of boost.python.
 
@@ -61,15 +61,11 @@ __fwdpp__ provides fwdpp::mutation, which is a "standard" type of variant for a 
 
 The sugar layer provides the additional type fwdpp::popgenmut, which also tracks \f$g\f$, the generation in the simulation where the mutation first arose.
 
-The sugar layer also provides fwdpp::infsites, which generates mutations according to an infinitely-many sites scheme.  The mutation types that are supported are fwdpp::mutation and fwdpp::popgenmut.  I intend fwdpp::infsites to facilitate rapid prototyping of __fwdpp__-based simulations, and many users may find these mutation-related types sufficient for their own research needs.
-
 The relevant sugar headers are:
 
 ~~~{.cpp}
 //for fwdpp::popgenmut
 #include <fwdpp/sugar/popgenmut.hpp>
-//for fwdpp::infsites
-#include <fwdpp/sugar/infsites.hpp>
 ~~~
 
 ### Simplifying the declaration of a population
@@ -110,9 +106,7 @@ These "poptypes" contain all of the types needed to make calls to fwdpp::sample_
 See the following files for concrete working examples:
 
 * diploid_ind.cc
-* diploid_ind_2locus.cc
 * diploid_fixed_sh_ind.cc
-* bneck_selection_ind.cc
 
 #### Further customization
 
