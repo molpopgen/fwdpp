@@ -1,6 +1,8 @@
 #ifndef __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 #define __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
