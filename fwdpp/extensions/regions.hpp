@@ -94,7 +94,7 @@ namespace fwdpp
 
         template <typename dmm_type>
         inline typename dmm_type::function_type
-        bind_dmm_wrapper(const gsl_rng *r, dmm_type &dmm, std::true_type)
+        bind_dmm_wrapper(const gsl_rng *r, const dmm_type &dmm, std::true_type)
         {
             return
                 [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
@@ -105,7 +105,8 @@ namespace fwdpp
 
         template <typename dmm_type>
         inline typename dmm_type::function_type
-        bind_dmm_wrapper(const gsl_rng *r, dmm_type &dmm, std::false_type)
+        bind_dmm_wrapper(const gsl_rng *r, const dmm_type &dmm,
+                         std::false_type)
         {
             return
                 [r, &dmm](typename dmm_type::recycling_bin_type &recycling_bin,
@@ -125,7 +126,7 @@ namespace fwdpp
         */
         template <typename dmm_type>
         inline typename dmm_type::function_type
-        bind_dmm(const gsl_rng *r, dmm_type &dmm)
+        bind_dmm(const gsl_rng *r, const dmm_type &dmm)
         {
             return bind_dmm_wrapper(
                 r, dmm,
@@ -140,7 +141,7 @@ namespace fwdpp
          */
         template <typename dmm_type>
         inline std::vector<typename dmm_type::function_type>
-        bind_vec_dmm(const gsl_rng *r, std::vector<dmm_type> &vdm)
+        bind_vec_dmm(const gsl_rng *r, const std::vector<dmm_type> &vdm)
         {
             std::vector<typename dmm_type::function_type> rv;
             for (auto &i : vdm)
