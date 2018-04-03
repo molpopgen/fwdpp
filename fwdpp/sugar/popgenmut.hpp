@@ -80,6 +80,27 @@ namespace fwdpp
                        const position_function &posmaker,
                        const effect_size_function &esize_maker,
                        const dominance_function &hmaker)
+	/*!
+	 * Mutation function to add a fwdpp::popgenmut to a population.
+	 *
+	 * In order to use this function, it must be bound to a callable
+	 * that is a valid mutation function.  See examples for details.
+	 *
+	 * \param recycling_bin Recycling queue for mutations.
+	 * \param mutations Container of mutations
+	 * \param r A random-number generator
+	 * \param lookup Lookup table for mutation positions
+	 * \param generation The generation that is being mutated
+	 * \param pselected  The probability that a new mutation affects fitness
+	 * \param posmaker A function generating a mutation position.  Must be convertible to std::function<double()>.
+	 * \param esize_maker A function to generate an effect size, given that a mutation affects fitness. Must be convertible to std::function<double()>.
+	 * \param hmaker A function to generate a dominance value, given that a mutation affects fitness. Must be convertible to std::function<double()>.
+	 *
+	 * \note "Neutral" mutations get assigned a dominance of zero.  The xtra field is not written to.
+	 *
+	 * \version 0.6.0
+	 * Added to library
+	 */
     {
         auto pos = posmaker();
         while (lookup.find(pos) != lookup.end())
