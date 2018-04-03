@@ -9,7 +9,7 @@
 #include <list>
 #include <sstream>
 // Use mutation model from sugar layer
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/extensions/regions.hpp>
 
@@ -132,22 +132,19 @@ main(int argc, char **argv)
     std::vector<fwdpp::extensions::discrete_rec_model::function_type>
         rec_functions;
 
+    const double pselected
+        = mutrate_del_region / (mutrate_del_region + mutrate_region);
     for (unsigned i = 0; i < K; ++i)
         {
             locus_weights.push_back(1.0);
-            functions.push_back(
-                [&r, &generation, &pop, i, mutrate_region, mutrate_del_region](
-                    fwdpp::traits::recycling_bin_t<singlepop_t::mcont_t>
-                        &mutation_recycling_bin,
-                    singlepop_t::mcont_t &mutations) {
-                    return fwdpp::infsites()(
-                        mutation_recycling_bin, mutations, r.get(),
-                        pop.mut_lookup, generation, mutrate_region,
-                        0.0, // mutrate_del_region,
-                        [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
-                        []() { return -0.1; }, []() { return 1.; });
-                });
-
+            functions.push_back([&pop, &r, &generation,
+                                 pselected](std::queue<std::size_t> &recbin,
+                                            singlepop_t::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, r.get(), pop.mut_lookup, generation,
+                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
+                    []() { return 0.0; }, []() { return 0.0; });
+            });
             rec_functions.push_back([i, &r](std::vector<double> &breakpoints) {
                 breakpoints.push_back(gsl_ran_flat(r.get(), i, i + 1));
             });

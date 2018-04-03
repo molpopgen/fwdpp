@@ -14,10 +14,10 @@
 #include <functional>
 #include <cassert>
 #include <iomanip>
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation
-using mtype = fwdpp::mutation;
+using mtype = fwdpp::popgenmut;
 #include <common_ind.hpp>
 #include <gsl/gsl_randist.h>
 using namespace fwdpp;
@@ -59,13 +59,23 @@ main(int argc, char **argv)
     const auto rec
         = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
+    const double pselected = mu_del / (mu_del + mu_neutral);
+
     while (nreps--)
         {
             singlepop_t pop(N);
             pop.mutations.reserve(
                 size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                                  + 0.667 * (theta_neutral + theta_del))));
-            unsigned generation;
+            unsigned generation = 0;
+            const auto mmodel = [&pop, &r, &generation, s, h,
+                                 pselected](std::queue<std::size_t> &recbin,
+                                            singlepop_t::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, r.get(), pop.mut_lookup, generation,
+                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
+                    [s]() { return s; }, [h]() { return h; });
+            };
 
             double wbar = 1;
             for (generation = 0; generation < ngens; ++generation)
@@ -73,12 +83,7 @@ main(int argc, char **argv)
                     assert(fwdpp::check_sum(pop.gametes, 2 * N));
                     wbar = fwdpp::sample_diploid(
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
-                        pop.mcounts, N, mu_neutral + mu_del,
-                        std::bind(fwdpp::infsites(), std::placeholders::_1,
-                                  std::placeholders::_2, r.get(),
-                                  std::ref(pop.mut_lookup), mu_neutral, mu_del,
-                                  [&r]() { return gsl_rng_uniform(r.get()); },
-                                  [&s]() { return s; }, [&h]() { return h; }),
+                        pop.mcounts, N, mu_neutral + mu_del, mmodel,
                         // The function to generation recombination positions:
                         rec, fwdpp::multiplicative_diploid(1.), pop.neutral,
                         pop.selected);
