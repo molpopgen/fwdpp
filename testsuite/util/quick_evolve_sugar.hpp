@@ -68,16 +68,21 @@ simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
  */
 {
     unsigned g = generation;
+
+    const auto mmodel = [&pop, &rng, &generation](
+        std::queue<std::size_t> &recbin,
+        typename slocuspop_object_t::mcont_t &mutations) {
+        return fwdpp::infsites_popgenmut(
+            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
+            [&rng]() { return gsl_rng_uniform(rng.get()); },
+            []() { return -0.01; }, []() { return 1.; });
+    };
     for (; g < generation + simlen; ++g)
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, 0.005,
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, rng.get(),
-                          std::ref(pop.mut_lookup), g, 0.0025, 0.0025,
-                          [&rng]() { return gsl_rng_uniform(rng.get()); },
-                          []() { return -0.01; }, []() { return 1.; }),
+				mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),
                 fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
