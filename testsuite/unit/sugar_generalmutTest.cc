@@ -8,7 +8,6 @@
 #include <sstream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
-#include <fwdpp/sugar/infsites.hpp>
 #include <fwdpp/sugar/generalmut.hpp>
 #include <iostream>
 

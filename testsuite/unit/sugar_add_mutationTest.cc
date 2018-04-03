@@ -7,12 +7,6 @@
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
-// #include <fwdpp/diploid.hh>
-// #include <fwdpp/sugar/GSLrng_t.hpp>
-// #include <fwdpp/sugar/slocuspop.hpp>
-// #include <fwdpp/sugar/multiloc.hpp>
-// #include <fwdpp/sugar/infsites.hpp>
-// #include <fwdpp/sugar/serialization.hpp>
 #include <fwdpp/sugar/add_mutation.hpp>
 #include <fwdpp/debug.hpp>
 /*

@@ -4,7 +4,7 @@
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
 #include <fwdpp/sugar/mlocuspop.hpp>
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
@@ -88,8 +88,8 @@ class mlocuspop_popgenmut_fixture
         std::vector<fwdpp::extensions::discrete_rec_model> vdrm_;
         for (unsigned i = 0; i < 4; ++i)
             {
-                std::vector<
-                    fwdpp::extensions::discrete_rec_model::function_type>
+                std::vector<fwdpp::extensions::discrete_rec_model::
+                                function_type>
                     f;
                 std::vector<double> w{ 1., 10., 1. };
                 f.push_back([&r, i](std::vector<double> &b) {
@@ -128,17 +128,16 @@ class mlocuspop_popgenmut_fixture
         {
             using dip_t = poptype::dipvector_t::value_type::value_type;
             return std::max(
-                0., 1.
-                        + std::accumulate(
-                              diploid.begin(), diploid.end(), 0.,
-                              [&gametes, &mutations](const double d,
-                                                     const dip_t &dip) {
-                                  return d
-                                         + fwdpp::additive_diploid()(
-                                               gametes[dip.first],
-                                               gametes[dip.second], mutations)
-                                         - 1.;
-                              }));
+                0.,
+                1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
+                                     [&gametes, &mutations](const double d,
+                                                            const dip_t &dip) {
+                                         return d + fwdpp::additive_diploid()(
+                                                        gametes[dip.first],
+                                                        gametes[dip.second],
+                                                        mutations)
+                                                - 1.;
+                                     }));
         }
     };
     poptype pop;
@@ -153,39 +152,46 @@ class mlocuspop_popgenmut_fixture
     std::vector<std::function<std::vector<double>(void)>> bound_recmodels;
     mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
-        : pop(poptype(1000, 4)), generation(0), rng{seed},
+        : pop(poptype(1000, 4)), generation(0), rng{ seed },
           mu(std::vector<double>(4, 0.005)),
           rbw(std::vector<double>(3, 0.005)),
           mutmodels(
               { // Locus 0: positions Uniform [0,1)
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
-                          0.0025,
-                          [this]() { return gsl_rng_uniform(rng.get()); },
-                          []() { return -0.01; }, []() { return 1.; }),
+                [this](std::queue<std::size_t> &recbin,
+                       poptype::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, rng.get(), pop.mut_lookup,
+                        this->generation, 0.5,
+                        [this]() { return gsl_rng_uniform(rng.get()); },
+                        []() { return -0.01; }, []() { return 1.; });
+                },
                 // Locus 1: positions Uniform [1,2)
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
-                          0.0025,
-                          [this]() { return gsl_ran_flat(rng.get(), 1., 2.); },
-                          []() { return -0.01; }, []() { return 1.; }),
+                [this](std::queue<std::size_t> &recbin,
+                       poptype::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, rng.get(), pop.mut_lookup,
+                        this->generation, 0.5,
+                        [this]() { return gsl_ran_flat(rng.get(), 1., 2.); },
+                        []() { return -0.01; }, []() { return 1.; });
+                },
                 // Locus 2: positions Uniform [2,3)
-                std::bind(
-                    fwdpp::infsites(), std::placeholders::_1,
-                    std::placeholders::_2, this->rng.get(),
-                    std::ref(pop.mut_lookup), &this->generation, 0.0025,
-                    0.0025,
-                    [this]() { return gsl_ran_flat(this->rng.get(), 2., 3.); },
-                    []() { return -0.01; }, []() { return 1.; }),
+                [this](std::queue<std::size_t> &recbin,
+                       poptype::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, rng.get(), pop.mut_lookup,
+                        this->generation, 0.5,
+                        [this]() { return gsl_ran_flat(rng.get(), 2., 3.); },
+                        []() { return -0.01; }, []() { return 1.; });
+                },
                 // Locus 3: positions Uniform [3,4)
-                std::bind(fwdpp::infsites(), std::placeholders::_1,
-                          std::placeholders::_2, this->rng.get(),
-                          std::ref(pop.mut_lookup), &this->generation, 0.0025,
-                          0.0025,
-                          [this]() { return gsl_ran_flat(rng.get(), 3., 4.); },
-                          []() { return -0.01; }, []() { return 1.; }) }),
+                [this](std::queue<std::size_t> &recbin,
+                       poptype::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, rng.get(), pop.mut_lookup,
+                        this->generation, 0.5,
+                        [this]() { return gsl_ran_flat(rng.get(), 1., 2.); },
+                        []() { return -0.01; }, []() { return 1.; });
+                } }),
           recmodels{ fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                       this->rng.get()),
                      fwdpp::recbinder(fwdpp::poisson_xover(0.005, 1., 2.),
