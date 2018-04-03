@@ -79,7 +79,7 @@ namespace fwdpp
                        const uint_t &generation, const double pselected,
                        const position_function &posmaker,
                        const effect_size_function &esize_maker,
-                       const dominance_function &hmaker)
+                       const dominance_function &hmaker, const decltype(popgenmut::xtra) x = 0)
 	/*!
 	 * Mutation function to add a fwdpp::popgenmut to a population.
 	 *
@@ -110,7 +110,7 @@ namespace fwdpp
         bool selected = (gsl_rng_uniform(r) < pselected);
         return fwdpp_internal::recycle_mutation_helper(
             recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
-            (selected) ? hmaker() : 0., generation);
+            (selected) ? hmaker() : 0., generation, x);
     }
 
     namespace io
