@@ -75,9 +75,12 @@ main(int argc, char **argv)
             singlepop_t pop(N);
             pop.mutations.reserve(
                 size_t(std::ceil(std::log(2 * N) * theta + 0.667 * theta)));
-            unsigned generation;
+            unsigned generation = 0;
             double wbar;
-
+            auto infsites_mut_model = fwdpp::popgenmut::infsites(
+                r.get(), 0., pop.mutations, pop.mut_lookup, generation,
+                [&r]() { return gsl_rng_uniform(r.get()); },
+                []() { return 0.; }, []() { return 0.; });
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
@@ -90,16 +93,12 @@ main(int argc, char **argv)
                         N,  // current pop size, remains constant
                         mu, // mutation rate per gamete
                         /*
-                          The mutation model (fwdpp::infsites) will be applied
+                          The mutation model will be applied
                           by
                           sample_diploid in order to add mutations to gametes
                           each generation.
                         */
-                        std::bind(fwdpp::infsites(), std::placeholders::_1,
-                                  std::placeholders::_2, r.get(),
-                                  std::ref(pop.mut_lookup), generation, mu, 0.,
-                                  [&r]() { return gsl_rng_uniform(r.get()); },
-                                  []() { return 0.; }, []() { return 0.; }),
+                        infsites_mut_model,
                         // The function to generation recombination positions:
                         rec,
                         /*
@@ -133,7 +132,6 @@ main(int argc, char **argv)
                                             pop.mcounts, generation, twoN);
                     assert(fwdpp::check_sum(pop.gametes, twoN));
                 }
-
             // Take a sample of size samplesize1 from the population
             std::vector<std::pair<double, std::string>> mslike
                 = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,

@@ -1,6 +1,7 @@
 #ifndef __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 #define __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 
+#include <gsl/gsl_rng.h>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
@@ -65,6 +66,31 @@ namespace fwdpp
             return std::tie(this->g, this->s, this->h)
                        == std::tie(rhs.g, rhs.s, rhs.h)
                    && is_equal(rhs);
+        }
+
+        template <typename mcont_t, typename lookup_table_t, typename posmaker,
+                  typename smaker, typename hmaker>
+        inline static std::function<std::size_t(
+            fwdpp::traits::recycling_bin_t<mcont_t> &, mcont_t &)>
+        infsites(const gsl_rng *r, double psel, const mcont_t &,
+                 lookup_table_t &lookup, uint_t &generation, posmaker p,
+                 smaker s, hmaker h)
+        {
+            auto mutation_model = [r, &generation, &lookup, psel, p, s, h](
+                fwdpp::traits::recycling_bin_t<mcont_t> &recycling_bin,
+                mcont_t &mutations) {
+                auto pos = p();
+                while (lookup.find(pos) != lookup.end())
+                    {
+                        pos = p();
+                    }
+                lookup.insert(pos);
+                bool selected = gsl_rng_uniform(r) < psel;
+                return fwdpp_internal::recycle_mutation_helper(
+                    recycling_bin, mutations, pos, (selected) ? s() : 0.,
+                    (selected) ? h() : 0., generation);
+            };
+            return mutation_model;
         }
     };
 
