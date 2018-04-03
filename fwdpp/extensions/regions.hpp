@@ -82,6 +82,19 @@ namespace fwdpp
                     }
             }
 
+            discrete_mut_model(const discrete_mut_model &dmm)
+                : functions{ dmm.functions }, weights{ dmm.weights }, lookup{
+                      nullptr
+                  }
+            {
+                if (!weights.empty())
+                    {
+                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                            gsl_ran_discrete_preproc(weights.size(),
+                                                     weights.data()));
+                    }
+            }
+
             template <typename... function_type_args>
             inline typename function_type::result_type
             operator()(const gsl_rng *r, function_type_args &&... args) const
@@ -191,6 +204,19 @@ namespace fwdpp
                 else
                     {
                         throw std::invalid_argument("weights cannot be empty");
+                    }
+            }
+
+            discrete_rec_model(const discrete_rec_model &drm)
+                : recrate{ drm.recrate }, functions{ drm.functions },
+                  weights{ drm.weights }, lookup{ nullptr }
+
+            {
+                if (!weights.empty())
+                    {
+                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                            gsl_ran_discrete_preproc(weights.size(),
+                                                     weights.data()));
                     }
             }
 
