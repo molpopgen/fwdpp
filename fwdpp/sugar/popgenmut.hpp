@@ -1,6 +1,8 @@
 #ifndef __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 #define __FWDPP_SUGAR_MUTATION_POPGENMUT_HPP__
 
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/tags/tags.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
@@ -67,6 +69,50 @@ namespace fwdpp
                    && is_equal(rhs);
         }
     };
+
+    template <typename queue_t, typename mcont_t, typename lookup_table_t,
+              typename position_function, typename effect_size_function,
+              typename dominance_function>
+    std::size_t
+    infsites_popgenmut(queue_t &recycling_bin, mcont_t &mutations,
+                       const gsl_rng *r, lookup_table_t &lookup,
+                       const uint_t &generation, const double pselected,
+                       const position_function &posmaker,
+                       const effect_size_function &esize_maker,
+                       const dominance_function &hmaker, const decltype(popgenmut::xtra) x = 0)
+	/*!
+	 * Mutation function to add a fwdpp::popgenmut to a population.
+	 *
+	 * In order to use this function, it must be bound to a callable
+	 * that is a valid mutation function.  See examples for details.
+	 *
+	 * \param recycling_bin Recycling queue for mutations.
+	 * \param mutations Container of mutations
+	 * \param r A random-number generator
+	 * \param lookup Lookup table for mutation positions
+	 * \param generation The generation that is being mutated
+	 * \param pselected  The probability that a new mutation affects fitness
+	 * \param posmaker A function generating a mutation position.  Must be convertible to std::function<double()>.
+	 * \param esize_maker A function to generate an effect size, given that a mutation affects fitness. Must be convertible to std::function<double()>.
+	 * \param hmaker A function to generate a dominance value, given that a mutation affects fitness. Must be convertible to std::function<double()>.
+	 *
+	 * \note "Neutral" mutations get assigned a dominance of zero.  The xtra field is not written to.
+	 *
+	 * \version 0.6.0
+	 * Added to library
+	 */
+    {
+        auto pos = posmaker();
+        while (lookup.find(pos) != lookup.end())
+            {
+                pos = posmaker();
+            }
+        lookup.insert(pos);
+        bool selected = (gsl_rng_uniform(r) < pselected);
+        return fwdpp_internal::recycle_mutation_helper(
+            recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
+            (selected) ? hmaker() : 0., generation, x);
+    }
 
     namespace io
     {

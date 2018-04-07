@@ -149,7 +149,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::SINGLEPOP_TAG>::value>>
+                                        fwdpp::sugar::SINGLELOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<
                                typename poptype::diploid_t::first_type *>>
@@ -185,7 +185,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::MULTILOCPOP_TAG>::value>>
+                                        fwdpp::sugar::MULTILOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<typename poptype::diploid_t::
                                            value_type::first_type *>>
@@ -221,59 +221,6 @@ namespace fwdpp
                 }
             return gams;
         }
-
-        template <typename poptype, typename = std::enable_if<std::is_same<
-                                        typename poptype::popmodel_t,
-                                        fwdpp::sugar::METAPOP_TAG>::value>>
-        std::unordered_map<std::size_t,
-                           std::vector<
-                               typename poptype::diploid_t::first_type *>>
-        collect_gametes(poptype &p, const std::vector<std::size_t> demes,
-                        const std::vector<std::vector<std::size_t>> &indlist,
-                        const std::vector<std::vector<short>> &clist)
-        /*!
-          \brief Helper function for add_mutation and add_mutations.
-
-          Collects together all the gametes that will be updated, to minimize
-          the number of
-          new gametes created.
-        */
-        {
-            // collect gametes that are to be updated
-            std::unordered_map<std::size_t,
-                               std::vector<
-                                   typename poptype::diploid_t::first_type *>>
-                gams;
-            for (std::size_t deme = 0; deme < demes.size(); ++deme)
-                {
-                    for (std::size_t ind = 0; ind < indlist[deme].size();
-                         ++ind)
-                        {
-                            auto c = clist[deme][ind];
-                            if (c == 0 || c == 2)
-                                {
-                                    gams[p.diploids[demes[deme]]
-                                                   [indlist[deme][ind]]
-                                                       .first]
-                                        .push_back(
-                                            &p.diploids[demes[deme]]
-                                                       [indlist[deme][ind]]
-                                                           .first);
-                                }
-                            if (c > 0)
-                                {
-                                    gams[p.diploids[demes[deme]]
-                                                   [indlist[deme][ind]]
-                                                       .second]
-                                        .push_back(
-                                            &p.diploids[demes[deme]]
-                                                       [indlist[deme][ind]]
-                                                           .second);
-                                }
-                        }
-                }
-            return gams;
-        }
     }
 
     template <typename poptype, class... Args>
@@ -283,7 +230,7 @@ namespace fwdpp
     /*!
       \brief Add a mutation into a population at a given frequency.
 
-      \param p A single deme object.
+      \param p A single locus population object.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
       \param clist A list of gametes.  See below.
@@ -315,8 +262,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be a single-deme object type");
+                                   fwdpp::sugar::SINGLELOC_TAG>::value,
+                      "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks
         for (const auto &i : indlist)
@@ -343,87 +290,6 @@ namespace fwdpp
         return mindex;
     }
 
-    template <typename metapoptype, class... Args>
-    std::size_t
-    add_mutation(metapoptype &p, const std::vector<std::size_t> demes,
-                 const std::vector<std::vector<std::size_t>> &indlist,
-                 const std::vector<std::vector<short>> &clist, Args &&... args)
-    /*!
-      \brief Add a mutation into a deme from a population at a given frequency
-      in a specific set of
-      demes.
-
-      \param p A population object. Meta- or multi-locus.
-      \param demes Vector of indices of the demes in which to add mutation.
-      \param indlist A list of indexes of diploids into which to add the new
-      mutations in each deme.
-      \param clist A list of gametes. See below.
-      \param args Values required to cosnstruct a new mutation.  See below.
-
-      \return The key referring to the location of the new mutation in the
-      population
-
-      Some notes:
-
-      clist.size() must equal indlist.size() must equal demes.size()
-
-      Further, each element of clist must equal each element of indlist in
-      size.
-
-      Values in \a clist must be 0, 1, or 2. These values mean to add the
-      mutation to the first,
-      second, or both gametes, resepectively, of each diploid in \a indlist.
-
-      Note that \a args can take on a few different forms.  First, it can be a
-      raw set of values
-      used to construct a new mutation.  Or, it can be an object of correct
-      mutation type.  Or, it can be
-      any type from which the correct mutation type can be constructed.  The
-      last two cases require
-      that the mutation type have the appropriate constructors defined.
-
-      See the unit test file unit/test_sugar_add_mutation.cc for example of
-      use.
-
-      \ingroup sugar
-    */
-    {
-        for (const auto &c : clist)
-            {
-                for (auto ci : c)
-                    if (ci < 0 || ci > 2)
-                        throw std::runtime_error(
-                            "clist contains elements < 0 and/or > 2");
-            }
-        if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
-        for (std::size_t i = 0; i < indlist.size(); ++i)
-            {
-                if (indlist[i].size() != clist[i].size())
-                    throw std::runtime_error(
-                        "indlist[i] must equal clist[i] for all i");
-            }
-
-        for (std::size_t i = 0; i < demes.size(); ++i)
-            {
-                if (i > p.diploids.size())
-                    throw std::out_of_range("deme index out of range");
-                auto d = demes[i];
-                for (const auto di : indlist[i])
-                    {
-                        if (di > p.diploids[d].size())
-                            throw std::out_of_range(
-                                "individual index out of range");
-                    }
-            }
-        // create a new mutation
-        typename metapoptype::mcont_t::value_type new_mutant(
-            std::forward<Args>(args)...);
-        auto mindex = sugar::get_mut_index(p.mutations, p.mcounts, new_mutant);
-        auto gams = sugar::collect_gametes(p, demes, indlist, clist);
-        sugar::add_mutation_details(p, { mindex }, gams);
-        return mindex;
-    }
 
     template <typename multiloc_poptype, class... Args>
     std::size_t
@@ -434,7 +300,7 @@ namespace fwdpp
       \brief Add a mutation into a population at a given frequency at in a
       specific locus.
 
-      \param p A population object. Meta- or multi-locus.
+      \param p A multi-locus population object.
       \param locus Index of the locus in which to add mutation.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
@@ -502,7 +368,7 @@ namespace fwdpp
     /*!
       \brief Add a set of mutations into a set of individuals in a population.
 
-      \param p A population object. Meta- or multi-locus.
+	  \param p A multi-locus population object.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
       \param clist A list of gametes. See below.
@@ -534,8 +400,8 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLEPOP_TAG>::value,
-                      "poptype must be a single-deme object type");
+                                   fwdpp::sugar::SINGLELOC_TAG>::value,
+                      "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks
         for (const auto &i : indlist)
@@ -563,88 +429,6 @@ namespace fwdpp
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
 
-    template <typename metapoptype>
-    void
-    add_mutations(metapoptype &p, const std::vector<std::size_t> demes,
-                  const std::vector<std::vector<std::size_t>> &indlist,
-                  const std::vector<std::vector<short>> &clist,
-                  const std::vector<std::size_t> &mutation_indexes)
-    /*!
-      \brief Add a set of mutation into a deme from a population at a given
-      frequency in a specific set of
-      demes.
-
-      \param p A population object. Meta- or multi-locus.
-      \param demes Vector of indices of the demes in which to add mutation.
-      \param indlist A list of indexes of diploids into which to add the new
-      mutations in each deme.
-      \param clist A list of gametes. See below.
-      \param mutation_indexes Keys to mutations in p.mutations
-
-      \return Nothing (void)
-
-      Some notes:
-
-      clist.size() must equal indlist.size()
-
-      Values in \a clist must be 0, 1, or 2. These values mean to add the
-      mutation to the first,
-      second, or both gametes, resepectively, of each diploid in \a indlist.
-
-      \note \a mutation_indexes refers to the locations of mutations found in
-      \a p.mutations.
-
-      \note For each element, i, in \a mutation_indexes, \a p.mcounts[i] should
-      be zero before
-      entering this function.
-
-      \note \a p.mut_lookup is NOT updated by this function.
-
-      See the unit test file unit/test_sugar_add_mutation.cc for example of
-      use.
-
-      \ingroup sugar
-    */
-    {
-        for (const auto &c : clist)
-            {
-                for (auto ci : c)
-                    if (ci < 0 || ci > 2)
-                        throw std::runtime_error(
-                            "clist contains elements < 0 and/or > 2");
-            }
-        if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
-        for (std::size_t i = 0; i < indlist.size(); ++i)
-            {
-                if (indlist[i].size() != clist[i].size())
-                    throw std::runtime_error(
-                        "indlist[i] must equal clist[i] for all i");
-            }
-
-        for (std::size_t i = 0; i < demes.size(); ++i)
-            {
-                if (i > p.diploids.size())
-                    throw std::out_of_range("deme index out of range");
-                auto d = demes[i];
-                for (const auto di : indlist[i])
-                    {
-                        if (di > p.diploids[d].size())
-                            throw std::out_of_range(
-                                "individual index out of range");
-                    }
-            }
-        for (auto mi : mutation_indexes)
-            {
-                if (mi >= p.mutations.size())
-                    throw std::runtime_error("mutation key out of range");
-            }
-        if (p.mcounts.size() != p.mutations.size())
-            throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
-        auto gams = sugar::collect_gametes(p, demes, indlist, clist);
-        sugar::add_mutation_details(p, mutation_indexes, gams);
-    }
-
     template <typename multiloc_poptype>
     void
     add_mutations(multiloc_poptype &p, const std::size_t locus,
@@ -655,12 +439,12 @@ namespace fwdpp
       \brief Add a set of mutations into a given locus of a multi-locus
       simulation.
 
-      \param p A population object. Meta- or multi-locus.
+      \param p A multi-locus population object.
       \param locus Index of the locus in which to add mutation.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
       \param clist A list of gametes. See below.
-      \param mutaton_indexes Keys to mutations in p.mutations.
+      \param mutation_indexes Keys to mutations in p.mutations.
 
       \return Nothing (void)
 

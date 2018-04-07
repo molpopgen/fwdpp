@@ -81,7 +81,7 @@ namespace fwdpp
         template <typename mcont_t, typename gcont_t, typename dipvector_t,
                   typename integer_type = std::size_t>
         sep_sample_t
-        ms_sample_separate_single_deme(
+        ms_sample_separate_single_locus_pop(
             const mcont_t &mutations, const gcont_t &gametes,
             const dipvector_t &diploids,
             const std::vector<integer_type> &diplist, const unsigned &n,

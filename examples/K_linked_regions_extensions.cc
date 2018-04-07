@@ -9,7 +9,7 @@
 #include <list>
 #include <sstream>
 // Use mutation model from sugar layer
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/extensions/regions.hpp>
 
@@ -66,7 +66,8 @@ struct additive_over_loci
                     });
 
                 rv += fwdpp::multiplicative_diploid(2.0)(start1, stop1, start2,
-                                                         stop2, mutations) - 1.0;
+                                                         stop2, mutations)
+                      - 1.0;
             }
         return std::max(1.0 + rv, 0.0);
     }
@@ -96,19 +97,19 @@ main(int argc, char **argv)
         }
     const unsigned N = atoi(argv[argument++]);   // Number of diploids
     const double theta = atof(argv[argument++]); // 4*n*mutation rate.  Note:
-                                                 // mutation rate is per
-                                                 // REGION, not SITE!!
-    const double rho = atof(argv[argument++]);   // 4*n*recombination rate.
-                                                 // Note: recombination rate is
-                                                 // per REGION, not SITE!!
-    const double rbw = atof(argv[argument++]);   // rec rate b/w loci.
+    // mutation rate is per
+    // REGION, not SITE!!
+    const double rho = atof(argv[argument++]); // 4*n*recombination rate.
+    // Note: recombination rate is
+    // per REGION, not SITE!!
+    const double rbw = atof(argv[argument++]); // rec rate b/w loci.
     const unsigned K = atoi(argv[argument++]); // Number of loci in simulation
     const unsigned ngens = atoi(argv[argument++]); //# generations to simulatae
     const unsigned seed
         = atoi(argv[argument++]); // Number of loci in simulation
 
     const double mutrate_region = theta / double(4 * N * K);
-    const double mutrate_del_region = 0.1 * mutrate_region;
+    const double mutrate_del_region = 0. * mutrate_region;
     const double recrate_region = rho / double(4 * N * K);
 
     std::vector<double> RBW(K, rbw);
@@ -126,46 +127,50 @@ main(int argc, char **argv)
     // Set up mutation models
     std::vector<double> locus_starts(K);
     std::vector<double> locus_ends(K);
+    std::vector<double> locus_weights, locus_rec_weights;
+    std::vector<fwdpp::traits::mutation_model<singlepop_t::mcont_t>> functions;
+    std::vector<fwdpp::extensions::discrete_rec_model::function_type>
+        rec_functions;
+
+    const double pselected
+        = mutrate_del_region / (mutrate_del_region + mutrate_region);
     for (unsigned i = 0; i < K; ++i)
         {
-            locus_starts[i] = i;
-            locus_ends[i] = i + 1;
+            locus_weights.push_back(1.0);
+            functions.push_back([&pop, &r, &generation,
+                                 pselected](std::queue<std::size_t> &recbin,
+                                            singlepop_t::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, r.get(), pop.mut_lookup, generation,
+                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
+                    []() { return 0.0; }, []() { return 0.0; });
+            });
+            rec_functions.push_back([i, &r](std::vector<double> &breakpoints) {
+                breakpoints.push_back(gsl_ran_flat(r.get(), i, i + 1));
+            });
+            locus_rec_weights.push_back(recrate_region);
+            if (i < K - 1)
+                {
+                    rec_functions.push_back(
+                        [i](std::vector<double> &breakpoints) {
+                            breakpoints.push_back(i + 1);
+                        });
+                    locus_rec_weights.push_back(rbw);
+                }
         }
-    std::vector<double> locus_weights(K, 1.0); // all loci will have equal
-                                               // weight for both mutation and
-                                               // recombination
-    std::vector<fwdpp::extensions::shmodel> shmodels(
-        K, fwdpp::extensions::shmodel(fwdpp::extensions::constant(-0.1),
-                                      fwdpp::extensions::constant(1.0)));
-    fwdpp::extensions::discrete_mut_model mmodels(
-        locus_starts, locus_ends, locus_weights, locus_starts, locus_ends,
-        locus_weights, shmodels);
 
-    // Set up recombination rates
-    locus_starts.clear();
-    locus_ends.clear();
-    locus_weights.clear();
-    for (unsigned i = 0; i < K; ++i)
-        {
-            // start, end, and weight associated w/crossover w/in region i
-            locus_starts.push_back(i);
-            locus_ends.push_back(i + 1);
-            locus_weights.push_back(recrate_region);
+    fwdpp::extensions::discrete_mut_model<singlepop_t::mcont_t> mmodels(
+        std::move(functions), std::move(locus_weights));
 
-            // values associated w/crossover b/w region i and i+1
-            locus_starts.push_back(i + 1);
-            locus_ends.push_back(i + 1);
-            locus_weights.push_back(rbw);
-        }
+    const auto bound_mmodels = fwdpp::extensions::bind_dmm(r.get(), mmodels);
+
     const double ttl_recrate
         = double(K) * recrate_region + double(K - 1) * rbw;
-    fwdpp::extensions::discrete_rec_model recmap(
-        r.get(), ttl_recrate, locus_starts, locus_ends, locus_weights);
 
-    const auto bound_mmodels = fwdpp::extensions::bind_dmm(
-        mmodels, pop.mutations, pop.mut_lookup, r.get(),
-        double(K * mutrate_region), double(K * mutrate_del_region),
-        &generation);
+    fwdpp::extensions::discrete_rec_model recmap(
+        ttl_recrate, std::move(rec_functions), std::move(locus_rec_weights));
+
+    auto bound_recmap = [&recmap, &r]() { return recmap(r.get()); };
 
     for (generation = 0; generation < ngens; ++generation)
         {
@@ -175,15 +180,25 @@ main(int argc, char **argv)
                 N, double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
                 // mmodels:
-                bound_mmodels, recmap,
+                bound_mmodels, bound_recmap,
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, K * twoN));
+            assert(check_sum(pop.gametes, twoN));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
             assert(popdata_sane(pop.diploids, pop.gametes, pop.mutations,
                                 pop.mcounts));
+        }
+    for (unsigned i = 0; i < pop.mcounts.size(); ++i)
+        {
+            if (pop.mcounts[i])
+                {
+                    std::cout << pop.mutations[i].pos << ' '
+                              << pop.mutations[i].s << ' '
+                              << pop.mutations[i].g << ' ' << pop.mcounts[i]
+                              << '\n';
+                }
         }
 }

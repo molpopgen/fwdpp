@@ -25,12 +25,12 @@
 //
 // Then, to really make sure, we do the above tests 1,000 times, evolving
 // our population 100 generations in between each test.
-BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
+BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
 {
-    using spoptype = singlepop_popgenmut_fixture::poptype;
+    using spoptype = slocuspop_popgenmut_fixture::poptype;
     spoptype pop(1000);
     fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
-    auto generation = simulate_singlepop(pop, rng, 0, 10000);
+    auto generation = simulate_slocuspop(pop, rng, 0, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
     for (std::size_t i = 100; i < 750; i += 5)
@@ -208,15 +208,15 @@ BOOST_AUTO_TEST_CASE(singlepop_hapmatrix_exhaustive)
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
             // Evolve pop 100 more generations
-            generation = simulate_singlepop(pop, rng, generation, 100);
+            generation = simulate_slocuspop(pop, rng, generation, 100);
         }
 }
 
 BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
 {
-    multiloc_popgenmut_fixture mpf;
+    mlocuspop_popgenmut_fixture mpf;
     simulate_mlocuspop(mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
-                       multiloc_popgenmut_fixture::multilocus_additive(),
+                       mlocuspop_popgenmut_fixture::multilocus_additive(),
                        mpf.mu, mpf.rbw, mpf.generation, 10000);
     std::vector<std::size_t> indlist;
     // Sample a LOT of individuals
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                 }
             simulate_mlocuspop(
                 mpf.pop, mpf.rng, mpf.mutmodels, mpf.recmodels,
-                multiloc_popgenmut_fixture::multilocus_additive(), mpf.mu,
+                mlocuspop_popgenmut_fixture::multilocus_additive(), mpf.mu,
                 mpf.rbw, mpf.generation, 100);
         }
 }

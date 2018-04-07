@@ -9,7 +9,7 @@ These functions are only relevant to _indivdual-based_ simulations.  The gamete-
 The intention of the "sugar layer" is to:
 
 * Provide a path to more rapid development of simulations, which is accomplished by providing a set of C++11 template aliases for structures defining population objects.
-* Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include fwdpp::mutation (which has been in the library "forever"), fwdpp::popgenmut, which is implemented over and over again as mutation_with_age in the examples (@ref md_md_examples), and fwdpp::infsites, which implements an infinitely-many sites mutation scheme that can return either of these two types of mutation.
+* Provide a set of standard mutation types and a standard mutation model policy to support such objects.  These types include fwdpp::mutation (which has been in the library "forever"), fwdpp::popgenmut, which is implemented overm, which is used in the examples (@ref md_md_examples), and fwdpp::infsites_popgenmut, which implements an infinitely-many sites mutation scheme generate the latter mutation type. 
 * Provide data types wrapping the serialization methods in __fwdpp__ (see @ref md_md_serialization).  The relevant sugar components are fwdpp::serialize and fwdpp::deserialize.
 * Make sure that all types defined in the sugar layer are properly-defined so that they may be used in conjunction with tools like [Rcpp](http://cran.r-project.org/web/packages/Rcpp/index.html) to enable running/processing simulations within R, [boost](http://www.boost.org)'s "boost.python" library to enable processing/running simulations in python, and [pybind11](https://github.com/pybind/pybind11), a C++11/c++14 reimagining of boost.python.
 
@@ -61,15 +61,11 @@ __fwdpp__ provides fwdpp::mutation, which is a "standard" type of variant for a 
 
 The sugar layer provides the additional type fwdpp::popgenmut, which also tracks \f$g\f$, the generation in the simulation where the mutation first arose.
 
-The sugar layer also provides fwdpp::infsites, which generates mutations according to an infinitely-many sites scheme.  The mutation types that are supported are fwdpp::mutation and fwdpp::popgenmut.  I intend fwdpp::infsites to facilitate rapid prototyping of __fwdpp__-based simulations, and many users may find these mutation-related types sufficient for their own research needs.
-
 The relevant sugar headers are:
 
 ~~~{.cpp}
 //for fwdpp::popgenmut
 #include <fwdpp/sugar/popgenmut.hpp>
-//for fwdpp::infsites
-#include <fwdpp/sugar/infsites.hpp>
 ~~~
 
 ### Simplifying the declaration of a population
@@ -81,41 +77,27 @@ The sugar layer allows you to set up a simulation only having to decide on your 
 Let's assume that you want to do a simulation implemented in terms of fwdpp::popgenmut.  You may set up various types of simulations like this:
 
 ~~~{.cpp}
-//Single population, single locus
+//Single-locus population
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/singlepop.hpp>
+#include <fwdpp/sugar/slocuspop.hpp>
 
-using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
+using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 ~~~
 
-~~~{.cpp}
-//Metapopulation, single locus
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/metapop.hpp>
-
-using poptype = fwdpp::metapop<fwdpp::popgenmut>;
-~~~
 
 ~~~{.cpp}
-//Single population, multi locus
+//Multi-locus population
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/multiloc.hpp>
+#include <fwdpp/sugar/mlocuspop.hpp>
 
-using poptype = fwdpp::multiloc<fwdpp::popgenmut>;
+using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
 ~~~
 
 The code chunks above will result in the following:
 
 * All containers are from namespace std
 * Populations are copy- and move-constructible
-* Populations are serializable via fwdpp::serialize, fwdpp::deserialize, and fwdpp::gzdeserialize.
-
-~~~{.cpp}
-//Single population, single locus
-#include <fwdpp/sugar/popgenmut.hpp>
-
-using poptype = fwdpp::singlepop<fwdpp::popgenmut>;
-~~~
+* Populations are serializable via fwdpp::io::serialize_population
 
 #### Details
 
@@ -124,20 +106,16 @@ These "poptypes" contain all of the types needed to make calls to fwdpp::sample_
 See the following files for concrete working examples:
 
 * diploid_ind.cc
-* diploid_ind_2locus.cc
-* migsel_ind.cc
 * diploid_fixed_sh_ind.cc
-* bneck_selection_ind.cc
 
 #### Further customization
 
 It you aren't happy with how I've set up the "poptypes", you may provide your own typedefs in terms of the following classes:
 
-* fwdpp::sugar::singlepop
-* fwdpp::sugar::metapop 
-* fwdpp::sugar::multiloc 
+* fwdpp::sugar::slocuspop
+* fwdpp::sugar::mlocuspop 
 
-You should also be able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
+You are able to publicly inherit them or encapsulate them in the usual ways, if more customization is needed.
 
 __fwdpp__ 0.3.1 added support for custom diploid types (see @ref md_md_customdip).  The template aliases for population types were updated accordingly.
 

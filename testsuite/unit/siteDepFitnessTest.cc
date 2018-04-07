@@ -1,5 +1,5 @@
 /*!
-  \file siteDepFitness.cc
+  \file siteDepFitnessTest.cc
   \brief Unit tests of fwdpp::site_dependent_fitness
   \ingroup unit
 */

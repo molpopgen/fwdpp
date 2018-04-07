@@ -12,6 +12,7 @@
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/recbinder.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <gsl/gsl_rng.h>
@@ -38,11 +39,11 @@ BOOST_FIXTURE_TEST_SUITE(test_type_traits, standard_empty_single_deme_fixture)
 
 BOOST_AUTO_TEST_CASE(is_diploid_test)
 {
-    auto v = fwdpp::traits::is_diploid<std::pair<std::size_t,
-                                                 std::size_t>>::value;
+    auto v = fwdpp::traits::is_diploid<
+        std::pair<std::size_t, std::size_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = fwdpp::traits::is_custom_diploid<std::pair<std::size_t,
-                                                   std::size_t>>::value;
+    v = fwdpp::traits::is_custom_diploid<
+        std::pair<std::size_t, std::size_t>>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
 
@@ -58,8 +59,8 @@ BOOST_AUTO_TEST_CASE(is_gamete_test)
 
 BOOST_AUTO_TEST_CASE(is_custom_diploid_test)
 {
-    auto v = fwdpp::traits::is_custom_diploid<trivial_custom_diploid_invalid>::
-        value;
+    auto v = fwdpp::traits::is_custom_diploid<
+        trivial_custom_diploid_invalid>::value;
     BOOST_REQUIRE_EQUAL(v, false);
     v = fwdpp::traits::is_custom_diploid<trivial_custom_diploid_valid>::value;
     BOOST_REQUIRE_EQUAL(v, true);
@@ -94,10 +95,9 @@ BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
     auto m = [](fwdpp::traits::recycling_bin_t<mcont_t> &,
                 const gcont_t::value_type &,
                 const mcont_t &) -> std::size_t { return 1; };
-    auto v = std::
-        is_convertible<decltype(m),
-                       fwdpp::traits::mutation_model_gamete<mcont_t,
-                                                            gcont_t>>::value;
+    auto v = std::is_convertible<
+        decltype(m),
+        fwdpp::traits::mutation_model_gamete<mcont_t, gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
@@ -118,20 +118,18 @@ BOOST_AUTO_TEST_CASE(is_mmodel_diploid_test)
     auto m = [](fwdpp::traits::recycling_bin_t<mcont_t> &, const fake_dip &,
                 const gcont_t::value_type &,
                 const mcont_t &) -> std::size_t { return 1; };
-    auto v = std::
-        is_convertible<decltype(m),
-                       fwdpp::traits::mutation_model_diploid<fake_dip, mcont_t,
-                                                            gcont_t>>::value;
+    auto v = std::is_convertible<
+        decltype(m), fwdpp::traits::mutation_model_diploid<fake_dip, mcont_t,
+                                                           gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
 BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
 {
     auto fp = fwdpp::multiplicative_diploid(2.);
-    auto v = std::is_convertible<decltype(fp),
-                                 fwdpp::traits::fitness_fxn_t<dipvector_t,
-                                                              gcont_t,
-                                                              mcont_t>>::value;
+    auto v = std::is_convertible<
+        decltype(fp),
+        fwdpp::traits::fitness_fxn_t<dipvector_t, gcont_t, mcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
@@ -153,9 +151,7 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
 
 BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
 {
-
-    fwdpp::poisson_xover rm(r, 1e-3, 0., 1.);
-
+    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
     auto v = fwdpp::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
                                          gcont_t::value_type, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, true);
@@ -169,7 +165,7 @@ BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
 
 BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
 {
-    fwdpp::poisson_xover rm(r, 1e-3, 0., 1.);
+    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
     auto mock_rec
         = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
                 const mcont_t &) -> decltype(rm()) { return rm(); };
@@ -187,7 +183,7 @@ BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
 
 BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
 {
-    fwdpp::poisson_xover rm(r, 1e-3, 0., 1.);
+    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
     auto mock_rec_diploid
         = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
                 const gcont_t::value_type &,
@@ -205,13 +201,14 @@ BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
 
 BOOST_AUTO_TEST_CASE(is_not_recmodel_test)
 {
-    fwdpp::poisson_xover rm(r, 1e-3, 0., 1.);
+    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
     // Test that this is not a valid rec policy
-    auto mock_not_rec = [&rm](const int, int, const mcont_t &) -> decltype(
-        rm()) { return rm(); };
-    auto v = fwdpp::traits::is_rec_model<decltype(mock_not_rec),
-                                         dipvector_t::value_type, int,
-                                         mcont_t>::value;
+    auto mock_not_rec
+        = [&rm](const int, int, const mcont_t &) -> decltype(rm()) {
+        return rm();
+    };
+    auto v = fwdpp::traits::is_rec_model<
+        decltype(mock_not_rec), dipvector_t::value_type, int, mcont_t>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
 

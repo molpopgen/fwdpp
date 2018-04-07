@@ -25,20 +25,20 @@ namespace fwdpp
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
                   typename lookup_table_type>
-        class multiloc : public popbase<mutation_type, mcont, gcont, dipvector,
-                                        mvector, ftvector, lookup_table_type>
+        class mlocuspop : public popbase<mutation_type, mcont, gcont, mvector,
+                                         ftvector, lookup_table_type>
         {
           private:
             void
-            process_diploid_input()
+            process_individual_input()
             {
                 std::vector<uint_t> gcounts(this->gametes.size(), 0);
                 for (auto &&locus : diploids)
                     {
                         for (auto &&dip : locus)
                             {
-                                this->validate_diploid_keys(dip.first,
-                                                            dip.second);
+                                this->validate_individual_keys(dip.first);
+                                this->validate_individual_keys(dip.second);
                                 gcounts[dip.first]++;
                                 gcounts[dip.second]++;
                             }
@@ -47,39 +47,37 @@ namespace fwdpp
             }
 
           public:
-            virtual ~multiloc() = default;
-            multiloc(multiloc &&) = default;
-            multiloc(const multiloc &) = default;
-            multiloc &operator=(multiloc &&) = default;
-            multiloc &operator=(const multiloc &) = default;
+            virtual ~mlocuspop() = default;
+            mlocuspop(mlocuspop &&) = default;
+            mlocuspop(const mlocuspop &) = default;
+            mlocuspop &operator=(mlocuspop &&) = default;
+            mlocuspop &operator=(const mlocuspop &) = default;
+            using dipvector_t = dipvector;
+            using diploid_t = typename dipvector::value_type;
             //! Dispatch tags for other parts of sugar layer
-            using popmodel_t = sugar::MULTILOCPOP_TAG;
+            using popmodel_t = sugar::MULTILOC_TAG;
             //! Typedef for base class
-            using popbase_t = popbase<mutation_type, mcont, gcont, dipvector,
-                                      mvector, ftvector, lookup_table_type>;
+            using popbase_t = popbase<mutation_type, mcont, gcont, mvector,
+                                      ftvector, lookup_table_type>;
 
-            static_assert(
-                traits::is_multilocus_diploid<
-                    typename popbase_t::dipvector_t::value_type>::value,
-                "Require that dipvector_t::value_type be a diploid");
+            static_assert(traits::is_multilocus_diploid_t<diploid_t>::value,
+                          "Require that dipvector_t::value_type be a diploid");
 
             //! Population size
             uint_t N;
 
             //! Container of individuals
-            typename popbase_t::dipvector_t diploids;
+            dipvector_t diploids;
 
             /*! The positional boundaries of each locus/region,
              *  expressed as half-open intervals [min,max).
-             *  If nothing is provided, the intervals are assigned
-             *  [0,i+1) for all 0 <= i < nloci.
              */
             std::vector<std::pair<double, double>> locus_boundaries;
+
             /*! Construct with population size, number of loci,
-             *  and locus boundaries.  If no locus boundaries
-             *  are provided, default values are assigned.
+             *  and locus boundaries.
              */
-            multiloc(
+            mlocuspop(
                 const uint_t &__N, const uint_t &__nloci,
                 const std::vector<std::pair<double, double>> &locus_boundaries_
                 = std::vector<std::pair<double, double>>(),
@@ -87,17 +85,14 @@ namespace fwdpp
                     reserve_size
                 = 100)
                 : popbase_t(__nloci * __N, reserve_size), N(__N),
-                  diploids(__N, typename popbase_t::diploid_t(
-                                    __nloci,
-                                    typename popbase_t::diploid_t::value_type(
-                                        0, 0))),
+                  diploids(__N, diploid_t(__nloci, {0,0})),
                   locus_boundaries(locus_boundaries_)
             {
             }
 
             template <typename diploids_input, typename gametes_input,
                       typename mutations_input>
-            explicit multiloc(
+            explicit mlocuspop(
                 diploids_input &&d, gametes_input &&g, mutations_input &&m,
                 const std::vector<std::pair<double, double>> &locus_boundaries_
                 = std::vector<std::pair<double, double>>())
@@ -106,11 +101,11 @@ namespace fwdpp
                   N(d.size()), diploids(std::forward<diploids_input>(d)),
                   locus_boundaries(locus_boundaries_)
             {
-                this->process_diploid_input();
+                this->process_individual_input();
             }
 
             bool
-            operator==(const multiloc &rhs) const
+            operator==(const mlocuspop &rhs) const
             {
                 return this->diploids == rhs.diploids
                        && this->locus_boundaries == rhs.locus_boundaries

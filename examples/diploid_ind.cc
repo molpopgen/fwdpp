@@ -15,8 +15,8 @@
 #include <Sequence/SimData.hpp>
 #endif
 #include <fwdpp/diploid.hh>
-// Pull mutation model from fwdpp's "sugar" layer  (@ref md_md_sugar)
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/recbinder.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 // typedef mutation_with_age mtype;
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
@@ -66,16 +66,25 @@ main(int argc, char **argv)
     unsigned twoN = 2 * N;
 
     // recombination map is uniform[0,1)
-    fwdpp::poisson_xover rec(r.get(), littler, 0., 1.);
+    const auto rec
+        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
     while (nreps--)
         {
             singlepop_t pop(N);
             pop.mutations.reserve(
                 size_t(std::ceil(std::log(2 * N) * theta + 0.667 * theta)));
-            unsigned generation;
+            unsigned generation = 0;
             double wbar;
 
+            const auto mmodel =
+                [&pop, &r, &generation](std::queue<std::size_t> &recbin,
+                                        singlepop_t::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, r.get(), pop.mut_lookup, generation,
+                        0.0, [&r]() { return gsl_rng_uniform(r.get()); },
+                        []() { return 0.0; }, []() { return 0.0; });
+                };
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
@@ -88,16 +97,12 @@ main(int argc, char **argv)
                         N,  // current pop size, remains constant
                         mu, // mutation rate per gamete
                         /*
-                          The mutation model (fwdpp::infsites) will be applied
+                          The mutation model will be applied
                           by
                           sample_diploid in order to add mutations to gametes
                           each generation.
                         */
-                        std::bind(fwdpp::infsites(), std::placeholders::_1,
-                                  std::placeholders::_2, r.get(),
-                                  std::ref(pop.mut_lookup), generation, mu, 0.,
-                                  [&r]() { return gsl_rng_uniform(r.get()); },
-                                  []() { return 0.; }, []() { return 0.; }),
+                        mmodel,
                         // The function to generation recombination positions:
                         rec,
                         /*

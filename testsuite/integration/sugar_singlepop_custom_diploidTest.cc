@@ -1,5 +1,5 @@
 /*!
-  \file sugar_singlepop_custom_diploid.cc
+  \file sugar_singlepop_custom_diploidTest.cc
   \ingroup unit
   \brief Testing single-deme sugar functionality with custom diploids
 */
@@ -10,21 +10,21 @@
 
 using mutation_t = fwdpp::popgenmut;
 
-BOOST_FIXTURE_TEST_SUITE(test_singlepop_custom,
-                         singlepop_popgenmut_custom_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_slocuspop_custom,
+                         slocuspop_popgenmut_custom_fixture)
 
-BOOST_AUTO_TEST_CASE(singlepop_sugar_custom_test1)
+BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test1)
 {
-    simulate_singlepop(pop);
+    simulate_slocuspop(pop);
 
     auto pop2(pop);
 
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 
-BOOST_AUTO_TEST_CASE(singlepop_sugar_custom_test3)
+BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test3)
 {
-    simulate_singlepop(pop);
+    simulate_slocuspop(pop);
 
     auto pop2(std::move(pop));
     // Should be false b/c move will leave
@@ -32,9 +32,9 @@ BOOST_AUTO_TEST_CASE(singlepop_sugar_custom_test3)
     BOOST_CHECK_EQUAL(pop == pop2, false);
 }
 
-BOOST_AUTO_TEST_CASE(singlepop_sugar_custom_test4)
+BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test4)
 {
-    simulate_singlepop(pop);
+    simulate_slocuspop(pop);
 
     auto pop2 = std::move(pop);
     // Should be false b/c move will leave

@@ -16,14 +16,11 @@
    mutation type
 */
 #ifdef SINGLEPOP_SIM
-#include <fwdpp/sugar/singlepop.hpp>
-using singlepop_t = fwdpp::singlepop<mtype>;
-#elif defined(METAPOP_SIM)
-#include <fwdpp/sugar/metapop.hpp>
-using metapop_t = fwdpp::metapop<mtype>;
+#include <fwdpp/sugar/slocuspop.hpp>
+using singlepop_t = fwdpp::slocuspop<mtype>;
 #elif defined(MULTILOCUS_SIM)
-#include <fwdpp/sugar/multiloc.hpp>
-using multiloc_t = fwdpp::multiloc<mtype>;
+#include <fwdpp/sugar/mlocuspop.hpp>
+using multiloc_t = fwdpp::mlocuspop<mtype>;
 #endif
 
 // RNG type

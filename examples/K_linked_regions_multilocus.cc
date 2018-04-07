@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #endif
@@ -12,7 +13,7 @@
 #include <list>
 #include <sstream>
 // Use mutation model from sugar layer
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/sampling.hpp>
 using mtype = fwdpp::popgenmut;
 #define MULTILOCUS_SIM
@@ -90,16 +91,16 @@ main(int argc, char **argv)
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
-            recpols.emplace_back(fwdpp::poisson_xover(
-                r.get(), littler, double(i), double(i) + 1.0));
-            mmodels.push_back(std::bind(
-                fwdpp::infsites(), std::placeholders::_1,
-                std::placeholders::_2, r.get(), std::ref(pop.mut_lookup),
-                &generation, mu[i], 0.,
-                [&r, i]() {
-                    return gsl_ran_flat(r.get(), double(i), double(i) + 1.0);
-                },
-                []() { return 0.; }, []() { return 0.; }));
+            recpols.emplace_back(fwdpp::recbinder(
+                fwdpp::poisson_xover(littler, i, i + 1), r.get()));
+            mmodels.push_back(
+                [&pop, &r, &generation](std::queue<std::size_t> &recbin,
+                                        multiloc_t::mcont_t &mutations) {
+                    return fwdpp::infsites_popgenmut(
+                        recbin, mutations, r.get(), pop.mut_lookup, generation,
+                        0.0, [&r]() { return gsl_rng_uniform(r.get()); },
+                        []() { return 0.0; }, []() { return 0.0; });
+                });
         }
     std::vector<std::function<unsigned(void)>> interlocus_rec(
         K - 1, std::bind(gsl_ran_binomial, r.get(), rbw, 1));

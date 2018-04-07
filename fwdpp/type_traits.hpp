@@ -12,10 +12,17 @@ namespace fwdpp
     namespace traits
     {
         //! Wraps a static constant allowing a test that T is a gamete
+        template <typename T, typename = void>
+        struct is_gamete : std::false_type
+        {
+        };
+
         template <typename T>
-        struct is_gamete
-            : std::integral_constant<bool, traits::internal::
-                                               has_gamete_tag<T>::value>
+        struct is_gamete<T, typename traits::internal::void_t<
+                                typename T::mutation_container>::type>
+            : std::integral_constant<bool, std::is_integral<
+                                               typename T::mutation_container::
+                                                   value_type>::value>
         {
         };
 
@@ -216,7 +223,7 @@ namespace fwdpp
         using mutation_model_diploid = typename traits::internal::
             mutation_model_diploid<diploid_t, mcont_t, gcont_t>::type;
 
-/*! \defgroup Cpp14
+/*! \defgroup Cpp14 C++14 features
  * \brief C++14 features
  */
 

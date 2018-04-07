@@ -135,6 +135,17 @@ namespace fwdpp
                                         // as "recyclable"
                         lookup.erase(mutations[i].pos);
                     }
+                else if (mcounts[i] == twoN) // Fixation is not neutral
+                    {
+						// Guard against repeatedly recording fixation data
+                        if (std::find(std::begin(fixations),
+                                      std::end(fixations), mutations[i])
+                            == std::end(fixations))
+                            {
+                                fixations.push_back(mutations[i]);
+                                fixation_times.push_back(generation);
+                            }
+                    }
                 if (!mcounts[i])
                     lookup.erase(mutations[i].pos);
             }

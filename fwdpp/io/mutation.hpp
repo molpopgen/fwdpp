@@ -2,9 +2,10 @@
 #define FWDPP_IO_MUTATION_HPP__
 
 #include <cstddef>
-#include <stdexcept>
+#include <typeinfo>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/meta/always_false.hpp>
 #include "scalar_serialization.hpp"
 
 /*! \namespace fwdpp::io
@@ -21,21 +22,24 @@ namespace fwdpp
 {
     namespace io
     {
+
         template <typename T> struct serialize_mutation
         /// \brief Serialize a mutation
         ///
         /// Serialize a mutation.
         /// This *must* be specialized for a specific mutation type,
-        /// otherwise std::runtime_error will be thrown.
+        /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See serialize_mutation<popgenmut> for example implementation
         {
-            template <typename istreamtype>
+            template <typename ostreamtype>
             inline void
-            operator()(istreamtype &, const T &) const
+            operator()(ostreamtype &, const T &) const
             {
-                throw std::runtime_error(
-                    "serializtion not implemented for this mutation type");
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::serialize_mutation "
+                              "not implemented for this "
+                              "type");
             }
         };
 
@@ -44,16 +48,18 @@ namespace fwdpp
         ///
         /// Deserialize a mutation.
         /// This *must* be specialized for a specific mutation type,
-        /// otherwise std::runtime_error will be thrown.
+        /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See deserialize_mutation<popgenmut> for example implementation
         {
-            template <typename ostreamtype>
+            template <typename istreamtype>
             inline T
-            operator()(ostreamtype &) const
+            operator()(istreamtype &) const
             {
-                throw std::runtime_error(
-                    "deserializtion not implemented for this mutation type");
+                static_assert(meta::always_false<T>::value,
+                              "fwdpp::io::deserialize_mutation "
+                              "not implemented for this "
+                              "type");
             }
         };
 

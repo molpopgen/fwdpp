@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
 #endif
@@ -12,7 +13,7 @@
 #include <list>
 #include <sstream>
 // Use mutation model from sugar layer
-#include <fwdpp/sugar/infsites.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/sampling.hpp>
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
@@ -53,7 +54,7 @@ main(int argc, char **argv)
     const unsigned seed
         = atoi(argv[argument++]); // Number of loci in simulation
 
-	const double mu = theta/double(4*N);
+    const double mu = theta / double(4 * N);
 
     /*
       littler r is the recombination rate per region per generation.
@@ -75,26 +76,31 @@ main(int argc, char **argv)
     for (unsigned i = 0; i < K; ++i)
         {
             recvar.recmap.push_back(
-                fwdpp::poisson_interval(r.get(), littler, i, i + 1.0));
+                fwdpp::poisson_interval(littler, i, i + 1.0));
             if (i)
                 {
                     recvar.recmap.push_back(
-                        fwdpp::crossover_point(r.get(), rbw, i + 1.0, false));
+                        fwdpp::crossover_point(rbw, i + 1.0, false));
                 }
         }
+    auto recmap = fwdpp::recbinder(recvar, r.get());
+
+    const auto mmodel
+        = [&pop, &r, &generation](std::queue<std::size_t> &recbin,
+                                  singlepop_t::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,
+                  [&r]() { return gsl_rng_uniform(r.get()); },
+                  []() { return 0.0; }, []() { return 0.0; });
+          };
 
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
-            fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N,mu, std::bind(fwdpp::infsites(), std::placeholders::_1,
-                             std::placeholders::_2, r.get(),
-                             std::ref(pop.mut_lookup), generation, mu, 0.,
-                             [&r,K]() { return gsl_ran_flat(r.get(),0.,double(K)); },
-                             []() { return 0.; }, []() { return 0.; }),
-                recvar, fwdpp::multiplicative_diploid(),
-                pop.neutral, pop.selected);
+            fwdpp::sample_diploid(r.get(), pop.gametes, pop.diploids,
+                                  pop.mutations, pop.mcounts, N, mu, mmodel,
+                                  recmap, fwdpp::multiplicative_diploid(),
+                                  pop.neutral, pop.selected);
             assert(check_sum(pop.gametes, K * twoN));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,

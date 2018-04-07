@@ -1,5 +1,5 @@
 /*!
-  \file test_sugar_change_neutral.cc
+  \file sugar_change_neutralTest.cc
 
   \brief test fwdpp::change_neutral
 */
@@ -11,9 +11,9 @@
 #include <fwdpp/sugar/change_neutral.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(test_change_neutral, singlepop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_change_neutral, slocuspop_popgenmut_fixture)
 
-BOOST_AUTO_TEST_CASE(test_change_neutral_singlepop)
+BOOST_AUTO_TEST_CASE(test_change_neutral_slocuspop)
 {
 
     fwdpp::add_mutation(pop,

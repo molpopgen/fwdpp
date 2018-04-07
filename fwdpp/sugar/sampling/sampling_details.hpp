@@ -167,7 +167,7 @@ namespace fwdpp
                    const std::vector<integer_type> &individuals,
                    const bool removeFixed)
     {
-        sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_deme(
+        sep_sample_t temp = fwdpp_internal::ms_sample_separate_single_locus_pop(
             p.mutations, p.gametes, p.diploids, individuals,
             2 * individuals.size(), removeFixed);
         auto rv = std::move(temp.first);
