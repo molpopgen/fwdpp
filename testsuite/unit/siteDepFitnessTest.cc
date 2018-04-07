@@ -57,8 +57,9 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative_trait)
     BOOST_CHECK_EQUAL(g1.smutations.size(), 1);
 
     gcont_t g{ g1, g2 };
-    double w = fwdpp::multiplicative_diploid(1., fwdpp::mtrait())(g[0], g[1],
-                                                                  mutations);
+    double w = fwdpp::multiplicative_diploid(
+        1., fwdpp::multiplicative_diploid::policy::mtrait)(g[0], g[1],
+                                                           mutations);
 
     BOOST_CHECK_CLOSE(w, -0.05, 1e-8);
 }
@@ -208,8 +209,8 @@ BOOST_AUTO_TEST_CASE(simple_additive_trait)
 
     gcont_t g{ g1, g2 };
 
-    double w
-        = fwdpp::additive_diploid(1., fwdpp::additive_diploid::policy::atrait)(g[0], g[1], mutations);
+    double w = fwdpp::additive_diploid(
+        1., fwdpp::additive_diploid::policy::atrait)(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, -0.1);
 }
 
@@ -256,10 +257,10 @@ BOOST_AUTO_TEST_CASE(stateful_additive_trait)
     };
 
     stateful_mapping_to_fitness sm(i);
-    //Here, a COPY of sm is move-constructed
-    //into an instance of additive_diploid,
-    //which is why we need to use a pointer
-    //for our stateful object above.
+    // Here, a COPY of sm is move-constructed
+    // into an instance of additive_diploid,
+    // which is why we need to use a pointer
+    // for our stateful object above.
     auto a = fwdpp::additive_diploid(1, sm);
     double w = a(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, 0.0);
@@ -314,8 +315,7 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
         // Now the additive model
 
         // assign a fitness model with default scaling = 1.
-        fitness_model_t dipfit
-            = fwdpp::additive_diploid();
+        fitness_model_t dipfit = fwdpp::additive_diploid();
         auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit = fwdpp::additive_diploid(2.);
@@ -363,8 +363,7 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
         // Multiplicative model first
 
         // assign a fitness model with default scaling = 1.
-        fitness_model_t dipfit
-            = fwdpp::multiplicative_diploid();
+        fitness_model_t dipfit = fwdpp::multiplicative_diploid();
         auto a = dipfit(cdiploids[0], gametes, mutations);
 
         // Now, reassign it with scaling = 2.

@@ -362,26 +362,6 @@ namespace fwdpp
     /// Typedef for backwards API compatibility.
     using haplotype_dependent_fitness = haplotype_dependent_trait_value;
 
-    struct mw
-    ///! A callable mapping multiplicative genetic values to fitness.
-    {
-        inline double
-        operator()(const double genetic_value) const noexcept
-        {
-            return std::max(0., genetic_value);
-        }
-    };
-
-    struct mtrait
-    //! A callable mapping multiplicative genetic values to trait value.
-    {
-        inline double
-        operator()(const double genetic_value) const noexcept
-        {
-            return genetic_value - 1.0;
-        }
-    };
-
     /// \brief Multiplicative fitness or trait value across sites
     /// This function object calculate the genetic
     /// value of a diploid according to an multiplicative model
@@ -511,26 +491,6 @@ namespace fwdpp
                                     mutations);
         }
     };
-
-    // struct aw
-    // {
-    //     inline double
-    //     operator()(const double genetic_value) const noexcept
-    //     //! Return a closure mapping additive genetic effects to fitness.
-    //     {
-    //         return std::max(0., 1. + genetic_value);
-    //     }
-    // };
-
-    // struct atrait
-    // //! A callable mapping additive genetic effects to trait values.
-    // {
-    //     inline double
-    //     operator()(const double genetic_value) const noexcept
-    //     {
-    //         return genetic_value;
-    //     }
-    // };
 
     /// \brief Additive fitness or trait value across sites
     /// This function object calculate the genetic
