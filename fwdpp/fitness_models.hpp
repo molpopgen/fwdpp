@@ -522,45 +522,28 @@ namespace fwdpp
             atrait,
             custom
         };
-        class final_genetic_value
+        std::function<double(double)>
+        assign_f(policy p_)
         {
-          private:
-            static std::function<double(double)>
-            assign_f(policy p_)
-            {
-                if (p_ == policy::custom)
-                    {
-                        throw std::invalid_argument(
-                            "custom policy not a valid value");
-                    }
-                if (p_ == policy::atrait)
-                    {
-                        return [](const double d) { return d; };
-                    }
-                return [](const double d) { return std::max(0.0, 1.0 + d); };
-            }
-            const std::function<double(double)> f;
-
-          public:
-            policy p;
-            final_genetic_value(policy p_) : f{ assign_f(p_) }, p{ p_ } {}
-            final_genetic_value(std::function<double(double)> &&f_)
-                : f{ std::move(f_) }, p{ policy::custom }
-            {
-            }
-            inline double
-            operator()(const double d) const noexcept
-            {
-                return f(d);
-            }
-        };
+            if (p_ == policy::custom)
+                {
+                    throw std::invalid_argument(
+                        "custom policy not a valid value");
+                }
+            if (p_ == policy::atrait)
+                {
+                    return [](const double d) { return d; };
+                }
+            return [](const double d) { return std::max(0.0, 1.0 + d); };
+        }
         const double scaling;
+        const policy p;
+        const std::function<double(double)> f;
         using result_type = site_dependent_genetic_value::result_type;
-        const final_genetic_value make_return_value;
+        // const final_genetic_value make_return_value;
         additive_diploid(const double scaling_ = 1.0,
-                         const policy p = policy::aw)
-            : scaling{ scaling_ }, make_return_value{ final_genetic_value{
-                                       p } }
+                         const policy p_ = policy::aw)
+            : scaling{ scaling_ }, p{ p_ }, f{ assign_f(p) }
         /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or
         /// trait
@@ -600,9 +583,8 @@ namespace fwdpp
         {
         }
         additive_diploid(const double scaling_,
-                         std::function<double(double)> f)
-            : scaling{ scaling_ }, make_return_value{ final_genetic_value{
-                                       std::move(f) } }
+                         std::function<double(double)> f_)
+            : scaling{ scaling_ }, p{ policy::custom }, f{ std::move(f_) }
         {
         }
         template <typename iterator_t, typename mcont_t>
@@ -612,7 +594,7 @@ namespace fwdpp
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return f(site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
@@ -640,7 +622,7 @@ namespace fwdpp
         ///  \note g1 and g2 must be part of the gamete_base hierarchy
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return f(site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
