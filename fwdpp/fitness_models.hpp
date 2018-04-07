@@ -397,12 +397,34 @@ namespace fwdpp
     /// \ingroup fitness
     struct multiplicative_diploid
     {
+        enum class policy : std::int8_t
+        {
+            mw,
+            mtrait,
+            custom
+        };
+        std::function<double(double)>
+        assign_f(policy p_)
+        {
+            if (p_ == policy::custom)
+                {
+                    throw std::invalid_argument(
+                        "custom policy not a valid value");
+                }
+            if (p_ == policy::mtrait)
+                {
+                    return [](const double d) { return d - 1.0; };
+                }
+            return [](const double d) { return std::max(0.0, d); };
+        }
         const double scaling;
+        const policy p;
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
         multiplicative_diploid(const double scaling_ = 1.0,
-                               std::function<double(double)> f_ = fwdpp::mw())
-            : scaling{ scaling_ }, make_return_value{ std::move(f_) }
+                               const policy p_
+                               = multiplicative_diploid::policy::mw)
+            : scaling{ scaling_ }, p{ p_ }, make_return_value{ assign_f(p) }
         /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or trait
         /// value.
@@ -425,6 +447,15 @@ namespace fwdpp
         /// part of fwdpp's testing suite.
         {
         }
+
+        multiplicative_diploid(const double scaling_,
+                               std::function<double(double)> f_)
+            : scaling{ scaling_ }, p{ policy::custom }, make_return_value{
+                  std::move(f_)
+              }
+        {
+        }
+
         template <typename iterator_t, typename mcont_t>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
@@ -538,12 +569,12 @@ namespace fwdpp
         }
         const double scaling;
         const policy p;
-        const std::function<double(double)> f;
+        const std::function<double(double)> make_return_value;
         using result_type = site_dependent_genetic_value::result_type;
         // const final_genetic_value make_return_value;
         additive_diploid(const double scaling_ = 1.0,
                          const policy p_ = policy::aw)
-            : scaling{ scaling_ }, p{ p_ }, f{ assign_f(p) }
+            : scaling{ scaling_ }, p{ p_ }, make_return_value{ assign_f(p) }
         /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
         /// \param f_ A function mapping genetic value to fitness or
         /// trait
@@ -584,7 +615,9 @@ namespace fwdpp
         }
         additive_diploid(const double scaling_,
                          std::function<double(double)> f_)
-            : scaling{ scaling_ }, p{ policy::custom }, f{ std::move(f_) }
+            : scaling{ scaling_ }, p{ policy::custom }, make_return_value{
+                  std::move(f_)
+              }
         {
         }
         template <typename iterator_t, typename mcont_t>
@@ -594,7 +627,7 @@ namespace fwdpp
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
-            return f(site_dependent_genetic_value()(
+            return make_return_value(site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
@@ -622,7 +655,7 @@ namespace fwdpp
         ///  \note g1 and g2 must be part of the gamete_base hierarchy
         {
             using __mtype = typename mcont_t::value_type;
-            return f(site_dependent_genetic_value()(
+            return make_return_value(site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
