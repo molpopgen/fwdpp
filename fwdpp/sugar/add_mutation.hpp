@@ -275,11 +275,11 @@ namespace fwdpp
         for (const auto &c : clist)
             {
                 if (c < 0 || c > 2)
-                    throw std::runtime_error(
+                    throw std::out_of_range(
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
+            throw std::invalid_argument("indlist and clist must be same length");
 
         // create a new mutation
         typename poptype::mcont_t::value_type new_mutant(
@@ -336,11 +336,11 @@ namespace fwdpp
         for (const auto &c : clist)
             {
                 if (c < 0 || c > 2)
-                    throw std::runtime_error(
+                    throw std::invalid_argument(
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
+            throw std::invalid_argument	("indlist and clist must be same length");
 
         if (locus >= p.diploids[0].size())
             throw std::out_of_range("locus index out of range");
@@ -413,18 +413,18 @@ namespace fwdpp
         for (const auto &c : clist)
             {
                 if (c < 0 || c > 2)
-                    throw std::runtime_error(
+                    throw std::invalid_argument(
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
+            throw std::invalid_argument("indlist and clist must be same length");
         for (auto mi : mutation_indexes)
             {
                 if (mi >= p.mutations.size())
-                    throw std::runtime_error("mutation key out of range");
+                    throw std::out_of_range("mutation key out of range");
             }
         if (p.mcounts.size() != p.mutations.size())
-            throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
+            throw std::invalid_argument("p.mcounts.size() != p.mutations.size()");
         auto gams = sugar::collect_gametes(p, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
@@ -474,11 +474,11 @@ namespace fwdpp
         for (const auto &c : clist)
             {
                 if (c < 0 || c > 2)
-                    throw std::runtime_error(
+                    throw std::invalid_argument(
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::runtime_error("indlist and clist must be same length");
+            throw std::invalid_argument("indlist and clist must be same length");
 
         if (locus >= p.diploids[0].size())
             throw std::out_of_range("locus index out of range");
@@ -491,10 +491,10 @@ namespace fwdpp
         for (auto mi : mutation_indexes)
             {
                 if (mi >= p.mutations.size())
-                    throw std::runtime_error("mutation key out of range");
+                    throw std::out_of_range("mutation key out of range");
             }
         if (p.mcounts.size() != p.mutations.size())
-            throw std::runtime_error("p.mcounts.size() != p.mutations.size()");
+            throw std::invalid_argument("p.mcounts.size() != p.mutations.size()");
         auto gams = sugar::collect_gametes(p, locus, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
