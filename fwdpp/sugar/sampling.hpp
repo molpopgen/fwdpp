@@ -64,14 +64,14 @@ namespace fwdpp
                       "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "locus boundaries required when adding fixations");
             }
         auto rv = ms_sample(r, p.mutations, p.gametes, p.diploids, nsam,
                             removeFixed);
         if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(rv, p.fixations, nsam, removeFixed,
@@ -104,14 +104,14 @@ namespace fwdpp
                       "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "locus boundaries required when adding fixations");
             }
         auto rv = ms_sample_separate(r, p.mutations, p.gametes, p.diploids,
                                      nsam, removeFixed);
         if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(rv, p.fixations, nsam, removeFixed,
@@ -205,7 +205,7 @@ namespace fwdpp
                       "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "locus boundaries required when adding fixations");
             }
         if (individuals.empty())
@@ -288,7 +288,7 @@ namespace fwdpp
                       "poptype must be MULTILOC_TAG");
         if (!removeFixed && p.locus_boundaries.empty())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "locus boundaries required when adding fixations");
             }
         if (individuals.empty())
@@ -306,7 +306,7 @@ namespace fwdpp
             2 * individuals.size(), removeFixed);
         if (!removeFixed && p.locus_boundaries.size() != rv.size())
             {
-                throw std::runtime_error(
+                throw std::invalid_argument(
                     "incorrect number of elements in locus_boundaries");
             }
         finish_sample(

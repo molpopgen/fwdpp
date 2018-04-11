@@ -153,7 +153,7 @@ namespace fwdpp
         {
             if (v.size() != indexes.size())
                 {
-                    throw std::runtime_error("vector sizes do not match");
+                    throw std::invalid_argument("vector sizes do not match");
                 }
             for (auto &&mk : mut_keys)
                 {
@@ -168,7 +168,7 @@ namespace fwdpp
                             auto idx = std::distance(indexes.begin(), i);
                             if (static_cast<std::size_t>(idx) >= v.size())
                                 {
-                                    throw std::runtime_error(
+                                    throw std::out_of_range(
                                         "idx >= v.size()");
                                 }
                             v[static_cast<std::size_t>(idx)]++;
