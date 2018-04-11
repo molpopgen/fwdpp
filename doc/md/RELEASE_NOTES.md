@@ -33,6 +33,9 @@ so new that no one has affected by them:
     
 The following changes have been made to the library itself:
 
+* The back end for specifying final values from fwdpp::additive_diploid and fwdpp::multiplicative_diploid have been
+  streamlined. [PR121](https://github.com/molpopgen/fwdpp/pull/121), which changes behavior introduced in fwdpp 0.5.6
+  in response to [Issue 49](https://github.com/molpopgen/fwdpp/issues/49)
 * The namespace has been changed from KTfwd to fwdpp. [PR88](https://github.com/molpopgen/fwdpp/pull/88)
 * Serialization code has been generalized to depend on template specializations. [PR90](https://github.com/molpopgen/fwdpp/pull/90) and [PR108](https://github.com/molpopgen/fwdpp/pull/108)
 * The struct KTfwd::infsites was removed.  For the mutation type fwdpp::popgenmut, fwdpp::infsites_popgenmut was added
