@@ -49,20 +49,22 @@ migrate_and_calc_fitness(const gsl_rng *r, singlepop_t &pop,
     for (unsigned i = 0; i < nmig12; ++i)
         {
             auto mig = static_cast<uint_t>(gsl_ran_flat(r, 0, N1));
-            if (migrants.find(mig) == migrants.end())
+            while (migrants.find(mig) != migrants.end())
                 {
-                    deme_labels[i] = !deme_labels[i];
-                    migrants.insert(mig);
+                    mig = static_cast<uint_t>(gsl_ran_flat(r, 0, N1));
                 }
+            deme_labels[i] = !deme_labels[i];
+            migrants.insert(mig);
         }
     for (unsigned i = 0; i < nmig21; ++i)
         {
             auto mig = static_cast<uint_t>(gsl_ran_flat(r, N1, N1 + N2));
-            if (migrants.find(mig) == migrants.end())
+            while (migrants.find(mig) != migrants.end())
                 {
-                    deme_labels[i] = !deme_labels[i];
-                    migrants.insert(mig);
+                    mig = static_cast<uint_t>(gsl_ran_flat(r, N1, N1 + N2));
                 }
+            deme_labels[i] = !deme_labels[i];
+            migrants.insert(mig);
         }
     for (std::size_t i = 0; i < deme_labels.size(); ++i)
         {
