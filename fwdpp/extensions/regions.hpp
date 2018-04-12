@@ -39,6 +39,8 @@ namespace fwdpp
          *
          *  See extensions_regionsTest.cc and
          *  K_linked_regions_extensions.cc for examples.
+         * 
+         *  \example K_linked_regions_extensions.cc
          */
         {
             static_assert(fwdpp::traits::is_mutation<
@@ -168,6 +170,8 @@ namespace fwdpp
         /*!
           Class allowing the simulation of discrete variation
           in recombination rates along a region.
+
+          \example K_linked_regions_extensions.cc
         */
         {
           private:

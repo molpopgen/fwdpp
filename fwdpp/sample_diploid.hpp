@@ -34,6 +34,7 @@ namespace fwdpp
       sampling.
       \return The mean fitness of the parental generation
       \example diploid_ind.cc
+      \example diploid_fixed_sh_ind.cc
     */
     template <typename gamete_type, typename gamete_cont_type_allocator,
               typename mutation_type, typename mutation_cont_type_allocator,
