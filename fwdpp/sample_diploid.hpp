@@ -87,7 +87,6 @@ namespace fwdpp
       recombination, and sampling.  Mutations will be changed by mutation and
       sampling.
       \return The mean fitness of the parental generation
-      \example bneck_selection_ind.cc
     */
     template <typename gamete_type, typename gamete_cont_type_allocator,
               typename mutation_type, typename mutation_cont_type_allocator,
