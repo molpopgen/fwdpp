@@ -237,8 +237,7 @@ main(int argc, char **argv)
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, mu_neutral + mu_del, mmodel,
                 // The function to generation recombination positions:
-                rec, fwdpp::multiplicative_diploid(1.), pop.neutral,
-                pop.selected);
+                rec, wfxn, pop.neutral, pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
