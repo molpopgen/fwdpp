@@ -121,6 +121,7 @@ namespace fwdpp
      * It holds a vector of functions that add recombination
      * breakpoints to a vector.  Examples of such functions
      * are fwdpp::poisson_interval and fwdpp::crossover_point.
+     * \example K_linked_regions_generalized_rec.cc
      */
     {
         std::vector<std::function<void(const gsl_rng *, std::vector<double>&)>> recmap;

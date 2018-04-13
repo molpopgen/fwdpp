@@ -89,7 +89,8 @@ POST_UNINSTALL = :
 noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	K_linked_regions_multilocus$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
-	K_linked_regions_generalized_rec$(EXEEXT)
+	K_linked_regions_generalized_rec$(EXEEXT) \
+	juvenile_migration$(EXEEXT)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DHAVE_LIBSEQUENCE
 @DEBUG_FALSE@am__append_2 = -DNDEBUG
 subdir = examples
@@ -130,6 +131,10 @@ am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
 diploid_ind_OBJECTS = $(am_diploid_ind_OBJECTS)
 diploid_ind_LDADD = $(LDADD)
 diploid_ind_DEPENDENCIES =
+am_juvenile_migration_OBJECTS = juvenile_migration.$(OBJEXT)
+juvenile_migration_OBJECTS = $(am_juvenile_migration_OBJECTS)
+juvenile_migration_LDADD = $(LDADD)
+juvenile_migration_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -174,11 +179,13 @@ am__v_CCLD_1 =
 SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
-	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES)
+	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
+	$(juvenile_migration_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
-	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES)
+	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
+	$(juvenile_migration_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -307,6 +314,7 @@ diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
 K_linked_regions_multilocus_SOURCES = K_linked_regions_multilocus.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES = K_linked_regions_extensions.cc common_ind.hpp
 K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc common_ind.hpp
+juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
 AM_CPPFLAGS = -Wall -W -I. $(am__append_2)
 AM_CXXFLAGS = $(am__append_1)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
@@ -368,6 +376,10 @@ diploid_ind$(EXEEXT): $(diploid_ind_OBJECTS) $(diploid_ind_DEPENDENCIES) $(EXTRA
 	@rm -f diploid_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_OBJECTS) $(diploid_ind_LDADD) $(LIBS)
 
+juvenile_migration$(EXEEXT): $(juvenile_migration_OBJECTS) $(juvenile_migration_DEPENDENCIES) $(EXTRA_juvenile_migration_DEPENDENCIES) 
+	@rm -f juvenile_migration$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(juvenile_migration_OBJECTS) $(juvenile_migration_LDADD) $(LIBS)
+
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
 
@@ -379,6 +391,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_multilocus.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

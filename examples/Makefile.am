@@ -2,7 +2,8 @@ noinst_PROGRAMS=	diploid_ind \
 	diploid_fixed_sh_ind \
 	K_linked_regions_multilocus \
 	K_linked_regions_extensions \
-	K_linked_regions_generalized_rec 
+	K_linked_regions_generalized_rec \
+	juvenile_migration
 
 
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
@@ -10,6 +11,7 @@ diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc common_ind.hpp
 K_linked_regions_multilocus_SOURCES=K_linked_regions_multilocus.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES=K_linked_regions_extensions.cc common_ind.hpp
 K_linked_regions_generalized_rec_SOURCES=K_linked_regions_generalized_rec.cc common_ind.hpp
+juvenile_migration_SOURCES=juvenile_migration.cc common_ind.hpp
 
 AM_CPPFLAGS=-Wall -W -I.
 

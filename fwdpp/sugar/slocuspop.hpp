@@ -11,6 +11,9 @@ namespace fwdpp
 {
     /*!
       \brief Single locus, single population object
+      \example juvenile_migration.cc
+      \example K_linked_regions_extensions.cc
+      \example K_linked_regions_generalized_rec.cc
       \ingroup sugar
     */
     template <typename mtype,
