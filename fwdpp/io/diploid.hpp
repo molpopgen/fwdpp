@@ -20,6 +20,7 @@ namespace fwdpp
         /// This type simply writes T::first and T::second
         /// to a stream.  If your diploid type contains more data,
         /// then specialize this struct.
+        /// \example custom_diploid.cc
         {
             template <typename ostreamtype>
             inline void
@@ -72,6 +73,7 @@ namespace fwdpp
         /// \brief Deserialize a diploid
         ///
         /// Deserialize a diploid.
+        /// \example custom_diploid.cc
         {
             template <typename istreamtype>
             inline void
