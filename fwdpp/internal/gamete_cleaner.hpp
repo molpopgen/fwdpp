@@ -463,11 +463,9 @@ namespace fwdpp
                     return find_fixation()(mc, mutations, mcounts, twoN, mp);
                 },
                 [&mutations, &mcounts, &mp,
-                 twoN](typename gcont_t::value_type::mutation_container &mc,
-                       typename gcont_t::value_type::mutation_container::
-                           value_type v) {
+                 twoN](typename gcont_t::value_type::mutation_container &mc) {
                     return gamete_cleaner_erase_remove_idiom_wrapper()(
-                        mc, mutations, mcounts, v, twoN, mp);
+                        mc, mutations, mcounts, twoN, mp);
                 },
                 std::true_type());
         }
