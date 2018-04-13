@@ -33,6 +33,9 @@ so new that no one has affected by them:
     
 The following changes have been made to the library itself:
 
+* @ref custom_mutation.cc, @ref custom_diploid.cc and @ref juvenile_migration.cc were added to examples. [PR124](https://github.com/molpopgen/fwdpp/pull/124).
+* All use of std::bind is replaced with lambdas. [PR126](https://github.com/molpopgen/fwdpp/pull/126).
+* Some mutation types were removed from fwdpp/sugar. [PR125](https://github.com/molpopgen/fwdpp/pull/125).
 * The back end for specifying final values from fwdpp::additive_diploid and fwdpp::multiplicative_diploid have been
   streamlined. [PR121](https://github.com/molpopgen/fwdpp/pull/121), which changes behavior introduced in fwdpp 0.5.6
   in response to [Issue 49](https://github.com/molpopgen/fwdpp/issues/49)
