@@ -34,7 +34,8 @@ namespace fwdpp
     inline std::vector<std::function<unsigned(void)>>
     make_poisson_interlocus_rec(const gsl_rng* r, const double* means,
                                 const std::size_t n)
-    /// \brief Create a vector of callbacks bound to model interlocus recombination
+    /// \brief Create a vector of callbacks bound to model interlocus
+    /// recombination
     ///
     /// Example use for two loci with recombination occuring
     /// at rate 1e-3 between them:
@@ -50,7 +51,8 @@ namespace fwdpp
         std::vector<std::function<unsigned(void)>> rv;
         for (std::size_t i = 0; i < n; ++i)
             {
-                rv.emplace_back(std::bind(gsl_ran_poisson, r, means[i]));
+                auto mi = means[i];
+                rv.emplace_back([r, mi]() { return gsl_ran_poisson(r, mi); });
             }
         return rv;
     }
@@ -58,7 +60,8 @@ namespace fwdpp
     inline std::vector<std::function<unsigned(void)>>
     make_binomial_interlocus_rec(const gsl_rng* r, const double* distances,
                                  const std::size_t n)
-    /// \brief Create a vector of callbacks bound to model interlocus recombination
+    /// \brief Create a vector of callbacks bound to model interlocus
+    /// recombination
     ///
     /// Example of a three locus system where loci 0 and 1
     /// are 25cM apart and locus 2 is unlinked (50cM) from
@@ -75,8 +78,9 @@ namespace fwdpp
         std::vector<std::function<unsigned(void)>> rv;
         for (std::size_t i = 0; i < n; ++i)
             {
+                auto di = distances[i];
                 rv.emplace_back(
-                    std::bind(gsl_ran_binomial, r, distances[i], 1));
+                    [r, di]() { return gsl_ran_binomial(r, di, 1); });
             }
         return rv;
     }

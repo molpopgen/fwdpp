@@ -59,10 +59,8 @@ namespace fwdpp
         next_extant_gamete(gcont_t_iterator beg, gcont_t_iterator end) noexcept
         {
             return std::find_if(
-                beg, end,
-                [](const typename gcont_t_iterator::value_type &g) noexcept {
-                    return g.n;
-                });
+                beg, end, [](const typename gcont_t_iterator::value_type
+                                 &g) noexcept { return g.n; });
         }
 
         struct find_fixation
@@ -357,11 +355,17 @@ namespace fwdpp
                            const uint_t twoN, const mutation_removal_policy &)
         {
             gamete_cleaner_details(
-                gametes, std::bind(find_fixation(), std::placeholders::_1,
-                                   std::cref(mcounts), twoN),
-                std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
-                          std::placeholders::_1, std::cref(mcounts),
-                          std::placeholders::_2, twoN));
+                gametes,
+                [&mcounts,
+                 twoN](const typename gcont_t::value_type::mutation_container
+                           &mc) { return find_fixation()(mc, mcounts, twoN); },
+                [&mcounts,
+                 twoN](typename gcont_t::value_type::mutation_container &mc,
+                       const typename gcont_t::value_type::mutation_container::
+                           value_type v) {
+                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                        mc, mcounts, v, twoN);
+                });
         }
 
         /*! \brief Handles removal of indexes to mutations from gametes after
@@ -383,13 +387,19 @@ namespace fwdpp
                            const mutation_removal_policy &mp)
         {
             gamete_cleaner_details(
-                gametes, std::bind(find_fixation(), std::placeholders::_1,
-                                   std::cref(mutations), std::cref(mcounts),
-                                   twoN, std::forward<decltype(mp)>(mp)),
-                std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
-                          std::placeholders::_1, std::cref(mutations),
-                          std::cref(mcounts), std::placeholders::_2, twoN,
-                          std::forward<decltype(mp)>(mp)));
+                gametes,
+                [&mutations, &mcounts, &mp,
+                 twoN](const typename gcont_t::value_type::mutation_container
+                           &mc) {
+                    return find_fixation()(mc, mutations, mcounts, twoN, mp);
+                },
+                [&mutations, &mcounts, &mp,
+                 twoN](typename gcont_t::value_type::mutation_container &mc,
+                       typename gcont_t::value_type::mutation_container::
+                           value_type v) {
+                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                        mc, mutations, mcounts, v, twoN, mp);
+                });
         }
 
         /*! \brief Handles removal of indexes to mutations from gametes after
@@ -412,10 +422,15 @@ namespace fwdpp
                            std::true_type)
         {
             gamete_cleaner_details(
-                gametes, std::bind(find_fixation(), std::placeholders::_1,
-                                   std::cref(mcounts), twoN),
-                std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
-                          std::placeholders::_1, std::cref(mcounts), twoN),
+                gametes,
+                [&mcounts,
+                 twoN](const typename gcont_t::value_type::mutation_container
+                           &mc) { return find_fixation()(mc, mcounts, twoN); },
+                [&mcounts,
+                 twoN](typename gcont_t::value_type::mutation_container &mc) {
+                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                        mc, mcounts, twoN);
+                },
                 std::true_type());
         }
 
@@ -441,13 +456,19 @@ namespace fwdpp
                            const mutation_removal_policy &mp, std::true_type)
         {
             gamete_cleaner_details(
-                gametes, std::bind(find_fixation(), std::placeholders::_1,
-                                   std::cref(mutations), std::cref(mcounts),
-                                   twoN, std::forward<decltype(mp)>(mp)),
-                std::bind(gamete_cleaner_erase_remove_idiom_wrapper(),
-                          std::placeholders::_1, std::cref(mutations),
-                          std::cref(mcounts), twoN,
-                          std::forward<decltype(mp)>(mp)),
+                gametes,
+                [&mutations, &mcounts, &mp,
+                 twoN](const typename gcont_t::value_type::mutation_container
+                           &mc) {
+                    return find_fixation()(mc, mutations, mcounts, twoN, mp);
+                },
+                [&mutations, &mcounts, &mp,
+                 twoN](typename gcont_t::value_type::mutation_container &mc,
+                       typename gcont_t::value_type::mutation_container::
+                           value_type v) {
+                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                        mc, mutations, mcounts, v, twoN, mp);
+                },
                 std::true_type());
         }
     }
