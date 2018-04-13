@@ -90,7 +90,8 @@ noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	K_linked_regions_multilocus$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
 	K_linked_regions_generalized_rec$(EXEEXT) \
-	juvenile_migration$(EXEEXT)
+	juvenile_migration$(EXEEXT) custom_mutation$(EXEEXT) \
+	custom_diploid$(EXEEXT)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DHAVE_LIBSEQUENCE
 @DEBUG_FALSE@am__append_2 = -DNDEBUG
 subdir = examples
@@ -123,6 +124,14 @@ K_linked_regions_multilocus_OBJECTS =  \
 	$(am_K_linked_regions_multilocus_OBJECTS)
 K_linked_regions_multilocus_LDADD = $(LDADD)
 K_linked_regions_multilocus_DEPENDENCIES =
+am_custom_diploid_OBJECTS = custom_diploid.$(OBJEXT)
+custom_diploid_OBJECTS = $(am_custom_diploid_OBJECTS)
+custom_diploid_LDADD = $(LDADD)
+custom_diploid_DEPENDENCIES =
+am_custom_mutation_OBJECTS = custom_mutation.$(OBJEXT)
+custom_mutation_OBJECTS = $(am_custom_mutation_OBJECTS)
+custom_mutation_LDADD = $(LDADD)
+custom_mutation_DEPENDENCIES =
 am_diploid_fixed_sh_ind_OBJECTS = diploid_fixed_sh_ind.$(OBJEXT)
 diploid_fixed_sh_ind_OBJECTS = $(am_diploid_fixed_sh_ind_OBJECTS)
 diploid_fixed_sh_ind_LDADD = $(LDADD)
@@ -179,11 +188,13 @@ am__v_CCLD_1 =
 SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
+	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(juvenile_migration_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
+	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(juvenile_migration_SOURCES)
 am__can_run_installinfo = \
@@ -315,6 +326,8 @@ K_linked_regions_multilocus_SOURCES = K_linked_regions_multilocus.cc common_ind.
 K_linked_regions_extensions_SOURCES = K_linked_regions_extensions.cc common_ind.hpp
 K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc common_ind.hpp
 juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
+custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
+custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
 AM_CPPFLAGS = -Wall -W -I. $(am__append_2)
 AM_CXXFLAGS = $(am__append_1)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
@@ -368,6 +381,14 @@ K_linked_regions_multilocus$(EXEEXT): $(K_linked_regions_multilocus_OBJECTS) $(K
 	@rm -f K_linked_regions_multilocus$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_multilocus_OBJECTS) $(K_linked_regions_multilocus_LDADD) $(LIBS)
 
+custom_diploid$(EXEEXT): $(custom_diploid_OBJECTS) $(custom_diploid_DEPENDENCIES) $(EXTRA_custom_diploid_DEPENDENCIES) 
+	@rm -f custom_diploid$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(custom_diploid_OBJECTS) $(custom_diploid_LDADD) $(LIBS)
+
+custom_mutation$(EXEEXT): $(custom_mutation_OBJECTS) $(custom_mutation_DEPENDENCIES) $(EXTRA_custom_mutation_DEPENDENCIES) 
+	@rm -f custom_mutation$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(custom_mutation_OBJECTS) $(custom_mutation_LDADD) $(LIBS)
+
 diploid_fixed_sh_ind$(EXEEXT): $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_DEPENDENCIES) $(EXTRA_diploid_fixed_sh_ind_DEPENDENCIES) 
 	@rm -f diploid_fixed_sh_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_sh_ind_LDADD) $(LIBS)
@@ -389,6 +410,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_extensions.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_generalized_rec.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_multilocus.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_diploid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_mutation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@

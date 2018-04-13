@@ -82,14 +82,14 @@ The former is used when the current state of a gamete doesn't matter.  The infin
 The latter is used whn the current state of a gamete does matter.  A finite-sites model would be an example.
 Internally, the library detects which type is being used.  The return value is the index in the mutation container where
 the new mutation was placed.  This location may have been generated via recycling, and the library provides
-fwdpp::internal::recycle_mutation_helper to facilitate this operation.
+fwdpp::fwdpp_internal::recycle_mutation_helper to facilitate this operation.
 
 Additional model parameters are possible via the usual mechanisms: class members, std::bind, etc.
 
 A valid mutation policy passes a static assertion involving fwdpp::traits::valid_mutation_model at compile time. See
 type_traitsTest.cc for an example of this assertion.
 
-* fwdpp::infsites
+For an example of how to compose a mutation policy, see @ref custom_mutation.cc.
 
 \subsection TutRec Recombination policies
 
