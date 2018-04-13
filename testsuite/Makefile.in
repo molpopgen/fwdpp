@@ -158,8 +158,7 @@ unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 	unit/sugar_GSLrngTest.cc unit/sugar_samplingTest.cc \
 	unit/sugar_add_mutationTest.cc \
-	unit/sugar_change_neutralTest.cc unit/sugar_generalmutTest.cc \
-	unit/sugar_generalmut_vecTest.cc unit/sugar_construct_pops.cc \
+	unit/sugar_change_neutralTest.cc unit/sugar_construct_pops.cc \
 	unit/sugar_popgenmut.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_sugar_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests.$(OBJEXT) \
@@ -167,8 +166,6 @@ am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_samplingTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmutTest.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_construct_pops.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.$(OBJEXT)
 unit_sugar_unit_tests_OBJECTS = $(am_unit_sugar_unit_tests_OBJECTS)
@@ -551,8 +548,6 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_samplingTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmutTest.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_generalmut_vecTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_construct_pops.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.cc
 
@@ -683,10 +678,6 @@ unit/sugar_add_mutationTest.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/sugar_change_neutralTest.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
-unit/sugar_generalmutTest.$(OBJEXT): unit/$(am__dirstamp) \
-	unit/$(DEPDIR)/$(am__dirstamp)
-unit/sugar_generalmut_vecTest.$(OBJEXT): unit/$(am__dirstamp) \
-	unit/$(DEPDIR)/$(am__dirstamp)
 unit/sugar_construct_pops.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/sugar_popgenmut.$(OBJEXT): unit/$(am__dirstamp) \
@@ -726,8 +717,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_add_mutationTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_change_neutralTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_construct_pops.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_generalmutTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_generalmut_vecTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_popgenmut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_samplingTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_unit_tests.Po@am__quote@
