@@ -20,7 +20,7 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline void
-            operator()(streamtype& buffer, const T& g) const
+            operator()(streamtype&, const T&) const
             {
                 static_assert(meta::always_false<T>::value,
                               "serialize_gamete not implemented for type");
@@ -37,7 +37,7 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline T
-            operator()(streamtype& buffer) const
+            operator()(streamtype&) const
             {
                 static_assert(meta::always_false<T>::value,
                               "deserialize_gamete not implemented for type");

@@ -88,7 +88,6 @@ namespace fwdpp
             const bool &remove_fixed)
         {
             sep_sample_t rv;
-            sample_t::iterator itr;
 
             std::function<bool(const sample_site_t &, const double &)>
                 sitefinder = [](const sample_site_t &site, const double &d) {

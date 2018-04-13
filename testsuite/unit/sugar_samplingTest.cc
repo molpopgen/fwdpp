@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(multilocus_test_sep_empty)
 BOOST_AUTO_TEST_CASE(multilocus_test_sampling)
 {
 	std::cout << recmodels.size() << '\n';
-	for(auto i=0;i<recmodels.size();++i)
+	for(std::size_t i=0;i<recmodels.size();++i)
 	{
 		std::cout << i << std::endl;
 		auto x = recmodels.at(2)();

@@ -77,8 +77,6 @@ main(int argc, char **argv)
     // Initiate random number generation system
     GSLrng r(seed);
 
-    unsigned twoN = 2 * N;
-
     multiloc_t pop(N, K);
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));

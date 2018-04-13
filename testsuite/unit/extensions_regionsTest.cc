@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
     using mmodel_type = fwdpp::traits::mutation_model<poptype::mcont_t>;
     rng_t rng{ 42 };
     const auto mmodel
-        = [&rng](std::queue<std::size_t> &,
+        = [](std::queue<std::size_t> &,
                  poptype::mcont_t &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mcont_t> m(
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(bind_gamete_dependent_mutation_model)
                                                              poptype::gcont_t>;
     rng_t rng{ 42 };
     const auto mmodel
-        = [&rng](std::queue<std::size_t> &, const poptype::gamete_t &,
+        = [](std::queue<std::size_t> &, const poptype::gamete_t &,
                  poptype::mcont_t &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mcont_t, poptype::gcont_t>
