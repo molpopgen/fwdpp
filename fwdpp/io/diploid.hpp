@@ -24,7 +24,7 @@ namespace fwdpp
         {
             template <typename ostreamtype>
             inline void
-            operator()(ostreamtype &buffer, const T &dip) const
+            operator()(ostreamtype &, const T &) const
             {
                 static_assert(meta::always_false<T>::value,
                               "fwdpp::io::serialize_diploid not implemented "
@@ -77,7 +77,7 @@ namespace fwdpp
         {
             template <typename istreamtype>
             inline void
-            operator()(istreamtype &buffer, T &dip) const
+            operator()(istreamtype &, T &) const
             {
                 static_assert(meta::always_false<T>::value,
                               "fwdpp::io::deserialize_diploid not implemented "

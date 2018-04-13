@@ -20,7 +20,7 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline void
-            operator()(streamtype& buffer, const T& g) const
+            operator()(streamtype&, const T&) const
             {
                 static_assert(meta::always_false<T>::value,
                               "serialize_gamete not implemented for type");
@@ -37,28 +37,10 @@ namespace fwdpp
         {
             template <typename streamtype>
             inline T
-            operator()(streamtype& buffer) const
+            operator()(streamtype&) const
             {
                 static_assert(meta::always_false<T>::value,
                               "deserialize_gamete not implemented for type");
-                // scalar_reader reader;
-                // decltype(T::n) n;
-                // std::size_t nm;
-                // decltype(T::mutations) mutations, smutations;
-                // reader(buffer, &n);
-                // reader(buffer, &nm);
-                // if (nm)
-                //    {
-                //        mutations.resize(nm);
-                //        reader(buffer, mutations.data(), nm);
-                //    }
-                // reader(buffer, &nm);
-                // if (nm)
-                //    {
-                //        smutations.resize(nm);
-                //        reader(buffer, smutations.data(), nm);
-                //    }
-                // return T(n, std::move(mutations), std::move(smutations));
             }
         };
 
