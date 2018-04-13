@@ -22,14 +22,15 @@ so new that no one has affected by them:
   [PR71](https://github.com/molpopgen/fwdpp/pull/71)
 * API bugs in multilocus sampling routines have been fixed. 
   [PR70](https://github.com/molpopgen/fwdpp/pull/70)
-* An erroneous check that gamete keys are sorted in extinct gametes when constructing populations "manually" has been
-  fixed.  [PR66](https://github.com/molpopgen/fwdpp/pull/66).  This bug was introduced in 0.5.7 by
-  [PR56](https://github.com/molpopgen/fwdpp/pull/56).
 * The "perfect-forwarding" constructor of fwdpp::popbase now is indeed perfectly-forwarding.[PR65](https://github.com/molpopgen/fwdpp/pull/65).
   This fixes a bug introduced in [PR56](https://github.com/molpopgen/fwdpp/pull/56).
-* The changes introduced in 0.5.7, specifically 
-  [PR56](https://github.com/molpopgen/fwdpp/pull/56), did not check that mutation keys in gametes are sorted. This is
-  fixed.
+
+In fwdpp 0.5.7, [PR56](https://github.com/molpopgen/fwdpp/pull/56) had a few issues resolved in this release:
+
+* Do not require mutation keys to be sorted by position in extinct gametes. [PR66](https://github.com/molpopgen/fwdpp/pull/66)  
+* Fixed an error in a "perfect forwarding" constructor introduced in 0.5.7. [PR65](https://github.com/molpopgen/fwdpp/pull/65) 
+* When creating populations based on user data, 0.5.7 failed to enforce
+  proper sorting of mutation keys in gametes.  This issue was fixed via [PR64](https://github.com/molpopgen/fwdpp/pull/64).
     
 The following changes have been made to the library itself:
 
@@ -61,22 +62,12 @@ The following changes have been made to the library itself:
   [PR69](https://github.com/molpopgen/fwdpp/pull/69)
 * fwdpp::generalmut and fwdpp::generalmut_vec now take less memory.
   [PR67](https://github.com/molpopgen/fwdpp/pull/67)
-
-
-## 0.5.8
-
 * Sampling routines in fwdpp/sugar/sampling.hpp now guard against the possibility of having fixations repeated in
   samples. For example, this change will affect simulations where selected fixations are retained because they affect trait values. [PR71](https://github.com/molpopgen/fwdpp/pull/71) 
 * Issue [PR69](https://github.com/molpopgen/fwdpp/issues/69) [PR70](https://github.com/molpopgen/fwdpp/pull/70) 
 * Fixed template errors when sampling from multilocus populations using functions in fwdpp/sugar/sampling.hpp.  These
   errors resulted in failure to compile and thus did not affect anyone's results.  [PR70](https://github.com/molpopgen/fwdpp/pull/70) 
 
-In fwdpp 0.5.7, [PR56](https://github.com/molpopgen/fwdpp/pull/56) had a few issues resolved in this release:
-
-* Do not require mutation keys to be sorted by position in extinct gametes. [PR66](https://github.com/molpopgen/fwdpp/pull/66)  
-* Fixed an error in a "perfect forwarding" constructor introduced in 0.5.7. [PR65](https://github.com/molpopgen/fwdpp/pull/65) 
-* When creating populations based on user data, 0.5.7 failed to enforce
-  proper sorting of mutation keys in gametes.  This issue was fixed via [PR64](https://github.com/molpopgen/fwdpp/pull/64).
 
 ## 0.5.7
 
