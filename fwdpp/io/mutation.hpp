@@ -31,6 +31,7 @@ namespace fwdpp
         /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See serialize_mutation<popgenmut> for example implementation
+        /// \example custom_mutation.cc
         {
             template <typename ostreamtype>
             inline void
@@ -51,6 +52,7 @@ namespace fwdpp
         /// otherwise a static_assertion will fail.
         /// The type T must be a valid mutation type.
         /// See deserialize_mutation<popgenmut> for example implementation
+        /// \example custom_mutation.cc
         {
             template <typename istreamtype>
             inline T
