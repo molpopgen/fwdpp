@@ -3,7 +3,7 @@
 
 #include <utility>
 #include <vector>
-#include <unordered_set>
+#include <unordered_map>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/sugar/poptypes/slocuspop.hpp>
 
@@ -22,7 +22,9 @@ namespace fwdpp
         = sugar::slocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
                            std::vector<diploid_t>, std::vector<mtype>,
                            std::vector<uint_t>,
-                           std::unordered_set<double, std::hash<double>,
-                                              fwdpp::equal_eps>>;
+						   // fwdpp 0.6.1 changed this from an unordered_set,
+						   // in order to address a rare bug. See GitHub
+						   // issue 130 for details.
+                           std::unordered_multimap<double, std::uint32_t>>;
 }
 #endif

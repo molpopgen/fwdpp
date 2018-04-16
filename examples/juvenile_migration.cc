@@ -69,6 +69,7 @@
 #include <numeric>
 #include <functional>
 #include <cassert>
+#include <unordered_set>
 #include <fwdpp/sugar/popgenmut.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation

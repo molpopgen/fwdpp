@@ -105,7 +105,8 @@ namespace fwdpp
                 for (unsigned i = 0; i < pop.mcounts.size(); ++i)
                     {
                         if (pop.mcounts[i])
-                            pop.mut_lookup.insert(pop.mutations[i].pos);
+                            pop.mut_lookup.emplace(pop.mutations[i].pos,
+                                                   static_cast<uint_t>(i));
                     }
             }
 
@@ -165,7 +166,8 @@ namespace fwdpp
                 for (unsigned i = 0; i < pop.mcounts.size(); ++i)
                     {
                         if (pop.mcounts[i])
-                            pop.mut_lookup.insert(pop.mutations[i].pos);
+                            pop.mut_lookup.emplace(pop.mutations[i].pos,
+                                                   static_cast<uint_t>(i));
                     }
             }
         }

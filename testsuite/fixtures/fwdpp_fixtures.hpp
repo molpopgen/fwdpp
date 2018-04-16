@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <utility>
-#include <unordered_set>
+#include <unordered_map>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <gsl/gsl_rng.h>
@@ -27,7 +27,7 @@ using mcont_t = std::vector<mtype>;
 using gcont_t = std::vector<fwdpp::gamete>;
 using dipvector_t = std::vector<std::pair<std::size_t, std::size_t>>;
 using lookup_table_t
-    = std::unordered_set<double, std::hash<double>, fwdpp::equal_eps>;
+    = std::unordered_multimap<double, fwdpp::uint_t>;
 using mcounts_t = std::vector<fwdpp::uint_t>;
 
 struct standard_empty_single_deme_fixture

@@ -107,11 +107,12 @@ namespace fwdpp
             {
                 pos = posmaker();
             }
-        lookup.insert(pos);
         bool selected = (gsl_rng_uniform(r) < pselected);
-        return fwdpp_internal::recycle_mutation_helper(
+        auto idx =  fwdpp_internal::recycle_mutation_helper(
             recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
             (selected) ? hmaker() : 0., generation, x);
+		lookup.emplace(pos,idx);
+		return idx;
     }
 
     namespace io
