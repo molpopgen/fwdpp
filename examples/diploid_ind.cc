@@ -166,7 +166,6 @@ main(int argc, char **argv)
                     std::cout << "//\nsegsites: 0\n";
                 }
 #endif
-			std::cout<<pop.mutations.size()<<' '<<pop.gametes.size()<<' ' << pop.mut_lookup.size() << '\n';
         }
     return 0;
 }
