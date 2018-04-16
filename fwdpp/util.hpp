@@ -78,6 +78,7 @@ namespace fwdpp
                                         mcounts[i] = 0;
                                         break;
                                     }
+                                ++itr.first;
                             }
                     }
             }
