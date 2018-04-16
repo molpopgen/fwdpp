@@ -31,9 +31,7 @@ struct TwoDmutation : public fwdpp::mutation_base
         : mutation_base(pos,
                         // Mutation is neutral i.f.f. all values in s_ == 0.
                         !std::any_of(std::begin(s_), std::end(s_),
-                                    [](const double t) {
-                                        return t != 0.;
-                                    }),
+                                     [](const double t) { return t != 0.; }),
                         label),
           s(std::move(s_)), h(std::move(h_)), g{ gen }
     {
@@ -118,16 +116,17 @@ infsites_TwoDmutation_additive(queue_t &recycling_bin, mcont_t &mutations,
         {
             pos = posmaker();
         }
-    lookup.insert(pos);
 
     if (gsl_rng_uniform(r) < pselected)
         {
             gsl_ran_bivariate_gaussian(r, sigma_x, sigma_y, rho, &s[0], &s[1]);
         }
 
-    return fwdpp::fwdpp_internal::recycle_mutation_helper(
+    auto idx = fwdpp::fwdpp_internal::recycle_mutation_helper(
         recycling_bin, mutations, std::move(s), std::move(h), pos, generation,
         x);
+    lookup.emplace(pos, idx);
+    return idx;
 }
 
 // For testing, we'll define a single-locus pop type in terms of the above.

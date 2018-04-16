@@ -135,6 +135,16 @@ main(int argc, char **argv)
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);
                     assert(fwdpp::check_sum(pop.gametes, twoN));
+					//for(std::size_t i=0;i<pop.mcounts.size();++i)
+					//{
+					//	if(pop.mcounts[i])
+					//	{
+					//		if(pop.mut_lookup.find(pop.mutations[i].pos)==pop.mut_lookup.end())
+					//		{
+					//			throw 1;
+					//		}
+					//	}
+					//}
                 }
 
             // Take a sample of size samplesize1 from the population

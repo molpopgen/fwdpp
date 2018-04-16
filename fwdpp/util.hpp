@@ -36,8 +36,17 @@ namespace fwdpp
                 assert(mcounts[i] <= twoN);
                 if (mcounts[i] == twoN || !mcounts[i])
                     {
-                        lookup.erase(mutations[i].pos);
-                        mcounts[i] = 0;
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        while (itr.first != itr.second)
+                            {
+                                if (itr.first->second == i)
+                                    {
+                                        lookup.erase(itr.first);
+                                        mcounts[i] = 0;
+                                        break;
+                                    }
+                                ++itr.first;
+                            }
                     }
             }
     }
@@ -60,8 +69,17 @@ namespace fwdpp
             {
                 if (!mcounts[i])
                     {
-                        lookup.erase(mutations[i].pos);
-                        mcounts[i] = 0;
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        while (itr.first != itr.second)
+                            {
+                                if (itr.first->second == i)
+                                    {
+                                        lookup.erase(mutations[i].pos);
+                                        mcounts[i] = 0;
+                                        break;
+                                    }
+                                ++itr.first;
+                            }
                     }
             }
     }
@@ -96,10 +114,33 @@ namespace fwdpp
                         fixation_times.push_back(generation);
                         mcounts[i] = 0; // set count to zero to mark mutation
                                         // as "recyclable"
-                        lookup.erase(mutations[i].pos);
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        while (itr.first != itr.second)
+                            {
+                                if (itr.first->second == i)
+                                    {
+                                        lookup.erase(itr.first);
+                                        break;
+                                    }
+                                ++itr.first;
+                            }
                     }
-                if (!mcounts[i])
-                    lookup.erase(mutations[i].pos);
+                else if (!mcounts[i])
+                    {
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        if (itr.first != lookup.end())
+                            {
+                                while (itr.first != itr.second)
+                                    {
+                                        if (itr.first->second == i)
+                                            {
+                                                lookup.erase(itr.first);
+                                                break;
+                                            }
+                                        ++itr.first;
+                                    }
+                            }
+                    }
             }
     }
 
@@ -122,7 +163,8 @@ namespace fwdpp
     {
         static_assert(
             typename traits::is_mutation<typename mcont_t::value_type>::type(),
-            "mutation_type must be derived from fwdpp::mutation_base");
+            "mutation_type must be derived from "
+            "fwdpp::mutation_base");
         assert(mcounts.size() == mutations.size());
         for (unsigned i = 0; i < mcounts.size(); ++i)
             {
@@ -133,11 +175,20 @@ namespace fwdpp
                         fixation_times.push_back(generation);
                         mcounts[i] = 0; // set count to zero to mark mutation
                                         // as "recyclable"
-                        lookup.erase(mutations[i].pos);
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        while (itr.first != itr.second)
+                            {
+                                if (itr.first->second == i)
+                                    {
+                                        lookup.erase(mutations[i].pos);
+                                        break;
+                                    }
+                                ++itr.first;
+                            }
                     }
                 else if (mcounts[i] == twoN) // Fixation is not neutral
                     {
-						// Guard against repeatedly recording fixation data
+                        // Guard against repeatedly recording fixation data
                         if (std::find(std::begin(fixations),
                                       std::end(fixations), mutations[i])
                             == std::end(fixations))
@@ -146,8 +197,19 @@ namespace fwdpp
                                 fixation_times.push_back(generation);
                             }
                     }
-                if (!mcounts[i])
-                    lookup.erase(mutations[i].pos);
+                else if (!mcounts[i])
+                    {
+                        auto itr = lookup.equal_range(mutations[i].pos);
+                        while (itr.first != itr.second)
+                            {
+                                if (itr.first->second == i)
+                                    {
+                                        lookup.erase(mutations[i].pos);
+                                        break;
+                                    }
+                                ++itr.first;
+                            }
+                    }
             }
     }
 }

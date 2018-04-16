@@ -153,7 +153,8 @@ namespace fwdpp
                 typename gamete_t::mutation_container::size_type reserve_size
                 = 100)
                 : // No muts in the population
-                  mutations(mcont_t()), mcounts(mcount_t()),
+                  mutations(mcont_t()),
+                  mcounts(mcount_t()),
                   // The population contains a single gamete in 2N copies
                   gametes(gcont(1, gamete_t(2 * popsize))),
                   neutral(typename gamete_t::mutation_container()),
@@ -255,9 +256,10 @@ namespace fwdpp
             fixations.clear();
             fixation_times.clear();
             mcounts.clear();
-            for (auto &&m : mutations)
+            for (std::size_t i = 0; i < mutations.size(); ++i)
                 {
-                    mut_lookup.insert(m.pos);
+                    mut_lookup.emplace(mutations[i].pos,
+                                       static_cast<uint_t>(i));
                 }
             for (const auto &g : gametes)
                 {

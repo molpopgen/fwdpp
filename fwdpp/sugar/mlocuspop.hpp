@@ -2,7 +2,7 @@
 #define __FWDPP_SUGAR_MULTILOC_HPP__
 
 #include <vector>
-#include <unordered_set>
+#include <unordered_map>
 #include <fwdpp/sugar/poptypes/mlocuspop.hpp>
 #include <fwdpp/fwd_functional.hpp>
 
@@ -17,9 +17,11 @@ namespace fwdpp
               typename diploid_t = std::pair<std::size_t, std::size_t>>
     using mlocuspop
         = sugar::mlocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
-                          std::vector<std::vector<diploid_t>>,
-                          std::vector<mtype>, std::vector<uint_t>,
-                          std::unordered_set<double, std::hash<double>,
-                                             fwdpp::equal_eps>>;
+                           std::vector<std::vector<diploid_t>>,
+                           std::vector<mtype>, std::vector<uint_t>,
+						   // fwdpp 0.6.1 changed this from an unordered_set,
+						   // in order to address a rare bug. See GitHub
+						   // issue 130 for details.
+                           std::unordered_multimap<double, uint_t>>;
 }
 #endif
