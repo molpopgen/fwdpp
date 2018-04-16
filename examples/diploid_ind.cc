@@ -9,6 +9,7 @@
   4.  Outputting a sample in "ms" format
 */
 #include <iostream>
+#include <unordered_map>
 #include <type_traits>
 #include <vector>
 #ifdef HAVE_LIBSEQUENCE
@@ -21,6 +22,112 @@
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
+
+void
+compact(singlepop_t &pop)
+{
+    using pair_type
+        = std::pair<singlepop_t::mcont_t::value_type, fwdpp::uint_t>;
+    using iter_type = std::vector<pair_type>::iterator;
+    std::vector<pair_type> data_copy;
+    data_copy.reserve(pop.mutations.size());
+    std::vector<std::size_t> indexes;
+    unsigned nzeroes = 0;
+    for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
+        {
+            if (!pop.mcounts[i])
+                ++nzeroes;
+            data_copy.emplace_back(std::move(pop.mutations[i]),
+                                   pop.mcounts[i]);
+            indexes.push_back(i);
+        }
+
+    auto ic = indexes;
+    auto nmoved = 0;
+    auto new_indexes_end = std::stable_partition(
+        std::begin(indexes), std::end(indexes),
+        [&data_copy](std::size_t i) { return data_copy[i].second > 0; });
+    std::size_t new_indexes_size
+        = std::distance(std::begin(indexes), new_indexes_end);
+    //for (unsigned i = 0; i < indexes.size(); ++i)
+    //    {
+    //        std::cout << ic[i] << ' ' << indexes[i] << '\n';
+    //    }
+    //std::exit(0);
+    //for (unsigned i = new_indexes_size; i < data_copy.size(); ++i)
+    //    {
+    //        if (data_copy[indexes[i]].second > 0)
+    //            {
+    //                throw std::string();
+    //            }
+    //    }
+    std::sort(std::begin(indexes), new_indexes_end,
+              [&data_copy](const std::size_t i, const std::size_t j) {
+                  return data_copy[i].first.pos < data_copy[j].first.pos;
+              });
+    std::unordered_map<fwdpp::uint_t, fwdpp::uint_t> reindex;
+    for (std::size_t i = 0; i < new_indexes_size; ++i)
+        {
+            reindex[indexes[i]] = i;
+        }
+    for (auto &g : pop.gametes)
+        {
+            if (g.n)
+                {
+                    for (auto &m : g.mutations)
+                        {
+                            m = reindex[m];
+                        }
+                    for (auto &m : g.smutations)
+                        {
+                            m = reindex[m];
+                        }
+                }
+        }
+    pop.mutations.clear();
+    pop.mcounts.clear();
+    //pop.mut_lookup.clear();
+    for (auto i : indexes)
+        {
+            pop.mutations.emplace_back(std::move(data_copy[i].first));
+            pop.mcounts.push_back(data_copy[i].second);
+            if (pop.mcounts.back() > 0)
+                {
+                    //pop.mut_lookup.emplace(pop.mutations.back().pos,pop.mutations.size()-1);
+                    auto x
+                        = pop.mut_lookup.equal_range(pop.mutations.back().pos);
+                    //if (x.first == pop.mut_lookup.end())
+                    //    throw 1;
+                    while (x.first != x.second)
+                        {
+                            if (x.first->second == i)
+                                {
+                                    x.first->second = pop.mutations.size() - 1;
+                                    break;
+                                }
+                            ++x.first;
+                        }
+                }
+        }
+    //for(unsigned i=0;i<pop.mcounts.size();++i)
+    //{
+    //	if(pop.mcounts[i] && pop.mut_lookup.find(pop.mutations[i].pos) == pop.mut_lookup.end())
+    //	{
+    //		throw std::runtime_error("bad");
+    //	}
+    //}
+    //for (unsigned i = new_indexes_size; i < pop.mcounts.size(); ++i)
+    //    {
+    //        if (pop.mcounts[i] > 0)
+    //            {
+    //                throw 2.0;
+    //            }
+    //    }
+    //for(unsigned i=0;i<new_indexes_size;++i)
+    //{
+    //	std::cerr << pop.mutations[i].pos << ' ' << pop.mcounts[i] << '\n';
+    //}
+}
 
 int
 main(int argc, char **argv)
@@ -134,17 +241,21 @@ main(int argc, char **argv)
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);
+                    if (generation && generation % 100 == 0.0)
+                        {
+                            compact(pop);
+                        }
                     assert(fwdpp::check_sum(pop.gametes, twoN));
-					//for(std::size_t i=0;i<pop.mcounts.size();++i)
-					//{
-					//	if(pop.mcounts[i])
-					//	{
-					//		if(pop.mut_lookup.find(pop.mutations[i].pos)==pop.mut_lookup.end())
-					//		{
-					//			throw 1;
-					//		}
-					//	}
-					//}
+                    //for(std::size_t i=0;i<pop.mcounts.size();++i)
+                    //{
+                    //	if(pop.mcounts[i])
+                    //	{
+                    //		if(pop.mut_lookup.find(pop.mutations[i].pos)==pop.mut_lookup.end())
+                    //		{
+                    //			throw 1;
+                    //		}
+                    //	}
+                    //}
                 }
 
             // Take a sample of size samplesize1 from the population
