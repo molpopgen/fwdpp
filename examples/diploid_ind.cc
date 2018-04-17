@@ -42,8 +42,6 @@ compact(singlepop_t &pop)
             indexes.push_back(i);
         }
 
-    auto ic = indexes;
-    auto nmoved = 0;
     auto new_indexes_end = std::stable_partition(
         std::begin(indexes), std::end(indexes),
         [&data_copy](std::size_t i) { return data_copy[i].second > 0; });
@@ -53,7 +51,6 @@ compact(singlepop_t &pop)
               [&data_copy](const std::size_t i, const std::size_t j) {
                   return data_copy[i].first.pos < data_copy[j].first.pos;
               });
-    //std::unordered_map<fwdpp::uint_t, fwdpp::uint_t> reindex;
 	std::vector<fwdpp::uint_t> reindex(indexes.size());
     for (std::size_t i = 0; i < new_indexes_size; ++i)
         {
@@ -75,18 +72,14 @@ compact(singlepop_t &pop)
         }
     pop.mutations.clear();
     pop.mcounts.clear();
-    //pop.mut_lookup.clear();
     for (auto i : indexes)
         {
             pop.mutations.emplace_back(std::move(data_copy[i].first));
             pop.mcounts.push_back(data_copy[i].second);
             if (pop.mcounts.back() > 0)
                 {
-                    //pop.mut_lookup.emplace(pop.mutations.back().pos,pop.mutations.size()-1);
                     auto x
                         = pop.mut_lookup.equal_range(pop.mutations.back().pos);
-                    //if (x.first == pop.mut_lookup.end())
-                    //    throw 1;
                     while (x.first != x.second)
                         {
                             if (x.first->second == i)
@@ -98,24 +91,6 @@ compact(singlepop_t &pop)
                         }
                 }
         }
-    //for(unsigned i=0;i<pop.mcounts.size();++i)
-    //{
-    //	if(pop.mcounts[i] && pop.mut_lookup.find(pop.mutations[i].pos) == pop.mut_lookup.end())
-    //	{
-    //		throw std::runtime_error("bad");
-    //	}
-    //}
-    //for (unsigned i = new_indexes_size; i < pop.mcounts.size(); ++i)
-    //    {
-    //        if (pop.mcounts[i] > 0)
-    //            {
-    //                throw 2.0;
-    //            }
-    //    }
-    //for(unsigned i=0;i<new_indexes_size;++i)
-    //{
-    //	std::cerr << pop.mutations[i].pos << ' ' << pop.mcounts[i] << '\n';
-    //}
 }
 
 int
