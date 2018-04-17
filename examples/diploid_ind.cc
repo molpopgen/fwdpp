@@ -49,23 +49,12 @@ compact(singlepop_t &pop)
         [&data_copy](std::size_t i) { return data_copy[i].second > 0; });
     std::size_t new_indexes_size
         = std::distance(std::begin(indexes), new_indexes_end);
-    //for (unsigned i = 0; i < indexes.size(); ++i)
-    //    {
-    //        std::cout << ic[i] << ' ' << indexes[i] << '\n';
-    //    }
-    //std::exit(0);
-    //for (unsigned i = new_indexes_size; i < data_copy.size(); ++i)
-    //    {
-    //        if (data_copy[indexes[i]].second > 0)
-    //            {
-    //                throw std::string();
-    //            }
-    //    }
     std::sort(std::begin(indexes), new_indexes_end,
               [&data_copy](const std::size_t i, const std::size_t j) {
                   return data_copy[i].first.pos < data_copy[j].first.pos;
               });
-    std::unordered_map<fwdpp::uint_t, fwdpp::uint_t> reindex;
+    //std::unordered_map<fwdpp::uint_t, fwdpp::uint_t> reindex;
+	std::vector<fwdpp::uint_t> reindex(indexes.size());
     for (std::size_t i = 0; i < new_indexes_size; ++i)
         {
             reindex[indexes[i]] = i;
