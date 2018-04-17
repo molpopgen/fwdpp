@@ -18,73 +18,12 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/algorithm/compact_mutations.hpp>
 // typedef mutation_with_age mtype;
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
-#include <numeric>
-void
-compact(singlepop_t &pop)
-{
-    std::vector<fwdpp::uint_t> indexes(pop.mutations.size());
-    std::iota(std::begin(indexes), std::end(indexes), 0);
 
-    auto new_indexes_end = std::stable_partition(
-        std::begin(indexes), std::end(indexes),
-        [&pop](const fwdpp::uint_t i) { return pop.mcounts[i]; });
-
-    std::sort(std::begin(indexes), new_indexes_end,
-              [&pop](const fwdpp::uint_t i, const fwdpp::uint_t j) {
-                  return pop.mutations[i].pos < pop.mutations[j].pos;
-              });
-    std::vector<fwdpp::uint_t> reindex(indexes.size());
-    std::size_t new_indexes_size
-        = std::distance(std::begin(indexes), new_indexes_end);
-    for (std::size_t i = 0; i < new_indexes_size; ++i)
-        {
-            reindex[indexes[i]] = i;
-        }
-    for (auto &g : pop.gametes)
-        {
-            if (g.n)
-                {
-                    for (auto &m : g.mutations)
-                        {
-                            m = reindex[m];
-                        }
-                    for (auto &m : g.smutations)
-                        {
-                            m = reindex[m];
-                        }
-                }
-        }
-    decltype(pop.mutations) reordered_muts;
-    decltype(pop.mcounts) reordered_mcounts;
-    reordered_muts.reserve(pop.mutations.size());
-    reordered_mcounts.reserve(pop.mutations.size());
-    for (auto i : indexes)
-        {
-            reordered_muts.emplace_back(std::move(pop.mutations[i]));
-            reordered_mcounts.push_back(pop.mcounts[i]);
-            if (reordered_mcounts.back() > 0)
-                {
-                    auto x = pop.mut_lookup.equal_range(
-                        reordered_muts.back().pos);
-                    while (x.first != x.second)
-                        {
-                            if (x.first->second == i)
-                                {
-                                    x.first->second
-                                        = reordered_muts.size() - 1;
-                                    break;
-                                }
-                            ++x.first;
-                        }
-                }
-        }
-    pop.mutations.swap(reordered_muts);
-    pop.mcounts.swap(reordered_mcounts);
-}
 
 int
 main(int argc, char **argv)
@@ -200,7 +139,7 @@ main(int argc, char **argv)
                                             pop.mcounts, generation, twoN);
                     if (generation && generation % 100 == 0.0)
                         {
-                            compact(pop);
+							fwdpp::compact_mutations(pop);
                         }
                     assert(fwdpp::check_sum(pop.gametes, twoN));
                     //for(std::size_t i=0;i<pop.mcounts.size();++i)

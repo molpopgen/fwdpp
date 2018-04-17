@@ -15,6 +15,7 @@
 #include <cassert>
 #include <iomanip>
 #include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/algorithm/compact_mutations.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation
 using mtype = fwdpp::popgenmut;
@@ -90,6 +91,10 @@ main(int argc, char **argv)
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
+                    if (generation && generation % 100 == 0.0)
+                        {
+							fwdpp::compact_mutations(pop);
+                        }
                     assert(fwdpp::check_sum(pop.gametes, 2 * N));
                 }
             // Take a sample of size samplesize1.  Two data blocks are
