@@ -332,11 +332,6 @@ main(int argc, char **argv)
             // Call our fancy new evolve function
             evolve_two_demes(r.get(), pop, N1, N2, m12, m21,
                              mu_neutral + mu_del, wfxn, rec, mmodel);
-            wbar = fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu_neutral + mu_del, mmodel,
-                // The function to generation recombination positions:
-                rec, wfxn, pop.neutral, pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
