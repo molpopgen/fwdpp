@@ -119,37 +119,26 @@ migrate_and_calc_fitness(const gsl_rng *r, singlepop_t &pop,
     deme_labels.resize(N1 + N2, 1);
     assert(deme_labels.size() == pop.diploids.size());
 
-    // A lookup table to facilitate
-    // sampling migrants w/o replacement
-    std::unordered_set<uint_t> migrants;
+    // Set up source and destination containers
+    // for sampling w/o replacement
+    std::vector<std::size_t> individuals(N1 + N2);
+    std::iota(std::begin(individuals), std::end(individuals), 0);
+    std::vector<std::size_t> migrants(std::max(nmig12, nmig21));
 
     // Who is migrating 1 -> 2?
-    for (unsigned i = 0; i < nmig12; ++i)
+    gsl_ran_choose(r, migrants.data(), nmig12, individuals.data(), N1,
+                   sizeof(std::size_t));
+    for (std::size_t i = 0; i < nmig12; ++i)
         {
-            // Sample an individual w/o replacement from deme 1:
-            auto mig = static_cast<uint_t>(gsl_ran_flat(r, 0, N1));
-            while (migrants.find(mig) != migrants.end())
-                {
-                    mig = static_cast<uint_t>(gsl_ran_flat(r, 0, N1));
-                }
-            // Flip the deme label:
-            deme_labels[i] = !deme_labels[i];
-
-            // Prevent sampling this individual again:
-            migrants.insert(mig);
+            deme_labels[migrants[i]] = !deme_labels[migrants[i]];
         }
 
     // Exact same logic for migrants 2 -> 1
-    for (unsigned i = 0; i < nmig21; ++i)
+    gsl_ran_choose(r, migrants.data(), nmig21, individuals.data() + N1, N2,
+                   sizeof(std::size_t));
+    for (std::size_t i = 0; i < nmig21; ++i)
         {
-            // Mind your ranges for generating indexes:
-            auto mig = static_cast<uint_t>(gsl_ran_flat(r, N1, N1 + N2));
-            while (migrants.find(mig) != migrants.end())
-                {
-                    mig = static_cast<uint_t>(gsl_ran_flat(r, N1, N1 + N2));
-                }
-            deme_labels[i] = !deme_labels[i];
-            migrants.insert(mig);
+            deme_labels[migrants[i]] = !deme_labels[migrants[i]];
         }
 
     // Go over all parents, set gametes counts to zero,
@@ -327,9 +316,8 @@ main(int argc, char **argv)
         size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                          + 0.667 * (theta_neutral + theta_del))));
     unsigned generation = 0;
-    const auto mmodel = [&pop, &r, &generation, s, h,
-                         pselected](std::queue<std::size_t> &recbin,
-                                    singlepop_t::mcont_t &mutations) {
+    const auto mmodel = [&pop, &r, &generation, s, h, pselected](
+        std::queue<std::size_t> &recbin, singlepop_t::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, r.get(), pop.mut_lookup, generation, pselected,
             [&r]() { return gsl_rng_uniform(r.get()); }, [s]() { return s; },
@@ -344,11 +332,6 @@ main(int argc, char **argv)
             // Call our fancy new evolve function
             evolve_two_demes(r.get(), pop, N1, N2, m12, m21,
                              mu_neutral + mu_del, wfxn, rec, mmodel);
-            wbar = fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu_neutral + mu_del, mmodel,
-                // The function to generation recombination positions:
-                rec, wfxn, pop.neutral, pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
