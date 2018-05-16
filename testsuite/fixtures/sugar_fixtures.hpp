@@ -213,4 +213,72 @@ class mlocuspop_popgenmut_fixture
     }
 };
 
+struct slocuspop_objects
+{
+    using poptype = slocuspop_popgenmut_fixture::poptype;
+
+    poptype::dipvector_t diploids;
+    poptype::mcont_t mutations;
+    poptype::gcont_t gametes;
+
+    using mutation_container
+        = poptype::gcont_t::value_type::mutation_container;
+
+    slocuspop_objects() : diploids{}, mutations{}, gametes{}
+    {
+        // Add some mutations
+        for (unsigned i = 0; i < 3; ++i)
+            {
+                // position = i, effect size = i
+                // meaning muts 1 and 2 not neutral
+                mutations.emplace_back(i, i, 1, 0);
+            }
+
+        // Add two gametes
+        gametes.emplace_back(1, mutation_container{ 0 },
+                             mutation_container{ 1 });
+        gametes.emplace_back(1, mutation_container{}, mutation_container{ 2 });
+
+        // Add a diploid
+        diploids.emplace_back(0, 1);
+        assert(gametes.size() == 2);
+        assert(mutations.size() == 3);
+    }
+};
+
+struct mlocuspop_objects
+{
+    using poptype = mlocuspop_popgenmut_fixture::poptype;
+
+    poptype::dipvector_t diploids;
+    poptype::mcont_t mutations;
+    poptype::gcont_t gametes;
+
+    using mutation_container
+        = poptype::gcont_t::value_type::mutation_container;
+
+    mlocuspop_objects() : diploids{}, mutations{}, gametes{}
+    {
+        // Add some mutations
+        for (unsigned i = 0; i < 3; ++i)
+            {
+                // position = i, effect size = i
+                // meaning muts 1 and 2 not neutral
+                mutations.emplace_back(i, i, 1, 0);
+            }
+
+        // Add two gametes
+        gametes.emplace_back(1, mutation_container{ 0 },
+                             mutation_container{ 1 });
+        gametes.emplace_back(3, mutation_container{}, mutation_container{ 2 });
+
+        diploids.resize(2); // two demes
+        // Add a diploid
+        diploids[0].emplace_back(0, 1);
+        diploids[1].emplace_back(1, 1);
+        assert(gametes.size() == 2);
+        assert(mutations.size() == 3);
+    }
+};
+
 #endif
