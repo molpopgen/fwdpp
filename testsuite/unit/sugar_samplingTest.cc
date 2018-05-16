@@ -11,7 +11,6 @@
 #include <fwdpp/sugar/sampling.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/debug.hpp>
-#include <iostream>
 
 fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
 
@@ -243,13 +242,6 @@ BOOST_AUTO_TEST_CASE(multilocus_test_sep_empty)
 
 BOOST_AUTO_TEST_CASE(multilocus_test_sampling)
 {
-	std::cout << recmodels.size() << '\n';
-	for(std::size_t i=0;i<recmodels.size();++i)
-	{
-		std::cout << i << std::endl;
-		auto x = recmodels.at(2)();
-		std::cout << x.size() << std::endl;
-	}
     //simulate_mlocuspop(pop, rng, mutmodels, recmodels, multilocus_additive(),
     //                   mu, rbw, generation);
     //auto s = fwdpp::sample_separate(rng.get(), pop, 20, true);
