@@ -15,11 +15,11 @@ namespace fwdpp
         {
             if (__first == __last)
                 return __first;
-            return std::upper_bound(
+            return std::lower_bound(
                 __first, __last, val,
-                [&mutations](const double __val,
-                             const typename itr_type::value_type __mut) {
-                    return __val < mutations[__mut].pos;
+                [&mutations](const typename itr_type::value_type __mut,
+                             const double v) {
+                    return mutations[__mut].pos < v;
                 });
         }
 
@@ -41,7 +41,7 @@ namespace fwdpp
             muts.insert(muts.end(), __first, __ub);
             return __ub;
         }
-    }
-}
+    } // namespace fwdpp_internal
+} // namespace fwdpp
 
 #endif
