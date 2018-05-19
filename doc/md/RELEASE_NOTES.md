@@ -3,6 +3,22 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.6.1
+
+Maintenance release fixing the following two bugs:
+
+* A bug that resulted in the failure to transmit a mutation if it was on parental gamete 2 AND its position equalled the
+  left edge of a recombinant interval has been fixed.  The bug was [issue
+  134](https://github.com/molpopgen/fwdpp/issues/134) and it was fixed via [PR
+  135](https://github.com/molpopgen/fwdpp/pull/135).
+* A [bug](https://github.com/molpopgen/fwdpp/issues/130) in `fwdpp::update_mutations` was fixed via [PR
+  132](https://github.com/molpopgen/fwdpp/pull/132).
+
+The following features were added:
+
+* fwdpp::compact_mutations was added, which reorganizes data structures for better memory access, thus improving
+  performance.  When used appropriately, significant run time improvements are possible.
+
 ## 0.6.0
 
 This is a major release, breaking API compatibility in many areas.  These changes were necessary to make the library
