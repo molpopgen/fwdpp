@@ -11,6 +11,21 @@ namespace fwdpp
     template <typename T>
     std::vector<fwdpp::uint_t>
     compact_mutations(T &pop)
+    /// \brief Sort mutation positions in population.
+    ///
+    /// Reorders the population mutation container
+    /// so that it is sorted by increasing mutation position.
+    /// The reordering requires assigning new key values into
+    /// all gametes, which is also done. The mutation counts
+    /// and mut_lookup data structures also get updated.
+    ///
+    /// Running this periodically is a performance increase
+    /// due to improved cache performance.
+    ///
+    /// \param pop A population.
+    ///
+    /// \return A vector containing the mapping of old to
+    /// new mutation index
     {
         std::vector<fwdpp::uint_t> indexes(pop.mutations.size());
         std::iota(std::begin(indexes), std::end(indexes), 0);
