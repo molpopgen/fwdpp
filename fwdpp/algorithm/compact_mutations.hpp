@@ -9,7 +9,7 @@
 namespace fwdpp
 {
     template <typename T>
-    void
+    std::vector<fwdpp::uint_t>
     compact_mutations(T &pop)
     {
         std::vector<fwdpp::uint_t> indexes(pop.mutations.size());
@@ -70,7 +70,8 @@ namespace fwdpp
             }
         pop.mutations.swap(reordered_muts);
         pop.mcounts.swap(reordered_mcounts);
+        return reindex;
     }
-}
+} // namespace fwdpp
 
 #endif
