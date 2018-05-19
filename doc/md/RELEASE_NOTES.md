@@ -19,6 +19,10 @@ The following features were added:
 * fwdpp::compact_mutations was added, which reorganizes data structures for better memory access, thus improving
   performance.  When used appropriately, significant run time improvements are possible.
 
+The following API issues were addressed:
+
+* The initialization of gamete counts in fwdpp::popbase is now independent of ploidy. [PR 136](https://github.com/molpopgen/fwdpp/pull/136).
+
 ## 0.6.0
 
 This is a major release, breaking API compatibility in many areas.  These changes were necessary to make the library
