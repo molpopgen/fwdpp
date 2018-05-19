@@ -9,6 +9,7 @@
   4.  Outputting a sample in "ms" format
 */
 #include <iostream>
+#include <unordered_map>
 #include <type_traits>
 #include <vector>
 #ifdef HAVE_LIBSEQUENCE
@@ -17,10 +18,12 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/algorithm/compact_mutations.hpp>
 // typedef mutation_with_age mtype;
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
+
 
 int
 main(int argc, char **argv)
@@ -134,17 +137,21 @@ main(int argc, char **argv)
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);
+                    if (generation && generation % 100 == 0.0)
+                        {
+							fwdpp::compact_mutations(pop);
+                        }
                     assert(fwdpp::check_sum(pop.gametes, twoN));
-					//for(std::size_t i=0;i<pop.mcounts.size();++i)
-					//{
-					//	if(pop.mcounts[i])
-					//	{
-					//		if(pop.mut_lookup.find(pop.mutations[i].pos)==pop.mut_lookup.end())
-					//		{
-					//			throw 1;
-					//		}
-					//	}
-					//}
+                    //for(std::size_t i=0;i<pop.mcounts.size();++i)
+                    //{
+                    //	if(pop.mcounts[i])
+                    //	{
+                    //		if(pop.mut_lookup.find(pop.mutations[i].pos)==pop.mut_lookup.end())
+                    //		{
+                    //			throw 1;
+                    //		}
+                    //	}
+                    //}
                 }
 
             // Take a sample of size samplesize1 from the population
