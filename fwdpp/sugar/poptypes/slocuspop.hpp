@@ -74,7 +74,7 @@ namespace fwdpp
                 typename popbase_t::gamete_t::mutation_container::size_type
                     reserve_size
                 = 100)
-                : popbase_t(popsize, reserve_size), N(popsize),
+                : popbase_t(2 * popsize, reserve_size), N(popsize),
                   // All N diploids contain the only gamete in the pop
                   diploids(dipvector_t(popsize, diploid_t(0, 0)))
             {
@@ -108,6 +108,6 @@ namespace fwdpp
                 popbase_t::clear_containers();
             }
         };
-    }
-}
+    } // namespace sugar
+} // namespace fwdpp
 #endif
