@@ -84,8 +84,8 @@ namespace fwdpp
                 typename popbase_t::gamete_t::mutation_container::size_type
                     reserve_size
                 = 100)
-                : popbase_t(__nloci * __N, reserve_size), N(__N),
-                  diploids(__N, diploid_t(__nloci, {0,0})),
+                : popbase_t(__nloci * 2 * __N, reserve_size), N(__N),
+                  diploids(__N, diploid_t(__nloci, { 0, 0 })),
                   locus_boundaries(locus_boundaries_)
             {
             }
@@ -121,7 +121,7 @@ namespace fwdpp
                 popbase_t::clear_containers();
             }
         };
-    }
-}
+    } // namespace sugar
+} // namespace fwdpp
 
 #endif

@@ -149,14 +149,13 @@ namespace fwdpp
 
             //! Constructor
             explicit popbase(
-                const uint_t &popsize,
+                const uint_t &initial_gamete_count,
                 typename gamete_t::mutation_container::size_type reserve_size
                 = 100)
                 : // No muts in the population
                   mutations(mcont_t()),
                   mcounts(mcount_t()),
-                  // The population contains a single gamete in 2N copies
-                  gametes(gcont(1, gamete_t(2 * popsize))),
+                  gametes(gcont(1, gamete_t(initial_gamete_count))),
                   neutral(typename gamete_t::mutation_container()),
                   selected(typename gamete_t::mutation_container()),
                   mut_lookup(lookup_table_type()), fixations(mvector()),
@@ -165,7 +164,7 @@ namespace fwdpp
                 // This is a good number for reserving,
                 // allowing for extra allocations when recycling is doing its
                 // thing
-                gametes.reserve(4 * popsize);
+                gametes.reserve(2 * initial_gamete_count);
                 // Reserve memory
                 neutral.reserve(reserve_size);
                 selected.reserve(reserve_size);
