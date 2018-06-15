@@ -4,6 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/type_traits.hpp>
+#include <cmath>
 #include <stdexcept>
 #include <cassert>
 #include <type_traits>
@@ -422,6 +423,11 @@ namespace fwdpp
         /// gss_multiplicative_trait in siteDepFitnessTest.cc, which is
         /// part of fwdpp's testing suite.
         {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
         }
 
         template <typename iterator_t, typename mcont_t>
@@ -535,6 +541,11 @@ namespace fwdpp
         /// fwdpp::additive_diploid::policy::aw for details (which involving
         /// adding 1.0).
         {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
         }
 
         template <typename iterator_t, typename mcont_t>
@@ -588,5 +599,5 @@ namespace fwdpp
                                     mutations);
         }
     };
-}
+} // namespace fwdpp
 #endif /* _FITNESS_MODELS_HPP_ */
