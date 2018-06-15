@@ -105,6 +105,13 @@ namespace fwdpp
                 return functions.at(region)(
                     std::forward<function_type_args>(args)...);
             }
+
+            const std::vector<double> &
+            get_weights() const
+            /// Returns const reference to the weights.
+            {
+                return weights;
+            }
         };
 
         template <typename dmm_type>
@@ -243,7 +250,20 @@ namespace fwdpp
                 rv.push_back(std::numeric_limits<double>::max());
                 return rv;
             }
+            const std::vector<double> &
+            get_weights() const
+            /// Returns const reference to the weights.
+            {
+                return weights;
+            }
+
+            double
+            get_recrate() const
+            /// Returns the recombination rate.
+            {
+                return recrate;
+            }
         };
-    }
-}
+    } // namespace extensions
+} // namespace fwdpp
 #endif
