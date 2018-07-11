@@ -1,4 +1,6 @@
+#include <stdexcept>
 #include <iterator>
+#include <numeric>
 /*
  * This header is not meant to be included directly.
  */
@@ -13,39 +15,10 @@ namespace fwdpp
             haplotype
         };
 
-        struct matrix_helper
-        //! Holds the data needed for generating data matrix
-        {
-            std::vector<std::pair<std::size_t, uint_t>> neutral_keys,
-                selected_keys;
-            std::vector<std::int8_t> neutral_row, neutral_row2, selected_row,
-                selected_row2;
-            matrix_helper(
-                const std::vector<std::pair<std::size_t, uint_t>> &nk,
-                const std::vector<std::pair<std::size_t, uint_t>> &sk)
-                : neutral_keys{ nk }, selected_keys{ sk },
-                  neutral_row(std::vector<std::int8_t>(nk.size(), 0)),
-                  neutral_row2(std::vector<std::int8_t>(nk.size(), 0)),
-                  selected_row(std::vector<std::int8_t>(sk.size(), 0)),
-                  selected_row2(std::vector<std::int8_t>(sk.size(), 0))
-            {
-            }
-            void
-            zero()
-            //! Refill temporary rows with zerosconst std::vector<uint_t> &
-            //! gamete_mut_keys,
-            {
-                std::fill(neutral_row.begin(), neutral_row.end(), 0);
-                std::fill(neutral_row2.begin(), neutral_row2.end(), 0);
-                std::fill(selected_row.begin(), selected_row.end(), 0);
-                std::fill(selected_row2.begin(), selected_row2.end(), 0);
-            }
-        };
-
-        template <typename gamete_t>
+        template <typename mutation_key_container>
         void
         update_mutation_keys(std::unordered_map<std::size_t, uint_t> &keys,
-                             const typename gamete_t::mutation_container &a,
+                             const mutation_key_container &a,
                              const std::vector<uint_t> &mcounts)
         {
             for (auto &&ai : a)
@@ -76,22 +49,21 @@ namespace fwdpp
                       sugar::SINGLELOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
-            using gamete_t = typename gcont_t::value_type;
             for (auto &&ind : individuals)
                 {
                     auto &dip = diploids[ind];
                     if (include_neutral)
                         {
-                            update_mutation_keys<gamete_t>(
+                            update_mutation_keys(
                                 n, gametes[dip.first].mutations, mcounts);
-                            update_mutation_keys<gamete_t>(
+                            update_mutation_keys(
                                 n, gametes[dip.second].mutations, mcounts);
                         }
                     if (include_selected)
                         {
-                            update_mutation_keys<gamete_t>(
+                            update_mutation_keys(
                                 s, gametes[dip.first].smutations, mcounts);
-                            update_mutation_keys<gamete_t>(
+                            update_mutation_keys(
                                 s, gametes[dip.second].smutations, mcounts);
                         }
                 }
@@ -112,7 +84,6 @@ namespace fwdpp
                       sugar::MULTILOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
-            using gamete_t = typename gcont_t::value_type;
             for (auto &&ind : individuals)
                 {
                     auto &dip = diploids[ind];
@@ -120,19 +91,19 @@ namespace fwdpp
                         {
                             if (include_neutral)
                                 {
-                                    update_mutation_keys<gamete_t>(
+                                    update_mutation_keys(
                                         n, gametes[locus.first].mutations,
                                         mcounts);
-                                    update_mutation_keys<gamete_t>(
+                                    update_mutation_keys(
                                         n, gametes[locus.second].mutations,
                                         mcounts);
                                 }
                             if (include_selected)
                                 {
-                                    update_mutation_keys<gamete_t>(
+                                    update_mutation_keys(
                                         s, gametes[locus.first].smutations,
                                         mcounts);
-                                    update_mutation_keys<gamete_t>(
+                                    update_mutation_keys(
                                         s, gametes[locus.second].smutations,
                                         mcounts);
                                 }
@@ -146,103 +117,29 @@ namespace fwdpp
                                       std::make_move_iterator(s.end())));
         }
 
-        inline void
-        update_row(std::vector<std::int8_t> &v,
-                   const std::vector<fwdpp::uint_t> &mut_keys,
-                   const std::vector<std::pair<std::size_t, uint_t>> &indexes)
+        template <typename mutation_key_container>
+        void
+        update_site(const mutation_key_container &first,
+                    const mutation_key_container &second,
+                    std::vector<std::int8_t> &site,
+                    const std::pair<std::size_t, uint_t> &mutation_record,
+                    const matrix_type mtype)
         {
-            if (v.size() != indexes.size())
+            int onfirst
+                = (std::find(first.begin(), first.end(), mutation_record.first)
+                   != first.end());
+            int onsecond = (std::find(second.begin(), second.end(),
+                                      mutation_record.first)
+                            != second.end());
+            if (mtype == matrix_type::genotype)
                 {
-                    throw std::invalid_argument("vector sizes do not match");
+                    site.push_back(onfirst + onsecond);
                 }
-            for (auto &&mk : mut_keys)
+            else
                 {
-                    auto i = std::find_if(
-                        indexes.begin(), indexes.end(),
-                        [mk](const std::pair<std::size_t, uint_t> &p) {
-                            return p.first == mk;
-                        });
-                    if (i != indexes.end()) // i may equal indexes.end iff mk
-                        // refers to a fixation
-                        {
-                            auto idx = std::distance(indexes.begin(), i);
-                            if (static_cast<std::size_t>(idx) >= v.size())
-                                {
-                                    throw std::out_of_range(
-                                        "idx >= v.size()");
-                                }
-                            v[static_cast<std::size_t>(idx)]++;
-                        }
+                    site.push_back(onfirst);
+                    site.push_back(onsecond);
                 }
-        }
-
-#ifndef NDEBUG
-        inline bool
-        validate_rows(const std::vector<uint_t> &gamete_mut_keys,
-                      const std::vector<std::pair<std::size_t, uint_t>> &keys,
-                      const std::vector<std::int8_t> &row)
-        //! check that row sums are ok.
-        // We need this more expensive check in case keys are adjusted prior
-        // to filling matrix.
-        {
-            std::set<std::size_t> gam(gamete_mut_keys.begin(),
-                                      gamete_mut_keys.end());
-            std::set<std::size_t> k;
-            for (auto &&ki : keys)
-                {
-                    k.insert(ki.first);
-                }
-            std::vector<std::size_t> intersection;
-            std::set_intersection(gam.begin(), gam.end(), k.begin(), k.end(),
-                                  std::back_inserter(intersection));
-            return intersection.size()
-                   == std::accumulate(row.begin(), row.end(), 0.);
-        }
-#endif
-
-        template <typename gamete_t>
-        inline void
-        update_row_common(const gamete_t &g1, const gamete_t &g2,
-                          matrix_helper &h)
-        {
-            update_row(h.neutral_row, g1.mutations, h.neutral_keys);
-            update_row(h.neutral_row2, g2.mutations, h.neutral_keys);
-            update_row(h.selected_row, g1.smutations, h.selected_keys);
-            update_row(h.selected_row2, g2.smutations, h.selected_keys);
-        }
-
-        inline void
-        fill_matrix_with_rows(data_matrix &m, matrix_helper &h,
-                              const matrix_type mtype)
-        {
-            if (mtype == matrix_type::haplotype)
-                {
-                    m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
-                                     h.neutral_row.end());
-                    m.neutral.insert(m.neutral.end(), h.neutral_row2.begin(),
-                                     h.neutral_row2.end());
-                    m.selected.insert(m.selected.end(), h.selected_row.begin(),
-                                      h.selected_row.end());
-                    m.selected.insert(m.selected.end(),
-                                      h.selected_row2.begin(),
-                                      h.selected_row2.end());
-                }
-            else if (mtype == matrix_type::genotype)
-                {
-                    std::transform(h.neutral_row2.begin(),
-                                   h.neutral_row2.end(), h.neutral_row.begin(),
-                                   h.neutral_row.begin(),
-                                   std::plus<std::int8_t>());
-                    std::transform(
-                        h.selected_row2.begin(), h.selected_row2.end(),
-                        h.selected_row.begin(), h.selected_row.begin(),
-                        std::plus<std::int8_t>());
-                    m.neutral.insert(m.neutral.end(), h.neutral_row.begin(),
-                                     h.neutral_row.end());
-                    m.selected.insert(m.selected.end(), h.selected_row.begin(),
-                                      h.selected_row.end());
-                }
-            h.zero();
         }
 
         template <typename poptype>
@@ -254,26 +151,27 @@ namespace fwdpp
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
             sugar::SINGLELOC_TAG, matrix_type mtype)
         {
-            matrix_helper h(neutral_keys, selected_keys);
-            for (auto &&ind : individuals)
+            for (auto &&mkey : neutral_keys)
                 {
-                    if (ind >= pop.diploids.size())
+                    for (auto &ind : individuals)
                         {
-                            throw std::out_of_range(
-                                "individual index out of range");
+                            update_site(
+                                pop.gametes[pop.diploids[ind].first].mutations,
+                                pop.gametes[pop.diploids[ind].second]
+                                    .mutations,
+                                m.neutral, mkey, mtype);
                         }
-                    auto &dip = pop.diploids[ind];
-                    update_row_common(pop.gametes[dip.first],
-                                      pop.gametes[dip.second], h);
-                    assert(validate_rows(pop.gametes[dip.first].mutations,
-                                         h.neutral_keys, h.neutral_row));
-                    assert(validate_rows(pop.gametes[dip.second].mutations,
-                                         h.neutral_keys, h.neutral_row2));
-                    assert(validate_rows(pop.gametes[dip.first].smutations,
-                                         h.selected_keys, h.selected_row));
-                    assert(validate_rows(pop.gametes[dip.second].smutations,
-                                         h.selected_keys, h.selected_row2));
-                    fill_matrix_with_rows(m, h, mtype);
+                }
+            for (auto &&mkey : selected_keys)
+                {
+                    for (auto &ind : individuals)
+                        {
+                            update_site(pop.gametes[pop.diploids[ind].first]
+                                            .smutations,
+                                        pop.gametes[pop.diploids[ind].second]
+                                            .smutations,
+                                        m.selected, mkey, mtype);
+                        }
                 }
             // fill out other data fields
             for (auto &&i : neutral_keys)
@@ -303,21 +201,93 @@ namespace fwdpp
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
             sugar::MULTILOC_TAG, matrix_type mtype)
         {
-            matrix_helper h(neutral_keys, selected_keys);
-            for (auto &&ind : individuals)
+            for (auto &mkey : neutral_keys)
                 {
-                    if (ind >= pop.diploids.size())
+                    assert(pop.mutations[mkey.first].neutral);
+                    assert(pop.mcounts[mkey.first]);
+                    //We need to find out what locus this mutation is in
+                    double mpos = pop.mutations[mkey.first].pos;
+                    std::size_t locus_index
+                        = std::numeric_limits<std::size_t>::max();
+                    for (std::size_t i = 0;
+                         i < pop.locus_boundaries.size()
+                         && locus_index
+                                == std::numeric_limits<std::size_t>::max();
+                         ++i)
                         {
-                            throw std::out_of_range(
-                                "individual index out of range");
+                            if (mpos >= pop.locus_boundaries[i].first
+                                && mpos < pop.locus_boundaries[i].second)
+                                {
+                                    locus_index = i;
+                                }
                         }
-                    auto &dip = pop.diploids[ind];
-                    for (auto &&locus : dip)
+                    if (locus_index == std::numeric_limits<std::size_t>::max())
                         {
-                            update_row_common(pop.gametes[locus.first],
-                                              pop.gametes[locus.second], h);
+                            throw std::runtime_error(
+                                "mutation position not found in "
+                                "pop.locus_boundaries");
                         }
-                    fill_matrix_with_rows(m, h, mtype);
+                    auto current_size = m.neutral.size();
+                    for (auto &ind : individuals)
+                        {
+                            auto locus = pop.diploids[ind][locus_index];
+                            assert(pop.gametes[locus.first].n);
+                            assert(pop.gametes[locus.second].n);
+                            update_site(pop.gametes[locus.first].mutations,
+                                        pop.gametes[locus.second].mutations,
+                                        m.neutral, mkey, mtype);
+                        }
+                    if (std::accumulate(m.neutral.begin() + current_size,
+                                        m.neutral.end(), 0)
+                        == 0)
+                        {
+                            throw std::runtime_error(
+                                "no variation found at site in this sample");
+                        }
+                }
+            for (auto &mkey : selected_keys)
+                {
+                    assert(pop.mcounts[mkey.first]);
+                    assert(!pop.mutations[mkey.first].neutral);
+                    //We need to find out what locus this mutation is in
+                    double mpos = pop.mutations[mkey.first].pos;
+                    std::size_t locus_index
+                        = std::numeric_limits<std::size_t>::max();
+                    for (std::size_t i = 0;
+                         i < pop.locus_boundaries.size()
+                         && locus_index
+                                == std::numeric_limits<std::size_t>::max();
+                         ++i)
+                        {
+                            if (mpos >= pop.locus_boundaries[i].first
+                                && mpos < pop.locus_boundaries[i].second)
+                                {
+                                    locus_index = i;
+                                }
+                        }
+                    if (locus_index == std::numeric_limits<std::size_t>::max())
+                        {
+                            throw std::runtime_error(
+                                "mutation position not found in "
+                                "pop.locus_boundaries");
+                        }
+                    auto current_size = m.selected.size();
+                    for (auto &ind : individuals)
+                        {
+                            auto locus = pop.diploids[ind][locus_index];
+                            assert(pop.gametes[locus.first].n);
+                            assert(pop.gametes[locus.second].n);
+                            update_site(pop.gametes[locus.first].smutations,
+                                        pop.gametes[locus.second].smutations,
+                                        m.selected, mkey, mtype);
+                        }
+                    if (std::accumulate(m.selected.begin() + current_size,
+                                        m.selected.end(), 0)
+                        == 0)
+                        {
+                            throw std::runtime_error(
+                                "no variation found at site in this sample");
+                        }
                 }
             // fill out other data fields
             for (auto &&i : neutral_keys)
@@ -387,5 +357,5 @@ namespace fwdpp
                 }
             return rv;
         }
-    }
-}
+    } // namespace data_matrix_details
+} // namespace fwdpp
