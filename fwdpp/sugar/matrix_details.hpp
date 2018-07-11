@@ -117,6 +117,21 @@ namespace fwdpp
                                       std::make_move_iterator(s.end())));
         }
 
+        template <typename poptype, typename key_container>
+        inline void
+        update_pos_and_freqs(const poptype &pop, const key_container &keys,
+                             std::vector<double> &positions,
+                             std::vector<double> &freqs)
+        {
+            const double twoN = 2 * pop.diploids.size();
+            for (auto &key : keys)
+                {
+                    positions.push_back(pop.mutations[key.first].pos);
+                    freqs.push_back(static_cast<double>(pop.mcounts[key.first])
+                                    / twoN);
+                }
+        }
+
         template <typename mutation_key_container>
         void
         update_site(const mutation_key_container &first,
@@ -174,22 +189,10 @@ namespace fwdpp
                         }
                 }
             // fill out other data fields
-            for (auto &&i : neutral_keys)
-                {
-                    assert(pop.mutations[i.first].neutral);
-                    m.neutral_positions.push_back(pop.mutations[i.first].pos);
-                    m.neutral_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i.first])
-                        / static_cast<double>(2 * pop.diploids.size()));
-                }
-            for (auto &&i : selected_keys)
-                {
-                    assert(!pop.mutations[i.first].neutral);
-                    m.selected_positions.push_back(pop.mutations[i.first].pos);
-                    m.selected_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i.first])
-                        / static_cast<double>(2 * pop.diploids.size()));
-                }
+            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
+                                 m.neutral_popfreq);
+            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
+                                 m.selected_popfreq);
         }
 
         template <typename poptype>
@@ -201,32 +204,47 @@ namespace fwdpp
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
             sugar::MULTILOC_TAG, matrix_type mtype)
         {
+            const auto find_locus = [&pop](const std::size_t key) {
+                double mpos = pop.mutations[key].pos;
+                std::size_t locus_index
+                    = std::numeric_limits<std::size_t>::max();
+                for (std::size_t i = 0;
+                     i < pop.locus_boundaries.size()
+                     && locus_index == std::numeric_limits<std::size_t>::max();
+                     ++i)
+                    {
+                        if (mpos >= pop.locus_boundaries[i].first
+                            && mpos < pop.locus_boundaries[i].second)
+                            {
+                                locus_index = i;
+                            }
+                    }
+                if (locus_index == std::numeric_limits<std::size_t>::max())
+                    {
+                        throw std::runtime_error(
+                            "mutation position not found in "
+                            "pop.locus_boundaries");
+                    }
+                return locus_index;
+            };
+
+            const auto check_invariant_site
+                = [](const std::vector<std::int8_t> &site,
+                     const std::size_t offset) {
+                      if (std::accumulate(site.begin() + offset, site.end(), 0)
+                          == 0)
+                          {
+                              throw std::runtime_error(
+                                  "no variation found at site in this sample");
+                          }
+                  };
+
             for (auto &mkey : neutral_keys)
                 {
                     assert(pop.mutations[mkey.first].neutral);
                     assert(pop.mcounts[mkey.first]);
                     //We need to find out what locus this mutation is in
-                    double mpos = pop.mutations[mkey.first].pos;
-                    std::size_t locus_index
-                        = std::numeric_limits<std::size_t>::max();
-                    for (std::size_t i = 0;
-                         i < pop.locus_boundaries.size()
-                         && locus_index
-                                == std::numeric_limits<std::size_t>::max();
-                         ++i)
-                        {
-                            if (mpos >= pop.locus_boundaries[i].first
-                                && mpos < pop.locus_boundaries[i].second)
-                                {
-                                    locus_index = i;
-                                }
-                        }
-                    if (locus_index == std::numeric_limits<std::size_t>::max())
-                        {
-                            throw std::runtime_error(
-                                "mutation position not found in "
-                                "pop.locus_boundaries");
-                        }
+                    auto locus_index = find_locus(mkey.first);
                     auto current_size = m.neutral.size();
                     for (auto &ind : individuals)
                         {
@@ -237,40 +255,14 @@ namespace fwdpp
                                         pop.gametes[locus.second].mutations,
                                         m.neutral, mkey, mtype);
                         }
-                    if (std::accumulate(m.neutral.begin() + current_size,
-                                        m.neutral.end(), 0)
-                        == 0)
-                        {
-                            throw std::runtime_error(
-                                "no variation found at site in this sample");
-                        }
+                    check_invariant_site(m.neutral, current_size);
                 }
             for (auto &mkey : selected_keys)
                 {
                     assert(pop.mcounts[mkey.first]);
                     assert(!pop.mutations[mkey.first].neutral);
                     //We need to find out what locus this mutation is in
-                    double mpos = pop.mutations[mkey.first].pos;
-                    std::size_t locus_index
-                        = std::numeric_limits<std::size_t>::max();
-                    for (std::size_t i = 0;
-                         i < pop.locus_boundaries.size()
-                         && locus_index
-                                == std::numeric_limits<std::size_t>::max();
-                         ++i)
-                        {
-                            if (mpos >= pop.locus_boundaries[i].first
-                                && mpos < pop.locus_boundaries[i].second)
-                                {
-                                    locus_index = i;
-                                }
-                        }
-                    if (locus_index == std::numeric_limits<std::size_t>::max())
-                        {
-                            throw std::runtime_error(
-                                "mutation position not found in "
-                                "pop.locus_boundaries");
-                        }
+                    auto locus_index = find_locus(mkey.first);
                     auto current_size = m.selected.size();
                     for (auto &ind : individuals)
                         {
@@ -281,31 +273,13 @@ namespace fwdpp
                                         pop.gametes[locus.second].smutations,
                                         m.selected, mkey, mtype);
                         }
-                    if (std::accumulate(m.selected.begin() + current_size,
-                                        m.selected.end(), 0)
-                        == 0)
-                        {
-                            throw std::runtime_error(
-                                "no variation found at site in this sample");
-                        }
+                    check_invariant_site(m.selected, current_size);
                 }
             // fill out other data fields
-            for (auto &&i : neutral_keys)
-                {
-                    assert(pop.mutations[i.first].neutral);
-                    m.neutral_positions.push_back(pop.mutations[i.first].pos);
-                    m.neutral_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i.first])
-                        / static_cast<double>(2 * pop.diploids.size()));
-                }
-            for (auto &&i : selected_keys)
-                {
-                    assert(!pop.mutations[i.first].neutral);
-                    m.selected_positions.push_back(pop.mutations[i.first].pos);
-                    m.selected_popfreq.push_back(
-                        static_cast<double>(pop.mcounts[i.first])
-                        / static_cast<double>(2 * pop.diploids.size()));
-                }
+            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
+                                 m.neutral_popfreq);
+            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
+                                 m.selected_popfreq);
         }
 
         template <typename poptype>
