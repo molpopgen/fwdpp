@@ -61,30 +61,24 @@ namespace fwdpp
         //! Frequencies of selected mutations in entire population.  Same order
         //! as matrix column order
         std::vector<double> selected_popfreq;
-        //! Number of rows in the matrix
-        std::size_t nrow;
-        data_matrix(const std::size_t nrow_ = 0)
+        //! Number of columns in the matrix
+        std::size_t ncol;
+        data_matrix(const std::size_t ncol_)
             /*!
              * Constructor
              *
-             * \param nrow_ Number of rows in the matrix
+             * \param ncol_ Number of columns in the matrix
              *
-             * The default value of nrow_ = 0 is so that instances of this
-             * type can be easily stack-allocated.  Intended use cases are
-             * Cython,
-             * Rcpp, or other systems for "wrapping" C++.  This type will
-             * rely on compiler-generated copy/move constructors, and therefore
-             * such
-             * systems should rely on copy elision to make sure that
-             * data_matrix::nrow
-             * is set correctly.
+             * \version 0.7.0 
+             * Changed from rows are sites to rows are individuals. Removed
+             * default value of zero from constructor.
              */
             : neutral{}, selected{}, neutral_positions{}, selected_positions{},
-              neutral_popfreq{}, selected_popfreq{}, nrow{ nrow_ }
+              neutral_popfreq{}, selected_popfreq{}, ncol{ ncol_ }
         {
         }
     };
-}
+} // namespace fwdpp
 
 // This header contains code re-used for
 // implementing functions defined below.
@@ -130,8 +124,7 @@ namespace fwdpp
     {
         return data_matrix_details::mutation_keys(
             pop.diploids, individuals, pop.gametes, pop.mcounts,
-            include_neutral, include_selected,
-            typename poptype::popmodel_t());
+            include_neutral, include_selected, typename poptype::popmodel_t());
     }
 
     template <typename poptype>
@@ -214,6 +207,6 @@ namespace fwdpp
             data_matrix_details::row_col_sums_details(
                 m.selected, m.nrow, m.selected_positions.size(), false));
     }
-}
+} // namespace fwdpp
 
 #endif
