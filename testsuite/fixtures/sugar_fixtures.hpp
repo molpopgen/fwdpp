@@ -189,7 +189,7 @@ class mlocuspop_popgenmut_fixture
                     return fwdpp::infsites_popgenmut(
                         recbin, mutations, rng.get(), pop.mut_lookup,
                         this->generation, 0.5,
-                        [this]() { return gsl_ran_flat(rng.get(), 1., 2.); },
+                        [this]() { return gsl_ran_flat(rng.get(), 3., 4.); },
                         []() { return -0.01; }, []() { return 1.; });
                 } }),
           recmodels{ fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),

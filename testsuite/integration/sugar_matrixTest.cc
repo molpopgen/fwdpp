@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
                 keys.second.end());
             // Create data matrices and do basic sanity checks
             auto m = haplotype_matrix(pop, indlist, keys.first, keys.second);
-            BOOST_REQUIRE_EQUAL(m.nrow, 2 * indlist.size());
-            BOOST_REQUIRE_EQUAL(m.neutral.size(), m.nrow * keys.first.size());
+            BOOST_REQUIRE_EQUAL(m.ncol, 2 * indlist.size());
+            BOOST_REQUIRE_EQUAL(m.neutral.size(), m.ncol * keys.first.size());
             BOOST_REQUIRE_EQUAL(m.selected.size(),
-                                m.nrow * keys.second.size());
+                                m.ncol * keys.second.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_popfreq.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
@@ -91,11 +91,11 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
                 }
 
             auto gm = genotype_matrix(pop, indlist, keys.first, keys.second);
-            BOOST_REQUIRE_EQUAL(gm.nrow, indlist.size());
+            BOOST_REQUIRE_EQUAL(gm.ncol, indlist.size());
             BOOST_REQUIRE_EQUAL(gm.neutral.size(),
-                                gm.nrow * keys.first.size());
+                                gm.ncol * keys.first.size());
             BOOST_REQUIRE_EQUAL(gm.selected.size(),
-                                gm.nrow * keys.second.size());
+                                gm.ncol * keys.second.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(),
                                 gm.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), gm.neutral_popfreq.size());
@@ -130,8 +130,8 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
                     BOOST_REQUIRE_EQUAL(pos[i], m.selected_positions[i]);
                     BOOST_REQUIRE_EQUAL(pos[i], gm.selected_positions[i]);
                 }
-            auto sums = fwdpp::col_sums(m);
-            auto gm_sums = fwdpp::col_sums(gm);
+            auto sums = fwdpp::row_sums(m);
+            auto gm_sums = fwdpp::row_sums(gm);
             BOOST_REQUIRE_EQUAL(sums.first.size(), m.neutral_positions.size());
             BOOST_REQUIRE_EQUAL(sums.second.size(),
                                 m.selected_positions.size());
@@ -145,26 +145,20 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
                 {
                     BOOST_REQUIRE_EQUAL(sums.second[i], gm_sums.second[i]);
                 }
-            // Make sure column sums check out for neutral sites.
+            // Make sure row sums check out for neutral sites.
             // Only compare to haplotype matrix. If we've made it this far,
-            // we know m == gm in terms of column sums.
+            // we know m == gm in terms of row sums.
             for (std::size_t c = 0; c < sums.first.size(); ++c)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.nrow; ++i)
-                        {
-                            sum2 += (s.first[c].second[i] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(s.first[c].second.begin(),
+                                               s.first[c].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.first[c], sum2);
                 }
             // Make sure column sums check out for selected sites
             for (std::size_t c = 0; c < sums.second.size(); ++c)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.nrow; ++i)
-                        {
-                            sum2 += (s.second[c].second[i] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(s.second[c].second.begin(),
+                                               s.second[c].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.second[c], sum2);
                 }
             // Now, row sums.
@@ -172,39 +166,29 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
             gm_sums = fwdpp::row_sums(gm);
             // Compare row sums from haplotype and genotype matrix.
             for (std::size_t hi = 0, gi = 0; hi < sums.first.size();
-                 hi += 2, gi += 1)
+                 hi += 1, gi += 1)
                 {
                     // Neutral sites
-                    BOOST_REQUIRE_EQUAL(sums.first[hi] + sums.first[hi + 1],
-                                        gm_sums.first[gi]);
+                    BOOST_REQUIRE_EQUAL(sums.first[hi], gm_sums.first[gi]);
                 }
             for (std::size_t hi = 0, gi = 0; hi < sums.second.size();
-                 hi += 2, gi += 1)
+                 hi += 1, gi += 1)
                 {
                     // Selected sites
-                    BOOST_REQUIRE_EQUAL(sums.second[hi] + sums.second[hi + 1],
-                                        gm_sums.second[gi]);
+                    BOOST_REQUIRE_EQUAL(sums.second[hi], gm_sums.second[gi]);
                 }
             // Check neutral sites in haplotype matrix to the sample
             for (std::size_t r = 0; r < sums.first.size(); ++r)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.neutral_positions.size();
-                         ++i)
-                        {
-                            sum2 += (s.first[i].second[r] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(s.first[r].second.begin(),
+                                               s.first[r].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.first[r], sum2);
                 }
             // Check selected sites
             for (std::size_t r = 0; r < sums.second.size(); ++r)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.selected_positions.size();
-                         ++i)
-                        {
-                            sum2 += (s.second[i].second[r] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(s.second[r].second.begin(),
+                                               s.second[r].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
             // Evolve pop 100 more generations
@@ -264,51 +248,48 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
             auto gm_sums = fwdpp::row_sums(gm);
             // Compare row sums from haplotype and genotype matrix.
             for (std::size_t hi = 0, gi = 0; hi < sums.first.size();
-                 hi += 2, gi += 1)
+                 hi += 1, gi += 1)
                 {
                     // Neutral sites
-                    BOOST_REQUIRE_EQUAL(sums.first[hi] + sums.first[hi + 1],
-                                        gm_sums.first[gi]);
+                    BOOST_REQUIRE_EQUAL(sums.first[hi], gm_sums.first[gi]);
                 }
             for (std::size_t hi = 0, gi = 0; hi < sums.second.size();
-                 hi += 2, gi += 1)
+                 hi += 1, gi += 1)
                 {
                     // Selected sites
-                    BOOST_REQUIRE_EQUAL(sums.second[hi] + sums.second[hi + 1],
-                                        gm_sums.second[gi]);
+                    BOOST_REQUIRE_EQUAL(sums.second[hi], gm_sums.second[gi]);
                 }
 
             // Get a sample
             auto s = fwdpp::sample_separate(mpf.pop, indlist, true);
             // multi-locus samples are tricky, so let's simplify
             fwdpp::sample_t neutral, selected;
+            std::size_t nlen = 0, slen = 0;
             for (auto &&si : s)
                 {
+                    nlen += si.first.size();
+                    slen += si.second.size();
                     neutral.insert(neutral.end(), si.first.begin(),
                                    si.first.end());
                     selected.insert(selected.end(), si.second.begin(),
                                     si.second.end());
                 }
+            BOOST_REQUIRE_EQUAL(nlen, m.neutral.size() / m.ncol);
+            BOOST_REQUIRE_EQUAL(slen, m.selected.size() / m.ncol);
+            BOOST_REQUIRE_EQUAL(sums.first.size(), neutral.size());
+            BOOST_REQUIRE_EQUAL(sums.second.size(), selected.size());
             // Check neutral sites in haplotype matrix to the sample
             for (std::size_t r = 0; r < sums.first.size(); ++r)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.neutral_positions.size();
-                         ++i)
-                        {
-                            sum2 += (neutral[i].second[r] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(neutral[r].second.begin(),
+                                               neutral[r].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.first[r], sum2);
                 }
             // Check selected sites
             for (std::size_t r = 0; r < sums.second.size(); ++r)
                 {
-                    unsigned sum2 = 0;
-                    for (std::size_t i = 0; i < m.selected_positions.size();
-                         ++i)
-                        {
-                            sum2 += (selected[i].second[r] == '1') ? 1 : 0;
-                        }
+                    unsigned sum2 = std::count(selected[r].second.begin(),
+                                               selected[r].second.end(), '1');
                     BOOST_REQUIRE_EQUAL(sums.second[r], sum2);
                 }
             simulate_mlocuspop(

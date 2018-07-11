@@ -26,10 +26,10 @@ namespace fwdpp
      * representing the genotypes for a set of diploids.
      *
      * For a haplotype matrix of n individuals, the data represent
-     * 2n rows with a 0/1 encoding representing ancestral/derived.
+     * 2n columns with a 0/1 encoding representing ancestral/derived.
      *
      * For a genotype matrix of n individuals, the data represent
-     * n rows with a 0/1/2 encoding for the number of copies of the
+     * n columns with a 0/1/2 encoding for the number of copies of the
      * derived mutation.
      *
      * The data layout is row-major (aka "C-style") ordering,
@@ -51,40 +51,34 @@ namespace fwdpp
         std::vector<std::int8_t> neutral;
         //! Data for selected mutations.
         std::vector<std::int8_t> selected;
-        //! Positions of neutral mutations.  Same order as matrix column order
+        //! Positions of neutral mutations.  Same order as matrix row order
         std::vector<double> neutral_positions;
-        //! Positions of selected mutations.  Same order as matrix column order
+        //! Positions of selected mutations.  Same order as matrix row order
         std::vector<double> selected_positions;
         //! Frequencies of neutral mutations in entire population.  Same order
-        //! as matrix column order
+        //! as matrix row order
         std::vector<double> neutral_popfreq;
         //! Frequencies of selected mutations in entire population.  Same order
-        //! as matrix column order
+        //! as matrix row order
         std::vector<double> selected_popfreq;
-        //! Number of rows in the matrix
-        std::size_t nrow;
-        data_matrix(const std::size_t nrow_ = 0)
+        //! Number of columns in the matrix
+        std::size_t ncol;
+        data_matrix(const std::size_t ncol_)
             /*!
              * Constructor
              *
-             * \param nrow_ Number of rows in the matrix
+             * \param ncol_ Number of columns in the matrix
              *
-             * The default value of nrow_ = 0 is so that instances of this
-             * type can be easily stack-allocated.  Intended use cases are
-             * Cython,
-             * Rcpp, or other systems for "wrapping" C++.  This type will
-             * rely on compiler-generated copy/move constructors, and therefore
-             * such
-             * systems should rely on copy elision to make sure that
-             * data_matrix::nrow
-             * is set correctly.
+             * \version 0.7.0 
+             * Changed from rows are sites to rows are individuals. Removed
+             * default value of zero from constructor.
              */
             : neutral{}, selected{}, neutral_positions{}, selected_positions{},
-              neutral_popfreq{}, selected_popfreq{}, nrow{ nrow_ }
+              neutral_popfreq{}, selected_popfreq{}, ncol{ ncol_ }
         {
         }
     };
-}
+} // namespace fwdpp
 
 // This header contains code re-used for
 // implementing functions defined below.
@@ -130,8 +124,7 @@ namespace fwdpp
     {
         return data_matrix_details::mutation_keys(
             pop.diploids, individuals, pop.gametes, pop.mcounts,
-            include_neutral, include_selected,
-            typename poptype::popmodel_t());
+            include_neutral, include_selected, typename poptype::popmodel_t());
     }
 
     template <typename poptype>
@@ -193,9 +186,9 @@ namespace fwdpp
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
-                m.neutral, m.nrow, m.neutral_positions.size(), true),
+                m.neutral, m.neutral_positions.size(), m.ncol, true),
             data_matrix_details::row_col_sums_details(
-                m.selected, m.nrow, m.selected_positions.size(), true));
+                m.selected, m.selected_positions.size(), m.ncol, true));
     }
 
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
@@ -210,10 +203,10 @@ namespace fwdpp
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
-                m.neutral, m.nrow, m.neutral_positions.size(), false),
+                m.neutral, m.neutral_positions.size(), m.ncol, false),
             data_matrix_details::row_col_sums_details(
-                m.selected, m.nrow, m.selected_positions.size(), false));
+                m.selected, m.selected_positions.size(), m.ncol, false));
     }
-}
+} // namespace fwdpp
 
 #endif
