@@ -120,18 +120,14 @@ namespace fwdpp
                                       std::make_move_iterator(s.end())));
         }
 
-        template <typename poptype, typename key_container>
+        template <typename mcont_t, typename key_container>
         inline void
-        update_pos_and_freqs(const poptype &pop, const key_container &keys,
-                             std::vector<double> &positions,
-                             std::vector<double> &freqs)
+        update_pos(const mcont_t &mutations, const key_container &keys,
+                   std::vector<double> &positions)
         {
-            const double twoN = 2 * pop.diploids.size();
             for (auto &key : keys)
                 {
-                    positions.push_back(pop.mutations[key.first].pos);
-                    freqs.push_back(static_cast<double>(pop.mcounts[key.first])
-                                    / twoN);
+                    positions.push_back(mutations[key.first].pos);
                 }
         }
 
@@ -179,6 +175,7 @@ namespace fwdpp
                                     .mutations,
                                 m.neutral, mkey, mtype);
                         }
+                    m.neutral_keys.push_back(mkey.first);
                 }
             for (auto &&mkey : selected_keys)
                 {
@@ -190,12 +187,11 @@ namespace fwdpp
                                             .smutations,
                                         m.selected, mkey, mtype);
                         }
+                    m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
-                                 m.neutral_popfreq);
-            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
-                                 m.selected_popfreq);
+            update_pos(pop.mutations, neutral_keys, m.neutral_positions);
+            update_pos(pop.mutations, selected_keys, m.selected_positions);
         }
 
         template <typename poptype>
@@ -231,16 +227,15 @@ namespace fwdpp
                 return locus_index;
             };
 
-            const auto check_invariant_site
-                = [](const std::vector<std::int8_t> &site,
-                     const std::size_t offset) {
-                      if (std::accumulate(site.begin() + offset, site.end(), 0)
-                          == 0)
-                          {
-                              throw std::runtime_error(
-                                  "no variation found at site in this sample");
-                          }
-                  };
+            const auto check_invariant_site = [](
+                const std::vector<std::int8_t> &site,
+                const std::size_t offset) {
+                if (std::accumulate(site.begin() + offset, site.end(), 0) == 0)
+                    {
+                        throw std::runtime_error(
+                            "no variation found at site in this sample");
+                    }
+            };
 
             for (auto &mkey : neutral_keys)
                 {
@@ -259,6 +254,7 @@ namespace fwdpp
                                         m.neutral, mkey, mtype);
                         }
                     check_invariant_site(m.neutral, current_size);
+                    m.neutral_keys.push_back(mkey.first);
                 }
             for (auto &mkey : selected_keys)
                 {
@@ -277,12 +273,11 @@ namespace fwdpp
                                         m.selected, mkey, mtype);
                         }
                     check_invariant_site(m.selected, current_size);
+                    m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
-                                 m.neutral_popfreq);
-            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
-                                 m.selected_popfreq);
+            update_pos(pop.mutations, neutral_keys, m.neutral_positions);
+            update_pos(pop.mutations, selected_keys, m.selected_positions);
         }
 
         template <typename poptype>

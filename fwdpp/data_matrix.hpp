@@ -55,12 +55,12 @@ namespace fwdpp
         std::vector<double> neutral_positions;
         //! Positions of selected mutations.  Same order as matrix row order
         std::vector<double> selected_positions;
-        //! Frequencies of neutral mutations in entire population.  Same order
+        //! Locations of neutral mutations from mutation vector.  Same order
         //! as matrix row order
-        std::vector<double> neutral_popfreq;
-        //! Frequencies of selected mutations in entire population.  Same order
+        std::vector<std::size_t> neutral_keys;
+        //! Locations of selected mutations from mutation vector.  Same order
         //! as matrix row order
-        std::vector<double> selected_popfreq;
+        std::vector<std::size_t> selected_keys;
         //! Number of columns in the matrix
         std::size_t ncol;
         data_matrix(const std::size_t ncol_)
@@ -74,7 +74,7 @@ namespace fwdpp
              * default value of zero from constructor.
              */
             : neutral{}, selected{}, neutral_positions{}, selected_positions{},
-              neutral_popfreq{}, selected_popfreq{}, ncol{ ncol_ }
+              neutral_keys{}, selected_keys{}, ncol{ ncol_ }
         {
         }
     };

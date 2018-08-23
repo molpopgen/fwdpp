@@ -76,10 +76,10 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
             BOOST_REQUIRE_EQUAL(m.selected.size(),
                                 m.ncol * keys.second.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_positions.size());
-            BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_popfreq.size());
+            BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_keys.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
                                 m.selected_positions.size());
-            BOOST_REQUIRE_EQUAL(keys.second.size(), m.selected_popfreq.size());
+            BOOST_REQUIRE_EQUAL(keys.second.size(), m.selected_keys.size());
 
             // Note that we can convert the data to vectors of other types
             // as needed
@@ -98,11 +98,11 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
                                 gm.ncol * keys.second.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(),
                                 gm.neutral_positions.size());
-            BOOST_REQUIRE_EQUAL(keys.first.size(), gm.neutral_popfreq.size());
+            BOOST_REQUIRE_EQUAL(keys.first.size(), gm.neutral_keys.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
                                 gm.selected_positions.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
-                                gm.selected_popfreq.size());
+                                gm.selected_keys.size());
 
             // Now, compare to an independent calculation of the genotypes
             // for same individuals
