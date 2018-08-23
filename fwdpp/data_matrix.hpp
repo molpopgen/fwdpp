@@ -45,6 +45,8 @@ namespace fwdpp
      *
      * \note This type is not constructed directly, but rather returned
      * by other functions.
+     *
+     * \ingroup samplingPops
      */
     {
         //! Data for neutral mutations.
@@ -120,6 +122,8 @@ namespace fwdpp
      * 3. Keys from multiple samples can be merged to form new vectors where
      * the key elements are unique and
      * the frequencies are summed, all using standard C++.
+     *
+     * \ingroup samplingPops
      */
     {
         return data_matrix_details::mutation_keys(
@@ -144,6 +148,8 @@ namespace fwdpp
      * \param selected_keys See documentation of fwdpp::mutation_keys
      *
      * \return fwdpp::data_matrix
+     *
+     * \ingroup samplingPops
      */
     {
         return data_matrix_details::fill_matrix(
@@ -168,6 +174,8 @@ namespace fwdpp
      * \param selected_keys See documentation of fwdpp::mutation_keys
      *
      * \return fwdpp::data_matrix
+     *
+     * \ingroup samplingPops
      */
     {
         return data_matrix_details::fill_matrix(
@@ -182,6 +190,8 @@ namespace fwdpp
      *
      * \return A pair of vectors of unsigned integers representing row sums
      * for neutral and selected sites in the matrix, respectively.
+     *
+     * \ingroup samplingPops
      */
     {
         return std::make_pair(
@@ -199,6 +209,8 @@ namespace fwdpp
      * \return A pair of vectors of unsigned integers representing column
      * sums
      * for neutral and selected sites in the matrix, respectively.
+     *
+     * \ingroup samplingPops
      */
     {
         return std::make_pair(
