@@ -7,7 +7,7 @@
 #include <boost/test/unit_test.hpp>
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"
-#include <fwdpp/sugar/matrix.hpp>
+#include <fwdpp/data_matrix.hpp>
 #include <fwdpp/sugar/sampling.hpp>
 #include <gsl/gsl_matrix_char.h>
 
