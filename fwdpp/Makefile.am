@@ -19,6 +19,7 @@ pkginclude_HEADERS=debug.hpp \
 	sugar.hpp \
 	version.hpp \
 	mutate_recombine.hpp \
+	data_matrix.hpp \
 	recbinder.hpp
 
 

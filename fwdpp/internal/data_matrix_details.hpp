@@ -1,3 +1,6 @@
+#ifndef FWDPP_DATA_MATRIX_DETAILS_HPP
+#define FWDPP_DATA_MATRIX_DETAILS_HPP
+
 #include <stdexcept>
 #include <iterator>
 #include <numeric>
@@ -333,3 +336,5 @@ namespace fwdpp
         }
     } // namespace data_matrix_details
 } // namespace fwdpp
+
+#endif

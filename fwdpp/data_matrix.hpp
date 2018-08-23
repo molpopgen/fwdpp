@@ -1,5 +1,5 @@
-#ifndef FWDPP_MATRIX_HPP_
-#define FWDPP_MATRIX_HPP_
+#ifndef FWDPP_DATA_MATRIX_HPP_
+#define FWDPP_DATA_MATRIX_HPP_
 
 #include <cassert>
 #include <numeric>
@@ -82,7 +82,7 @@ namespace fwdpp
 
 // This header contains code re-used for
 // implementing functions defined below.
-#include "matrix_details.hpp"
+#include "internal/matrix_details.hpp"
 
 namespace fwdpp
 {
