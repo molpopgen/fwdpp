@@ -82,7 +82,7 @@ namespace fwdpp
 
 // This header contains code re-used for
 // implementing functions defined below.
-#include "internal/matrix_details.hpp"
+#include "internal/data_matrix_details.hpp"
 
 namespace fwdpp
 {
