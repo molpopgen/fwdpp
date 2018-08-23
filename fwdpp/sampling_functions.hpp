@@ -12,113 +12,51 @@
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/data_matrix.hpp>
+
 /*! @defgroup samplingPops Functions related to taking samples from simulated
   populations
-
-  This collection of functions allows a user to draw a sample of size \f$n \ll
-  2N\f$ from
-  a simulated population.
-
-  The library provides several overloads of the functions fwdpp::ms_sample and
-  fwdpp::ms_sample_separate.
-
-  The following features are in common to all versions of these functions:
-
-  1. They only supp]ort bi-allelic mutation positions.
-  2. All functions return some number of objects of type std::vector<
-  std::pair<double, std::string> >.
-  Each element in the vector corresponds to a mutation.  The double corresponds
-  to the mutation position,
-  and the string corresponds to the character states in each of the \f$n\f$
-  samples.  The strings contain the character
-  '0' when a sample has the ancestral state or '1' for the derived (mutant)
-  state.  This type may be used
-  to populate a polymorphism table from the
-  [libsequence](http://molpopgen.github.io/libsequence/) library:
-  \code
-  auto x = fwdpp::ms_sample( appropriate arguments );
-  Sequence::SimData xx(x.begin(),x.end());
-  \endcode
-  When a SimData object is written to a stream, its output format is the same
-  as that used by Dick Hudson's coalescent simulation
-  program [ms](http://home.uchicago.edu/~rhudson1/source/mksamples.html)
-  3. All versions of fwdpp::ms_sample return vectors where the mutations
-  affecting fitness and those not affecting fitness are intermingled.
-  4. All versions of fwdpp::ms_sample_separate return pairs of vectors
-  separating the mutations not affecting fitness from those that do.
-  The first member of each pair is a vector of "neutral" mutations, and the
-  second member is the vector of "selected" mutations.
-  5. The functions are all implemented using sampling with replacement from the
-  population.  Thus, setting \f$n = N\f$ (or \f$2N\f$) will NOT
-  return all the variable sites in the entire population!!!
-
-  A vector may contain data looking like the following:
-  \verbatim
-  0.0760 "10000"
-  0.6805 "00010"
-  \endverbatim
-
-  The two rows are the two different positions (0.076 and 0.6805).  The first
-  haplotype is "10", the second is "00", and the fourth is "01".
-
-  If you converted the data to a Sequence::SimData object and printed it to
-  screen or a file, the output would be:
-
-  \verbatim
-  //
-  segsites: 2
-  positions: 0.0760 0.6805
-  10
-  00
-  00
-  01
-  00
-  \endverbatim
-*/
-
-/*!
-  @defgroup samplingPopsGamete Randomly-sampling individual gametes.
-  @ingroup samplingPops
-
-  These functions draws a sample of size \f$n \ll 2N\f$ from a simulated
-  population.
-
-  The gametes are randomly-sampled (with replacement) proportionally to their
-  frequency in the population.
-
-  The object passed to these functions is the container of gametes (e.g, some
-  container of type fwdpp::gamete_base).
-
-  The return values have no relation to any actual diploid individual in the
-  population. Each haplotype
-  corresponds to a simulated haplotype, but adjacent haplotypes are basically
-  random draws of M&Ms from a jar.
-
-  For these functions, \f$n\f$ can be odd or even.
-*/
-
-/*!
-  @defgroup samplingPopsInd Randomly-sampling diploids.
-  @ingroup samplingPops
-
-  These functions pull a sample of \f$n\f$ simulated individuals from the
-  population.
-
-  The individuals are sampled uniformly, and with replacement, with no regard
-  for their fitness.
-
-  The object passed to these functions is a container of diploids.
-
-  For these functions, \f$n\f$ must be an even number, as it represents the
-  number of alleles to sample (twice the
-  number of individuals).
-
-  The return values of these functions store individuals in the order that they
-  were sampled.
 */
 
 namespace fwdpp
 {
+    template <typename poptype>
+    data_matrix
+    sample_individuals(const poptype &pop,
+                       const std::vector<std::size_t> &individuals,
+                       const bool include_neutral, const bool include_selected,
+                       const bool remove_fixed)
+    {
+        auto keys = mutation_keys(pop, individuals, include_neutral,
+                                  include_neutral);
+        if (remove_fixed)
+            {
+                keys.first.erase(
+                    std::remove_if(
+                        keys.first.begin(), keys.first.end(),
+                        [&individuals](
+                            const std::pair<std::size_t, uint_t> &p) {
+                            return p.second == 2 * individuals.size();
+                        }),
+                    keys.first.end());
+                keys.second.erase(
+                    std::remove_if(
+                        keys.second.begin(), keys.second.end(),
+                        [&individuals](
+                            const std::pair<std::size_t, uint_t> &p) {
+                            return p.second == 2 * individuals.size();
+                        }),
+                    keys.second.end());
+            }
+        const auto comp = [&pop](const std::pair<std::size_t, uint_t> &a,
+                                 const std::pair<std::size_t, uint_t> &b) {
+            return pop.mutations[a.first].pos < pop.mutations[b.first].pos;
+        };
+        std::sort(keys.first.begin(), keys.first.end(), comp);
+        std::sort(keys.second.begin(), keys.second.end(), comp);
+        return haplotype_matrix(pop, individuals, keys.first, keys.second);
+    }
+
     /*!
       A variable site in a sample is a pair (pos,genotypes).
 
