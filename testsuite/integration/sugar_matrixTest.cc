@@ -72,35 +72,35 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
             // Create data matrices and do basic sanity checks
             auto m = haplotype_matrix(pop, indlist, keys.first, keys.second);
             BOOST_REQUIRE_EQUAL(m.ncol, 2 * indlist.size());
-            BOOST_REQUIRE_EQUAL(m.neutral.size(), m.ncol * keys.first.size());
-            BOOST_REQUIRE_EQUAL(m.selected.size(),
+            BOOST_REQUIRE_EQUAL(m.neutral.data.size(), m.ncol * keys.first.size());
+            BOOST_REQUIRE_EQUAL(m.selected.data.size(),
                                 m.ncol * keys.second.size());
-            BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_positions.size());
+            BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral.positions.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), m.neutral_keys.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
-                                m.selected_positions.size());
+                                m.selected.positions.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(), m.selected_keys.size());
 
             // Note that we can convert the data to vectors of other types
             // as needed
-            std::vector<double> neutral_as_double(m.neutral.begin(),
-                                                  m.neutral.end());
-            for (std::size_t i = 0; i < m.neutral.size(); ++i)
+            std::vector<double> neutral_as_double(m.neutral.data.begin(),
+                                                  m.neutral.data.end());
+            for (std::size_t i = 0; i < m.neutral.data.size(); ++i)
                 {
-                    BOOST_REQUIRE_EQUAL(m.neutral[i], neutral_as_double[i]);
+                    BOOST_REQUIRE_EQUAL(m.neutral.data[i], neutral_as_double[i]);
                 }
 
             auto gm = genotype_matrix(pop, indlist, keys.first, keys.second);
             BOOST_REQUIRE_EQUAL(gm.ncol, indlist.size());
-            BOOST_REQUIRE_EQUAL(gm.neutral.size(),
+            BOOST_REQUIRE_EQUAL(gm.neutral.data.size(),
                                 gm.ncol * keys.first.size());
-            BOOST_REQUIRE_EQUAL(gm.selected.size(),
+            BOOST_REQUIRE_EQUAL(gm.selected.data.size(),
                                 gm.ncol * keys.second.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(),
-                                gm.neutral_positions.size());
+                                gm.neutral.positions.size());
             BOOST_REQUIRE_EQUAL(keys.first.size(), gm.neutral_keys.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
-                                gm.selected_positions.size());
+                                gm.selected.positions.size());
             BOOST_REQUIRE_EQUAL(keys.second.size(),
                                 gm.selected_keys.size());
 
@@ -108,10 +108,10 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
             // for same individuals
             auto s = fwdpp::sample_separate(pop, indlist, true);
             // Check same total # of mutations
-            BOOST_REQUIRE_EQUAL(s.first.size(), m.neutral_positions.size());
-            BOOST_REQUIRE_EQUAL(s.second.size(), m.selected_positions.size());
-            BOOST_REQUIRE_EQUAL(s.first.size(), gm.neutral_positions.size());
-            BOOST_REQUIRE_EQUAL(s.second.size(), gm.selected_positions.size());
+            BOOST_REQUIRE_EQUAL(s.first.size(), m.neutral.positions.size());
+            BOOST_REQUIRE_EQUAL(s.second.size(), m.selected.positions.size());
+            BOOST_REQUIRE_EQUAL(s.first.size(), gm.neutral.positions.size());
+            BOOST_REQUIRE_EQUAL(s.second.size(), gm.selected.positions.size());
 
             std::vector<double> pos;
             for (auto &&i : s.first)
@@ -119,22 +119,22 @@ BOOST_AUTO_TEST_CASE(slocuspop_hapmatrix_exhaustive)
             // Make sure all positions come out ok
             for (std::size_t i = 0; i < pos.size(); ++i)
                 {
-                    BOOST_REQUIRE_EQUAL(pos[i], m.neutral_positions[i]);
-                    BOOST_REQUIRE_EQUAL(pos[i], gm.neutral_positions[i]);
+                    BOOST_REQUIRE_EQUAL(pos[i], m.neutral.positions[i]);
+                    BOOST_REQUIRE_EQUAL(pos[i], gm.neutral.positions[i]);
                 }
             pos.clear();
             for (auto &&i : s.second)
                 pos.push_back(i.first);
             for (std::size_t i = 0; i < pos.size(); ++i)
                 {
-                    BOOST_REQUIRE_EQUAL(pos[i], m.selected_positions[i]);
-                    BOOST_REQUIRE_EQUAL(pos[i], gm.selected_positions[i]);
+                    BOOST_REQUIRE_EQUAL(pos[i], m.selected.positions[i]);
+                    BOOST_REQUIRE_EQUAL(pos[i], gm.selected.positions[i]);
                 }
             auto sums = fwdpp::row_sums(m);
             auto gm_sums = fwdpp::row_sums(gm);
-            BOOST_REQUIRE_EQUAL(sums.first.size(), m.neutral_positions.size());
+            BOOST_REQUIRE_EQUAL(sums.first.size(), m.neutral.positions.size());
             BOOST_REQUIRE_EQUAL(sums.second.size(),
-                                m.selected_positions.size());
+                                m.selected.positions.size());
             // Check that haplotype and genotype matrices
             // have same row sums in same order
             for (std::size_t i = 0; i < sums.first.size(); ++i)
@@ -274,8 +274,8 @@ BOOST_AUTO_TEST_CASE(multilocus_matrix_test)
                     selected.insert(selected.end(), si.second.begin(),
                                     si.second.end());
                 }
-            BOOST_REQUIRE_EQUAL(nlen, m.neutral.size() / m.ncol);
-            BOOST_REQUIRE_EQUAL(slen, m.selected.size() / m.ncol);
+            BOOST_REQUIRE_EQUAL(nlen, m.neutral.data.size() / m.ncol);
+            BOOST_REQUIRE_EQUAL(slen, m.selected.data.size() / m.ncol);
             BOOST_REQUIRE_EQUAL(sums.first.size(), neutral.size());
             BOOST_REQUIRE_EQUAL(sums.second.size(), selected.size());
             // Check neutral sites in haplotype matrix to the sample

@@ -18,10 +18,8 @@
 
 namespace fwdpp
 {
-    struct data_matrix
-    /*!
-     * \brief Genotype or haplotype matrix.
-     *
+    struct state_matrix
+    /*! \brief Simplistic matrix representation of mutations
      * This type uses std::vector<std::int8_t> to hold a matrix
      * representing the genotypes for a set of diploids.
      *
@@ -49,14 +47,34 @@ namespace fwdpp
      * \ingroup samplingPops
      */
     {
+        //! The state data
+        std::vector<std::int8_t> data;
+        //! Positions of variable sites
+        std::vector<double> positions;
+        //! Construct an empty object
+        state_matrix() : data(), positions() {}
+        //! Perfect-forwarding constructor
+        template <typename T, typename P>
+        state_matrix(T &&t, P &&p)
+            : data(std::forward<T>(t)), positions(std::forward<P>(p))
+        {
+        }
+    };
+
+    struct data_matrix
+    /*!
+     * \brief Genotype or haplotype matrix.
+     *
+     * Data for neutral and selected variants,
+     * respectively are stored as state_matrix objects.
+     *
+     * \ingroup samplingPops
+     */
+    {
         //! Data for neutral mutations.
-        std::vector<std::int8_t> neutral;
+        state_matrix neutral;
         //! Data for selected mutations.
-        std::vector<std::int8_t> selected;
-        //! Positions of neutral mutations.  Same order as matrix row order
-        std::vector<double> neutral_positions;
-        //! Positions of selected mutations.  Same order as matrix row order
-        std::vector<double> selected_positions;
+        state_matrix selected;
         //! Locations of neutral mutations from mutation vector.  Same order
         //! as matrix row order
         std::vector<std::size_t> neutral_keys;
@@ -75,8 +93,11 @@ namespace fwdpp
              * Changed from rows are sites to rows are individuals. Removed
              * default value of zero from constructor.
              */
-            : neutral{}, selected{}, neutral_positions{}, selected_positions{},
-              neutral_keys{}, selected_keys{}, ncol{ ncol_ }
+            : neutral{},
+              selected{},
+              neutral_keys{},
+              selected_keys{},
+              ncol{ ncol_ }
         {
         }
     };
@@ -196,9 +217,9 @@ namespace fwdpp
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
-                m.neutral, m.neutral_positions.size(), m.ncol, true),
+                m.neutral.data, m.neutral.positions.size(), m.ncol, true),
             data_matrix_details::row_col_sums_details(
-                m.selected, m.selected_positions.size(), m.ncol, true));
+                m.selected.data, m.selected.positions.size(), m.ncol, true));
     }
 
     inline std::pair<std::vector<std::uint32_t>, std::vector<std::uint32_t>>
@@ -215,9 +236,9 @@ namespace fwdpp
     {
         return std::make_pair(
             data_matrix_details::row_col_sums_details(
-                m.neutral, m.neutral_positions.size(), m.ncol, false),
+                m.neutral.data, m.neutral.positions.size(), m.ncol, false),
             data_matrix_details::row_col_sums_details(
-                m.selected, m.selected_positions.size(), m.ncol, false));
+                m.selected.data, m.selected.positions.size(), m.ncol, false));
     }
 } // namespace fwdpp
 
