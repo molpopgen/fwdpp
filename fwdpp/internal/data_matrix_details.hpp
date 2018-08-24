@@ -123,11 +123,11 @@ namespace fwdpp
         template <typename mcont_t, typename key_container>
         inline void
         update_pos(const mcont_t &mutations, const key_container &keys,
-                   std::vector<double> &positions)
+                   state_matrix & sm)
         {
             for (auto &key : keys)
                 {
-                    positions.push_back(mutations[key.first].pos);
+                    sm.positions.push_back(mutations[key.first].pos);
                 }
         }
 
@@ -173,7 +173,7 @@ namespace fwdpp
                                 pop.gametes[pop.diploids[ind].first].mutations,
                                 pop.gametes[pop.diploids[ind].second]
                                     .mutations,
-                                m.neutral, mkey, mtype);
+                                m.neutral.data, mkey, mtype);
                         }
                     m.neutral_keys.push_back(mkey.first);
                 }
@@ -185,13 +185,13 @@ namespace fwdpp
                                             .smutations,
                                         pop.gametes[pop.diploids[ind].second]
                                             .smutations,
-                                        m.selected, mkey, mtype);
+                                        m.selected.data, mkey, mtype);
                         }
                     m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos(pop.mutations, neutral_keys, m.neutral_positions);
-            update_pos(pop.mutations, selected_keys, m.selected_positions);
+            update_pos(pop.mutations, neutral_keys, m.neutral);
+            update_pos(pop.mutations, selected_keys, m.selected);
         }
 
         template <typename poptype>
@@ -243,7 +243,7 @@ namespace fwdpp
                     assert(pop.mcounts[mkey.first]);
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.neutral.size();
+                    auto current_size = m.neutral.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
@@ -251,9 +251,9 @@ namespace fwdpp
                             assert(pop.gametes[locus.second].n);
                             update_site(pop.gametes[locus.first].mutations,
                                         pop.gametes[locus.second].mutations,
-                                        m.neutral, mkey, mtype);
+                                        m.neutral.data, mkey, mtype);
                         }
-                    check_invariant_site(m.neutral, current_size);
+                    check_invariant_site(m.neutral.data, current_size);
                     m.neutral_keys.push_back(mkey.first);
                 }
             for (auto &mkey : selected_keys)
@@ -262,7 +262,7 @@ namespace fwdpp
                     assert(!pop.mutations[mkey.first].neutral);
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.selected.size();
+                    auto current_size = m.selected.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
@@ -270,14 +270,14 @@ namespace fwdpp
                             assert(pop.gametes[locus.second].n);
                             update_site(pop.gametes[locus.first].smutations,
                                         pop.gametes[locus.second].smutations,
-                                        m.selected, mkey, mtype);
+                                        m.selected.data, mkey, mtype);
                         }
-                    check_invariant_site(m.selected, current_size);
+                    check_invariant_site(m.selected.data, current_size);
                     m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos(pop.mutations, neutral_keys, m.neutral_positions);
-            update_pos(pop.mutations, selected_keys, m.selected_positions);
+            update_pos(pop.mutations, neutral_keys, m.neutral);
+            update_pos(pop.mutations, selected_keys, m.selected);
         }
 
         template <typename poptype>
