@@ -20,6 +20,53 @@
 
 namespace fwdpp
 {
+    inline void
+    remove_fixed_keys(std::vector<std::pair<std::size_t, uint_t>> &keys,
+                      const uint_t nsam)
+    /// Removes all keys were key.second == nsam.
+    {
+        const auto f = [nsam](const std::pair<std::size_t, uint_t> &p) {
+            return p.second == nsam;
+        };
+        keys.erase(std::remove_if(keys.begin(), keys.end(), f), keys.end());
+    }
+
+    template <typename mcont_t>
+    inline void
+    sort_keys(const mcont_t &mutations,
+              std::vector<std::pair<std::size_t, uint_t>> &keys)
+    /// Sorts keys by position
+    {
+        const auto comp
+            = [&mutations](const std::pair<std::size_t, uint_t> &a,
+                           const std::pair<std::size_t, uint_t> &b) {
+                  return mutations[a.first].pos < mutations[b.first].pos;
+              };
+        std::sort(keys.begin(), keys.end(), comp);
+    }
+
+    template <typename poptype>
+    auto
+    generate_filter_sort_keys(const poptype &pop,
+                              const std::vector<std::size_t> &individuals,
+                              const bool include_neutral,
+                              const bool include_selected,
+                              const bool remove_fixed)
+        -> decltype(mutation_keys(pop, individuals, include_neutral,
+                                  include_selected))
+    {
+        auto keys = mutation_keys(pop, individuals, include_neutral,
+                                  include_selected);
+        if (remove_fixed)
+            {
+                remove_fixed_keys(keys.first, 2 * individuals.size());
+                remove_fixed_keys(keys.second, 2 * individuals.size());
+            }
+        sort_keys(pop.mutations, keys.first);
+        sort_keys(pop.mutations, keys.second);
+        return keys;
+    }
+
     template <typename poptype>
     data_matrix
     sample_individuals(const poptype &pop,
@@ -27,34 +74,52 @@ namespace fwdpp
                        const bool include_neutral, const bool include_selected,
                        const bool remove_fixed)
     {
-        auto keys = mutation_keys(pop, individuals, include_neutral,
-                                  include_neutral);
-        if (remove_fixed)
-            {
-                keys.first.erase(
-                    std::remove_if(
-                        keys.first.begin(), keys.first.end(),
-                        [&individuals](
-                            const std::pair<std::size_t, uint_t> &p) {
-                            return p.second == 2 * individuals.size();
-                        }),
-                    keys.first.end());
-                keys.second.erase(
-                    std::remove_if(
-                        keys.second.begin(), keys.second.end(),
-                        [&individuals](
-                            const std::pair<std::size_t, uint_t> &p) {
-                            return p.second == 2 * individuals.size();
-                        }),
-                    keys.second.end());
-            }
-        const auto comp = [&pop](const std::pair<std::size_t, uint_t> &a,
-                                 const std::pair<std::size_t, uint_t> &b) {
-            return pop.mutations[a.first].pos < pop.mutations[b.first].pos;
-        };
-        std::sort(keys.first.begin(), keys.first.end(), comp);
-        std::sort(keys.second.begin(), keys.second.end(), comp);
+        auto keys = generate_filter_sort_keys(
+            pop, individuals, include_neutral, include_selected, remove_fixed);
         return haplotype_matrix(pop, individuals, keys.first, keys.second);
+    }
+
+    // TODO: static assert the population type is mlocus
+    template <typename poptype>
+    std::vector<data_matrix>
+    sample_individuals_by_locus(const poptype &pop,
+                                const std::vector<std::size_t> &individuals,
+                                const bool include_neutral,
+                                const bool include_selected,
+                                const bool remove_fixed)
+    {
+        auto keys = generate_filter_sort_keys(
+            pop, individuals, include_neutral, include_selected, remove_fixed);
+        std::vector<data_matrix> rv;
+        decltype(keys.first.cbegin()) nstart, nend, sstart, send;
+
+        const auto lbf = [&pop](const std::pair<std::size_t, uint_t> &p,
+                                const double pos) {
+            return pop.mutations[p.first].pos < pos;
+        };
+
+        const auto ubf = [&pop](const double pos,
+                                const std::pair<std::size_t, uint_t> &p) {
+            return pos < pop.mutations[p.first].pos;
+        };
+        decltype(keys.first) nwk, swk;
+        for (const auto &b : pop.locus_boundaries)
+            {
+                nstart = std::lower_bound(keys.first.begin(), keys.first.end(),
+                                          b.first, lbf);
+                nend = std::upper_bound(nstart, keys.first.end(), b.second,
+                                        ubf);
+                sstart = std::lower_bound(keys.second.begin(),
+                                          keys.first.end(), b.first, lbf);
+                send = std::upper_bound(sstart, keys.second.end(), b.second,
+                                        ubf);
+                nwk.assign(nstart, nend);
+                swk.assign(sstart, send);
+
+                rv.emplace_back(haplotype_matrix(pop, individuals, keys.first,
+                                                 keys.second));
+            }
+        return rv;
     }
 
     /*!
