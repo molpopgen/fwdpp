@@ -13,7 +13,7 @@
 #include <sstream>
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/sampling.hpp>
+#include <fwdpp/sampling_functions.hpp>
 using mtype = fwdpp::popgenmut;
 #define MULTILOCUS_SIM
 #include <common_ind.hpp>
