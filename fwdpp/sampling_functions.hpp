@@ -79,11 +79,11 @@ namespace fwdpp
         return haplotype_matrix(pop, individuals, keys.first, keys.second);
     }
 
-    // TODO: static assert the population type is mlocus
     template <typename poptype>
     std::vector<data_matrix>
-    sample_individuals_by_locus(const poptype &pop,
+    sample_individuals_by_window(const poptype &pop,
                                 const std::vector<std::size_t> &individuals,
+                                const std::vector<std::pair<double,double>> window_boundaries,
                                 const bool include_neutral,
                                 const bool include_selected,
                                 const bool remove_fixed)
@@ -91,7 +91,7 @@ namespace fwdpp
         auto keys = generate_filter_sort_keys(
             pop, individuals, include_neutral, include_selected, remove_fixed);
         std::vector<data_matrix> rv;
-        decltype(keys.first.cbegin()) nstart, nend, sstart, send;
+        decltype(keys.first.begin()) nstart, nend, sstart, send;
 
         const auto lbf = [&pop](const std::pair<std::size_t, uint_t> &p,
                                 const double pos) {
@@ -103,7 +103,7 @@ namespace fwdpp
             return pos < pop.mutations[p.first].pos;
         };
         decltype(keys.first) nwk, swk;
-        for (const auto &b : pop.locus_boundaries)
+        for (const auto &b : window_boundaries)
             {
                 nstart = std::lower_bound(keys.first.begin(), keys.first.end(),
                                           b.first, lbf);
