@@ -7,7 +7,6 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
-#include <Sequence/SimData.hpp>
 #endif
 #include <vector>
 #include <list>
@@ -139,13 +138,19 @@ main(int argc, char **argv)
                 }
 #endif
         }
-    auto x = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
-                              pop.diploids, 10, true);
-#ifdef HAVE_LIBSEQUENCE
-    for (auto &i : x)
+    // Take a sample of size samplesize1 from the population
+    std::vector<std::size_t> random_dips;
+    for (unsigned i = 0; i < N/100; ++i)
         {
-            Sequence::SimData a(i.begin(), i.end());
-            std::cout << a << '\n';
+            auto x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
+            while (std::find(random_dips.begin(), random_dips.end(), x)
+                   != random_dips.end())
+                {
+                    x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
+                }
         }
+    auto s = fwdpp::sample_individuals_by_window(
+        pop, random_dips, pop.locus_boundaries, true, true, true);
+#ifdef HAVE_LIBSEQUENCE
 #endif
 }
