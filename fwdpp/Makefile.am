@@ -13,12 +13,12 @@ pkginclude_HEADERS=debug.hpp \
 	sample_diploid.hpp \
 	sample_diploid.tcc \
 	sampling_functions.hpp \
-	sampling_functions.tcc \
 	type_traits.hpp \
 	util.hpp \
 	sugar.hpp \
 	version.hpp \
 	mutate_recombine.hpp \
+	data_matrix.hpp \
 	recbinder.hpp
 
 

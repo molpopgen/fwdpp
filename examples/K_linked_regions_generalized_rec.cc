@@ -7,14 +7,12 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
-#include <Sequence/SimData.hpp>
 #endif
 #include <vector>
 #include <list>
 #include <sstream>
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/sampling.hpp>
 using mtype = fwdpp::popgenmut;
 #define SINGLEPOP_SIM
 #include <common_ind.hpp>
@@ -104,10 +102,6 @@ main(int argc, char **argv)
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
         }
-    auto x = fwdpp::ms_sample(r.get(), pop.mutations, pop.gametes,
-                              pop.diploids, 10, true);
 #ifdef HAVE_LIBSEQUENCE
-    Sequence::SimData a(x.begin(), x.end());
-    std::cout << a << '\n';
 #endif
 }

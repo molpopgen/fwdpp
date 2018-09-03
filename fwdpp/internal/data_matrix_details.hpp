@@ -1,3 +1,6 @@
+#ifndef FWDPP_DATA_MATRIX_DETAILS_HPP
+#define FWDPP_DATA_MATRIX_DETAILS_HPP
+
 #include <stdexcept>
 #include <iterator>
 #include <numeric>
@@ -117,18 +120,14 @@ namespace fwdpp
                                       std::make_move_iterator(s.end())));
         }
 
-        template <typename poptype, typename key_container>
+        template <typename mcont_t, typename key_container>
         inline void
-        update_pos_and_freqs(const poptype &pop, const key_container &keys,
-                             std::vector<double> &positions,
-                             std::vector<double> &freqs)
+        update_pos(const mcont_t &mutations, const key_container &keys,
+                   state_matrix & sm)
         {
-            const double twoN = 2 * pop.diploids.size();
             for (auto &key : keys)
                 {
-                    positions.push_back(pop.mutations[key.first].pos);
-                    freqs.push_back(static_cast<double>(pop.mcounts[key.first])
-                                    / twoN);
+                    sm.positions.push_back(mutations[key.first].pos);
                 }
         }
 
@@ -174,8 +173,9 @@ namespace fwdpp
                                 pop.gametes[pop.diploids[ind].first].mutations,
                                 pop.gametes[pop.diploids[ind].second]
                                     .mutations,
-                                m.neutral, mkey, mtype);
+                                m.neutral.data, mkey, mtype);
                         }
+                    m.neutral_keys.push_back(mkey.first);
                 }
             for (auto &&mkey : selected_keys)
                 {
@@ -185,14 +185,13 @@ namespace fwdpp
                                             .smutations,
                                         pop.gametes[pop.diploids[ind].second]
                                             .smutations,
-                                        m.selected, mkey, mtype);
+                                        m.selected.data, mkey, mtype);
                         }
+                    m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
-                                 m.neutral_popfreq);
-            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
-                                 m.selected_popfreq);
+            update_pos(pop.mutations, neutral_keys, m.neutral);
+            update_pos(pop.mutations, selected_keys, m.selected);
         }
 
         template <typename poptype>
@@ -228,16 +227,15 @@ namespace fwdpp
                 return locus_index;
             };
 
-            const auto check_invariant_site
-                = [](const std::vector<std::int8_t> &site,
-                     const std::size_t offset) {
-                      if (std::accumulate(site.begin() + offset, site.end(), 0)
-                          == 0)
-                          {
-                              throw std::runtime_error(
-                                  "no variation found at site in this sample");
-                          }
-                  };
+            const auto check_invariant_site = [](
+                const std::vector<std::int8_t> &site,
+                const std::size_t offset) {
+                if (std::accumulate(site.begin() + offset, site.end(), 0) == 0)
+                    {
+                        throw std::runtime_error(
+                            "no variation found at site in this sample");
+                    }
+            };
 
             for (auto &mkey : neutral_keys)
                 {
@@ -245,7 +243,7 @@ namespace fwdpp
                     assert(pop.mcounts[mkey.first]);
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.neutral.size();
+                    auto current_size = m.neutral.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
@@ -253,9 +251,10 @@ namespace fwdpp
                             assert(pop.gametes[locus.second].n);
                             update_site(pop.gametes[locus.first].mutations,
                                         pop.gametes[locus.second].mutations,
-                                        m.neutral, mkey, mtype);
+                                        m.neutral.data, mkey, mtype);
                         }
-                    check_invariant_site(m.neutral, current_size);
+                    check_invariant_site(m.neutral.data, current_size);
+                    m.neutral_keys.push_back(mkey.first);
                 }
             for (auto &mkey : selected_keys)
                 {
@@ -263,7 +262,7 @@ namespace fwdpp
                     assert(!pop.mutations[mkey.first].neutral);
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.selected.size();
+                    auto current_size = m.selected.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
@@ -271,15 +270,14 @@ namespace fwdpp
                             assert(pop.gametes[locus.second].n);
                             update_site(pop.gametes[locus.first].smutations,
                                         pop.gametes[locus.second].smutations,
-                                        m.selected, mkey, mtype);
+                                        m.selected.data, mkey, mtype);
                         }
-                    check_invariant_site(m.selected, current_size);
+                    check_invariant_site(m.selected.data, current_size);
+                    m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields
-            update_pos_and_freqs(pop, neutral_keys, m.neutral_positions,
-                                 m.neutral_popfreq);
-            update_pos_and_freqs(pop, selected_keys, m.selected_positions,
-                                 m.selected_popfreq);
+            update_pos(pop.mutations, neutral_keys, m.neutral);
+            update_pos(pop.mutations, selected_keys, m.selected);
         }
 
         template <typename poptype>
@@ -333,3 +331,5 @@ namespace fwdpp
         }
     } // namespace data_matrix_details
 } // namespace fwdpp
+
+#endif

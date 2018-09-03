@@ -8,7 +8,6 @@
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
-#include <Sequence/SimData.hpp>
 #endif
 #include <numeric>
 #include <functional>
@@ -99,18 +98,18 @@ main(int argc, char **argv)
                 }
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
-            std::pair<std::vector<std::pair<double, std::string>>,
-                      std::vector<std::pair<double, std::string>>>
-                sample
-                = ms_sample_separate(r.get(), pop.mutations, pop.gametes,
-                                     pop.diploids, samplesize1);
-
+            std::vector<std::size_t> random_dips;
+            for(unsigned i=0;i<samplesize1;++i)
+            {
+                auto x = static_cast<std::size_t>(gsl_ran_flat(r.get(),0,N));
+                while(std::find(random_dips.begin(),random_dips.end(),x) != 
+                        random_dips.end())
+                {
+                x = static_cast<std::size_t>(gsl_ran_flat(r.get(),0,N));
+                }
+            }
+            auto dm = fwdpp::sample_individuals(pop, random_dips, true, false, true);
 #ifdef HAVE_LIBSEQUENCE
-            Sequence::SimData neutral_muts, selected_muts;
-            neutral_muts.assign(sample.first.begin(), sample.first.end());
-            selected_muts.assign(sample.second.begin(), sample.second.end());
-
-            std::cout << neutral_muts << '\n' << selected_muts << '\n';
 #endif
         }
 }

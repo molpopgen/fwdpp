@@ -9,7 +9,5 @@
 #include <fwdpp/sugar/multiloc.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/singlepop.hpp>
-#include <fwdpp/sugar/sampling.hpp>
 #include <fwdpp/sugar/add_mutation.hpp>
-#include <fwdpp/sugar/matrix.hpp>
 #endif
