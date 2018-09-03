@@ -152,6 +152,45 @@ namespace fwdpp
             include_neutral, include_selected, typename poptype::popmodel_t());
     }
 
+    template <typename mcont_t>
+    inline void
+    sort_keys(const mcont_t &mutations,
+              std::vector<std::pair<std::size_t, uint_t>> &keys)
+    /*! \brief Sort keys by position
+     *
+     * Takes the data returned from mutation_keys and sorts
+     * it by increasing mutation positions.
+     *
+     * \param mutations A mutation container
+     * \param keys Returned from mutation_keys
+     *
+     * \ingroup samplingPops
+     */
+    {
+        const auto comp
+            = [&mutations](const std::pair<std::size_t, uint_t> &a,
+                           const std::pair<std::size_t, uint_t> &b) {
+                  return mutations[a.first].pos < mutations[b.first].pos;
+              };
+        std::sort(keys.begin(), keys.end(), comp);
+    }
+
+    template <typename F>
+    inline void
+    filter_keys(std::vector<std::pair<std::size_t, uint_t>> &keys, F f)
+    /*! \brief Apply a filter to the keys
+     *
+     * Takes the data returned from mutation_keys and applies a 
+     * filtering function.  The implementation is simply a wrapper
+     * around the erase/remove idiom.
+     *
+     * \param keys 
+     * \param f A function taking the value_type in \a keys and returning true if item should be removed
+     */
+    {
+        keys.erase(std::remove_if(keys.begin(), keys.end(), f), keys.end());
+    }
+
     template <typename poptype>
     data_matrix
     genotype_matrix(

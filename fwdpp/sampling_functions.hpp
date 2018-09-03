@@ -13,6 +13,7 @@
 #include <gsl/gsl_randist.h>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/data_matrix.hpp>
+#include "internal/sampling_functions_details.hpp"
 
 /*! @defgroup samplingPops Functions related to taking samples from simulated
   populations
@@ -20,75 +21,64 @@
 
 namespace fwdpp
 {
-    inline void
-    remove_fixed_keys(std::vector<std::pair<std::size_t, uint_t>> &keys,
-                      const uint_t nsam)
-    /// Removes all keys were key.second == nsam.
-    {
-        const auto f = [nsam](const std::pair<std::size_t, uint_t> &p) {
-            return p.second == nsam;
-        };
-        keys.erase(std::remove_if(keys.begin(), keys.end(), f), keys.end());
-    }
-
-    template <typename mcont_t>
-    inline void
-    sort_keys(const mcont_t &mutations,
-              std::vector<std::pair<std::size_t, uint_t>> &keys)
-    /// Sorts keys by position
-    {
-        const auto comp
-            = [&mutations](const std::pair<std::size_t, uint_t> &a,
-                           const std::pair<std::size_t, uint_t> &b) {
-                  return mutations[a.first].pos < mutations[b.first].pos;
-              };
-        std::sort(keys.begin(), keys.end(), comp);
-    }
-
-    template <typename poptype>
-    auto
-    generate_filter_sort_keys(const poptype &pop,
-                              const std::vector<std::size_t> &individuals,
-                              const bool include_neutral,
-                              const bool include_selected,
-                              const bool remove_fixed)
-        -> decltype(mutation_keys(pop, individuals, include_neutral,
-                                  include_selected))
-    {
-        auto keys = mutation_keys(pop, individuals, include_neutral,
-                                  include_selected);
-        if (remove_fixed)
-            {
-                remove_fixed_keys(keys.first, 2 * individuals.size());
-                remove_fixed_keys(keys.second, 2 * individuals.size());
-            }
-        sort_keys(pop.mutations, keys.first);
-        sort_keys(pop.mutations, keys.second);
-        return keys;
-    }
-
     template <typename poptype>
     data_matrix
     sample_individuals(const poptype &pop,
                        const std::vector<std::size_t> &individuals,
                        const bool include_neutral, const bool include_selected,
                        const bool remove_fixed)
+    /*!
+     * \brief Create a fwdpp::data_matrix for a set of individuals.
+     *
+     * \param pop A population
+     * \param individuals indexes of individuals in \a pop
+     * \param include_neutral If true, populate fwdpp::data_matrix::neutral
+     * \param include_selected If true, populate fwdpp::data_matrix::selected
+     * \param remove_fixed If true, remove variants that are fixed in the sample.
+     *
+     * \return fwdpp::data_matrix
+     *
+     * \note The return value is a haplotype matrix.
+     *
+     * \ingroup samplingPops
+     */
     {
-        auto keys = generate_filter_sort_keys(
+        auto keys = fwdpp_internal::generate_filter_sort_keys(
             pop, individuals, include_neutral, include_selected, remove_fixed);
         return haplotype_matrix(pop, individuals, keys.first, keys.second);
     }
 
     template <typename poptype>
     std::vector<data_matrix>
-    sample_individuals_by_window(const poptype &pop,
-                                const std::vector<std::size_t> &individuals,
-                                const std::vector<std::pair<double,double>> window_boundaries,
-                                const bool include_neutral,
-                                const bool include_selected,
-                                const bool remove_fixed)
+    sample_individuals_by_window(
+        const poptype &pop, const std::vector<std::size_t> &individuals,
+        const std::vector<std::pair<double, double>> window_boundaries,
+        const bool include_neutral, const bool include_selected,
+        const bool remove_fixed)
+    /*!
+     * \brief Create a vector fwdpp::data_matrix for a set of individuals.
+     *
+     * \param pop A population
+     * \param individuals indexes of individuals in \a pop
+     * \param window_boundaries [start,stop) positions of each window.
+     * \param include_neutral If true, populate fwdpp::data_matrix::neutral
+     * \param include_selected If true, populate fwdpp::data_matrix::selected
+     * \param remove_fixed If true, remove variants that are fixed in the sample.
+     *
+     * \return vector of fwdpp::data_matrix
+     *
+     * \note Each fwdpp::data_matrix is in haplotype matrix layout.
+     *
+     * This function differs from sample_individuals in that a 
+     * separate data_matrix is returned for each window.  The main 
+     * use case envisioned is for sampling from multilocus populations,
+     * where mlocuspop::locus_boundaries is passed in as \a window_boundaries.
+     * Other applications are possible, however.
+     *
+     * \ingroup samplingPops
+     */
     {
-        auto keys = generate_filter_sort_keys(
+        auto keys = fwdpp_internal::generate_filter_sort_keys(
             pop, individuals, include_neutral, include_selected, remove_fixed);
         std::vector<data_matrix> rv;
         decltype(keys.first.begin()) nstart, nend, sstart, send;
