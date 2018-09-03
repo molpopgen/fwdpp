@@ -100,14 +100,13 @@ namespace fwdpp
                 nend = std::upper_bound(nstart, keys.first.end(), b.second,
                                         ubf);
                 sstart = std::lower_bound(keys.second.begin(),
-                                          keys.first.end(), b.first, lbf);
+                                          keys.second.end(), b.first, lbf);
                 send = std::upper_bound(sstart, keys.second.end(), b.second,
                                         ubf);
                 nwk.assign(nstart, nend);
                 swk.assign(sstart, send);
 
-                rv.emplace_back(haplotype_matrix(pop, individuals, keys.first,
-                                                 keys.second));
+                rv.emplace_back(haplotype_matrix(pop, individuals, nwk, swk));
             }
         return rv;
     }
