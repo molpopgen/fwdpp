@@ -93,6 +93,15 @@ namespace fwdpp
             return pos < pop.mutations[p.first].pos;
         };
         decltype(keys.first) nwk, swk;
+        /* Note:
+         * The binary searches work for the case
+         * of an empty window because, for e.g.,
+         * you end up with nstart == nend,
+         * which has the effect of clearing
+         * nwk's contents.
+         *
+         * This case is tested in the test suite.
+         */
         for (const auto &b : window_boundaries)
             {
                 nstart = std::lower_bound(keys.first.begin(), keys.first.end(),
