@@ -149,6 +149,25 @@ namespace fwdpp
             }
         return true;
     }
-}
+
+    namespace debug
+    {
+        template <typename poptype, typename iterator>
+        void
+        validate_mutation_key_ranges(const poptype &p, const iterator beg,
+                                     const iterator end)
+        /*! Throw an exception if any mutation keys are >= p.mutations.size()
+         */
+        {
+            if (std::any_of(beg, end, [&p](const std::size_t m) {
+                    return m >= p.mutations.size();
+                }))
+                {
+                    throw std::runtime_error("FWDPP DEBUG: mutation key "
+                                             "out of range");
+                }
+        }
+    } // namespace debug
+} // namespace fwdpp
 
 #endif
