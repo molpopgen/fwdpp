@@ -10,14 +10,19 @@
 #include <exception>
 #include <type_traits>
 #include <algorithm>
-#include <cassert>
+#include <stdexcept>
 #include <vector>
 #include <unordered_map>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
 
+#ifndef NDEBUG
+#include <fwdpp/debug.hpp>
+#endif
+
 namespace fwdpp
 {
+
     namespace sugar
     {
         template <typename mcont_t, typename mcounts_t>
@@ -66,9 +71,9 @@ namespace fwdpp
             // find an extinct mutation, if one exists
             auto extinct_mut
                 = std::find(std::begin(mcounts), std::end(mcounts), 0);
-            std::size_t mindex = mcounts.size(); // this will be the correct
-                                                 // value if we use the else
-                                                 // block below
+            std::size_t mindex = mcounts.size();  // this will be the correct
+                                                  // value if we use the else
+                                                  // block below
             if (extinct_mut != std::end(mcounts)) // then we can recycle
                 {
                     auto dist
@@ -98,7 +103,6 @@ namespace fwdpp
             auto inserter
                 = [&p](const double &__value, const std::size_t __mut) noexcept
             {
-                assert(__mut < p.mutations.size());
                 return __value < p.mutations[__mut].pos;
             };
 
@@ -112,6 +116,10 @@ namespace fwdpp
 
                             if (p.mutations[mindex].neutral)
                                 {
+#ifndef NDEBUG
+                                    debug::validate_mutation_ranges(
+                                        p, n.begin(), n.end());
+#endif
                                     n.insert(std::upper_bound(n.begin(),
                                                               n.end(), pos,
                                                               inserter),
@@ -119,6 +127,10 @@ namespace fwdpp
                                 }
                             else
                                 {
+#ifndef NDEBUG
+                                    debug::validate_mutation_key_ranges(
+                                        p, s.begin(), s.end());
+#endif
                                     s.insert(std::upper_bound(s.begin(),
                                                               s.end(), pos,
                                                               inserter),
@@ -150,9 +162,9 @@ namespace fwdpp
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
                                         fwdpp::sugar::SINGLELOC_TAG>::value>>
-        std::unordered_map<std::size_t,
-                           std::vector<
-                               typename poptype::diploid_t::first_type *>>
+        std::unordered_map<
+            std::size_t,
+            std::vector<typename poptype::diploid_t::first_type *>>
         collect_gametes(poptype &p, const std::vector<std::size_t> &indlist,
                         const std::vector<short> &clist)
         /*!
@@ -163,9 +175,9 @@ namespace fwdpp
           new gametes created.
         */
         {
-            std::unordered_map<std::size_t,
-                               std::vector<
-                                   typename poptype::diploid_t::first_type *>>
+            std::unordered_map<
+                std::size_t,
+                std::vector<typename poptype::diploid_t::first_type *>>
                 gams;
             for (std::size_t i = 0; i < indlist.size(); ++i)
                 {
@@ -186,9 +198,9 @@ namespace fwdpp
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
                                         fwdpp::sugar::MULTILOC_TAG>::value>>
-        std::unordered_map<std::size_t,
-                           std::vector<typename poptype::diploid_t::
-                                           value_type::first_type *>>
+        std::unordered_map<
+            std::size_t,
+            std::vector<typename poptype::diploid_t::value_type::first_type *>>
         collect_gametes(poptype &p, const std::size_t locus,
                         const std::vector<std::size_t> &indlist,
                         const std::vector<short> &clist)
@@ -200,9 +212,10 @@ namespace fwdpp
           new gametes created.
         */
         {
-            std::unordered_map<std::size_t,
-                               std::vector<typename poptype::diploid_t::
-                                               value_type::first_type *>>
+            std::unordered_map<
+                std::size_t,
+                std::vector<
+                    typename poptype::diploid_t::value_type::first_type *>>
                 gams;
             for (std::size_t ind = 0; ind < indlist.size(); ++ind)
                 {
@@ -221,7 +234,7 @@ namespace fwdpp
                 }
             return gams;
         }
-    }
+    } // namespace sugar
 
     template <typename poptype, class... Args>
     std::size_t
@@ -279,7 +292,8 @@ namespace fwdpp
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument("indlist and clist must be same length");
+            throw std::invalid_argument(
+                "indlist and clist must be same length");
 
         // create a new mutation
         typename poptype::mcont_t::value_type new_mutant(
@@ -289,7 +303,6 @@ namespace fwdpp
         sugar::add_mutation_details(p, { mindex }, gams);
         return mindex;
     }
-
 
     template <typename multiloc_poptype, class... Args>
     std::size_t
@@ -340,7 +353,8 @@ namespace fwdpp
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument	("indlist and clist must be same length");
+            throw std::invalid_argument(
+                "indlist and clist must be same length");
 
         if (locus >= p.diploids[0].size())
             throw std::out_of_range("locus index out of range");
@@ -417,14 +431,16 @@ namespace fwdpp
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument("indlist and clist must be same length");
+            throw std::invalid_argument(
+                "indlist and clist must be same length");
         for (auto mi : mutation_indexes)
             {
                 if (mi >= p.mutations.size())
                     throw std::out_of_range("mutation key out of range");
             }
         if (p.mcounts.size() != p.mutations.size())
-            throw std::invalid_argument("p.mcounts.size() != p.mutations.size()");
+            throw std::invalid_argument(
+                "p.mcounts.size() != p.mutations.size()");
         auto gams = sugar::collect_gametes(p, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
@@ -478,7 +494,8 @@ namespace fwdpp
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument("indlist and clist must be same length");
+            throw std::invalid_argument(
+                "indlist and clist must be same length");
 
         if (locus >= p.diploids[0].size())
             throw std::out_of_range("locus index out of range");
@@ -494,10 +511,11 @@ namespace fwdpp
                     throw std::out_of_range("mutation key out of range");
             }
         if (p.mcounts.size() != p.mutations.size())
-            throw std::invalid_argument("p.mcounts.size() != p.mutations.size()");
+            throw std::invalid_argument(
+                "p.mcounts.size() != p.mutations.size()");
         auto gams = sugar::collect_gametes(p, locus, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
-}
+} // namespace fwdpp
 
 #endif
