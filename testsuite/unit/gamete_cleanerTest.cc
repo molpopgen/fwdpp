@@ -6,12 +6,14 @@
 #include <config.h>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/diploid.hh>
+#include <fwdpp/debug.hpp>
 #include "../fixtures/fwdpp_fixtures.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(gamete_cleanerTest,
                          standard_empty_single_deme_fixture)
 
 BOOST_AUTO_TEST_CASE(test_remove_all)
+// TODO: Refactor this test to use a pop type
 {
     diploids.resize(1000, std::make_pair(0, 0));
     mutations.emplace_back(mtype(0, 0, 0));
@@ -23,15 +25,19 @@ BOOST_AUTO_TEST_CASE(test_remove_all)
     gametes[0].n = 1999;
     gametes.push_back(gcont_t::value_type(1));
     gametes[1].mutations.push_back(1);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
-    BOOST_REQUIRE_EQUAL(
-        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    int s = 0;
+    for (auto& g : gametes)
+        {
+            s += g.n;
+        }
+    BOOST_REQUIRE_EQUAL(s, 2000);
     fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
                                           std::true_type());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 0);
 }
 
 BOOST_AUTO_TEST_CASE(test_remove_nothing)
+// TODO: Refactor this test to use a pop type
 {
     diploids.resize(1000, std::make_pair(0, 0));
     mutations.emplace_back(mtype(0, 0, 0));
@@ -43,15 +49,19 @@ BOOST_AUTO_TEST_CASE(test_remove_nothing)
     gametes[0].n = 1999;
     gametes.push_back(gcont_t::value_type(1));
     gametes[1].mutations.push_back(1);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
-    BOOST_REQUIRE_EQUAL(
-        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    int s = 0;
+    for (auto& g : gametes)
+        {
+            s += g.n;
+        }
+    BOOST_REQUIRE_EQUAL(s, 2000);
     fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
                                           fwdpp::remove_nothing());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 1);
 }
 
 BOOST_AUTO_TEST_CASE(test_remove_neutral)
+// TODO: Refactor this test to use a pop type
 {
     diploids.resize(1000, std::make_pair(0, 0));
     mutations.emplace_back(mtype(0, 0, 0));
@@ -64,9 +74,12 @@ BOOST_AUTO_TEST_CASE(test_remove_neutral)
     gametes[0].n = 2000;
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(gametes[0].smutations.size(), 1);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(gametes, 2000), true);
-    BOOST_REQUIRE_EQUAL(
-        fwdpp::popdata_sane(diploids, gametes, mutations, mcounts), true);
+    int s = 0;
+    for (auto& g : gametes)
+        {
+            s += g.n;
+        }
+    BOOST_REQUIRE_EQUAL(s, 2000);
     fwdpp::fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2000,
                                           fwdpp::remove_neutral());
     BOOST_REQUIRE_EQUAL(gametes[0].mutations.size(), 0);

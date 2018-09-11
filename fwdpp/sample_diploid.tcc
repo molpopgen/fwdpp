@@ -92,7 +92,6 @@ namespace fwdpp
         */
 
         // test preconditions in debugging mode
-        assert(popdata_sane(diploids, gametes, mutations, mcounts));
         assert(mcounts.size() == mutations.size());
         assert(N_curr == diploids.size());
         assert(mcounts.size() == mutations.size());
@@ -214,7 +213,6 @@ namespace fwdpp
                     mu, gam_recycling_bin, mut_recycling_bin, dip, neutral,
                     selected);
             }
-        assert(check_sum(gametes, 2 * N_next));
 #ifndef NDEBUG
         for (const auto &dip : diploids)
             {
@@ -261,7 +259,6 @@ namespace fwdpp
                 assert(mc <= 2 * N_next);
             }
 #endif
-        assert(popdata_sane(diploids, gametes, mutations, mcounts));
 
         /*
           The last thing to do is handle fixations.  In many contexts, we
@@ -323,7 +320,6 @@ namespace fwdpp
         typename gamete_type::mutation_container &selected, const double &f,
         const mutation_removal_policy &mp)
     {
-        assert(popdata_sane_multilocus(diploids, gametes, mutations, mcounts));
         assert(mcounts.size() == mutations.size());
         assert(diploids.size() == N_curr);
         // Vector of parental fitnesses
@@ -392,7 +388,6 @@ namespace fwdpp
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2 * N_next,
                                        mp, std::true_type());
-        assert(popdata_sane_multilocus(diploids, gametes, mutations, mcounts));
         return wbar;
     }
 

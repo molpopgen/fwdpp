@@ -8,6 +8,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+#include <fwdpp/debug.hpp>
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
@@ -135,12 +136,13 @@ main(int argc, char **argv)
     for (unsigned i = 0; i < K; ++i)
         {
             locus_weights.push_back(1.0);
-            functions.push_back([&pop, &r, &generation,
-                                 pselected,i](std::queue<std::size_t> &recbin,
-                                            singlepop_t::mcont_t &mutations) {
+            functions.push_back([&pop, &r, &generation, pselected,
+                                 i](std::queue<std::size_t> &recbin,
+                                    singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
-                    pselected, [&r,i]() { return gsl_ran_flat(r.get(),i,i+1); },
+                    pselected,
+                    [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
                     []() { return 0.0; }, []() { return 0.0; });
             });
             rec_functions.push_back([i, &r](std::vector<double> &breakpoints) {
@@ -182,12 +184,11 @@ main(int argc, char **argv)
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, 2*pop.diploids.size()));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            assert(popdata_sane(pop.diploids, pop.gametes, pop.mutations,
-                                pop.mcounts));
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2 * N);
+            fwdpp::debug::validate_pop_data(pop);
         }
     for (unsigned i = 0; i < pop.mcounts.size(); ++i)
         {

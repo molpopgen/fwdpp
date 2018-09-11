@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE(test_add_mutation)
                         { 0, 1, 0, 2, 2, 0 },
                         // Parameters to pass on to create a new mutation
                         0.1, -0.1, 1, 0);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
+    BOOST_REQUIRE_NO_THROW(
+        fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2000));
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
@@ -79,7 +80,8 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_from_object)
                         { 0, 1, 0, 2, 2, 0 },
                         // move it right into place:
                         std::move(m));
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
+    BOOST_REQUIRE_NO_THROW(
+        fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2000));
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
@@ -208,7 +210,8 @@ BOOST_AUTO_TEST_CASE(test_add_mutation_mlocuspop)
                         { 0, 1, 0, 2, 2, 0 },
                         // params for new mutation
                         0.1, -0.1, 1, 0);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 8000), true);
+    BOOST_REQUIRE_NO_THROW(
+        fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 8000));
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
