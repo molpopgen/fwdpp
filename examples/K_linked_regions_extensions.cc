@@ -136,11 +136,11 @@ main(int argc, char **argv)
         {
             locus_weights.push_back(1.0);
             functions.push_back([&pop, &r, &generation,
-                                 pselected](std::queue<std::size_t> &recbin,
+                                 pselected,i](std::queue<std::size_t> &recbin,
                                             singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
-                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
+                    pselected, [&r,i]() { return gsl_ran_flat(r.get(),i,i+1); },
                     []() { return 0.0; }, []() { return 0.0; });
             });
             rec_functions.push_back([i, &r](std::vector<double> &breakpoints) {
@@ -182,7 +182,7 @@ main(int argc, char **argv)
                 std::bind(additive_over_loci(), std::placeholders::_1,
                           std::placeholders::_2, std::placeholders::_3, K),
                 pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, twoN));
+            assert(check_sum(pop.gametes, 2*pop.diploids.size()));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
