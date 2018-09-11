@@ -5,6 +5,7 @@
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
+#include "internal/debug_details.hpp"
 
 namespace fwdpp
 {
@@ -152,20 +153,14 @@ namespace fwdpp
 
     namespace debug
     {
-        template <typename poptype, typename iterator>
+        template <typename mcont_t, typename iterator>
         void
-        validate_mutation_key_ranges(const poptype &p, const iterator beg,
-                                     const iterator end)
-        /*! Throw an exception if any mutation keys are >= p.mutations.size()
+        validate_mutation_key_ranges(const mcont_t &mutations,
+                                     const iterator beg, const iterator end)
+        /*! Throw an exception if any mutation keys are >= mutations.size()
          */
         {
-            if (std::any_of(beg, end, [&p](const std::size_t m) {
-                    return m >= p.mutations.size();
-                }))
-                {
-                    throw std::runtime_error("FWDPP DEBUG: mutation key "
-                                             "out of range");
-                }
+            detail::validate_mutation_key_ranges(mutations, beg, end);
         }
     } // namespace debug
 } // namespace fwdpp

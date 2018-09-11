@@ -15,10 +15,7 @@
 #include <unordered_map>
 #include <fwdpp/internal/recycling.hpp>
 #include <fwdpp/sugar/poptypes/tags.hpp>
-
-#ifndef NDEBUG
 #include <fwdpp/debug.hpp>
-#endif
 
 namespace fwdpp
 {
@@ -116,10 +113,8 @@ namespace fwdpp
 
                             if (p.mutations[mindex].neutral)
                                 {
-#ifndef NDEBUG
                                     debug::validate_mutation_key_ranges(
-                                        p, n.begin(), n.end());
-#endif
+                                        p.mutations, n.begin(), n.end());
                                     n.insert(std::upper_bound(n.begin(),
                                                               n.end(), pos,
                                                               inserter),
@@ -127,10 +122,8 @@ namespace fwdpp
                                 }
                             else
                                 {
-#ifndef NDEBUG
                                     debug::validate_mutation_key_ranges(
-                                        p, s.begin(), s.end());
-#endif
+                                        p.mutations, s.begin(), s.end());
                                     s.insert(std::upper_bound(s.begin(),
                                                               s.end(), pos,
                                                               inserter),
@@ -162,9 +155,9 @@ namespace fwdpp
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
                                         fwdpp::sugar::SINGLELOC_TAG>::value>>
-        std::unordered_map<
-            std::size_t,
-            std::vector<typename poptype::diploid_t::first_type *>>
+        std::unordered_map<std::size_t,
+                           std::vector<
+                               typename poptype::diploid_t::first_type *>>
         collect_gametes(poptype &p, const std::vector<std::size_t> &indlist,
                         const std::vector<short> &clist)
         /*!
@@ -175,9 +168,9 @@ namespace fwdpp
           new gametes created.
         */
         {
-            std::unordered_map<
-                std::size_t,
-                std::vector<typename poptype::diploid_t::first_type *>>
+            std::unordered_map<std::size_t,
+                               std::vector<
+                                   typename poptype::diploid_t::first_type *>>
                 gams;
             for (std::size_t i = 0; i < indlist.size(); ++i)
                 {
@@ -198,9 +191,9 @@ namespace fwdpp
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
                                         fwdpp::sugar::MULTILOC_TAG>::value>>
-        std::unordered_map<
-            std::size_t,
-            std::vector<typename poptype::diploid_t::value_type::first_type *>>
+        std::unordered_map<std::size_t,
+                           std::vector<typename poptype::diploid_t::
+                                           value_type::first_type *>>
         collect_gametes(poptype &p, const std::size_t locus,
                         const std::vector<std::size_t> &indlist,
                         const std::vector<short> &clist)
@@ -212,10 +205,9 @@ namespace fwdpp
           new gametes created.
         */
         {
-            std::unordered_map<
-                std::size_t,
-                std::vector<
-                    typename poptype::diploid_t::value_type::first_type *>>
+            std::unordered_map<std::size_t,
+                               std::vector<typename poptype::diploid_t::
+                                               value_type::first_type *>>
                 gams;
             for (std::size_t ind = 0; ind < indlist.size(); ++ind)
                 {
