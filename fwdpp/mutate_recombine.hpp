@@ -10,7 +10,6 @@
 
 #include <vector>
 #include <algorithm>
-#include <cassert>
 #include <tuple>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
@@ -166,7 +165,7 @@ namespace fwdpp
             selected.reserve(std::max(gametes[g1].smutations.size(),
                                       gametes[g2].smutations.size()));
         }
-    }
+    } // namespace fwdpp_internal
 
     template <typename gcont_t, typename mcont_t, typename queue_type>
     uint_t
@@ -290,7 +289,13 @@ namespace fwdpp
                         ++i;
                     }
             }
-        assert(next_mutation == new_mutations.cend());
+#ifndef NDEBUG
+        if (next_mutation != new_mutations.cend())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: fatal error during mutation/recombination");
+            }
+#endif
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
     }
@@ -384,14 +389,14 @@ namespace fwdpp
         gametes[dip.first].n++;
         gametes[dip.second].n++;
 
-        assert(gametes[dip.first].n);
-        assert(gametes[dip.second].n);
+        debug::gamete_is_extant(gametes[dip.first]);
+        debug::gamete_is_extant(gametes[dip.second]);
 
         auto nrec = (!breakpoints.empty()) ? breakpoints.size() - 1 : 0;
         auto nrec2 = (!breakpoints2.empty()) ? breakpoints2.size() - 1 : 0;
         return std::make_tuple(nrec, nrec2, new_mutations.size(),
                                new_mutations2.size());
     }
-}
+} // namespace fwdpp
 
 #endif
