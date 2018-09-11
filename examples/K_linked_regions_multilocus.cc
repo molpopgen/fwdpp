@@ -80,7 +80,6 @@ main(int argc, char **argv)
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
-    double wbar;
 
     std::vector<std::function<std::vector<double>()>> recpols;
     std::vector<std::function<std::size_t(std::queue<std::size_t> &,
@@ -88,16 +87,17 @@ main(int argc, char **argv)
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
+            pop.locus_boundaries.emplace_back(i, i + 1);
             recpols.emplace_back(fwdpp::recbinder(
                 fwdpp::poisson_xover(littler, i, i + 1), r.get()));
-            mmodels.push_back(
-                [&pop, &r, &generation](std::queue<std::size_t> &recbin,
-                                        multiloc_t::mcont_t &mutations) {
-                    return fwdpp::infsites_popgenmut(
-                        recbin, mutations, r.get(), pop.mut_lookup, generation,
-                        0.0, [&r]() { return gsl_rng_uniform(r.get()); },
-                        []() { return 0.0; }, []() { return 0.0; });
-                });
+            mmodels.push_back([&pop, &r, &generation,
+                               i](std::queue<std::size_t> &recbin,
+                                  multiloc_t::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, r.get(), pop.mut_lookup, generation,
+                    0.0, [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
+                    []() { return 0.0; }, []() { return 0.0; });
+            });
         }
     std::vector<std::function<unsigned(void)>> interlocus_rec(
         K - 1, std::bind(gsl_ran_binomial, r.get(), rbw, 1));
@@ -108,7 +108,7 @@ main(int argc, char **argv)
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, mu.data(), mmodels, recpols, interlocus_rec,
                 no_selection_multi(), pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, K * twoN));
+            assert(check_sum(pop.gametes, K * 2 * pop.diploids.size()));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
@@ -140,7 +140,7 @@ main(int argc, char **argv)
         }
     // Take a sample of size samplesize1 from the population
     std::vector<std::size_t> random_dips;
-    for (unsigned i = 0; i < N/100; ++i)
+    for (unsigned i = 0; i < N / 100; ++i)
         {
             auto x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
             while (std::find(random_dips.begin(), random_dips.end(), x)
@@ -148,6 +148,7 @@ main(int argc, char **argv)
                 {
                     x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
                 }
+            random_dips.push_back(x);
         }
     auto s = fwdpp::sample_individuals_by_window(
         pop, random_dips, pop.locus_boundaries, true, true, true);
