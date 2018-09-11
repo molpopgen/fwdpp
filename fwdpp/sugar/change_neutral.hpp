@@ -7,7 +7,6 @@
 #define FWDPP_SUGAR_CHANGE_NEUTRAL_HPP
 
 #include <algorithm>
-#include <cassert>
 #include <exception>
 #include <fwdpp/debug.hpp>
 

@@ -3,7 +3,6 @@
 #define __FWDPP_EXTENSIONS_REGIONS_HPP__
 
 #include <limits>
-#include <cassert>
 #include <stdexcept>
 #include <algorithm>
 #include <memory>

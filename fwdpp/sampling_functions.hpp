@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 #include <string>
-#include <cassert>
 #include <type_traits>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
