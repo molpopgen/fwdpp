@@ -45,9 +45,7 @@ namespace fwdpp
                     std::swap(itr_e, jtr_e);
                     std::swap(itr_s_e, jtr_s_e);
                 }
-
-            assert(gamete_is_sorted_n(gametes[ibeg], mutations));
-            assert(gamete_is_sorted_s(gametes[ibeg], mutations));
+			debug::gamete_is_sorted(gametes[ibeg], mutations);
         }
     }
 }

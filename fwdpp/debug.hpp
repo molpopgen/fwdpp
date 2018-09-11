@@ -162,6 +162,17 @@ namespace fwdpp
         {
             detail::validate_mutation_key_ranges(mutations, beg, end);
         }
+
+        template <typename gamete_t, typename mcont_t>
+        void
+        gamete_is_sorted(const gamete_t &g, const mcont_t &mutations)
+        /*!
+      \brief Check that neutral mutation keys are sorted according to mutation
+      position
+    */
+        {
+            detail::gamete_is_sorted(g, mutations);
+        }
     } // namespace debug
 } // namespace fwdpp
 

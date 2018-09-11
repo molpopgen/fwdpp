@@ -14,6 +14,7 @@
 #include <tuple>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
+#include <fwdpp/debug.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
@@ -66,7 +67,7 @@ namespace fwdpp
                          const recombination_policy &rec_pol)
     /// Generate vector of recombination breakpoints
     ///
-	/// \param diploid A single-locus diploid.
+    /// \param diploid A single-locus diploid.
     /// \param g1 Index of gamete 1
     /// \param g2 Index of gamete 2
     /// \param gametes Vector of gametes
@@ -107,7 +108,7 @@ namespace fwdpp
     /// \param recycling_bin The queue for recycling mutations
     /// \param r A random number generator
     /// \param mu The total mutation rate
-	/// \param dip A single-locus diploid
+    /// \param dip A single-locus diploid
     /// \param gametes Vector of gametes
     /// \param mutations Vector of mutations
     /// \param g index of gamete to mutate
@@ -320,7 +321,7 @@ namespace fwdpp
     /// \param parental_gametes Tuple of gamete keys for each parent
     /// \param rec_pol Policy to generate recombination breakpoints
     /// \param mmodel Policy to generate new mutations
-	/// \param mu Total mutation rate (per gamete).
+    /// \param mu Total mutation rate (per gamete).
     /// \param gamete_recycling_bin FIFO queue for gamete recycling
     /// \param mutation_recycling_bin FIFO queue for mutation recycling
     /// \param dip The offspring
@@ -375,9 +376,11 @@ namespace fwdpp
         dip.first = mutate_recombine(new_mutations, breakpoints, p1g1, p1g2,
                                      gametes, mutations, gamete_recycling_bin,
                                      neutral, selected);
+        debug::gamete_is_sorted(gametes[dip.first], mutations);
         dip.second = mutate_recombine(new_mutations2, breakpoints2, p2g1, p2g2,
                                       gametes, mutations, gamete_recycling_bin,
                                       neutral, selected);
+        debug::gamete_is_sorted(gametes[dip.second], mutations);
         gametes[dip.first].n++;
         gametes[dip.second].n++;
 
