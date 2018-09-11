@@ -1,5 +1,5 @@
-#ifndef __FWDPP_DEBUG_HPP__
-#define __FWDPP_DEBUG_HPP__
+#ifndef FWDPP_DEBUG_HPP
+#define FWDPP_DEBUG_HPP
 
 #include <algorithm>
 #include <numeric>
