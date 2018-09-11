@@ -117,7 +117,7 @@ namespace fwdpp
                             if (p.mutations[mindex].neutral)
                                 {
 #ifndef NDEBUG
-                                    debug::validate_mutation_ranges(
+                                    debug::validate_mutation_key_ranges(
                                         p, n.begin(), n.end());
 #endif
                                     n.insert(std::upper_bound(n.begin(),
