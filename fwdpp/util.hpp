@@ -34,7 +34,7 @@ namespace fwdpp
         if (mcounts.size() != mutations.size())
             {
                 throw std::runtime_error(
-                    "mutation counts size must equal mutation container size");
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
             }
 #endif
         for (std::size_t i = 0; i < mcounts.size(); ++i)
@@ -43,7 +43,7 @@ namespace fwdpp
                 if (mcounts[i] > twoN)
                     {
                         throw std::runtime_error(
-                            "mutation count out of range");
+                            "FWDPP DEBUG: mutation count out of range");
                     }
 #endif
                 if (mcounts[i] == twoN || !mcounts[i])
@@ -120,7 +120,7 @@ namespace fwdpp
         if (mcounts.size() != mutations.size())
             {
                 throw std::runtime_error(
-                    "mutation counts size must equal mutation container size");
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
             }
 #endif
         for (unsigned i = 0; i < mcounts.size(); ++i)
@@ -129,7 +129,7 @@ namespace fwdpp
                 if (mcounts[i] > twoN)
                     {
                         throw std::runtime_error(
-                            "mutation count out of range");
+                            "FWDPP DEBUG: mutation count out of range");
                     }
 #endif
                 if (mcounts[i] == twoN)
@@ -193,7 +193,7 @@ namespace fwdpp
         if (mcounts.size() != mutations.size())
             {
                 throw std::runtime_error(
-                    "mutation counts size must equal mutation container size");
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
             }
 #endif
         for (unsigned i = 0; i < mcounts.size(); ++i)
@@ -202,7 +202,7 @@ namespace fwdpp
                 if (mcounts[i] > twoN)
                     {
                         throw std::runtime_error(
-                            "mutation count out of range");
+                            "FWDPP DEBUG: mutation count out of range");
                     }
 #endif
                 if (mutations[i].neutral && mcounts[i] == twoN)
