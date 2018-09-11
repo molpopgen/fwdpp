@@ -1,9 +1,9 @@
-#ifndef __FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP__
-#define __FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP__
+#ifndef FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP
+#define FWDPP_INTERNAL_REC_GAMETE_UPDATER_HPP
 
 #include <algorithm>
 #include <functional>
-#include <cassert>
+
 namespace fwdpp
 {
     namespace fwdpp_internal
