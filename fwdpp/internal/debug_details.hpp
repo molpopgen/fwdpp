@@ -27,7 +27,7 @@ namespace fwdpp
                 if (s != expected_sum)
                     {
                         throw std::runtime_error(
-                            "unexpectd sum of gamete counts");
+                            "FWDPP DEBUG: unexpectd sum of gamete counts");
                     }
             }
 
@@ -52,7 +52,7 @@ namespace fwdpp
             {
                 if (!gamete.n)
                     {
-                        throw std::runtime_error("unexpected extinct gamete");
+                        throw std::runtime_error("FWDPP DEBUG: unexpected extinct gamete");
                     }
             }
 
@@ -72,13 +72,13 @@ namespace fwdpp
                                     comp))
                     {
                         throw std::runtime_error(
-                            "neutral mutation keys not sorted");
+                            "FWDPP DEBUG: neutral mutation keys not sorted");
                     }
                 if (!std::is_sorted(g.smutations.begin(), g.smutations.end(),
                                     comp))
                     {
                         throw std::runtime_error(
-                            "selected mutation keys not sorted");
+                            "FWDPP DEBUG: selected mutation keys not sorted");
                     }
             }
 
@@ -94,12 +94,12 @@ namespace fwdpp
                         if (!mutcounts[k])
                             {
                                 throw std::runtime_error(
-                                    "extinct mutation in extant gamete");
+                                    "FWDPP DEBUG: extinct mutation in extant gamete");
                             }
                         if (mutations[k].neutral != expected_neutrality)
                             {
                                 throw std::runtime_error(
-                                    "mutation neutrality field incorrect");
+                                    "FWDPP DEBUG: mutation neutrality field incorrect");
                             }
                     }
             }
@@ -129,7 +129,7 @@ namespace fwdpp
             {
                 if (!gametes[dip.first].n || !gametes[dip.second].n)
                     {
-                        throw std::runtime_error("gamete count is zero");
+                        throw std::runtime_error("FWDPP DEBUG: gamete count is zero");
                     }
                 gamete_is_sorted(gametes[dip.first], mutations);
                 gamete_is_sorted(gametes[dip.second], mutations);
