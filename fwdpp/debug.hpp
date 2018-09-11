@@ -12,8 +12,9 @@ namespace fwdpp
     namespace debug
     {
         template <typename gcont_t>
-        void validate_sum_gamete_counts(const gcont_t &gametes,
-                                        const uint_t expected_sum)
+        void
+        validate_sum_gamete_counts(const gcont_t &gametes,
+                                   const uint_t expected_sum)
         {
             detail::validate_sum_gamete_counts(gametes, expected_sum);
         }
@@ -26,6 +27,13 @@ namespace fwdpp
          */
         {
             detail::validate_mutation_key_ranges(mutations, beg, end);
+        }
+
+        template <typename gamete_t>
+        void
+        gamete_is_extant(const gamete_t &gamete)
+        {
+            detail::gamete_is_extant(gamete);
         }
 
         template <typename gamete_t, typename mcont_t>

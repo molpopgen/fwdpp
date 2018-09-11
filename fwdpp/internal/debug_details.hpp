@@ -46,6 +46,16 @@ namespace fwdpp
                     }
             }
 
+            template <typename gamete_t>
+            void
+            gamete_is_extant(const gamete_t &gamete)
+            {
+                if (!gamete.n)
+                    {
+                        throw std::runtime_error("unexpected extinct gamete");
+                    }
+            }
+
             template <typename gamete_t, typename mcont_t>
             void
             gamete_is_sorted(const gamete_t &g, const mcont_t &m)
@@ -175,6 +185,12 @@ namespace fwdpp
             {
             }
 
+            template <typename gamete_t>
+            void
+            gamete_is_extant(const gamete_t & /*gamete*/)
+            {
+            }
+
             template <typename gamete_t, typename mcont_t>
             void
             gamete_is_sorted(const gamete_t &, const mcont_t &)
@@ -199,8 +215,8 @@ namespace fwdpp
             {
             }
 #endif
-        }
-    }
-}
+        } // namespace detail
+    }     // namespace debug
+} // namespace fwdpp
 
 #endif
