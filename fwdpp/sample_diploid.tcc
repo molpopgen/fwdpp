@@ -6,8 +6,8 @@
   \brief Definitions of functions for evolving populations of diploids.
 */
 
-#ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
-#define __FWDPP_SAMPLE_DIPLOID_TCC__
+#ifndef FWDPP_SAMPLE_DIPLOID_TCC
+#define FWDPP_SAMPLE_DIPLOID_TCC
 
 #include <fwdpp/debug.hpp>
 #include <fwdpp/mutate_recombine.hpp>

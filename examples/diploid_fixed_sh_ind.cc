@@ -97,6 +97,14 @@ main(int argc, char **argv)
                     fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
                                                              2 * N);
                 }
+            for(std::size_t i=0;i<pop.mcounts.size();++i)
+            {
+                if(pop.mcounts[i])
+                {
+                    std::cout<<pop.mutations[i].s<<' ' << pop.mcounts[i]<<'\n';
+
+                }
+            }
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
             std::vector<std::size_t> random_dips;
