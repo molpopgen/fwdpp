@@ -52,7 +52,8 @@ namespace fwdpp
             {
                 if (!gamete.n)
                     {
-                        throw std::runtime_error("FWDPP DEBUG: unexpected extinct gamete");
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: unexpected extinct gamete");
                     }
             }
 
@@ -94,12 +95,14 @@ namespace fwdpp
                         if (!mutcounts[k])
                             {
                                 throw std::runtime_error(
-                                    "FWDPP DEBUG: extinct mutation in extant gamete");
+                                    "FWDPP DEBUG: extinct mutation in extant "
+                                    "gamete");
                             }
                         if (mutations[k].neutral != expected_neutrality)
                             {
                                 throw std::runtime_error(
-                                    "FWDPP DEBUG: mutation neutrality field incorrect");
+                                    "FWDPP DEBUG: mutation neutrality field "
+                                    "incorrect");
                             }
                     }
             }
@@ -129,7 +132,8 @@ namespace fwdpp
             {
                 if (!gametes[dip.first].n || !gametes[dip.second].n)
                     {
-                        throw std::runtime_error("FWDPP DEBUG: gamete count is zero");
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: gamete count is zero");
                     }
                 gamete_is_sorted(gametes[dip.first], mutations);
                 gamete_is_sorted(gametes[dip.second], mutations);
@@ -168,6 +172,19 @@ namespace fwdpp
             validate_pop_data(const poptype &pop)
             {
                 validate_pop_data(pop, typename poptype::popmodel_t());
+            }
+
+            template <typename mutation_type>
+            void
+            check_mutation_neutrality(const mutation_type &mutation,
+                                      const bool expected_neutrality)
+            {
+                if (mutation.neutral != expected_neutrality)
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: mutation neutrality field "
+                            "incorrect");
+                    }
             }
 #else
             template <typename gcont_t>
@@ -212,6 +229,13 @@ namespace fwdpp
             template <typename poptype>
             void
             validate_pop_data(const poptype & /*pop*/)
+            {
+            }
+
+            template <typename mutation_type>
+            void
+            check_mutation_neutrality(const mutation_type & /*mutation*/,
+                                      const bool /*expected_neutrality*/)
             {
             }
 #endif

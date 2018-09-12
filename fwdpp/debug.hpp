@@ -61,6 +61,14 @@ namespace fwdpp
         {
             detail::validate_pop_data(pop);
         }
+
+        template <typename mutation_type>
+        void
+        check_mutation_neutrality(const mutation_type &mutation,
+                                  const bool expected_neutrality)
+        {
+            detail::check_mutation_neutrality(mutation, expected_neutrality);
+        }
     } // namespace debug
 } // namespace fwdpp
 
