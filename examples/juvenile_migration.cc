@@ -70,6 +70,7 @@
 #include <functional>
 #include <cassert>
 #include <unordered_set>
+#include <fwdpp/debug.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation
@@ -239,7 +240,8 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
                                     mut_recycling_bin, pop.diploids[i],
                                     pop.neutral, pop.selected);
         }
-    assert(check_sum(pop.gametes, 2 * (N1 + N2)));
+    fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
+                                             2 * pop.diploids.size());
 #ifndef NDEBUG
     for (const auto &dip : pop.diploids)
         {
@@ -260,8 +262,7 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
             assert(mc <= 2 * (N1 + N2));
         }
 #endif
-    assert(
-        popdata_sane(pop.diploids, pop.gametes, pop.mutations, pop.mcounts));
+    debug::validate_pop_data(pop);
 
     // Prune fixations from gametes
     fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations, pop.mcounts,
@@ -327,7 +328,8 @@ main(int argc, char **argv)
     double wbar = 1;
     for (generation = 0; generation < ngens; ++generation)
         {
-            assert(fwdpp::check_sum(pop.gametes, 2 * (N1 + N2)));
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
+                                                     2 * (N1 + N2));
 
             // Call our fancy new evolve function
             evolve_two_demes(r.get(), pop, N1, N2, m12, m21,
@@ -335,6 +337,6 @@ main(int argc, char **argv)
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            assert(fwdpp::check_sum(pop.gametes, 2 * N));
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2 * N);
         }
 }

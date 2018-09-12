@@ -8,6 +8,7 @@
 
 #include <exception>
 #include <cmath>
+#include <fwdpp/debug.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>
@@ -81,8 +82,7 @@ simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, 0.005,
-				mmodel,
+                pop.mcounts, 1000, 0.005, mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),
                 fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
@@ -111,15 +111,15 @@ struct multilocus_additive
         using dip_t = mlocuspop_popgenmut_fixture::poptype::dipvector_t::
             value_type::value_type;
         return std::max(
-            0.,
-            1. + std::accumulate(
-                     diploid.begin(), diploid.end(), 0.,
-                     [&gametes, &mutations](const double d, const dip_t &dip) {
-                         return d + fwdpp::additive_diploid()(
-                                        gametes[dip.first],
-                                        gametes[dip.second], mutations)
-                                - 1.;
-                     }));
+            0., 1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
+                                     [&gametes, &mutations](const double d,
+                                                            const dip_t &dip) {
+                                         return d + fwdpp::additive_diploid()(
+                                                        gametes[dip.first],
+                                                        gametes[dip.second],
+                                                        mutations)
+                                                - 1.;
+                                     }));
     }
 };
 
@@ -150,7 +150,7 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
                 {
                     throw std::runtime_error("fitness not finite");
                 }
-            assert(check_sum(pop.gametes, 8000));
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 8000);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2000);

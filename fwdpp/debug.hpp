@@ -1,154 +1,107 @@
-#ifndef __FWDPP_DEBUG_HPP__
-#define __FWDPP_DEBUG_HPP__
+#ifndef FWDPP_DEBUG_HPP
+#define FWDPP_DEBUG_HPP
 
 #include <algorithm>
 #include <numeric>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
+#include "internal/debug_details.hpp"
+
+/*! \namespace fwdpp::debug Debugging routines
+ * In general, the library does not throw exceptions
+ * during the execution of simulation-related algorithms.
+ * Rather, exception handling is limited to sanity-checking
+ * parameters inputs, etc., for object construction and other routines.
+ *
+ * However, it is sometimes useful to perform expensive checks on the
+ * data integrity of a simulated population.  The routines in
+ * fwdpp::debug allow you to do that without affecting the 
+ * performance of code compiled in "release" mode.
+ *
+ * Following the tradition of the C language, compiling with
+ * -DNDEBUG signals that a release-mode build is desired, 
+ * meaning that expensive runtime checks are disables.
+ * 
+ * If that symbol is not defined, then various runtime checks
+ * are enabled, and any failed checks with throw std::runtime_error.
+ * The message field of the error will begin with "FWDPP DEBUG:".
+ *
+ * Functions in namespace fwdpp::debug will be optimized out when
+ * code is compiled with -DNDEBUG, as they evaluate to empty functions.
+ */
 
 namespace fwdpp
 {
-
-    /*! \brief Returns true if the sum of counts in gametes equals twoN, false
-      otherwise
-      Returns true if the sum of counts in gametes equals twoN, false otherwise
-    */
-    template <typename gcont_t>
-    bool
-    check_sum(const gcont_t &gametes, const unsigned twoN)
+    namespace debug
     {
-        static_assert(
-            typename traits::is_gamete<typename gcont_t::value_type>::type(),
-            "gcont_t::value_type must be a valid gamete type");
-        return (std::accumulate(gametes.cbegin(), gametes.cend(), 0u,
-                                [](unsigned &__u,
-                                   const typename gcont_t::value_type &__g) {
-                                    return __u + __g.n;
-                                })
-                == twoN);
-    }
+        template <typename gcont_t>
+        void
+        validate_sum_gamete_counts(const gcont_t &gametes,
+                                   const uint_t expected_sum)
+        /// Throw exception if sum of all gamete counts != \a expected_sum
+        {
+            detail::validate_sum_gamete_counts(gametes, expected_sum);
+        }
 
-    /*! \brief Returns true if the sum of counts in gametes equals twoN, false
-      otherwise
-      Returns true if the sum of counts in gametes equals twoN, false otherwise
-    */
-    template <typename gcont_t>
-    bool
-    check_sum(const gcont_t *gametes, const unsigned twoN)
-    {
-        return check_sum(*gametes, twoN);
-    }
+        template <typename mcont_t, typename iterator>
+        void
+        validate_mutation_key_ranges(const mcont_t &mutations,
+                                     const iterator beg, const iterator end)
+        /*! Throw an exception if any mutation keys are >= mutations.size()
+         */
+        {
+            detail::validate_mutation_key_ranges(mutations, beg, end);
+        }
 
-    template <typename gamete_t, typename mcont_t>
-    bool
-    gamete_is_sorted_n(const gamete_t &g, const mcont_t &m)
-    /*!
-      \brief Check that neutral mutation keys are sorted according to mutation
-      position
-    */
-    {
-        return std::is_sorted(g.mutations.begin(), g.mutations.end(),
-                              [&m](const size_t i, const size_t j) {
-                                  return m[i].pos <= m[j].pos;
-                              });
-    }
+        template <typename gamete_t>
+        void
+        gamete_is_extant(const gamete_t &gamete)
+        /// Throw exception of gamete.n == 0
+        {
+            detail::gamete_is_extant(gamete);
+        }
 
-    template <typename gamete_t, typename mcont_t>
-    bool
-    gamete_is_sorted_s(const gamete_t &g, const mcont_t &m)
-    /*!
-      \brief Check that selected mutation keys are sorted according to mutation
-      position
-    */
-    {
-        return std::is_sorted(g.smutations.begin(), g.smutations.end(),
-                              [&m](const size_t i, const size_t j) {
-                                  return m[i].pos <= m[j].pos;
-                              });
-    }
+        template <typename gamete_t, typename mcont_t>
+        void
+        gamete_is_sorted(const gamete_t &g, const mcont_t &mutations)
+        /*!
+          \brief Check that neutral mutation keys are sorted according to mutation
+          position
+        */
+        {
+            detail::gamete_is_sorted(g, mutations);
+        }
 
-    template <typename gamete_t, typename mcont_t>
-    bool
-    gamete_data_sane(const gamete_t &g, const mcont_t &mutations,
-                     const std::vector<uint_t> &mutcounts)
-    /*
-      \brief Check that "neutral" and "non-neutral" mutations are where we
-      expect them to be.
-     */
-    {
-        for (const auto &i : g.mutations)
-            {
-                if (!mutcounts[i])
-                    return false;
-                if (!mutations[i].neutral)
-                    return false;
-                if (!(g.n <= mutcounts[i]))
-                    return false;
-            }
-        for (const auto &i : g.smutations)
-            {
-                if (!mutcounts[i])
-                    return false;
-                if (mutations[i].neutral)
-                    return false;
-                if (!(g.n <= mutcounts[i]))
-                    return false;
-            }
-        return true;
-    }
+        template <typename gamete_t, typename mcont_t>
+        void
+        gamete_data_valid(const gamete_t &g, const mcont_t &mutations,
+                          const std::vector<uint_t> &mutcounts)
+        /// Throw exception if gamete data are unsorted or if mutation
+        /// key storage is invalid.
+        /// \note Only call this if the gamete is extant!!!!
+        {
+            detail::gamete_data_valid(g, mutations, mutcounts);
+        }
 
-    template <typename dipcont_t, typename gcont_t, typename mcont_t>
-    bool
-    popdata_sane(const dipcont_t &diploids, const gcont_t &gametes,
-                 const mcont_t &mutations,
-                 const std::vector<uint_t> &mutcounts)
-    /*
-      \brief Check that all diploids refer to extant gametes with sane data.
-     */
-    {
-        for (const auto &d : diploids)
-            {
-                if (!gametes[d.first].n)
-                    return false;
-                if (!gametes[d.second].n)
-                    return false;
-                if (!gamete_data_sane(gametes[d.first], mutations, mutcounts))
-                    return false;
-                if (!gamete_data_sane(gametes[d.second], mutations, mutcounts))
-                    return false;
-            }
-        return true;
-    }
+        template <typename poptype>
+        void
+        validate_pop_data(const poptype &pop)
+        /// Throw exception if any in a series of checks on
+        /// the internal state of \a pop fail.
+        /// \note This is an expensive function!
+        {
+            detail::validate_pop_data(pop);
+        }
 
-    template <typename dipcont_t, typename gcont_t, typename mcont_t>
-    bool
-    popdata_sane_multilocus(const dipcont_t &diploids, const gcont_t &gametes,
-                            const mcont_t &mutations,
-                            const std::vector<uint_t> &mutcounts)
-    /*
-      \brief Check that all diploids refer to extant gametes with sane data.
-      \note This is for the case where diploids are equivalent to
-      vector<pair<key,key>>
-     */
-    {
-        for (const auto &d : diploids)
-            {
-                for (const auto &locus : d)
-                    {
-                        if (!gametes[locus.first].n)
-                            return false;
-                        if (!gametes[locus.second].n)
-                            return false;
-                        if (!gamete_data_sane(gametes[locus.first], mutations,
-                                              mutcounts))
-                            return false;
-                        if (!gamete_data_sane(gametes[locus.second], mutations,
-                                              mutcounts))
-                            return false;
-                    }
-            }
-        return true;
-    }
-}
+        template <typename mutation_type>
+        void
+        check_mutation_neutrality(const mutation_type &mutation,
+                                  const bool expected_neutrality)
+        /// Throw exception if mutation.neutral != \a expected_neutrality
+        {
+            detail::check_mutation_neutrality(mutation, expected_neutrality);
+        }
+    } // namespace debug
+} // namespace fwdpp
 
 #endif

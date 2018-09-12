@@ -7,7 +7,6 @@
 #define FWDPP_SUGAR_CHANGE_NEUTRAL_HPP
 
 #include <algorithm>
-#include <cassert>
 #include <exception>
 #include <fwdpp/debug.hpp>
 
@@ -102,7 +101,7 @@ namespace fwdpp
                                     p.mutations, pos, mindex, g.smutations,
                                     g.mutations);
                             }
-                        assert(gamete_data_sane(g, p.mutations, p.mcounts));
+                        debug::gamete_data_valid(g,p.mutations,p.mcounts);
                     }
             }
     }

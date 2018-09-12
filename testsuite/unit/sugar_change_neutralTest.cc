@@ -28,7 +28,8 @@ BOOST_AUTO_TEST_CASE(test_change_neutral_slocuspop)
                         { 0, 1, 0, 2, 2, 0 },
                         // Parameters to pass on to create a new mutation
                         0.1, -0.1, 1, 0);
-    BOOST_REQUIRE_EQUAL(fwdpp::check_sum(pop.gametes, 2000), true);
+    BOOST_REQUIRE_NO_THROW(
+        fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2000));
     BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);

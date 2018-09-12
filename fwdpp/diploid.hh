@@ -13,7 +13,6 @@
 // namespace std
 #include <vector>
 #include <list>
-#include <cassert>
 #include <iterator>
 #include <ctime>
 #include <cmath>

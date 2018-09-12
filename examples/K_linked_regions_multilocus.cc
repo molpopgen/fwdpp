@@ -11,6 +11,7 @@
 #include <vector>
 #include <list>
 #include <sstream>
+#include <fwdpp/debug.hpp>
 // Use mutation model from sugar layer
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sampling_functions.hpp>
@@ -108,12 +109,12 @@ main(int argc, char **argv)
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
                 N, mu.data(), mmodels, recpols, interlocus_rec,
                 no_selection_multi(), pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, K * 2 * pop.diploids.size()));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            assert(popdata_sane_multilocus(pop.diploids, pop.gametes,
-                                           pop.mutations, pop.mcounts));
+            fwdpp::debug::validate_sum_gamete_counts(
+                pop.gametes, K * 2 * pop.diploids.size());
+            fwdpp::debug::validate_pop_data(pop);
 #ifndef NDEBUG
             /*
             Useful block for long-run testing.

@@ -5,7 +5,6 @@
 #ifndef __FWDPP_SUGAR_GSLRNG_T_HPP__
 #define __FWDPP_SUGAR_GSLRNG_T_HPP__
 
-#include <cassert>
 #include <stdexcept>
 //#include <cstdio>// FOR SOME POSIX ONLY FUNCTIONS!
 #include <fwdpp/sugar/gsl/tags.hpp>

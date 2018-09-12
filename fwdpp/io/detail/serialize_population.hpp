@@ -1,6 +1,8 @@
 #ifndef FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 #define FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 
+#include <cstdint>
+#include <stdexcept>
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <fwdpp/io/mutation.hpp>
 #include <fwdpp/io/gamete.hpp>
@@ -133,7 +135,13 @@ namespace fwdpp
                     dipreader;
                 for (auto &dip : pop.diploids)
                     {
-                        assert(dip.size() == nloci);
+                        if (dip.size() != nloci)
+                            {
+                                throw std::runtime_error(
+                                    "serialization error: diploid has "
+                                    "unexpected number of loci");
+                            }
+
                         for (auto &genotype : dip)
                             {
                                 dipreader(buffer, genotype);
@@ -170,7 +178,7 @@ namespace fwdpp
                                                    static_cast<uint_t>(i));
                     }
             }
-        }
-    }
-}
+        } // namespace detail
+    }     // namespace io
+} // namespace fwdpp
 #endif

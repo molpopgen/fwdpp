@@ -97,10 +97,11 @@ main(int argc, char **argv)
                                   pop.mutations, pop.mcounts, N, mu, mmodel,
                                   recmap, fwdpp::multiplicative_diploid(),
                                   pop.neutral, pop.selected);
-            assert(check_sum(pop.gametes, 2*pop.diploids.size()));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes,2*N);
+            fwdpp::debug::validate_pop_data(pop);
         }
 #ifdef HAVE_LIBSEQUENCE
 #endif

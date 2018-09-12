@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <iterator>
 #include <numeric>
+#include <fwdpp/debug.hpp>
+
 /*
  * This header is not meant to be included directly.
  */
@@ -123,7 +125,7 @@ namespace fwdpp
         template <typename mcont_t, typename key_container>
         inline void
         update_pos(const mcont_t &mutations, const key_container &keys,
-                   state_matrix & sm)
+                   state_matrix &sm)
         {
             for (auto &key : keys)
                 {
@@ -227,28 +229,38 @@ namespace fwdpp
                 return locus_index;
             };
 
-            const auto check_invariant_site = [](
-                const std::vector<std::int8_t> &site,
-                const std::size_t offset) {
-                if (std::accumulate(site.begin() + offset, site.end(), 0) == 0)
-                    {
-                        throw std::runtime_error(
-                            "no variation found at site in this sample");
-                    }
-            };
+            const auto check_invariant_site
+                = [](const std::vector<std::int8_t> &site,
+                     const std::size_t offset) {
+                      if (std::accumulate(site.begin() + offset, site.end(), 0)
+                          == 0)
+                          {
+                              throw std::runtime_error(
+                                  "no variation found at site in this sample");
+                          }
+                  };
 
             for (auto &mkey : neutral_keys)
                 {
-                    assert(pop.mutations[mkey.first].neutral);
-                    assert(pop.mcounts[mkey.first]);
+                    debug::check_mutation_neutrality(pop.mutations[mkey.first],
+                                                     true);
+#ifndef NDEBUG
+                    if (!pop.mcounts[mkey.first])
+                        {
+                            throw std::runtime_error(
+                                "extinct mutation encountered");
+                        }
+#endif
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
                     auto current_size = m.neutral.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
-                            assert(pop.gametes[locus.first].n);
-                            assert(pop.gametes[locus.second].n);
+                            fwdpp::debug::gamete_is_extant(
+                                pop.gametes[locus.first]);
+                            fwdpp::debug::gamete_is_extant(
+                                pop.gametes[locus.second]);
                             update_site(pop.gametes[locus.first].mutations,
                                         pop.gametes[locus.second].mutations,
                                         m.neutral.data, mkey, mtype);
@@ -258,16 +270,25 @@ namespace fwdpp
                 }
             for (auto &mkey : selected_keys)
                 {
-                    assert(pop.mcounts[mkey.first]);
-                    assert(!pop.mutations[mkey.first].neutral);
+                    debug::check_mutation_neutrality(pop.mutations[mkey.first],
+                                                     false);
+#ifndef NDEBUG
+                    if (!pop.mcounts[mkey.first])
+                        {
+                            throw std::runtime_error(
+                                "extinct mutation encountered");
+                        }
+#endif
                     //We need to find out what locus this mutation is in
                     auto locus_index = find_locus(mkey.first);
                     auto current_size = m.selected.data.size();
                     for (auto &ind : individuals)
                         {
                             auto locus = pop.diploids[ind][locus_index];
-                            assert(pop.gametes[locus.first].n);
-                            assert(pop.gametes[locus.second].n);
+                            fwdpp::debug::gamete_is_extant(
+                                pop.gametes[locus.first]);
+                            fwdpp::debug::gamete_is_extant(
+                                pop.gametes[locus.second]);
                             update_site(pop.gametes[locus.first].smutations,
                                         pop.gametes[locus.second].smutations,
                                         m.selected.data, mkey, mtype);

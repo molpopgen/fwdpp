@@ -2,7 +2,7 @@
 #define __FWDPP_INTERNAL_MUTATION_HPP__
 
 #include <algorithm>
-#include <cassert>
+
 namespace fwdpp
 {
     namespace fwdpp_internal

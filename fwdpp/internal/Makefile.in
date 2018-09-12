@@ -277,6 +277,7 @@ pkginclude_HEADERS = mutation_internal.hpp \
 	type_traits.hpp \
 	data_matrix_details.hpp \
 	sampling_functions_details.hpp \
+	debug_details.hpp \
 	void_t.hpp
 
 all: all-am

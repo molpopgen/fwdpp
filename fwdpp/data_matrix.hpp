@@ -1,7 +1,6 @@
 #ifndef FWDPP_DATA_MATRIX_HPP_
 #define FWDPP_DATA_MATRIX_HPP_
 
-#include <cassert>
 #include <numeric>
 #include <utility>
 #include <vector>

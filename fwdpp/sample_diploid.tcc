@@ -6,9 +6,10 @@
   \brief Definitions of functions for evolving populations of diploids.
 */
 
-#ifndef __FWDPP_SAMPLE_DIPLOID_TCC__
-#define __FWDPP_SAMPLE_DIPLOID_TCC__
-
+#ifndef FWDPP_SAMPLE_DIPLOID_TCC
+#define FWDPP_SAMPLE_DIPLOID_TCC
+   
+#include <cassert>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/internal/recycling.hpp>
@@ -92,10 +93,19 @@ namespace fwdpp
         */
 
         // test preconditions in debugging mode
-        assert(popdata_sane(diploids, gametes, mutations, mcounts));
-        assert(mcounts.size() == mutations.size());
-        assert(N_curr == diploids.size());
-        assert(mcounts.size() == mutations.size());
+#ifndef NDEBUG
+        if (mcounts.size() != mutations.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: mutation container size must equal "
+                    "mutation count container size");
+            }
+        if (N_curr != diploids.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: N_curr != diploids.size()");
+            }
+#endif
 
         /*
           The mutation and gamete containers contain both extinct and extant
@@ -153,7 +163,13 @@ namespace fwdpp
         wbar /= double(diploids.size());
 #ifndef NDEBUG
         for (const auto &g : gametes)
-            assert(!g.n);
+            {
+                if (g.n > 0)
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: not all gamete counts equal zero");
+                    }
+            }
 #endif
 
         /*
@@ -175,7 +191,6 @@ namespace fwdpp
             {
                 diploids.resize(N_next);
             }
-        assert(diploids.size() == N_next);
 
         // Fill in the next generation!
         for (auto &dip : diploids)
@@ -187,8 +202,6 @@ namespace fwdpp
                 auto p2 = (f == 1. || (f > 0. && gsl_rng_uniform(r) < f))
                               ? p1
                               : gsl_ran_discrete(r, lookup.get());
-                assert(p1 < parents.size());
-                assert(p2 < parents.size());
                 /*
                   These are the gametes from each parent.
                   This is a trivial assignment if keys.
@@ -214,7 +227,6 @@ namespace fwdpp
                     mu, gam_recycling_bin, mut_recycling_bin, dip, neutral,
                     selected);
             }
-        assert(check_sum(gametes, 2 * N_next));
 #ifndef NDEBUG
         for (const auto &dip : diploids)
             {
@@ -254,14 +266,12 @@ namespace fwdpp
           The implementation is in fwdpp/internal/sample_diploid_helpers.hpp
          */
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
-        assert(mcounts.size() == mutations.size());
 #ifndef NDEBUG
         for (const auto &mc : mcounts)
             {
-                assert(mc <= 2 * N_next);
+                if(mc > 2*N_next){throw std::runtime_error("mutation size too large");}
             }
 #endif
-        assert(popdata_sane(diploids, gametes, mutations, mcounts));
 
         /*
           The last thing to do is handle fixations.  In many contexts, we
@@ -291,26 +301,26 @@ namespace fwdpp
 
     // Multi-locus API
     // single deme, N changing
-    template <
-        typename diploid_geno_t, typename gamete_type,
-        typename gamete_cont_type_allocator, typename mutation_type,
-        typename mutation_cont_type_allocator,
-        typename diploid_vector_type_allocator,
-        typename locus_vector_type_allocator,
-        typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container,
-        template <typename, typename> class gamete_cont_type,
-        template <typename, typename> class mutation_cont_type,
-        template <typename, typename> class diploid_vector_type,
-        template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy>
+    template <typename diploid_geno_t, typename gamete_type,
+              typename gamete_cont_type_allocator, typename mutation_type,
+              typename mutation_cont_type_allocator,
+              typename diploid_vector_type_allocator,
+              typename locus_vector_type_allocator,
+              typename diploid_fitness_function,
+              typename mutation_model_container,
+              typename recombination_policy_container,
+              template <typename, typename> class gamete_cont_type,
+              template <typename, typename> class mutation_cont_type,
+              template <typename, typename> class diploid_vector_type,
+              template <typename, typename> class locus_vector_type,
+              typename mutation_removal_policy>
     double
     sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
-        diploid_vector_type<locus_vector_type<diploid_geno_t,
-                                              locus_vector_type_allocator>,
-                            diploid_vector_type_allocator> &diploids,
+        diploid_vector_type<
+            locus_vector_type<diploid_geno_t, locus_vector_type_allocator>,
+            diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N_curr,
@@ -323,9 +333,19 @@ namespace fwdpp
         typename gamete_type::mutation_container &selected, const double &f,
         const mutation_removal_policy &mp)
     {
-        assert(popdata_sane_multilocus(diploids, gametes, mutations, mcounts));
-        assert(mcounts.size() == mutations.size());
-        assert(diploids.size() == N_curr);
+#ifndef NDEBUG
+        if (mcounts.size() != mutations.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: mutation container size must equal "
+                    "mutation count container size");
+            }
+        if (N_curr != diploids.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: N_curr != diploids.size()");
+            }
+#endif
         // Vector of parental fitnesses
         std::vector<double> fitnesses(N_curr);
         double wbar = 0.;
@@ -356,7 +376,13 @@ namespace fwdpp
           If so, this assertion will fail.
         */
         for (const auto &g : gametes)
-            assert(!g.n);
+            {
+                if (g.n > 0)
+                    {
+                        throw std::runtime_error("FWDPP DEBUG: not all gamete "
+                                                 "counts were set to zero");
+                    }
+            }
 #endif
 
         fwdpp_internal::gsl_ran_discrete_t_ptr lookup(
@@ -372,16 +398,13 @@ namespace fwdpp
                 diploids.resize(N_next);
             }
 
-        assert(diploids.size() == N_next);
 
         for (auto &dip : diploids)
             {
                 auto p1 = gsl_ran_discrete(r, lookup.get());
-                assert(p1 < N_curr);
                 auto p2 = (f == 1. || (f > 0. && gsl_rng_uniform(r) < f))
                               ? p1
                               : gsl_ran_discrete(r, lookup.get());
-                assert(p2 < N_curr);
                 dip = fwdpp_internal::multilocus_rec_mut(
                     r, parents[p1], parents[p2], mut_recycling_bin,
                     gamete_recycling_bin, rec_policies, interlocus_rec,
@@ -392,31 +415,30 @@ namespace fwdpp
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2 * N_next,
                                        mp, std::true_type());
-        assert(popdata_sane_multilocus(diploids, gametes, mutations, mcounts));
         return wbar;
     }
 
     // single deme, constant N
-    template <
-        typename diploid_geno_t, typename gamete_type,
-        typename gamete_cont_type_allocator, typename mutation_type,
-        typename mutation_cont_type_allocator,
-        typename diploid_vector_type_allocator,
-        typename locus_vector_type_allocator,
-        typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container,
-        template <typename, typename> class gamete_cont_type,
-        template <typename, typename> class mutation_cont_type,
-        template <typename, typename> class diploid_vector_type,
-        template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy>
+    template <typename diploid_geno_t, typename gamete_type,
+              typename gamete_cont_type_allocator, typename mutation_type,
+              typename mutation_cont_type_allocator,
+              typename diploid_vector_type_allocator,
+              typename locus_vector_type_allocator,
+              typename diploid_fitness_function,
+              typename mutation_model_container,
+              typename recombination_policy_container,
+              template <typename, typename> class gamete_cont_type,
+              template <typename, typename> class mutation_cont_type,
+              template <typename, typename> class diploid_vector_type,
+              template <typename, typename> class locus_vector_type,
+              typename mutation_removal_policy>
     double
     sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
-        diploid_vector_type<locus_vector_type<diploid_geno_t,
-                                              locus_vector_type_allocator>,
-                            diploid_vector_type_allocator> &diploids,
+        diploid_vector_type<
+            locus_vector_type<diploid_geno_t, locus_vector_type_allocator>,
+            diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
@@ -432,6 +454,6 @@ namespace fwdpp
                               mu, mmodel, rec_policies, interlocus_rec, ff,
                               neutral, selected, f, mp);
     }
-}
+} // namespace fwdpp
 
 #endif

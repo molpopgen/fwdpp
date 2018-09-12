@@ -10,8 +10,8 @@
 #include <map>
 #include <type_traits>
 #include <algorithm>
+#include <stdexcept>
 #include <functional>
-#include <cassert>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -30,10 +30,22 @@ namespace fwdpp
         static_assert(
             typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from fwdpp::mutation_base");
-        assert(mcounts.size() == mutations.size());
+#ifndef NDEBUG
+        if (mcounts.size() != mutations.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
+            }
+#endif
         for (std::size_t i = 0; i < mcounts.size(); ++i)
             {
-                assert(mcounts[i] <= twoN);
+#ifndef NDEBUG
+                if (mcounts[i] > twoN)
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: mutation count out of range");
+                    }
+#endif
                 if (mcounts[i] == twoN || !mcounts[i])
                     {
                         auto itr = lookup.equal_range(mutations[i].pos);
@@ -104,10 +116,22 @@ namespace fwdpp
         static_assert(
             typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from fwdpp::mutation_base");
-        assert(mcounts.size() == mutations.size());
+#ifndef NDEBUG
+        if (mcounts.size() != mutations.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
+            }
+#endif
         for (unsigned i = 0; i < mcounts.size(); ++i)
             {
-                assert(mcounts[i] <= twoN);
+#ifndef NDEBUG
+                if (mcounts[i] > twoN)
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: mutation count out of range");
+                    }
+#endif
                 if (mcounts[i] == twoN)
                     {
                         fixations.push_back(mutations[i]);
@@ -165,10 +189,22 @@ namespace fwdpp
             typename traits::is_mutation<typename mcont_t::value_type>::type(),
             "mutation_type must be derived from "
             "fwdpp::mutation_base");
-        assert(mcounts.size() == mutations.size());
+#ifndef NDEBUG
+        if (mcounts.size() != mutations.size())
+            {
+                throw std::runtime_error(
+                    "FWDPP DEBUG: mutation counts size must equal mutation container size");
+            }
+#endif
         for (unsigned i = 0; i < mcounts.size(); ++i)
             {
-                assert(mcounts[i] <= twoN);
+#ifndef NDEBUG
+                if (mcounts[i] > twoN)
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: mutation count out of range");
+                    }
+#endif
                 if (mutations[i].neutral && mcounts[i] == twoN)
                     {
                         fixations.push_back(mutations[i]);
@@ -212,5 +248,5 @@ namespace fwdpp
                     }
             }
     }
-}
+} // namespace fwdpp
 #endif /* _UTIL_HPP_ */

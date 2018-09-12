@@ -6,7 +6,6 @@
 #include <fwdpp/type_traits.hpp>
 #include <cmath>
 #include <stdexcept>
-#include <cassert>
 #include <type_traits>
 #include <algorithm>
 #include <functional>
@@ -187,22 +186,19 @@ namespace fwdpp
                 }
             for (; first1 != last1; ++first1)
                 {
-                    for (;
-                         first2 != last2 && *first1 != *first2
-                         && !(mutations[*first2].pos > mutations[*first1].pos);
+                    for (; first2 != last2 && *first1 != *first2
+                           && mutations[*first2].pos < mutations[*first1].pos;
                          ++first2)
                         // All mutations in this range are Aa
                         {
-                            assert(mutations[*first2].pos
-                                   < mutations[*first1].pos);
                             fpol_het(w, mutations[*first2]);
                         }
-                    if (first2 < last2 && *first1 == *first2) // mutation with
-                        // index first1
-                        // is homozygous
+                    if (first2 < last2
+                        && (*first1 == *first2
+                            || mutations[*first1].pos
+                                   == mutations[*first2].pos))
+                        // mutation with index first1 is homozygous
                         {
-                            assert(mutations[*first2].pos
-                                   == mutations[*first1].pos);
                             fpol_hom(w, mutations[*first1]);
                             ++first2; // increment so that we don't re-process
                             // this site as a het next time 'round

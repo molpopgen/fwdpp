@@ -1,5 +1,5 @@
-#ifndef __FWDPP_SAMPLE_DIPLOID_HPP__
-#define __FWDPP_SAMPLE_DIPLOID_HPP__
+#ifndef FWDPP_SAMPLE_DIPLOID_HPP
+#define FWDPP_SAMPLE_DIPLOID_HPP
 
 #include <utility>
 #include <vector>
