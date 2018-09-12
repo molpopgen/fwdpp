@@ -189,6 +189,7 @@ namespace fwdpp
                 {
                     for (;
                          first2 != last2 && *first1 != *first2
+                         // TODO: change this test to <
                          && !(mutations[*first2].pos > mutations[*first1].pos);
                          ++first2)
                         // All mutations in this range are Aa
