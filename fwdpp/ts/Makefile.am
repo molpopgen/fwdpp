@@ -5,6 +5,7 @@ pkginclude_HEADERS= definitions.hpp \
 			edge.hpp \
 			table_collection.hpp \
 			table_simplifier.hpp \
+			get_parent_ids.hpp \
 			data_matrix_generator.hpp \
 			indexed_edge.hpp \
 			iterate_marginal_trees_details.hpp \
