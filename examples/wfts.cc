@@ -10,6 +10,8 @@
 #include <fwdpp/sugar/slocuspop.hpp>
 #include <boost/program_options.hpp>
 
+#include "evolve_generation_ts.hpp"
+
 namespace po = boost::program_options;
 using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 

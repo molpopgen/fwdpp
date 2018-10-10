@@ -1,15 +1,27 @@
+#include <cstdint>
+#include <algorithm>
+#include <vector>
+#include <tuple>
+#include <gsl/gsl_randist.h>
+
+#include <fwdpp/util.hpp>
+#include <fwdpp/internal/gamete_cleaner.hpp>
+#include <fwdpp/mutate_recombine.hpp>
+#include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/table_simplifier.hpp>
+
 // Wow, that's a lot of stuff needed:
-template <typename breakpoint_function, typename mutation_model,
+template <typename poptype,typename rng_t,typename breakpoint_function, typename mutation_model,
           typename mrecbin, typename grecbin>
 std::int32_t
-generate_offspring(const GSLrng_t& rng, const breakpoint_function& recmodel,
+generate_offspring(const rng_t& rng, const breakpoint_function& recmodel,
                    const mutation_model& mmodel, const double mu,
                    const std::size_t parent, const fwdpp::uint_t parent_g1,
                    const fwdpp::uint_t parent_g2,
                    const std::tuple<std::int32_t, std::int32_t>& parent_nodes,
                    const std::int32_t generation,
-                   const std::int32_t next_index, slocuspop_t& pop,
-                   std::size_t& offspring_gamete, table_collection& tables,
+                   const std::int32_t next_index, poptype & pop,
+                   std::size_t& offspring_gamete, fwdpp::ts::table_collection& tables,
                    mrecbin& mutation_recycling_bin,
                    grecbin& gamete_recycling_bin)
 {
@@ -50,14 +62,16 @@ generate_offspring(const GSLrng_t& rng, const breakpoint_function& recmodel,
     return next_index + 1;
 }
 
-template <typename breakpoint_function, typename mutation_model>
+template <typename rng_t, typename poptype, typename pick_parent1_fxn,
+          typename pick_parent2_fxn, typename breakpoint_function,
+          typename mutation_model>
 void
-evolve_generation(const GSLrng_t& rng, slocuspop_t& pop,
-                  const fwdpp::uint_t N_next, const double mu,
-                  const mutation_model& mmodel,
+evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
+                  const double mu, const pick_parent1_fxn& pick1,
+                  const pick_parent2_fxn& pick2, const mutation_model& mmodel,
                   const breakpoint_function& recmodel,
-                  const fwdpp::uint_t generation, table_collection& tables,
-                  table_simplifier& simplifier,
+                  const fwdpp::uint_t generation, fwdpp::ts::table_collection& tables,
+                  fwdpp::ts::table_simplifier& simplifier,
                   std::int32_t first_parental_index, std::int32_t next_index)
 {
 
@@ -66,15 +80,14 @@ evolve_generation(const GSLrng_t& rng, slocuspop_t& pop,
     auto mutation_recycling_bin
         = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
 
-    auto lookup = w(pop, fwdpp::multiplicative_diploid());
     decltype(pop.diploids) offspring(N_next);
 
     // Generate the offspring
     auto next_index_local = next_index;
     for (auto& dip : offspring)
         {
-            auto p1 = gsl_ran_discrete(rng.get(), lookup.get());
-            auto p2 = gsl_ran_discrete(rng.get(), lookup.get());
+            auto p1 = pick1();
+            auto p2 = pick2(p1);
             auto p1g1 = pop.diploids[p1].first;
             auto p1g2 = pop.diploids[p1].second;
             auto p2g1 = pop.diploids[p2].first;
@@ -144,7 +157,6 @@ evolve_generation(const GSLrng_t& rng, slocuspop_t& pop,
         }
     decltype(pop.mcounts) mc;
     fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations, mc);
-    //assert(pop.mcounts == mc);
     for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
         {
             if (!pop.mutations[i].neutral)
@@ -165,15 +177,4 @@ evolve_generation(const GSLrng_t& rng, slocuspop_t& pop,
     fwdpp::update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
                             pop.mut_lookup, pop.mcounts, generation,
                             2 * pop.diploids.size());
-    if (generation && generation % 100 == 0.0)
-        {
-            auto new_mut_indexes = fwdpp::compact_mutations(pop);
-            // Mutation compacting re-orders the data, so we need to
-            // re-index our mutation table
-            for (auto& mr : tables.mutation_table)
-                {
-                    mr.key = new_mut_indexes[mr.key];
-                }
-        }
 }
-
