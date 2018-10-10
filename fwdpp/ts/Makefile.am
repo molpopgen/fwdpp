@@ -1,0 +1,17 @@
+pkgincludedir=$(prefix)/include/fwdpp/ts
+
+pkginclude_HEADERS= definitions.hpp \
+			node.hpp \
+			edge.hpp \
+			table_collection.hpp \
+			table_simplifier.hpp \
+			data_matrix_generator.hpp \
+			indexed_edge.hpp \
+			iterate_marginal_trees_details.hpp \
+			iterate_marginal_trees.hpp \
+			marginal_tree.hpp \
+			msprime_algo.hpp \
+			mutation_record.hpp \
+			variant_filler.hpp 
+
+
