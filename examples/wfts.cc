@@ -9,6 +9,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
+#include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
@@ -19,6 +20,23 @@
 namespace po = boost::program_options;
 using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
+
+inline fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr
+mean_fitness_zero_out_gametes(poptype &pop)
+{
+    auto N_curr = pop.diploids.size();
+    std::vector<double> fitnesses(N_curr);
+    for (size_t i = 0; i < N_curr; ++i)
+        {
+            fitnesses[i] = fwdpp::multiplicative_diploid(2.0)(
+                pop.diploids[i], pop.gametes, pop.mutations);
+            pop.gametes[pop.diploids[i].first].n = 0;
+            pop.gametes[pop.diploids[i].second].n = 0;
+        }
+    auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+        gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
+    return lookup;
+}
 
 int
 main(int argc, char **argv)
@@ -73,4 +91,10 @@ main(int argc, char **argv)
             recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.0,
             generate_mutation_position, get_selection_coefficient, generate_h);
     };
+
+    // Evolve pop for 20N generations
+    for (; generation <= 20 * N; ++generation)
+        {
+            auto lookup = mean_fitness_zero_out_gametes(pop);
+        }
 }
