@@ -7,6 +7,7 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/mutate_recombine.hpp>
+#include <fwdpp/ts/get_parent_ids.hpp>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 
@@ -101,8 +102,8 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             if (swap2)
                 std::swap(p2g1, p2g2);
 
-            auto p1id = get_parent_ids(first_parental_index, p1, swap1);
-            auto p2id = get_parent_ids(first_parental_index, p2, swap2);
+            auto p1id = fwdpp::ts::get_parent_ids(first_parental_index, p1, swap1);
+            auto p2id = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
 
             assert(std::get<0>(p1id) < 2 * static_cast<std::int32_t>(N_next));
             assert(std::get<1>(p1id) < 2 * static_cast<std::int32_t>(N_next));
