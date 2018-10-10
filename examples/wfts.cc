@@ -6,10 +6,12 @@
 #include <cassert>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
+#include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
 #include <boost/program_options.hpp>
 
 namespace po = boost::program_options;
+using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 
 int
 main(int argc, char** argv)
