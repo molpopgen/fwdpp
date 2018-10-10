@@ -25,5 +25,5 @@ then
     # conda install -c bioconda libsequence
 else
     sudo apt-get update -qq
-    sudo apt-get -f install libboost-test-dev libgsl*-dev
+    sudo apt-get -f install libboost-test-dev libboost-program-options-dev libgsl*-dev
 fi
