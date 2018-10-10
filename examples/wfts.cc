@@ -59,13 +59,18 @@ main(int argc, char **argv)
     const auto recmap
         = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
 
-    fwdpp::extensions::gamma dfe(mean, shape);
-    const auto mmodel = [&pop, &rng, &generation,
-                         dfe](std::queue<std::size_t> &recbin,
-                              poptype::mcont_t &mutations) {
+    const fwdpp::extensions::gamma dfe(mean, shape);
+    const auto get_selection_coefficient
+        = [&rng, dfe]() { return dfe(rng.get()); };
+    const auto generate_mutation_position
+        = [&rng]() { return gsl_rng_uniform(rng.get()); };
+    const auto generate_h = []() { return 1.0; };
+    const auto mmodel = [&pop, &rng, &generation, generate_mutation_position,
+                         get_selection_coefficient,
+                         generate_h](std::queue<std::size_t> &recbin,
+                                     poptype::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.0,
-            [&rng, dfe]() { return gsl_rng_uniform(rng.get()); },
-            [&rng, dfe]() { return dfe(rng.get()); }, []() { return 1.0; });
+            generate_mutation_position, get_selection_coefficient, generate_h);
     };
 }
