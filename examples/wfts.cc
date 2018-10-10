@@ -48,12 +48,12 @@ main(int argc, char **argv)
     // clang-format off
     options.add_options()("help", "Display help")
         ("N", po::value<unsigned>(&N), "Diploid population size")
-        ( "gc", po::value<unsigned>(&gcint),
+        ("gc", po::value<unsigned>(&gcint),
         "Simplification interval. Default is 100 generations.")
         ("theta", po::value<double>(&theta), "4Nu")
         ("rho", po::value<double>(&rho), "4Nr")
-        ( "mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ( "mean", po::value<double>(&mean), "Mean of Gamma distribution of selection coefficients")
+        ("mu", po::value<double>(&mu), "mutation rate to selected variants")
+        ("mean", po::value<double>(&mean), "Mean of Gamma distribution of selection coefficients")
         ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42");
     // clang-format on
