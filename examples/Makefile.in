@@ -91,9 +91,12 @@ noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
 	K_linked_regions_generalized_rec$(EXEEXT) \
 	juvenile_migration$(EXEEXT) custom_mutation$(EXEEXT) \
-	custom_diploid$(EXEEXT) wfts$(EXEEXT)
-@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_1 = -DHAVE_LIBSEQUENCE
-@DEBUG_FALSE@am__append_2 = -DNDEBUG
+	custom_diploid$(EXEEXT) $(am__EXEEXT_1)
+
+# examples based on tree sequences
+@BPO_PRESENT_TRUE@am__append_1 = wfts
+@HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_2 = -DHAVE_LIBSEQUENCE
+@DEBUG_FALSE@am__append_3 = -DNDEBUG
 subdir = examples
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
@@ -105,6 +108,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
+@BPO_PRESENT_TRUE@am__EXEEXT_1 = wfts$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_K_linked_regions_extensions_OBJECTS =  \
 	K_linked_regions_extensions.$(OBJEXT)
@@ -144,7 +148,8 @@ am_juvenile_migration_OBJECTS = juvenile_migration.$(OBJEXT)
 juvenile_migration_OBJECTS = $(am_juvenile_migration_OBJECTS)
 juvenile_migration_LDADD = $(LDADD)
 juvenile_migration_DEPENDENCIES =
-am_wfts_OBJECTS = wfts.$(OBJEXT)
+am__wfts_SOURCES_DIST = wfts.cc
+@BPO_PRESENT_TRUE@am_wfts_OBJECTS = wfts.$(OBJEXT)
 wfts_OBJECTS = $(am_wfts_OBJECTS)
 wfts_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -199,7 +204,7 @@ DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(juvenile_migration_SOURCES) $(wfts_SOURCES)
+	$(juvenile_migration_SOURCES) $(am__wfts_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -332,12 +337,10 @@ K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc c
 juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
-
-# examples based on tree sequences
-wfts_SOURCES = wfts.cc
-wfts_LDADD = -lboost_program_options
-AM_CPPFLAGS = -Wall -W -I. $(am__append_2)
-AM_CXXFLAGS = $(am__append_1)
+@BPO_PRESENT_TRUE@wfts_SOURCES = wfts.cc
+@BPO_PRESENT_TRUE@wfts_LDADD = -lboost_program_options
+AM_CPPFLAGS = -Wall -W -I. $(am__append_3)
+AM_CXXFLAGS = $(am__append_2)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
 LDADD = 
 all: all-am
