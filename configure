@@ -632,8 +632,8 @@ BPO_TEST_LIB_PRESENT_FALSE
 BPO_TEST_LIB_PRESENT_TRUE
 HAVE_LIBSEQ_RUNTIME_FALSE
 HAVE_LIBSEQ_RUNTIME_TRUE
-BPO_TEST_PRESENT_FALSE
-BPO_TEST_PRESENT_TRUE
+BPO_PRESENT_FALSE
+BPO_PRESENT_TRUE
 BUNIT_TEST_PRESENT_FALSE
 BUNIT_TEST_PRESENT_TRUE
 HAVE_SIMDATA_HPP_FALSE
@@ -4967,11 +4967,11 @@ fi
 
 
  if test x$BPROGOPT = x1; then
-  BPO_TEST_PRESENT_TRUE=
-  BPO_TEST_PRESENT_FALSE='#'
+  BPO_PRESENT_TRUE=
+  BPO_PRESENT_FALSE='#'
 else
-  BPO_TEST_PRESENT_TRUE='#'
-  BPO_TEST_PRESENT_FALSE=
+  BPO_PRESENT_TRUE='#'
+  BPO_PRESENT_FALSE=
 fi
 
 
@@ -5434,8 +5434,8 @@ if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"
   as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${BPO_TEST_PRESENT_TRUE}" && test -z "${BPO_TEST_PRESENT_FALSE}"; then
-  as_fn_error $? "conditional \"BPO_TEST_PRESENT\" was never defined.
+if test -z "${BPO_PRESENT_TRUE}" && test -z "${BPO_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BPO_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_LIBSEQ_RUNTIME_TRUE}" && test -z "${HAVE_LIBSEQ_RUNTIME_FALSE}"; then

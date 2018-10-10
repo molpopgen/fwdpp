@@ -66,7 +66,7 @@ AM_CONDITIONAL([BUNIT_TEST_PRESENT], test x$BUNITTEST = x1)
 
 AC_CHECK_HEADER(boost/program_options.hpp, BPROGOPT=1,[echo "boost/program_options.hpp not found. Some example programs will not be compiled."])
 
-AM_CONDITIONAL([BPO_TEST_PRESENT], test x$BPROGOPT = x1)
+AM_CONDITIONAL([BPO_PRESENT], test x$BPROGOPT = x1)
 
 dnl check for C run-time libraries
 dnl AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR([zlib run time library not found])])
