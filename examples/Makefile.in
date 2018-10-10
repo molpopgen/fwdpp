@@ -144,9 +144,8 @@ am_juvenile_migration_OBJECTS = juvenile_migration.$(OBJEXT)
 juvenile_migration_OBJECTS = $(am_juvenile_migration_OBJECTS)
 juvenile_migration_LDADD = $(LDADD)
 juvenile_migration_DEPENDENCIES =
-am_wfts_OBJECTS = custom_diploid.$(OBJEXT)
+am_wfts_OBJECTS = wfts.$(OBJEXT)
 wfts_OBJECTS = $(am_wfts_OBJECTS)
-wfts_LDADD = $(LDADD)
 wfts_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -335,7 +334,8 @@ custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
 
 # examples based on tree sequences
-wfts_SOURCES = custom_diploid.cc common_ind.hpp
+wfts_SOURCES = wfts.cc
+wfts_LDADD = -lboost_program_options
 AM_CPPFLAGS = -Wall -W -I. $(am__append_2)
 AM_CXXFLAGS = $(am__append_1)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
@@ -427,6 +427,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts.Po@am__quote@
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\

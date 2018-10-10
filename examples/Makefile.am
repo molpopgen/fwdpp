@@ -19,7 +19,8 @@ custom_mutation_SOURCES=custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
 
 # examples based on tree sequences
-wfts_SOURCES=custom_diploid.cc common_ind.hpp
+wfts_SOURCES=wfts.cc
+wfts_LDADD=-lboost_program_options
 
 AM_CPPFLAGS=-Wall -W -I.
 
