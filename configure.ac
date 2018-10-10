@@ -64,6 +64,9 @@ AC_CHECK_HEADER(boost/test/unit_test.hpp, BUNITTEST=1,[echo "boost/test/unit_tes
 
 AM_CONDITIONAL([BUNIT_TEST_PRESENT], test x$BUNITTEST = x1)
 
+AC_CHECK_HEADER(boost/program_options.hpp, BPROGOPT=1,[echo "boost/program_options.hpp not found. Some example programs will not be compiled."])
+
+AM_CONDITIONAL([BPO_TEST_PRESENT], test x$BPROGOPT = x1)
 
 dnl check for C run-time libraries
 dnl AC_CHECK_LIB([z],gzungetc,,[AC_MSG_ERROR([zlib run time library not found])])
@@ -87,7 +90,10 @@ AC_LANG_SAVE
 dnl	  AC_CHECK_LIB(boost_unit_test_framework,main,BUNITTESTLIB=1,
 dnl                   [AC_MSG_WARN([boost unit testing framework not found. Test suite will not be compiled.])])
 	  AM_CONDITIONAL([HAVE_LIBSEQ_RUNTIME], test x$HAVELIBSEQ = x1)
-dnl	  AM_CONDITIONAL([BUNIT_TEST_LIB_PRESENT], test x$BUNITTESTLIB = x1)
+      AC_CHECK_LIB(boost_program_options,main,HAVEBPOLIB=1,[AC_MSG_WARN([boost_program_options runtime library does not
+                                                            seem to be here.  Some example programs will not be
+                                                            compiled])])
+	  AM_CONDITIONAL([BPO_TEST_LIB_PRESENT], test x$HAVEBPOLIB = x1)
 AC_LANG_RESTORE
 
 dnl AC_CONFIG_HEADER(config.h)

@@ -628,8 +628,12 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+BPO_TEST_LIB_PRESENT_FALSE
+BPO_TEST_LIB_PRESENT_TRUE
 HAVE_LIBSEQ_RUNTIME_FALSE
 HAVE_LIBSEQ_RUNTIME_TRUE
+BPO_TEST_PRESENT_FALSE
+BPO_TEST_PRESENT_TRUE
 BUNIT_TEST_PRESENT_FALSE
 BUNIT_TEST_PRESENT_TRUE
 HAVE_SIMDATA_HPP_FALSE
@@ -4953,6 +4957,23 @@ else
 fi
 
 
+ac_fn_cxx_check_header_mongrel "$LINENO" "boost/program_options.hpp" "ac_cv_header_boost_program_options_hpp" "$ac_includes_default"
+if test "x$ac_cv_header_boost_program_options_hpp" = xyes; then :
+  BPROGOPT=1
+else
+  echo "boost/program_options.hpp not found. Some example programs will not be compiled."
+fi
+
+
+
+ if test x$BPROGOPT = x1; then
+  BPO_TEST_PRESENT_TRUE=
+  BPO_TEST_PRESENT_FALSE='#'
+else
+  BPO_TEST_PRESENT_TRUE='#'
+  BPO_TEST_PRESENT_FALSE=
+fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for cblas_dgemm in -lgslcblas" >&5
 $as_echo_n "checking for cblas_dgemm in -lgslcblas... " >&6; }
@@ -5203,6 +5224,55 @@ else
   HAVE_LIBSEQ_RUNTIME_FALSE=
 fi
 
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_program_options" >&5
+$as_echo_n "checking for main in -lboost_program_options... " >&6; }
+if ${ac_cv_lib_boost_program_options_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_program_options  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_boost_program_options_main=yes
+else
+  ac_cv_lib_boost_program_options_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_program_options_main" >&5
+$as_echo "$ac_cv_lib_boost_program_options_main" >&6; }
+if test "x$ac_cv_lib_boost_program_options_main" = xyes; then :
+  HAVEBPOLIB=1
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: boost_program_options runtime library does not
+                                                            seem to be here.  Some example programs will not be
+                                                            compiled" >&5
+$as_echo "$as_me: WARNING: boost_program_options runtime library does not
+                                                            seem to be here.  Some example programs will not be
+                                                            compiled" >&2;}
+fi
+
+	   if test x$HAVEBPOLIB = x1; then
+  BPO_TEST_LIB_PRESENT_TRUE=
+  BPO_TEST_LIB_PRESENT_FALSE='#'
+else
+  BPO_TEST_LIB_PRESENT_TRUE='#'
+  BPO_TEST_LIB_PRESENT_FALSE=
+fi
+
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -5364,8 +5434,16 @@ if test -z "${BUNIT_TEST_PRESENT_TRUE}" && test -z "${BUNIT_TEST_PRESENT_FALSE}"
   as_fn_error $? "conditional \"BUNIT_TEST_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
+if test -z "${BPO_TEST_PRESENT_TRUE}" && test -z "${BPO_TEST_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BPO_TEST_PRESENT\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 if test -z "${HAVE_LIBSEQ_RUNTIME_TRUE}" && test -z "${HAVE_LIBSEQ_RUNTIME_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_LIBSEQ_RUNTIME\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${BPO_TEST_LIB_PRESENT_TRUE}" && test -z "${BPO_TEST_LIB_PRESENT_FALSE}"; then
+  as_fn_error $? "conditional \"BPO_TEST_LIB_PRESENT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
