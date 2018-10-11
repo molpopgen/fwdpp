@@ -53,7 +53,7 @@ main(int argc, char **argv)
         ("theta", po::value<double>(&theta), "4Nu")
         ("rho", po::value<double>(&rho), "4Nr")
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ("mean", po::value<double>(&mean), "Mean of Gamma distribution of selection coefficients")
+        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients")
         ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42");
     // clang-format on
@@ -78,8 +78,9 @@ main(int argc, char **argv)
         = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
 
     const fwdpp::extensions::gamma dfe(mean, shape);
-    const auto get_selection_coefficient
-        = [&rng, dfe]() { return dfe(rng.get()); };
+    const auto get_selection_coefficient = [&rng, dfe, N]() {
+        return dfe(rng.get()) / static_cast<double>(2 * N);
+    };
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = []() { return 1.0; };
@@ -88,8 +89,10 @@ main(int argc, char **argv)
                          generate_h](std::queue<std::size_t> &recbin,
                                      poptype::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.0,
-            generate_mutation_position, get_selection_coefficient, generate_h);
+            recbin, mutations, rng.get(), pop.mut_lookup, generation,
+            // 1.0 signifies 100% of mutations will be selected
+            1.0, generate_mutation_position, get_selection_coefficient,
+            generate_h);
     };
 
     // Evolve pop for 20N generations
