@@ -44,6 +44,22 @@ mean_fitness_zero_out_gametes(poptype &pop)
     return lookup;
 }
 
+std::queue<std::size_t>
+make_mut_queue(const std::vector<std::uint32_t> &mcounts,
+               const std::vector<std::uint32_t> &counts_from_preserved_nodes)
+/// TODO: put this in library!
+{
+    std::queue<std::size_t> mutation_recycling_bin;
+    for (std::size_t i = 0; i < mcounts.size(); ++i)
+        {
+            if (mcounts[i] + counts_from_preserved_nodes[i] == 0)
+                {
+                    mutation_recycling_bin.push(i);
+                }
+        }
+    return mutation_recycling_bin;
+}
+
 template <typename gcont_t, typename mcont_t,
           typename mutation_count_container>
 void
@@ -62,27 +78,22 @@ gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
         }
     if (fixations_exist)
         {
+            auto removal_criteria = [&mcounts, &mcounts_from_preserved_nodes,
+                                     twoN](const fwdpp::uint_t key) {
+                return mcounts[key] == twoN
+                       && mcounts_from_preserved_nodes[key] == 0;
+            };
             for (auto &g : gametes)
                 {
                     if (g.n)
                         {
-                            auto itr = std::remove_if(
-                                g.mutations.begin(), g.mutations.end(),
-                                [&mcounts, &mcounts_from_preserved_nodes,
-                                 twoN](const fwdpp::uint_t &key) {
-                                    return mcounts[key] == twoN
-                                           && mcounts_from_preserved_nodes[key]
-                                                  == 0;
-                                });
+                            auto itr = std::remove_if(g.mutations.begin(),
+                                                      g.mutations.end(),
+                                                      removal_criteria);
                             g.mutations.erase(itr, g.mutations.end());
-                            itr = std::remove_if(
-                                g.smutations.begin(), g.smutations.end(),
-                                [&mcounts, &mcounts_from_preserved_nodes,
-                                 twoN](const fwdpp::uint_t &key) {
-                                    return mcounts[key] == twoN
-                                           && mcounts_from_preserved_nodes[key]
-                                                  == 0;
-                                });
+                            itr = std::remove_if(g.smutations.begin(),
+                                                 g.smutations.end(),
+                                                 removal_criteria);
                             g.smutations.erase(itr, g.smutations.end());
                         }
                 }
@@ -152,6 +163,10 @@ simplify_tables(poptype &pop,
         {
             s = idmap[s];
         }
+    for (auto &s : tables.preserved_nodes)
+        {
+            assert(idmap[s] != 1);
+        }
     tables.count_mutations(pop.mutations, samples, pop.mcounts,
                            mcounts_from_preserved_nodes);
     // TODO: the following steps all need to be updated
@@ -179,6 +194,8 @@ main(int argc, char **argv)
     fwdpp::uint_t N, gcint = 100;
     double theta, rho, mean, shape, mu;
     unsigned seed = 42;
+    int ancient_sampling_interval = -1;
+    int ancient_sample_size = -1;
     po::options_description options("Usage");
     // clang-format off
     options.add_options()("help", "Display help")
@@ -190,11 +207,17 @@ main(int argc, char **argv)
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
         ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients")
         ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients")
-        ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42");
+        ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
+        ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
+         "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
+        ("ansam", po::value<int>(&ancient_sample_size),
+         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used");
     // clang-format on
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, options), vm);
     po::notify(vm);
+
+    // TODO: need parameter validation
 
     if (vm.count("help"))
         {
@@ -236,6 +259,14 @@ main(int argc, char **argv)
     bool simplified = false;
     std::queue<std::size_t> mutation_recycling_bin;
     std::vector<fwdpp::uint_t> mcounts_from_preserved_nodes;
+    std::vector<std::size_t> individual_labels(N);
+    std::iota(individual_labels.begin(), individual_labels.end(), 0);
+    std::vector<std::size_t> individuals;
+    if (ancient_sample_size > 0)
+        {
+            individuals.resize(ancient_sample_size);
+        }
+
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
@@ -253,8 +284,8 @@ main(int argc, char **argv)
                     simplify_tables(pop, mcounts_from_preserved_nodes, tables,
                                     simplifier, tables.num_nodes() - 2 * N,
                                     2 * N, generation);
-                    mutation_recycling_bin
-                        = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
+                    mutation_recycling_bin = make_mut_queue(
+                        pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
@@ -266,6 +297,46 @@ main(int argc, char **argv)
                     first_parental_index = next_index;
                     next_index += 2 * N;
                     mutation_recycling_bin = {};
+                }
+            if (ancient_sampling_interval > 0
+                && generation % ancient_sampling_interval == 0.0
+                && generation < 20 * N)
+                {
+                    gsl_ran_choose(
+                        rng.get(), individuals.data(), individuals.size(),
+                        individual_labels.data(), individual_labels.size(),
+                        sizeof(std::size_t));
+                    for (auto i : individuals)
+                        {
+                            auto x = fwdpp::ts::get_parent_ids(
+                                first_parental_index, i, 0);
+                            assert(x.first >= first_parental_index);
+                            assert(x.second >= first_parental_index);
+                            assert(x.first < tables.num_nodes());
+                            assert(x.second < tables.num_nodes());
+                            if (tables.node_table[x.first].generation
+                                != generation)
+                                {
+                                    std::cout << tables.node_table[x.first]
+                                                     .generation
+                                              << ' ' << generation
+                                              << std::endl;
+                                }
+                            assert(tables.node_table[x.first].generation
+                                   == generation);
+                            assert(tables.node_table[x.second].generation
+                                   == generation);
+                            assert(std::find(tables.preserved_nodes.begin(),
+                                             tables.preserved_nodes.end(),
+                                             x.first)
+                                   == tables.preserved_nodes.end());
+                            assert(std::find(tables.preserved_nodes.begin(),
+                                             tables.preserved_nodes.end(),
+                                             x.second)
+                                   == tables.preserved_nodes.end());
+                            tables.preserved_nodes.push_back(x.first);
+                            tables.preserved_nodes.push_back(x.second);
+                        }
                 }
         }
     if (!simplified)
