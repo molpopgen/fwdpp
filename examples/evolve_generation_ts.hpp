@@ -41,21 +41,10 @@ generate_offspring(
                                 [&pop](const fwdpp::uint_t key) {
                                     return pop.mutations[key].neutral == true;
                                 });
-    //if (!std::is_sorted(end_of_neutral, new_mutations.end(),
-    //                    [&pop](const std::size_t a, const std::size_t b) {
-    //                        return pop.mutations[a].pos < pop.mutations[b].pos;
-    //                    }))
-    //    {
-    //        throw std::runtime_error("bad");
-    //    }
     offspring_gamete = fwdpp::mutate_recombine(
         decltype(new_mutations)(end_of_neutral, new_mutations.end()),
         breakpoints, parent_g1, parent_g2, pop.gametes, pop.mutations,
         gamete_recycling_bin, pop.neutral, pop.selected);
-    //if (!new_mutations.empty() || !breakpoints.empty())
-    //    {
-    //        assert(offspring_gamete != parent_g1);
-    //    }
     tables.add_offspring_data(next_index, breakpoints, new_mutations,
                               parent_nodes, generation);
     return next_index + 1;
