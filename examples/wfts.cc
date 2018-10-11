@@ -110,5 +110,21 @@ main(int argc, char **argv)
             evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel, recmap,
                               generation, tables, simplifier,
                               first_parental_index, next_index);
+            if (generation % gcint == 0.0)
+                {
+                    tables.sort_tables(pop.mutations);
+                    std::vector<std::int32_t> samples(2 * pop.diploids.size());
+                    std::iota(samples.begin(), samples.end(),
+                              tables.num_nodes() - 2 * pop.diploids.size());
+                    auto idmap
+                        = simplifier.simplify(tables, samples, pop.mutations);
+                    tables.build_indexes();
+                    for (auto &s : samples)
+                        {
+                            s = idmap[s];
+                        }
+                    tables.count_mutations(pop.mutations, samples,
+                                           pop.mcounts);
+                }
         }
 }

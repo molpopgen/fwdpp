@@ -12,19 +12,17 @@
 #include <fwdpp/ts/table_simplifier.hpp>
 
 // Wow, that's a lot of stuff needed:
-template <typename poptype,typename rng_t,typename breakpoint_function, typename mutation_model,
-          typename mrecbin, typename grecbin>
+template <typename poptype, typename rng_t, typename breakpoint_function,
+          typename mutation_model, typename mrecbin, typename grecbin>
 std::int32_t
-generate_offspring(const rng_t& rng, const breakpoint_function& recmodel,
-                   const mutation_model& mmodel, const double mu,
-                   const std::size_t parent, const fwdpp::uint_t parent_g1,
-                   const fwdpp::uint_t parent_g2,
-                   const std::tuple<std::int32_t, std::int32_t>& parent_nodes,
-                   const std::int32_t generation,
-                   const std::int32_t next_index, poptype & pop,
-                   std::size_t& offspring_gamete, fwdpp::ts::table_collection& tables,
-                   mrecbin& mutation_recycling_bin,
-                   grecbin& gamete_recycling_bin)
+generate_offspring(
+    const rng_t& rng, const breakpoint_function& recmodel,
+    const mutation_model& mmodel, const double mu, const std::size_t parent,
+    const fwdpp::uint_t parent_g1, const fwdpp::uint_t parent_g2,
+    const std::tuple<std::int32_t, std::int32_t>& parent_nodes,
+    const std::int32_t generation, const std::int32_t next_index, poptype& pop,
+    std::size_t& offspring_gamete, fwdpp::ts::table_collection& tables,
+    mrecbin& mutation_recycling_bin, grecbin& gamete_recycling_bin)
 {
     auto breakpoints = recmodel();
     auto new_mutations = fwdpp::generate_new_mutations(
@@ -72,7 +70,8 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                   const double mu, const pick_parent1_fxn& pick1,
                   const pick_parent2_fxn& pick2, const mutation_model& mmodel,
                   const breakpoint_function& recmodel,
-                  const fwdpp::uint_t generation, fwdpp::ts::table_collection& tables,
+                  const fwdpp::uint_t generation,
+                  fwdpp::ts::table_collection& tables,
                   fwdpp::ts::table_simplifier& simplifier,
                   std::int32_t first_parental_index, std::int32_t next_index)
 {
@@ -103,8 +102,10 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             if (swap2)
                 std::swap(p2g1, p2g2);
 
-            auto p1id = fwdpp::ts::get_parent_ids(first_parental_index, p1, swap1);
-            auto p2id = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
+            auto p1id
+                = fwdpp::ts::get_parent_ids(first_parental_index, p1, swap1);
+            auto p2id
+                = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
 
             assert(std::get<0>(p1id) < 2 * static_cast<std::int32_t>(N_next));
             assert(std::get<1>(p1id) < 2 * static_cast<std::int32_t>(N_next));
@@ -126,17 +127,6 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
            == next_index + 2 * static_cast<std::int32_t>(N_next));
     // This is constant-time
     pop.diploids.swap(offspring);
-    tables.sort_tables(pop.mutations);
-    std::vector<std::int32_t> samples(2 * pop.diploids.size());
-    std::iota(samples.begin(), samples.end(),
-              tables.num_nodes() - 2 * pop.diploids.size());
-    auto idmap = simplifier.simplify(tables, samples, pop.mutations);
-    tables.build_indexes();
-    for (auto& s : samples)
-        {
-            s = idmap[s];
-        }
-    tables.count_mutations(pop.mutations, samples, pop.mcounts);
 #ifndef NDEBUG
     std::vector<std::size_t> keys;
     for (auto& mr : tables.mutation_table)
