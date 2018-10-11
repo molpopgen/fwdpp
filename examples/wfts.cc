@@ -1,4 +1,11 @@
-/*! \include wfts.cet
+/*! \include wfts.cc
+ * Wright-Fisher simulation with tree sequences.
+ *
+ * See the following paper for background and motivation:
+ * Kelleher, Jerome, Kevin Thornton, Jaime Ashander, and Peter Ralph. 2018.
+ * “Efficient Pedigree Recording for Fast Population Genetics Simulation.”
+ * bioRxiv. https://doi.org/10.1101/248500.
+ *
  */
 
 #include <cstdio>
