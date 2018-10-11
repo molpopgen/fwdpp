@@ -1,3 +1,6 @@
+#ifndef FWDPP_EXAMPLES_EVOLVE_GENERATION_TS
+#define FWDPP_EXAMPLES_EVOLVE_GENERATION_TS
+
 #include <cstdint>
 #include <algorithm>
 #include <vector>
@@ -114,3 +117,5 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
     // This is constant-time
     pop.diploids.swap(offspring);
 }
+
+#endif
