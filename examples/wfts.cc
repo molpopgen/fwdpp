@@ -30,12 +30,83 @@ mean_fitness_zero_out_gametes(poptype &pop)
         {
             fitnesses[i] = fwdpp::multiplicative_diploid(2.0)(
                 pop.diploids[i], pop.gametes, pop.mutations);
-            pop.gametes[pop.diploids[i].first].n = 0;
-            pop.gametes[pop.diploids[i].second].n = 0;
         }
     auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
         gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
     return lookup;
+}
+
+template <typename poptype>
+void
+confirm_mutation_counts(poptype &pop,
+                        const fwdpp::ts::table_collection &tables,
+                        const unsigned generation)
+{
+#ifndef NDEBUG
+    std::vector<std::size_t> keys;
+    for (auto &mr : tables.mutation_table)
+        {
+            keys.push_back(mr.key);
+        }
+    std::sort(keys.begin(), keys.end());
+    auto u = std::unique(keys.begin(), keys.end());
+    ;
+    if (u != keys.end())
+        {
+            std::cout << "redundant keys " << generation << '\n';
+        }
+
+    for (auto &mr : tables.mutation_table)
+        {
+            assert(mr.node != fwdpp::ts::TS_NULL_NODE);
+            assert(tables.node_table[mr.node].generation
+                   >= pop.mutations[mr.key].g);
+        }
+    decltype(pop.mcounts) mc;
+    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations, mc);
+    for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
+        {
+            if (!pop.mutations[i].neutral)
+                {
+                    assert(pop.mcounts[i] == mc[i]);
+                }
+        }
+#endif
+}
+
+template <typename poptype>
+void
+simplify_tables(poptype &pop, fwdpp::ts::table_collection &tables,
+                fwdpp::ts::table_simplifier &simplifier,
+                const fwdpp::ts::TS_NODE_INT first_sample_node,
+                const std::size_t num_samples, const unsigned generation)
+{
+    tables.sort_tables(pop.mutations);
+    std::vector<std::int32_t> samples(num_samples);
+    std::iota(samples.begin(), samples.end(), first_sample_node);
+    auto idmap = simplifier.simplify(tables, samples, pop.mutations);
+    tables.build_indexes();
+    for (auto &s : samples)
+        {
+            s = idmap[s];
+        }
+    tables.count_mutations(pop.mutations, samples, pop.mcounts);
+    // TODO: the following steps all need to be updated
+    // to deal with mutation counts due to preserved nodes.
+    tables.mutation_table.erase(
+        std::remove_if(
+            tables.mutation_table.begin(), tables.mutation_table.end(),
+            [&pop](const fwdpp::ts::mutation_record &mr) {
+                return pop.mcounts[mr.key] == 2 * pop.diploids.size();
+            }),
+        tables.mutation_table.end());
+    fwdpp::fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations,
+                                          pop.mcounts, 2 * pop.diploids.size(),
+                                          std::true_type());
+    fwdpp::update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
+                            pop.mut_lookup, pop.mcounts, generation,
+                            2 * pop.diploids.size());
+    confirm_mutation_counts(pop, tables, generation);
 }
 
 int
@@ -98,7 +169,7 @@ main(int argc, char **argv)
     // Evolve pop for 20N generations
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
-    unsigned last_generation_simplified = 0;
+    bool simplified = false;
     std::queue<std::size_t> mutation_recycling_bin;
     for (; generation <= 20 * N; ++generation)
         {
@@ -111,41 +182,31 @@ main(int argc, char **argv)
             };
             evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel,
                               mutation_recycling_bin, recmap, generation,
-                              tables, first_parental_index,
-                              next_index);
+                              tables, first_parental_index, next_index);
             if (generation % gcint == 0.0)
                 {
-                    tables.sort_tables(pop.mutations);
-                    std::vector<std::int32_t> samples(2 * pop.diploids.size());
-                    std::iota(samples.begin(), samples.end(),
-                              tables.num_nodes() - 2 * pop.diploids.size());
-                    auto idmap
-                        = simplifier.simplify(tables, samples, pop.mutations);
-                    tables.build_indexes();
-                    for (auto &s : samples)
-                        {
-                            s = idmap[s];
-                        }
-                    tables.count_mutations(pop.mutations, samples,
-                                           pop.mcounts);
-                    // TODO: the following steps all need to be updated
-                    // to deal with mutation counts due to preserved nodes.
-                    tables.mutation_table.erase(
-                        std::remove_if(
-                            tables.mutation_table.begin(),
-                            tables.mutation_table.end(),
-                            [&pop](const fwdpp::ts::mutation_record &mr) {
-                                return pop.mcounts[mr.key]
-                                       == 2 * pop.diploids.size();
-                            }),
-                        tables.mutation_table.end());
-                    fwdpp::fwdpp_internal::gamete_cleaner(
-                        pop.gametes, pop.mutations, pop.mcounts, 2 * N,
-                        std::true_type());
-                    fwdpp::update_mutations(pop.mutations, pop.fixations,
-                                            pop.fixation_times, pop.mut_lookup,
-                                            pop.mcounts, generation, 2 * N);
-                    last_generation_simplified = generation;
+                    simplify_tables(pop, tables, simplifier,
+                                    tables.num_nodes() - 2 * N, 2 * N,
+                                    generation);
+                    mutation_recycling_bin
+                        = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
+                    simplified = true;
+                    next_index = tables.num_nodes();
+                    first_parental_index = 0;
+                    confirm_mutation_counts(pop, tables, generation);
                 }
+            else
+                {
+                    simplified = false;
+                    first_parental_index = next_index;
+                    next_index += 2 * N;
+                    mutation_recycling_bin = {};
+                }
+        }
+    if (!simplified)
+        {
+            simplify_tables(pop, tables, simplifier,
+                            tables.num_nodes() - 2 * N, 2 * N, generation);
+            confirm_mutation_counts(pop, tables, generation);
         }
 }
