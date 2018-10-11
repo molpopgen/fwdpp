@@ -63,6 +63,7 @@ generate_offspring(const rng_t& rng, const breakpoint_function& recmodel,
     return next_index + 1;
 }
 
+//TODO: need to track contribution to ancestral mutation counts!
 template <typename rng_t, typename poptype, typename pick_parent1_fxn,
           typename pick_parent2_fxn, typename breakpoint_function,
           typename mutation_model>
@@ -166,6 +167,8 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                 }
         }
 #endif
+    // TODO: the following block all needs to be updated
+    // to deal with mutation counts due to preserved nodes.
     tables.mutation_table.erase(
         std::remove_if(
             tables.mutation_table.begin(), tables.mutation_table.end(),
