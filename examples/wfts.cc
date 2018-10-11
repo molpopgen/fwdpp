@@ -96,5 +96,11 @@ main(int argc, char **argv)
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
+            auto pick1 = [&lookup, &rng]() {
+                return gsl_ran_discrete(rng.get(), lookup.get());
+            };
+            auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
+                return gsl_ran_discrete(rng.get(), lookup.get());
+            };
         }
 }
