@@ -67,6 +67,10 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
 
     auto gamete_recycling_bin
         = fwdpp::fwdpp_internal::make_gamete_queue(pop.gametes);
+    for(auto & dip:pop.diploids)
+    {
+        pop.gametes[dip.first].n=pop.gametes[dip.second].n=0;
+    }
 
     decltype(pop.diploids) offspring(N_next);
 
@@ -94,11 +98,6 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             auto p2id
                 = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
 
-            assert(std::get<0>(p1id) < 2 * static_cast<std::int32_t>(N_next));
-            assert(std::get<1>(p1id) < 2 * static_cast<std::int32_t>(N_next));
-            assert(std::get<0>(p2id) < 2 * static_cast<std::int32_t>(N_next));
-            assert(std::get<1>(p2id) < 2 * static_cast<std::int32_t>(N_next));
-
             next_index_local = generate_offspring(
                 rng, recmodel, mmodel, mu, p1, p1g1, p1g2, p1id, generation,
                 next_index_local, pop, dip.first, tables,
@@ -114,34 +113,4 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
            == next_index + 2 * static_cast<std::int32_t>(N_next));
     // This is constant-time
     pop.diploids.swap(offspring);
-#ifndef NDEBUG
-    std::vector<std::size_t> keys;
-    for (auto& mr : tables.mutation_table)
-        {
-            keys.push_back(mr.key);
-        }
-    std::sort(keys.begin(), keys.end());
-    auto u = std::unique(keys.begin(), keys.end());
-    ;
-    if (u != keys.end())
-        {
-            std::cout << "redundant keys " << generation << '\n';
-        }
-
-    for (auto& mr : tables.mutation_table)
-        {
-            assert(mr.node != fwdpp::ts::TS_NULL_NODE);
-            assert(tables.node_table[mr.node].generation
-                   >= pop.mutations[mr.key].g);
-        }
-    decltype(pop.mcounts) mc;
-    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations, mc);
-    for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
-        {
-            if (!pop.mutations[i].neutral)
-                {
-                    assert(pop.mcounts[i] == mc[i]);
-                }
-        }
-#endif
 }
