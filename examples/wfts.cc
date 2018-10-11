@@ -93,8 +93,8 @@ main(int argc, char **argv)
     };
 
     // Evolve pop for 20N generations
-    std::int32_t first_parental_index = 0,
-                 next_index = 2 * pop.diploids.size();
+    fwdpp::ts::TS_NODE_INT first_parental_index = 0,
+                           next_index = 2 * pop.diploids.size();
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
