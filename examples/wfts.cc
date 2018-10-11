@@ -99,6 +99,7 @@ main(int argc, char **argv)
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
     unsigned last_generation_simplified = 0;
+    std::queue<std::size_t> mutation_recycling_bin;
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
@@ -108,9 +109,10 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel, recmap,
-                              generation, tables, simplifier,
-                              first_parental_index, next_index);
+            evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel,
+                              mutation_recycling_bin, recmap, generation,
+                              tables, simplifier, first_parental_index,
+                              next_index);
             if (generation % gcint == 0.0)
                 {
                     tables.sort_tables(pop.mutations);
@@ -142,8 +144,7 @@ main(int argc, char **argv)
                         std::true_type());
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
-                                            pop.mcounts, generation,
-                                            2 * N);
+                                            pop.mcounts, generation, 2 * N);
                     last_generation_simplified = generation;
                 }
         }

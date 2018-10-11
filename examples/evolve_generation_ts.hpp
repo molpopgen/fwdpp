@@ -58,6 +58,7 @@ void
 evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                   const double mu, const pick_parent1_fxn& pick1,
                   const pick_parent2_fxn& pick2, const mutation_model& mmodel,
+                  std::queue<std::size_t>& mutation_recycling_bin,
                   const breakpoint_function& recmodel,
                   const fwdpp::uint_t generation,
                   fwdpp::ts::table_collection& tables,
@@ -67,8 +68,6 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
 
     auto gamete_recycling_bin
         = fwdpp::fwdpp_internal::make_gamete_queue(pop.gametes);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
 
     decltype(pop.diploids) offspring(N_next);
 
