@@ -98,6 +98,7 @@ main(int argc, char **argv)
     // Evolve pop for 20N generations
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
+    unsigned last_generation_simplified = 0;
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
@@ -143,6 +144,7 @@ main(int argc, char **argv)
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation,
                                             2 * N);
+                    last_generation_simplified = generation;
                 }
         }
 }
