@@ -10,6 +10,8 @@
 
 #include <cstdio>
 #include <iostream>
+#include <algorithm>
+#include <numeric>
 #include <cassert>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
@@ -146,7 +148,7 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
 }
 
 template <typename poptype>
-void
+std::vector<fwdpp::ts::TS_NODE_INT>
 simplify_tables(poptype &pop,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
                 fwdpp::ts::table_collection &tables,
@@ -186,7 +188,20 @@ simplify_tables(poptype &pop,
     update_mutations(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
                      pop.mut_lookup, 2 * pop.diploids.size());
     confirm_mutation_counts(pop, tables);
+    return idmap;
 }
+
+struct diploid_metadata
+{
+    std::size_t individual;
+    double time, fitness;
+    fwdpp::ts::TS_NODE_INT n1, n2;
+    diploid_metadata(std::size_t i, double t, double w,
+                     fwdpp::ts::TS_NODE_INT a, fwdpp::ts::TS_NODE_INT b)
+        : individual(i), time(t), fitness(w), n1(a), n2(b)
+    {
+    }
+};
 
 int
 main(int argc, char **argv)
@@ -267,6 +282,7 @@ main(int argc, char **argv)
             individuals.resize(ancient_sample_size);
         }
     std::vector<double> fitnesses;
+    std::vector<diploid_metadata> ancient_sample_metadata;
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = calculate_fitnesses(pop, fitnesses);
@@ -281,15 +297,25 @@ main(int argc, char **argv)
                               tables, first_parental_index, next_index);
             if (generation % gcint == 0.0)
                 {
-                    simplify_tables(pop, mcounts_from_preserved_nodes, tables,
-                                    simplifier, tables.num_nodes() - 2 * N,
-                                    2 * N, generation);
+                    auto idmap = simplify_tables(
+                        pop, mcounts_from_preserved_nodes, tables, simplifier,
+                        tables.num_nodes() - 2 * N, 2 * N, generation);
                     mutation_recycling_bin = make_mut_queue(
                         pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
                     confirm_mutation_counts(pop, tables);
+
+                    // When tracking ancient samples, the node ids of those samples change.
+                    // Thus, we need to remap our metadata upon simplification
+                    for (auto &md : ancient_sample_metadata)
+                        {
+                            md.n1 = idmap[md.n1];
+                            md.n2 = idmap[md.n2];
+                            assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
+                            assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
+                        }
                 }
             else
                 {
@@ -302,6 +328,15 @@ main(int argc, char **argv)
                 && generation % ancient_sampling_interval == 0.0
                 && generation < 20 * N)
                 {
+                    // For recording the metadata, let's normalize the
+                    // fitnesses so that we record what matters in the sim,
+                    // which is relative fitness.
+                    auto wbar = std::accumulate(fitnesses.begin(),
+                                                fitnesses.end(), 0.)
+                                / static_cast<double>(N);
+                    std::transform(fitnesses.begin(), fitnesses.end(),
+                                   fitnesses.begin(),
+                                   [wbar](double w) { return w / wbar; });
                     gsl_ran_choose(
                         rng.get(), individuals.data(), individuals.size(),
                         individual_labels.data(), individual_labels.size(),
@@ -314,14 +349,6 @@ main(int argc, char **argv)
                             assert(x.second >= first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
-                            if (tables.node_table[x.first].generation
-                                != generation)
-                                {
-                                    std::cout << tables.node_table[x.first]
-                                                     .generation
-                                              << ' ' << generation
-                                              << std::endl;
-                                }
                             assert(tables.node_table[x.first].generation
                                    == generation);
                             assert(tables.node_table[x.second].generation
@@ -336,14 +363,32 @@ main(int argc, char **argv)
                                    == tables.preserved_nodes.end());
                             tables.preserved_nodes.push_back(x.first);
                             tables.preserved_nodes.push_back(x.second);
+                            // Record the metadata for our ancient samples
+                            ancient_sample_metadata.emplace_back(
+                                i, generation, fitnesses[i], x.first,
+                                x.second);
                         }
                 }
         }
     if (!simplified)
         {
-            simplify_tables(pop, mcounts_from_preserved_nodes, tables,
-                            simplifier, tables.num_nodes() - 2 * N, 2 * N,
-                            generation);
+            auto idmap = simplify_tables(
+                pop, mcounts_from_preserved_nodes, tables, simplifier,
+                tables.num_nodes() - 2 * N, 2 * N, generation);
             confirm_mutation_counts(pop, tables);
+            // When tracking ancient samples, the node ids of those samples change.
+            // Thus, we need to remap our metadata upon simplification
+            for (auto &md : ancient_sample_metadata)
+                {
+                    md.n1 = idmap[md.n1];
+                    md.n2 = idmap[md.n2];
+                    assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
+                    assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
+                }
+        }
+    for (auto &mr : ancient_sample_metadata)
+        {
+            assert(tables.node_table[mr.n1].generation == mr.time);
+            assert(tables.node_table[mr.n2].generation == mr.time);
         }
 }
