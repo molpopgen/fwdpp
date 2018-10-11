@@ -30,10 +30,10 @@ using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 inline fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr
-mean_fitness_zero_out_gametes(poptype &pop)
+calculate_fitnesses(poptype &pop, std::vector<double> &fitnesses)
 {
     auto N_curr = pop.diploids.size();
-    std::vector<double> fitnesses(N_curr);
+    fitnesses.resize(N_curr);
     for (size_t i = 0; i < N_curr; ++i)
         {
             fitnesses[i] = fwdpp::multiplicative_diploid(2.0)(
@@ -266,10 +266,10 @@ main(int argc, char **argv)
         {
             individuals.resize(ancient_sample_size);
         }
-
+    std::vector<double> fitnesses;
     for (; generation <= 20 * N; ++generation)
         {
-            auto lookup = mean_fitness_zero_out_gametes(pop);
+            auto lookup = calculate_fitnesses(pop, fitnesses);
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
