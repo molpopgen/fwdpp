@@ -71,7 +71,7 @@ main(int argc, char **argv)
 
     poptype pop(2 * N);
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier(1.0);
+    fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
     double recrate = rho / static_cast<double>(4 * N);
     const auto recmap
@@ -93,6 +93,8 @@ main(int argc, char **argv)
     };
 
     // Evolve pop for 20N generations
+    std::int32_t first_parental_index = 0,
+                 next_index = 2 * pop.diploids.size();
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
@@ -102,5 +104,8 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
+            evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel, recmap,
+                              generation, tables, simplifier,
+                              first_parental_index, next_index);
         }
 }
