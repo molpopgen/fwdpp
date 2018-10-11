@@ -342,7 +342,7 @@ namespace fwdpp
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const double generation)
             {
-                emplace_back_node(0, generation + 1);
+                emplace_back_node(0, generation);
                 split_breakpoints(breakpoints, parents, next_index);
             }
 
