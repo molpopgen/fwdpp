@@ -125,6 +125,24 @@ main(int argc, char **argv)
                         }
                     tables.count_mutations(pop.mutations, samples,
                                            pop.mcounts);
+                    // TODO: the following steps all need to be updated
+                    // to deal with mutation counts due to preserved nodes.
+                    tables.mutation_table.erase(
+                        std::remove_if(
+                            tables.mutation_table.begin(),
+                            tables.mutation_table.end(),
+                            [&pop](const fwdpp::ts::mutation_record &mr) {
+                                return pop.mcounts[mr.key]
+                                       == 2 * pop.diploids.size();
+                            }),
+                        tables.mutation_table.end());
+                    fwdpp::fwdpp_internal::gamete_cleaner(
+                        pop.gametes, pop.mutations, pop.mcounts, 2 * N,
+                        std::true_type());
+                    fwdpp::update_mutations(pop.mutations, pop.fixations,
+                                            pop.fixation_times, pop.mut_lookup,
+                                            pop.mcounts, generation,
+                                            2 * N);
                 }
         }
 }
