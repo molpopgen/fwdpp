@@ -44,9 +44,101 @@ mean_fitness_zero_out_gametes(poptype &pop)
     return lookup;
 }
 
+template <typename gcont_t, typename mcont_t,
+          typename mutation_count_container>
+void
+gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
+               const mutation_count_container &mcounts,
+               const mutation_count_container &mcounts_from_preserved_nodes,
+               const fwdpp::uint_t twoN)
+{
+    bool fixations_exist = false;
+    for (std::size_t i = 0; !fixations_exist && i < mcounts.size(); ++i)
+        {
+            if (mcounts[i] == twoN && mcounts_from_preserved_nodes[i] == 0)
+                {
+                    fixations_exist = true;
+                }
+        }
+    if (fixations_exist)
+        {
+            for (auto &g : gametes)
+                {
+                    if (g.n)
+                        {
+                            auto itr = std::remove_if(
+                                g.mutations.begin(), g.mutations.end(),
+                                [&mcounts, &mcounts_from_preserved_nodes,
+                                 twoN](const fwdpp::uint_t &key) {
+                                    return mcounts[key] == twoN
+                                           && mcounts_from_preserved_nodes[key]
+                                                  == 0;
+                                });
+                            g.mutations.erase(itr, g.mutations.end());
+                            itr = std::remove_if(
+                                g.smutations.begin(), g.smutations.end(),
+                                [&mcounts, &mcounts_from_preserved_nodes,
+                                 twoN](const fwdpp::uint_t &key) {
+                                    return mcounts[key] == twoN
+                                           && mcounts_from_preserved_nodes[key]
+                                                  == 0;
+                                });
+                            g.smutations.erase(itr, g.smutations.end());
+                        }
+                }
+        }
+}
+
+template <typename mcont_t, typename lookup_table,
+          typename mutation_count_container>
+void
+update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
+                 mutation_count_container &mcounts_from_preserved_nodes,
+                 lookup_table &lookup, const fwdpp::uint_t twoN)
+{
+    for (std::size_t i = 0; i < mcounts.size(); ++i)
+        {
+            if (mcounts_from_preserved_nodes[i] == 0)
+                {
+                    if (mcounts[i] == twoN)
+                        {
+                            auto itr = lookup.equal_range(mutations[i].pos);
+                            while (itr.first != itr.second)
+                                {
+                                    if (itr.first->second == i)
+                                        {
+                                            lookup.erase(itr.first);
+                                            mcounts[i] = 0;
+                                            break;
+                                        }
+                                    ++itr.first;
+                                }
+                        }
+                }
+            else if (mcounts[i] == 0)
+                {
+                    auto itr = lookup.equal_range(mutations[i].pos);
+                    if (itr.first != lookup.end())
+                        {
+                            while (itr.first != itr.second)
+                                {
+                                    if (itr.first->second == i)
+                                        {
+                                            lookup.erase(itr.first);
+                                            break;
+                                        }
+                                    ++itr.first;
+                                }
+                        }
+                }
+        }
+}
+
 template <typename poptype>
 void
-simplify_tables(poptype &pop, fwdpp::ts::table_collection &tables,
+simplify_tables(poptype &pop,
+                std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
+                fwdpp::ts::table_collection &tables,
                 fwdpp::ts::table_simplifier &simplifier,
                 const fwdpp::ts::TS_NODE_INT first_sample_node,
                 const std::size_t num_samples, const unsigned generation)
@@ -60,22 +152,24 @@ simplify_tables(poptype &pop, fwdpp::ts::table_collection &tables,
         {
             s = idmap[s];
         }
-    tables.count_mutations(pop.mutations, samples, pop.mcounts);
+    tables.count_mutations(pop.mutations, samples, pop.mcounts,
+                           mcounts_from_preserved_nodes);
     // TODO: the following steps all need to be updated
     // to deal with mutation counts due to preserved nodes.
     tables.mutation_table.erase(
         std::remove_if(
             tables.mutation_table.begin(), tables.mutation_table.end(),
-            [&pop](const fwdpp::ts::mutation_record &mr) {
-                return pop.mcounts[mr.key] == 2 * pop.diploids.size();
+            [&pop, &mcounts_from_preserved_nodes](
+                const fwdpp::ts::mutation_record &mr) {
+                return pop.mcounts[mr.key] == 2 * pop.diploids.size()
+                       && mcounts_from_preserved_nodes[mr.key] == 0;
             }),
         tables.mutation_table.end());
-    fwdpp::fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations,
-                                          pop.mcounts, 2 * pop.diploids.size(),
-                                          std::true_type());
-    fwdpp::update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
-                            pop.mut_lookup, pop.mcounts, generation,
-                            2 * pop.diploids.size());
+    gamete_cleaner(pop.gametes, pop.mutations, pop.mcounts,
+                   mcounts_from_preserved_nodes, 2 * pop.diploids.size());
+
+    update_mutations(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
+                     pop.mut_lookup, 2 * pop.diploids.size());
     confirm_mutation_counts(pop, tables);
 }
 
@@ -141,6 +235,7 @@ main(int argc, char **argv)
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
     std::queue<std::size_t> mutation_recycling_bin;
+    std::vector<fwdpp::uint_t> mcounts_from_preserved_nodes;
     for (; generation <= 20 * N; ++generation)
         {
             auto lookup = mean_fitness_zero_out_gametes(pop);
@@ -155,9 +250,9 @@ main(int argc, char **argv)
                               tables, first_parental_index, next_index);
             if (generation % gcint == 0.0)
                 {
-                    simplify_tables(pop, tables, simplifier,
-                                    tables.num_nodes() - 2 * N, 2 * N,
-                                    generation);
+                    simplify_tables(pop, mcounts_from_preserved_nodes, tables,
+                                    simplifier, tables.num_nodes() - 2 * N,
+                                    2 * N, generation);
                     mutation_recycling_bin
                         = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
                     simplified = true;
@@ -175,8 +270,9 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            simplify_tables(pop, tables, simplifier,
-                            tables.num_nodes() - 2 * N, 2 * N, generation);
+            simplify_tables(pop, mcounts_from_preserved_nodes, tables,
+                            simplifier, tables.num_nodes() - 2 * N, 2 * N,
+                            generation);
             confirm_mutation_counts(pop, tables);
         }
 }
