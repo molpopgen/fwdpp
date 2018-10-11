@@ -111,7 +111,7 @@ main(int argc, char **argv)
             };
             evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel,
                               mutation_recycling_bin, recmap, generation,
-                              tables, simplifier, first_parental_index,
+                              tables, first_parental_index,
                               next_index);
             if (generation % gcint == 0.0)
                 {

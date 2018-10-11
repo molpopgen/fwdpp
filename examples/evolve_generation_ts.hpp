@@ -62,7 +62,6 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                   const breakpoint_function& recmodel,
                   const fwdpp::uint_t generation,
                   fwdpp::ts::table_collection& tables,
-                  fwdpp::ts::table_simplifier& simplifier,
                   std::int32_t first_parental_index, std::int32_t next_index)
 {
 
