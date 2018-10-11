@@ -23,6 +23,7 @@
 #include <boost/program_options.hpp>
 
 #include "evolve_generation_ts.hpp"
+#include "confirm_mutation_counts.hpp"
 
 namespace po = boost::program_options;
 using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
@@ -41,44 +42,6 @@ mean_fitness_zero_out_gametes(poptype &pop)
     auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
         gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
     return lookup;
-}
-
-template <typename poptype>
-void
-confirm_mutation_counts(poptype &pop,
-                        const fwdpp::ts::table_collection &tables,
-                        const unsigned generation)
-{
-#ifndef NDEBUG
-    std::vector<std::size_t> keys;
-    for (auto &mr : tables.mutation_table)
-        {
-            keys.push_back(mr.key);
-        }
-    std::sort(keys.begin(), keys.end());
-    auto u = std::unique(keys.begin(), keys.end());
-    ;
-    if (u != keys.end())
-        {
-            std::cout << "redundant keys " << generation << '\n';
-        }
-
-    for (auto &mr : tables.mutation_table)
-        {
-            assert(mr.node != fwdpp::ts::TS_NULL_NODE);
-            assert(tables.node_table[mr.node].generation
-                   >= pop.mutations[mr.key].g);
-        }
-    decltype(pop.mcounts) mc;
-    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations, mc);
-    for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
-        {
-            if (!pop.mutations[i].neutral)
-                {
-                    assert(pop.mcounts[i] == mc[i]);
-                }
-        }
-#endif
 }
 
 template <typename poptype>
@@ -113,7 +76,7 @@ simplify_tables(poptype &pop, fwdpp::ts::table_collection &tables,
     fwdpp::update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
                             pop.mut_lookup, pop.mcounts, generation,
                             2 * pop.diploids.size());
-    confirm_mutation_counts(pop, tables, generation);
+    confirm_mutation_counts(pop, tables);
 }
 
 int
@@ -200,7 +163,7 @@ main(int argc, char **argv)
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
-                    confirm_mutation_counts(pop, tables, generation);
+                    confirm_mutation_counts(pop, tables);
                 }
             else
                 {
@@ -214,6 +177,6 @@ main(int argc, char **argv)
         {
             simplify_tables(pop, tables, simplifier,
                             tables.num_nodes() - 2 * N, 2 * N, generation);
-            confirm_mutation_counts(pop, tables, generation);
+            confirm_mutation_counts(pop, tables);
         }
 }
