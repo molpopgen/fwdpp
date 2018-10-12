@@ -177,8 +177,6 @@ simplify_tables(poptype &pop,
         }
     tables.count_mutations(pop.mutations, samples, pop.mcounts,
                            mcounts_from_preserved_nodes);
-    // TODO: the following steps all need to be updated
-    // to deal with mutation counts due to preserved nodes.
     tables.mutation_table.erase(
         std::remove_if(
             tables.mutation_table.begin(), tables.mutation_table.end(),
