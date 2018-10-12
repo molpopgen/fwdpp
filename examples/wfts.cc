@@ -350,6 +350,38 @@ main(int argc, char **argv)
                     simplified = false;
                     first_parental_index = next_index;
                     next_index += 2 * N;
+
+                    // The following (commented-out) block
+                    // shows that it is possible to mix mutation
+                    // counting strategies in the right situations.
+                    // However, the process_gametes call is a quadratic
+                    // operation and the overall effect on run time
+                    // and peak RAM usage is modest at best in the big 
+                    // picture...
+
+                    //if (tables.preserved_nodes.empty())
+                    //    {
+                    //        fwdpp::fwdpp_internal::process_gametes(
+                    //            pop.gametes, pop.mutations, pop.mcounts);
+                    //        fwdpp::fwdpp_internal::gamete_cleaner(
+                    //            pop.gametes, pop.mutations, pop.mcounts, 2 * N,
+                    //            std::true_type());
+                    //        fwdpp::update_mutations(
+                    //            pop.mutations, pop.fixations,
+                    //            pop.fixation_times, pop.mut_lookup,
+                    //            pop.mcounts, generation, 2 * N);
+                    //        mutation_recycling_bin
+                    //            = fwdpp::fwdpp_internal::make_mut_queue(
+                    //                pop.mcounts);
+                    //        auto itr = std::remove_if(
+                    //            tables.mutation_table.begin(),
+                    //            tables.mutation_table.end(),
+                    //            [&pop](const fwdpp::ts::mutation_record &mr) {
+                    //                return pop.mcounts[mr.key] == 0;
+                    //            });
+                    //        tables.mutation_table.erase(
+                    //            itr, tables.mutation_table.end());
+                    //    }
                 }
             if (ancient_sampling_interval > 0
                 && generation % ancient_sampling_interval == 0.0
