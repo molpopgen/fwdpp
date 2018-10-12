@@ -391,9 +391,16 @@ main(int argc, char **argv)
                     assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                 }
         }
+    // If we have done things correctly, then our 
+    // ancient sample metadata must match up with 
+    // what is in our node table.
     for (auto &mr : ancient_sample_metadata)
         {
-            assert(tables.node_table[mr.n1].generation == mr.time);
-            assert(tables.node_table[mr.n2].generation == mr.time);
+            if (tables.node_table[mr.n1].generation != mr.time
+                || tables.node_table[mr.n2].generation != mr.time)
+                {
+                    throw std::runtime_error(
+                        "invalid ancient sample metadata");
+                }
         }
 }
