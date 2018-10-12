@@ -153,6 +153,81 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
         }
 }
 
+class mutation_dropper
+{
+  private:
+    // Neutral mutation rate (per gamete/generation)
+    const double mu;
+
+  public:
+    mutation_dropper(const double neutral_mutation_rate)
+        : mu{ neutral_mutation_rate }
+    {
+    }
+    template <typename rng, typename poptype>
+    inline unsigned
+    operator()(const rng &r,
+               const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+               poptype &pop, fwdpp::ts::table_collection &tables) const
+    {
+        const double L = tables.L;
+        unsigned nmuts = 0;
+        std::vector<int> visited(tables.num_nodes(), 0);
+        const auto visitor = [&r, &pop, &samples, &tables, &visited, &nmuts,
+                              this,
+                              L](const fwdpp::ts::marginal_tree &marginal) {
+            std::fill(visited.begin(), visited.end(), 0);
+            double tm = mu * (marginal.right - marginal.left) / L;
+            for (auto &s : samples)
+                {
+                    assert(visited[s] == 0);
+                    visited[s] = 1;
+                    auto p = marginal.parents[s];
+                    while (p != fwdpp::ts::TS_NULL_NODE)
+                        {
+                            if (visited[p] == 0)
+                                {
+                                    visited[p] = 1;
+                                    if (marginal.leaf_counts[p]
+                                        < samples.size())
+                                        {
+                                            auto g = tables.node_table[p]
+                                                         .generation;
+                                            if (marginal.parents[p]
+                                                != fwdpp::ts::TS_NULL_NODE)
+                                                {
+                                                    auto g2
+                                                        = tables
+                                                              .node_table
+                                                                  [marginal
+                                                                       .parents
+                                                                           [p]]
+                                                              .generation;
+                                                    nmuts += gsl_ran_poisson(
+                                                        r.get(),
+                                                        static_cast<double>(
+                                                            g - g2)
+                                                            * tm);
+                                                }
+                                            else
+                                                {
+                                                    nmuts += gsl_ran_poisson(
+                                                        r.get(),
+                                                        static_cast<double>(g)
+                                                            * tm);
+                                                }
+                                        }
+                                }
+                            p = marginal.parents[p];
+                        }
+                }
+        };
+        fwdpp::ts::algorithmL(tables.input_left, tables.output_right, samples,
+                              tables.num_nodes(), L, visitor);
+        return nmuts;
+    }
+};
+
 template <typename poptype>
 std::vector<fwdpp::ts::TS_NODE_INT>
 simplify_tables(poptype &pop,
@@ -354,7 +429,7 @@ main(int argc, char **argv)
                     // counting strategies in the right situations.
                     // However, the process_gametes call is a quadratic
                     // operation and the overall effect on run time
-                    // and peak RAM usage is modest at best in the big 
+                    // and peak RAM usage is modest at best in the big
                     // picture...
 
                     //if (tables.preserved_nodes.empty())
@@ -455,4 +530,11 @@ main(int argc, char **argv)
                         "invalid ancient sample metadata");
                 }
         }
+    assert(tables.input_left.size() == tables.edge_table.size());
+    assert(tables.output_right.size() == tables.edge_table.size());
+    mutation_dropper md(theta / static_cast<double>(4 * N));
+    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
+    std::iota(s.begin(), s.end(), 0);
+    auto neutral_muts = md(rng, s, pop, tables);
+    std::cout << neutral_muts << '\n';
 }
