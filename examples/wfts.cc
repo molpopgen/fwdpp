@@ -458,6 +458,8 @@ main(int argc, char **argv)
                 }
             if (ancient_sampling_interval > 0
                 && generation % ancient_sampling_interval == 0.0
+                // This last check forbids us recording the
+                // final generation as ancient samples.
                 && generation < 20 * N)
                 {
                     // For recording the metadata, let's normalize the
