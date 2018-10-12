@@ -18,6 +18,7 @@
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
+#include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/poisson_xover.hpp>
@@ -113,6 +114,11 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
         {
             if (mcounts_from_preserved_nodes[i] == 0)
                 {
+                    if (mcounts[i] > twoN)
+                        {
+                            throw std::runtime_error(
+                                "mutation count out of range");
+                        }
                     if (mcounts[i] == twoN)
                         {
                             auto itr = lookup.equal_range(mutations[i].pos);
@@ -264,7 +270,7 @@ main(int argc, char **argv)
 
     GSLrng rng(seed);
 
-    poptype pop(2 * N);
+    poptype pop(N);
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
