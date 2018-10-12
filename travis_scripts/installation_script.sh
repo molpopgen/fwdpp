@@ -22,6 +22,7 @@ then
     # Useful for debugging any issues with conda
     conda info -a
     conda install gcc zlib boost gsl
+    ls -lhrt $HOME/miniconda/lib | grep boost_program
     # conda install -c bioconda libsequence
 else
     sudo apt-get update -qq
