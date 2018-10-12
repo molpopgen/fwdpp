@@ -344,12 +344,6 @@ main(int argc, char **argv)
                     simplified = false;
                     first_parental_index = next_index;
                     next_index += 2 * N;
-                    // Clear out our recycling bin, o/w
-                    // it will be full from the last simplification
-                    // and will will erroneously flag items for recycling.
-                    // Here, we use the 'swap-with-empty' idiom:
-                    std::queue<std::size_t> empty_queue;
-                    mutation_recycling_bin.swap(empty_queue);
                 }
             if (ancient_sampling_interval > 0
                 && generation % ancient_sampling_interval == 0.0
