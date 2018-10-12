@@ -233,7 +233,29 @@ main(int argc, char **argv)
     po::notify(vm);
 
     // TODO: need parameter validation
-
+    if (theta < 0. || rho < 0.)
+        {
+            throw std::invalid_argument("rho and theta must be >= 0.0");
+        }
+    if (N < 1)
+        {
+            throw std::invalid_argument("N must be > 0");
+        }
+    if (gcint < 1)
+        {
+            throw std::invalid_argument(
+                "Simplification (gc) interval must be > 0");
+        }
+    if (mu < 0)
+        {
+            throw std::invalid_argument(
+                "Mutation rate to selected variants must be >= 0");
+        }
+    if (ancient_sampling_interval > 0 && ancient_sample_size < 1)
+        {
+            throw std::invalid_argument(
+                "ansam must be > 0 when tracking ancient samples");
+        }
     if (vm.count("help"))
         {
             std::cout << options << '\n';
@@ -391,8 +413,8 @@ main(int argc, char **argv)
                     assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                 }
         }
-    // If we have done things correctly, then our 
-    // ancient sample metadata must match up with 
+    // If we have done things correctly, then our
+    // ancient sample metadata must match up with
     // what is in our node table.
     for (auto &mr : ancient_sample_metadata)
         {
