@@ -180,6 +180,23 @@ class mutation_dropper
                               L](const fwdpp::ts::marginal_tree &marginal) {
             double tm = mu * (marginal.right - marginal.left) / L;
             double ttime = 0.0;
+            //for (std::size_t i = 0; i < marginal.parents.size(); ++i)
+            //    {
+            //        if (marginal.parents[i] != fwdpp::ts::TS_NULL_NODE)
+            //            {
+            //                if (marginal.leaf_counts[i] > 0
+            //                    && marginal.leaf_counts[i] < samples.size())
+            //                    {
+            //                        auto nt = tables.node_table[i].generation;
+            //                        auto at
+            //                            = tables
+            //                                  .node_table[marginal.parents[i]]
+            //                                  .generation;
+            //                        ttime += (nt - at);
+            //                        rates[i] += (nt - at) * tm;
+            //                    }
+            //            }
+            //    }
             for (auto &s : samples)
                 {
                     assert(visited[s] == 0);
