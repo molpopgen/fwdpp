@@ -173,53 +173,52 @@ class mutation_dropper
         const double L = tables.L;
         unsigned nmuts = 0;
         std::vector<int> visited(tables.num_nodes(), 0);
-        const auto visitor = [&r, &pop, &samples, &tables, &visited, &nmuts,
-                              this,
+        std::vector<unsigned> nmuts_per_node(tables.num_nodes(), 0);
+        std::vector<double> rates(tables.num_nodes(), 0.0);
+        const auto visitor = [&r, &pop, &samples, &tables, &visited, &rates,
+                              &nmuts_per_node, &nmuts, this,
                               L](const fwdpp::ts::marginal_tree &marginal) {
-            std::fill(visited.begin(), visited.end(), 0);
             double tm = mu * (marginal.right - marginal.left) / L;
+            double ttime = 0.0;
             for (auto &s : samples)
                 {
                     assert(visited[s] == 0);
                     auto p = s;
                     while (p != fwdpp::ts::TS_NULL_NODE)
                         {
+                            auto pp = marginal.parents[p];
                             if (visited[p] == 0)
                                 {
                                     visited[p] = 1;
                                     if (marginal.leaf_counts[p]
                                         < samples.size())
                                         {
-                                            auto g = tables.node_table[p]
-                                                         .generation;
+                                            auto nt = tables.node_table[p]
+                                                          .generation;
+                                            auto at = 0;
                                             if (marginal.parents[p]
                                                 != fwdpp::ts::TS_NULL_NODE)
                                                 {
-                                                    auto g2
-                                                        = tables
-                                                              .node_table
-                                                                  [marginal
-                                                                       .parents
-                                                                           [p]]
-                                                              .generation;
-                                                    nmuts += gsl_ran_poisson(
-                                                        r.get(),
-                                                        static_cast<double>(
-                                                            g - g2)
-                                                            * tm);
+                                                    at = tables.node_table[pp]
+                                                             .generation;
                                                 }
-                                            else
-                                                {
-                                                    nmuts += gsl_ran_poisson(
-                                                        r.get(),
-                                                        static_cast<double>(g)
-                                                            * tm);
-                                                }
+                                            ttime += (nt - at);
+                                            rates[p] += (nt - at) * tm;
                                         }
                                 }
-                            p = marginal.parents[p];
+                            p = pp;
                         }
                 }
+            auto nm = gsl_ran_poisson(r.get(), ttime * tm);
+            if (nm)
+                {
+                    gsl_ran_multinomial(r.get(), nmuts_per_node.size(), nm,
+                                        rates.data(), nmuts_per_node.data());
+                    std::fill(nmuts_per_node.begin(), nmuts_per_node.end(), 0);
+                    nmuts += nm;
+                }
+            std::fill(visited.begin(), visited.end(), 0);
+            std::fill(rates.begin(), rates.end(), 0);
         };
         fwdpp::ts::algorithmL(tables.input_left, tables.output_right, samples,
                               tables.num_nodes(), L, visitor);
@@ -383,7 +382,7 @@ main(int argc, char **argv)
         }
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
-    for (; generation <= 20 * N; ++generation)
+    for (; generation <= 10 * N; ++generation)
         {
             auto lookup = calculate_fitnesses(pop, fitnesses);
             auto pick1 = [&lookup, &rng]() {
@@ -459,7 +458,7 @@ main(int argc, char **argv)
                 && generation % ancient_sampling_interval == 0.0
                 // This last check forbids us recording the
                 // final generation as ancient samples.
-                && generation < 20 * N)
+                && generation < 10 * N)
                 {
                     // For recording the metadata, let's normalize the
                     // fitnesses so that we record what matters in the sim,
