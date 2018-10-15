@@ -153,6 +153,45 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
         }
 }
 
+// TODO: consider flattening the return value to a vector
+std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
+mark_multiple_roots(const fwdpp::ts::table_collection &tables,
+           const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+{
+    std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
+        rv;
+    unsigned single = 0, multi = 0;
+    auto rooter = [&tables, &rv, samples, &single,
+                   &multi](const fwdpp::ts::marginal_tree &marginal) {
+        bool single_root = false;
+        for (auto &s : samples)
+            {
+                auto p = s;
+                auto lp = p;
+                while (p != -1)
+                    {
+                        lp = p;
+                        p = marginal.parents[p];
+                    }
+                if (marginal.leaf_counts[lp] == samples.size())
+                    {
+                        single_root = true;
+                    }
+                else
+                    {
+                        rv[lp].emplace_back(marginal.left, marginal.right);
+                    }
+                if (single_root)
+                    {
+                        break;
+                    }
+            }
+    };
+    fwdpp::ts::algorithmL(tables.input_left, tables.output_right, samples,
+                          tables.num_nodes(), tables.L, rooter);
+    return rv;
+}
+
 class mutation_dropper
 {
   private:
@@ -242,6 +281,22 @@ class mutation_dropper
         return nmuts;
     }
 };
+
+template <typename rng>
+unsigned
+mutate_tables(const rng &r, const double mu,
+              fwdpp::ts::table_collection &tables)
+{
+    unsigned nmuts = 0;
+    for (auto &e : tables.edge_table)
+        {
+            auto dt = tables.node_table[e.child].generation
+                      - tables.node_table[e.parent].generation;
+            double mean = dt * (e.right - e.left) * mu;
+            nmuts += gsl_ran_poisson(r.get(), mean);
+        }
+    return nmuts;
+}
 
 template <typename poptype>
 std::vector<fwdpp::ts::TS_NODE_INT>
@@ -553,5 +608,8 @@ main(int argc, char **argv)
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
     std::iota(s.begin(), s.end(), 0);
     auto neutral_muts = md(rng, s, pop, tables);
-    std::cout << neutral_muts << '\n';
+    auto neutral_muts2
+        = mutate_tables(rng, theta / static_cast<double>(4 * N), tables);
+    auto roots = mark_multiple_roots(tables, s);
+    std::cout << neutral_muts << ' ' << neutral_muts2 << '\n';
 }
