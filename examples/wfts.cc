@@ -181,8 +181,7 @@ class mutation_dropper
             for (auto &s : samples)
                 {
                     assert(visited[s] == 0);
-                    visited[s] = 1;
-                    auto p = marginal.parents[s];
+                    auto p = s;
                     while (p != fwdpp::ts::TS_NULL_NODE)
                         {
                             if (visited[p] == 0)
