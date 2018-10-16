@@ -15,6 +15,8 @@
 #include <cassert>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
+#include <fwdpp/ts/count_mutations.hpp>
+#include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
@@ -156,39 +158,38 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
 // TODO: consider flattening the return value to a vector
 std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
 mark_multiple_roots(const fwdpp::ts::table_collection &tables,
-           const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
     std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
         rv;
-    unsigned single = 0, multi = 0;
-    auto rooter = [&tables, &rv, samples, &single,
-                   &multi](const fwdpp::ts::marginal_tree &marginal) {
-        bool single_root = false;
-        for (auto &s : samples)
-            {
-                auto p = s;
-                auto lp = p;
-                while (p != -1)
-                    {
-                        lp = p;
-                        p = marginal.parents[p];
-                    }
-                if (marginal.leaf_counts[lp] == samples.size())
-                    {
-                        single_root = true;
-                    }
-                else
-                    {
-                        rv[lp].emplace_back(marginal.left, marginal.right);
-                    }
-                if (single_root)
-                    {
-                        break;
-                    }
-            }
-    };
-    fwdpp::ts::algorithmL(tables.input_left, tables.output_right, samples,
-                          tables.num_nodes(), tables.L, rooter);
+    fwdpp::ts::marginal_tree_iterator mti(tables, samples);
+    while (mti(std::true_type(), std::false_type()))
+        {
+            bool single_root = false;
+            for (auto &s : samples)
+                {
+                    auto p = s;
+                    auto lp = p;
+                    while (p != -1)
+                        {
+                            lp = p;
+                            p = mti.marginal.parents[p];
+                        }
+                    if (mti.marginal.leaf_counts[lp] == samples.size())
+                        {
+                            single_root = true;
+                        }
+                    else
+                        {
+                            rv[lp].emplace_back(mti.marginal.left,
+                                                mti.marginal.right);
+                        }
+                    if (single_root)
+                        {
+                            break;
+                        }
+                }
+        }
     return rv;
 }
 
@@ -320,8 +321,8 @@ simplify_tables(poptype &pop,
         {
             assert(idmap[s] != 1);
         }
-    tables.count_mutations(pop.mutations, samples, pop.mcounts,
-                           mcounts_from_preserved_nodes);
+    fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts,
+                               mcounts_from_preserved_nodes);
     tables.mutation_table.erase(
         std::remove_if(
             tables.mutation_table.begin(), tables.mutation_table.end(),
