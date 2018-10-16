@@ -183,6 +183,12 @@ namespace fwdpp
                           });
                 if (edge_offset > 0)
                     {
+                        //TODO: try to refactor to avoid temp_edges
+                        //getting as larg.
+                        //It seems like judicious use of move
+                        //will allow moving the smaller of the two
+                        //partitions first into temp_edges and 
+                        //then moving the rest internally.
                         temp_edges.reserve(edge_table.size());
 #ifndef NDEBUG
                         auto size = edge_table.size();

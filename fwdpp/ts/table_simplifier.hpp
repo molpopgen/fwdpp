@@ -544,6 +544,9 @@ namespace fwdpp
                     == new_node_table.size());
                 // After swapping, new_node_table
                 // contains the input nodes
+                // TODO: consider a copy into the edge table here, 
+                // but only after a check on what happens to
+                // new_edge_table.capacity().
                 tables.edge_table.swap(new_edge_table);
                 tables.node_table.swap(new_node_table);
                 // TODO: allow for exception instead of assert
