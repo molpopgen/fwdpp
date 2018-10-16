@@ -171,10 +171,12 @@ namespace fwdpp
                 new_edge_table.clear();
                 new_node_table.clear();
                 E.clear();
-                for (auto& ai : Ancestry)
-                    {
-                        ai.clear();
-                    }
+                // It is tempting to 
+                // just clear out each 
+                // inner element. Bad idea.
+                // You use >= 10X more RAM
+                // in "big" simulations.
+                Ancestry.clear();
             }
 
             edge_vector::const_iterator
