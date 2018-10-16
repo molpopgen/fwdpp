@@ -16,6 +16,7 @@
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/count_mutations.hpp>
+#include <fwdpp/ts/recycling.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
@@ -47,22 +48,6 @@ calculate_fitnesses(poptype &pop, std::vector<double> &fitnesses)
     auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
         gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
     return lookup;
-}
-
-std::queue<std::size_t>
-make_mut_queue(const std::vector<std::uint32_t> &mcounts,
-               const std::vector<std::uint32_t> &counts_from_preserved_nodes)
-/// TODO: put this in library!
-{
-    std::queue<std::size_t> mutation_recycling_bin;
-    for (std::size_t i = 0; i < mcounts.size(); ++i)
-        {
-            if (mcounts[i] + counts_from_preserved_nodes[i] == 0)
-                {
-                    mutation_recycling_bin.push(i);
-                }
-        }
-    return mutation_recycling_bin;
 }
 
 template <typename gcont_t, typename mcont_t,
@@ -472,7 +457,7 @@ main(int argc, char **argv)
                     auto idmap = simplify_tables(
                         pop, mcounts_from_preserved_nodes, tables, simplifier,
                         tables.num_nodes() - 2 * N, 2 * N, generation);
-                    mutation_recycling_bin = make_mut_queue(
+                    mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
