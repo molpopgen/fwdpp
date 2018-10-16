@@ -135,20 +135,20 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
                                     ++itr.first;
                                 }
                         }
-                }
-            else if (mcounts[i] == 0)
-                {
-                    auto itr = lookup.equal_range(mutations[i].pos);
-                    if (itr.first != lookup.end())
+                    else if (mcounts[i] == 0)
                         {
-                            while (itr.first != itr.second)
+                            auto itr = lookup.equal_range(mutations[i].pos);
+                            if (itr.first != lookup.end())
                                 {
-                                    if (itr.first->second == i)
+                                    while (itr.first != itr.second)
                                         {
-                                            lookup.erase(itr.first);
-                                            break;
+                                            if (itr.first->second == i)
+                                                {
+                                                    lookup.erase(itr.first);
+                                                    break;
+                                                }
+                                            ++itr.first;
                                         }
-                                    ++itr.first;
                                 }
                         }
                 }
