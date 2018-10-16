@@ -26,7 +26,6 @@ namespace fwdpp
         struct table_collection
         {
           private:
-            edge_vector temp_edges; //used for sorting
             void
             split_breakpoints_add_edges(
                 const std::vector<double>& breakpoints,
@@ -126,8 +125,8 @@ namespace fwdpp
             const double L;
             std::vector<TS_NODE_INT> preserved_nodes;
             table_collection(const double maxpos)
-                : temp_edges{}, node_table{}, edge_table{}, mutation_table{},
-                  input_left{}, output_right{}, edge_offset{ 0 }, L{ maxpos },
+                : node_table{}, edge_table{}, mutation_table{}, input_left{},
+                  output_right{}, edge_offset{ 0 }, L{ maxpos },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -140,8 +139,8 @@ namespace fwdpp
             table_collection(const TS_NODE_INT num_initial_nodes,
                              const double initial_time, TS_NODE_INT pop,
                              const double maxpos)
-                : temp_edges{}, node_table{}, edge_table{}, mutation_table{},
-                  input_left{}, output_right{}, edge_offset{ 0 }, L{ maxpos },
+                : node_table{}, edge_table{}, mutation_table{}, input_left{},
+                  output_right{}, edge_offset{ 0 }, L{ maxpos },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -161,6 +160,13 @@ namespace fwdpp
             /// The sorting differs from msprime here. The difference
             /// is that we  assume that birth times are recorded forward in
             /// time rather than backwards.
+            ///
+            /// In between simplifications, edges are appended to the table
+            /// starting at edge_offset.  edges prior to that point are,
+            /// by definition, sorted b/c they are the output of simplification.
+            /// Thus, we only sort the new edges and then perform a left rotate
+            /// w.r.to edge_offset to put the nodes in the correct final order.
+            /// The rotation is exactly edge_table.size() swaps.
             {
                 std::sort(edge_table.begin() + edge_offset, edge_table.end(),
                           [this](const edge& a, const edge& b) {
@@ -182,31 +188,10 @@ namespace fwdpp
                           });
                 if (edge_offset > 0)
                     {
-                        //TODO: try to refactor to avoid temp_edges
-                        //getting as larg.
-                        //It seems like judicious use of move
-                        //will allow moving the smaller of the two
-                        //partitions first into temp_edges and
-                        //then moving the rest internally.
-                        temp_edges.reserve(edge_table.size());
-#ifndef NDEBUG
-                        auto size = edge_table.size();
-#endif
-                        temp_edges.clear();
-                        temp_edges.insert(
-                            temp_edges.end(),
-                            std::make_move_iterator(edge_table.begin()
-                                                    + edge_offset),
-                            std::make_move_iterator(edge_table.end()));
-                        temp_edges.insert(
-                            temp_edges.end(),
-                            std::make_move_iterator(edge_table.begin()),
-                            std::make_move_iterator(edge_table.begin()
-                                                    + edge_offset));
-                        assert(temp_edges.size() == size);
-                        temp_edges.swap(edge_table);
+                        std::rotate(edge_table.begin(),
+                                    edge_table.begin() + edge_offset,
+                                    edge_table.end());
                     }
-                temp_edges.clear();
                 // TODO: allow for exceptions
                 // rather than assertions.
                 assert(edges_are_sorted());

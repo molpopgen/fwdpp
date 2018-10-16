@@ -542,13 +542,16 @@ namespace fwdpp
                         idmap.begin(), idmap.end(),
                         [](const TS_NODE_INT i) { return i != TS_NULL_NODE; }))
                     == new_node_table.size());
-                // After swapping, new_node_table
-                // contains the input nodes
-                // TODO: consider a copy into the edge table here, 
-                // but only after a check on what happens to
-                // new_edge_table.capacity().
-                tables.edge_table.swap(new_edge_table);
-                tables.node_table.swap(new_node_table);
+                // Update the tables.  To keep memory use as sane as possible,
+                // we use resize-and-move here.  In theory, we can also do
+                // vector swaps, but that has a side-effect of keeping 
+                // far too much RAM allocated compared to what we need.
+                tables.edge_table.resize(new_edge_table.size());
+                std::move(new_edge_table.begin(), new_edge_table.end(),
+                          tables.edge_table.begin());
+                tables.node_table.resize(new_node_table.size());
+                std::move(new_node_table.begin(), new_node_table.end(),
+                          tables.node_table.begin());
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_sorted());
                 tables.update_offset();
