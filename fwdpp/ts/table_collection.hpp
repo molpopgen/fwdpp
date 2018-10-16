@@ -13,7 +13,6 @@
 #include <fwdpp/forward_types.hpp>
 #include "node.hpp"
 #include "edge.hpp"
-#include "msprime_algo.hpp"
 #include "mutation_record.hpp"
 #include "indexed_edge.hpp" //TODO: create fewer header dependencies
 
@@ -187,7 +186,7 @@ namespace fwdpp
                         //getting as larg.
                         //It seems like judicious use of move
                         //will allow moving the smaller of the two
-                        //partitions first into temp_edges and 
+                        //partitions first into temp_edges and
                         //then moving the rest internally.
                         temp_edges.reserve(edge_table.size());
 #ifndef NDEBUG
@@ -382,90 +381,6 @@ namespace fwdpp
             update_offset()
             {
                 edge_offset = edge_table.size();
-            }
-
-            template <typename mcont_t>
-            void
-            count_mutations(const mcont_t& mutations,
-                            const std::vector<TS_NODE_INT>& samples,
-                            std::vector<fwdpp::uint_t>& mcounts)
-            {
-                // Use Kelleher et al. (2016)'s Algorithm L
-                // to march through each marginal tree and its leaf
-                // counts. At the same time, we march through our mutation
-                // table, which is sorted by position.
-                std::fill(mcounts.begin(), mcounts.end(), 0);
-                mcounts.resize(mutations.size(), 0);
-
-                auto mtable_itr = mutation_table.begin();
-                auto mtable_end = mutation_table.end();
-                auto mutation_counter = [&mutations, &mtable_itr, mtable_end,
-                                         &mcounts](
-                                            const marginal_tree& marginal) {
-                    while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos < marginal.left)
-                        {
-                            ++mtable_itr;
-                        }
-                    while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos < marginal.right)
-                        {
-                            assert(mutations[mtable_itr->key].pos
-                                   >= marginal.left);
-                            assert(mutations[mtable_itr->key].pos
-                                   < marginal.right);
-                            mcounts[mtable_itr->key]
-                                = marginal.leaf_counts[mtable_itr->node];
-                            ++mtable_itr;
-                        }
-                };
-
-                algorithmL(input_left, output_right, samples,
-                           node_table.size(), L, mutation_counter);
-            }
-            template <typename mcont_t>
-            void
-            count_mutations(const mcont_t& mutations,
-                            const std::vector<TS_NODE_INT>& samples,
-                            std::vector<fwdpp::uint_t>& mcounts,
-                            std::vector<fwdpp::uint_t>& acounts)
-            {
-                // Use Kelleher et al. (2016)'s Algorithm L
-                // to march through each marginal tree and its leaf
-                // counts. At the same time, we march through our mutation
-                // table, which is sorted by position.
-                std::fill(mcounts.begin(), mcounts.end(), 0);
-                mcounts.resize(mutations.size(), 0);
-                std::fill(acounts.begin(), acounts.end(), 0);
-                acounts.resize(mutations.size(), 0);
-
-                auto mtable_itr = mutation_table.begin();
-                auto mtable_end = mutation_table.end();
-                auto mutation_counter = [&mutations, &mtable_itr, mtable_end,
-                                         &mcounts,&acounts](
-                                            const marginal_tree& marginal) {
-                    while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos < marginal.left)
-                        {
-                            ++mtable_itr;
-                        }
-                    while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos < marginal.right)
-                        {
-                            assert(mutations[mtable_itr->key].pos
-                                   >= marginal.left);
-                            assert(mutations[mtable_itr->key].pos
-                                   < marginal.right);
-                            mcounts[mtable_itr->key]
-                                = marginal.leaf_counts[mtable_itr->node];
-                            acounts[mtable_itr->key]
-                                = marginal.preserved_leaf_counts[mtable_itr->node];
-                            ++mtable_itr;
-                        }
-                };
-
-                algorithmL(input_left, output_right, samples, preserved_nodes,
-                           node_table.size(), L, mutation_counter);
             }
         };
     } // namespace ts
