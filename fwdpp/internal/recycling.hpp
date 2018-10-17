@@ -18,6 +18,9 @@ namespace fwdpp
         template <typename mcount_vec>
         recycling_bin_t<typename mcount_vec::size_type>
         make_mut_queue(const mcount_vec &mcounts)
+		/// \brief Make a FIFO recycling queue for mutations
+		///
+		/// \note Simulations with tree sequences should use fwdpp::ts::make_mut_queue
         {
             recycling_bin_t<typename mcount_vec::size_type> rv;
             const auto msize = mcounts.size();
