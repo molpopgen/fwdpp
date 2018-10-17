@@ -194,101 +194,12 @@ mark_multiple_roots(const fwdpp::ts::table_collection &tables,
     return rv;
 }
 
-class mutation_dropper
-{
-  private:
-    // Neutral mutation rate (per gamete/generation)
-    const double mu;
-
-  public:
-    mutation_dropper(const double neutral_mutation_rate)
-        : mu{ neutral_mutation_rate }
-    {
-    }
-    template <typename rng, typename poptype>
-    inline unsigned
-    operator()(const rng &r,
-               const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-               poptype &pop, fwdpp::ts::table_collection &tables) const
-    {
-        const double L = tables.L;
-        unsigned nmuts = 0;
-        std::vector<int> visited(tables.num_nodes(), 0);
-        std::vector<unsigned> nmuts_per_node(tables.num_nodes(), 0);
-        std::vector<double> rates(tables.num_nodes(), 0.0);
-        const auto visitor = [&r, &pop, &samples, &tables, &visited, &rates,
-                              &nmuts_per_node, &nmuts, this,
-                              L](const fwdpp::ts::marginal_tree &marginal) {
-            double tm = mu * (marginal.right - marginal.left) / L;
-            double ttime = 0.0;
-            //for (std::size_t i = 0; i < marginal.parents.size(); ++i)
-            //    {
-            //        if (marginal.parents[i] != fwdpp::ts::TS_NULL_NODE)
-            //            {
-            //                if (marginal.leaf_counts[i] > 0
-            //                    && marginal.leaf_counts[i] < samples.size())
-            //                    {
-            //                        auto nt = tables.node_table[i].generation;
-            //                        auto at
-            //                            = tables
-            //                                  .node_table[marginal.parents[i]]
-            //                                  .generation;
-            //                        ttime += (nt - at);
-            //                        rates[i] += (nt - at) * tm;
-            //                    }
-            //            }
-            //    }
-            for (auto &s : samples)
-                {
-                    assert(visited[s] == 0);
-                    auto p = s;
-                    while (p != fwdpp::ts::TS_NULL_NODE)
-                        {
-                            auto pp = marginal.parents[p];
-                            if (visited[p] == 0)
-                                {
-                                    visited[p] = 1;
-                                    if (marginal.leaf_counts[p]
-                                        < samples.size())
-                                        {
-                                            auto nt = tables.node_table[p]
-                                                          .generation;
-                                            auto at = 0;
-                                            if (marginal.parents[p]
-                                                != fwdpp::ts::TS_NULL_NODE)
-                                                {
-                                                    at = tables.node_table[pp]
-                                                             .generation;
-                                                }
-                                            ttime += (nt - at);
-                                            rates[p] += (nt - at) * tm;
-                                        }
-                                }
-                            p = pp;
-                        }
-                }
-            auto nm = gsl_ran_poisson(r.get(), ttime * tm);
-            if (nm)
-                {
-                    gsl_ran_multinomial(r.get(), nmuts_per_node.size(), nm,
-                                        rates.data(), nmuts_per_node.data());
-                    std::fill(nmuts_per_node.begin(), nmuts_per_node.end(), 0);
-                    nmuts += nm;
-                }
-            std::fill(visited.begin(), visited.end(), 0);
-            std::fill(rates.begin(), rates.end(), 0);
-        };
-        fwdpp::ts::algorithmL(tables.input_left, tables.output_right, samples,
-                              tables.num_nodes(), L, visitor);
-        return nmuts;
-    }
-};
-
-template <typename rng>
+template <typename rng, typename mfunction>
 unsigned
-mutate_tables(const rng &r, const double mu,
+mutate_tables(const rng &r, const mfunction &make_mutation,
               fwdpp::ts::table_collection &tables,
-              const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+              const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+              const double mu)
 {
     unsigned nmuts = 0;
     auto mr = mark_multiple_roots(tables, samples);
@@ -298,15 +209,34 @@ mutate_tables(const rng &r, const double mu,
             for (auto j : i.second)
                 {
                     double mean = dt * (j.second - j.first) * mu;
-                    nmuts += gsl_ran_poisson(r.get(), mean);
+                    auto nm = gsl_ran_poisson(r.get(), mean);
+                    nmuts += nm;
+                    for (unsigned m = 0; m < nm; ++m)
+                        {
+                            unsigned g = static_cast<unsigned>(
+                                gsl_ran_flat(r.get(), 1, dt + 1));
+                            auto k = make_mutation(j.first, j.second, g);
+                            tables.mutation_table.emplace_back(
+                                fwdpp::ts::mutation_record{ i.first, k });
+                        }
                 }
         }
     for (auto &e : tables.edge_table)
         {
-            auto dt = tables.node_table[e.child].generation
-                      - tables.node_table[e.parent].generation;
+            auto ct = tables.node_table[e.child].generation;
+            auto pt = tables.node_table[e.parent].generation;
+            auto dt = ct - pt;
             double mean = dt * (e.right - e.left) * mu;
-            nmuts += gsl_ran_poisson(r.get(), mean);
+            auto nm = gsl_ran_poisson(r.get(), mean);
+            for (unsigned m = 0; m < nm; ++m)
+                {
+                    unsigned g = static_cast<unsigned>(
+                        gsl_ran_flat(r.get(), pt + 1, ct + 1));
+                    auto k = make_mutation(e.left, e.right, g);
+                    tables.mutation_table.emplace_back(
+                        fwdpp::ts::mutation_record{ e.child, k });
+                }
+            nmuts += nm;
         }
     return nmuts;
 }
@@ -369,7 +299,7 @@ int
 main(int argc, char **argv)
 {
     fwdpp::uint_t N, gcint = 100;
-    double theta, rho, mean, shape, mu;
+    double theta, rho, mean = 0.0, shape = 1, mu;
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1;
@@ -382,8 +312,8 @@ main(int argc, char **argv)
         ("theta", po::value<double>(&theta), "4Nu")
         ("rho", po::value<double>(&rho), "4Nr")
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients")
-        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients")
+        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
+        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
@@ -412,6 +342,14 @@ main(int argc, char **argv)
         {
             throw std::invalid_argument(
                 "Mutation rate to selected variants must be >= 0");
+        }
+    else if (mu > 0)
+        {
+            if (mean == 0.0)
+                {
+                    throw std::invalid_argument(
+                        "mean selection coefficient cannot be zero");
+                }
         }
     if (ancient_sampling_interval > 0 && ancient_sample_size < 1)
         {
@@ -617,11 +555,38 @@ main(int argc, char **argv)
         }
     assert(tables.input_left.size() == tables.edge_table.size());
     assert(tables.output_right.size() == tables.edge_table.size());
-    mutation_dropper md(theta / static_cast<double>(4 * N));
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
     std::iota(s.begin(), s.end(), 0);
-    auto neutral_muts = md(rng, s, pop, tables);
-    auto neutral_muts2
-        = mutate_tables(rng, theta / static_cast<double>(4 * N), tables, s);
-    std::cout << neutral_muts << ' ' << neutral_muts2 << '\n';
+    const auto neutral_variant_maker
+        = [&rng, &pop,
+           &mutation_recycling_bin](const double left, const double right,
+                                    const fwdpp::uint_t generation) {
+              return fwdpp::infsites_popgenmut(
+                  mutation_recycling_bin, pop.mutations, rng.get(),
+                  pop.mut_lookup, generation, 0.0,
+                  [left, right, &rng] {
+                      return gsl_ran_flat(rng.get(), left, right);
+                  },
+                  []() { return 0.0; }, []() { return 0.0; });
+          };
+    auto neutral_muts = mutate_tables(rng, neutral_variant_maker, tables, s,
+                                      theta / static_cast<double>(4 * N));
+    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
+              [&pop](const fwdpp::ts::mutation_record &a,
+                     const fwdpp::ts::mutation_record &b) {
+                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
+              });
+    fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts);
+    for (std::size_t i = 0; i < pop.mutations.size(); ++i)
+        {
+            if (pop.mutations[i].neutral)
+                {
+                    if (!pop.mcounts[i])
+                        {
+                            throw std::runtime_error(
+                                "invalid final mutation count");
+                        }
+                }
+        }
+    std::cout << neutral_muts << '\n';
 }
