@@ -166,8 +166,24 @@ mark_multiple_roots(const fwdpp::ts::table_collection &tables,
                         }
                     else
                         {
-                            rv[lp].emplace_back(mti.marginal.left,
-                                                mti.marginal.right);
+                            auto itr = rv.find(lp);
+                            auto w = std::make_pair(mti.marginal.left,
+                                                    mti.marginal.right);
+                            if (itr == rv.end())
+                                {
+                                    rv[lp].emplace_back(std::move(w));
+                                }
+                            else
+                                {
+                                    assert(!itr->second.empty());
+                                    if (std::find(itr->second.begin(),
+                                                  itr->second.end(), w)
+                                        == itr->second.end())
+                                        {
+                                            itr->second.emplace_back(
+                                                std::move(w));
+                                        }
+                                }
                         }
                     if (single_root)
                         {
@@ -276,31 +292,17 @@ mutate_tables(const rng &r, const double mu,
 {
     unsigned nmuts = 0;
     auto mr = mark_multiple_roots(tables, samples);
+    for (auto &i : mr)
+        {
+            auto dt = tables.node_table[i.first].generation;
+            for (auto j : i.second)
+                {
+                    double mean = dt * (j.second - j.first) * mu;
+                    nmuts += gsl_ran_poisson(r.get(), mean);
+                }
+        }
     for (auto &e : tables.edge_table)
         {
-            auto itr = mr.find(e.parent);
-            if (itr != mr.end())
-                {
-                    for (auto &p : itr->second)
-                        {
-                            if (e.left <= p.second && p.second <= e.right)
-                                {
-                                    double lo = std::max(e.left, p.first);
-                                    double ro = std::min(e.right, p.second);
-                                    auto dt = tables.node_table[e.parent]
-                                                  .generation;
-                                    double mean = dt * (ro - lo) * mu;
-                                    
-                                    auto n = gsl_ran_poisson(r.get(), mean);
-                                    nmuts+=n;
-                                    break;
-                                    //std::cout << "overlap: " << e.parent << ' '
-                                    //          << e.left << ' ' << e.right
-                                    //          << ' ' << p.first << ' '
-                                    //          << p.second << '\n';
-                                }
-                        }
-                }
             auto dt = tables.node_table[e.child].generation
                       - tables.node_table[e.parent].generation;
             double mean = dt * (e.right - e.left) * mu;
@@ -434,7 +436,8 @@ main(int argc, char **argv)
 
     const fwdpp::extensions::gamma dfe(mean, shape);
     const auto get_selection_coefficient = [&rng, dfe, N]() {
-        return dfe(rng.get()) / static_cast<double>(2 * N);
+        return -0.1;
+        //return dfe(rng.get()) / static_cast<double>(2 * N);
     };
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
