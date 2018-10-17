@@ -271,11 +271,36 @@ class mutation_dropper
 template <typename rng>
 unsigned
 mutate_tables(const rng &r, const double mu,
-              fwdpp::ts::table_collection &tables)
+              fwdpp::ts::table_collection &tables,
+              const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
     unsigned nmuts = 0;
+    auto mr = mark_multiple_roots(tables, samples);
     for (auto &e : tables.edge_table)
         {
+            auto itr = mr.find(e.parent);
+            if (itr != mr.end())
+                {
+                    for (auto &p : itr->second)
+                        {
+                            if (e.left <= p.first && e.right <= p.second)
+                                {
+                                    double lo = std::max(e.left, p.first);
+                                    double ro = std::min(e.right, p.second);
+                                    auto dt = tables.node_table[e.parent]
+                                                  .generation;
+                                    double mean = dt * (ro - lo) * mu;
+                                    
+                                    auto n = gsl_ran_poisson(r.get(), mean);
+                                    nmuts+=n;
+                                    break;
+                                    //std::cout << "overlap: " << e.parent << ' '
+                                    //          << e.left << ' ' << e.right
+                                    //          << ' ' << p.first << ' '
+                                    //          << p.second << '\n';
+                                }
+                        }
+                }
             auto dt = tables.node_table[e.child].generation
                       - tables.node_table[e.parent].generation;
             double mean = dt * (e.right - e.left) * mu;
@@ -595,7 +620,6 @@ main(int argc, char **argv)
     std::iota(s.begin(), s.end(), 0);
     auto neutral_muts = md(rng, s, pop, tables);
     auto neutral_muts2
-        = mutate_tables(rng, theta / static_cast<double>(4 * N), tables);
-    auto roots = mark_multiple_roots(tables, s);
+        = mutate_tables(rng, theta / static_cast<double>(4 * N), tables, s);
     std::cout << neutral_muts << ' ' << neutral_muts2 << '\n';
 }
