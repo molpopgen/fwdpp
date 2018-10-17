@@ -436,8 +436,7 @@ main(int argc, char **argv)
 
     const fwdpp::extensions::gamma dfe(mean, shape);
     const auto get_selection_coefficient = [&rng, dfe, N]() {
-        return -0.1;
-        //return dfe(rng.get()) / static_cast<double>(2 * N);
+        return dfe(rng.get()) / static_cast<double>(2 * N);
     };
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
