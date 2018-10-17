@@ -54,10 +54,11 @@ calculate_fitnesses(poptype &pop, std::vector<double> &fitnesses)
 template <typename gcont_t, typename mcont_t,
           typename mutation_count_container>
 void
-gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
-               const mutation_count_container &mcounts,
-               const mutation_count_container &mcounts_from_preserved_nodes,
-               const fwdpp::uint_t twoN)
+remove_fixations_from_gametes(
+    gcont_t &gametes, const mcont_t &mutations,
+    const mutation_count_container &mcounts,
+    const mutation_count_container &mcounts_from_preserved_nodes,
+    const fwdpp::uint_t twoN)
 {
     bool fixations_exist = false;
     for (std::size_t i = 0; !fixations_exist && i < mcounts.size(); ++i)
@@ -141,7 +142,6 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
         }
 }
 
-
 template <typename rng, typename mfunction>
 unsigned
 mutate_tables(const rng &r, const mfunction &make_mutation,
@@ -222,8 +222,9 @@ simplify_tables(poptype &pop,
                        && mcounts_from_preserved_nodes[mr.key] == 0;
             }),
         tables.mutation_table.end());
-    gamete_cleaner(pop.gametes, pop.mutations, pop.mcounts,
-                   mcounts_from_preserved_nodes, 2 * pop.diploids.size());
+    remove_fixations_from_gametes(pop.gametes, pop.mutations, pop.mcounts,
+                                  mcounts_from_preserved_nodes,
+                                  2 * pop.diploids.size());
 
     update_mutations(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
                      pop.mut_lookup, 2 * pop.diploids.size());
