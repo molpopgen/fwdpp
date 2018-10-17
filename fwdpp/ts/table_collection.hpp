@@ -170,8 +170,8 @@ namespace fwdpp
             {
                 std::sort(edge_table.begin() + edge_offset, edge_table.end(),
                           [this](const edge& a, const edge& b) {
-                              auto ga = this->node_table[a.parent].generation;
-                              auto gb = this->node_table[b.parent].generation;
+                              auto ga = this->node_table[a.parent].time;
+                              auto gb = this->node_table[b.parent].time;
                               if (ga == gb)
                                   {
                                       if (a.parent == b.parent)
@@ -232,8 +232,8 @@ namespace fwdpp
                 return std::is_sorted(
                     edge_table.begin(), edge_table.end(),
                     [this](const edge& a, const edge& b) {
-                        auto ga = this->node_table[a.parent].generation;
-                        auto gb = this->node_table[b.parent].generation;
+                        auto ga = this->node_table[a.parent].time;
+                        auto gb = this->node_table[b.parent].time;
                         return ga > gb
                                && (std::tie(a.child, a.left)
                                    < std::tie(b.child, b.left));
@@ -276,9 +276,9 @@ namespace fwdpp
             }
 
             void
-            push_back_node(double generation, std::int32_t pop)
+            push_back_node(double time, std::int32_t pop)
             {
-                node_table.push_back(node{ pop, generation });
+                node_table.push_back(node{ pop, time });
             }
 
             template <typename... args>
@@ -315,10 +315,10 @@ namespace fwdpp
                     {
                         assert(e.left < e.right);
                         input_left.emplace_back(
-                            e.left, -node_table[e.parent].generation, e.parent,
+                            e.left, -node_table[e.parent].time, e.parent,
                             e.child);
                         output_right.emplace_back(
-                            e.right, node_table[e.parent].generation, e.parent,
+                            e.right, node_table[e.parent].time, e.parent,
                             e.child);
                     }
                 std::sort(input_left.begin(), input_left.end());
@@ -330,10 +330,10 @@ namespace fwdpp
                 const TS_NODE_INT next_index,
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const double generation)
+                const double time)
             {
                 // TODO: carefully document how to index node times.
-                emplace_back_node(0, generation);
+                emplace_back_node(0, time);
                 split_breakpoints(breakpoints, parents, next_index);
             }
 
@@ -343,10 +343,10 @@ namespace fwdpp
                 const std::vector<double>& breakpoints,
                 const std::vector<std::uint32_t>& new_mutations,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const double generation)
+                const double time)
             {
                 add_offspring_data(next_index, breakpoints, parents,
-                                   generation);
+                                   time);
                 for (auto& m : new_mutations)
                     {
                         mutation_table.emplace_back(

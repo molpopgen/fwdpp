@@ -171,8 +171,8 @@ namespace fwdpp
                 new_edge_table.clear();
                 new_node_table.clear();
                 E.clear();
-                // It is tempting to 
-                // just clear out each 
+                // It is tempting to
+                // just clear out each
                 // inner element. Bad idea.
                 // You use >= 10X more RAM
                 // in "big" simulations.
@@ -304,7 +304,7 @@ namespace fwdpp
                                             input_node_table[parent_input_id]
                                                 .population,
                                             input_node_table[parent_input_id]
-                                                .generation });
+                                                .time });
                                         output_id = new_node_table.size() - 1;
                                         // update sample map
                                         idmap[parent_input_id] = output_id;
@@ -463,7 +463,7 @@ namespace fwdpp
                     {
                         new_node_table.emplace_back(
                             node{ tables.node_table[s].population,
-                                  tables.node_table[s].generation });
+                                  tables.node_table[s].time });
                         add_ancestry(s, 0, L,
                                      static_cast<TS_NODE_INT>(
                                          new_node_table.size() - 1));
@@ -546,7 +546,7 @@ namespace fwdpp
                     == new_node_table.size());
                 // Update the tables.  To keep memory use as sane as possible,
                 // we use resize-and-move here.  In theory, we can also do
-                // vector swaps, but that has a side-effect of keeping 
+                // vector swaps, but that has a side-effect of keeping
                 // far too much RAM allocated compared to what we need.
                 tables.edge_table.resize(new_edge_table.size());
                 std::move(new_edge_table.begin(), new_edge_table.end(),

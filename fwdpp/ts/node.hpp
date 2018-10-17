@@ -13,7 +13,7 @@ namespace fwdpp
         struct node
         {
             std::int32_t population;
-            double generation;
+            double time;
         };
     }
 }

@@ -153,7 +153,7 @@ mutate_tables(const rng &r, const mfunction &make_mutation,
     auto mr = fwdpp::ts::mark_multiple_roots(tables, samples);
     for (auto &i : mr)
         {
-            auto dt = tables.node_table[i.first].generation;
+            auto dt = tables.node_table[i.first].time;
             for (auto j : i.second)
                 {
                     double mean = dt * (j.second - j.first) * mu;
@@ -171,8 +171,8 @@ mutate_tables(const rng &r, const mfunction &make_mutation,
         }
     for (auto &e : tables.edge_table)
         {
-            auto ct = tables.node_table[e.child].generation;
-            auto pt = tables.node_table[e.parent].generation;
+            auto ct = tables.node_table[e.child].time;
+            auto pt = tables.node_table[e.parent].time;
             auto dt = ct - pt;
             double mean = dt * (e.right - e.left) * mu;
             auto nm = gsl_ran_poisson(r.get(), mean);
@@ -452,9 +452,9 @@ main(int argc, char **argv)
                             assert(x.second >= first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
-                            assert(tables.node_table[x.first].generation
+                            assert(tables.node_table[x.first].time
                                    == generation);
-                            assert(tables.node_table[x.second].generation
+                            assert(tables.node_table[x.second].time
                                    == generation);
                             assert(std::find(tables.preserved_nodes.begin(),
                                              tables.preserved_nodes.end(),
@@ -494,8 +494,8 @@ main(int argc, char **argv)
     // what is in our node table.
     for (auto &mr : ancient_sample_metadata)
         {
-            if (tables.node_table[mr.n1].generation != mr.time
-                || tables.node_table[mr.n2].generation != mr.time)
+            if (tables.node_table[mr.n1].time != mr.time
+                || tables.node_table[mr.n2].time != mr.time)
                 {
                     throw std::runtime_error(
                         "invalid ancient sample metadata");
