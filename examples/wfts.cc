@@ -18,6 +18,7 @@
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/recycling.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
+#include <fwdpp/ts/mark_multiple_roots.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
@@ -140,59 +141,6 @@ update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
         }
 }
 
-// TODO: consider flattening the return value to a vector
-std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
-mark_multiple_roots(const fwdpp::ts::table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
-{
-    std::map<fwdpp::ts::TS_NODE_INT, std::vector<std::pair<double, double>>>
-        rv;
-    fwdpp::ts::marginal_tree_iterator mti(tables, samples);
-    while (mti(std::true_type(), std::false_type()))
-        {
-            bool single_root = false;
-            for (auto &s : samples)
-                {
-                    auto p = s;
-                    auto lp = p;
-                    while (p != -1)
-                        {
-                            lp = p;
-                            p = mti.marginal.parents[p];
-                        }
-                    if (mti.marginal.leaf_counts[lp] == samples.size())
-                        {
-                            single_root = true;
-                        }
-                    else
-                        {
-                            auto itr = rv.find(lp);
-                            auto w = std::make_pair(mti.marginal.left,
-                                                    mti.marginal.right);
-                            if (itr == rv.end())
-                                {
-                                    rv[lp].emplace_back(std::move(w));
-                                }
-                            else
-                                {
-                                    assert(!itr->second.empty());
-                                    if (std::find(itr->second.begin(),
-                                                  itr->second.end(), w)
-                                        == itr->second.end())
-                                        {
-                                            itr->second.emplace_back(
-                                                std::move(w));
-                                        }
-                                }
-                        }
-                    if (single_root)
-                        {
-                            break;
-                        }
-                }
-        }
-    return rv;
-}
 
 template <typename rng, typename mfunction>
 unsigned
@@ -202,7 +150,7 @@ mutate_tables(const rng &r, const mfunction &make_mutation,
               const double mu)
 {
     unsigned nmuts = 0;
-    auto mr = mark_multiple_roots(tables, samples);
+    auto mr = fwdpp::ts::mark_multiple_roots(tables, samples);
     for (auto &i : mr)
         {
             auto dt = tables.node_table[i.first].generation;
