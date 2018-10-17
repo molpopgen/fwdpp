@@ -283,7 +283,7 @@ mutate_tables(const rng &r, const double mu,
                 {
                     for (auto &p : itr->second)
                         {
-                            if (e.left <= p.first && e.right <= p.second)
+                            if (e.left <= p.second && p.second <= e.right)
                                 {
                                     double lo = std::max(e.left, p.first);
                                     double ro = std::min(e.right, p.second);
