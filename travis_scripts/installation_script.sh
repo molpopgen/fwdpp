@@ -21,7 +21,8 @@ then
     conda update -q conda
     # Useful for debugging any issues with conda
     conda info -a
-    conda install gcc zlib boost gsl
+    conda install gcc zlib gsl
+    conda install -c conda-forge boost-cpp
     ls -lhrt $HOME/miniconda/lib | grep boost_program
     # conda install -c bioconda libsequence
 else
