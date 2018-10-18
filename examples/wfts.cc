@@ -525,12 +525,13 @@ main(int argc, char **argv)
                      const fwdpp::ts::mutation_record &b) {
                   return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
               });
-    fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts);
+    fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
+                               mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i])
+                    if (!pop.mcounts[i] && !mcounts_from_preserved_nodes[i])
                         {
                             throw std::runtime_error(
                                 "invalid final mutation count");
