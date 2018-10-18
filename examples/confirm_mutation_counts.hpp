@@ -34,8 +34,7 @@ confirm_mutation_counts(poptype &pop,
                         "mutation node maps to null node");
                 }
 
-            if (tables.node_table[mr.node].generation
-                < pop.mutations[mr.key].g)
+            if (tables.node_table[mr.node].time < pop.mutations[mr.key].g)
                 {
                     throw std::runtime_error(
                         "mutation mapped to node pre-dating its origin");
