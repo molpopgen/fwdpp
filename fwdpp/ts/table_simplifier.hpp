@@ -13,7 +13,6 @@
 #include "node.hpp"
 #include "edge.hpp"
 #include "table_collection.hpp"
-#include "msprime_algo.hpp"
 
 namespace fwdpp
 {
