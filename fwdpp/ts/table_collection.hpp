@@ -314,12 +314,12 @@ namespace fwdpp
                 for (auto& e : edge_table)
                     {
                         assert(e.left < e.right);
-                        input_left.emplace_back(
-                            e.left, -node_table[e.parent].time, e.parent,
-                            e.child);
-                        output_right.emplace_back(
-                            e.right, node_table[e.parent].time, e.parent,
-                            e.child);
+                        input_left.emplace_back(e.left,
+                                                -node_table[e.parent].time,
+                                                e.parent, e.child);
+                        output_right.emplace_back(e.right,
+                                                  node_table[e.parent].time,
+                                                  e.parent, e.child);
                     }
                 std::sort(input_left.begin(), input_left.end());
                 std::sort(output_right.begin(), output_right.end());
@@ -330,10 +330,10 @@ namespace fwdpp
                 const TS_NODE_INT next_index,
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const double time)
+                const std::int32_t population, const double time)
             {
                 // TODO: carefully document how to index node times.
-                emplace_back_node(0, time);
+                emplace_back_node(population, time);
                 split_breakpoints(breakpoints, parents, next_index);
             }
 
@@ -343,10 +343,10 @@ namespace fwdpp
                 const std::vector<double>& breakpoints,
                 const std::vector<std::uint32_t>& new_mutations,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const double time)
+                const std::int32_t population, const double time)
             {
                 add_offspring_data(next_index, breakpoints, parents,
-                                   time);
+                                   population, time);
                 for (auto& m : new_mutations)
                     {
                         mutation_table.emplace_back(

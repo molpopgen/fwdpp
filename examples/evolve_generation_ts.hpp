@@ -48,8 +48,9 @@ generate_offspring(
         decltype(new_mutations)(end_of_neutral, new_mutations.end()),
         breakpoints, parent_g1, parent_g2, pop.gametes, pop.mutations,
         gamete_recycling_bin, pop.neutral, pop.selected);
+    //TODO: generalize this for offspring deme != 0
     tables.add_offspring_data(next_index, breakpoints, new_mutations,
-                              parent_nodes, generation);
+                              parent_nodes, 0, generation);
     return next_index + 1;
 }
 
@@ -70,10 +71,10 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
 
     auto gamete_recycling_bin
         = fwdpp::fwdpp_internal::make_gamete_queue(pop.gametes);
-    for(auto & dip:pop.diploids)
-    {
-        pop.gametes[dip.first].n=pop.gametes[dip.second].n=0;
-    }
+    for (auto& dip : pop.diploids)
+        {
+            pop.gametes[dip.first].n = pop.gametes[dip.second].n = 0;
+        }
 
     decltype(pop.diploids) offspring(N_next);
 
