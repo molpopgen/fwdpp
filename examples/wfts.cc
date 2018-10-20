@@ -21,6 +21,7 @@
 #include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
+#include <fwdpp/ts/remove_fixations_from_gametes.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
@@ -51,47 +52,6 @@ calculate_fitnesses(poptype &pop, std::vector<double> &fitnesses)
     auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
         gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
     return lookup;
-}
-
-template <typename gcont_t, typename mcont_t,
-          typename mutation_count_container>
-void
-remove_fixations_from_gametes(
-    gcont_t &gametes, const mcont_t &mutations,
-    const mutation_count_container &mcounts,
-    const mutation_count_container &mcounts_from_preserved_nodes,
-    const fwdpp::uint_t twoN)
-{
-    bool fixations_exist = false;
-    for (std::size_t i = 0; !fixations_exist && i < mcounts.size(); ++i)
-        {
-            if (mcounts[i] == twoN && mcounts_from_preserved_nodes[i] == 0)
-                {
-                    fixations_exist = true;
-                }
-        }
-    if (fixations_exist)
-        {
-            auto removal_criteria = [&mcounts, &mcounts_from_preserved_nodes,
-                                     twoN](const fwdpp::uint_t key) {
-                return mcounts[key] == twoN
-                       && mcounts_from_preserved_nodes[key] == 0;
-            };
-            for (auto &g : gametes)
-                {
-                    if (g.n)
-                        {
-                            auto itr = std::remove_if(g.mutations.begin(),
-                                                      g.mutations.end(),
-                                                      removal_criteria);
-                            g.mutations.erase(itr, g.mutations.end());
-                            itr = std::remove_if(g.smutations.begin(),
-                                                 g.smutations.end(),
-                                                 removal_criteria);
-                            g.smutations.erase(itr, g.smutations.end());
-                        }
-                }
-        }
 }
 
 template <typename poptype>
@@ -127,9 +87,9 @@ simplify_tables(poptype &pop,
                        && mcounts_from_preserved_nodes[mr.key] == 0;
             }),
         tables.mutation_table.end());
-    remove_fixations_from_gametes(pop.gametes, pop.mutations, pop.mcounts,
-                                  mcounts_from_preserved_nodes,
-                                  2 * pop.diploids.size());
+    fwdpp::ts::remove_fixations_from_gametes(
+        pop.gametes, pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
+        2 * pop.diploids.size());
 
     fwdpp::ts::flag_mutations_for_recycling(
         pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
