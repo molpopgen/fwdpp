@@ -64,6 +64,8 @@ namespace fwdpp
                       std::numeric_limits<double>::quiet_NaN()
                   }
             {
+                //TODO: fix the below for sample_index_map
+                //and test!
                 for (auto s : samples)
                     {
                         if (static_cast<std::size_t>(s) >= leaf_counts.size())
