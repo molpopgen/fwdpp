@@ -13,6 +13,7 @@ pkginclude_HEADERS= definitions.hpp \
 			marginal_tree.hpp \
 			marginal_tree_iterator.hpp \
 			mark_multiple_roots.hpp \
+			mutate_tables.hpp \
 			count_mutations.hpp \
 			msprime_algo.hpp \
 			mutation_record.hpp \

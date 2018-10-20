@@ -18,7 +18,7 @@
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/recycling.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
-#include <fwdpp/ts/mark_multiple_roots.hpp>
+#include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
@@ -94,53 +94,6 @@ remove_fixations_from_gametes(
         }
 }
 
-template <typename rng, typename mfunction>
-unsigned
-mutate_tables(const rng &r, const mfunction &make_mutation,
-              fwdpp::ts::table_collection &tables,
-              const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-              const double mu)
-{
-    unsigned nmuts = 0;
-    auto mr = fwdpp::ts::mark_multiple_roots(tables, samples);
-    for (auto &i : mr)
-        {
-            auto dt = tables.node_table[i.first].time;
-            for (auto j : i.second)
-                {
-                    double mean = dt * (j.second - j.first) * mu;
-                    auto nm = gsl_ran_poisson(r.get(), mean);
-                    nmuts += nm;
-                    for (unsigned m = 0; m < nm; ++m)
-                        {
-                            unsigned g = static_cast<unsigned>(
-                                gsl_ran_flat(r.get(), 1, dt + 1));
-                            auto k = make_mutation(j.first, j.second, g);
-                            tables.mutation_table.emplace_back(
-                                fwdpp::ts::mutation_record{ i.first, k });
-                        }
-                }
-        }
-    for (auto &e : tables.edge_table)
-        {
-            auto ct = tables.node_table[e.child].time;
-            auto pt = tables.node_table[e.parent].time;
-            auto dt = ct - pt;
-            double mean = dt * (e.right - e.left) * mu;
-            auto nm = gsl_ran_poisson(r.get(), mean);
-            for (unsigned m = 0; m < nm; ++m)
-                {
-                    unsigned g = static_cast<unsigned>(
-                        gsl_ran_flat(r.get(), pt + 1, ct + 1));
-                    auto k = make_mutation(e.left, e.right, g);
-                    tables.mutation_table.emplace_back(
-                        fwdpp::ts::mutation_record{ e.child, k });
-                }
-            nmuts += nm;
-        }
-    return nmuts;
-}
-
 template <typename poptype>
 std::vector<fwdpp::ts::TS_NODE_INT>
 simplify_tables(poptype &pop,
@@ -178,8 +131,9 @@ simplify_tables(poptype &pop,
                                   mcounts_from_preserved_nodes,
                                   2 * pop.diploids.size());
 
-    fwdpp::ts::flag_mutations_for_recycling(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-                     pop.mut_lookup, 2 * pop.diploids.size());
+    fwdpp::ts::flag_mutations_for_recycling(
+        pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
+        pop.mut_lookup, 2 * pop.diploids.size());
     confirm_mutation_counts(pop, tables);
     return idmap;
 }
@@ -276,7 +230,8 @@ main(int argc, char **argv)
     int ancient_sample_size = -1;
     bool leaf_test = false;
     bool matrix_test = false;
-    po::options_description options("Simulation options"),testing("Testing options");
+    po::options_description options("Simulation options"),
+        testing("Testing options");
     // clang-format off
     options.add_options()("help", "Display help")
         ("N", po::value<unsigned>(&N), "Diploid population size")
@@ -546,8 +501,9 @@ main(int argc, char **argv)
                   },
                   []() { return 0.0; }, []() { return 0.0; });
           };
-    auto neutral_muts = mutate_tables(rng, neutral_variant_maker, tables, s,
-                                      theta / static_cast<double>(4 * N));
+    auto neutral_muts
+        = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
+                                   theta / static_cast<double>(4 * N));
     std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
               [&pop](const fwdpp::ts::mutation_record &a,
                      const fwdpp::ts::mutation_record &b) {
@@ -591,13 +547,13 @@ main(int argc, char **argv)
                                         pop.mutations,
                                         mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
-                    auto sc=s;
+                    auto sc = s;
                     sc.insert(sc.end(), tables.preserved_nodes.begin(),
-                             tables.preserved_nodes.end());
+                              tables.preserved_nodes.end());
                     auto mc(pop.mcounts);
                     std::transform(mc.begin(), mc.end(),
-                                   mcounts_from_preserved_nodes.begin(),mc.begin(),
-                                   std::plus<fwdpp::uint_t>());
+                                   mcounts_from_preserved_nodes.begin(),
+                                   mc.begin(), std::plus<fwdpp::uint_t>());
                     std::cout << "Matrix test with respect to last generation "
                                  "+ preserved nodes...";
                     matrix_runtime_test(tables, sc, pop.mutations, mc);
