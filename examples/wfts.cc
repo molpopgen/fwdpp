@@ -570,6 +570,7 @@ main(int argc, char **argv)
     fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
     while (mti(std::true_type(), std::true_type()))
         {
+            std::cout << mti.marginal.left << '\n';
             for (auto i : sample_list)
                 {
                     auto p = i;
@@ -589,9 +590,11 @@ main(int argc, char **argv)
                                                 }
                                             l = mti.marginal.next_sample[l];
                                         }
-                                    std::cout << ns << ' '
-                                              << mti.marginal.leaf_counts[p]
-                                              << '\n';
+                                    if (ns != mti.marginal.leaf_counts[p])
+                                        {
+                                            throw std::runtime_error(
+                                                "bad sample interval");
+                                        }
                                 }
                             p = mti.marginal.parents[p];
                         }
