@@ -45,6 +45,7 @@ namespace fwdpp
                         leaf_counts[s] = 1;
                         sample_index_map[s] = i;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
+                        i++;
                     }
             }
             marginal_tree(std::int32_t nnodes,
