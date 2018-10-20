@@ -20,6 +20,7 @@
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/ts/mark_multiple_roots.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
+#include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
@@ -245,6 +246,76 @@ struct diploid_metadata
     }
 };
 
+void
+expensive_leaf_test(const fwdpp::ts::table_collection &tables,
+                    const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list)
+{
+    fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
+    while (mti(std::true_type(), std::true_type()))
+        {
+            for (auto i : sample_list)
+                {
+                    auto p = i;
+                    while (p != -1)
+                        {
+                            auto l = mti.marginal.left_sample[p];
+                            auto ogl = l;
+                            if (l != -1)
+                                {
+                                    auto r = mti.marginal.right_sample[p];
+                                    int ns = 0;
+                                    while (true)
+                                        {
+                                            ++ns;
+                                            if (l == r)
+                                                {
+                                                    break;
+                                                }
+                                            l = mti.marginal.next_sample[l];
+                                            if (l == ogl)
+                                                {
+                                                    throw std::runtime_error(
+                                                        "loopback error");
+                                                }
+                                        }
+                                    if (ns != mti.marginal.leaf_counts[p])
+                                        {
+                                            throw std::runtime_error(
+                                                "bad sample interval");
+                                        }
+                                }
+                            p = mti.marginal.parents[p];
+                        }
+                }
+        }
+}
+
+template <typename mcont_t>
+void
+matrix_runtime_test(const fwdpp::ts::table_collection &tables,
+                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+                    const mcont_t &mutations,
+                    const std::vector<fwdpp::uint_t> &mcounts)
+{
+    auto dm = fwdpp::ts::generate_data_matrix(tables, samples, mutations, true,
+                                              true);
+    auto rs = fwdpp::row_sums(dm);
+    for (std::size_t i = 0; i < rs.first.size(); ++i)
+        {
+            if (rs.first[i] != mcounts[dm.neutral_keys[i]])
+                {
+                    throw std::runtime_error("bad neutral mutation count");
+                }
+        }
+    for (std::size_t i = 0; i < rs.second.size(); ++i)
+        {
+            if (rs.second[i] != mcounts[dm.selected_keys[i]])
+                {
+                    throw std::runtime_error("bad selected mutation count");
+                }
+        }
+}
+
 int
 main(int argc, char **argv)
 {
@@ -253,6 +324,8 @@ main(int argc, char **argv)
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1;
+    bool leaf_test = false;
+    bool matrix_test = false;
     po::options_description options("Usage");
     // clang-format off
     options.add_options()("help", "Display help")
@@ -268,7 +341,9 @@ main(int argc, char **argv)
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
         ("ansam", po::value<int>(&ancient_sample_size),
-         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used");
+         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
+        ("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
+        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums");
     // clang-format on
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, options), vm);
@@ -541,63 +616,39 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
-    //const auto sample_list = tables.preserved_nodes;
-    ////const auto sample_list = s;
-    //std::cout << sample_list.size() << '\n';
-    //fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
-    //while (mti(std::true_type(), std::true_type()))
-    //    {
-    //        const auto &marginal = mti.marginal;
-    //        for (const auto u : sample_list)
-    //            {
-    //                auto l = marginal.left_sample[u];
-    //                if (l != fwdpp::ts::TS_NULL_NODE)
-    //                    {
-    //                        const auto stop = marginal.right_sample[u];
-    //                        while (true)
-    //                            {
-    //                                if (l == stop)
-    //                                    {
-    //                                        break;
-    //                                    }
-    //                                l = marginal.next_sample[l];
-    //                            }
-    //                    }
-    //            }
-    //    }
-
-    const auto sample_list = tables.preserved_nodes;
-    fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
-    while (mti(std::true_type(), std::true_type()))
+    if (leaf_test)
         {
-            std::cout << mti.marginal.left << '\n';
-            for (auto i : sample_list)
+            std::cerr << "Starting sample list validation.  This may take a "
+                         "while!\n";
+            expensive_leaf_test(tables, s);
+            std::cout << "Passed with respect to last generation.\n";
+            expensive_leaf_test(tables, tables.preserved_nodes);
+            std::cout << "Passed with respect to preserved samples.\n";
+        }
+
+    if (matrix_test)
+        {
+            std::cerr << "Matrix test with respect to last generation...";
+            matrix_runtime_test(tables, s, pop.mutations, pop.mcounts);
+            std::cerr << "passed\n";
+            if (!tables.preserved_nodes.empty())
                 {
-                    auto p = i;
-                    while (p != -1)
-                        {
-                            auto l = mti.marginal.left_sample[p];
-                            if (l != -1)
-                                {
-                                    auto r = mti.marginal.right_sample[p];
-                                    int ns = 0;
-                                    while (true)
-                                        {
-                                            ++ns;
-                                            if (l == r)
-                                                {
-                                                    break;
-                                                }
-                                            l = mti.marginal.next_sample[l];
-                                        }
-                                    if (ns != mti.marginal.leaf_counts[p])
-                                        {
-                                            throw std::runtime_error(
-                                                "bad sample interval");
-                                        }
-                                }
-                            p = mti.marginal.parents[p];
-                        }
+                    std::cout
+                        << "Matrix test with respect to preserved samples...";
+                    matrix_runtime_test(tables, tables.preserved_nodes,
+                                        pop.mutations,
+                                        mcounts_from_preserved_nodes);
+                    std::cerr << "passed\n";
+                    s.insert(s.end(), tables.preserved_nodes.begin(),
+                             tables.preserved_nodes.end());
+                    auto mc(pop.mcounts);
+                    std::transform(mc.begin(), mc.end(),
+                                   mcounts_from_preserved_nodes.begin(),mc.begin(),
+                                   std::plus<fwdpp::uint_t>());
+                    std::cout << "Matrix test with respect to last generation "
+                                 "+ preserved nodes...";
+                    matrix_runtime_test(tables, s, pop.mutations, mc);
+                    std::cout << "passed.\n";
                 }
         }
 }
