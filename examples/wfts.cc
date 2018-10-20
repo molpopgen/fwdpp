@@ -542,6 +542,8 @@ main(int argc, char **argv)
     std::cout << neutral_muts << '\n';
 
     const auto sample_list = tables.preserved_nodes;
+    //const auto sample_list = s;
+    std::cout << sample_list.size() << '\n';
     fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
     while (mti(std::true_type(), std::true_type()))
         {
@@ -551,10 +553,10 @@ main(int argc, char **argv)
                     auto l = marginal.left_sample[u];
                     if (l != fwdpp::ts::TS_NULL_NODE)
                         {
-                            const auto s = marginal.right_sample[u];
+                            const auto stop = marginal.right_sample[u];
                             while (true)
                                 {
-                                    if (l == s)
+                                    if (l == stop)
                                         {
                                             break;
                                         }
