@@ -19,6 +19,7 @@
 #include <fwdpp/ts/recycling.hpp>
 #include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/ts/mark_multiple_roots.hpp>
+#include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>
@@ -539,4 +540,27 @@ main(int argc, char **argv)
                 }
         }
     std::cout << neutral_muts << '\n';
+
+    const auto sample_list = tables.preserved_nodes;
+    fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
+    while (mti(std::true_type(), std::true_type()))
+        {
+            const auto &marginal = mti.marginal;
+            for (const auto u : sample_list)
+                {
+                    auto l = marginal.left_sample[u];
+                    if (l != fwdpp::ts::TS_NULL_NODE)
+                        {
+                            const auto s = marginal.right_sample[u];
+                            while (true)
+                                {
+                                    if (l == s)
+                                        {
+                                            break;
+                                        }
+                                }
+                            l = marginal.next_sample[l];
+                        }
+                }
+        }
 }
