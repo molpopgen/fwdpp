@@ -326,7 +326,7 @@ main(int argc, char **argv)
     int ancient_sample_size = -1;
     bool leaf_test = false;
     bool matrix_test = false;
-    po::options_description options("Usage");
+    po::options_description options("Simulation options"),testing("Testing options");
     // clang-format off
     options.add_options()("help", "Display help")
         ("N", po::value<unsigned>(&N), "Diploid population size")
@@ -341,13 +341,20 @@ main(int argc, char **argv)
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
         ("ansam", po::value<int>(&ancient_sample_size),
-         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
-        ("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
+         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used");
+        testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
         ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums");
     // clang-format on
+    options.add(testing);
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, options), vm);
     po::notify(vm);
+
+    if (vm.count("help") || argc == 1)
+        {
+            std::cout << options << '\n';
+            std::exit(1);
+        }
 
     // TODO: need parameter validation
     if (theta < 0. || rho < 0.)
@@ -380,11 +387,6 @@ main(int argc, char **argv)
         {
             throw std::invalid_argument(
                 "ansam must be > 0 when tracking ancient samples");
-        }
-    if (vm.count("help"))
-        {
-            std::cout << options << '\n';
-            std::exit(1);
         }
 
     GSLrng rng(seed);
@@ -639,7 +641,8 @@ main(int argc, char **argv)
                                         pop.mutations,
                                         mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
-                    s.insert(s.end(), tables.preserved_nodes.begin(),
+                    auto sc=s;
+                    sc.insert(sc.end(), tables.preserved_nodes.begin(),
                              tables.preserved_nodes.end());
                     auto mc(pop.mcounts);
                     std::transform(mc.begin(), mc.end(),
@@ -647,7 +650,7 @@ main(int argc, char **argv)
                                    std::plus<fwdpp::uint_t>());
                     std::cout << "Matrix test with respect to last generation "
                                  "+ preserved nodes...";
-                    matrix_runtime_test(tables, s, pop.mutations, mc);
+                    matrix_runtime_test(tables, sc, pop.mutations, mc);
                     std::cout << "passed.\n";
                 }
         }
