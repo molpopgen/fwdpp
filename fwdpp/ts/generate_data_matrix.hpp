@@ -74,14 +74,15 @@ namespace fwdpp
                 {
                     // Advance the mutation table records until we are
                     // in the current tree
+                    const auto & tree = tv.tree();
                     while (mut < mut_end
-                           && mutations[mut->key].pos < tv.marginal.left)
+                           && mutations[mut->key].pos < tree.left)
                         {
                             ++mut;
                         }
                     // Process mutations on this tree
                     for (; mut < mut_end
-                           && mutations[mut->key].pos < tv.marginal.right;
+                           && mutations[mut->key].pos < tree.right;
                          ++mut)
                         {
                             bool is_neutral = mutations[mut->key].neutral;
@@ -89,12 +90,12 @@ namespace fwdpp
                                 || (!is_neutral && record_selected))
                                 {
                                     auto index
-                                        = tv.marginal.left_sample[mut->node];
+                                        = tree.left_sample[mut->node];
                                     // Check if mutation leads to a sample
                                     if (index != TS_NULL_NODE)
                                         {
                                             detail::process_samples(
-                                                tv.marginal, mut->node, index,
+                                                tree, mut->node, index,
                                                 genotypes);
                                             // Update our return value
                                             detail::update_data_matrix(

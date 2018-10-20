@@ -22,6 +22,7 @@ namespace fwdpp
             while (mti(std::true_type(), std::false_type()))
                 {
                     bool single_root = false;
+					auto & tree = mti.tree();
                     for (auto &s : samples)
                         {
                             auto p = s;
@@ -29,9 +30,9 @@ namespace fwdpp
                             while (p != -1)
                                 {
                                     lp = p;
-                                    p = mti.marginal.parents[p];
+                                    p = tree.parents[p];
                                 }
-                            if (mti.marginal.leaf_counts[lp] == samples.size())
+                            if (tree.leaf_counts[lp] == samples.size())
                                 {
                                     single_root = true;
                                 }
@@ -39,7 +40,7 @@ namespace fwdpp
                                 {
                                     auto itr = rv.find(lp);
                                     auto w = std::make_pair(
-                                        mti.marginal.left, mti.marginal.right);
+                                        tree.left, tree.right);
                                     if (itr == rv.end())
                                         {
                                             rv[lp].emplace_back(std::move(w));

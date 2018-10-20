@@ -31,22 +31,21 @@ namespace fwdpp
             marginal_tree_iterator mti(tables, samples);
             while (mti(std::true_type(), std::false_type()))
                 {
+                    auto& tree = mti.tree();
                     while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos
-                                  < mti.marginal.left)
+                           && mutations[mtable_itr->key].pos < tree.left)
                         {
                             ++mtable_itr;
                         }
                     while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos
-                                  < mti.marginal.right)
+                           && mutations[mtable_itr->key].pos < tree.right)
                         {
                             assert(mutations[mtable_itr->key].pos
-                                   >= mti.marginal.left);
+                                   >= tree.left);
                             assert(mutations[mtable_itr->key].pos
-                                   < mti.marginal.right);
+                                   < tree.right);
                             mcounts[mtable_itr->key]
-                                = mti.marginal.leaf_counts[mtable_itr->node];
+                                = tree.leaf_counts[mtable_itr->node];
                             ++mtable_itr;
                         }
                 }
@@ -75,25 +74,23 @@ namespace fwdpp
                                        tables.preserved_nodes);
             while (mti(std::true_type(), std::false_type()))
                 {
+                    auto& tree = mti.tree();
                     while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos
-                                  < mti.marginal.left)
+                           && mutations[mtable_itr->key].pos < tree.left)
                         {
                             ++mtable_itr;
                         }
                     while (mtable_itr < mtable_end
-                           && mutations[mtable_itr->key].pos
-                                  < mti.marginal.right)
+                           && mutations[mtable_itr->key].pos < tree.right)
                         {
                             assert(mutations[mtable_itr->key].pos
-                                   >= mti.marginal.left);
+                                   >= tree.left);
                             assert(mutations[mtable_itr->key].pos
-                                   < mti.marginal.right);
+                                   < tree.right);
                             mcounts[mtable_itr->key]
-                                = mti.marginal.leaf_counts[mtable_itr->node];
+                                = tree.leaf_counts[mtable_itr->node];
                             acounts[mtable_itr->key]
-                                = mti.marginal
-                                      .preserved_leaf_counts[mtable_itr->node];
+                                = tree.preserved_leaf_counts[mtable_itr->node];
                             ++mtable_itr;
                         }
                 }

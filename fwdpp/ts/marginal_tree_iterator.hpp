@@ -14,9 +14,9 @@ namespace fwdpp
           private:
             indexed_edge_container::const_iterator j, jM, k, kM;
             double x, maxpos;
+            marginal_tree marginal;
 
           public:
-            marginal_tree marginal;
             marginal_tree_iterator(const table_collection& tables,
                                    const std::vector<TS_NODE_INT>& samples)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
@@ -24,6 +24,21 @@ namespace fwdpp
                   kM(tables.output_right.cend()), x(0.0), maxpos(tables.L),
                   marginal(tables.num_nodes(), samples)
             {
+            }
+
+            const marginal_tree&
+            tree() const
+            /*!
+			 * Return a const reference to the current tree.
+			 *
+			 * \code{cpp}
+			 * // Copy-free "view" of
+			 * // the stored fwdpp::ts::marginal_tree
+			 * auto & tree = mti.tree();
+			 * \endcode
+			 */
+            {
+                return marginal;
             }
 
             marginal_tree_iterator(

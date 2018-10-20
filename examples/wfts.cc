@@ -117,16 +117,17 @@ expensive_leaf_test(const fwdpp::ts::table_collection &tables,
     fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
     while (mti(std::true_type(), std::true_type()))
         {
+            auto &tree = mti.tree();
             for (auto i : sample_list)
                 {
                     auto p = i;
                     while (p != -1)
                         {
-                            auto l = mti.marginal.left_sample[p];
+                            auto l = tree.left_sample[p];
                             auto ogl = l;
                             if (l != -1)
                                 {
-                                    auto r = mti.marginal.right_sample[p];
+                                    auto r = tree.right_sample[p];
                                     int ns = 0;
                                     while (true)
                                         {
@@ -135,20 +136,20 @@ expensive_leaf_test(const fwdpp::ts::table_collection &tables,
                                                 {
                                                     break;
                                                 }
-                                            l = mti.marginal.next_sample[l];
+                                            l = tree.next_sample[l];
                                             if (l == ogl)
                                                 {
                                                     throw std::runtime_error(
                                                         "loopback error");
                                                 }
                                         }
-                                    if (ns != mti.marginal.leaf_counts[p])
+                                    if (ns != tree.leaf_counts[p])
                                         {
                                             throw std::runtime_error(
                                                 "bad sample interval");
                                         }
                                 }
-                            p = mti.marginal.parents[p];
+                            p = tree.parents[p];
                         }
                 }
         }
