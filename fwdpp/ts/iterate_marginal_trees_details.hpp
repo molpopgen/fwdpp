@@ -69,13 +69,13 @@ namespace fwdpp
                     {
                         if (marginal.is_sample[n] == 1)
                             {
-                                marginal.left_sample[n]
-                                    = marginal.right_sample[n];
+                                marginal.right_sample[n]
+                                    = marginal.left_sample[n];
                             }
                         else
                             {
-                                marginal.left_sample[n]
-                                    = marginal.right_sample[n] = TS_NULL_NODE;
+                                marginal.left_sample[n] = TS_NULL_NODE;
+                                marginal.right_sample[n] = TS_NULL_NODE;
                             }
                         for (auto v = marginal.left_child[n];
                              v != TS_NULL_NODE; v = marginal.right_sib[v])
