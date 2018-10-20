@@ -16,7 +16,6 @@ pkginclude_HEADERS= definitions.hpp \
 			count_mutations.hpp \
 			msprime_algo.hpp \
 			mutation_record.hpp \
-			recycling.hpp \
-			variant_filler.hpp 
+			recycling.hpp
 
 
