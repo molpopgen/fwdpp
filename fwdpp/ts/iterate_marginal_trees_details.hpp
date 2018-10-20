@@ -67,7 +67,8 @@ namespace fwdpp
                 for (auto n = parent; n != TS_NULL_NODE;
                      n = marginal.parents[n])
                     {
-                        if (marginal.is_sample[n] == 1)
+                        auto sample_index = marginal.sample_index_map[n];
+                        if (sample_index != TS_NULL_NODE)
                             {
                                 marginal.right_sample[n]
                                     = marginal.left_sample[n];
