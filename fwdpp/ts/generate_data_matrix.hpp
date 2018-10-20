@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include "table_collection.hpp"
-#include "marginal_tree_iterator.hpp"
+#include "tree_visitor.hpp"
 #include <fwdpp/data_matrix.hpp>
 
 namespace fwdpp
@@ -67,7 +67,7 @@ namespace fwdpp
         {
             auto mut = tables.mutation_table.cbegin();
             const auto mut_end = tables.mutation_table.cend();
-            marginal_tree_iterator tv(tables, samples);
+            tree_visitor tv(tables, samples);
             std::vector<std::int8_t> genotypes(samples.size(), 0);
             data_matrix rv(samples.size());
             while (tv(std::true_type(), std::true_type()))

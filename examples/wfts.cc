@@ -17,9 +17,8 @@
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/recycling.hpp>
-#include <fwdpp/ts/marginal_tree_iterator.hpp>
+#include <fwdpp/ts/tree_visitor.hpp>
 #include <fwdpp/ts/mutate_tables.hpp>
-#include <fwdpp/ts/marginal_tree_iterator.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
@@ -114,7 +113,7 @@ void
 expensive_leaf_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list)
 {
-    fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
+    fwdpp::ts::tree_visitor mti(tables, sample_list);
     while (mti(std::true_type(), std::true_type()))
         {
             auto &tree = mti.tree();

@@ -6,7 +6,7 @@
 #include <vector>
 #include "definitions.hpp"
 #include "table_collection.hpp"
-#include "marginal_tree_iterator.hpp"
+#include "tree_visitor.hpp"
 
 namespace fwdpp
 {
@@ -28,7 +28,7 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            marginal_tree_iterator mti(tables, samples);
+            tree_visitor mti(tables, samples);
             while (mti(std::true_type(), std::false_type()))
                 {
                     auto& tree = mti.tree();
@@ -70,7 +70,7 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            marginal_tree_iterator mti(tables, samples,
+            tree_visitor mti(tables, samples,
                                        tables.preserved_nodes);
             while (mti(std::true_type(), std::false_type()))
                 {

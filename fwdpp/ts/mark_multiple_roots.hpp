@@ -6,7 +6,7 @@
 #include <vector>
 #include "definitions.hpp"
 #include "table_collection.hpp"
-#include "marginal_tree_iterator.hpp"
+#include "tree_visitor.hpp"
 
 namespace fwdpp
 {
@@ -18,7 +18,7 @@ namespace fwdpp
                             const std::vector<TS_NODE_INT> &samples)
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
-            marginal_tree_iterator mti(tables, samples);
+            tree_visitor mti(tables, samples);
             while (mti(std::true_type(), std::false_type()))
                 {
                     bool single_root = false;

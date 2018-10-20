@@ -276,7 +276,7 @@ pkginclude_HEADERS = definitions.hpp \
 			iterate_marginal_trees_details.hpp \
 			iterate_marginal_trees.hpp \
 			marginal_tree.hpp \
-			marginal_tree_iterator.hpp \
+			tree_visitor.hpp \
 			mark_multiple_roots.hpp \
 			mutate_tables.hpp \
 			count_mutations.hpp \

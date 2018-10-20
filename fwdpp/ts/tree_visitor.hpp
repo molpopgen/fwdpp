@@ -1,5 +1,5 @@
-#ifndef FWDPP_TS_MARGINAL_TREE_ITERATOR_HPP
-#define FWDPP_TS_MARGINAL_TREE_ITERATOR_HPP
+#ifndef FWDPP_TS_TREE_VISITOR_HPP
+#define FWDPP_TS_TREE_VISITOR_HPP
 
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
@@ -9,7 +9,7 @@ namespace fwdpp
 {
     namespace ts
     {
-        class marginal_tree_iterator
+        class tree_visitor
         {
           private:
             indexed_edge_container::const_iterator j, jM, k, kM;
@@ -17,8 +17,8 @@ namespace fwdpp
             marginal_tree marginal;
 
           public:
-            marginal_tree_iterator(const table_collection& tables,
-                                   const std::vector<TS_NODE_INT>& samples)
+            tree_visitor(const table_collection& tables,
+                         const std::vector<TS_NODE_INT>& samples)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0), maxpos(tables.L),
@@ -41,10 +41,9 @@ namespace fwdpp
                 return marginal;
             }
 
-            marginal_tree_iterator(
-                const table_collection& tables,
-                const std::vector<TS_NODE_INT>& samples,
-                const std::vector<TS_NODE_INT>& preserved_nodes)
+            tree_visitor(const table_collection& tables,
+                         const std::vector<TS_NODE_INT>& samples,
+                         const std::vector<TS_NODE_INT>& preserved_nodes)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0), maxpos(tables.L),
