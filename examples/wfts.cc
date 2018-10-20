@@ -541,27 +541,59 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
+    //const auto sample_list = tables.preserved_nodes;
+    ////const auto sample_list = s;
+    //std::cout << sample_list.size() << '\n';
+    //fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
+    //while (mti(std::true_type(), std::true_type()))
+    //    {
+    //        const auto &marginal = mti.marginal;
+    //        for (const auto u : sample_list)
+    //            {
+    //                auto l = marginal.left_sample[u];
+    //                if (l != fwdpp::ts::TS_NULL_NODE)
+    //                    {
+    //                        const auto stop = marginal.right_sample[u];
+    //                        while (true)
+    //                            {
+    //                                if (l == stop)
+    //                                    {
+    //                                        break;
+    //                                    }
+    //                                l = marginal.next_sample[l];
+    //                            }
+    //                    }
+    //            }
+    //    }
+
     const auto sample_list = tables.preserved_nodes;
-    //const auto sample_list = s;
-    std::cout << sample_list.size() << '\n';
     fwdpp::ts::marginal_tree_iterator mti(tables, sample_list);
     while (mti(std::true_type(), std::true_type()))
         {
-            const auto &marginal = mti.marginal;
-            for (const auto u : sample_list)
+            for (auto i : sample_list)
                 {
-                    auto l = marginal.left_sample[u];
-                    if (l != fwdpp::ts::TS_NULL_NODE)
+                    auto p = i;
+                    while (p != -1)
                         {
-                            const auto stop = marginal.right_sample[u];
-                            while (true)
+                            auto l = mti.marginal.left_sample[p];
+                            if (l != -1)
                                 {
-                                    if (l == stop)
+                                    auto r = mti.marginal.right_sample[p];
+                                    int ns = 0;
+                                    while (true)
                                         {
-                                            break;
+                                            ++ns;
+                                            if (l == r)
+                                                {
+                                                    break;
+                                                }
+                                            l = mti.marginal.next_sample[l];
                                         }
-                                    l = marginal.next_sample[l];
+                                    std::cout << ns << ' '
+                                              << mti.marginal.leaf_counts[p]
+                                              << '\n';
                                 }
+                            p = mti.marginal.parents[p];
                         }
                 }
         }
