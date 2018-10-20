@@ -94,56 +94,6 @@ remove_fixations_from_gametes(
         }
 }
 
-template <typename mcont_t, typename lookup_table,
-          typename mutation_count_container>
-void
-update_mutations(const mcont_t &mutations, mutation_count_container &mcounts,
-                 mutation_count_container &mcounts_from_preserved_nodes,
-                 lookup_table &lookup, const fwdpp::uint_t twoN)
-{
-    for (std::size_t i = 0; i < mcounts.size(); ++i)
-        {
-            if (mcounts_from_preserved_nodes[i] == 0)
-                {
-                    if (mcounts[i] > twoN)
-                        {
-                            throw std::runtime_error(
-                                "mutation count out of range");
-                        }
-                    if (mcounts[i] == twoN)
-                        {
-                            auto itr = lookup.equal_range(mutations[i].pos);
-                            while (itr.first != itr.second)
-                                {
-                                    if (itr.first->second == i)
-                                        {
-                                            lookup.erase(itr.first);
-                                            mcounts[i] = 0;
-                                            break;
-                                        }
-                                    ++itr.first;
-                                }
-                        }
-                    else if (mcounts[i] == 0)
-                        {
-                            auto itr = lookup.equal_range(mutations[i].pos);
-                            if (itr.first != lookup.end())
-                                {
-                                    while (itr.first != itr.second)
-                                        {
-                                            if (itr.first->second == i)
-                                                {
-                                                    lookup.erase(itr.first);
-                                                    break;
-                                                }
-                                            ++itr.first;
-                                        }
-                                }
-                        }
-                }
-        }
-}
-
 template <typename rng, typename mfunction>
 unsigned
 mutate_tables(const rng &r, const mfunction &make_mutation,
@@ -228,7 +178,7 @@ simplify_tables(poptype &pop,
                                   mcounts_from_preserved_nodes,
                                   2 * pop.diploids.size());
 
-    update_mutations(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
+    fwdpp::ts::flag_mutations_for_recycling(pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
                      pop.mut_lookup, 2 * pop.diploids.size());
     confirm_mutation_counts(pop, tables);
     return idmap;
