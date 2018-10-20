@@ -21,6 +21,7 @@
 #include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
+#include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/sugar/GSLrng_t.hpp>
 #include <fwdpp/sugar/popgenmut.hpp>
 #include <fwdpp/sugar/slocuspop.hpp>

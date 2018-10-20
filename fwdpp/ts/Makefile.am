@@ -19,6 +19,6 @@ pkginclude_HEADERS= definitions.hpp \
 			mutation_record.hpp \
 			remove_fixations_from_gametes.hpp \
 			recycling.hpp \
-			serialiation.hpp
+			serialization.hpp
 
 
