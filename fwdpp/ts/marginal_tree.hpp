@@ -65,8 +65,7 @@ namespace fwdpp
                       std::numeric_limits<double>::quiet_NaN()
                   }
             {
-                //TODO: fix the below for sample_index_map
-                //and test!
+				int i = 0;
                 for (auto s : samples)
                     {
                         if (static_cast<std::size_t>(s) >= leaf_counts.size())
@@ -75,7 +74,9 @@ namespace fwdpp
                                     "sample index out of range");
                             }
                         leaf_counts[s] = 1;
-                        left_sample[s] = right_sample[s] = s;
+						sample_index_map[s]=i;
+                        left_sample[s] = right_sample[s] = sample_index_map[s];
+						++i;
                     }
                 for (auto s : preserved_nodes)
                     {
@@ -85,7 +86,9 @@ namespace fwdpp
                                     "sample index out of range");
                             }
                         preserved_leaf_counts[s] = 1;
-                        left_sample[s] = right_sample[s] = s;
+						sample_index_map[s]=i;
+                        left_sample[s] = right_sample[s] = sample_index_map[s];
+						++i;
                     }
             }
             marginal_tree(std::int32_t nnodes)
