@@ -270,8 +270,6 @@ namespace fwdpp
             merge_ancestors(const node_vector& input_node_table,
                             const TS_NODE_INT parent_input_id,
                             std::vector<TS_NODE_INT>& idmap)
-            // TODO: will have to be made aware of sample labels.
-            // in order to handle ancient samples.
             {
                 auto output_id = idmap[parent_input_id];
                 bool is_sample = (output_id != TS_NULL_NODE);
