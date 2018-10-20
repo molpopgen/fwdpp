@@ -560,8 +560,8 @@ main(int argc, char **argv)
                                         {
                                             break;
                                         }
+                                    l = marginal.next_sample[l];
                                 }
-                            l = marginal.next_sample[l];
                         }
                 }
         }
