@@ -16,6 +16,8 @@ namespace fwdpp
         /// Edges define a transmission event
         /// of the genomic interval [left,right)
         /// from parent to child.
+        ///
+        ///  \version 0.7.0 Added to fwdpp
         {
             double left, right;
             TS_NODE_INT parent, child;

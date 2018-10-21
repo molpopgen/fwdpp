@@ -12,6 +12,7 @@ namespace fwdpp
         /// Holds edge data keyed on either right or left position.
         /// Used to define the index vectors described on page 13
         /// of \cite Kelleher2016-cb
+        ///  \version 0.7.0 Added to fwdpp
         {
             double pos, time;
             std::int32_t parent, child;
@@ -33,6 +34,7 @@ namespace fwdpp
 
 		/// An index for an edge table.  See \cite Kelleher2016-cb, 
 		/// page 13
+        ///  \version 0.7.0 Added to fwdpp
         using indexed_edge_container = std::vector<indexed_edge>;
     } // namespace ts
 } // namespace fwdpp

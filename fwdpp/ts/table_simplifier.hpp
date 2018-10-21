@@ -19,6 +19,19 @@ namespace fwdpp
     namespace ts
     {
         class table_simplifier
+        /*! \brief Implements the simplification algorithm of \cite Kelleher2018-fu
+         *
+         *  Keeping a persistent simplifier around during a simplification avoids many 
+         *  repeated large memory allocations.  On a single-core machine, the more often
+         *  you simplify, the more this matters.  When running many simulations on a many-core 
+         *  machine, keeping a persistent object reduces competition between threads for big
+         *  memory chunks, which should also lead to a performance boost.
+         *
+         *  Many of the implementation details are private functions, which are subject to change
+         *  without notice.
+         *
+         *  \version 0.7.0 Added to fwdpp
+         */
         {
           private:
             struct segment

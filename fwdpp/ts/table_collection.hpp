@@ -21,15 +21,20 @@ namespace fwdpp
     namespace ts
     {
         /// An "edge table"
+        ///  \version 0.7.0 Added to fwdpp
         using edge_vector = std::vector<edge>;
         /// A "node table"
+        ///  \version 0.7.0 Added to fwdpp
         using node_vector = std::vector<node>;
         /// A "mutation table"
+        ///  \version 0.7.0 Added to fwdpp
         using mutation_key_vector = std::vector<mutation_record>;
 
         struct table_collection
         /*!
 		 * \brief A collection of tables for a single simulation.
+         *
+         * \version 0.7.0 Added to fwdpp
 		 */
         {
           private:

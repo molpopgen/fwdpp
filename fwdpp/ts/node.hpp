@@ -12,6 +12,7 @@ namespace fwdpp
     {
         struct node
         /// A node in a tree sequence
+        ///  \version 0.7.0 Added to fwdpp
         {
             /// Location of the node.
             /// Used for models of discrete population structure
