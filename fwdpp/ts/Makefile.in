@@ -279,7 +279,6 @@ pkginclude_HEADERS = definitions.hpp \
 			mark_multiple_roots.hpp \
 			mutate_tables.hpp \
 			count_mutations.hpp \
-			msprime_algo.hpp \
 			mutation_record.hpp \
 			remove_fixations_from_gametes.hpp \
 			recycling.hpp \
