@@ -9,7 +9,6 @@ pkginclude_HEADERS= definitions.hpp \
 			generate_data_matrix.hpp \
 			indexed_edge.hpp \
 			iterate_marginal_trees_details.hpp \
-			iterate_marginal_trees.hpp \
 			marginal_tree.hpp \
 			tree_visitor.hpp \
 			mark_multiple_roots.hpp \
