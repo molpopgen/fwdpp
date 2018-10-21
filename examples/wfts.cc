@@ -13,6 +13,8 @@
 #include <algorithm>
 #include <numeric>
 #include <cassert>
+#include <fstream>
+#include <string>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/count_mutations.hpp>
@@ -181,6 +183,61 @@ matrix_runtime_test(const fwdpp::ts::table_collection &tables,
         }
 }
 
+void
+test_serialization(const fwdpp::ts::table_collection &tables,
+                   const std::string &filename)
+{
+    std::ofstream o(filename.c_str());
+    fwdpp::ts::io::serialize_tables(o, tables);
+    o.close();
+    std::ifstream i(filename.c_str());
+    auto tables2 = fwdpp::ts::io::deserialize_tables(i);
+
+    if (tables.L != tables2.L)
+        {
+            throw std::runtime_error("L does not match");
+        }
+    if (tables.edge_offset != tables2.edge_offset)
+        {
+            throw std::runtime_error("edge_offset does not match");
+        }
+    for (std::size_t i = 0; i < tables.edge_table.size(); ++i)
+        {
+            auto e1 = tables.edge_table[i];
+            auto e2 = tables2.edge_table[i];
+            bool l = (e1.left == e2.left);
+            bool r = (e1.right == e2.right);
+            bool p = (e1.parent == e2.parent);
+            bool c = (e1.child == e2.child);
+            if (!l || !r || !p || !c)
+                {
+                    throw std::runtime_error("edge tables do not match");
+                }
+        }
+    for (std::size_t i = 0; i < tables.node_table.size(); ++i)
+        {
+            auto n1 = tables.node_table[i];
+            auto n2 = tables2.node_table[i];
+            bool p = (n1.population == n2.population);
+            bool t = (n1.time == n2.time);
+            if (!p || !t)
+                {
+                    throw std::runtime_error("node tables do not match");
+                }
+        }
+    for (std::size_t i = 0; i < tables.mutation_table.size(); ++i)
+        {
+            auto mr1 = tables.mutation_table[i];
+            auto mr2 = tables2.mutation_table[i];
+            bool n = (mr1.node == mr2.node);
+            bool k = (mr1.key == mr2.key);
+            if (!n || !k)
+                {
+                    throw std::runtime_error("mutation tables do not match");
+                }
+        }
+}
+
 int
 main(int argc, char **argv)
 {
@@ -191,6 +248,7 @@ main(int argc, char **argv)
     int ancient_sample_size = -1;
     bool leaf_test = false;
     bool matrix_test = false;
+    std::string filename;
     po::options_description options("Simulation options"),
         testing("Testing options");
     // clang-format off
@@ -209,7 +267,8 @@ main(int argc, char **argv)
         ("ansam", po::value<int>(&ancient_sample_size),
          "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used");
         testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
-        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums");
+        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
+		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
     // clang-format on
     options.add(testing);
     po::variables_map vm;
@@ -520,5 +579,9 @@ main(int argc, char **argv)
                     matrix_runtime_test(tables, sc, pop.mutations, mc);
                     std::cout << "passed.\n";
                 }
+        }
+    if (!filename.empty())
+        {
+            test_serialization(tables, filename);
         }
 }
