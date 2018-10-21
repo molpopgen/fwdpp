@@ -62,44 +62,43 @@ namespace fwdpp
 
             inline void
             update_sample_list(marginal_tree& marginal,
-                               const std::int32_t parent, const std::true_type)
+                               const std::int32_t node, const std::true_type)
             {
-                for (auto n = parent; n != TS_NULL_NODE;
-                     n = marginal.parents[n])
+                const auto& parents = marginal.parents;
+                const auto& sample_map = marginal.sample_index_map;
+                const auto& left_child = marginal.left_child;
+                const auto& right_sib = marginal.right_sib;
+
+                auto& right = marginal.right_sample;
+                auto& left = marginal.left_sample;
+                auto& next = marginal.next_sample;
+                for (auto n = node; n != TS_NULL_NODE; n = parents[n])
                     {
-                        auto sample_index = marginal.sample_index_map[n];
+                        auto sample_index = sample_map[n];
                         if (sample_index != TS_NULL_NODE)
                             {
-                                marginal.right_sample[n]
-                                    = marginal.left_sample[n];
+                                right[n] = left[n];
                             }
                         else
                             {
-                                marginal.left_sample[n] = TS_NULL_NODE;
-                                marginal.right_sample[n] = TS_NULL_NODE;
+                                left[n] = TS_NULL_NODE;
+                                right[n] = TS_NULL_NODE;
                             }
-                        for (auto v = marginal.left_child[n];
-                             v != TS_NULL_NODE; v = marginal.right_sib[v])
+                        for (auto v = left_child[n]; v != TS_NULL_NODE;
+                             v = right_sib[v])
                             {
-                                if (marginal.left_sample[v] != TS_NULL_NODE)
+                                if (left[v] != TS_NULL_NODE)
                                     {
-                                        assert(marginal.right_sample[v]
-                                               != TS_NULL_NODE);
-                                        if (marginal.left_sample[n]
-                                            == TS_NULL_NODE)
+                                        assert(right[v] != TS_NULL_NODE);
+                                        if (left[n] == TS_NULL_NODE)
                                             {
-                                                marginal.left_sample[n]
-                                                    = marginal.left_sample[v];
-                                                marginal.right_sample[n]
-                                                    = marginal.right_sample[v];
+                                                left[n] = left[v];
+                                                right[n] = right[v];
                                             }
                                         else
                                             {
-                                                marginal.next_sample
-                                                    [marginal.right_sample[n]]
-                                                    = marginal.left_sample[v];
-                                                marginal.right_sample[n]
-                                                    = marginal.right_sample[v];
+                                                next[right[n]] = left[v];
+                                                right[n] = right[v];
                                             }
                                     }
                             }
