@@ -11,10 +11,14 @@ namespace fwdpp
     namespace ts
     {
         struct node
+        /// A node in a tree sequence
         {
+            /// Location of the node.
+            /// Used for models of discrete population structure
             std::int32_t population;
+            /// Birth time of the node.
             double time;
         };
-    }
-}
+    } // namespace ts
+} // namespace fwdpp
 #endif

@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+/// \namespace fwdpp::ts Tree sequence \cite Kelleher2018-fu support 
+
 namespace fwdpp
 {
     namespace ts

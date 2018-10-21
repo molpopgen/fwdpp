@@ -20,10 +20,17 @@ namespace fwdpp
 {
     namespace ts
     {
+        /// An "edge table"
         using edge_vector = std::vector<edge>;
+        /// A "node table"
         using node_vector = std::vector<node>;
+        /// A "mutation table"
         using mutation_key_vector = std::vector<mutation_record>;
+
         struct table_collection
+        /*!
+		 * \brief A collection of tables for a single simulation.
+		 */
         {
           private:
             void
@@ -113,17 +120,26 @@ namespace fwdpp
             }
 
           public:
+            /// Node table for this simulation
             node_vector node_table;
+            /// Edge table for this simulation
             edge_vector edge_table;
+            /// Mutation table for this simulation;
             mutation_key_vector mutation_table;
-            indexed_edge_container input_left, output_right;
-            // This reflects the length of
-            // tables.edge_table after last simplification.
-            // It can be used to make sure we only sort
-            // newly-added nodes.
+            /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
+            indexed_edge_container input_left;
+            /// The input edge vector. "O" in \cite Kelleher2016-cb, page 13
+            indexed_edge_container output_right;
+            /// This reflects the length of
+            /// tables.edge_table after last simplification.
+            /// It can be used to make sure we only sort
+            /// newly-added nodes.
             std::ptrdiff_t edge_offset;
+			/// Length of the genomic region.
             const double L;
+			/// A vector of dead/ancient sample nodes
             std::vector<TS_NODE_INT> preserved_nodes;
+
             table_collection(const double maxpos)
                 : node_table{}, edge_table{}, mutation_table{}, input_left{},
                   output_right{}, edge_offset{ 0 }, L{ maxpos },
@@ -255,6 +271,8 @@ namespace fwdpp
 
             void
             record_preserved_nodes(const std::vector<TS_NODE_INT>& node_ids)
+			/// Take a list of nodes to record as "ancient samples".
+			/// Throws an exception if the nodes are already recorded as such.
             {
                 for (auto i : node_ids)
                     {

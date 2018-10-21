@@ -9,6 +9,9 @@ namespace fwdpp
     namespace ts
     {
         struct indexed_edge
+        /// Holds edge data keyed on either right or left position.
+        /// Used to define the index vectors described on page 13
+        /// of \cite Kelleher2016-cb
         {
             double pos, time;
             std::int32_t parent, child;
@@ -28,6 +31,8 @@ namespace fwdpp
             }
         };
 
+		/// An index for an edge table.  See \cite Kelleher2016-cb, 
+		/// page 13
         using indexed_edge_container = std::vector<indexed_edge>;
     } // namespace ts
 } // namespace fwdpp
