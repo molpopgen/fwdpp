@@ -280,6 +280,7 @@ namespace fwdpp
                         tables.mutation_table.emplace_back(
                             mutation_record_reader(i));
                     }
+				tables.build_indexes();
                 return tables;
             }
         } // namespace io
