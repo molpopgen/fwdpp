@@ -240,7 +240,6 @@ namespace fwdpp
                 i.read(fwdppts, 7);
                 if (std::string(fwdppts) != "fwdppts")
                     {
-                        std::cout << std::string(fwdppts) << '\n';
                         throw std::runtime_error(
                             "input stream is not at the beginning of "
                             "table_collection");
