@@ -38,13 +38,14 @@ namespace fwdpp
 
             const marginal_tree&
             tree() const
-            /*!
-			 * Return a const reference to the current tree.
+            /*! \brief Returns a handle to the current tree.
+             *
+			 * \return const reference to the current tree.
 			 *
 			 * \code{cpp}
 			 * // Copy-free "view" of
 			 * // the stored fwdpp::ts::marginal_tree
-			 * auto & tree = mti.tree();
+			 * auto & tree = tv.tree();
 			 * \endcode
 			 */
             {

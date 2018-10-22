@@ -12,6 +12,14 @@ namespace fwdpp
     namespace ts
     {
         struct marginal_tree
+        /// \brief A non-recombining tree
+        ///
+        /// The tree is represented as a sparse tree
+        /// data structure where several linked lists
+        /// allow efficient retrieval of parent/child/siblings
+        /// of nodes.
+        /// 
+        /// \version 0.7.0 Added to fwdpp
         {
             std::vector<std::int32_t> parents, leaf_counts,
                 preserved_leaf_counts, left_sib, right_sib, left_child,
@@ -65,7 +73,7 @@ namespace fwdpp
                       std::numeric_limits<double>::quiet_NaN()
                   }
             {
-				int i = 0;
+                int i = 0;
                 for (auto s : samples)
                     {
                         if (static_cast<std::size_t>(s) >= leaf_counts.size())
@@ -74,9 +82,9 @@ namespace fwdpp
                                     "sample index out of range");
                             }
                         leaf_counts[s] = 1;
-						sample_index_map[s]=i;
+                        sample_index_map[s] = i;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
-						++i;
+                        ++i;
                     }
                 for (auto s : preserved_nodes)
                     {
@@ -86,9 +94,9 @@ namespace fwdpp
                                     "sample index out of range");
                             }
                         preserved_leaf_counts[s] = 1;
-						sample_index_map[s]=i;
+                        sample_index_map[s] = i;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
-						++i;
+                        ++i;
                     }
             }
             marginal_tree(std::int32_t nnodes)
