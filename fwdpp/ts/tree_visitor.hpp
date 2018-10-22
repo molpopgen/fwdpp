@@ -137,6 +137,9 @@ namespace fwdpp
                             }
                         marginal.left = x;
                         marginal.right = right;
+                        // Must set return value before
+                        // updating right, else the 
+                        // last tree will be skipped.
                         bool rv = j < jM || x < maxpos;
                         x = right;
                         return rv;
