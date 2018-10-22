@@ -8,6 +8,25 @@
 #include "table_collection.hpp"
 #include "serialization_version.hpp"
 
+/*! \namespace fwdpp::ts::io
+ *  \brief Binary seriazliation of fwdpp::ts::table_collection
+ *
+ *  The implementation of the binary formats depends on 
+ *  template specialiation of function objects for
+ *  reading and writing fwdp::ts::node, fwdpp::ts::edge
+ *  and fwdpp::ts::mutation_record objects. The templates
+ *  are specialized on the format version.  The current
+ *  format version is fwdpp::ts::io::TS_TABLES_VERSION.
+ *
+ *  The function objects themselves are implementation details
+ *  that should not be relied upon.  The main functions for library
+ *  users in this namespace are:
+ *  1. fwdpp::ts::io::serialize_tables
+ *  2. fwdpp::ts::io::deserialize_tables
+ *
+ *  \version 0.7.0 Added to library
+ */
+
 namespace fwdpp
 {
     namespace ts
@@ -162,8 +181,19 @@ namespace fwdpp
             template <typename ostreamtype>
             void
             serialize_tables(ostreamtype& o, const table_collection& tables)
+            /*! \brief Write a fwdpp::ts::table_collection to a binary format.
+			 *
+			 *  \param ostreamtype A model of std::ostream
+			 *  \param tables A fwdpp::ts::table_collection
+			 *
+			 *  The result is that the data in \a tables are written
+			 *  in a machine-readable format to \a o.
+			 *
+			 *  This function always outputs to the format version
+			 *  specified by fwdpp::ts::io::TS_TABLES_VERSION.
+			 */
             {
-				o << "fwdppts";
+                o << "fwdppts";
                 fwdpp::io::scalar_writer sw;
                 sw(o, &TS_TABLES_VERSION);
                 sw(o, &tables.L);
@@ -195,13 +225,22 @@ namespace fwdpp
             template <typename istreamtype>
             table_collection
             deserialize_tables(istreamtype& i)
+			/*! \brief Read a fwdpp::ts::table_collection in from a binary stream
+			 *
+			 *  \param i A model of std::istream
+			 *
+			 *  \return fwdpp::ts::table_collection
+			 *
+			 *  \note The return value has its index vectors populated.
+			 *  See fwdpp::ts::table_collection::build_indexes
+			 */
             {
                 //Reading data back in has to manage versions
                 char fwdppts[7];
                 i.read(fwdppts, 7);
                 if (std::string(fwdppts) != "fwdppts")
                     {
-						std::cout << std::string(fwdppts) << '\n';
+                        std::cout << std::string(fwdppts) << '\n';
                         throw std::runtime_error(
                             "input stream is not at the beginning of "
                             "table_collection");
@@ -242,7 +281,7 @@ namespace fwdpp
                         tables.mutation_table.emplace_back(
                             mutation_record_reader(i));
                     }
-				return tables;
+                return tables;
             }
         } // namespace io
     }     // namespace ts
