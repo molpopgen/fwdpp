@@ -16,6 +16,11 @@ namespace fwdpp
         std::map<TS_NODE_INT, std::vector<std::pair<double, double>>>
         mark_multiple_roots(const table_collection &tables,
                             const std::vector<TS_NODE_INT> &samples)
+		/// \brief Identify root nodes in "marginal forests".
+		/// 
+		/// \version 0.7.0 Added to library
+		///
+		/// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
             tree_visitor mti(tables, samples);
