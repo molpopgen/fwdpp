@@ -245,10 +245,10 @@ main(int argc, char **argv)
     double theta, rho, mean = 0.0, shape = 1, mu;
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
-    int ancient_sample_size = -1;
+    int ancient_sample_size = -1, nsam = 0;
     bool leaf_test = false;
     bool matrix_test = false;
-    std::string filename;
+    std::string filename, sfsfilename;
     po::options_description options("Simulation options"),
         testing("Testing options");
     // clang-format off
@@ -265,7 +265,9 @@ main(int argc, char **argv)
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
         ("ansam", po::value<int>(&ancient_sample_size),
-         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used");
+         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
+		("sfs", po::value<std::string>(&sfsfilename),"Write the site frequency spectrum of a sample to a file")
+		("nsam", po::value<int>(&nsam), "Sample size for the site frequency spectrum.  Default is 0.  Change when using --sfs");
         testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
         ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
 		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
@@ -583,5 +585,32 @@ main(int argc, char **argv)
     if (!filename.empty())
         {
             test_serialization(tables, filename);
+        }
+
+    if (!sfsfilename.empty())
+        {
+            if (!(nsam > 2))
+                {
+                    throw std::invalid_argument(
+                        "sample size for site frequency spectrum must be > 2");
+                }
+            // Simplify w.r.to 100 samples
+            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(nsam);
+            gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
+                           s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
+            std::iota(small_sample.begin(), small_sample.end(), 0);
+            auto dm = fwdpp::ts::generate_data_matrix(
+                tables, small_sample, pop.mutations, true, false);
+            auto rs = fwdpp::row_sums(dm);
+            std::vector<int> sfs(small_sample.size() - 1);
+            for (auto i : rs.first)
+                {
+                    sfs[i - 1]++;
+                }
+            std::ofstream sfs_stream(sfsfilename.c_str());
+            for (std::size_t i = 0; i < sfs.size(); ++i)
+                {
+                    sfs_stream << (i + 1) << ' ' << sfs[i] << '\n';
+                }
         }
 }
