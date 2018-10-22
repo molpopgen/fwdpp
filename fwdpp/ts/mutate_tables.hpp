@@ -54,7 +54,7 @@ namespace fwdpp
 		/// the simlification algorithm will "push" the most ancient nodes on these "marginal forests"
 		/// forwards in time to the most recent ancestral node of each tree in the forest.  Thus, naively
 		/// mutating the edge table will place too few mutations on these parts of the genome.  This
-		/// function corrects for the presence of marginal forest, as described below.
+		/// function corrects for the presence of marginal forests, as described below.
 		///
 		/// The \a samples list is used to identify "marginal forests", meaning marginal trees
 		/// that are not completely coalesced. (The finding is done via a call to 
@@ -65,7 +65,7 @@ namespace fwdpp
 		/// Note that two alternatives exist that will render the treatment of marginal forests unnecessary:
 		/// 1. Simulate for longer.  For example, CDF of TMRCA under Wright-Fisher is quite close to 1 at ~20N generations.
 		/// Thus, simulating longer means that fewer and fewer marginal trees will be forests.
-		/// 2. Start the simulation with an exisint, completely-coalesced, tree sequence. As far as fwdpp is concerned,
+		/// 2. Start the simulation with an existing, completely-coalesced, tree sequence. As far as fwdpp is concerned,
 		/// this is left as an "exercise for the reader" at the moment.
         {
             unsigned nmuts = 0;
