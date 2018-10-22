@@ -12,9 +12,14 @@ namespace fwdpp
     namespace ts
     {
         class tree_visitor
-        ///  \brief Class that iterates over marginal trees.
+        /// \brief Class that iterates over marginal trees.
         ///
-        ///  \version 0.7.0 Added to fwdpp
+        /// \note This class declares private data
+        /// whose integrity are tied to the lifetime
+        /// of the table_collection used to construct
+        /// a tree_visitor!
+        /// 
+        /// \version 0.7.0 Added to fwdpp
         {
           private:
             indexed_edge_container::const_iterator j, jM, k, kM;
