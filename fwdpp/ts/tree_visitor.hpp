@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
-#include "iterate_marginal_trees_details.hpp"
+#include "detail/advance_marginal_tree_policies.hpp"
 
 namespace fwdpp
 {
