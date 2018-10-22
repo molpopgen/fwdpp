@@ -30,7 +30,7 @@ fwdpp::ts::table_collection.
 ## Differences from msprime/tskit
 
 1. Node times are measured forwards in time. See fwdpp::ts::node.
-2. The mutation table is simply a the node where the mutation occurrs on the tree and its index in the population.  See
+2. The mutation table is simply a vector of records tracking nodes where mutations occur on the tree and their indexes in the population.  See
    fwdpp::ts::mutation_record.  Thus, the concept of a "sites table" and a "mutation table" are merged in fwdpp.
 
 ## Iterating over trees
