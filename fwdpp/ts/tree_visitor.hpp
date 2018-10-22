@@ -1,6 +1,8 @@
 #ifndef FWDPP_TS_TREE_VISITOR_HPP
 #define FWDPP_TS_TREE_VISITOR_HPP
 
+#include <vector>
+#include <algorithm>
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
 #include "iterate_marginal_trees_details.hpp"
