@@ -38,7 +38,11 @@
 #include <boost/geometry/geometries/point.hpp>
 #include <boost/geometry/core/cs.hpp>
 #include <boost/geometry/index/rtree.hpp>
-
+// Boost.Range
+#include <boost/range.hpp>
+// adaptors
+#include <boost/range/adaptor/indexed.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 #include "evolve_generation_ts.hpp"
 #include "confirm_mutation_counts.hpp"
 
@@ -121,7 +125,22 @@ struct diploid_metadata
     {
     }
 };
-
+// From
+// https://www.boost.org/doc/libs/1_64_0/libs/geometry/doc/html/geometry/spatial_indexes/rtree_examples/range_adaptors.htmlw
+// Define a function object converting a value_type of indexed Range into std::pair<>.
+// This is a generic implementation but of course it'd be possible to use some
+// specific types. One could also take Value as template parameter and access
+// first_type and second_type members, etc.
+template <typename First, typename Second> struct pair_maker
+{
+    typedef std::pair<First, Second> result_type;
+    template <typename T>
+    inline result_type
+    operator()(T const &v) const
+    {
+        return result_type(v.value(), v.index());
+    }
+};
 int
 main(int argc, char **argv)
 {
@@ -212,7 +231,7 @@ main(int argc, char **argv)
     // Initially, we assign all individuals to a location uniformly
     // distributed in a circle from (0.5,0.5).  That circle has a
     // radius of 0.5
-    std::vector<point_to_diploid> parental_points, offspring_points(N);
+    std::vector<point> parental_points, offspring_points(N);
     for (fwdpp::uint_t i = 0; i < N; ++i)
         {
             double x, y;
@@ -225,9 +244,11 @@ main(int argc, char **argv)
             x /= std::sqrt(2);
             y /= std::sqrt(2);
             point p{ 0.5 + x, 0.5 + y };
-            parental_points.emplace_back(p,i);
+            parental_points.emplace_back(p);
         }
-    rtree_type rtree(parental_points);
+    rtree_type rtree(
+        parental_points | boost::adaptors::indexed()
+        | boost::adaptors::transformed(pair_maker<point, std::size_t>()));
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
@@ -273,11 +294,11 @@ main(int argc, char **argv)
     const auto update_offspring
         = [&offspring_points, &parental_points](std::size_t o, std::size_t p1,
                                                 std::size_t p2) {
-              double x = (bg::get<0>(parental_points[p1].first)
-                          + bg::get<0>(parental_points[p2].first))
+              double x = (bg::get<0>(parental_points[p1])
+                          + bg::get<0>(parental_points[p2]))
                          / 2.0;
-              double y = (bg::get<1>(parental_points[p1].first)
-                          + bg::get<1>(parental_points[p2].first))
+              double y = (bg::get<1>(parental_points[p1])
+                          + bg::get<1>(parental_points[p2]))
                          / 2.0;
               // Don't fall of the map...
               if (x < 0.0)
@@ -296,7 +317,7 @@ main(int argc, char **argv)
                   {
                       y = 1.0;
                   }
-              offspring_points[o] = point_to_diploid{ point(x, y),o };
+              offspring_points[o] = point(x, y);
           };
     for (; generation <= 10 * N; ++generation)
         {
@@ -307,6 +328,7 @@ main(int argc, char **argv)
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
+            // NOTE: pick2 is the performance killer!
             auto pick2 = [&rng, &rtree, &parental_points, &fitnesses,
                           mating_radius](const std::size_t p1) {
                 std::vector<point_to_diploid> possible_mates;
@@ -316,8 +338,8 @@ main(int argc, char **argv)
                 auto pp = parental_points.at(p1);
                 rtree.query(bgi::satisfies([pp, mating_radius](
                                                const point_to_diploid &v) {
-                                double p1x = bg::get<0>(pp.first);
-                                double p1y = bg::get<1>(pp.first);
+                                double p1x = bg::get<0>(pp);
+                                double p1y = bg::get<1>(pp);
                                 double p2x = bg::get<0>(v.first);
                                 double p2y = bg::get<1>(v.first);
                                 double euclid
@@ -358,11 +380,14 @@ main(int argc, char **argv)
                               next_index);
             //rebuild our rtree
             //rtree.clear();
-            rtree=rtree_type(offspring_points);
             //for (std::size_t i = 0; i < pop.diploids.size(); ++i)
             //    {
             //        rtree.insert(point_to_diploid{ offspring_points[i], i });
             //    }
+
+            rtree = rtree_type(offspring_points | boost::adaptors::indexed()
+                               | boost::adaptors::transformed(
+                                     pair_maker<point, std::size_t>()));
             if (generation % gcint == 0.0)
                 {
                     std::cout << generation << '\n';
@@ -435,8 +460,8 @@ main(int argc, char **argv)
                             tables.preserved_nodes.push_back(x.second);
                             // Record the metadata for our ancient samples
                             ancient_sample_metadata.emplace_back(
-                                i, generation, bg::get<0>(offspring_points[i].first),
-                                bg::get<1>(offspring_points[i].first), x.first,
+                                i, generation, bg::get<0>(offspring_points[i]),
+                                bg::get<1>(offspring_points[i]), x.first,
                                 x.second);
                         }
                 }
