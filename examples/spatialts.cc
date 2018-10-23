@@ -1,5 +1,5 @@
-/*! \include wfts.cc
- * Wright-Fisher simulation with tree sequences.
+/*! \include spatialts.cc
+ * Discrete generations on a continuous landscape using tree sequences.
  *
  * See the following paper for background and motivation:
  * Kelleher, Jerome, Kevin Thornton, Jaime Ashander, and Peter Ralph. 2018.
@@ -113,11 +113,11 @@ simplify_tables(poptype &pop,
 struct diploid_metadata
 {
     std::size_t individual;
-    double time, fitness;
+    double time, x, y;
     fwdpp::ts::TS_NODE_INT n1, n2;
-    diploid_metadata(std::size_t i, double t, double w,
+    diploid_metadata(std::size_t i, double t, double x_, double y_,
                      fwdpp::ts::TS_NODE_INT a, fwdpp::ts::TS_NODE_INT b)
-        : individual(i), time(t), fitness(w), n1(a), n2(b)
+        : individual(i), time(t), x(x_), y(y_), n1(a), n2(b)
     {
     }
 };
@@ -126,7 +126,7 @@ int
 main(int argc, char **argv)
 {
     fwdpp::uint_t N, gcint = 100;
-    double theta, rho, mean = 0.0, shape = 1, mu;
+    double theta, rho, mean = 0.0, shape = 1, mu, mating_radius = 0.1;
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1, nsam = 0;
@@ -134,7 +134,8 @@ main(int argc, char **argv)
     bool matrix_test = false;
     std::string filename, sfsfilename;
     po::options_description options("Simulation options"),
-        testing("Testing options");
+        landscape_options("Landscape options");
+    //testing("Testing options"),
     // clang-format off
     options.add_options()("help", "Display help")
         ("N", po::value<unsigned>(&N), "Diploid population size")
@@ -152,11 +153,14 @@ main(int argc, char **argv)
          "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
 		("sfs", po::value<std::string>(&sfsfilename),"Write the site frequency spectrum of a sample to a file")
 		("nsam", po::value<int>(&nsam), "Sample size for the site frequency spectrum.  Default is 0.  Change when using --sfs");
-        testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
-        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
-		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
+        landscape_options.add_options()
+        ("mating_radius",po::value<double>(&mating_radius),"Mating radius. Default is 0.1");
+        //testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
+        //("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
+		//("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
     // clang-format on
-    options.add(testing);
+    options.add(landscape_options);
+    //options.add(testing);
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, options), vm);
     po::notify(vm);
@@ -206,24 +210,24 @@ main(int argc, char **argv)
 
     // Create our landscape, which will be a square on (0,0) to (1,1)
     // Initially, we assign all individuals to a location uniformly
-    // distributed in a circle from (0.5,0.5).  That circle has a 
+    // distributed in a circle from (0.5,0.5).  That circle has a
     // radius of 0.5
-    rtree_type rtree;
-    for(fwdpp::uint_t i=0;i<N;++i)
-    {
-        double x,y;
-        // This function returns x and y 
-        // w.r.to a normalized 2d surface
-        // such that x^2 + y^2 = 1.
-        // Thus, dividing x and y 
-        // by sqrt(2) gives us x^2+y^2 = 0.5
-        gsl_ran_dir_2d(rng.get(),&x,&y);
-        x /= std::sqrt(2);
-        y /= std::sqrt(2);
-        point p{0.5+x,0.5+y};
-        rtree.insert(std::make_pair(std::move(p),i));
-    }
-
+    std::vector<point_to_diploid> parental_points, offspring_points(N);
+    for (fwdpp::uint_t i = 0; i < N; ++i)
+        {
+            double x, y;
+            // This function returns x and y
+            // w.r.to a normalized 2d surface
+            // such that x^2 + y^2 = 1.
+            // Thus, dividing x and y
+            // by sqrt(2) gives us x^2+y^2 = 0.5
+            gsl_ran_dir_2d(rng.get(), &x, &y);
+            x /= std::sqrt(2);
+            y /= std::sqrt(2);
+            point p{ 0.5 + x, 0.5 + y };
+            parental_points.emplace_back(p,i);
+        }
+    rtree_type rtree(parental_points);
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
@@ -264,20 +268,104 @@ main(int argc, char **argv)
         }
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
+    // Set offspring location = parental midpoint
+    // TODO: add dispersal radius
+    const auto update_offspring
+        = [&offspring_points, &parental_points](std::size_t o, std::size_t p1,
+                                                std::size_t p2) {
+              double x = (bg::get<0>(parental_points[p1].first)
+                          + bg::get<0>(parental_points[p2].first))
+                         / 2.0;
+              double y = (bg::get<1>(parental_points[p1].first)
+                          + bg::get<1>(parental_points[p2].first))
+                         / 2.0;
+              // Don't fall of the map...
+              if (x < 0.0)
+                  {
+                      x = 0.0;
+                  }
+              if (x > 1.0)
+                  {
+                      x = 1.0;
+                  }
+              if (y < 0.0)
+                  {
+                      y = 0.0;
+                  }
+              if (y > 1.0)
+                  {
+                      y = 1.0;
+                  }
+              offspring_points[o] = point_to_diploid{ point(x, y),o };
+          };
     for (; generation <= 10 * N; ++generation)
         {
+            //Clear out offspring coordinates
+            offspring_points.resize(N);
+
             auto lookup = calculate_fitnesses(pop, fitnesses);
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
-                return gsl_ran_discrete(rng.get(), lookup.get());
+            auto pick2 = [&rng, &rtree, &parental_points, &fitnesses,
+                          mating_radius](const std::size_t p1) {
+                std::vector<point_to_diploid> possible_mates;
+                //find all individuals in population whose Euclidiean distance
+                //from parent1 is <= radius.  The "point" info fill up
+                //the possible_mates vector.
+                auto pp = parental_points.at(p1);
+                rtree.query(bgi::satisfies([pp, mating_radius](
+                                               const point_to_diploid &v) {
+                                double p1x = bg::get<0>(pp.first);
+                                double p1y = bg::get<1>(pp.first);
+                                double p2x = bg::get<0>(v.first);
+                                double p2y = bg::get<1>(v.first);
+                                double euclid
+                                    = std::sqrt(std::pow(p1x - p2x, 2.0)
+                                                + std::pow(p1y - p2y, 2.0));
+                                return euclid <= mating_radius;
+                            }),
+                            std::back_inserter(possible_mates));
+                if (possible_mates.size() == 1)
+                    return p1; //only possible mate was itself, so we self-fertilize
+                // Use inverse CDF to choose parent2 proportional
+                // to fitness w/in the mating circle
+                // TODO: this seems more cumbersome than necessary
+                std::vector<double> fitness_in_radius;
+                for (auto pm : possible_mates)
+                    {
+                        fitness_in_radius.push_back(fitnesses[pm.second]);
+                    }
+                double sumw = std::accumulate(fitness_in_radius.begin(),
+                                              fitness_in_radius.end(), 0.);
+                std::vector<double> cumw(fitness_in_radius.size());
+                std::partial_sum(fitness_in_radius.begin(),
+                                 fitness_in_radius.end(), cumw.begin());
+                std::transform(cumw.begin(), cumw.end(), cumw.begin(),
+                               [sumw](double w) { return w / sumw; });
+                auto x = gsl_rng_uniform(rng.get());
+                std::size_t i = 0;
+                for (; i < cumw.size(); ++i)
+                    {
+                        if (cumw[i] > x)
+                            break;
+                    }
+                return possible_mates[i].second;
             };
-            evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel,
-                              mutation_recycling_bin, recmap, generation,
-                              tables, first_parental_index, next_index);
+            evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,
+                              mmodel, mutation_recycling_bin, recmap,
+                              generation, tables, first_parental_index,
+                              next_index);
+            //rebuild our rtree
+            //rtree.clear();
+            rtree=rtree_type(offspring_points);
+            //for (std::size_t i = 0; i < pop.diploids.size(); ++i)
+            //    {
+            //        rtree.insert(point_to_diploid{ offspring_points[i], i });
+            //    }
             if (generation % gcint == 0.0)
                 {
+                    std::cout << generation << '\n';
                     auto idmap = simplify_tables(
                         pop, mcounts_from_preserved_nodes, tables, simplifier,
                         tables.num_nodes() - 2 * N, 2 * N, generation);
@@ -347,10 +435,12 @@ main(int argc, char **argv)
                             tables.preserved_nodes.push_back(x.second);
                             // Record the metadata for our ancient samples
                             ancient_sample_metadata.emplace_back(
-                                i, generation, fitnesses[i], x.first,
+                                i, generation, bg::get<0>(offspring_points[i].first),
+                                bg::get<1>(offspring_points[i].first), x.first,
                                 x.second);
                         }
                 }
+            parental_points.swap(offspring_points);
         }
     if (!simplified)
         {
