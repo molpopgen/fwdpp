@@ -359,6 +359,7 @@ main(int argc, char **argv)
         }
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
+    const auto update_offspring = [](std::size_t,std::size_t,std::size_t) {};
     for (; generation <= 10 * N; ++generation)
         {
             auto lookup = calculate_fitnesses(pop, fitnesses);
@@ -368,7 +369,7 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            evolve_generation(rng, pop, N, mu, pick1, pick2, mmodel,
+            evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,mmodel,
                               mutation_recycling_bin, recmap, generation,
                               tables, first_parental_index, next_index);
             if (generation % gcint == 0.0)
