@@ -43,6 +43,8 @@
 // adaptors
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+// For getting what we want from the rtree faster
+#include <boost/function_output_iterator.hpp>
 #include "evolve_generation_ts.hpp"
 #include "confirm_mutation_counts.hpp"
 
@@ -311,6 +313,15 @@ main(int argc, char **argv)
                   }
               offspring_points[o] = point(x, y);
           };
+    std::vector<std::size_t> possible_mates;
+    std::vector<double> possible_mate_fitness;
+    std::vector<double> cumw;
+    const auto rtree_search_callback
+        = [&possible_mates, &possible_mate_fitness,
+           &fitnesses](const point_to_diploid &p) {
+              possible_mates.push_back(p.second);
+              possible_mate_fitness.push_back(fitnesses[p.second]);
+          };
     for (; generation <= 10 * N; ++generation)
         {
             //Clear out offspring coordinates
@@ -321,9 +332,11 @@ main(int argc, char **argv)
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
             // NOTE: pick2 is the performance killer!
-            auto pick2 = [&rng, &rtree, &parental_points, &fitnesses,
+            auto pick2 = [&rng, &rtree, &parental_points, &possible_mates,
+                          &possible_mate_fitness, rtree_search_callback, &cumw,
                           mating_radius](const std::size_t p1) {
-                std::vector<point_to_diploid> possible_mates;
+                possible_mates.clear();
+                possible_mate_fitness.clear();
                 //find all individuals in population whose Euclidiean distance
                 //from parent1 is <= radius.  The "point" info fill up
                 //the possible_mates vector.
@@ -339,22 +352,17 @@ main(int argc, char **argv)
                                                 + std::pow(p1y - p2y, 2.0));
                                 return euclid <= mating_radius;
                             }),
-                            std::back_inserter(possible_mates));
+                            boost::make_function_output_iterator(
+                                rtree_search_callback));
                 if (possible_mates.size() == 1)
                     return p1; //only possible mate was itself, so we self-fertilize
                 // Use inverse CDF to choose parent2 proportional
                 // to fitness w/in the mating circle
                 // TODO: this seems more cumbersome than necessary
-                std::vector<double> fitness_in_radius;
-                for (auto pm : possible_mates)
-                    {
-                        fitness_in_radius.push_back(fitnesses[pm.second]);
-                    }
-                double sumw = std::accumulate(fitness_in_radius.begin(),
-                                              fitness_in_radius.end(), 0.);
-                std::vector<double> cumw(fitness_in_radius.size());
-                std::partial_sum(fitness_in_radius.begin(),
-                                 fitness_in_radius.end(), cumw.begin());
+                cumw.resize(possible_mate_fitness.size());
+                std::partial_sum(possible_mate_fitness.begin(),
+                                 possible_mate_fitness.end(), cumw.begin());
+                auto sumw = cumw.back();
                 std::transform(cumw.begin(), cumw.end(), cumw.begin(),
                                [sumw](double w) { return w / sumw; });
                 auto x = gsl_rng_uniform(rng.get());
@@ -364,7 +372,7 @@ main(int argc, char **argv)
                         if (cumw[i] > x)
                             break;
                     }
-                return possible_mates[i].second;
+                return possible_mates[i];
             };
             evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,
                               mmodel, mutation_recycling_bin, recmap,
