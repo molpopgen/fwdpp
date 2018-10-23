@@ -191,6 +191,13 @@ In order to compile the example programs, the following dependency is optional a
 
 1.  [libsequence](http://github.com/molpopgen/libsequence).
 
+As of fwdpp 0.7.0, some example programs require the `program_options` library from [boost](http://www.boost.org).  This
+is one of boost's runtime libraries, meaning that you need a "full" boost installation. Conda provides such a thing, and
+Linux variants like Ubuntu provide the different runtime libraries as separate packages.
+
+The configure script checks for these optional dependencies and will skip compilation of various example programs if
+they are missing.
+
 In order to compile the unit tests, you also need:
 
 1.  [boost](http://www.boost.org).

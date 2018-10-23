@@ -672,7 +672,7 @@ LAYOUT_FILE            =
 # search path. Do not use file names with spaces, bibtex cannot handle them. See
 # also \cite for info how to create references.
 
-CITE_BIB_FILES         =
+CITE_BIB_FILES         = fwdpp.bib
 
 #---------------------------------------------------------------------------
 # Configuration options related to warning and progress messages
@@ -743,7 +743,7 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = ../fwdpp ../fwdpp/io ../fwdpp/algorithm ../fwdpp/tags ../fwdpp/sugar ../fwdpp/sugar/gsl ../fwdpp/sugar/poptypes ../fwdpp/sugar/singlepop ../fwdpp/sugar/metapop ../fwdpp/sugar/multiloc ../fwdpp/internal ../fwdpp/experimental ../fwdpp/extensions ../testsuite/unit ../testsuite/integration ../testsuite/fixtures ../testsuite/util ../examples ../ md
+INPUT                  = ../fwdpp ../fwdpp/ts ../fwdpp/io ../fwdpp/algorithm ../fwdpp/tags ../fwdpp/sugar ../fwdpp/sugar/gsl ../fwdpp/sugar/poptypes ../fwdpp/sugar/singlepop ../fwdpp/sugar/metapop ../fwdpp/sugar/multiloc ../fwdpp/internal ../fwdpp/experimental ../fwdpp/extensions ../testsuite/unit ../testsuite/integration ../testsuite/fixtures ../testsuite/util ../examples ../ md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -835,7 +835,7 @@ EXAMPLE_RECURSIVE      = YES
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             =
+IMAGE_PATH             = images
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
