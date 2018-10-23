@@ -229,21 +229,13 @@ main(int argc, char **argv)
 
     // Create our landscape, which will be a square on (0,0) to (1,1)
     // Initially, we assign all individuals to a location uniformly
-    // distributed in a circle from (0.5,0.5).  That circle has a
-    // radius of 0.5
+    // distributed along each axis
     std::vector<point> parental_points, offspring_points(N);
     for (fwdpp::uint_t i = 0; i < N; ++i)
         {
-            double x, y;
-            // This function returns x and y
-            // w.r.to a normalized 2d surface
-            // such that x^2 + y^2 = 1.
-            // Thus, dividing x and y
-            // by sqrt(2) gives us x^2+y^2 = 0.5
-            gsl_ran_dir_2d(rng.get(), &x, &y);
-            x /= std::sqrt(2);
-            y /= std::sqrt(2);
-            point p{ 0.5 + x, 0.5 + y };
+            double x = gsl_rng_uniform(rng.get());
+            double y = gsl_rng_uniform(rng.get());
+            point p(x, y);
             parental_points.emplace_back(p);
         }
     rtree_type rtree(
