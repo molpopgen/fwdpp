@@ -9,7 +9,9 @@ namespace fwdpp
 {
     namespace ts
     {
+        /// Integer type for node indexes
         using TS_NODE_INT = std::int32_t;
+        /// Index value of a NULL node
         constexpr TS_NODE_INT TS_NULL_NODE = -1;
     } // namespace ts
 } // namespace fwdpp
