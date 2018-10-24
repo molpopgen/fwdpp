@@ -3,6 +3,20 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.7.0
+
+This is a major release, introducing namespace fwdpp::ts with support for tree sequence recording during simulations.
+I owe Jerome Kelleher a big thanks for guiding me through some of the details related to several of the finer points of
+the simplification algorithm as well as the tree traversal schemes from his 2016 paper describing msprime.
+
+* Support for tree sequences added [PR 151](https://github.com/molpopgen/fwdpp/pull/151) [PR 152](https://github.com/molpopgen/fwdpp/pull/152)
+* fwdpp::data_matrix is moved into the main library. [PR 118](https://github.com/molpopgen/fwdpp/pull/118)
+* fwdpp::data_matrix is refactored so that the contiguous dimension corresponds to variable sites.[PR 142](https://github.com/molpopgen/fwdpp/pull/142)
+* Fitness models do a better job of validating input parameters.[PR 140](https://github.com/molpopgen/fwdpp/pull/140)
+* Types in fwdpp::extensions now make their weight vectors viewable. [PR 141](https://github.com/molpopgen/fwdpp/pull/141)
+* Various pull with some example programs were fixed [PR 149](https://github.com/molpopgen/fwdpp/pull/149)
+* A debug namespace was added to the library. [PR 150](https://github.com/molpopgen/fwdpp/pull/148)
+
 ## 0.6.1
 
 Maintenance release fixing the following two bugs:
