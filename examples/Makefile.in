@@ -94,7 +94,7 @@ noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	custom_diploid$(EXEEXT) $(am__EXEEXT_1)
 
 # examples based on tree sequences
-@BPO_PRESENT_TRUE@am__append_1 = wfts
+@BPO_PRESENT_TRUE@am__append_1 = wfts spatialts
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_2 = -DHAVE_LIBSEQUENCE
 @DEBUG_FALSE@am__append_3 = -DNDEBUG
 subdir = examples
@@ -108,7 +108,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@BPO_PRESENT_TRUE@am__EXEEXT_1 = wfts$(EXEEXT)
+@BPO_PRESENT_TRUE@am__EXEEXT_1 = wfts$(EXEEXT) spatialts$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_K_linked_regions_extensions_OBJECTS =  \
 	K_linked_regions_extensions.$(OBJEXT)
@@ -148,6 +148,10 @@ am_juvenile_migration_OBJECTS = juvenile_migration.$(OBJEXT)
 juvenile_migration_OBJECTS = $(am_juvenile_migration_OBJECTS)
 juvenile_migration_LDADD = $(LDADD)
 juvenile_migration_DEPENDENCIES =
+am__spatialts_SOURCES_DIST = spatialts.cc
+@BPO_PRESENT_TRUE@am_spatialts_OBJECTS = spatialts.$(OBJEXT)
+spatialts_OBJECTS = $(am_spatialts_OBJECTS)
+spatialts_DEPENDENCIES =
 am__wfts_SOURCES_DIST = wfts.cc
 @BPO_PRESENT_TRUE@am_wfts_OBJECTS = wfts.$(OBJEXT)
 wfts_OBJECTS = $(am_wfts_OBJECTS)
@@ -198,13 +202,15 @@ SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(juvenile_migration_SOURCES) $(wfts_SOURCES)
+	$(juvenile_migration_SOURCES) $(spatialts_SOURCES) \
+	$(wfts_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(K_linked_regions_multilocus_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(juvenile_migration_SOURCES) $(am__wfts_SOURCES_DIST)
+	$(juvenile_migration_SOURCES) $(am__spatialts_SOURCES_DIST) \
+	$(am__wfts_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -339,6 +345,8 @@ custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
 @BPO_PRESENT_TRUE@wfts_SOURCES = wfts.cc
 @BPO_PRESENT_TRUE@wfts_LDADD = -lboost_program_options
+@BPO_PRESENT_TRUE@spatialts_SOURCES = spatialts.cc
+@BPO_PRESENT_TRUE@spatialts_LDADD = -lboost_program_options
 AM_CPPFLAGS = -Wall -W -I. $(am__append_3)
 AM_CXXFLAGS = $(am__append_2)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
@@ -412,6 +420,10 @@ juvenile_migration$(EXEEXT): $(juvenile_migration_OBJECTS) $(juvenile_migration_
 	@rm -f juvenile_migration$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(juvenile_migration_OBJECTS) $(juvenile_migration_LDADD) $(LIBS)
 
+spatialts$(EXEEXT): $(spatialts_OBJECTS) $(spatialts_DEPENDENCIES) $(EXTRA_spatialts_DEPENDENCIES) 
+	@rm -f spatialts$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(spatialts_OBJECTS) $(spatialts_LDADD) $(LIBS)
+
 wfts$(EXEEXT): $(wfts_OBJECTS) $(wfts_DEPENDENCIES) $(EXTRA_wfts_DEPENDENCIES) 
 	@rm -f wfts$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(wfts_OBJECTS) $(wfts_LDADD) $(LIBS)
@@ -430,6 +442,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spatialts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts.Po@am__quote@
 
 .cc.o:

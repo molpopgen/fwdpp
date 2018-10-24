@@ -8,12 +8,12 @@
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 #include <fwdpp/ts/table_collection.hpp>
 
+#ifndef NDEBUG
 template <typename poptype>
 void
 confirm_mutation_counts(poptype &pop,
                         const fwdpp::ts::table_collection &tables)
 {
-#ifndef NDEBUG
     std::vector<std::size_t> keys;
     for (auto &mr : tables.mutation_table)
         {
@@ -49,7 +49,13 @@ confirm_mutation_counts(poptype &pop,
                     assert(pop.mcounts[i] == mc[i]);
                 }
         }
-#endif
 }
+#else
+template <typename poptype>
+void
+confirm_mutation_counts(poptype &, const fwdpp::ts::table_collection &)
+{
+}
+#endif
 
 #endif

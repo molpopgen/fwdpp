@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-/// \namespace fwdpp::ts Tree sequence \cite Kelleher2018-fu support 
+/// \namespace fwdpp::ts Tree sequence \cite Kelleher2018-fu support
 
 namespace fwdpp
 {
@@ -14,4 +14,22 @@ namespace fwdpp
     } // namespace ts
 } // namespace fwdpp
 
+/*! \example wfts.cc 
+*
+*  Example of Wright-Fisher simulation with tree sequences
+*/
+
+/*! \example spatialts.cc
+ *
+ * Example of continous space and tree sequences.
+ *
+ * This example uses simple methods to find mates
+ * within a euclidean distance of an individual, and
+ * then choose a mate proportional to fitnesses within
+ * that circle.
+ *
+ * Note that this example has a rather big performance
+ * bottleneck due to a suboptimal implementation of a 
+ * "pick2" function.  We are working on it!
+ */
 #endif

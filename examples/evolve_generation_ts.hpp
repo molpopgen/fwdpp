@@ -56,12 +56,14 @@ generate_offspring(
 
 //TODO: need to track contribution to ancestral mutation counts!
 template <typename rng_t, typename poptype, typename pick_parent1_fxn,
-          typename pick_parent2_fxn, typename breakpoint_function,
-          typename mutation_model>
+          typename pick_parent2_fxn, typename offspring_metadata_fxn,
+          typename breakpoint_function, typename mutation_model>
 void
 evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                   const double mu, const pick_parent1_fxn& pick1,
-                  const pick_parent2_fxn& pick2, const mutation_model& mmodel,
+                  const pick_parent2_fxn& pick2,
+                  const offspring_metadata_fxn& update_offspring,
+                  const mutation_model& mmodel,
                   std::queue<std::size_t>& mutation_recycling_bin,
                   const breakpoint_function& recmodel,
                   const fwdpp::uint_t generation,
@@ -80,7 +82,8 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
 
     // Generate the offspring
     auto next_index_local = next_index;
-    for (auto& dip : offspring)
+    for (std::size_t next_offspring = 0; next_offspring < offspring.size();
+         ++next_offspring)
         {
             auto p1 = pick1();
             auto p2 = pick2(p1);
@@ -102,6 +105,7 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             auto p2id
                 = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
 
+            auto& dip = offspring[next_offspring];
             next_index_local = generate_offspring(
                 rng, recmodel, mmodel, mu, p1, p1g1, p1g2, p1id, generation,
                 next_index_local, pop, dip.first, tables,
@@ -112,6 +116,10 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                 mutation_recycling_bin, gamete_recycling_bin);
             pop.gametes[dip.first].n++;
             pop.gametes[dip.second].n++;
+            // Give the caller a chance to generate
+            // any metadata for the offspring that
+            // may depend on the parents
+            update_offspring(next_offspring, p1, p2);
         }
     assert(next_index_local
            == next_index + 2 * static_cast<std::int32_t>(N_next));
