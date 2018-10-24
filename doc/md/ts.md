@@ -47,3 +47,31 @@ I'll refer to *tskit* here, which means the part of msprime dealing with tree se
 
 fwdpp::ts::tree_visitor iterates over the non-recombining segments ("marginal trees") in the pedigree.  This type
 defines a call operator that handles the iteration, updating an internal variable of type fwdpp::ts::marginal_tree.
+
+![A simplified, fully-coalesced marginal tree](images/tree.png)
+
+Consider the tree shown above. It has 7 nodes. The parent list of the tree is represented as a linear vector
+(fwdpp::ts::marginal_tree::parents), and would contain the following values:
+
+```
+4 4 5 5 6 6 fwdpp::ts::TS_NULL_NODE
+```
+
+The final value, which is the parent of the node labelled **6**, is fwdpp::ts::TS_NULL_NODE, which signifies that there
+is no parent.
+
+Iteration over parents is trivial:
+
+```cpp
+void visit_parents(const fwdpp::ts::TS_NODE_INT n, const fwdpp::ts::marginal_tree & m)
+{
+ auto p = n;
+ while(p != fwdpp::ts::TS_NULL_NODE)
+ {
+    p = m.parents[p];
+ }
+}
+```
+
+Of course, a real-world application would have to provide bounds-checking, and would probably actually *do* something
+with `p` at each iteration.
