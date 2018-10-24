@@ -75,9 +75,9 @@ main(int argc, char **argv)
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1, nsam = 0;
-    bool leaf_test = false;
-    bool matrix_test = false;
-    std::string filename, sfsfilename;
+    //bool leaf_test = false;
+    //bool matrix_test = false;
+    std::string sfsfilename;
     po::options_description options("Simulation options"),
         landscape_options("Landscape options");
     //testing("Testing options"),
@@ -297,7 +297,7 @@ main(int argc, char **argv)
                 {
                     auto idmap = simplify_tables(
                         pop, mcounts_from_preserved_nodes, tables, simplifier,
-                        tables.num_nodes() - 2 * N, 2 * N, generation);
+                        tables.num_nodes() - 2 * N, 2 * N);
                     mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
@@ -374,7 +374,7 @@ main(int argc, char **argv)
         {
             auto idmap = simplify_tables(
                 pop, mcounts_from_preserved_nodes, tables, simplifier,
-                tables.num_nodes() - 2 * N, 2 * N, generation);
+                tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification

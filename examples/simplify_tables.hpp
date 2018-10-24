@@ -17,7 +17,7 @@ simplify_tables(poptype &pop,
                 fwdpp::ts::table_collection &tables,
                 fwdpp::ts::table_simplifier &simplifier,
                 const fwdpp::ts::TS_NODE_INT first_sample_node,
-                const std::size_t num_samples, const unsigned generation)
+                const std::size_t num_samples)
 {
     tables.sort_tables(pop.mutations);
     std::vector<std::int32_t> samples(num_samples);
@@ -28,10 +28,12 @@ simplify_tables(poptype &pop,
         {
             s = idmap[s];
         }
+#ifndef NDEBUG
     for (auto &s : tables.preserved_nodes)
         {
             assert(idmap[s] != 1);
         }
+#endif
     fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts,
                                mcounts_from_preserved_nodes);
     tables.mutation_table.erase(
