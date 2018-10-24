@@ -12,6 +12,9 @@ I encourage you to read the [tutorials](https://tskit-dev.github.io/tutorials/) 
 
 1. wfts.cc implements a Wright-Fisher simulation with selection, ancestral sample recording, and ancestral sample
    metadata tracking. Command line switches also enable extensive testing of the data structures.
+2. spatialts.cc implements a simplistic method of simulating discrete generations on a continuous landscape.  The
+   methods used in this example are **not** what one would do in research-quality code.  Rather, the example is
+   illustrative, and shows how the geographic locations of preserved samples may be tracked.
 
 ## Namespace
 
