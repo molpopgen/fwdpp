@@ -45,8 +45,9 @@
 #include <boost/range/adaptor/transformed.hpp>
 // For getting what we want from the rtree faster
 #include <boost/function_output_iterator.hpp>
+#include "simplify_tables.hpp"
 #include "evolve_generation_ts.hpp"
-#include "confirm_mutation_counts.hpp"
+#include "calculate_fitnesses.hpp"
 
 namespace po = boost::program_options;
 namespace bg = boost::geometry;
@@ -57,64 +58,6 @@ using point = bg::model::point<double, 2, boost::geometry::cs::cartesian>;
 using point_to_diploid = std::pair<point, std::size_t>;
 using rtree_type = bgi::rtree<point_to_diploid, bgi::quadratic<16>>;
 
-inline fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr
-calculate_fitnesses(poptype &pop, std::vector<double> &fitnesses)
-{
-    auto N_curr = pop.diploids.size();
-    fitnesses.resize(N_curr);
-    for (size_t i = 0; i < N_curr; ++i)
-        {
-            fitnesses[i] = fwdpp::multiplicative_diploid(2.0)(
-                pop.diploids[i], pop.gametes, pop.mutations);
-        }
-    auto lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
-        gsl_ran_discrete_preproc(N_curr, &fitnesses[0]));
-    return lookup;
-}
-
-template <typename poptype>
-std::vector<fwdpp::ts::TS_NODE_INT>
-simplify_tables(poptype &pop,
-                std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
-                fwdpp::ts::table_collection &tables,
-                fwdpp::ts::table_simplifier &simplifier,
-                const fwdpp::ts::TS_NODE_INT first_sample_node,
-                const std::size_t num_samples, const unsigned generation)
-{
-    tables.sort_tables(pop.mutations);
-    std::vector<std::int32_t> samples(num_samples);
-    std::iota(samples.begin(), samples.end(), first_sample_node);
-    auto idmap = simplifier.simplify(tables, samples, pop.mutations);
-    tables.build_indexes();
-    for (auto &s : samples)
-        {
-            s = idmap[s];
-        }
-    for (auto &s : tables.preserved_nodes)
-        {
-            assert(idmap[s] != 1);
-        }
-    fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts,
-                               mcounts_from_preserved_nodes);
-    tables.mutation_table.erase(
-        std::remove_if(
-            tables.mutation_table.begin(), tables.mutation_table.end(),
-            [&pop, &mcounts_from_preserved_nodes](
-                const fwdpp::ts::mutation_record &mr) {
-                return pop.mcounts[mr.key] == 2 * pop.diploids.size()
-                       && mcounts_from_preserved_nodes[mr.key] == 0;
-            }),
-        tables.mutation_table.end());
-    fwdpp::ts::remove_fixations_from_gametes(
-        pop.gametes, pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-        2 * pop.diploids.size());
-
-    fwdpp::ts::flag_mutations_for_recycling(
-        pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-        pop.mut_lookup, 2 * pop.diploids.size());
-    confirm_mutation_counts(pop, tables);
-    return idmap;
-}
 
 struct diploid_metadata
 {
@@ -143,6 +86,7 @@ template <typename First, typename Second> struct pair_maker
         return result_type(v.value(), v.index());
     }
 };
+
 int
 main(int argc, char **argv)
 {
