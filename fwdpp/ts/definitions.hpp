@@ -23,7 +23,12 @@ namespace fwdpp
  *
  * Example of continous space and tree sequences.
  *
- * Note that this model has a rather big performance
+ * This example uses simple methods to find mates
+ * within a euclidean distance of an individual, and
+ * then choose a mate proportional to fitnesses within
+ * that circle.
+ *
+ * Note that this example has a rather big performance
  * bottleneck due to a suboptimal implementation of a 
  * "pick2" function.  We are working on it!
  */
