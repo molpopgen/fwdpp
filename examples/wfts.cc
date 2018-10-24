@@ -200,7 +200,7 @@ main(int argc, char **argv)
     fwdpp::uint_t N, gcint = 100;
     double theta, rho, mean = 0.0, shape = 1, mu,
                        scoeff = std::numeric_limits<double>::quiet_NaN(),
-                       dominance = 1.0;
+                       dominance = 1.0, scaling = 2.0;
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1, nsam = 0;
@@ -229,7 +229,8 @@ main(int argc, char **argv)
         ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
         ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
         ("constant",po::value<double>(&scoeff), "Use a constant DFE with fixed selection coefficient s.\nUsing this over-rides gamma DFE parameters.")
-        ("h",po::value<double>(&dominance), "Dominance of selected variants.  Default = 1.0");
+        ("h",po::value<double>(&dominance), "Dominance of selected variants.  Default = 1.0")
+        ("scaling",po::value<double>(&scaling), "Fitness model scaling is 1, 1+hs, 1+scaling*s for AA, Aa, and aa genotypes, resp.  Default = 2.0");
         testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
         ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
 		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
@@ -329,7 +330,7 @@ main(int argc, char **argv)
     // meaning that we can record a correct fitness
     // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
-    auto ff = fwdpp::multiplicative_diploid(2.0);
+    auto ff = fwdpp::multiplicative_diploid(scaling);
     auto lookup = calculate_fitnesses(pop, fitnesses, ff);
     for (; generation <= 10 * N; ++generation)
         {
