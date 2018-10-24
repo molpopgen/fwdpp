@@ -190,9 +190,8 @@ make_dfe(const fwdpp::uint_t N, const rng &r, const double mean,
             return [scoeff]() { return scoeff; };
         }
     fwdpp::extensions::gamma dfe(mean, shape);
-    return [&r, dfe, N]() {
-        return dfe(r.get()) / static_cast<double>(2 * N);
-    };
+    return
+        [&r, dfe, N]() { return dfe(r.get()) / static_cast<double>(2 * N); };
 }
 
 int
@@ -330,7 +329,8 @@ main(int argc, char **argv)
     // meaning that we can record a correct fitness
     // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
-    auto lookup = calculate_fitnesses(pop, fitnesses);
+    auto ff = fwdpp::multiplicative_diploid(2.0);
+    auto lookup = calculate_fitnesses(pop, fitnesses, ff);
     for (; generation <= 10 * N; ++generation)
         {
             auto pick1 = [&lookup, &rng]() {
@@ -344,7 +344,7 @@ main(int argc, char **argv)
                               generation, tables, first_parental_index,
                               next_index);
             // Recalculate fitnesses and the lookup table.
-            lookup = calculate_fitnesses(pop, fitnesses);
+            lookup = calculate_fitnesses(pop, fitnesses, ff);
             if (generation % gcint == 0.0)
                 {
                     auto idmap = simplify_tables(

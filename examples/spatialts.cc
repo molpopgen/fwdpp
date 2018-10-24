@@ -58,7 +58,6 @@ using point = bg::model::point<double, 2, boost::geometry::cs::cartesian>;
 using point_to_diploid = std::pair<point, std::size_t>;
 using rtree_type = bgi::rtree<point_to_diploid, bgi::quadratic<256>>;
 
-
 struct diploid_metadata
 {
     std::size_t individual;
@@ -266,12 +265,13 @@ main(int argc, char **argv)
               possible_mates.push_back(p.second);
               possible_mate_fitness.push_back(fitnesses[p.second]);
           };
+    auto ff = fwdpp::multiplicative_diploid(2.0);
     for (; generation <= 10 * N; ++generation)
         {
             //Clear out offspring coordinates
             offspring_points.resize(N);
 
-            auto lookup = calculate_fitnesses(pop, fitnesses);
+            auto lookup = calculate_fitnesses(pop, fitnesses, ff);
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
