@@ -180,11 +180,28 @@ test_serialization(const fwdpp::ts::table_collection &tables,
         }
 }
 
+template <typename rng>
+std::function<double()>
+make_dfe(const fwdpp::uint_t N, const rng &r, const double mean,
+         const double shape, const double scoeff)
+{
+    if (std::isfinite(scoeff))
+        {
+            return [scoeff]() { return scoeff; };
+        }
+    fwdpp::extensions::gamma dfe(mean, shape);
+    return [&r, dfe, N]() {
+        return dfe(r.get()) / static_cast<double>(2 * N);
+    };
+}
+
 int
 main(int argc, char **argv)
 {
     fwdpp::uint_t N, gcint = 100;
-    double theta, rho, mean = 0.0, shape = 1, mu;
+    double theta, rho, mean = 0.0, shape = 1, mu,
+                       scoeff = std::numeric_limits<double>::quiet_NaN(),
+                       dominance = 1.0;
     unsigned seed = 42;
     int ancient_sampling_interval = -1;
     int ancient_sample_size = -1, nsam = 0;
@@ -192,6 +209,7 @@ main(int argc, char **argv)
     bool matrix_test = false;
     std::string filename, sfsfilename;
     po::options_description options("Simulation options"),
+        dfeoptions("Distribution of fitness effects"),
         testing("Testing options");
     // clang-format off
     options.add_options()("help", "Display help")
@@ -201,19 +219,23 @@ main(int argc, char **argv)
         ("theta", po::value<double>(&theta), "4Nu")
         ("rho", po::value<double>(&rho), "4Nr")
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
-        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
         ("ansam", po::value<int>(&ancient_sample_size),
          "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
-		("sfs", po::value<std::string>(&sfsfilename),"Write the site frequency spectrum of a sample to a file")
+		("sfs", po::value<std::string>(&sfsfilename),"Write the neutral site frequency spectrum of a sample to a file")
 		("nsam", po::value<int>(&nsam), "Sample size for the site frequency spectrum.  Default is 0.  Change when using --sfs");
+        dfeoptions.add_options()
+        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
+        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
+        ("constant",po::value<double>(&scoeff), "Use a constant DFE with fixed selection coefficient s.\nUsing this over-rides gamma DFE parameters.")
+        ("h",po::value<double>(&dominance), "Dominance of selected variants.  Default = 1.0");
         testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
         ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
 		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
     // clang-format on
+    options.add(dfeoptions);
     options.add(testing);
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, options), vm);
@@ -246,7 +268,7 @@ main(int argc, char **argv)
         }
     else if (mu > 0)
         {
-            if (mean == 0.0)
+            if (mean == 0.0 && std::isnan(scoeff))
                 {
                     throw std::invalid_argument(
                         "mean selection coefficient cannot be zero");
@@ -268,13 +290,10 @@ main(int argc, char **argv)
     const auto recmap
         = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
 
-    const fwdpp::extensions::gamma dfe(mean, shape);
-    const auto get_selection_coefficient = [&rng, dfe, N]() {
-        return dfe(rng.get()) / static_cast<double>(2 * N);
-    };
+    auto get_selection_coefficient = make_dfe(N, rng, mean, shape, scoeff);
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
-    const auto generate_h = []() { return 1.0; };
+    const auto generate_h = [dominance]() { return dominance; };
     const auto mmodel = [&pop, &rng, &generation, generate_mutation_position,
                          get_selection_coefficient,
                          generate_h](std::queue<std::size_t> &recbin,
@@ -302,14 +321,14 @@ main(int argc, char **argv)
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
     const auto update_offspring = [](std::size_t, std::size_t, std::size_t) {};
-    
+
     // GOTCHA: we calculate fitnesses and generate our lookup table
     // here, based on our initial/monomorphic population.
     // The reason that we do this is that we will then update
     // these data AFTER each call to the evolution function,
     // so that fitnesses == those of current pop.diploids,
     // meaning that we can record a correct fitness
-    // value as ancient sample metadata.  This is a logic 
+    // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
     auto lookup = calculate_fitnesses(pop, fitnesses);
     for (; generation <= 10 * N; ++generation)
