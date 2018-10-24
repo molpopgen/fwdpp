@@ -360,9 +360,18 @@ main(int argc, char **argv)
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
     const auto update_offspring = [](std::size_t, std::size_t, std::size_t) {};
+    
+    // GOTCHA: we calculate fitnesses and generate our lookup table
+    // here, based on our initial/monomorphic population.
+    // The reason that we do this is that we will then update
+    // these data AFTER each call to the evolution function,
+    // so that fitnesses == those of current pop.diploids,
+    // meaning that we can record a correct fitness
+    // value as ancient sample metadata.  This is a logic 
+    // issue that is easy to goof.
+    auto lookup = calculate_fitnesses(pop, fitnesses);
     for (; generation <= 10 * N; ++generation)
         {
-            auto lookup = calculate_fitnesses(pop, fitnesses);
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
@@ -373,6 +382,8 @@ main(int argc, char **argv)
                               mmodel, mutation_recycling_bin, recmap,
                               generation, tables, first_parental_index,
                               next_index);
+            // Recalculate fitnesses and the lookup table.
+            lookup = calculate_fitnesses(pop, fitnesses);
             if (generation % gcint == 0.0)
                 {
                     auto idmap = simplify_tables(
@@ -439,15 +450,6 @@ main(int argc, char **argv)
                 // final generation as ancient samples.
                 && generation < 10 * N)
                 {
-                    // For recording the metadata, let's normalize the
-                    // fitnesses so that we record what matters in the sim,
-                    // which is relative fitness.
-                    auto wbar = std::accumulate(fitnesses.begin(),
-                                                fitnesses.end(), 0.)
-                                / static_cast<double>(N);
-                    std::transform(fitnesses.begin(), fitnesses.end(),
-                                   fitnesses.begin(),
-                                   [wbar](double w) { return w / wbar; });
                     gsl_ran_choose(
                         rng.get(), individuals.data(), individuals.size(),
                         individual_labels.data(), individual_labels.size(),
@@ -475,6 +477,10 @@ main(int argc, char **argv)
                             tables.preserved_nodes.push_back(x.first);
                             tables.preserved_nodes.push_back(x.second);
                             // Record the metadata for our ancient samples
+                            // Here, we record each individual's actual fitness.
+                            // If we wanted relative fitness, then
+                            // we'd have to copy fitnesses into a temp
+                            // and normalize it appropriately.
                             ancient_sample_metadata.emplace_back(
                                 i, generation, fitnesses[i], x.first,
                                 x.second);
