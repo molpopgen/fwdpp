@@ -56,7 +56,7 @@ using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 using point = bg::model::point<double, 2, boost::geometry::cs::cartesian>;
 using point_to_diploid = std::pair<point, std::size_t>;
-using rtree_type = bgi::rtree<point_to_diploid, bgi::quadratic<16>>;
+using rtree_type = bgi::rtree<point_to_diploid, bgi::quadratic<256>>;
 
 
 struct diploid_metadata
