@@ -141,7 +141,7 @@ namespace fwdpp
             /// newly-added nodes.
             std::ptrdiff_t edge_offset;
 			/// Length of the genomic region.
-            const double L;
+            mutable double L;
 			/// A vector of dead/ancient sample nodes
             std::vector<TS_NODE_INT> preserved_nodes;
 
