@@ -4,6 +4,7 @@
 #ifndef FWDPP_TS_EDGE_HPP
 #define FWDPP_TS_EDGE_HPP
 
+#include <tuple>
 #include "definitions.hpp"
 
 namespace fwdpp
@@ -12,7 +13,7 @@ namespace fwdpp
     {
         struct edge
         /// \brief An edge in a tree sequence
-		///
+        ///
         /// Edges define a transmission event
         /// of the genomic interval [left,right)
         /// from parent to child.
@@ -22,6 +23,12 @@ namespace fwdpp
             double left, right;
             TS_NODE_INT parent, child;
         };
+        bool
+        operator==(const edge& a, const edge& b)
+        {
+            return std::tie(a.parent, a.child, a.left, a.right)
+                   == std::tie(b.parent, b.child, b.left, b.right);
+        }
     } // namespace ts
 } // namespace fwdpp
 

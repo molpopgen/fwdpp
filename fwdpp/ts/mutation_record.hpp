@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_MUTATION_RECORD_HPP
 #define FWDPP_TS_MUTATION_RECORD_HPP
 
+#include <tuple>
 #include <cstdint>
 
 namespace fwdpp
@@ -18,6 +19,12 @@ namespace fwdpp
             /// population's mutation container
             std::size_t key;
         };
+
+        bool
+        operator==(const mutation_record& a, const mutation_record& b)
+        {
+            return std::tie(a.node, a.key) == std::tie(b.node, b.key);
+        }
     } // namespace ts
 } // namespace fwdpp
 

@@ -396,6 +396,21 @@ namespace fwdpp
                 return L;
             }
         };
+
+        bool
+        operator==(const table_collection& a, const table_collection& b)
+        {
+            return a.genome_length() == b.genome_length()
+                   && a.edge_table == b.edge_table
+                   && a.node_table == b.node_table
+                   && a.mutation_table == b.mutation_table;
+        }
+        
+        bool
+        operator!=(const table_collection& a, const table_collection& b)
+        {
+            return !(a == b);
+        }
     } // namespace ts
 } // namespace fwdpp
 

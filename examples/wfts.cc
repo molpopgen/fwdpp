@@ -143,40 +143,24 @@ test_serialization(const fwdpp::ts::table_collection &tables,
         {
             throw std::runtime_error("edge_offset does not match");
         }
-    for (std::size_t i = 0; i < tables.edge_table.size(); ++i)
+
+    if (tables.edge_table != tables2.edge_table)
         {
-            auto e1 = tables.edge_table[i];
-            auto e2 = tables2.edge_table[i];
-            bool l = (e1.left == e2.left);
-            bool r = (e1.right == e2.right);
-            bool p = (e1.parent == e2.parent);
-            bool c = (e1.child == e2.child);
-            if (!l || !r || !p || !c)
-                {
-                    throw std::runtime_error("edge tables do not match");
-                }
+            throw std::runtime_error("edge tables do not match");
         }
-    for (std::size_t i = 0; i < tables.node_table.size(); ++i)
+
+    if (tables.node_table != tables2.node_table)
         {
-            auto n1 = tables.node_table[i];
-            auto n2 = tables2.node_table[i];
-            bool p = (n1.population == n2.population);
-            bool t = (n1.time == n2.time);
-            if (!p || !t)
-                {
-                    throw std::runtime_error("node tables do not match");
-                }
+            throw std::runtime_error("node tables do not match");
         }
-    for (std::size_t i = 0; i < tables.mutation_table.size(); ++i)
+
+    if (tables.mutation_table != tables2.mutation_table)
         {
-            auto mr1 = tables.mutation_table[i];
-            auto mr2 = tables2.mutation_table[i];
-            bool n = (mr1.node == mr2.node);
-            bool k = (mr1.key == mr2.key);
-            if (!n || !k)
-                {
-                    throw std::runtime_error("mutation tables do not match");
-                }
+            throw std::runtime_error("mutation tables do not match");
+        }
+    if (tables != tables2)
+        {
+            throw std::runtime_error("tables failed equality check");
         }
 }
 
@@ -451,9 +435,9 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto idmap = simplify_tables(
-                pop, mcounts_from_preserved_nodes, tables, simplifier,
-                tables.num_nodes() - 2 * N, 2 * N);
+            auto idmap = simplify_tables(pop, mcounts_from_preserved_nodes,
+                                         tables, simplifier,
+                                         tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification
