@@ -31,7 +31,7 @@ namespace fwdpp
                          const std::vector<TS_NODE_INT>& samples)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.L),
+                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples)
             {
             }
@@ -57,7 +57,7 @@ namespace fwdpp
                          const std::vector<TS_NODE_INT>& preserved_nodes)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.L),
+                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes)
             {
             }

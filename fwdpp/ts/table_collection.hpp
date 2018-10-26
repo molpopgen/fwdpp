@@ -38,6 +38,8 @@ namespace fwdpp
 		 */
         {
           private:
+            /// Length of the genomic region.
+            double L;
             void
             split_breakpoints_add_edges(
                 const std::vector<double>& breakpoints,
@@ -140,14 +142,12 @@ namespace fwdpp
             /// It can be used to make sure we only sort
             /// newly-added nodes.
             std::ptrdiff_t edge_offset;
-			/// Length of the genomic region.
-            mutable double L;
-			/// A vector of dead/ancient sample nodes
+            /// A vector of dead/ancient sample nodes
             std::vector<TS_NODE_INT> preserved_nodes;
 
             table_collection(const double maxpos)
-                : node_table{}, edge_table{}, mutation_table{}, input_left{},
-                  output_right{}, edge_offset{ 0 }, L{ maxpos },
+                : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
+                  input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -160,8 +160,8 @@ namespace fwdpp
             table_collection(const TS_NODE_INT num_initial_nodes,
                              const double initial_time, TS_NODE_INT pop,
                              const double maxpos)
-                : node_table{}, edge_table{}, mutation_table{}, input_left{},
-                  output_right{}, edge_offset{ 0 }, L{ maxpos },
+                : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
+                  input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -276,8 +276,8 @@ namespace fwdpp
 
             void
             record_preserved_nodes(const std::vector<TS_NODE_INT>& node_ids)
-			/// Take a list of nodes to record as "ancient samples".
-			/// Throws an exception if the nodes are already recorded as such.
+            /// Take a list of nodes to record as "ancient samples".
+            /// Throws an exception if the nodes are already recorded as such.
             {
                 for (auto i : node_ids)
                     {
@@ -389,6 +389,11 @@ namespace fwdpp
             update_offset()
             {
                 edge_offset = edge_table.size();
+            }
+            double
+            genome_length() const
+            {
+                return L;
             }
         };
     } // namespace ts

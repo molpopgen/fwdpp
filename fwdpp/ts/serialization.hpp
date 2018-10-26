@@ -196,7 +196,8 @@ namespace fwdpp
                 o << "fwdppts";
                 fwdpp::io::scalar_writer sw;
                 sw(o, &TS_TABLES_VERSION);
-                sw(o, &tables.L);
+                auto L=tables.genome_length();
+                sw(o, &L);
                 sw(o, &tables.edge_offset);
                 std::size_t num_edges = tables.edge_table.size(),
                             num_nodes = tables.num_nodes(),

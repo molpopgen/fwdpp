@@ -135,9 +135,9 @@ test_serialization(const fwdpp::ts::table_collection &tables,
     std::ifstream i(filename.c_str());
     auto tables2 = fwdpp::ts::io::deserialize_tables(i);
 
-    if (tables.L != tables2.L)
+    if (tables.genome_length() != tables2.genome_length())
         {
-            throw std::runtime_error("L does not match");
+            throw std::runtime_error("genome_length does not match");
         }
     if (tables.edge_offset != tables2.edge_offset)
         {
