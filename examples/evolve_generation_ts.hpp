@@ -67,8 +67,7 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
                   std::queue<std::size_t>& mutation_recycling_bin,
                   const breakpoint_function& recmodel,
                   const fwdpp::uint_t generation,
-                  fwdpp::ts::table_collection& tables,
-                  std::int32_t first_parental_index, std::int32_t next_index)
+                  fwdpp::ts::table_collection& tables)
 {
 
     auto gamete_recycling_bin
@@ -81,7 +80,7 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
     decltype(pop.diploids) offspring(N_next);
 
     // Generate the offspring
-    auto next_index_local = next_index;
+    auto next_index_local = tables.next_index;
     for (std::size_t next_offspring = 0; next_offspring < offspring.size();
          ++next_offspring)
         {
@@ -100,10 +99,10 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             if (swap2)
                 std::swap(p2g1, p2g2);
 
-            auto p1id
-                = fwdpp::ts::get_parent_ids(first_parental_index, p1, swap1);
-            auto p2id
-                = fwdpp::ts::get_parent_ids(first_parental_index, p2, swap2);
+            auto p1id = fwdpp::ts::get_parent_ids(tables.first_parental_index,
+                                                  p1, swap1);
+            auto p2id = fwdpp::ts::get_parent_ids(tables.first_parental_index,
+                                                  p2, swap2);
 
             auto& dip = offspring[next_offspring];
             next_index_local = generate_offspring(
@@ -121,8 +120,6 @@ evolve_generation(const rng_t& rng, poptype& pop, const fwdpp::uint_t N_next,
             // may depend on the parents
             update_offspring(next_offspring, p1, p2);
         }
-    assert(next_index_local
-           == next_index + 2 * static_cast<std::int32_t>(N_next));
     // This is constant-time
     pop.diploids.swap(offspring);
 }

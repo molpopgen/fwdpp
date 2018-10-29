@@ -290,8 +290,6 @@ main(int argc, char **argv)
     };
 
     // Evolve pop for 20N generations
-    fwdpp::ts::TS_NODE_INT first_parental_index = 0,
-                           next_index = 2 * pop.diploids.size();
     bool simplified = false;
     std::queue<std::size_t> mutation_recycling_bin;
     std::vector<fwdpp::uint_t> mcounts_from_preserved_nodes;
@@ -326,8 +324,7 @@ main(int argc, char **argv)
             };
             evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,
                               mmodel, mutation_recycling_bin, recmap,
-                              generation, tables, first_parental_index,
-                              next_index);
+                              generation, tables);
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, ff);
             if (generation % gcint == 0.0)
@@ -338,8 +335,8 @@ main(int argc, char **argv)
                     mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
-                    next_index = tables.num_nodes();
-                    first_parental_index = 0;
+                    tables.next_index = tables.num_nodes();
+                    tables.first_parental_index = 0;
                     confirm_mutation_counts(pop, tables);
 
                     // When tracking ancient samples, the node ids of those samples change.
@@ -355,8 +352,10 @@ main(int argc, char **argv)
             else
                 {
                     simplified = false;
-                    first_parental_index = next_index;
-                    next_index += 2 * N;
+                    tables.first_parental_index = tables.next_index;
+                    tables.end_parental_indexes
+                        = tables.first_parental_index + 2 * N;
+                    tables.next_index += 2 * N;
 
                     // The following (commented-out) block
                     // shows that it is possible to mix mutation
@@ -403,9 +402,9 @@ main(int argc, char **argv)
                     for (auto i : individuals)
                         {
                             auto x = fwdpp::ts::get_parent_ids(
-                                first_parental_index, i, 0);
-                            assert(x.first >= first_parental_index);
-                            assert(x.second >= first_parental_index);
+                                tables.first_parental_index, i, 0);
+                            assert(x.first >= tables.first_parental_index);
+                            assert(x.second >= tables.first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
                             assert(tables.node_table[x.first].time
@@ -438,6 +437,11 @@ main(int argc, char **argv)
             auto idmap = simplify_tables(pop, mcounts_from_preserved_nodes,
                                          tables, simplifier,
                                          tables.num_nodes() - 2 * N, 2 * N);
+            // Make sure indexes are up to date
+            // in case one evolves the pop'n any further.
+            tables.first_parental_index = 0;
+            tables.end_parental_indexes = 2 * N;
+            tables.next_index = tables.num_nodes();
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification
