@@ -4,6 +4,7 @@
 #ifndef FWDPP_TS_NODE_HPP
 #define FWDPP_TS_NODE_HPP
 
+#include <tuple>
 #include <cstdint>
 
 namespace fwdpp
@@ -20,6 +21,13 @@ namespace fwdpp
             /// Birth time of the node.
             double time;
         };
+
+        bool
+        operator==(const node& a, const node& b)
+        {
+            return std::tie(a.time, a.population)
+                   == std::tie(b.time, b.population);
+        }
     } // namespace ts
 } // namespace fwdpp
 #endif
