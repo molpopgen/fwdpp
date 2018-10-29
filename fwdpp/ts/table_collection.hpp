@@ -144,11 +144,15 @@ namespace fwdpp
             std::ptrdiff_t edge_offset;
             /// A vector of dead/ancient sample nodes
             std::vector<TS_NODE_INT> preserved_nodes;
+            TS_NODE_INT first_parental_index;
+            TS_NODE_INT end_parental_indexes;
+            TS_NODE_INT next_index;
 
             table_collection(const double maxpos)
                 : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
                   input_left{}, output_right{}, edge_offset{ 0 },
-                  preserved_nodes{}
+                  preserved_nodes{}, first_parental_index(TS_NULL_NODE),
+                  end_parental_indexes(TS_NULL_NODE), next_index(TS_NULL_NODE)
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
                     {
@@ -162,7 +166,9 @@ namespace fwdpp
                              const double maxpos)
                 : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
                   input_left{}, output_right{}, edge_offset{ 0 },
-                  preserved_nodes{}
+                  preserved_nodes{}, first_parental_index(0),
+                  end_parental_indexes(num_initial_nodes),
+                  next_index(num_initial_nodes)
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
                     {
@@ -405,7 +411,7 @@ namespace fwdpp
                    && a.node_table == b.node_table
                    && a.mutation_table == b.mutation_table;
         }
-        
+
         bool
         operator!=(const table_collection& a, const table_collection& b)
         {
