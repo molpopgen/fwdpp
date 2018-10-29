@@ -407,6 +407,9 @@ namespace fwdpp
         operator==(const table_collection& a, const table_collection& b)
         {
             return a.genome_length() == b.genome_length()
+                   && a.first_parental_index == b.first_parental_index
+                   && a.end_parental_indexes == b.end_parental_indexes
+                   && a.next_index == b.next_index
                    && a.edge_table == b.edge_table
                    && a.node_table == b.node_table
                    && a.mutation_table == b.mutation_table;
