@@ -196,8 +196,11 @@ namespace fwdpp
                 o << "fwdppts";
                 fwdpp::io::scalar_writer sw;
                 sw(o, &TS_TABLES_VERSION);
-                auto L=tables.genome_length();
+                auto L = tables.genome_length();
                 sw(o, &L);
+                sw(o, &tables.first_parental_index);
+                sw(o, &tables.end_parental_indexes);
+                sw(o, &tables.next_index);
                 sw(o, &tables.edge_offset);
                 std::size_t num_edges = tables.edge_table.size(),
                             num_nodes = tables.num_nodes(),
@@ -226,7 +229,7 @@ namespace fwdpp
             template <typename istreamtype>
             table_collection
             deserialize_tables(istreamtype& i)
-			/*! \brief Read a fwdpp::ts::table_collection in from a binary stream
+            /*! \brief Read a fwdpp::ts::table_collection in from a binary stream
 			 *
 			 *  \param i A model of std::istream
 			 *
@@ -256,6 +259,9 @@ namespace fwdpp
                 double L;
                 sr(i, &L);
                 table_collection tables(L);
+                sr(i, &tables.first_parental_index);
+                sr(i, &tables.end_parental_indexes);
+                sr(i, &tables.next_index);
                 sr(i, &tables.edge_offset);
                 std::size_t num_edges, num_nodes, num_mutations;
                 sr(i, &num_edges);
@@ -281,7 +287,7 @@ namespace fwdpp
                         tables.mutation_table.emplace_back(
                             mutation_record_reader(i));
                     }
-				tables.build_indexes();
+                tables.build_indexes();
                 return tables;
             }
         } // namespace io
