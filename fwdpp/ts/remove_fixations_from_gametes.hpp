@@ -16,7 +16,7 @@ namespace fwdpp
             gcont_t &gametes, const mcont_t &mutations,
             const mutation_count_container &mcounts,
             const mutation_count_container &mcounts_from_preserved_nodes,
-            const fwdpp::uint_t twoN)
+            const fwdpp::uint_t twoN, const bool preserve_selected_fixations)
         {
             bool fixations_exist = false;
             for (std::size_t i = 0; !fixations_exist && i < mcounts.size();
@@ -31,10 +31,13 @@ namespace fwdpp
             if (fixations_exist)
                 {
                     auto removal_criteria
-                        = [&mcounts, &mcounts_from_preserved_nodes,
-                           twoN](const fwdpp::uint_t key) {
+                        = [&mutations, &mcounts, &mcounts_from_preserved_nodes,
+                           twoN, preserve_selected_fixations](
+                              const fwdpp::uint_t key) {
                               return mcounts[key] == twoN
-                                     && mcounts_from_preserved_nodes[key] == 0;
+                                     && mcounts_from_preserved_nodes[key] == 0
+                                     && (!preserve_selected_fixations
+                                         || mutations[key].neutral);
                           };
                     for (auto &g : gametes)
                         {
