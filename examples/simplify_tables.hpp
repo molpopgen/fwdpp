@@ -51,7 +51,7 @@ simplify_tables(poptype &pop,
 
     fwdpp::ts::flag_mutations_for_recycling(
         pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-        pop.mut_lookup, 2 * pop.diploids.size());
+        pop.mut_lookup, 2 * pop.diploids.size(), false);
     confirm_mutation_counts(pop, tables);
     return idmap;
 }
