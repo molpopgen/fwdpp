@@ -47,7 +47,7 @@ simplify_tables(poptype &pop,
         tables.mutation_table.end());
     fwdpp::ts::remove_fixations_from_gametes(
         pop.gametes, pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-        2 * pop.diploids.size());
+        2 * pop.diploids.size(), false);
 
     fwdpp::ts::flag_mutations_for_recycling(
         pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
