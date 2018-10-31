@@ -38,7 +38,8 @@ namespace fwdpp
         flag_mutations_for_recycling(
             const mcont_t &mutations, mutation_count_container &mcounts,
             mutation_count_container &mcounts_from_preserved_nodes,
-            lookup_table &lookup, const fwdpp::uint_t twoN)
+            lookup_table &lookup, const fwdpp::uint_t twoN,
+            bool preserve_selected_fixations)
         {
             for (std::size_t i = 0; i < mcounts.size(); ++i)
                 {
@@ -49,7 +50,9 @@ namespace fwdpp
                                     throw std::runtime_error(
                                         "mutation count out of range");
                                 }
-                            if (mcounts[i] == twoN)
+                            if (mcounts[i] == twoN
+                                && (!preserve_selected_fixations
+                                    || mutations[i].neutral))
                                 {
                                     auto itr
                                         = lookup.equal_range(mutations[i].pos);
