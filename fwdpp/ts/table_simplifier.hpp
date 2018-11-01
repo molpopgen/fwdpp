@@ -468,9 +468,16 @@ namespace fwdpp
             record_sample_nodes(const std::vector<TS_NODE_INT>& samples,
                                 const table_collection& tables,
                                 std::vector<TS_NODE_INT>& idmap)
+            /// \version 0.7.1 Throw exception if a sample is recorded twice
             {
                 for (const auto& s : samples)
                     {
+                        // See GitHub issue 158
+                        // for background
+                        if(idmap[s] != TS_NULL_NODE)
+                        {
+                            throw std::invalid_argument("invalid sample list");
+                        }
                         new_node_table.emplace_back(
                             node{ tables.node_table[s].population,
                                   tables.node_table[s].time });
@@ -505,6 +512,7 @@ namespace fwdpp
             /// \param tables A table_collection
             /// \param samples A list of sample (node) ids.
             /// \param mutations A container of mutations
+            /// \version 0.7.1 Throw exception if a sample is recorded twice
             {
                 Ancestry.resize(tables.node_table.size());
 
