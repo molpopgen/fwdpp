@@ -22,7 +22,9 @@ namespace fwdpp
         /// \version 0.7.0 Added to fwdpp
         /// \version 0.7.1 Constructors throw exceptions when sample lists contain the
         /// same node ID more than once. Changed from struct to class in order
-        /// to reuse some code in a private function.
+        /// to reuse some code in a private function. Initialization also 
+        /// tracks the total sample size, which is number of nonzero elements
+        /// in sample_index_map.
         {
           private:
             void
@@ -45,6 +47,7 @@ namespace fwdpp
                             }
                         lc[s] = 1;
                         sample_index_map[s] = i;
+                        ++sample_size;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
                         i++;
                     }
@@ -56,6 +59,7 @@ namespace fwdpp
                 right_child, left_sample, right_sample, next_sample,
                 sample_index_map;
             double left, right;
+            TS_NODE_INT sample_size;
             marginal_tree(TS_NODE_INT nnodes,
                           const std::vector<TS_NODE_INT>& samples)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
@@ -70,12 +74,13 @@ namespace fwdpp
                   sample_index_map(nnodes, TS_NULL_NODE),
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
-                  }
+                  },sample_size(0)
             /// Constructor
             /// \todo Document
             {
                 init_samples(samples, leaf_counts);
             }
+
             marginal_tree(TS_NODE_INT nnodes,
                           const std::vector<TS_NODE_INT>& samples,
                           const std::vector<TS_NODE_INT>& preserved_nodes)
@@ -91,7 +96,7 @@ namespace fwdpp
                   sample_index_map(nnodes, TS_NULL_NODE),
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
-                  }
+                  },sample_size(0)
             /// Constructor
             /// \todo Document
             {
@@ -110,7 +115,7 @@ namespace fwdpp
                   sample_index_map(nnodes, TS_NULL_NODE),
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
-                  }
+                  },sample_size(0)
             /// Constructor
             /// \todo Document
             {
