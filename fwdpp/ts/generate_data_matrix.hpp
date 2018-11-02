@@ -21,6 +21,9 @@ namespace fwdpp
                              const mcont_t& mutations,
                              const bool record_neutral,
                              const bool record_selected)
+        /// \todo Document
+        /// \version 0.7.0 Added to library
+        /// \version 0.7.1 Change behavior to skip sites fixed in the sample
         {
             auto mut = tables.mutation_table.cbegin();
             const auto mut_end = tables.mutation_table.cend();
@@ -31,33 +34,40 @@ namespace fwdpp
                 {
                     // Advance the mutation table records until we are
                     // in the current tree
-                    const auto & tree = tv.tree();
+                    const auto& tree = tv.tree();
                     while (mut < mut_end
                            && mutations[mut->key].pos < tree.left)
                         {
                             ++mut;
                         }
                     // Process mutations on this tree
-                    for (; mut < mut_end
-                           && mutations[mut->key].pos < tree.right;
+                    for (;
+                         mut < mut_end && mutations[mut->key].pos < tree.right;
                          ++mut)
                         {
-                            bool is_neutral = mutations[mut->key].neutral;
-                            if ((is_neutral && record_neutral)
-                                || (!is_neutral && record_selected))
+                            auto tc = tree.leaf_counts[mut->node]
+                                      + tree.preserved_leaf_counts[mut->node];
+                            if (tc < tree.sample_size)
                                 {
-                                    auto index
-                                        = tree.left_sample[mut->node];
-                                    // Check if mutation leads to a sample
-                                    if (index != TS_NULL_NODE)
+                                    // Mutation leads to a polymorphism
+                                    bool is_neutral
+                                        = mutations[mut->key].neutral;
+                                    if ((is_neutral && record_neutral)
+                                        || (!is_neutral && record_selected))
                                         {
-                                            detail::process_samples(
-                                                tree, mut->node, index,
-                                                genotypes);
-                                            // Update our return value
-                                            detail::update_data_matrix(
-                                                mutations, mut->key, genotypes,
-                                                rv);
+                                            auto index
+                                                = tree.left_sample[mut->node];
+                                            // Check if mutation leads to a sample
+                                            if (index != TS_NULL_NODE)
+                                                {
+                                                    detail::process_samples(
+                                                        tree, mut->node, index,
+                                                        genotypes);
+                                                    // Update our return value
+                                                    detail::update_data_matrix(
+                                                        mutations, mut->key,
+                                                        genotypes, rv);
+                                                }
                                         }
                                 }
                         }
