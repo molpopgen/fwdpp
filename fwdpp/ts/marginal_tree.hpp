@@ -11,16 +11,46 @@ namespace fwdpp
 {
     namespace ts
     {
-        struct marginal_tree
+        class marginal_tree
         /// \brief A non-recombining tree
         ///
         /// The tree is represented as a sparse tree
         /// data structure where several linked lists
         /// allow efficient retrieval of parent/child/siblings
         /// of nodes.
-        /// 
+        ///
         /// \version 0.7.0 Added to fwdpp
+        /// \version 0.7.1 Constructors throw exceptions when sample lists contain the
+        /// same node ID more than once. Changed from struct to class in order
+        /// to reuse some code in a private function.
         {
+          private:
+            void
+            init_samples(const std::vector<TS_NODE_INT>& samples,
+                         std::vector<TS_NODE_INT>& lc)
+            {
+                int i = 0;
+                for (auto s : samples)
+                    {
+                        if (static_cast<std::size_t>(s) >= leaf_counts.size())
+                            {
+                                throw std::invalid_argument(
+                                    "sample index out of range");
+                            }
+                        // See GitHub issue #158 for background
+                        if (sample_index_map[s] != TS_NULL_NODE)
+                            {
+                                throw std::invalid_argument(
+                                    "invalid sample list");
+                            }
+                        lc[s] = 1;
+                        sample_index_map[s] = i;
+                        left_sample[s] = right_sample[s] = sample_index_map[s];
+                        i++;
+                    }
+            }
+
+          public:
             std::vector<std::int32_t> parents, leaf_counts,
                 preserved_leaf_counts, left_sib, right_sib, left_child,
                 right_child, left_sample, right_sample, next_sample,
@@ -41,20 +71,10 @@ namespace fwdpp
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
                   }
+            /// Constructor
+            /// \todo Document
             {
-                int i = 0;
-                for (auto s : samples)
-                    {
-                        if (static_cast<std::size_t>(s) >= leaf_counts.size())
-                            {
-                                throw std::invalid_argument(
-                                    "sample index out of range");
-                            }
-                        leaf_counts[s] = 1;
-                        sample_index_map[s] = i;
-                        left_sample[s] = right_sample[s] = sample_index_map[s];
-                        i++;
-                    }
+                init_samples(samples, leaf_counts);
             }
             marginal_tree(std::int32_t nnodes,
                           const std::vector<std::int32_t>& samples,
@@ -72,32 +92,11 @@ namespace fwdpp
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
                   }
+            /// Constructor
+            /// \todo Document
             {
-                int i = 0;
-                for (auto s : samples)
-                    {
-                        if (static_cast<std::size_t>(s) >= leaf_counts.size())
-                            {
-                                throw std::invalid_argument(
-                                    "sample index out of range");
-                            }
-                        leaf_counts[s] = 1;
-                        sample_index_map[s] = i;
-                        left_sample[s] = right_sample[s] = sample_index_map[s];
-                        ++i;
-                    }
-                for (auto s : preserved_nodes)
-                    {
-                        if (static_cast<std::size_t>(s) >= leaf_counts.size())
-                            {
-                                throw std::invalid_argument(
-                                    "sample index out of range");
-                            }
-                        preserved_leaf_counts[s] = 1;
-                        sample_index_map[s] = i;
-                        left_sample[s] = right_sample[s] = sample_index_map[s];
-                        ++i;
-                    }
+                init_samples(samples, leaf_counts);
+                init_samples(preserved_nodes, preserved_leaf_counts);
             }
             marginal_tree(std::int32_t nnodes)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts{},
@@ -112,6 +111,8 @@ namespace fwdpp
                   left{ std::numeric_limits<double>::quiet_NaN() }, right{
                       std::numeric_limits<double>::quiet_NaN()
                   }
+            /// Constructor
+            /// \todo Document
             {
             }
         };
