@@ -51,13 +51,13 @@ namespace fwdpp
             }
 
           public:
-            std::vector<std::int32_t> parents, leaf_counts,
+            std::vector<TS_NODE_INT> parents, leaf_counts,
                 preserved_leaf_counts, left_sib, right_sib, left_child,
                 right_child, left_sample, right_sample, next_sample,
                 sample_index_map;
             double left, right;
-            marginal_tree(std::int32_t nnodes,
-                          const std::vector<std::int32_t>& samples)
+            marginal_tree(TS_NODE_INT nnodes,
+                          const std::vector<TS_NODE_INT>& samples)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -76,9 +76,9 @@ namespace fwdpp
             {
                 init_samples(samples, leaf_counts);
             }
-            marginal_tree(std::int32_t nnodes,
-                          const std::vector<std::int32_t>& samples,
-                          const std::vector<std::int32_t>& preserved_nodes)
+            marginal_tree(TS_NODE_INT nnodes,
+                          const std::vector<TS_NODE_INT>& samples,
+                          const std::vector<TS_NODE_INT>& preserved_nodes)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -98,7 +98,7 @@ namespace fwdpp
                 init_samples(samples, leaf_counts);
                 init_samples(preserved_nodes, preserved_leaf_counts);
             }
-            marginal_tree(std::int32_t nnodes)
+            marginal_tree(TS_NODE_INT nnodes)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts{},
                   preserved_leaf_counts{}, left_sib(nnodes, TS_NULL_NODE),
                   right_sib(nnodes, TS_NULL_NODE),
