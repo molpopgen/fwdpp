@@ -534,6 +534,23 @@ main(int argc, char **argv)
                                  "+ preserved nodes...";
                     matrix_runtime_test(tables, sc, pop.mutations, mc);
                     std::cout << "passed.\n";
+                    std::cout << "Matrix test with respect to most recent "
+                                 "ancient sampling time point...";
+                    sc.clear();
+                    std::copy_if(
+                        tables.preserved_nodes.begin(),
+                        tables.preserved_nodes.end(), std::back_inserter(sc),
+                        [&tables](const fwdpp::ts::TS_NODE_INT n) {
+                            return tables.node_table[n].time
+                                   == tables
+                                          .node_table[tables.preserved_nodes
+                                                          .back()]
+                                          .time;
+                        });
+                    mc.clear();
+                    fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
+                    matrix_runtime_test(tables, sc, pop.mutations, mc);
+                    std::cout<<"passed\n";
                 }
         }
     if (!filename.empty())
