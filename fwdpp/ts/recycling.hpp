@@ -3,6 +3,7 @@
 
 #include <stdexcept>
 #include <vector>
+#include <limits>
 #include <cstdint>
 #include <queue>
 #include <fwdpp/forward_types.hpp>
@@ -36,7 +37,7 @@ namespace fwdpp
                   typename mutation_count_container>
         void
         flag_mutations_for_recycling(
-            const mcont_t &mutations, mutation_count_container &mcounts,
+            mcont_t &mutations, mutation_count_container &mcounts,
             mutation_count_container &mcounts_from_preserved_nodes,
             lookup_table &lookup, const fwdpp::uint_t twoN,
             bool preserve_selected_fixations)
@@ -71,11 +72,32 @@ namespace fwdpp
          * fixation times are only accurate if simplification happens very often.  A future
          * release will overload this function to handle that case, or you may write your own.
          *
+         * Note that \mutations is passed in non-const! There are guaranteed to be
+         * no changes to the size of the container.  However, mutations marked for recycling
+         * will have there positions change to numeric_limits<double>::max().
+         *
+         * \version 0.7.0 Added to library
+         * \version 0.7.1 Updated to change recycled mutation positions to max value of a double.
+         *
          * \todo Improve treatment of fixations by allowing for variants fixed in alive AND 
          * ancient samples to be flagged.
          * \todo Return a recycling queue?
          */
         {
+            auto process
+                = [&lookup, &mutations, &mcounts](const std::size_t i) {
+                      auto itr = lookup.equal_range(mutations[i].pos);
+                      mutations[i].pos = std::numeric_limits<double>::max();
+                      while (itr.first != itr.second)
+                          {
+                              if (itr.first->second == i)
+                                  {
+                                      lookup.erase(itr.first);
+                                      break;
+                                  }
+                              ++itr.first;
+                          }
+                  };
             for (std::size_t i = 0; i < mcounts.size(); ++i)
                 {
                     if (mcounts_from_preserved_nodes[i] == 0)
@@ -89,36 +111,12 @@ namespace fwdpp
                                 && (!preserve_selected_fixations
                                     || mutations[i].neutral))
                                 {
-                                    auto itr
-                                        = lookup.equal_range(mutations[i].pos);
-                                    while (itr.first != itr.second)
-                                        {
-                                            if (itr.first->second == i)
-                                                {
-                                                    lookup.erase(itr.first);
-                                                    mcounts[i] = 0;
-                                                    break;
-                                                }
-                                            ++itr.first;
-                                        }
+                                    process(i);
+                                    mcounts[i] = 0;
                                 }
                             else if (mcounts[i] == 0)
                                 {
-                                    auto itr
-                                        = lookup.equal_range(mutations[i].pos);
-                                    if (itr.first != lookup.end())
-                                        {
-                                            while (itr.first != itr.second)
-                                                {
-                                                    if (itr.first->second == i)
-                                                        {
-                                                            lookup.erase(
-                                                                itr.first);
-                                                            break;
-                                                        }
-                                                    ++itr.first;
-                                                }
-                                        }
+                                    process(i);
                                 }
                         }
                 }
