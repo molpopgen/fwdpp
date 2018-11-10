@@ -33,6 +33,25 @@ namespace fwdpp
             return mutation_recycling_bin;
         }
 
+        template <typename mcont_t, typename lookup_table>
+        void
+        process_mutation_index(mcont_t &mutations, lookup_table &lookup,
+                               const std::size_t i)
+        /// Implementation detail for flag_mutations_for_recycling
+        {
+            auto itr = lookup.equal_range(mutations[i].pos);
+            mutations[i].pos = std::numeric_limits<double>::max();
+            while (itr.first != itr.second)
+                {
+                    if (itr.first->second == i)
+                        {
+                            lookup.erase(itr.first);
+                            break;
+                        }
+                    ++itr.first;
+                }
+        }
+
         template <typename mcont_t, typename lookup_table,
                   typename mutation_count_container>
         void
@@ -84,20 +103,6 @@ namespace fwdpp
          * \todo Return a recycling queue?
          */
         {
-            auto process
-                = [&lookup, &mutations, &mcounts](const std::size_t i) {
-                      auto itr = lookup.equal_range(mutations[i].pos);
-                      mutations[i].pos = std::numeric_limits<double>::max();
-                      while (itr.first != itr.second)
-                          {
-                              if (itr.first->second == i)
-                                  {
-                                      lookup.erase(itr.first);
-                                      break;
-                                  }
-                              ++itr.first;
-                          }
-                  };
             for (std::size_t i = 0; i < mcounts.size(); ++i)
                 {
                     if (mcounts_from_preserved_nodes[i] == 0)
@@ -111,15 +116,30 @@ namespace fwdpp
                                 && (!preserve_selected_fixations
                                     || mutations[i].neutral))
                                 {
-                                    process(i);
+                                    process_mutation_index(mutations, lookup,
+                                                           i);
                                     mcounts[i] = 0;
                                 }
                             else if (mcounts[i] == 0)
                                 {
-                                    process(i);
+                                    process_mutation_index(mutations, lookup,
+                                                           i);
                                 }
                         }
                 }
+        }
+
+        template <typename mcont_t, typename lookup_table,
+                  typename mutation_count_container>
+        void
+        flag_mutations_for_recycling(
+            mcont_t &mutations, mcont_t &fixations,
+            std::vector<uint_t> &fixation_times,
+            mutation_count_container &mcounts,
+            mutation_count_container &mcounts_from_preserved_nodes,
+            lookup_table &lookup, const fwdpp::uint_t twoN,
+            bool preserve_selected_fixations)
+        {
         }
     } // namespace ts
 } // namespace fwdpp
