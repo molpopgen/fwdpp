@@ -52,14 +52,12 @@ namespace fwdpp
                 }
         }
 
-        template <typename mcont_t, typename lookup_table,
-                  typename mutation_count_container>
+        template <typename poptype, typename mutation_count_container>
         void
         flag_mutations_for_recycling(
-            mcont_t &mutations, mutation_count_container &mcounts,
+            poptype &pop,
             mutation_count_container &mcounts_from_preserved_nodes,
-            lookup_table &lookup, const fwdpp::uint_t twoN,
-            bool preserve_selected_fixations)
+            const uint_t twoN, const bool preserve_selected_fixations)
         /*! Mark mutations for recycling.
          *
          * This function should be called immediately after simplification and mutation counting.
@@ -91,55 +89,43 @@ namespace fwdpp
          * fixation times are only accurate if simplification happens very often.  A future
          * release will overload this function to handle that case, or you may write your own.
          *
-         * Note that \mutations is passed in non-const! There are guaranteed to be
+         * Note that \a mutations is passed in non-const! There are guaranteed to be
          * no changes to the size of the container.  However, mutations marked for recycling
          * will have there positions change to numeric_limits<double>::max().
          *
          * \version 0.7.0 Added to library
          * \version 0.7.1 Updated to change recycled mutation positions to max value of a double.
+         * Updated to take a population type as an argument.
          *
          * \todo Improve treatment of fixations by allowing for variants fixed in alive AND 
          * ancient samples to be flagged.
          * \todo Return a recycling queue?
          */
         {
-            for (std::size_t i = 0; i < mcounts.size(); ++i)
+            for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                 {
                     if (mcounts_from_preserved_nodes[i] == 0)
                         {
-                            if (mcounts[i] > twoN)
+                            if (pop.mcounts[i] > twoN)
                                 {
                                     throw std::runtime_error(
                                         "mutation count out of range");
                                 }
-                            if (mcounts[i] == twoN
+                            if (pop.mcounts[i] == twoN
                                 && (!preserve_selected_fixations
-                                    || mutations[i].neutral))
+                                    || pop.mutations[i].neutral))
                                 {
-                                    process_mutation_index(mutations, lookup,
-                                                           i);
-                                    mcounts[i] = 0;
+                                    process_mutation_index(pop.mutations,
+                                                           pop.mut_lookup, i);
+                                    pop.mcounts[i] = 0;
                                 }
-                            else if (mcounts[i] == 0)
+                            else if (pop.mcounts[i] == 0)
                                 {
-                                    process_mutation_index(mutations, lookup,
-                                                           i);
+                                    process_mutation_index(pop.mutations,
+                                                           pop.mut_lookup, i);
                                 }
                         }
                 }
-        }
-
-        template <typename mcont_t, typename lookup_table,
-                  typename mutation_count_container>
-        void
-        flag_mutations_for_recycling(
-            mcont_t &mutations, mcont_t &fixations,
-            std::vector<uint_t> &fixation_times,
-            mutation_count_container &mcounts,
-            mutation_count_container &mcounts_from_preserved_nodes,
-            lookup_table &lookup, const fwdpp::uint_t twoN,
-            bool preserve_selected_fixations)
-        {
         }
     } // namespace ts
 } // namespace fwdpp
