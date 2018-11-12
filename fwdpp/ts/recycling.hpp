@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_RECYCLING_HPP
 #define FWDPP_TS_RECYCLING_HPP
 
+#include <algorithm>
 #include <stdexcept>
 #include <vector>
 #include <limits>
@@ -33,31 +34,165 @@ namespace fwdpp
             return mutation_recycling_bin;
         }
 
-        template <typename mcont_t, typename lookup_table>
-        void
-        process_mutation_index(mcont_t &mutations, lookup_table &lookup,
-                               const std::size_t i)
-        /// Implementation detail for flag_mutations_for_recycling
+        namespace detail
         {
-            auto itr = lookup.equal_range(mutations[i].pos);
-            mutations[i].pos = std::numeric_limits<double>::max();
-            while (itr.first != itr.second)
-                {
-                    if (itr.first->second == i)
-                        {
-                            lookup.erase(itr.first);
-                            break;
-                        }
-                    ++itr.first;
-                }
-        }
+            template <typename mcont_t, typename lookup_table>
+            void
+            process_mutation_index(mcont_t &mutations, lookup_table &lookup,
+                                   const std::size_t i)
+            /// Implementation detail for flag_mutations_for_recycling
+            {
+                auto itr = lookup.equal_range(mutations[i].pos);
+                mutations[i].pos = std::numeric_limits<double>::max();
+                while (itr.first != itr.second)
+                    {
+                        if (itr.first->second == i)
+                            {
+                                lookup.erase(itr.first);
+                                break;
+                            }
+                        ++itr.first;
+                    }
+            }
 
-        template <typename poptype, typename mutation_count_container>
+            template <typename mcont_t, typename mutation_count_container,
+                      typename lookup_table>
+            inline void
+            process_fixations(mcont_t &mutations,
+                              mutation_count_container &mcounts,
+                              mcont_t & /*fixations*/,
+                              std::vector<uint_t> & /*fixation_times*/,
+                              lookup_table &mut_lookup,
+                              const uint_t /*generation*/, const std::size_t i,
+                              std::false_type, std::false_type)
+            // Remove all fixations.
+            // Do not record fixations
+            {
+                process_mutation_index(mutations, mut_lookup, i);
+                mcounts[i] = 0;
+            }
+
+            template <typename mcont_t, typename mutation_count_container,
+                      typename lookup_table>
+            inline void
+            process_fixations(mcont_t &mutations,
+                              mutation_count_container &mcounts,
+                              mcont_t &fixations,
+                              std::vector<uint_t> &fixation_times,
+                              lookup_table &mut_lookup,
+                              const uint_t generation, const std::size_t i,
+                              std::false_type, std::true_type)
+            // Remove all fixations
+            // Record fixations
+            {
+                fixations.push_back(mutations[i]);
+                fixation_times.push_back(generation);
+                process_mutation_index(mutations, mut_lookup, i);
+                mcounts[i] = 0;
+            }
+
+            struct equal_range_comparison
+            {
+                template <typename mutation_type>
+                inline bool
+                operator()(const mutation_type &m, const double p) const
+                {
+                    return m.pos < p;
+                }
+                template <typename mutation_type>
+                inline bool
+                operator()(const double p, const mutation_type &m) const
+                {
+                    return p < m.pos;
+                }
+            };
+
+            template <typename mcont_t, typename mutation_count_container,
+                      typename lookup_table>
+            inline void
+            process_fixations(mcont_t &mutations,
+                              mutation_count_container &mcounts,
+                              mcont_t & /*fixations*/,
+                              std::vector<uint_t> & /*fixation_times*/,
+                              lookup_table &mut_lookup,
+                              const uint_t /*generation*/, const std::size_t i,
+                              std::true_type, std::false_type)
+            // Only remove neutral fixations
+            // Do not record fixations
+            {
+                if (mutations[i].neutral)
+                    {
+                        process_mutation_index(mutations, mut_lookup, i);
+                        mcounts[i] = 0;
+                    }
+            }
+
+            template <typename mcont_t, typename mutation_count_container,
+                      typename lookup_table>
+            inline void
+            process_fixations(mcont_t &mutations,
+                              mutation_count_container &mcounts,
+                              mcont_t &fixations,
+                              std::vector<uint_t> &fixation_times,
+                              lookup_table &mut_lookup,
+                              const uint_t generation, const std::size_t i,
+                              std::true_type, std::true_type)
+            // Only remove neutral fixations.
+            // Record fixations.
+            // The recording is in order of mutation position.
+            {
+                if (mutations[i].neutral)
+                    {
+                        // Record the fixation here,
+                        // as we will recycle this variant
+                        auto loc = std::lower_bound(
+                            fixations.begin(), fixations.end(),
+                            mutations[i].pos,
+                            [](const typename mcont_t::value_type &m,
+                               const double val) { return m.pos < val; });
+                        auto d = std::distance(fixations.begin(), loc);
+                        fixations.insert(loc, mutations[i]);
+                        fixation_times.insert(fixation_times.begin() + d,
+                                              generation);
+                        process_mutation_index(mutations, mut_lookup, i);
+                        mcounts[i] = 0;
+                    }
+                else
+                    {
+                        // The logic here is tougher.  We are preserving
+                        // selected mutations, and thus we only
+                        // want to record their fixations once. Thus,
+                        // we have to make sure that this fixation
+                        // hasn't been recorded at all.
+                        auto loc_range = std::equal_range(
+                            fixations.begin(), fixations.end(),
+                            mutations[i].pos,
+                            detail::equal_range_comparison());
+                        if (std::find(loc_range.first, loc_range.second,
+                                      mutations[i])
+                            == loc_range.second)
+                            {
+                                fixations.insert(loc_range.first,
+                                                 mutations[i]);
+                                auto d = std::distance(fixations.begin(),
+                                                       loc_range.first);
+                                fixation_times.insert(
+                                    fixation_times.begin() + d, generation);
+                            }
+                    }
+            }
+        } // namespace detail
+
+        template <typename poptype, typename mutation_count_container,
+                  typename preserve_selected_fixations,
+                  typename record_fixations>
         void
         flag_mutations_for_recycling(
             poptype &pop,
             mutation_count_container &mcounts_from_preserved_nodes,
-            const uint_t twoN, const bool preserve_selected_fixations)
+            const uint_t twoN, const uint_t generation,
+            const preserve_selected_fixations preserve,
+            const record_fixations record)
         /*! Mark mutations for recycling.
          *
          * This function should be called immediately after simplification and mutation counting.
@@ -111,18 +246,18 @@ namespace fwdpp
                                     throw std::runtime_error(
                                         "mutation count out of range");
                                 }
-                            if (pop.mcounts[i] == twoN
-                                && (!preserve_selected_fixations
-                                    || pop.mutations[i].neutral))
+                            if (pop.mcounts[i] == twoN)
                                 {
-                                    process_mutation_index(pop.mutations,
-                                                           pop.mut_lookup, i);
-                                    pop.mcounts[i] = 0;
+                                    detail::process_fixations(
+                                        pop.mutations, pop.mcounts,
+                                        pop.fixations, pop.fixation_times,
+                                        pop.mut_lookup, generation, i,
+                                        preserve, record);
                                 }
                             else if (pop.mcounts[i] == 0)
                                 {
-                                    process_mutation_index(pop.mutations,
-                                                           pop.mut_lookup, i);
+                                    detail::process_mutation_index(
+                                        pop.mutations, pop.mut_lookup, i);
                                 }
                         }
                 }
