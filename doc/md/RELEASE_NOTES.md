@@ -3,6 +3,18 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.7.1
+
+Point release fixing some API and UI issues with tree sequence recording.  Several documentation updates for 
+these functions, too.
+
+* fwdpp::ts::table_collection is now equality-comparable. [PR 153](https://github.com/molpopgen/fwdpp/pull/153)
+* Stricter checking of sample list validity during simplification and tree traversal. [PR 159](https://github.com/molpopgen/fwdpp/pull/159)
+* fwdpp::ts::marginak_tree now tracks number of samples.  fwdpp::ts::generate_data_matrix no longer adds fixed variants
+  to the output. [PR 160](https://github.com/molpopgen/fwdpp/pull/160)
+* fwdpp::ts::flag_mutations_for_recycling has been refactored to allow for preserving selected fixations and limited
+  fixation recording. [PR 162](https://github.com/molpopgen/fwdpp/pull/162)
+
 ## 0.7.0
 
 This is a major release, introducing namespace fwdpp::ts with support for tree sequence recording during simulations.
