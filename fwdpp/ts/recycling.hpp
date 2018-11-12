@@ -172,10 +172,10 @@ namespace fwdpp
                                       mutations[i])
                             == loc_range.second)
                             {
-                                fixations.insert(loc_range.first,
-                                                 mutations[i]);
                                 auto d = std::distance(fixations.begin(),
                                                        loc_range.first);
+                                fixations.insert(loc_range.first,
+                                                 mutations[i]);
                                 fixation_times.insert(
                                     fixation_times.begin() + d, generation);
                             }
