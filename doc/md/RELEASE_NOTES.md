@@ -10,7 +10,7 @@ these functions, too.
 
 * fwdpp::ts::table_collection is now equality-comparable. [PR 153](https://github.com/molpopgen/fwdpp/pull/153)
 * Stricter checking of sample list validity during simplification and tree traversal. [PR 159](https://github.com/molpopgen/fwdpp/pull/159)
-* fwdpp::ts::marginak_tree now tracks number of samples.  fwdpp::ts::generate_data_matrix no longer adds fixed variants
+* fwdpp::ts::marginal_tree now tracks number of samples.  fwdpp::ts::generate_data_matrix no longer adds fixed variants
   to the output. [PR 160](https://github.com/molpopgen/fwdpp/pull/160)
 * fwdpp::ts::flag_mutations_for_recycling has been refactored to allow for preserving selected fixations and limited
   fixation recording. [PR 162](https://github.com/molpopgen/fwdpp/pull/162)
