@@ -240,6 +240,9 @@ namespace fwdpp
          * with this function should be considered limited to the case of regular simplification and no
          * ancient sample preservation.
          *
+         * \warning The \a preserve argument needs to be consistent with the desired behavior of
+         * ts::remove_fixations_from_gametes.
+         *
          * \version 0.7.0 Added to library
          * \version 0.7.1 Updated to change recycled mutation positions to max value of a double.
          * Refactor API to take compile-time policies for fixation handling.

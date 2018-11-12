@@ -42,6 +42,9 @@ namespace fwdpp
          * \note When simulating a trait and never simulating neutral mutations, the most 
          * efficient thing is to skip calling this function entirely.
          *
+         * \warning The value passed to \a preserve_selected_fixations needs to be 
+         * coordinated with the \a preserve argument of flag_mutations_for_recycling.
+         *
          * \todo Improve treatment of fixations by allowing for variants fixed in alive AND 
          * ancient samples to be detected.
          */
