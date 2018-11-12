@@ -197,40 +197,52 @@ namespace fwdpp
          *
          * This function should be called immediately after simplification and mutation counting.
          *
-         * \param mutations A mutation container
-         * \param mcounts A container stating how many times each element in \a mutations is present in the
-         * currently-alive population
+         * \param pop A mutation container
          * \param mcounts_from_preserved_nodes A container recording the counts of each mutation in ancient samples
-         * \param lookup The population lookup table for mutations
          * \param twoN Twice the current population size
-         * \param preserve_selected_fixations If true, do not mark selected fixations for recycling.
+         * \param generation Current generation/time step in the simulation
+         * \param preserve Policy for handling selected fixations.  See below.
+         * \param record Policy for recording fixation events. See below.
          *
          * A mutation is marked for recycling if one of the following conditions holds:
-         * 1. The sum of \a mcounts and \a mcounts_from_preserved_nodes is zero.
-         * 2. \a mcounts == \a twoN, mcounts_from_preserved_nodes is zero, 
-         * and \a preserve_selected_fixations is false or the mutation is neutral.
+         * 1. The sum of \a pop.mcounts and \a mcounts_from_preserved_nodes is zero.
+         * 2. \a pop.mcounts == \a twoN, mcounts_from_preserved_nodes is zero, 
+         * and \a record is std::false_type or the mutation is neutral.
          *
          * Condition 1 refers to extinct mutations and condition 2 refers to fixations.
          *
-         * When \a preserve_selected_fixations is true, selected fixations are retained
+         * When \a preserve is std::true_type, selected fixations are retained
          * in the population.  We do this because simulations of phenotypes (as opposed
          * to relative fitness) require tracking the contribution of fixation to 
          * trait values.
          *
-         * All variants matching the above criteria have their record in \a mcounts
-         * set to zero and their position is removed from \a lookup.
+         * All variants matching the above criteria have their record in \a pop.mcounts
+         * set to zero and their position is removed from \a pop.mut_lookup.  Further, the 
+         * mutation's position in \a pop.mutations is set to std::numeric_limits<double>::max(),
+         * to signify an "invalid" mutation.
          *
-         * This function does not record fixations/fixation times.  The reason is that
-         * fixation times are only accurate if simplification happens very often.  A future
-         * release will overload this function to handle that case, or you may write your own.
+         * If \a record is std::false_type, no fixation recording takes place.  However, if
+         * \a record is std::true_type, a record is entered into \a pop.fixations and
+         * \a pop.fixation_times.  If \a preserve is also std::true_type, the recording is 
+         * slightly more expensive because we have to guard against repeated recording.  For this
+         * case, the fixations and fixation times containers in \a pop are kept sorted by fixation position.
          *
-         * Note that \a mutations is passed in non-const! There are guaranteed to be
-         * no changes to the size of the container.  However, mutations marked for recycling
-         * will have there positions change to numeric_limits<double>::max().
+         * An advanced use of this function is to create branchless code with respect to 
+         * fixation handling.  One can generate a closure wrapping this function with the desired
+         * values of \a preserve and \a record at the start of a simulation, thus avoiding a bunch of 
+         * "if" statements prior to each call.
+         *
+         * \note There are several caveats to fixation recording (\a record == std::true_type).  First,
+         * it is only as accurate as the time steps between simplifications is small.  \a pop will only 
+         * contain exact fixation times if simplification occurs every generation.  The second limitation
+         * is that it will not give correct results if ancient samples are being tracked in a simulation.
+         * This has to do with a "todo" item for this function described below.  Thus, fixation recording 
+         * with this function should be considered limited to the case of regular simplification and no
+         * ancient sample preservation.
          *
          * \version 0.7.0 Added to library
          * \version 0.7.1 Updated to change recycled mutation positions to max value of a double.
-         * Updated to take a population type as an argument.
+         * Refactor API to take compile-time policies for fixation handling.
          *
          * \todo Improve treatment of fixations by allowing for variants fixed in alive AND 
          * ancient samples to be flagged.
