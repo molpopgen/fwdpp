@@ -12,7 +12,7 @@
 
 template <typename poptype>
 std::vector<fwdpp::ts::TS_NODE_INT>
-simplify_tables(poptype &pop,
+simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
                 fwdpp::ts::table_collection &tables,
                 fwdpp::ts::table_simplifier &simplifier,
@@ -50,8 +50,8 @@ simplify_tables(poptype &pop,
         2 * pop.diploids.size(), false);
 
     fwdpp::ts::flag_mutations_for_recycling(
-        pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
-        pop.mut_lookup, 2 * pop.diploids.size(), false);
+        pop, mcounts_from_preserved_nodes, 2 * pop.diploids.size(), generation,
+        std::false_type(), std::false_type());
     confirm_mutation_counts(pop, tables);
     return idmap;
 }
