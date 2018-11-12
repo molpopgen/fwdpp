@@ -333,8 +333,8 @@ main(int argc, char **argv)
             if (generation % gcint == 0.0)
                 {
                     auto idmap = simplify_tables(
-                        pop, mcounts_from_preserved_nodes, tables, simplifier,
-                        tables.num_nodes() - 2 * N, 2 * N);
+                        pop, generation, mcounts_from_preserved_nodes, tables,
+                        simplifier, tables.num_nodes() - 2 * N, 2 * N);
                     mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, mcounts_from_preserved_nodes);
                     simplified = true;
@@ -435,7 +435,7 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto idmap = simplify_tables(pop, mcounts_from_preserved_nodes,
+            auto idmap = simplify_tables(pop, generation, mcounts_from_preserved_nodes,
                                          tables, simplifier,
                                          tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
@@ -550,7 +550,7 @@ main(int argc, char **argv)
                     mc.clear();
                     fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
                     matrix_runtime_test(tables, sc, pop.mutations, mc);
-                    std::cout<<"passed\n";
+                    std::cout << "passed\n";
                 }
         }
     if (!filename.empty())
