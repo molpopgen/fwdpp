@@ -403,9 +403,10 @@ namespace fwdpp
             return a.genome_length() == b.genome_length()
                    && a.edge_table == b.edge_table
                    && a.node_table == b.node_table
-                   && a.mutation_table == b.mutation_table;
+                   && a.mutation_table == b.mutation_table
+                   && a.preserved_nodes == b.preserved_nodes;
         }
-        
+
         bool
         operator!=(const table_collection& a, const table_collection& b)
         {
