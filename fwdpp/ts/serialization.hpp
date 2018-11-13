@@ -221,6 +221,14 @@ namespace fwdpp
                     {
                         mutation_record_writer(o, m);
                     }
+                std::size_t num_preserved_samples
+                    = tables.preserved_nodes.size();
+                sw(o, &num_preserved_samples);
+                if (num_preserved_samples)
+                    {
+                        sw(o, tables.preserved_nodes.data(),
+                           num_preserved_samples);
+                    }
             }
 
             template <typename istreamtype>
@@ -280,6 +288,14 @@ namespace fwdpp
                     {
                         tables.mutation_table.emplace_back(
                             mutation_record_reader(i));
+                    }
+                std::size_t num_preserved_samples;
+                sr(i, &num_preserved_samples);
+                if (num_preserved_samples)
+                    {
+                        tables.preserved_nodes.resize(num_preserved_samples);
+                        sr(i, tables.preserved_nodes.data(),
+                           num_preserved_samples);
                     }
                 tables.build_indexes();
                 return tables;
