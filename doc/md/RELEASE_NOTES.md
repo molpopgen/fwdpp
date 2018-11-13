@@ -5,6 +5,7 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.7.2
 
+* Resolve a serialization and comparison issue with fwdpp::ts::table_collection [PR 165](https://github.com/molpopgen/fwdpp/pull/165).
 * fwdpp::ts::mutate_tables now returns immediately if the mutation rate is not positive.
 
 ## 0.7.1
