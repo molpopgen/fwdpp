@@ -135,7 +135,7 @@ namespace fwdpp
             mutation_key_vector mutation_table;
             /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
             indexed_edge_container input_left;
-            /// The input edge vector. "O" in \cite Kelleher2016-cb, page 13
+            /// The output edge vector. "O" in \cite Kelleher2016-cb, page 13
             indexed_edge_container output_right;
             /// This reflects the length of
             /// tables.edge_table after last simplification.
