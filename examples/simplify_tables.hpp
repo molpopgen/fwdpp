@@ -11,7 +11,7 @@
 #include "confirm_mutation_counts.hpp"
 
 template <typename poptype>
-std::vector<fwdpp::ts::TS_NODE_INT>
+std::pair<std::vector<fwdpp::ts::TS_NODE_INT>, std::vector<std::size_t>>
 simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
                 fwdpp::ts::table_collection &tables,
@@ -22,16 +22,17 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
     tables.sort_tables(pop.mutations);
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
-    auto idmap = simplifier.simplify(tables, samples, pop.mutations);
+    auto idmap_removed_variants
+        = simplifier.simplify(tables, samples, pop.mutations);
     tables.build_indexes();
     for (auto &s : samples)
         {
-            s = idmap[s];
+            s = idmap_removed_variants.first[s];
         }
 #ifndef NDEBUG
     for (auto &s : tables.preserved_nodes)
         {
-            assert(idmap[s] != 1);
+            assert(idmap_removed_variants.first[s] != 1);
         }
 #endif
     fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts,
@@ -53,6 +54,6 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
         pop, mcounts_from_preserved_nodes, 2 * pop.diploids.size(), generation,
         std::false_type(), std::false_type());
     confirm_mutation_counts(pop, tables);
-    return idmap;
+    return idmap_removed_variants;
 }
 #endif

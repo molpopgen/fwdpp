@@ -332,7 +332,7 @@ main(int argc, char **argv)
             lookup = calculate_fitnesses(pop, fitnesses, ff);
             if (generation % gcint == 0.0)
                 {
-                    auto idmap = simplify_tables(
+                    auto rv = simplify_tables(
                         pop, generation, mcounts_from_preserved_nodes, tables,
                         simplifier, tables.num_nodes() - 2 * N, 2 * N);
                     mutation_recycling_bin = fwdpp::ts::make_mut_queue(
@@ -346,8 +346,8 @@ main(int argc, char **argv)
                     // Thus, we need to remap our metadata upon simplification
                     for (auto &md : ancient_sample_metadata)
                         {
-                            md.n1 = idmap[md.n1];
-                            md.n2 = idmap[md.n2];
+                            md.n1 = rv.first[md.n1];
+                            md.n2 = rv.first[md.n2];
                             assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
                             assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                         }
@@ -435,7 +435,7 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto idmap = simplify_tables(pop, generation, mcounts_from_preserved_nodes,
+            auto rv = simplify_tables(pop, generation, mcounts_from_preserved_nodes,
                                          tables, simplifier,
                                          tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
@@ -443,8 +443,8 @@ main(int argc, char **argv)
             // Thus, we need to remap our metadata upon simplification
             for (auto &md : ancient_sample_metadata)
                 {
-                    md.n1 = idmap[md.n1];
-                    md.n2 = idmap[md.n2];
+                    md.n1 = rv.first[md.n1];
+                    md.n2 = rv.first[md.n2];
                     assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
                     assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                 }
