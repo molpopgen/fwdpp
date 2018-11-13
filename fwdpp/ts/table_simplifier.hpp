@@ -450,15 +450,15 @@ namespace fwdpp
 
                 // Any mutations with null node values do not have
                 // ancestry and may be removed.
-                std::vector<std::size_t> removed_variants;
+                std::vector<std::size_t> preserved_variants;
                 auto itr = std::remove_if(mt.begin(), mt.end(),
                                           [](const mutation_record& mr) {
                                               return mr.node == TS_NULL_NODE;
                                           });
-                removed_variants.reserve(std::distance(itr, mt.end()));
-                for (auto i = itr; i != mt.end(); ++i)
+                preserved_variants.reserve(std::distance(itr, mt.end()));
+                for (auto i = mt.begin(); i != itr; ++i)
                     {
-                        removed_variants.push_back(i->key);
+                        preserved_variants.push_back(i->key);
                     }
 
                 mt.erase(itr, mt.end());
@@ -469,7 +469,7 @@ namespace fwdpp
                                           return mutations[a.key].pos
                                                  < mutations[b.key].pos;
                                       }));
-                return removed_variants;
+                return preserved_variants;
             }
 
             void
@@ -523,7 +523,8 @@ namespace fwdpp
             /// \param mutations A container of mutations
             /// \version 0.7.1 Throw exception if a sample is recorded twice
             /// \version 0.7.3 Return value is now a pair containing the
-            /// node ID map and a vector of keys to mutations "simplified out"
+            /// node ID map and a vector of keys to mutations preserved in
+            /// mutation tables
             {
                 Ancestry.resize(tables.node_table.size());
 
@@ -586,12 +587,12 @@ namespace fwdpp
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_sorted());
                 tables.update_offset();
-                auto removed_variants
+                auto preserved_variants
                     = simplify_mutations(mutations, tables.mutation_table);
 
                 cleanup();
                 std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
-                    rv(std::move(idmap), std::move(removed_variants));
+                    rv(std::move(idmap), std::move(preserved_variants));
                 return rv;
             }
         };
