@@ -37,15 +37,18 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
 #endif
     fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts,
                                mcounts_from_preserved_nodes);
-    tables.mutation_table.erase(
-        std::remove_if(
-            tables.mutation_table.begin(), tables.mutation_table.end(),
-            [&pop, &mcounts_from_preserved_nodes](
-                const fwdpp::ts::mutation_record &mr) {
-                return pop.mcounts[mr.key] == 2 * pop.diploids.size()
-                       && mcounts_from_preserved_nodes[mr.key] == 0;
-            }),
-        tables.mutation_table.end());
+    auto itr = std::remove_if(
+        tables.mutation_table.begin(), tables.mutation_table.end(),
+        [&pop,
+         &mcounts_from_preserved_nodes](const fwdpp::ts::mutation_record &mr) {
+            return pop.mcounts[mr.key] == 2 * pop.diploids.size()
+                   && mcounts_from_preserved_nodes[mr.key] == 0;
+        });
+    for (auto i = itr; i < tables.mutation_table.end(); ++i)
+        {
+            idmap_removed_variants.second.push_back(i->key);
+        }
+    tables.mutation_table.erase(itr, tables.mutation_table.end());
     fwdpp::ts::remove_fixations_from_gametes(
         pop.gametes, pop.mutations, pop.mcounts, mcounts_from_preserved_nodes,
         2 * pop.diploids.size(), false);
