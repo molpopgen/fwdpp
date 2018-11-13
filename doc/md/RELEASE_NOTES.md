@@ -3,6 +3,10 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.7.2
+
+* fwdpp::ts::mutate_tables now returns immediately if the mutation rate is not positive.
+
 ## 0.7.1
 
 Point release fixing some API and UI issues with tree sequence recording.  Several documentation updates for 
