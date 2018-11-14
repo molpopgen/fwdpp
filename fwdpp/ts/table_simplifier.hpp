@@ -391,7 +391,7 @@ namespace fwdpp
             }
 
             template <typename mcont_t>
-            void
+            std::vector<std::size_t>
             simplify_mutations(const mcont_t& mutations,
                                mutation_key_vector& mt) const
             // Remove all mutations that do not map to nodes
@@ -450,11 +450,18 @@ namespace fwdpp
 
                 // Any mutations with null node values do not have
                 // ancestry and may be removed.
-                mt.erase(std::remove_if(mt.begin(), mt.end(),
-                                        [](const mutation_record& mr) {
-                                            return mr.node == TS_NULL_NODE;
-                                        }),
-                         mt.end());
+                std::vector<std::size_t> preserved_variants;
+                auto itr = std::remove_if(mt.begin(), mt.end(),
+                                          [](const mutation_record& mr) {
+                                              return mr.node == TS_NULL_NODE;
+                                          });
+                preserved_variants.reserve(std::distance(itr, mt.end()));
+                for (auto i = mt.begin(); i != itr; ++i)
+                    {
+                        preserved_variants.push_back(i->key);
+                    }
+
+                mt.erase(itr, mt.end());
                 //TODO: replace assert with exception
                 assert(std::is_sorted(mt.begin(), mt.end(),
                                       [&mutations](const mutation_record& a,
@@ -462,6 +469,7 @@ namespace fwdpp
                                           return mutations[a.key].pos
                                                  < mutations[b.key].pos;
                                       }));
+                return preserved_variants;
             }
 
             void
@@ -474,10 +482,11 @@ namespace fwdpp
                     {
                         // See GitHub issue 158
                         // for background
-                        if(idmap[s] != TS_NULL_NODE)
-                        {
-                            throw std::invalid_argument("invalid sample list");
-                        }
+                        if (idmap[s] != TS_NULL_NODE)
+                            {
+                                throw std::invalid_argument(
+                                    "invalid sample list");
+                            }
                         new_node_table.emplace_back(
                             node{ tables.node_table[s].population,
                                   tables.node_table[s].time });
@@ -502,7 +511,7 @@ namespace fwdpp
             }
 
             template <typename mutation_container>
-            std::vector<TS_NODE_INT>
+            std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
             simplify(table_collection& tables,
                      const std::vector<TS_NODE_INT>& samples,
                      const mutation_container& mutations)
@@ -513,6 +522,9 @@ namespace fwdpp
             /// \param samples A list of sample (node) ids.
             /// \param mutations A container of mutations
             /// \version 0.7.1 Throw exception if a sample is recorded twice
+            /// \version 0.7.3 Return value is now a pair containing the
+            /// node ID map and a vector of keys to mutations preserved in
+            /// mutation tables
             {
                 Ancestry.resize(tables.node_table.size());
 
@@ -575,10 +587,13 @@ namespace fwdpp
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_sorted());
                 tables.update_offset();
-                simplify_mutations(mutations, tables.mutation_table);
+                auto preserved_variants
+                    = simplify_mutations(mutations, tables.mutation_table);
 
                 cleanup();
-                return idmap;
+                std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
+                    rv(std::move(idmap), std::move(preserved_variants));
+                return rv;
             }
         };
     } // namespace ts
