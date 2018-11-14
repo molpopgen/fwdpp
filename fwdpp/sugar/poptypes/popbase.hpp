@@ -108,6 +108,15 @@ namespace fwdpp
             /// Contains the contribution of ancient samples
             /// to mutation counts.  This is place within
             /// population classes out of convienience.
+            /// Be aware of the following issue regarding
+            /// serialization: mcounts/mcounts_from_preserved_nodes
+            /// are NOT serialized in fwdpp::serialize_population.
+            /// Further, when pops are deserialized, mcounts is 
+            /// filled by a call to fwdpp_internal::process_gametes.
+            /// This behavior is generally incorrect for simulations
+            /// involving tree sequence recording, and a call to
+            /// fwdpp::ts::count_mutations will be needed upon
+            /// deserialization.
             /// \version 0.7.3 Added to library
             mcount_t mcounts_from_preserved_nodes;
             //! Container of gametes
