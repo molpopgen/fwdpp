@@ -296,7 +296,6 @@ main(int argc, char **argv)
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
     std::queue<std::size_t> mutation_recycling_bin;
-    std::vector<fwdpp::uint_t> mcounts_from_preserved_nodes;
     std::vector<std::size_t> individual_labels(N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
     std::vector<std::size_t> individuals;
@@ -335,13 +334,13 @@ main(int argc, char **argv)
             if (generation % gcint == 0.0)
                 {
                     auto rv = simplify_tables(
-                        pop, generation, mcounts_from_preserved_nodes, tables,
+                        pop, generation, pop.mcounts_from_preserved_nodes, tables,
                         simplifier, tables.num_nodes() - 2 * N, 2 * N,
                         preserve_fixations);
                     if (!preserve_fixations)
                         {
                             mutation_recycling_bin = fwdpp::ts::make_mut_queue(
-                                pop.mcounts, mcounts_from_preserved_nodes);
+                                pop.mcounts, pop.mcounts_from_preserved_nodes);
                         }
                     else
                         {
@@ -446,7 +445,7 @@ main(int argc, char **argv)
     if (!simplified)
         {
             auto rv = simplify_tables(pop, generation,
-                                      mcounts_from_preserved_nodes, tables,
+                                      pop.mcounts_from_preserved_nodes, tables,
                                       simplifier, tables.num_nodes() - 2 * N,
                                       2 * N, preserve_fixations);
             if (preserve_fixations)
@@ -455,7 +454,7 @@ main(int argc, char **argv)
                     std::iota(samples.begin(), samples.end(), 0);
                     fwdpp::ts::count_mutations(tables, pop.mutations, samples,
                                                pop.mcounts,
-                                               mcounts_from_preserved_nodes);
+                                               pop.mcounts_from_preserved_nodes);
                 }
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
@@ -505,12 +504,12 @@ main(int argc, char **argv)
                   return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
               });
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
-                               mcounts_from_preserved_nodes);
+                               pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i] && !mcounts_from_preserved_nodes[i])
+                    if (!pop.mcounts[i] && !pop.mcounts_from_preserved_nodes[i])
                         {
                             throw std::runtime_error(
                                 "invalid final mutation count");
@@ -540,14 +539,14 @@ main(int argc, char **argv)
                         << "Matrix test with respect to preserved samples...";
                     matrix_runtime_test(tables, tables.preserved_nodes,
                                         pop.mutations,
-                                        mcounts_from_preserved_nodes);
+                                        pop.mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
                     auto sc = s;
                     sc.insert(sc.end(), tables.preserved_nodes.begin(),
                               tables.preserved_nodes.end());
                     auto mc(pop.mcounts);
                     std::transform(mc.begin(), mc.end(),
-                                   mcounts_from_preserved_nodes.begin(),
+                                   pop.mcounts_from_preserved_nodes.begin(),
                                    mc.begin(), std::plus<fwdpp::uint_t>());
                     std::cout << "Matrix test with respect to last generation "
                                  "+ preserved nodes...";
