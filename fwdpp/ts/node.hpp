@@ -22,7 +22,7 @@ namespace fwdpp
             double time;
         };
 
-        bool
+        inline bool
         operator==(const node& a, const node& b)
         {
             return std::tie(a.time, a.population)

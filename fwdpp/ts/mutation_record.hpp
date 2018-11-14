@@ -20,7 +20,7 @@ namespace fwdpp
             std::size_t key;
         };
 
-        bool
+        inline bool
         operator==(const mutation_record& a, const mutation_record& b)
         {
             return std::tie(a.node, a.key) == std::tie(b.node, b.key);

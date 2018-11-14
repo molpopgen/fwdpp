@@ -23,7 +23,7 @@ namespace fwdpp
             double left, right;
             TS_NODE_INT parent, child;
         };
-        bool
+        inline bool
         operator==(const edge& a, const edge& b)
         {
             return std::tie(a.parent, a.child, a.left, a.right)

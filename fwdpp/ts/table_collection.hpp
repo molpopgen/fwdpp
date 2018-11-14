@@ -397,7 +397,7 @@ namespace fwdpp
             }
         };
 
-        bool
+        inline bool
         operator==(const table_collection& a, const table_collection& b)
         {
             return a.genome_length() == b.genome_length()
@@ -407,7 +407,7 @@ namespace fwdpp
                    && a.preserved_nodes == b.preserved_nodes;
         }
 
-        bool
+        inline bool
         operator!=(const table_collection& a, const table_collection& b)
         {
             return !(a == b);

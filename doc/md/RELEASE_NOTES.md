@@ -12,6 +12,8 @@ milestones (target version numbers for these features to go live) because that i
   [PR 167](https://github.com/molpopgen/fwdpp/pull/167)
 * fwdpp::sugar::popbase::mcounts_from_preserved_nodes added, mostly out of convenience, so that simulations doing
 tree sequence recording don't have to remember to create the extra variable.
+* operator==/!= are now inline for fwdpp::ts::edge, fwdpp::ts::node, fwdpp::ts::mutation_record, and
+  fwdpp::ts::table_collection
 
 ## 0.7.2
 
