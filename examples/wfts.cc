@@ -190,6 +190,7 @@ main(int argc, char **argv)
     int ancient_sample_size = -1, nsam = 0;
     bool leaf_test = false;
     bool matrix_test = false;
+    bool preserve_fixations = false;
     std::string filename, sfsfilename;
     po::options_description options("Simulation options"),
         dfeoptions("Distribution of fitness effects"),
@@ -202,6 +203,7 @@ main(int argc, char **argv)
         ("theta", po::value<double>(&theta), "4Nu")
         ("rho", po::value<double>(&rho), "4Nr")
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
+        ("preserve_fixations",po::bool_switch(&preserve_fixations),"If true, do not count mutations and remove fixations during simulation.  Mutation recycling will proceed via the output of mutation simplification.")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
          "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
@@ -334,13 +336,30 @@ main(int argc, char **argv)
                 {
                     auto rv = simplify_tables(
                         pop, generation, mcounts_from_preserved_nodes, tables,
-                        simplifier, tables.num_nodes() - 2 * N, 2 * N);
-                    mutation_recycling_bin = fwdpp::ts::make_mut_queue(
-                        pop.mcounts, mcounts_from_preserved_nodes);
+                        simplifier, tables.num_nodes() - 2 * N, 2 * N,
+                        preserve_fixations);
+                    if (!preserve_fixations)
+                        {
+                            mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                                pop.mcounts, mcounts_from_preserved_nodes);
+                        }
+                    else
+                        {
+                            std::sort(rv.second.begin(), rv.second.end());
+                            std::vector<std::size_t> mindexes(
+                                pop.mutations.size());
+                            std::deque<std::size_t> diff;
+                            std::iota(mindexes.begin(), mindexes.end(), 0);
+                            std::set_difference(
+                                mindexes.begin(), mindexes.end(),
+                                rv.second.begin(), rv.second.end(),
+                                std::back_inserter(diff));
+                            std::queue<std::size_t> tqueue(std::move(diff));
+                            mutation_recycling_bin.swap(tqueue);
+                        }
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
-                    confirm_mutation_counts(pop, tables);
 
                     // When tracking ancient samples, the node ids of those samples change.
                     // Thus, we need to remap our metadata upon simplification
@@ -435,9 +454,18 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto rv = simplify_tables(pop, generation, mcounts_from_preserved_nodes,
-                                         tables, simplifier,
-                                         tables.num_nodes() - 2 * N, 2 * N);
+            auto rv = simplify_tables(pop, generation,
+                                      mcounts_from_preserved_nodes, tables,
+                                      simplifier, tables.num_nodes() - 2 * N,
+                                      2 * N, preserve_fixations);
+            if (preserve_fixations)
+                {
+                    std::vector<std::int32_t> samples(2 * N);
+                    std::iota(samples.begin(), samples.end(), 0);
+                    fwdpp::ts::count_mutations(tables, pop.mutations, samples,
+                                               pop.mcounts,
+                                               mcounts_from_preserved_nodes);
+                }
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification
