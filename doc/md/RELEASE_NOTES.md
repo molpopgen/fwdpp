@@ -10,6 +10,8 @@ milestones (target version numbers for these features to go live) because that i
   that avoids tree traversal entirely.  This new overload can result in big speedups for simulations where ancestral
   samples are being recorded.  However, it only applies for simulations where it is "ok" to keep fixations around.
   [PR 167](https://github.com/molpopgen/fwdpp/pull/167)
+* fwdpp::sugar::popbase::mcounts_from_preserved_nodes added, mostly out of convenience, so that simulations doing
+tree sequence recording don't have to remember to create the extra variable.
 
 ## 0.7.2
 
