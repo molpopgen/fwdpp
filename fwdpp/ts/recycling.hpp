@@ -2,10 +2,12 @@
 #define FWDPP_TS_RECYCLING_HPP
 
 #include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <vector>
 #include <limits>
 #include <cstdint>
+#include <deque>
 #include <queue>
 #include <fwdpp/forward_types.hpp>
 
@@ -21,6 +23,8 @@ namespace fwdpp
         /// \param mcounts Contribution of extant nodes to mutation counts
         /// \param counts_from_preserved_nodes Contribution of extinct nodes to mutation counts
         ///
+        /// \version 0.7.0 Added to fwdpp
+        ///
         /// \returns std::queue<std::size_t>
         {
             std::queue<std::size_t> mutation_recycling_bin;
@@ -32,6 +36,46 @@ namespace fwdpp
                         }
                 }
             return mutation_recycling_bin;
+        }
+
+        std::queue<std::size_t>
+        make_mut_queue(std::vector<std::size_t> &preserved_mutation_indexes,
+                       const std::size_t num_mutations)
+        /// \brief Make a mutation recycling queue for simulations with tree sequences
+        /// \param preserved_mutation_indexes Vector of preserved mutation indexes returned by simplification
+        /// \param num_mutations The total number of mutations currently allocated in the population
+        ///
+        /// \returns std::queue<std::size_t>
+        ///
+        /// \version 0.7.3 Added to fwdpp
+        ///
+        /// This overload may be preferable to the other when the following conditions apply:
+        /// 1. Mutation counts in the entire simulation are not of interest during the simulation.
+        /// 2. There is no need/wish to remove fixations from the gametes/tables during the simulation.
+        /// 3. There are large numbers of ancient samples being recorded.
+        ///
+        /// The first two conditions are required for correct results.  The third condition is optional,
+        /// but big speedups will be seen for that case.
+        ///
+        /// This function generates a recycling queue by taking the set difference of 
+        /// \a preserved_mutation_indexes and all possible mutation indexes, \f$[0,num\_mutations)\f$.
+        /// The algorithm is a fast Nlog(N) method, and it will outperform the other overload based 
+        /// on tree traversal when the number of trees is very large, as is the case when large numbers
+        /// of ancestral samples are registered during a simulation.
+        ///
+        /// \note A side-effect is that \a preserved_mutation_indexes is sorted.
+        {
+            std::sort(preserved_mutation_indexes.begin(),
+                      preserved_mutation_indexes.end());
+            std::vector<std::size_t> mindexes(num_mutations);
+            std::deque<std::size_t> diff;
+            std::iota(mindexes.begin(), mindexes.end(), 0);
+            std::set_difference(mindexes.begin(), mindexes.end(),
+                                preserved_mutation_indexes.begin(),
+                                preserved_mutation_indexes.end(),
+                                std::back_inserter(diff));
+            std::queue<std::size_t> rv(std::move(diff));
+            return rv;
         }
 
         namespace detail

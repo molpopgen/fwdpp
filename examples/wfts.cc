@@ -345,17 +345,8 @@ main(int argc, char **argv)
                         }
                     else
                         {
-                            std::sort(rv.second.begin(), rv.second.end());
-                            std::vector<std::size_t> mindexes(
-                                pop.mutations.size());
-                            std::deque<std::size_t> diff;
-                            std::iota(mindexes.begin(), mindexes.end(), 0);
-                            std::set_difference(
-                                mindexes.begin(), mindexes.end(),
-                                rv.second.begin(), rv.second.end(),
-                                std::back_inserter(diff));
-                            std::queue<std::size_t> tqueue(std::move(diff));
-                            mutation_recycling_bin.swap(tqueue);
+                            mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                                rv.second, pop.mutations.size());
                         }
                     simplified = true;
                     next_index = tables.num_nodes();

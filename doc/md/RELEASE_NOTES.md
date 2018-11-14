@@ -3,6 +3,14 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.7.3
+
+* The return value of fwdpp::ts::table_simplifier::simplify has been changed to include a list of indexes to mutations
+  that are preserved by simplification.  This return value may be passed to a new overload of fwdpp::ts::make_mut_queue
+  that avoids tree traversal entirely.  This new overload can result in big speedups for simulations where ancestral
+  samples are being recorded.  However, it only applies for simulations where it is "ok" to keep fixations around.
+  [PR 167](https://github.com/molpopgen/fwdpp/pull/167)
+
 ## 0.7.2
 
 * Resolve a serialization and comparison issue with fwdpp::ts::table_collection [PR 165](https://github.com/molpopgen/fwdpp/pull/165).
