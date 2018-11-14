@@ -105,6 +105,11 @@ namespace fwdpp
 
             //! Contains number of times each mutation exists
             mcount_t mcounts;
+            /// Contains the contribution of ancient samples
+            /// to mutation counts.  This is place within
+            /// population classes out of convienience.
+            /// \version 0.7.3 Added to library
+            mcount_t mcounts_from_preserved_nodes;
             //! Container of gametes
             gcont gametes;
 
@@ -153,8 +158,8 @@ namespace fwdpp
                 typename gamete_t::mutation_container::size_type reserve_size
                 = 100)
                 : // No muts in the population
-                  mutations(mcont_t()),
-                  mcounts(mcount_t()),
+                  mutations(mcont_t()), mcounts(mcount_t()),
+                  mcounts_from_preserved_nodes(mcount_t()),
                   gametes(gcont(1, gamete_t(initial_gamete_count))),
                   neutral(typename gamete_t::mutation_container()),
                   selected(typename gamete_t::mutation_container()),
@@ -175,6 +180,7 @@ namespace fwdpp
                 gametes_input &&g, mutations_input &&m,
                 typename gamete_t::mutation_container::size_type reserve_size)
                 : mutations(std::forward<mutations_input>(m)), mcounts{},
+                  mcounts_from_preserved_nodes{},
                   gametes(std::forward<gametes_input>(g)), neutral{},
                   selected{}, mut_lookup{}, fixations{}, fixation_times{}
             {
@@ -188,6 +194,7 @@ namespace fwdpp
             {
                 return this->mutations == rhs.mutations
                        && this->mcounts == rhs.mcounts
+                       && this->mcounts_from_preserved_nodes == rhs.mcounts_from_preserved_nodes
                        && this->gametes == rhs.gametes
                        && this->fixations == rhs.fixations
                        && this->fixation_times == rhs.fixation_times;
@@ -199,6 +206,7 @@ namespace fwdpp
             {
                 mutations.clear();
                 mcounts.clear();
+                mcounts_from_preserved_nodes.clear();
                 gametes.clear();
                 mut_lookup.clear();
                 fixations.clear();
@@ -273,6 +281,6 @@ namespace fwdpp
                 }
             fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         }
-    }
-}
+    } // namespace sugar
+} // namespace fwdpp
 #endif
