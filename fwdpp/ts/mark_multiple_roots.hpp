@@ -16,18 +16,18 @@ namespace fwdpp
         std::map<TS_NODE_INT, std::vector<std::pair<double, double>>>
         mark_multiple_roots(const table_collection &tables,
                             const std::vector<TS_NODE_INT> &samples)
-		/// \brief Identify root nodes in "marginal forests".
-		/// 
-		/// \version 0.7.0 Added to library
-		///
-		/// See fwdpp::ts::mutate_tables for discussion.
+        /// \brief Identify root nodes in "marginal forests".
+        ///
+        /// \version 0.7.0 Added to library
+        ///
+        /// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
             tree_visitor mti(tables, samples);
             while (mti(std::true_type(), std::false_type()))
                 {
                     bool single_root = false;
-					auto & tree = mti.tree();
+                    auto &tree = mti.tree();
                     for (auto &s : samples)
                         {
                             auto p = s;
@@ -37,15 +37,16 @@ namespace fwdpp
                                     lp = p;
                                     p = tree.parents[p];
                                 }
-                            if (tree.leaf_counts[lp] == samples.size())
+                            if (static_cast<std::size_t>(tree.leaf_counts[lp])
+                                == samples.size())
                                 {
                                     single_root = true;
                                 }
                             else
                                 {
                                     auto itr = rv.find(lp);
-                                    auto w = std::make_pair(
-                                        tree.left, tree.right);
+                                    auto w = std::make_pair(tree.left,
+                                                            tree.right);
                                     if (itr == rv.end())
                                         {
                                             rv[lp].emplace_back(std::move(w));
