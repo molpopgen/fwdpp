@@ -21,6 +21,22 @@
 
 namespace fwdpp
 {
+    struct mut_rec_intermediates
+    /// Encapsulates the various containers needed
+    /// to carry out mutation and recombination
+    /// \version 0.7.4 Added to library
+    {
+        std::vector<double> breakpoints;
+        std::vector<std::size_t> new_mutation_keys;
+        std::vector<std::uint32_t> temp_neutral, temp_selected;
+        std::queue<std::size_t> gamete_recycling_bin, mutation_recycling_bin;
+        mut_rec_intermediates()
+            : breakpoints(), new_mutation_keys(), temp_neutral(),
+              temp_selected(), gamete_recycling_bin(), mutation_recycling_bin()
+        {
+        }
+    };
+
     template <typename recombination_policy, typename diploid_t,
               typename gamete_t, typename mcont_t>
     inline typename std::result_of<recombination_policy()>::type
