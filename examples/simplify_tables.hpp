@@ -32,7 +32,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
 #ifndef NDEBUG
     for (auto &s : tables.preserved_nodes)
         {
-            assert(rv.first[s] != 1);
+            assert(rv.first[s] != -1);
         }
 #endif
     if (!preserve_fixations)
