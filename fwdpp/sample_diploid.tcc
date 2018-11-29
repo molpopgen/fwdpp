@@ -38,17 +38,14 @@ namespace fwdpp
             &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
-        std::vector<uint_t> &mcounts, const uint_t &N_curr, const double &mu,
+        std::vector<uint_t> &mcounts, const uint_t N_curr,
         const mutation_model &mmodel, const recombination_policy &rec_pol,
-        const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected, const double f,
+        const diploid_fitness_function &ff, const double f,
         const mutation_removal_policy mp)
     {
         // run changing N version with N_next == N_curr
         return sample_diploid(r, gametes, diploids, mutations, mcounts, N_curr,
-                              N_curr, mu, mmodel, rec_pol, ff, neutral,
-                              selected, f, mp);
+                              N_curr, mmodel, rec_pol, ff, f, mp);
     }
 
     // single deme, N changing
@@ -70,11 +67,9 @@ namespace fwdpp
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N_curr,
-        const uint_t &N_next, const double &mu, const mutation_model &mmodel,
+        const uint_t &N_next, const mutation_model &mmodel,
         const recombination_policy &rec_pol,
-        const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected, const double f,
+        const diploid_fitness_function &ff, const double f,
         const mutation_removal_policy mp)
     {
         /*
@@ -106,7 +101,6 @@ namespace fwdpp
                     "FWDPP DEBUG: N_curr != diploids.size()");
             }
 #endif
-
         mut_rec_intermediates intermediates;
         /*
           The mutation and gamete containers contain both extinct and extant

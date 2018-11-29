@@ -71,7 +71,7 @@ main(int argc, char **argv)
     const auto rec
         = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
-                std::vector<fwdpp::uint_t> new_variant_keys;
+    std::vector<fwdpp::uint_t> new_variant_keys;
     while (nreps--)
         {
             singlepop_t pop(N);
@@ -80,7 +80,7 @@ main(int argc, char **argv)
             unsigned generation = 0;
             double wbar;
 
-            const auto mmodel = [&pop, &r, &generation,&new_variant_keys,
+            const auto mmodel = [&pop, &r, &generation, &new_variant_keys,
                                  mu](std::queue<std::size_t> &recbin,
                                      singlepop_t::mcont_t &mutations) {
                 auto nmuts = gsl_ran_poisson(r.get(), mu);
@@ -105,8 +105,7 @@ main(int argc, char **argv)
                         pop.diploids,  // non-const reference to diploids
                         pop.mutations, // non-const reference to mutations
                         pop.mcounts,
-                        N,  // current pop size, remains constant
-                        mu, // mutation rate per gamete
+                        N, // current pop size, remains constant
                         /*
                           The mutation model will be applied
                           by
@@ -140,8 +139,7 @@ main(int argc, char **argv)
                           multiplicative
                           models are very common in population genetics
                         */
-                        fwdpp::multiplicative_diploid(), pop.neutral,
-                        pop.selected);
+                        fwdpp::multiplicative_diploid());
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);
@@ -179,6 +177,9 @@ main(int argc, char **argv)
                 }
             auto dm = fwdpp::sample_individuals(pop, random_dips, true, false,
                                                 true);
+            std::cout << std::accumulate(pop.mcounts.begin(),
+                                         pop.mcounts.end(), 0)
+                      << '\n';
 // Write the sample date a to libsequence's Sequence::SimData and
 // print to screen
 #ifdef HAVE_LIBSEQUENCE
