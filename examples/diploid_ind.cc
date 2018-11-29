@@ -71,6 +71,7 @@ main(int argc, char **argv)
     const auto rec
         = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
 
+                std::vector<fwdpp::uint_t> new_variant_keys;
     while (nreps--)
         {
             singlepop_t pop(N);
@@ -79,20 +80,20 @@ main(int argc, char **argv)
             unsigned generation = 0;
             double wbar;
 
-            const auto mmodel = [&pop, &r, &generation,
+            const auto mmodel = [&pop, &r, &generation,&new_variant_keys,
                                  mu](std::queue<std::size_t> &recbin,
                                      singlepop_t::mcont_t &mutations) {
                 auto nmuts = gsl_ran_poisson(r.get(), mu);
-                std::vector<fwdpp::uint_t> rv;
+                new_variant_keys.clear();
                 for (unsigned i = 0; i < nmuts; ++i)
                     {
-                        rv.push_back(fwdpp::infsites_popgenmut(
+                        new_variant_keys.push_back(fwdpp::infsites_popgenmut(
                             recbin, mutations, r.get(), pop.mut_lookup,
                             generation, 0.0,
                             [&r]() { return gsl_rng_uniform(r.get()); },
                             []() { return 0.0; }, []() { return 0.0; }));
                     }
-                return rv;
+                return new_variant_keys;
             };
 
             for (generation = 0; generation < ngens; ++generation)
