@@ -164,6 +164,20 @@ main(int argc, char **argv)
 
     const auto bound_mmodels = fwdpp::extensions::bind_dmm(r.get(), mmodels);
 
+    const double total_mutation_rate
+        = static_cast<double>(K) * (mutrate_region + mutrate_del_region);
+    const auto poisson_mutations = [&r, total_mutation_rate, &bound_mmodels](
+                                       std::queue<std::size_t> &recbin,
+                                       singlepop_t::mcont_t &mutations) {
+        auto nmuts = gsl_ran_poisson(r.get(), total_mutation_rate);
+        std::vector<fwdpp::uint_t> rv;
+        for (unsigned i = 0; i < nmuts; ++i)
+            {
+                rv.push_back(bound_mmodels(recbin, mutations));
+            }
+        return rv;
+    };
+
     const double ttl_recrate
         = double(K) * recrate_region + double(K - 1) * rbw;
 
@@ -177,13 +191,12 @@ main(int argc, char **argv)
             // Iterate the population through 1 generation
             fwdpp::sample_diploid(
                 r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, double(K) * (mutrate_region + mutrate_del_region),
+                N,
                 // This is the synthesized function bound to operator() of
                 // mmodels:
-                bound_mmodels, bound_recmap,
+                poisson_mutations, bound_recmap,
                 std::bind(additive_over_loci(), std::placeholders::_1,
-                          std::placeholders::_2, std::placeholders::_3, K),
-                pop.neutral, pop.selected);
+                          std::placeholders::_2, std::placeholders::_3, K));
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);

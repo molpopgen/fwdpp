@@ -48,6 +48,7 @@ main(int argc, char **argv)
 
     const double mu_neutral = theta_neutral / double(4 * N);
     const double mu_del = theta_del / double(4 * N);
+    const double ttl_mutation_rate = mu_neutral + mu_del;
     const double littler = rho / double(4 * N);
 
     std::copy(argv, argv + argc,
@@ -69,24 +70,31 @@ main(int argc, char **argv)
                 size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                                  + 0.667 * (theta_neutral + theta_del))));
             unsigned generation = 0;
-            const auto mmodel = [&pop, &r, &generation, s, h,
-                                 pselected](std::queue<std::size_t> &recbin,
-                                            singlepop_t::mcont_t &mutations) {
-                return fwdpp::infsites_popgenmut(
-                    recbin, mutations, r.get(), pop.mut_lookup, generation,
-                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
-                    [s]() { return s; }, [h]() { return h; });
-            };
+            const auto mmodel
+                = [&pop, &r, &generation, s, h, ttl_mutation_rate,
+                   pselected](std::queue<std::size_t> &recbin,
+                              singlepop_t::mcont_t &mutations) {
+                      auto nmuts = gsl_ran_poisson(r.get(), ttl_mutation_rate);
+                      std::vector<uint_t> rv;
+                      for (unsigned i = 0; i < nmuts; ++i)
+                          {
+                              rv.push_back(fwdpp::infsites_popgenmut(
+                                  recbin, mutations, r.get(), pop.mut_lookup,
+                                  generation, pselected,
+                                  [&r]() { return gsl_rng_uniform(r.get()); },
+                                  [s]() { return s; }, [h]() { return h; }));
+                          }
+                      return rv;
+                  };
 
             double wbar = 1;
             for (generation = 0; generation < ngens; ++generation)
                 {
                     wbar = fwdpp::sample_diploid(
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
-                        pop.mcounts, N, mu_neutral + mu_del, mmodel,
+                        pop.mcounts, N, mmodel,
                         // The function to generation recombination positions:
-                        rec, fwdpp::multiplicative_diploid(1.), pop.neutral,
-                        pop.selected);
+                        rec, fwdpp::multiplicative_diploid(1.));
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
@@ -97,14 +105,14 @@ main(int argc, char **argv)
                     fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
                                                              2 * N);
                 }
-            for(std::size_t i=0;i<pop.mcounts.size();++i)
-            {
-                if(pop.mcounts[i])
+            for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                 {
-                    std::cout<<pop.mutations[i].s<<' ' << pop.mcounts[i]<<'\n';
-
+                    if (pop.mcounts[i])
+                        {
+                            std::cout << pop.mutations[i].s << ' '
+                                      << pop.mcounts[i] << '\n';
+                        }
                 }
-            }
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
             std::vector<std::size_t> random_dips;
