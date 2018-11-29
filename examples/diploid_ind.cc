@@ -79,14 +79,22 @@ main(int argc, char **argv)
             unsigned generation = 0;
             double wbar;
 
-            const auto mmodel =
-                [&pop, &r, &generation](std::queue<std::size_t> &recbin,
-                                        singlepop_t::mcont_t &mutations) {
-                    return fwdpp::infsites_popgenmut(
-                        recbin, mutations, r.get(), pop.mut_lookup, generation,
-                        0.0, [&r]() { return gsl_rng_uniform(r.get()); },
-                        []() { return 0.0; }, []() { return 0.0; });
-                };
+            const auto mmodel = [&pop, &r, &generation,
+                                 mu](std::queue<std::size_t> &recbin,
+                                     singlepop_t::mcont_t &mutations) {
+                auto nmuts = gsl_ran_poisson(r.get(), mu);
+                std::vector<fwdpp::uint_t> rv;
+                for (unsigned i = 0; i < nmuts; ++i)
+                    {
+                        rv.push_back(fwdpp::infsites_popgenmut(
+                            recbin, mutations, r.get(), pop.mut_lookup,
+                            generation, 0.0,
+                            [&r]() { return gsl_rng_uniform(r.get()); },
+                            []() { return 0.0; }, []() { return 0.0; }));
+                    }
+                return rv;
+            };
+
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation

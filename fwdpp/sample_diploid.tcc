@@ -205,9 +205,9 @@ namespace fwdpp
                 auto p2 = (f == 1. || (f > 0. && gsl_rng_uniform(r) < f))
                               ? p1
                               : gsl_ran_discrete(r, lookup.get());
-                generate_offspring_gametes(r, mu, dip, parents[p1],
-                                           parents[p2], gametes, mutations,
-                                           intermediates, mmodel, rec_pol);
+                generate_offspring_gametes(r, dip, parents[p1], parents[p2],
+                                           gametes, mutations, intermediates,
+                                           mmodel, rec_pol);
             }
 #ifndef NDEBUG
         for (const auto &dip : diploids)

@@ -182,6 +182,16 @@ namespace fwdpp
             selected.reserve(std::max(gametes[g1].smutations.size(),
                                       gametes[g2].smutations.size()));
         }
+
+        template <typename mcont_t>
+        inline void
+        sort_mutation_keys(std::vector<uint_t> &keys, const mcont_t &mutations)
+        {
+            std::sort(keys.begin(), keys.end(),
+                      [&mutations](const uint_t a, const uint_t b) {
+                          return mutations[a].pos < mutations[b].pos;
+                      });
+        }
     } // namespace fwdpp_internal
 
     template <typename gcont_t, typename mcont_t, typename queue_type>
@@ -320,8 +330,8 @@ namespace fwdpp
     template <typename diploid_t, typename gcont_t, typename mcont_t,
               typename mutation_model, typename recombination_model>
     void
-    generate_offspring_gametes(const gsl_rng *r, const double mu,
-                               diploid_t &offspring, const diploid_t &parent1,
+    generate_offspring_gametes(const gsl_rng *r, diploid_t &offspring,
+                               const diploid_t &parent1,
                                const diploid_t &parent2, gcont_t &gametes,
                                mcont_t &mutations,
                                mut_rec_intermediates &intermediates,
@@ -344,12 +354,16 @@ namespace fwdpp
             offspring, p1g1, p1g2, gametes, mutations, recmodel);
         intermediates.breakpoints2 = generate_breakpoints(
             offspring, p2g1, p2g2, gametes, mutations, recmodel);
-        intermediates.new_mutation_keys1 = generate_new_mutations(
-            intermediates.mutation_recycling_bin, r, mu, offspring, gametes,
-            mutations, p1g1, mmodel);
-        intermediates.new_mutation_keys2 = generate_new_mutations(
-            intermediates.mutation_recycling_bin, r, mu, offspring, gametes,
-            mutations, p2g1, mmodel);
+        intermediates.new_mutation_keys1 = fwdpp_internal::mmodel_dispatcher(
+            mmodel, offspring, gametes[p1g1], mutations,
+            intermediates.mutation_recycling_bin);
+        intermediates.new_mutation_keys2 = fwdpp_internal::mmodel_dispatcher(
+            mmodel, offspring, gametes[p2g1], mutations,
+            intermediates.mutation_recycling_bin);
+        fwdpp_internal::sort_mutation_keys(intermediates.new_mutation_keys1,
+                                           mutations);
+        fwdpp_internal::sort_mutation_keys(intermediates.new_mutation_keys2,
+                                           mutations);
         // Pass the breakpoints and new mutation keys on to
         // fwdpp::mutate_recombine (defined in
         // fwdpp/mutate_recombine.hpp),
