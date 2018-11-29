@@ -26,13 +26,14 @@ namespace fwdpp
     /// to carry out mutation and recombination
     /// \version 0.7.4 Added to library
     {
-        std::vector<double> breakpoints;
-        std::vector<std::size_t> new_mutation_keys;
+        std::vector<double> breakpoints1, breakpoints2;
+        std::vector<std::uint32_t> new_mutation_keys1, new_mutation_keys2;
         std::vector<std::uint32_t> temp_neutral, temp_selected;
         std::queue<std::size_t> gamete_recycling_bin, mutation_recycling_bin;
         mut_rec_intermediates()
-            : breakpoints(), new_mutation_keys(), temp_neutral(),
-              temp_selected(), gamete_recycling_bin(), mutation_recycling_bin()
+            : breakpoints1(), breakpoints2(), new_mutation_keys1(),
+              new_mutation_keys2(), temp_neutral(), temp_selected(),
+              gamete_recycling_bin(), mutation_recycling_bin()
         {
         }
     };
@@ -314,6 +315,65 @@ namespace fwdpp
 #endif
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
                                               neutral, selected);
+    }
+
+    template <typename diploid_t, typename gcont_t, typename mcont_t,
+              typename mutation_model, typename recombination_model>
+    void
+    generate_offspring_gametes(const gsl_rng *r, const double mu,
+                               diploid_t &offspring, const diploid_t &parent1,
+                               const diploid_t &parent2, gcont_t &gametes,
+                               mcont_t &mutations,
+                               mut_rec_intermediates &intermediates,
+                               const mutation_model &mmodel,
+                               const recombination_model &recmodel)
+    {
+        auto p1g1 = parent1.first;
+        auto p1g2 = parent1.second;
+        auto p2g1 = parent2.first;
+        auto p2g2 = parent2.second;
+        if (gsl_rng_uniform(r) < 0.5)
+            {
+                std::swap(p1g1, p1g2);
+            }
+        if (gsl_rng_uniform(r) < 0.5)
+            {
+                std::swap(p2g1, p2g2);
+            }
+        intermediates.breakpoints1 = generate_breakpoints(
+            offspring, p1g1, p1g2, gametes, mutations, recmodel);
+        intermediates.breakpoints2 = generate_breakpoints(
+            offspring, p2g1, p2g2, gametes, mutations, recmodel);
+        intermediates.new_mutation_keys1 = generate_new_mutations(
+            intermediates.mutation_recycling_bin, r, mu, offspring, gametes,
+            mutations, p1g1, mmodel);
+        intermediates.new_mutation_keys2 = generate_new_mutations(
+            intermediates.mutation_recycling_bin, r, mu, offspring, gametes,
+            mutations, p2g1, mmodel);
+        // Pass the breakpoints and new mutation keys on to
+        // fwdpp::mutate_recombine (defined in
+        // fwdpp/mutate_recombine.hpp),
+        // which splices together the offspring gamete and returns its
+        // location in gametes.  The location of the offspring gamete
+        // is
+        // either reycled from an extinct gamete or it is the location
+        // of a
+        // new gamete emplace_back'd onto the end.
+        offspring.first = mutate_recombine(
+            intermediates.new_mutation_keys1, intermediates.breakpoints1, p1g1,
+            p1g2, gametes, mutations, intermediates.gamete_recycling_bin,
+            intermediates.temp_neutral, intermediates.temp_selected);
+        debug::gamete_is_sorted(gametes[offspring.first], mutations);
+        offspring.second = mutate_recombine(
+            intermediates.new_mutation_keys2, intermediates.breakpoints2, p2g1,
+            p2g2, gametes, mutations, intermediates.gamete_recycling_bin,
+            intermediates.temp_neutral, intermediates.temp_selected);
+        debug::gamete_is_sorted(gametes[offspring.second], mutations);
+        gametes[offspring.first].n++;
+        gametes[offspring.second].n++;
+
+        debug::gamete_is_extant(gametes[offspring.first]);
+        debug::gamete_is_extant(gametes[offspring.second]);
     }
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,

@@ -8,7 +8,7 @@
 
 #ifndef FWDPP_SAMPLE_DIPLOID_TCC
 #define FWDPP_SAMPLE_DIPLOID_TCC
-   
+
 #include <cassert>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/mutate_recombine.hpp>
@@ -107,6 +107,7 @@ namespace fwdpp
             }
 #endif
 
+        mut_rec_intermediates intermediates;
         /*
           The mutation and gamete containers contain both extinct and extant
           objects.
@@ -127,8 +128,10 @@ namespace fwdpp
           The details of recycling are implemented in
           fwdpp/internal/recycling.hpp
         */
-        auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
-        auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+        intermediates.mutation_recycling_bin
+            = fwdpp_internal::make_mut_queue(mcounts);
+        intermediates.gamete_recycling_bin
+            = fwdpp_internal::make_gamete_queue(gametes);
 
         // Calculate fitness for each diploid:
 
@@ -202,30 +205,9 @@ namespace fwdpp
                 auto p2 = (f == 1. || (f > 0. && gsl_rng_uniform(r) < f))
                               ? p1
                               : gsl_ran_discrete(r, lookup.get());
-                /*
-                  These are the gametes from each parent.
-                  This is a trivial assignment if keys.
-                */
-                auto p1g1 = parents[p1].first;
-                auto p1g2 = parents[p1].second;
-                auto p2g1 = parents[p2].first;
-                auto p2g2 = parents[p2].second;
-
-                /*
-                  The offspring will inherit some manipulation of p1g1 and
-                  p1g2.
-                  The next two lines do "Mendel".
-                */
-                if (gsl_rng_uniform(r) < 0.5)
-                    std::swap(p1g1, p1g2);
-                if (gsl_rng_uniform(r) < 0.5)
-                    std::swap(p2g1, p2g2);
-
-                mutate_recombine_update(
-                    r, gametes, mutations,
-                    std::make_tuple(p1g1, p1g2, p2g1, p2g2), rec_pol, mmodel,
-                    mu, gam_recycling_bin, mut_recycling_bin, dip, neutral,
-                    selected);
+                generate_offspring_gametes(r, mu, dip, parents[p1],
+                                           parents[p2], gametes, mutations,
+                                           intermediates, mmodel, rec_pol);
             }
 #ifndef NDEBUG
         for (const auto &dip : diploids)
@@ -269,7 +251,10 @@ namespace fwdpp
 #ifndef NDEBUG
         for (const auto &mc : mcounts)
             {
-                if(mc > 2*N_next){throw std::runtime_error("mutation size too large");}
+                if (mc > 2 * N_next)
+                    {
+                        throw std::runtime_error("mutation size too large");
+                    }
             }
 #endif
 
@@ -397,7 +382,6 @@ namespace fwdpp
             {
                 diploids.resize(N_next);
             }
-
 
         for (auto &dip : diploids)
             {
