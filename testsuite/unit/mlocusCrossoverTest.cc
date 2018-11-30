@@ -3,6 +3,7 @@
   \ingroup unit
   \brief Tests fwdpp::fwdpp_internal::multilocus_rec
 */
+#define SUPPRESS_INITIAL_MENDEL_STEP_FOR_TESTING
 #include <config.h>
 #include <iostream>
 // For this unit test, this symbol eliminates the mutation-related part of
@@ -12,6 +13,7 @@
 // Plus, mutation stuff is unit-tested elsewhere
 // #define FWDPP_UNIT_TESTING
 #include <fwdpp/diploid.hh>
+#include <fwdpp/mutate_recombine.hpp>
 #include <boost/test/unit_test.hpp>
 #include <unistd.h>
 #include <iterator>
@@ -27,6 +29,10 @@
   stuff
 */
 gsl_rng *r = gsl_rng_alloc(gsl_rng_ranlxs2);
+
+static const std::vector<std::pair<double, double>> locus_boundaries{
+    { { 0, 0.5 }, { 0.5, 1 }, { 1., 1.5 } }
+};
 
 using diploid_t = dipvector_t;
 
@@ -109,16 +115,6 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
 
     // We use these to "fake" what we want to happen between loci.
     std::vector<double> r_bw_loci = { 1., 0. };
-    std::vector<diploid_t> diploids({ diploid });
-
-    // auto gamete_lookup =
-    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
-    gcont_t::value_type::mutation_container neutral,
-        selected; // req'd as of 0.3.3
 
     std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
                                                   const gcont_t::value_type &,
@@ -137,18 +133,20 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
 
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          decltype(mutations) &)>>
+    auto fake_mut_pol = [](std::queue<std::size_t> &, decltype(mutations) &) {
+        return std::vector<fwdpp::uint_t>();
+    };
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, decltype(mutations) &)>>
         mutation_models(3, fake_mut_pol);
 
-    double mu[3] = { 0.0, 0.0, 0.0 };
+    diploid_t offspring(3);
+    fwdpp::mut_rec_intermediates intermediates, per_locus_intermediates;
 
-    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
-        r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models);
+    generate_offspring_gametes(r, offspring, diploid, diploid2, gametes,
+                               mutations, intermediates, mutation_models,
+                               recpols, interlocus_rec, locus_boundaries,
+                               per_locus_intermediates);
 
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 0);
@@ -175,15 +173,6 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
     std::vector<double> r_bw_loci = { 1., 0. };
     std::vector<diploid_t> diploids({ diploid });
 
-    // auto gamete_lookup =
-    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
-    gcont_t::value_type::mutation_container neutral,
-        selected; // req'd as of 0.3.3
-
     std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
                                                   const gcont_t::value_type &,
                                                   const mcont_t &)>>
@@ -201,19 +190,20 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
 
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          decltype(mutations) &)>>
-        mutation_models{ fake_mut_pol, fake_mut_pol };
+    auto fake_mut_pol = [](std::queue<std::size_t> &, decltype(mutations) &) {
+        return std::vector<fwdpp::uint_t>();
+    };
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, decltype(mutations) &)>>
+        mutation_models(3, fake_mut_pol);
 
-    double mu[3] = { 0.0, 0.0, 0.0 };
+    diploid_t offspring(3);
+    fwdpp::mut_rec_intermediates intermediates, per_locus_intermediates;
 
-    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
-        r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models);
-
+    generate_offspring_gametes(r, offspring, diploid, diploid2, gametes,
+                               mutations, intermediates, mutation_models,
+                               recpols, interlocus_rec, locus_boundaries,
+                               per_locus_intermediates);
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 0);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
     BOOST_CHECK_EQUAL(mutations[gametes[offspring[1].first].mutations[0]].pos,
@@ -243,15 +233,6 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
     std::vector<double> r_bw_loci = { 1., 1. };
     std::vector<diploid_t> diploids({ diploid });
 
-    // auto gamete_lookup =
-    // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
-    gcont_t::value_type::mutation_container neutral,
-        selected; // req'd as of 0.3.3
-
     std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
                                                   const gcont_t::value_type &,
                                                   const mcont_t &)>>
@@ -268,19 +249,21 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          decltype(mutations) &)>>
-        mutation_models{ fake_mut_pol, fake_mut_pol };
 
-    double mu[3] = { 0.0, 0.0, 0.0 };
+    auto fake_mut_pol = [](std::queue<std::size_t> &, decltype(mutations) &) {
+        return std::vector<fwdpp::uint_t>();
+    };
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, decltype(mutations) &)>>
+        mutation_models(3, fake_mut_pol);
 
-    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
-        r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models);
+    diploid_t offspring(3);
+    fwdpp::mut_rec_intermediates intermediates, per_locus_intermediates;
 
+    generate_offspring_gametes(r, offspring, diploid, diploid2, gametes,
+                               mutations, intermediates, mutation_models,
+                               recpols, interlocus_rec, locus_boundaries,
+                               per_locus_intermediates);
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
     BOOST_CHECK_EQUAL(mutations[gametes[offspring[1].first].mutations[0]].pos,
@@ -311,13 +294,6 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
     std::vector<double> r_bw_loci = { 1., 1. };
     std::vector<diploid_t> diploids({ diploid });
 
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
-    gcont_t::value_type::mutation_container neutral,
-        selected; // req'd as of 0.3.3
-
     std::vector<std::function<std::vector<double>(const gcont_t::value_type &,
                                                   const gcont_t::value_type &,
                                                   const mcont_t &)>>
@@ -334,19 +310,21 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          decltype(mutations) &)>>
+
+    auto fake_mut_pol = [](std::queue<std::size_t> &, decltype(mutations) &) {
+        return std::vector<fwdpp::uint_t>();
+    };
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, decltype(mutations) &)>>
         mutation_models(3, fake_mut_pol);
 
-    double mu[3] = { 0.0, 0.0, 0.0 };
+    diploid_t offspring(3);
+    fwdpp::mut_rec_intermediates intermediates, per_locus_intermediates;
 
-    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
-        r, diploid, diploid2, mutation_recycling_bin, gamete_recycling_bin,
-        recpols, interlocus_rec, 0, 0, gametes, mutations, neutral, selected,
-        &mu[0], mutation_models);
-
+    generate_offspring_gametes(r, offspring, diploid, diploid2, gametes,
+                               mutations, intermediates, mutation_models,
+                               recpols, interlocus_rec, locus_boundaries,
+                               per_locus_intermediates);
     BOOST_CHECK_EQUAL(gametes[offspring[0].first].mutations.size(), 2);
     BOOST_CHECK_EQUAL(gametes[offspring[1].first].mutations.size(), 1);
     BOOST_CHECK_EQUAL(mutations[gametes[offspring[1].first].mutations[0]].pos,
