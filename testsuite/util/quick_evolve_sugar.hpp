@@ -31,22 +31,34 @@ simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
 {
     fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     unsigned generation = 0;
-    const auto mmodel = [&pop, &rng, &generation](
-        std::queue<std::size_t> &recbin,
-        typename slocuspop_object_t::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
-            [&rng]() { return gsl_rng_uniform(rng.get()); },
-            []() { return -0.01; }, []() { return 1.; });
+    const auto make_mutation
+        = [&pop, &rng,
+           &generation](std::queue<std::size_t> &recbin,
+                        typename slocuspop_object_t::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                  0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
+                  []() { return -0.01; }, []() { return 1.; });
+          };
+    const auto mmodel = [&make_mutation, &rng](
+                            std::queue<std::size_t> &recbin,
+                            typename slocuspop_object_t::mcont_t &mutations) {
+        unsigned nmuts = gsl_ran_poisson(rng.get(), 0.005);
+        std::vector<fwdpp::uint_t> rv;
+        for (unsigned i = 0; i < nmuts; ++i)
+            {
+                rv.push_back(make_mutation(recbin, mutations));
+            }
+        return rv;
     };
     for (; generation < simlen; ++generation)
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, pop.N, popsize, 0.005, mmodel,
+                pop.mcounts, pop.N, popsize, mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),
-                fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
+                fwdpp::multiplicative_diploid(2.));
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
@@ -71,8 +83,8 @@ simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
     unsigned g = generation;
 
     const auto mmodel = [&pop, &rng, &generation](
-        std::queue<std::size_t> &recbin,
-        typename slocuspop_object_t::mcont_t &mutations) {
+                            std::queue<std::size_t> &recbin,
+                            typename slocuspop_object_t::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
             [&rng]() { return gsl_rng_uniform(rng.get()); },
@@ -111,15 +123,17 @@ struct multilocus_additive
         using dip_t = mlocuspop_popgenmut_fixture::poptype::dipvector_t::
             value_type::value_type;
         return std::max(
-            0., 1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
-                                     [&gametes, &mutations](const double d,
-                                                            const dip_t &dip) {
-                                         return d + fwdpp::additive_diploid()(
-                                                        gametes[dip.first],
-                                                        gametes[dip.second],
-                                                        mutations)
-                                                - 1.;
-                                     }));
+            0., 1.
+                    + std::accumulate(diploid.begin(), diploid.end(), 0.,
+                                      [&gametes, &mutations](
+                                          const double d, const dip_t &dip) {
+                                          return d
+                                                 + fwdpp::additive_diploid()(
+                                                       gametes[dip.first],
+                                                       gametes[dip.second],
+                                                       mutations)
+                                                 - 1.;
+                                      }));
     }
 };
 
