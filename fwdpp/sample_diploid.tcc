@@ -303,13 +303,11 @@ namespace fwdpp
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N_curr,
-        const uint_t &N_next, const double *mu,
-        const mutation_model_container &mmodel,
+        const uint_t &N_next, const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
         const std::vector<std::function<unsigned(void)>> &interlocus_rec,
-        const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected, const double &f,
+        const std::vector<std::pair<double, double>> &locus_boundaries,
+        const diploid_fitness_function &ff, const double &f,
         const mutation_removal_policy &mp)
     {
 #ifndef NDEBUG
@@ -328,8 +326,11 @@ namespace fwdpp
         // Vector of parental fitnesses
         std::vector<double> fitnesses(N_curr);
         double wbar = 0.;
-        auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
-        auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+        mut_rec_intermediates intermediates, per_locus_intermediates;
+        per_locus_intermediates.mutation_recycling_bin
+            = fwdpp_internal::make_mut_queue(mcounts);
+        per_locus_intermediates.gamete_recycling_bin
+            = fwdpp_internal::make_gamete_queue(gametes);
         // Go over parents
         for (uint_t i = 0; i < N_curr; ++i)
             {
@@ -383,12 +384,10 @@ namespace fwdpp
                 auto p2 = (f == 1. || (f > 0. && gsl_rng_uniform(r) < f))
                               ? p1
                               : gsl_ran_discrete(r, lookup.get());
-                dip = fwdpp_internal::multilocus_rec_mut(
-                    r, parents[p1], parents[p2], mut_recycling_bin,
-                    gamete_recycling_bin, rec_policies, interlocus_rec,
-                    ((gsl_rng_uniform(r) < 0.5) ? 1 : 0),
-                    ((gsl_rng_uniform(r) < 0.5) ? 1 : 0), gametes, mutations,
-                    neutral, selected, mu, mmodel);
+                generate_offspring_gametes(
+                    r, dip, parents[p1], parents[p2], gametes, mutations,
+                    intermediates, mmodel, rec_policies, interlocus_rec,
+                    locus_boundaries, per_locus_intermediates);
             }
         fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         fwdpp_internal::gamete_cleaner(gametes, mutations, mcounts, 2 * N_next,
@@ -419,18 +418,17 @@ namespace fwdpp
             diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
-        std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
+        std::vector<uint_t> &mcounts, const uint_t &N,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
         const std::vector<std::function<unsigned(void)>> &interlocus_rec,
-        const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected, const double &f,
+        const std::vector<std::pair<double, double>> &locus_boundaries,
+        const diploid_fitness_function &ff, const double &f,
         const mutation_removal_policy &mp)
     {
         return sample_diploid(r, gametes, diploids, mutations, mcounts, N, N,
-                              mu, mmodel, rec_policies, interlocus_rec, ff,
-                              neutral, selected, f, mp);
+                              mmodel, rec_policies, interlocus_rec,
+                              locus_boundaries, ff, f, mp);
     }
 } // namespace fwdpp
 

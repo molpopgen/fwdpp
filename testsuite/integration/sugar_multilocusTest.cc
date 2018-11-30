@@ -23,8 +23,8 @@ using poptype = mlocuspop_popgenmut_fixture::poptype;
 BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test1)
 {
     mlocuspop_popgenmut_fixture f;
-    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), f.mu,
+    simulate_mlocuspop(f.pop, f.rng, f.wrapped_mmodels, f.recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(),
                        f.rbw, f.generation);
     poptype pop2(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, true);
@@ -33,8 +33,8 @@ BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test1)
 BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test2)
 {
     mlocuspop_popgenmut_fixture f;
-    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), f.mu,
+    simulate_mlocuspop(f.pop, f.rng, f.wrapped_mmodels, f.recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(),
                        f.rbw, f.generation);
     poptype pop2(0, 0);
     std::stringstream buffer;
@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test2)
 BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test3)
 {
     mlocuspop_popgenmut_fixture f;
-    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), f.mu,
+    simulate_mlocuspop(f.pop, f.rng, f.wrapped_mmodels, f.recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(),
                        f.rbw, f.generation);
     poptype pop2(std::move(f.pop));
     BOOST_CHECK_EQUAL(f.pop == pop2, false);
@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test3)
 BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test4)
 {
     mlocuspop_popgenmut_fixture f;
-    simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), f.mu,
+    simulate_mlocuspop(f.pop, f.rng, f.wrapped_mmodels, f.recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(),
                        f.rbw, f.generation);
     poptype pop2 = std::move(f.pop);
     BOOST_CHECK_EQUAL(f.pop == pop2, false);

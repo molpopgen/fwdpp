@@ -66,9 +66,7 @@ main(int argc, char **argv)
     const unsigned seed
         = atoi(argv[argument++]); // Number of loci in simulation
 
-    const std::vector<double> mu(
-        K, theta / double(4 * N * K)); // per-gamete mutation rate per locus
-
+    const double mu_per_locus = theta / double(4 * N * K);
     /*
       littler r is the recombination rate per region per generation.
     */
@@ -83,21 +81,30 @@ main(int argc, char **argv)
     unsigned generation = 0;
 
     std::vector<std::function<std::vector<double>()>> recpols;
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
-                                          multiloc_t::mcont_t &)>>
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, multiloc_t::mcont_t &)>>
         mmodels;
     for (unsigned i = 0; i < K; ++i)
         {
             pop.locus_boundaries.emplace_back(i, i + 1);
             recpols.emplace_back(fwdpp::recbinder(
                 fwdpp::poisson_xover(littler, i, i + 1), r.get()));
-            mmodels.push_back([&pop, &r, &generation,
+            mmodels.push_back([&pop, &r, &generation, mu_per_locus,
                                i](std::queue<std::size_t> &recbin,
                                   multiloc_t::mcont_t &mutations) {
-                return fwdpp::infsites_popgenmut(
-                    recbin, mutations, r.get(), pop.mut_lookup, generation,
-                    0.0, [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
-                    []() { return 0.0; }, []() { return 0.0; });
+                unsigned nmuts = gsl_ran_poisson(r.get(), mu_per_locus);
+                std::vector<fwdpp::uint_t> rv;
+                for (unsigned j = 0; j < nmuts; ++j)
+                    {
+                        rv.push_back(fwdpp::infsites_popgenmut(
+                            recbin, mutations, r.get(), pop.mut_lookup,
+                            generation, 0.0,
+                            [&r, i]() {
+                                return gsl_ran_flat(r.get(), i, i + 1);
+                            },
+                            []() { return 0.0; }, []() { return 0.0; }));
+                    }
+                return rv;
             });
         }
     std::vector<std::function<unsigned(void)>> interlocus_rec(
@@ -105,10 +112,10 @@ main(int argc, char **argv)
     for (generation = 0; generation < ngens; ++generation)
         {
             // Iterate the population through 1 generation
-            fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu.data(), mmodels, recpols, interlocus_rec,
-                no_selection_multi(), pop.neutral, pop.selected);
+            fwdpp::sample_diploid(r.get(), pop.gametes, pop.diploids,
+                                  pop.mutations, pop.mcounts, N, mmodels,
+                                  recpols, interlocus_rec,
+                                  pop.locus_boundaries, no_selection_multi());
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);

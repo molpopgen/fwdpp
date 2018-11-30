@@ -47,6 +47,9 @@ class mlocuspop_popgenmut_fixture
     using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
     using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
                                                poptype::mcont_t &)>;
+    using wrapped_mutmodel = std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, poptype::mcont_t &)>;
+    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
 
   private:
     std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>>
@@ -88,8 +91,8 @@ class mlocuspop_popgenmut_fixture
         std::vector<fwdpp::extensions::discrete_rec_model> vdrm_;
         for (unsigned i = 0; i < 4; ++i)
             {
-                std::vector<fwdpp::extensions::discrete_rec_model::
-                                function_type>
+                std::vector<
+                    fwdpp::extensions::discrete_rec_model::function_type>
                     f;
                 std::vector<double> w{ 1., 10., 1. };
                 f.push_back([&r, i](std::vector<double> &b) {
@@ -113,8 +116,30 @@ class mlocuspop_popgenmut_fixture
         return vdrm_;
     }
 
+    std::vector<wrapped_mutmodel>
+    wrap_mutation_models(const rng_t &r,
+                         const std::vector<mutmodel> &mutation_maker_fxns)
+    {
+        std::vector<wrapped_mutmodel> rv;
+        for (std::size_t i = 0; i < mutation_maker_fxns.size(); ++i)
+            {
+                rv.push_back([&r, &mutation_maker_fxns,
+                              i](std::queue<std::size_t> &recbin,
+                                 poptype::mcont_t &mutations) {
+                    unsigned nmuts = gsl_ran_poisson(r.get(), 0.005);
+                    std::vector<fwdpp::uint_t> rv;
+                    for (unsigned j = 0; j < nmuts; ++j)
+                        {
+                            rv.push_back(
+                                mutation_maker_fxns[i](recbin, mutations));
+                        }
+                    return rv;
+                });
+            }
+        return rv;
+    }
+
   public:
-    using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     using recmodel = std::function<std::vector<double>()>;
     // Fitness function
     struct multilocus_additive
@@ -128,32 +153,33 @@ class mlocuspop_popgenmut_fixture
         {
             using dip_t = poptype::dipvector_t::value_type::value_type;
             return std::max(
-                0.,
-                1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
-                                     [&gametes, &mutations](const double d,
-                                                            const dip_t &dip) {
-                                         return d + fwdpp::additive_diploid()(
-                                                        gametes[dip.first],
-                                                        gametes[dip.second],
-                                                        mutations)
-                                                - 1.;
-                                     }));
+                0., 1.
+                        + std::accumulate(
+                              diploid.begin(), diploid.end(), 0.,
+                              [&gametes, &mutations](const double d,
+                                                     const dip_t &dip) {
+                                  return d
+                                         + fwdpp::additive_diploid()(
+                                               gametes[dip.first],
+                                               gametes[dip.second], mutations)
+                                         - 1.;
+                              }));
         }
     };
     poptype pop;
     unsigned generation;
     rng_t rng;
-    std::vector<double> mu, rbw;
+    std::vector<double> rbw;
     std::vector<mutmodel> mutmodels;
     std::vector<recmodel> recmodels;
     std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>> vdmm;
     std::vector<mutmodel> bound_mmodels;
+    std::vector<wrapped_mutmodel> wrapped_mmodels;
     std::vector<fwdpp::extensions::discrete_rec_model> vdrm;
     std::vector<std::function<std::vector<double>(void)>> bound_recmodels;
     mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
         : pop(poptype(1000, 4)), generation(0), rng{ seed },
-          mu(std::vector<double>(4, 0.005)),
           rbw(std::vector<double>(3, 0.005)),
           mutmodels(
               { // Locus 0: positions Uniform [0,1)
@@ -202,6 +228,7 @@ class mlocuspop_popgenmut_fixture
                                       this->rng.get()) },
           vdmm(this->fill_vdmm(mutmodels)),
           bound_mmodels(fwdpp::extensions::bind_vec_dmm(rng.get(), vdmm)),
+          wrapped_mmodels(wrap_mutation_models(rng, bound_mmodels)),
           vdrm(this->fill_vdrm(rng.get())), bound_recmodels{}
     {
         for (unsigned i = 0; i < vdrm.size(); ++i)

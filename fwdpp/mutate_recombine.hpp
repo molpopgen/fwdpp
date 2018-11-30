@@ -444,8 +444,8 @@ namespace fwdpp
                     }
                 auto p1g1 = parent1[i].first;
                 auto p1g2 = parent1[i].second;
-                auto p2g1 = parent1[i].first;
-                auto p2g2 = parent1[i].second;
+                auto p2g1 = parent2[i].first;
+                auto p2g2 = parent2[i].second;
                 // if ttl # recs before now is odd, swap parental pointers
                 if (s1 % 2 != 0.)
                     {
@@ -467,7 +467,7 @@ namespace fwdpp
                     }
                 fwdpp_internal::fill_intermediates(
                     offspring[i], p1g1, p1g2, p2g1, p2g2, gametes, mutations,
-                    mmodel, recmodel, per_locus_intermediates);
+                    mmodel[i], recmodel[i], per_locus_intermediates);
                 offspring[i].first = mutate_recombine(
                     per_locus_intermediates.new_mutation_keys1,
                     per_locus_intermediates.breakpoints1, p1g1, p1g2, gametes,

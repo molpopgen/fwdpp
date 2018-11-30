@@ -130,14 +130,11 @@ namespace fwdpp
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N_curr,
-        const uint_t &N_next, const double *mu,
-        const mutation_model_container &mmodel,
+        const uint_t &N_next, const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
         const std::vector<std::function<unsigned(void)>> &interlocus_rec,
-        const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected,
-        const double &f = 0,
+        const std::vector<std::pair<double, double>> &locus_boundaries,
+        const diploid_fitness_function &ff, const double &f = 0,
         const mutation_removal_policy &mp = mutation_removal_policy());
 
     /*! \brief Single deme, multilocus model, constant population size
@@ -165,13 +162,12 @@ namespace fwdpp
             diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
-        std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
+        std::vector<uint_t> &mcounts, const uint_t &N,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
         const std::vector<std::function<unsigned(void)>> &interlocus_rec,
+        const std::vector<std::pair<double, double>> &locus_boundaries,
         const diploid_fitness_function &ff,
-        typename gamete_type::mutation_container &neutral,
-        typename gamete_type::mutation_container &selected,
         const double &f = 0,
         const mutation_removal_policy &mp = mutation_removal_policy());
 } // namespace fwdpp

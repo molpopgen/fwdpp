@@ -142,9 +142,8 @@ template <typename poptype, typename rng_type, typename mmodel_vec,
 inline unsigned
 simulate_mlocuspop(poptype &pop, const rng_type &rng,
                    const mmodel_vec &mutmodels, const recmodel_vec &recmodels,
-                   const fitness_fxn &fitness, const std::vector<double> &mu,
-                   const std::vector<double> &rbw, unsigned &generation,
-                   const unsigned simlen = 10)
+                   const fitness_fxn &fitness, const std::vector<double> &rbw,
+                   unsigned &generation, const unsigned simlen = 10)
 /*!
   \brief Quick function for evolving a multilocus deme simulation
   \ingroup testing
@@ -158,8 +157,8 @@ simulate_mlocuspop(poptype &pop, const rng_type &rng,
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, &mu[0], mutmodels, recmodels,
-                interlocus_rec, fitness, pop.neutral, pop.selected);
+                pop.mcounts, 1000, mutmodels, recmodels, interlocus_rec,
+                pop.locus_boundaries, fitness);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");

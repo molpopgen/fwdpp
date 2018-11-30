@@ -56,9 +56,9 @@ BOOST_FIXTURE_TEST_SUITE(test_sampling_mlocus, mlocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(test_windowed_sampling)
 {
-    simulate_mlocuspop(pop, rng, mutmodels, recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), mu,
-                       rbw, generation, 1000);
+    simulate_mlocuspop(pop, rng, wrapped_mmodels, recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(), rbw,
+                       generation, 1000);
     BOOST_CHECK_EQUAL(generation, 1000);
     std::vector<std::size_t> individuals;
     for (unsigned i = 0; i < 50; ++i)
@@ -145,10 +145,14 @@ BOOST_AUTO_TEST_CASE(test_windowed_sampling)
 
 BOOST_AUTO_TEST_CASE(test_sampling_mlocus_empty_locus)
 {
-    mu[1] = 0.0; //make one of the loci get zero mutations
-    simulate_mlocuspop(pop, rng, mutmodels, recmodels,
-                       mlocuspop_popgenmut_fixture::multilocus_additive(), mu,
-                       rbw, generation, 1000);
+    // NOTE: we modify the fixture here so that the locus with index
+    // 1 NEVER generates any variants.
+    wrapped_mmodels[1] = [](std::queue<std::size_t>&, poptype::mcont_t&) {
+        return std::vector<fwdpp::uint_t>();
+    };
+    simulate_mlocuspop(pop, rng, wrapped_mmodels, recmodels,
+                       mlocuspop_popgenmut_fixture::multilocus_additive(), rbw,
+                       generation, 1000);
     BOOST_CHECK_EQUAL(generation, 1000);
     std::vector<std::size_t> individuals;
     for (unsigned i = 0; i < 50; ++i)
@@ -178,8 +182,8 @@ BOOST_AUTO_TEST_CASE(test_sampling_mlocus_empty_locus)
 
     // The more interesting test is to ensure that each locus is correct,
     // which we can brute-force:
-    BOOST_REQUIRE_EQUAL(vdm[1].neutral.data.empty(),true);
-    BOOST_REQUIRE_EQUAL(vdm[1].neutral.positions.empty(),true);
+    BOOST_REQUIRE_EQUAL(vdm[1].neutral.data.empty(), true);
+    BOOST_REQUIRE_EQUAL(vdm[1].neutral.positions.empty(), true);
     for (std::size_t i = 0; i < vdm.size(); ++i)
         {
             for (auto p : vdm[i].neutral.positions)

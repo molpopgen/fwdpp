@@ -143,8 +143,8 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
  * This test uses the multilocus fixture for the testsuite.
  */
 {
-	BOOST_REQUIRE_EQUAL(vdmm.size(),bound_mmodels.size());
-	BOOST_REQUIRE_EQUAL(vdmm.size(),vdrm.size());
+    BOOST_REQUIRE_EQUAL(vdmm.size(), bound_mmodels.size());
+    BOOST_REQUIRE_EQUAL(vdmm.size(), vdrm.size());
     // create a set of bound callbacks.
     // We use the fixture's mu to imply that
     // mutation rate = recombination rate per region.
@@ -156,10 +156,10 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
         rng.get(), rbw.data(), rbw.size());
     double wbar = sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-        pop.N, &mu[0], bound_mmodels, bound_recmodels, interlocus_rec,
+        pop.N, wrapped_mmodels, bound_recmodels, interlocus_rec,
+        pop.locus_boundaries,
         std::bind(multilocus_additive(), std::placeholders::_1,
-                  std::placeholders::_2, std::placeholders::_3),
-        pop.neutral, pop.selected);
+                  std::placeholders::_2, std::placeholders::_3));
     if (!std::isfinite(wbar))
         {
             throw std::runtime_error("wbar not finite");
