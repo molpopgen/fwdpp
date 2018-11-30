@@ -36,6 +36,14 @@ namespace fwdpp
               gamete_recycling_bin(), mutation_recycling_bin()
         {
         }
+        void
+        clear_containers()
+        {
+            breakpoints1.clear();
+            breakpoints2.clear();
+            new_mutation_keys1.clear();
+            new_mutation_keys2.clear();
+        }
     };
 
     template <typename recombination_policy, typename diploid_t,
@@ -192,6 +200,36 @@ namespace fwdpp
                           return mutations[a].pos < mutations[b].pos;
                       });
         }
+
+        template <typename diploid_t, typename gcont_t, typename mcont_t,
+                  typename mutation_model, typename recombination_model>
+        inline void
+        fill_intermediates(diploid_t &offspring, const std::size_t p1g1,
+                           const std::size_t p1g2, const std::size_t p2g1,
+                           const std::size_t p2g2, gcont_t &gametes,
+                           mcont_t &mutations, const mutation_model &mmodel,
+                           const recombination_model &recmodel,
+                           mut_rec_intermediates &intermediates)
+        {
+            intermediates.breakpoints1 = generate_breakpoints(
+
+                offspring, p1g1, p1g2, gametes, mutations, recmodel);
+            intermediates.breakpoints2 = generate_breakpoints(
+                offspring, p2g1, p2g2, gametes, mutations, recmodel);
+            intermediates.new_mutation_keys1
+                = fwdpp_internal::mmodel_dispatcher(
+                    mmodel, offspring, gametes[p1g1], mutations,
+                    intermediates.mutation_recycling_bin);
+            intermediates.new_mutation_keys2
+                = fwdpp_internal::mmodel_dispatcher(
+                    mmodel, offspring, gametes[p2g1], mutations,
+                    intermediates.mutation_recycling_bin);
+            fwdpp_internal::sort_mutation_keys(
+                intermediates.new_mutation_keys1, mutations);
+            fwdpp_internal::sort_mutation_keys(
+                intermediates.new_mutation_keys2, mutations);
+        }
+
     } // namespace fwdpp_internal
 
     template <typename gcont_t, typename mcont_t, typename queue_type>
@@ -350,20 +388,9 @@ namespace fwdpp
             {
                 std::swap(p2g1, p2g2);
             }
-        intermediates.breakpoints1 = generate_breakpoints(
-            offspring, p1g1, p1g2, gametes, mutations, recmodel);
-        intermediates.breakpoints2 = generate_breakpoints(
-            offspring, p2g1, p2g2, gametes, mutations, recmodel);
-        intermediates.new_mutation_keys1 = fwdpp_internal::mmodel_dispatcher(
-            mmodel, offspring, gametes[p1g1], mutations,
-            intermediates.mutation_recycling_bin);
-        intermediates.new_mutation_keys2 = fwdpp_internal::mmodel_dispatcher(
-            mmodel, offspring, gametes[p2g1], mutations,
-            intermediates.mutation_recycling_bin);
-        fwdpp_internal::sort_mutation_keys(intermediates.new_mutation_keys1,
-                                           mutations);
-        fwdpp_internal::sort_mutation_keys(intermediates.new_mutation_keys2,
-                                           mutations);
+        fwdpp_internal::fill_intermediates(offspring, p1g1, p1g2, p2g1, p2g2,
+                                           gametes, mutations, mmodel,
+                                           recmodel, intermediates);
         // Pass the breakpoints and new mutation keys on to
         // fwdpp::mutate_recombine (defined in
         // fwdpp/mutate_recombine.hpp),
@@ -388,6 +415,102 @@ namespace fwdpp
 
         debug::gamete_is_extant(gametes[offspring.first]);
         debug::gamete_is_extant(gametes[offspring.second]);
+    }
+
+    template <typename diploid_t, typename gcont_t, typename mcont_t,
+              typename mutation_model, typename recombination_model>
+    void
+    generate_offspring_gametes(
+        const gsl_rng *r, diploid_t &offspring, const diploid_t &parent1,
+        const diploid_t &parent2, gcont_t &gametes, mcont_t &mutations,
+        mut_rec_intermediates &intermediates, const mutation_model &mmodel,
+        const recombination_model &recmodel,
+        const std::vector<std::function<unsigned(void)>> &interlocus_rec,
+        const std::vector<std::pair<double, double>> &locus_boundaries,
+        mut_rec_intermediates &per_locus_intermediates)
+    {
+        intermediates.clear_containers();
+        unsigned s1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+        unsigned s2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+        std::size_t nloops = parent1.size();
+        for (std::size_t i = 0; i < nloops; ++i)
+            {
+                if (i)
+                    {
+                        // between-locus rec, parent 1
+                        s1 += interlocus_rec[i - 1]();
+                        // between-locus rec, parent 2
+                        s2 += interlocus_rec[i - 1]();
+                    }
+                auto p1g1 = parent1[i].first;
+                auto p1g2 = parent1[i].second;
+                auto p2g1 = parent1[i].first;
+                auto p2g2 = parent1[i].second;
+                // if ttl # recs before now is odd, swap parental pointers
+                if (s1 % 2 != 0.)
+                    {
+                        std::swap(p1g1, p1g2);
+                        if (i)
+                            {
+                                intermediates.breakpoints1.push_back(
+                                    locus_boundaries[i - 1].second);
+                            }
+                    }
+                if (s2 % 2 != 0.)
+                    {
+                        std::swap(p2g1, p2g2);
+                        if (i)
+                            {
+                                intermediates.breakpoints2.push_back(
+                                    locus_boundaries[i - 1].second);
+                            }
+                    }
+                fwdpp_internal::fill_intermediates(
+                    offspring[i], p1g1, p1g2, p2g1, p2g2, gametes, mutations,
+                    mmodel, recmodel, per_locus_intermediates);
+                offspring[i].first = mutate_recombine(
+                    per_locus_intermediates.new_mutation_keys1,
+                    per_locus_intermediates.breakpoints1, p1g1, p1g2, gametes,
+                    mutations, per_locus_intermediates.gamete_recycling_bin,
+                    per_locus_intermediates.temp_neutral,
+                    per_locus_intermediates.temp_selected);
+                debug::gamete_is_sorted(gametes[offspring[i].first],
+                                        mutations);
+                offspring[i].second = mutate_recombine(
+                    per_locus_intermediates.new_mutation_keys2,
+                    per_locus_intermediates.breakpoints2, p2g1, p2g2, gametes,
+                    mutations, per_locus_intermediates.gamete_recycling_bin,
+                    per_locus_intermediates.temp_neutral,
+                    per_locus_intermediates.temp_selected);
+                debug::gamete_is_sorted(gametes[offspring[i].second],
+                                        mutations);
+                gametes[offspring[i].first].n++;
+                gametes[offspring[i].second].n++;
+
+                //Now, make sure that the overall intermediates are correctly filled
+                intermediates.new_mutation_keys1.insert(
+                    intermediates.new_mutation_keys1.end(),
+                    per_locus_intermediates.new_mutation_keys1.begin(),
+                    per_locus_intermediates.new_mutation_keys1.end());
+                intermediates.new_mutation_keys2.insert(
+                    intermediates.new_mutation_keys2.end(),
+                    per_locus_intermediates.new_mutation_keys2.begin(),
+                    per_locus_intermediates.new_mutation_keys2.end());
+                if (!per_locus_intermediates.breakpoints1.empty())
+                    {
+                        intermediates.breakpoints1.insert(
+                            intermediates.breakpoints1.end(),
+                            per_locus_intermediates.breakpoints1.begin(),
+                            per_locus_intermediates.breakpoints1.end() - 1);
+                    }
+                if (!per_locus_intermediates.breakpoints2.empty())
+                    {
+                        intermediates.breakpoints2.insert(
+                            intermediates.breakpoints2.end(),
+                            per_locus_intermediates.breakpoints2.begin(),
+                            per_locus_intermediates.breakpoints2.end() - 1);
+                    }
+            }
     }
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,
