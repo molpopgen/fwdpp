@@ -430,8 +430,13 @@ namespace fwdpp
         mut_rec_intermediates &per_locus_intermediates)
     {
         intermediates.clear_containers();
+#ifndef SUPPRESS_INITIAL_MENDEL_STEP_FOR_TESTING
         unsigned s1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
         unsigned s2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+#else
+        unsigned s1 = 0;
+        unsigned s2 = 0;
+#endif
         std::size_t nloops = parent1.size();
         for (std::size_t i = 0; i < nloops; ++i)
             {
@@ -498,6 +503,7 @@ namespace fwdpp
                     per_locus_intermediates.new_mutation_keys2.end());
                 if (!per_locus_intermediates.breakpoints1.empty())
                     {
+                        s1 += per_locus_intermediates.breakpoints1.size() - 1;
                         intermediates.breakpoints1.insert(
                             intermediates.breakpoints1.end(),
                             per_locus_intermediates.breakpoints1.begin(),
@@ -505,6 +511,7 @@ namespace fwdpp
                     }
                 if (!per_locus_intermediates.breakpoints2.empty())
                     {
+                        s2 += per_locus_intermediates.breakpoints2.size() - 1;
                         intermediates.breakpoints2.insert(
                             intermediates.breakpoints2.end(),
                             per_locus_intermediates.breakpoints2.begin(),
