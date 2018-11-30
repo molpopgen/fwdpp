@@ -70,44 +70,44 @@ simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
         }
 }
 
-template <typename slocuspop_object_t, typename rng_type>
-unsigned
-simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
-                   const unsigned generation, const unsigned simlen)
-/*!
-  \brief Quick function for evolving a single-deme simulation
-  \ingroup testing
-  \note this version CAN be used on the same population object
- */
-{
-    unsigned g = generation;
-
-    const auto mmodel = [&pop, &rng, &generation](
-                            std::queue<std::size_t> &recbin,
-                            typename slocuspop_object_t::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
-            [&rng]() { return gsl_rng_uniform(rng.get()); },
-            []() { return -0.01; }, []() { return 1.; });
-    };
-    for (; g < generation + simlen; ++g)
-        {
-            double wbar = fwdpp::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
-                pop.mcounts, 1000, 0.005, mmodel,
-                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
-                                 rng.get()),
-                fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
-            if (!std::isfinite(wbar))
-                {
-                    throw std::runtime_error("fitness not finite");
-                }
-            fwdpp::update_mutations(pop.mutations, pop.fixations,
-                                    pop.fixation_times, pop.mut_lookup,
-                                    pop.mcounts, g, 2 * pop.N);
-        }
-    return g + simlen;
-}
+//template <typename slocuspop_object_t, typename rng_type>
+//unsigned
+//simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
+//                   const unsigned generation, const unsigned simlen)
+///*!
+//  \brief Quick function for evolving a single-deme simulation
+//  \ingroup testing
+//  \note this version CAN be used on the same population object
+// */
+//{
+//    unsigned g = generation;
+//
+//    const auto mmodel = [&pop, &rng, &generation](
+//                            std::queue<std::size_t> &recbin,
+//                            typename slocuspop_object_t::mcont_t &mutations) {
+//        return fwdpp::infsites_popgenmut(
+//            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
+//            [&rng]() { return gsl_rng_uniform(rng.get()); },
+//            []() { return -0.01; }, []() { return 1.; });
+//    };
+//    for (; g < generation + simlen; ++g)
+//        {
+//            double wbar = fwdpp::sample_diploid(
+//                rng.get(), pop.gametes, pop.diploids, pop.mutations,
+//                pop.mcounts, 1000, 0.005, mmodel,
+//                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
+//                                 rng.get()),
+//                fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
+//            if (!std::isfinite(wbar))
+//                {
+//                    throw std::runtime_error("fitness not finite");
+//                }
+//            fwdpp::update_mutations(pop.mutations, pop.fixations,
+//                                    pop.fixation_times, pop.mut_lookup,
+//                                    pop.mcounts, g, 2 * pop.N);
+//        }
+//    return g + simlen;
+//}
 
 // Fitness function
 struct multilocus_additive
