@@ -232,7 +232,7 @@ main(int argc, char **argv)
     std::vector<std::size_t> possible_mates;
     std::vector<double> possible_mate_fitness;
     std::vector<double> cumw;
-    auto ff = fwdpp::multiplicative_diploid(2.0);
+    auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(2.0));
     for (; generation <= 10 * N; ++generation)
         {
             //Clear out offspring coordinates
@@ -295,8 +295,8 @@ main(int argc, char **argv)
             if (generation % gcint == 0.0)
                 {
                     auto rv = simplify_tables(
-                        pop, generation, pop.mcounts_from_preserved_nodes, tables,
-                        simplifier, tables.num_nodes() - 2 * N, 2 * N);
+                        pop, generation, pop.mcounts_from_preserved_nodes,
+                        tables, simplifier, tables.num_nodes() - 2 * N, 2 * N);
                     mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, pop.mcounts_from_preserved_nodes);
                     simplified = true;
@@ -371,9 +371,9 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto rv = simplify_tables(pop, generation, pop.mcounts_from_preserved_nodes,
-                                         tables, simplifier,
-                                         tables.num_nodes() - 2 * N, 2 * N);
+            auto rv = simplify_tables(
+                pop, generation, pop.mcounts_from_preserved_nodes, tables,
+                simplifier, tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification
@@ -427,7 +427,8 @@ main(int argc, char **argv)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i] && !pop.mcounts_from_preserved_nodes[i])
+                    if (!pop.mcounts[i]
+                        && !pop.mcounts_from_preserved_nodes[i])
                         {
                             throw std::runtime_error(
                                 "invalid final mutation count");

@@ -88,8 +88,8 @@ class mlocuspop_popgenmut_fixture
         std::vector<fwdpp::extensions::discrete_rec_model> vdrm_;
         for (unsigned i = 0; i < 4; ++i)
             {
-                std::vector<fwdpp::extensions::discrete_rec_model::
-                                function_type>
+                std::vector<
+                    fwdpp::extensions::discrete_rec_model::function_type>
                     f;
                 std::vector<double> w{ 1., 10., 1. };
                 f.push_back([&r, i](std::vector<double> &b) {
@@ -128,16 +128,18 @@ class mlocuspop_popgenmut_fixture
         {
             using dip_t = poptype::dipvector_t::value_type::value_type;
             return std::max(
-                0.,
-                1. + std::accumulate(diploid.begin(), diploid.end(), 0.,
-                                     [&gametes, &mutations](const double d,
-                                                            const dip_t &dip) {
-                                         return d + fwdpp::additive_diploid()(
-                                                        gametes[dip.first],
-                                                        gametes[dip.second],
-                                                        mutations)
-                                                - 1.;
-                                     }));
+                0., 1.
+                        + std::accumulate(
+                              diploid.begin(), diploid.end(), 0.,
+                              [&gametes, &mutations](const double d,
+                                                     const dip_t &dip) {
+                                  return d
+                                         + fwdpp::additive_diploid(
+                                               fwdpp::fitness(1.))(
+                                               gametes[dip.first],
+                                               gametes[dip.second], mutations)
+                                         - 1.;
+                              }));
         }
     };
     poptype pop;

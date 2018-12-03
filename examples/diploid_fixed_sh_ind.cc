@@ -85,8 +85,8 @@ main(int argc, char **argv)
                         r.get(), pop.gametes, pop.diploids, pop.mutations,
                         pop.mcounts, N, mu_neutral + mu_del, mmodel,
                         // The function to generation recombination positions:
-                        rec, fwdpp::multiplicative_diploid(1.), pop.neutral,
-                        pop.selected);
+                        rec, fwdpp::multiplicative_diploid(fwdpp::fitness(1.)),
+                        pop.neutral, pop.selected);
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);
@@ -97,14 +97,14 @@ main(int argc, char **argv)
                     fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
                                                              2 * N);
                 }
-            for(std::size_t i=0;i<pop.mcounts.size();++i)
-            {
-                if(pop.mcounts[i])
+            for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                 {
-                    std::cout<<pop.mutations[i].s<<' ' << pop.mcounts[i]<<'\n';
-
+                    if (pop.mcounts[i])
+                        {
+                            std::cout << pop.mutations[i].s << ' '
+                                      << pop.mcounts[i] << '\n';
+                        }
                 }
-            }
             // Take a sample of size samplesize1.  Two data blocks are
             // returned, one for neutral mutations, and one for selected
             std::vector<std::size_t> random_dips;
