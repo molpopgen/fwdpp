@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(is_mmodel_diploid_test)
 
 BOOST_AUTO_TEST_CASE(is_standard_fitness_model_test)
 {
-    auto fp = fwdpp::multiplicative_diploid(2.);
+    auto fp = fwdpp::multiplicative_diploid(fwdpp::fitness(2.));
     auto v = std::is_convertible<
         decltype(fp),
         fwdpp::traits::fitness_fxn_t<dipvector_t, gcont_t, mcont_t>>::value;
