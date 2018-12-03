@@ -66,8 +66,8 @@ struct additive_over_loci
                         return mutations[i].pos < val;
                     });
 
-                rv += fwdpp::multiplicative_diploid(2.0)(start1, stop1, start2,
-                                                         stop2, mutations)
+                rv += fwdpp::multiplicative_diploid(fwdpp::fitness(2.0))(
+                          start1, stop1, start2, stop2, mutations)
                       - 1.0;
             }
         return std::max(1.0 + rv, 0.0);

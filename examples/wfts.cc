@@ -315,7 +315,7 @@ main(int argc, char **argv)
     // meaning that we can record a correct fitness
     // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
-    auto ff = fwdpp::multiplicative_diploid(scaling);
+    auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(scaling));
     auto lookup = calculate_fitnesses(pop, fitnesses, ff);
     for (; generation <= 10 * N; ++generation)
         {
@@ -334,8 +334,8 @@ main(int argc, char **argv)
             if (generation % gcint == 0.0)
                 {
                     auto rv = simplify_tables(
-                        pop, generation, pop.mcounts_from_preserved_nodes, tables,
-                        simplifier, tables.num_nodes() - 2 * N, 2 * N,
+                        pop, generation, pop.mcounts_from_preserved_nodes,
+                        tables, simplifier, tables.num_nodes() - 2 * N, 2 * N,
                         preserve_fixations);
                     if (!preserve_fixations)
                         {
@@ -452,9 +452,9 @@ main(int argc, char **argv)
                 {
                     std::vector<std::int32_t> samples(2 * N);
                     std::iota(samples.begin(), samples.end(), 0);
-                    fwdpp::ts::count_mutations(tables, pop.mutations, samples,
-                                               pop.mcounts,
-                                               pop.mcounts_from_preserved_nodes);
+                    fwdpp::ts::count_mutations(
+                        tables, pop.mutations, samples, pop.mcounts,
+                        pop.mcounts_from_preserved_nodes);
                 }
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
@@ -509,7 +509,8 @@ main(int argc, char **argv)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i] && !pop.mcounts_from_preserved_nodes[i])
+                    if (!pop.mcounts[i]
+                        && !pop.mcounts_from_preserved_nodes[i])
                         {
                             throw std::runtime_error(
                                 "invalid final mutation count");

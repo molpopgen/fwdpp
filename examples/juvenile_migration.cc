@@ -311,14 +311,15 @@ main(int argc, char **argv)
 
     const double pselected = mu_del / (mu_del + mu_neutral);
 
-    auto wfxn = fwdpp::multiplicative_diploid(1.);
+    auto wfxn = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
     singlepop_t pop(N);
     pop.mutations.reserve(
         size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                          + 0.667 * (theta_neutral + theta_del))));
     unsigned generation = 0;
-    const auto mmodel = [&pop, &r, &generation, s, h, pselected](
-        std::queue<std::size_t> &recbin, singlepop_t::mcont_t &mutations) {
+    const auto mmodel = [&pop, &r, &generation, s, h,
+                         pselected](std::queue<std::size_t> &recbin,
+                                    singlepop_t::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, r.get(), pop.mut_lookup, generation, pselected,
             [&r]() { return gsl_rng_uniform(r.get()); }, [s]() { return s; },
