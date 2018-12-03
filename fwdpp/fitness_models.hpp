@@ -4,6 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/type_traits.hpp>
+#include <fwdpp/named_type.hpp>
 #include <cmath>
 #include <stdexcept>
 #include <type_traits>
@@ -359,6 +360,59 @@ namespace fwdpp
     /// Typedef for backwards API compatibility.
     using haplotype_dependent_fitness = haplotype_dependent_trait_value;
 
+    struct genetic_value_is_trait
+    {
+    };
+
+    struct genetic_value_is_fitness
+    {
+    };
+
+    /// Strong wrapper around a double signifying the scaling of a model.
+    /// Typical use would be to assign values 0, sh, scaling*s to
+    /// genotypes AA, Aa, aa
+    using trait = strong_types::named_type<double, genetic_value_is_trait>;
+    /// Strong wrapper around a boolean to signify that a genetic value represents
+    /// a trait value/phenytype
+    using is_trait_value
+        = strong_types::named_type<bool, genetic_value_is_trait>;
+    /// Strong wrapper around a double signifying the scaling of a model.
+    /// Typical use would be to assign values 0, sh, scaling*s to
+    /// genotypes AA, Aa, aa
+    using fitness = strong_types::named_type<double, genetic_value_is_fitness>;
+    /// Strong wrapper around a boolean to signify that a genetic value represents
+    /// fitness
+    using is_fitness_value
+        = strong_types::named_type<bool, genetic_value_is_fitness>;
+
+    inline is_trait_value
+    assign_is_trait_value(const trait &)
+    /// Helper function for genetic value object constructors
+    {
+        return is_trait_value(true);
+    }
+
+    inline is_trait_value
+    assign_is_trait_value(const fitness &)
+    /// Helper function for genetic value object constructors
+    {
+        return is_trait_value(false);
+    }
+
+    inline is_fitness_value
+    assign_is_fitness_value(const trait &)
+    /// Helper function for genetic value object constructors
+    {
+        return is_fitness_value(false);
+    }
+
+    inline is_fitness_value
+    assign_is_fitness_value(const fitness &)
+    /// Helper function for genetic value object constructors
+    {
+        return is_fitness_value(true);
+    }
+
     /// \brief Multiplicative fitness or trait value across sites
     /// This function object calculate the genetic
     /// value of a diploid according to an multiplicative model
@@ -374,50 +428,43 @@ namespace fwdpp
     /// \ingroup fitness
     struct multiplicative_diploid
     {
-        enum class policy : std::int8_t
-        {
-            mw,
-            mtrait
-        };
         std::function<double(double)>
-        assign_f(policy p_)
+        assign_f(trait &)
         {
-            if (p_ == policy::mtrait)
-                {
-                    return [](const double d) { return d - 1.0; };
-                }
+            return [](const double d) { return d - 1.0; };
+        }
+        std::function<double(double)>
+        assign_f(fitness &)
+        {
             return [](const double d) { return std::max(0.0, d); };
         }
         const double scaling;
-        const policy p;
+        const is_trait_value gvalue_is_trait;
+        const is_fitness_value gvalue_is_fitness;
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
-        multiplicative_diploid(const double scaling_ = 1.0,
-                               const policy p_
-                               = multiplicative_diploid::policy::mw)
-            : scaling{ scaling_ }, p{ p_ }, make_return_value{ assign_f(p) }
-        /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
-        /// \param p_ A fwdpp::multiplicative_diploid::policy. Either mw or
-        /// mtrait is allowed.
-        ///
-        /// The default for p_ is fwdpp::multiplicative_diplod::policy::mw,
-        /// which returns a closure mapping a genetic value to
-        /// max(0,genetic_value), which is a mapping from genetic_value onto
-        /// fitness.
-        ///
-        /// For simulations of traits, the genetic_value would be
-        /// the genetic component of the trait value.  To enable
-        /// this, pass fwdpp::multiplicative_diplod::policy::mtrait to the
-        /// constructor.
-        ///
-        /// Any valid mapping from double to double is allowed.
-        ///
-        /// \note For multiplicative models, the calculation
-        /// begins from a starting value of 1.0.  Thus, if you
-        /// want to model a trait centered on 0, you need to subtract
-        /// 1.0 in your mapping function.  For example, see the test
-        /// gss_multiplicative_trait in siteDepFitnessTest.cc, which is
-        /// part of fwdpp's testing suite.
+        multiplicative_diploid(trait t)
+            : scaling{ t.get() }, gvalue_is_trait(assign_is_trait_value(t)),
+              gvalue_is_fitness(assign_is_fitness_value(t)), make_return_value{
+                  assign_f(t)
+              }
+        /// Construct an object to calculate trait/phenotype values.
+        /// \param t fwdpp::trait, where the double repsresents the scaling of "aa" trait values.
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
+        multiplicative_diploid(fitness gvtype)
+            : scaling{ gvtype.get() },
+              gvalue_is_trait(assign_is_trait_value(gvtype)),
+              gvalue_is_fitness(assign_is_fitness_value(gvtype)),
+              make_return_value{ assign_f(gvtype) }
+        /// Construct an object to calculate fitness values.
+        /// \param t fwdpp::fitness, where the double repsresents the scaling of "aa" trait values.
         {
             if (!std::isfinite(scaling))
                 {
@@ -493,49 +540,40 @@ namespace fwdpp
     struct additive_diploid
     {
         /// Specifies final mapping of genetic value
-        enum class policy : std::int8_t
+        std::function<double(double)> assign_f(trait)
         {
-            /// Fitness
-            aw,
-            /// Trait value
-            atrait
-        };
-        std::function<double(double)>
-        assign_f(policy p_)
+            return [](const double d) { return d; };
+        }
+        std::function<double(double)> assign_f(fitness)
         {
-            if (p_ == policy::atrait)
-                {
-                    return [](const double d) { return d; };
-                }
             return [](const double d) { return std::max(0.0, 1.0 + d); };
         }
         const double scaling;
-        const policy p;
+        const is_trait_value gvalue_is_trait;
+        const is_fitness_value gvalue_is_fitness;
         const std::function<double(double)> make_return_value;
         using result_type = site_dependent_genetic_value::result_type;
-        // const final_genetic_value make_return_value;
-        additive_diploid(const double scaling_ = 1.0,
-                         const policy p_ = policy::aw)
-            : scaling{ scaling_ }, p{ p_ }, make_return_value{ assign_f(p) }
-        /// \param scaling Genetic values are 1, 1+hs, 1+scaling*s
-        /// \param p_ An additive_diploid::policy.  Either policy::aw or
-        /// policy::atrait is allowed.
-        ///
-        /// The default for p_ is fwdpp::additive_diploid::policy::aw, which
-        /// generates a closure mapping a genetic value to
-        /// max(0,1.+genetic_value), which is a mapping from genetic_value onto
-        /// fitness.
-        ///
-        /// For simulations of traits, the genetic_value would be
-        /// the genetic component of the trait value.  To enable
-        /// this, pass fwdpp::additive_diploid::policy::atrait to the
-        /// constructor.
-        ///
-        /// Note that the calculation of genetic value starts with
-        /// an initial value of 0, which has implications for treating
-        /// it as a fitness.  See implementation of
-        /// fwdpp::additive_diploid::policy::aw for details (which involving
-        /// adding 1.0).
+
+        additive_diploid(fitness f)
+            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
+              gvalue_is_fitness{ assign_is_fitness_value(f) },
+              make_return_value{ assign_f(f) }
+        /// Construct an object to calculate fitness values
+        /// \param f fwdpp::fitness, where the double represents the scaling of the "aa" genotype
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
+        additive_diploid(trait t)
+            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
+              gvalue_is_fitness{ assign_is_fitness_value(t) },
+              make_return_value{ assign_f(t) }
+        /// Construct an object to calculate trait/phenotype values
+        /// \param t fwdpp::trait, where the double represents the scaling of the "aa" genotype
         {
             if (!std::isfinite(scaling))
                 {
