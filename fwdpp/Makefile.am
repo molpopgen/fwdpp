@@ -19,7 +19,8 @@ pkginclude_HEADERS=debug.hpp \
 	version.hpp \
 	mutate_recombine.hpp \
 	data_matrix.hpp \
-	recbinder.hpp
+	recbinder.hpp \
+	named_type.hpp
 
 
 
