@@ -157,7 +157,10 @@ BOOST_AUTO_TEST_CASE(simple_additive_1)
 
     gcont_t g{ g1, g2 };
 
-    double w = fwdpp::additive_diploid(fwdpp::fitness(1.))(g[0], g[1], mutations);
+    auto wfxn = fwdpp::additive_diploid(fwdpp::fitness(1.));
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_trait.get(), false);
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_fitness.get(), true);
+    double w = wfxn(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, 1.2);
 }
 
@@ -175,7 +178,10 @@ BOOST_AUTO_TEST_CASE(simple_additive_trait)
 
     gcont_t g{ g1, g2 };
 
-    double w = fwdpp::additive_diploid(fwdpp::trait(1.))(g[0], g[1], mutations);
+    auto wfxn = fwdpp::additive_diploid(fwdpp::trait(1.));
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_trait.get(), true);
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_fitness.get(), false);
+    auto w = wfxn(g[0], g[1], mutations);
     BOOST_CHECK_EQUAL(w, -0.1);
 }
 
