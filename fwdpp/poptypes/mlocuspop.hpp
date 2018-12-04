@@ -5,8 +5,8 @@
 #include <vector>
 #include <utility>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/sugar/poptypes/tags.hpp>
-#include <fwdpp/sugar/poptypes/popbase.hpp>
+#include <fwdpp/poptypes/tags.hpp>
+#include <fwdpp/poptypes/popbase.hpp>
 
 namespace fwdpp
 {

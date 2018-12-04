@@ -10,7 +10,7 @@
 #include <sstream>
 #include <fwdpp/debug.hpp>
 // Use mutation model from sugar layer
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/popgenmut.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/extensions/regions.hpp>
 

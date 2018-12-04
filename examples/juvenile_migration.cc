@@ -71,7 +71,7 @@
 #include <cassert>
 #include <unordered_set>
 #include <fwdpp/debug.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/popgenmut.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation
 using mtype = fwdpp::popgenmut;

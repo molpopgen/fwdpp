@@ -30,7 +30,7 @@ AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
 
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile
-                 fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/sugar/poptypes/Makefile
+                 fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/poptypes/Makefile
                  fwdpp/sugar/gsl/Makefile fwdpp/extensions/Makefile fwdpp/meta/Makefile
                  fwdpp/ts/Makefile fwdpp/ts/detail/Makefile examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen]) 
 

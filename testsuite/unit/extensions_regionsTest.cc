@@ -5,7 +5,7 @@
 
 #include <config.h>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/extensions/regions.hpp>
 #include <fwdpp/type_traits.hpp>
 #include <limits>

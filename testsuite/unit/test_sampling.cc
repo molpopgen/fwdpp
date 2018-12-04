@@ -4,8 +4,8 @@
 #include <cassert>
 #include <numeric>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/slocuspop.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/popgenmut.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 #include <testsuite/util/quick_evolve_sugar.hpp>

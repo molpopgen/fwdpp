@@ -15,8 +15,8 @@
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/interlocus_recombination.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/GSLrng_t.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
 template <typename slocuspop_object_t>
