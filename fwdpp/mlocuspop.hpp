@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
-#include <fwdpp/sugar/poptypes/mlocuspop.hpp>
+#include <fwdpp/poptypes/mlocuspop.hpp>
 #include <fwdpp/fwd_functional.hpp>
 
 namespace fwdpp

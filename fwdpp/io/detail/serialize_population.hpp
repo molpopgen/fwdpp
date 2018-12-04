@@ -7,7 +7,7 @@
 #include <fwdpp/io/mutation.hpp>
 #include <fwdpp/io/gamete.hpp>
 #include <fwdpp/io/diploid.hpp>
-#include <fwdpp/sugar/poptypes/tags.hpp>
+#include <fwdpp/poptypes/tags.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
 
 namespace fwdpp

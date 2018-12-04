@@ -14,7 +14,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fwdpp/internal/recycling.hpp>
-#include <fwdpp/sugar/poptypes/tags.hpp>
+#include <fwdpp/poptypes/tags.hpp>
 #include <fwdpp/debug.hpp>
 
 namespace fwdpp

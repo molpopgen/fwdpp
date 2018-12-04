@@ -1,7 +1,7 @@
 #include <config.h>
 #include <cmath>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/extensions/regions.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>

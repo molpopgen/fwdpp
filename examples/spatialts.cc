@@ -24,9 +24,9 @@
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
 #include <fwdpp/ts/serialization.hpp>
-#include <fwdpp/sugar/GSLrng_t.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/slocuspop.hpp>
+#include <fwdpp/GSLrng_t.hpp>
+#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/slocuspop.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>

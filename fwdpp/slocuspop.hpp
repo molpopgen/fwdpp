@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/sugar/poptypes/slocuspop.hpp>
+#include <fwdpp/poptypes/slocuspop.hpp>
 
 namespace fwdpp
 {

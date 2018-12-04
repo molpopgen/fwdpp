@@ -1,11 +1,11 @@
 #ifndef FWDPP_TESTSUITE_SUGAR_FIXTURES_HPP
 #define FWDPP_TESTSUITE_SUGAR_FIXTURES_HPP
 
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/slocuspop.hpp>
-#include <fwdpp/sugar/mlocuspop.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
-#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/mlocuspop.hpp>
+#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>

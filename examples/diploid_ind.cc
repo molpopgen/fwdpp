@@ -17,7 +17,7 @@
 #endif
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/popgenmut.hpp>
 #include <fwdpp/algorithm/compact_mutations.hpp>
 // typedef mutation_with_age mtype;
 using mtype = fwdpp::popgenmut;

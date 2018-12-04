@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fwdpp/sugar/GSLrng_t.hpp>
+#include <fwdpp/GSLrng_t.hpp>
 #include <boost/test/unit_test.hpp>
 #include <gsl/gsl_randist.h>
 #include <sstream>

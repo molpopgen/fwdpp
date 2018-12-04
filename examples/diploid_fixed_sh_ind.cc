@@ -14,7 +14,7 @@
 #include <cassert>
 #include <iomanip>
 #include <fwdpp/debug.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/popgenmut.hpp>
 #include <fwdpp/algorithm/compact_mutations.hpp>
 #define SINGLEPOP_SIM
 // the type of mutation

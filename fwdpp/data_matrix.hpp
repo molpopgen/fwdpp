@@ -12,7 +12,7 @@
 #include <unordered_map>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/sugar/poptypes/tags.hpp>
+#include <fwdpp/poptypes/tags.hpp>
 #include <gsl/gsl_matrix_char.h>
 
 namespace fwdpp

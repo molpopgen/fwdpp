@@ -3,7 +3,7 @@
 
 #include <sstream>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/popgenmut.hpp>
 
 struct popgenmut_tuple_wrapper
 {

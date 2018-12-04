@@ -6,8 +6,9 @@
   The user initizializes it with a population size, N
 */
 
-#include <fwdpp/sugar/poptypes/tags.hpp>
-#include <fwdpp/sugar/poptypes/popbase.hpp>
+#include <fwdpp/poptypes/tags.hpp>
+#include <fwdpp/poptypes/popbase.hpp>
+
 namespace fwdpp
 {
     namespace sugar

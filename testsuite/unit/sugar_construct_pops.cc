@@ -3,8 +3,8 @@
 
 #include <cassert>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/sugar/slocuspop.hpp>
-#include <fwdpp/sugar/popgenmut.hpp>
+#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/popgenmut.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
 BOOST_AUTO_TEST_SUITE(test_construct_pops)

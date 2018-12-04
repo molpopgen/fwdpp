@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
-#include <fwdpp/sugar/poptypes/tags.hpp>
+#include <fwdpp/poptypes/tags.hpp>
 
 /* We ignore unused variable warnings in this 
  * file.  In release mode, the functions are empty,
