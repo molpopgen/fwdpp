@@ -46,21 +46,17 @@ namespace fwdpp
             new_mutation_keys.erase(itr, new_mutation_keys.end());
         }
 
-        template <typename breakpoint_function, typename new_mutation_fuction,
-                  typename mutation_handling_policy, typename poptype,
-                  typename mrecbin, typename grecbin>
+        template <typename genetic_param_holder,
+                  typename mutation_handling_policy, typename poptype>
         inline TS_NODE_INT
         generate_offspring(const gsl_rng* r,
                            const std::pair<std::size_t, std::size_t> parents,
                            const ts_bookkeeper& bookkeeper,
-                           const breakpoint_function& recombination_function,
-                           const new_mutation_fuction& mutation_function,
                            const mutation_handling_policy& mutation_policy,
-                           poptype& pop,
+                           poptype& pop, genetic_param_holder& genetics,
                            typename poptype::diploid_t& offspring,
-                           table_collection& tables,
-                           mrecbin& mutation_recycling_bin,
-                           grecbin& gamete_recycling_bin)
+                           table_collection& tables)
+		//TODO: dispatch this out differently for slocuspop vs mlocuspop
         {
             auto p1g1 = pop.diploids[parents.first].first;
             auto p1g2 = pop.diploids[parents.first].second;
@@ -78,15 +74,14 @@ namespace fwdpp
                 {
                     std::swap(p2g1, p2g2);
                 }
+			//TODO remove redundancy below
             auto p1id = get_parent_ids(bookkeeper.first_parental_index,
                                        parents.first, swap1);
-            auto p2id = get_parent_ids(bookkeeper.first_parental_index,
-                                       parents.second, swap2);
-            auto breakpoints = recombination_function();
+            auto breakpoints = genetics.generate_breakpoints();
             auto new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
-                mutation_function, pop.diploids[parents.first],
-                pop.gametes[pop.diploids[parents.first].first], pop.mutations,
-                mutation_recycling_bin);
+                genetics.generate_mutations, pop.diploids[parents.first],
+                pop.gametes[p1g1], pop.mutations,
+                genetics.mutation_recycling_bin);
             tables.add_offspring_data(
                 bookkeeper.next_index, breakpoints, new_mutation_keys, p1id,
                 bookkeeper.offspring_deme, bookkeeper.birth_time);
@@ -94,8 +89,25 @@ namespace fwdpp
                                   mutation_policy);
             offspring.first = mutate_recombine(
                 new_mutation_keys, breakpoints, p1g1, p1g2, pop.gametes,
-                pop.mutations, gamete_recycling_bin, pop.neutral,
-                pop.selected);
+                pop.mutations, genetics.gamete_recycling_bin, genetics.neutral,
+                genetics.selected);
+            auto p2id = get_parent_ids(bookkeeper.first_parental_index,
+                                       parents.second, swap2);
+            breakpoints = genetics.generate_breakpoints();
+            new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
+                genetics.generate_mutations, pop.diploids[parents.second],
+                pop.gametes[p2g1], pop.mutations,
+                genetics.mutation_recycling_bin);
+            tables.add_offspring_data(
+                bookkeeper.next_index + 1, breakpoints, new_mutation_keys,
+                p2id, bookkeeper.offspring_deme, bookkeeper.birth_time);
+            process_new_mutations(new_mutation_keys, pop.mutations,
+                                  mutation_policy);
+            offspring.first = mutate_recombine(
+                new_mutation_keys, breakpoints, p2g1, p2g2, pop.gametes,
+                pop.mutations, genetics.gamete_recycling_bin, genetics.neutral,
+                genetics.selected);
+            return bookkeeper.next_index + 2;
         }
     } // namespace ts
 } // namespace fwdpp
