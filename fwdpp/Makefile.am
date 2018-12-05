@@ -23,7 +23,8 @@ pkginclude_HEADERS=debug.hpp \
 	named_type.hpp \
 	slocuspop.hpp \
 	mlocuspop.hpp \
-	popgenmut.hpp
+	popgenmut.hpp \
+	simparams.hpp
 
 
 
