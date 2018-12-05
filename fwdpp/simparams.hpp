@@ -12,6 +12,22 @@ namespace fwdpp
               typename recombination_function,
               typename interlocus_recombination_function>
     struct genetic_parameters
+    /// \brief Hold types for genetic operations
+    ///
+    /// This is a simplistic struct to encapsulate the
+    /// types needed for "doing the genetics" in a simulation.
+    ///
+    /// There is no effort to ensure that the types reflect
+    /// valid policies upon instantiation or construction.
+    ///
+    /// For a single-locus simulation, interlocus_recombination_function
+    /// is expected to be std::nullptr_t
+    ///
+    /// The heavy use of lambdas in fwdpp means that it is, in practice,
+    /// nearly impossible to know the template parameter types.  Thus,
+    /// objects of this type are made by calling fwdpp::make_genetic_parameters.
+    ///
+    /// \version 0.7.4 Added to library
     {
         const genetic_value gvalue;
         const mutation_function generate_mutations;
@@ -41,6 +57,7 @@ namespace fwdpp
         genetic_value&& gvalue_param,
         mutation_function&& generate_mutations_param,
         recombination_function&& generate_breakpoints_param)
+    /// Create a fwdpp::genetic_parameters for a single-locus simulation.
     {
         return genetic_parameters<genetic_value, mutation_function,
                                   recombination_function, std::nullptr_t>(
@@ -58,6 +75,7 @@ namespace fwdpp
         mutation_function&& generate_mutations_param,
         recombination_function&& generate_breakpoints_param,
         interlocus_recombination&& interlocus_rec)
+    /// Create a fwdpp::genetic_parameters for a multi-locus simulation.
     {
         return genetic_parameters<genetic_value, mutation_function,
                                   recombination_function, std::nullptr_t>(
