@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_GENERATE_OFFSPRING_HPP
 #define FWDPP_TS_GENERATE_OFFSPRING_HPP
 
+#include <tuple>
 #include <type_traits>
 #include <gsl/gsl_rng.h>
 #include <fwdpp/mutate_recombine.hpp>
@@ -46,18 +47,57 @@ namespace fwdpp
             new_mutation_keys.erase(itr, new_mutation_keys.end());
         }
 
+        template <typename genetic_param_holder, typename poptype,
+                  typename recmodel, typename mutmodel, typename recycling_bin,
+                  typename mutation_key_container>
+        //TODO: replace with a struct?
+        std::tuple<std::vector<double>, std::vector<uint_t>>
+        generate_mutations_and_breakpoints(
+            std::size_t parent, std::size_t parental_gamete,
+            const recmodel& generate_breakpoints,
+            const mutmodel& generate_mutations,
+            recycling_bin& mutation_recycling_bin,
+            recycling_bin& gamete_recycling_bin,
+            mutation_key_container& neutral, mutation_key_container& selected,
+            poptype& pop)
+        {
+            auto breakpoints = generate_breakpoints();
+            auto new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
+                generate_mutations, pop.diploids[parent],
+                pop.gametes[parental_gamete], pop.mutations,
+                mutation_recycling_bin);
+            return std::make_tuple(std::move(breakpoints),
+                                   std::move(new_mutation_keys));
+        }
+
+        // NOTE The entire problem that we have here is due
+        // to the idea that we may or may not want to put neutral mutations
+        // into the gametes.  This function could be much simpler
+        // if we just returned breakpoints and new mutation keys.
+        //
+        // We almost certainly DO want to reuse fwdpp::mutate_recombine,
+        // which constrains us.  However, a lot of the hand-wringing is having
+        // to do with not wanting to copy the vector of new mutation keys. But,
+        // fwdpp::mutate_recombine uses an iterator range to update the new gamete
+        // in one place, and a range-based for loop in another.  We should consider
+        // a simplification where we change the API of that function to take a
+        // pair of iterators. We could to likewise with breakpoints, too.
         template <typename genetic_param_holder,
                   typename mutation_handling_policy, typename poptype>
         inline TS_NODE_INT
-        generate_offspring(const gsl_rng* r,
-                           const std::pair<std::size_t, std::size_t> parents,
-                           const ts_bookkeeper& bookkeeper,
-                           const mutation_handling_policy& mutation_policy,
-                           poptype& pop, genetic_param_holder& genetics,
-                           typename poptype::diploid_t& offspring,
-                           table_collection& tables)
-		//TODO: dispatch this out differently for slocuspop vs mlocuspop
+        generate_offspring_details(
+            fwdpp::sugar::SINGLELOC_TAG, const gsl_rng* r,
+            const std::pair<std::size_t, std::size_t> parents,
+            const ts_bookkeeper& bookkeeper,
+            const mutation_handling_policy& mutation_policy, poptype& pop,
+            genetic_param_holder& genetics,
+            typename poptype::diploid_t& offspring, table_collection& tables)
         {
+            static_assert(
+                std::is_same<typename std::remove_const<decltype(
+                                 genetics.interlocus_recombination)>::type,
+                             std::nullptr_t>::value,
+                "invalid genetics policies detected");
             auto p1g1 = pop.diploids[parents.first].first;
             auto p1g2 = pop.diploids[parents.first].second;
             auto p2g1 = pop.diploids[parents.second].first;
@@ -74,40 +114,59 @@ namespace fwdpp
                 {
                     std::swap(p2g1, p2g2);
                 }
-			//TODO remove redundancy below
-            auto p1id = get_parent_ids(bookkeeper.first_parental_index,
-                                       parents.first, swap1);
-            auto breakpoints = genetics.generate_breakpoints();
-            auto new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
-                genetics.generate_mutations, pop.diploids[parents.first],
-                pop.gametes[p1g1], pop.mutations,
-                genetics.mutation_recycling_bin);
+            //TODO remove redundancy below
+            //TODO the different order access into the tuple is confusing/error-prone
+            auto pid = get_parent_ids(bookkeeper.first_parental_index,
+                                      parents.first, swap1);
+            auto gamete_data = generate_mutations_and_breakpoints(
+                parents.first, p1g1, genetics.generate_breakpoints,
+                genetics.generate_mutations, genetics.mutation_recycling_bin,
+                genetics.gamete_recycling_bin, genetics.neutral,
+                genetics.selected, pop);
             tables.add_offspring_data(
-                bookkeeper.next_index, breakpoints, new_mutation_keys, p1id,
-                bookkeeper.offspring_deme, bookkeeper.birth_time);
-            process_new_mutations(new_mutation_keys, pop.mutations,
+                bookkeeper.next_index, std::get<0>(gamete_data),
+                std::get<1>(gamete_data), pid, bookkeeper.offspring_deme,
+                bookkeeper.birth_time);
+            process_new_mutations(std::get<1>(gamete_data), pop.mutations,
                                   mutation_policy);
             offspring.first = mutate_recombine(
-                new_mutation_keys, breakpoints, p1g1, p1g2, pop.gametes,
-                pop.mutations, genetics.gamete_recycling_bin, genetics.neutral,
-                genetics.selected);
-            auto p2id = get_parent_ids(bookkeeper.first_parental_index,
-                                       parents.second, swap2);
-            breakpoints = genetics.generate_breakpoints();
-            new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
-                genetics.generate_mutations, pop.diploids[parents.second],
-                pop.gametes[p2g1], pop.mutations,
-                genetics.mutation_recycling_bin);
+                std::get<1>(gamete_data), std::get<0>(gamete_data), p1g1, p1g2,
+                pop.gametes, pop.mutations, genetics.gamete_recycling_bin,
+                genetics.neutral, genetics.selected);
+            pid = get_parent_ids(bookkeeper.first_parental_index,
+                                 parents.second, swap2);
+            gamete_data = generate_mutations_and_breakpoints(
+                parents.second, p2g1, genetics.generate_breakpoints,
+                genetics.generate_mutations, genetics.mutation_recycling_bin,
+                genetics.gamete_recycling_bin, genetics.neutral,
+                genetics.selected, pop);
             tables.add_offspring_data(
-                bookkeeper.next_index + 1, breakpoints, new_mutation_keys,
-                p2id, bookkeeper.offspring_deme, bookkeeper.birth_time);
-            process_new_mutations(new_mutation_keys, pop.mutations,
+                bookkeeper.next_index + 1, std::get<0>(gamete_data),
+                std::get<1>(gamete_data), pid, bookkeeper.offspring_deme,
+                bookkeeper.birth_time);
+            process_new_mutations(std::get<1>(gamete_data), pop.mutations,
                                   mutation_policy);
             offspring.first = mutate_recombine(
-                new_mutation_keys, breakpoints, p2g1, p2g2, pop.gametes,
-                pop.mutations, genetics.gamete_recycling_bin, genetics.neutral,
-                genetics.selected);
+                std::get<1>(gamete_data), std::get<0>(gamete_data), p2g1, p2g2,
+                pop.gametes, pop.mutations, genetics.gamete_recycling_bin,
+                genetics.neutral, genetics.selected);
             return bookkeeper.next_index + 2;
+        }
+
+        template <typename genetic_param_holder,
+                  typename mutation_handling_policy, typename poptype>
+        inline TS_NODE_INT
+        generate_offspring(const gsl_rng* r,
+                           const std::pair<std::size_t, std::size_t> parents,
+                           const ts_bookkeeper& bookkeeper,
+                           const mutation_handling_policy& mutation_policy,
+                           poptype& pop, genetic_param_holder& genetics,
+                           typename poptype::diploid_t& offspring,
+                           table_collection& tables)
+        {
+            return generate_offspring_details(
+                typename poptype::popmodel_t(), r, parents, bookkeeper,
+                mutation_policy, pop, genetics, offspring, tables);
         }
     } // namespace ts
 } // namespace fwdpp
