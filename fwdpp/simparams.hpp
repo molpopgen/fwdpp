@@ -2,6 +2,8 @@
 #define FWDPP_SIM_PARAMS_HPP
 
 #include <vector>
+#include <queue>
+#include <cstdint>
 #include <utility>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
@@ -33,6 +35,7 @@ namespace fwdpp
         const mutation_function generate_mutations;
         const recombination_function generate_breakpoints;
         const interlocus_recombination_function interlocus_recombination;
+        std::queue<std::size_t> mutation_recycling_bin, gamete_recycling_bin;
         std::vector<uint_t> neutral;
         std::vector<uint_t> selected;
 
@@ -44,7 +47,8 @@ namespace fwdpp
                   generate_mutations_param) },
               generate_breakpoints{ std::forward<rec>(
                   generate_breakpoints_param) },
-              interlocus_recombination{}, neutral{}, selected{}
+              interlocus_recombination{}, mutation_recycling_bin{},
+              gamete_recycling_bin{}, neutral{}, selected{}
         {
         }
     };
