@@ -18,6 +18,12 @@ BOOST_AUTO_TEST_CASE(test_summation)
     auto sum1 = std::accumulate(x.begin(), x.end(), 0);
     auto sum2 = std::accumulate(begin(wr), end(wr), 0);
     BOOST_REQUIRE_EQUAL(sum1, sum2);
+    auto sum3 = 0;
+    for (auto v : wr)
+        {
+            sum3 += v;
+        }
+    BOOST_REQUIRE_EQUAL(sum3, sum2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

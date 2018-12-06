@@ -7,12 +7,22 @@ namespace fwdpp
 {
     template <typename T> struct wrapped_range
     {
-        T begin;
-        T end;
+        T begin_;
+        T end_;
         template <typename T_>
         wrapped_range(T_ &&b, T_ &&e)
-            : begin{ std::forward<T_>(b) }, end{ std::forward<T_>(e) }
+            : begin_{ std::forward<T_>(b) }, end_{ std::forward<T_>(e) }
         {
+        }
+        inline T
+        begin() const
+        {
+            return begin_;
+        }
+        inline T
+        end() const
+        {
+            return end_;
         }
     };
 
@@ -27,28 +37,28 @@ namespace fwdpp
     inline T
     begin(wrapped_range<T> &wr)
     {
-        return wr.begin;
+        return wr.begin();
     }
 
     template <typename T>
     inline auto
-    begin(const wrapped_range<T> &wr) -> decltype(wr.begin)
+    begin(const wrapped_range<T> &wr) -> decltype(wr.begin())
     {
-        return wr.begin;
+        return wr.begin();
     }
 
     template <typename T>
     inline T
     end(wrapped_range<T> &wr)
     {
-        return wr.end;
+        return wr.end();
     }
 
     template <typename T>
     inline auto
-    end(const wrapped_range<T> &wr) -> decltype(wr.end)
+    end(const wrapped_range<T> &wr) -> decltype(wr.end())
     {
-        return wr.end;
+        return wr.end();
     }
 } // namespace fwdpp
 
