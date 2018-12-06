@@ -141,7 +141,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/serializationTest.cc unit/mlocusCrossoverTest.cc \
 	unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
-	unit/test_simparams.cc
+	unit/test_simparams.cc unit/test_wrapped_range.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -155,7 +155,8 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_general_rec_variation.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_sampling.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
@@ -545,7 +546,8 @@ top_srcdir = @top_srcdir@
 #Unit test targets:
 @BUNIT_TEST_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.cc unit/test_sampling.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc
 
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
@@ -670,6 +672,8 @@ unit/test_sampling.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/test_simparams.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
+unit/test_wrapped_range.$(OBJEXT): unit/$(am__dirstamp) \
+	unit/$(DEPDIR)/$(am__dirstamp)
 
 unit/fwdpp_unit_tests$(EXEEXT): $(unit_fwdpp_unit_tests_OBJECTS) $(unit_fwdpp_unit_tests_DEPENDENCIES) $(EXTRA_unit_fwdpp_unit_tests_DEPENDENCIES) unit/$(am__dirstamp)
 	@rm -f unit/fwdpp_unit_tests$(EXEEXT)
@@ -725,6 +729,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_mutate_recombine.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_sampling.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_simparams.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_wrapped_range.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/type_traitsTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/utilTest.Po@am__quote@
 
