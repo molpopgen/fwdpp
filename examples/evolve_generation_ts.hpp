@@ -45,7 +45,7 @@ generate_offspring(
                                     return pop.mutations[key].neutral == true;
                                 });
     offspring_gamete = fwdpp::mutate_recombine(
-        decltype(new_mutations)(end_of_neutral, new_mutations.end()),
+        fwdpp::make_wrapped_range(end_of_neutral, new_mutations.end()),
         breakpoints, parent_g1, parent_g2, pop.gametes, pop.mutations,
         gamete_recycling_bin, pop.neutral, pop.selected);
     //TODO: generalize this for offspring deme != 0
