@@ -181,8 +181,9 @@ namespace fwdpp
     /// Update apply new mutations and recombination events to
     /// an offspring's gamete.
     ///
-    /// \param new_mutations Keys to new mutations
-    /// \param breakpoints Recombination breakpoints
+    /// \param new_mutations A range referring to new mutation keys.  Must be traversable via non-member begin/end
+    /// functions using argument-dependent lookup (ADL).
+    /// \param breakpoints A range of recombination breakpoints traversable via non-member begin/end functions.
     /// \param g1 Parental gamete 1
     /// \param g2 Parental gamete 2
     /// \param gametes The vector of gametes in the population

@@ -9,9 +9,6 @@
 #include <fwdpp/wrapped_range.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/mutate_recombine.hpp>
-#include <fwdpp/ts/get_parent_ids.hpp>
-#include <fwdpp/ts/definitions.hpp>
-#include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
 namespace fwdpp
@@ -19,10 +16,17 @@ namespace fwdpp
     namespace ts
     {
         struct mut_rec_intermediates
+        /// Contains the output of recombination and mutation when generating offspring gametes.
+        /// Objects of this type are returned by fwdpp::ts::generate_offspring.
+        /// \version 0.7.4 Added to fwdpp::ts.
         {
+            /// 1 if the parent gametes were swapped, 0 otherwise
             int swapped;
+            /// Recombination breakpoints
             std::vector<double> breakpoints;
+            /// Keys to new mutations
             std::vector<uint_t> mutation_keys;
+
             template <typename B, typename M>
             mut_rec_intermediates(int s, B&& b, M&& m)
                 : swapped{ s }, breakpoints{ std::forward<B>(b) },
@@ -32,10 +36,14 @@ namespace fwdpp
         };
 
         struct all_mutations
+        /// Dispatch tag. See docs for fwdpp::ts::generate_offspring
+        /// \version 0.7.4 Added to fwdpp::ts.
         {
         };
 
         struct selected_variants_only
+        /// Dispatch tag. See docs for fwdpp::ts::generate_offspring
+        /// \version 0.7.4 Added to fwdpp::ts.
         {
         };
 
@@ -171,6 +179,34 @@ namespace fwdpp
                            const mutation_handling_policy& mutation_policy,
                            poptype& pop, genetic_param_holder& genetics,
                            typename poptype::diploid_t& offspring)
+        /// \brief Generate offspring gametes and return breakpoints plus mutation keys
+        ///
+        /// \param r Random number generator
+        /// \param parents Indexes of the offspring parents in \a pop
+        /// \param mutation_policy Either all_mutations or selected_variants_only.  See below.
+        /// \param pop Either fwdpp::poptypes::slocuspop or fwdpp::poptypes::mlocuspop.
+        /// \param genetics A duck type of fwdpp::genetic_parameters.
+        /// \param offspring The offspring for which we will generate gametes.
+        ///
+        /// \return A pair of mut_rec_intermediates, corresponding to what is passed on from
+        /// each parent.
+        ///
+        /// The operations are dispatched out to functions based on the population type.  These
+        /// functions make calls to fwdpp::mutate_recombine.
+        ///
+        /// The parameter \a mutation_policy governs what types of mutations are entered
+        /// into the gametes of \a offspring.  If the policy is fwdpp::ts::all_mutations, then
+        /// neutral and selected variants are placed in an offspring's gametes.  If the policy is
+        /// fwdpp::ts::selected_variants_only, then only selected mutations are placed into the gametes.
+        /// Regardless of the policy, ALL mutations are contained in the return value, with the idea
+        /// that the caller will record them into a fwdpp::ts::table_collection.
+        ///
+        /// \note The function type genetic_param_holder::generate_mutations must return
+        /// std::vector<fwdpp::uint_t>, with the values reflecting the locations of new
+        /// mutations on \a pop.mutations.
+        ///
+        /// \version 0.7.4 Added to fwdpp::ts.
+        ///
         {
             return generate_offspring_details(typename poptype::popmodel_t(),
                                               r, parents, mutation_policy, pop,
