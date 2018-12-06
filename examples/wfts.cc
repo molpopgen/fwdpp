@@ -388,6 +388,7 @@ main(int argc, char **argv)
                     first_parental_index = next_index;
                     next_index += 2 * N;
 
+					// TODO: update or remove this bit
                     // The following (commented-out) block
                     // shows that it is possible to mix mutation
                     // counting strategies in the right situations.
