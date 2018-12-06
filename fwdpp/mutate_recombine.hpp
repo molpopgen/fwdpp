@@ -167,11 +167,59 @@ namespace fwdpp
         }
     } // namespace fwdpp_internal
 
-    template <typename gcont_t, typename mcont_t, typename queue_type>
+    // TODO: move wrapped_range into separate header
+    template <typename T> struct wrapped_range
+    {
+        T begin;
+        T end;
+        template <typename T_>
+        wrapped_range(T_ &&b, T_ &&e)
+            : begin{ std::forward<T_>(b) }, end{ std::forward<T_>(e) }
+        {
+        }
+    };
+
+    template <typename T>
+    inline wrapped_range<T>
+    make_wrapped_range(T b, T e)
+    {
+        return wrapped_range<T>(b, e);
+    }
+
+    template <typename T>
+    inline T
+    begin(wrapped_range<T> &wr)
+    {
+        return wr.begin;
+    }
+
+    template <typename T>
+    inline auto
+    begin(const wrapped_range<T> &wr) -> decltype(wr.begin)
+    {
+        return wr.begin;
+    }
+
+    template <typename T>
+    inline T
+    end(wrapped_range<T> &wr)
+    {
+        return wr.end;
+    }
+
+    template <typename T>
+    inline auto
+    end(const wrapped_range<T> &wr) -> decltype(wr.end)
+    {
+        return wr.end;
+    }
+
+    template <typename gcont_t, typename mcont_t, typename queue_type,
+              typename new_mutations_type, typename breakpoints_type>
     uint_t
     mutate_recombine(
-        const std::vector<uint_t> &new_mutations,
-        const std::vector<double> &breakpoints, const std::size_t g1,
+        const new_mutations_type &new_mutations,
+        const breakpoints_type &breakpoints, const std::size_t g1,
         const std::size_t g2, gcont_t &gametes, mcont_t &mutations,
         queue_type &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
@@ -192,6 +240,7 @@ namespace fwdpp
     ///
     /// \return The index of the new offspring gamete in \a gametes.
     ///
+    /// TODO: unit test this note.  I simply cannot believe it! :)
     /// \note For efficiency, it is helpful if \a new_mutations is sorted
     /// by mutation position.  fwdpp::generate_new_mutations exists to help in
     /// that
@@ -199,14 +248,18 @@ namespace fwdpp
     /// packages by the author will use fwdpp::generate_breakpoints to
     /// generate \a breakpoints.  That is not, however, required.
     ///
+    /// \todo Need a unit test on what happens if \a mutation_keys is not a sorted range
+    ///
     /// \version
     /// This function was added in fwdpp 0.5.7.
     {
-        if (new_mutations.empty() && breakpoints.empty())
+        if (begin(new_mutations) == end(new_mutations)
+            && begin(breakpoints) == end(breakpoints))
             {
                 return g1;
             }
-        else if (breakpoints.empty()) // only mutations to deal with
+        else if (begin(breakpoints)
+                 == end(breakpoints)) // only mutations to deal with
             {
                 fwdpp_internal::prep_temporary_containers(g1, g2, gametes,
                                                           neutral, selected);
@@ -214,17 +267,18 @@ namespace fwdpp
                      sb = gametes[g1].smutations.begin();
                 const auto ne = gametes[g1].mutations.end(),
                            se = gametes[g1].smutations.end();
-                for (auto &&m : new_mutations)
+                for (auto m = begin(new_mutations); m < end(new_mutations);
+                     ++m)
                     {
-                        if (mutations[m].neutral)
+                        if (mutations[*m].neutral)
                             {
                                 nb = fwdpp_internal::insert_new_mutation(
-                                    nb, ne, m, mutations, neutral);
+                                    nb, ne, *m, mutations, neutral);
                             }
                         else
                             {
                                 sb = fwdpp_internal::insert_new_mutation(
-                                    sb, se, m, mutations, selected);
+                                    sb, se, *m, mutations, selected);
                             }
                     }
                 neutral.insert(neutral.end(), nb, ne);
@@ -247,10 +301,10 @@ namespace fwdpp
         auto jtr_e = gametes[g2].mutations.cend();
         auto jtr_s_e = gametes[g2].smutations.cend();
 
-        auto next_mutation = new_mutations.cbegin();
-        for (auto i = breakpoints.cbegin(); i != breakpoints.cend();)
+        auto next_mutation = begin(new_mutations);
+        for (auto i = begin(breakpoints); i != end(breakpoints);)
             {
-                if (next_mutation != new_mutations.cend()
+                if (next_mutation != end(new_mutations)
                     && mutations[*next_mutation].pos < *i)
                     {
                         const auto mut = &mutations[*next_mutation];
@@ -290,10 +344,10 @@ namespace fwdpp
                     }
             }
 #ifndef NDEBUG
-        if (next_mutation != new_mutations.cend())
+        if (next_mutation != end(new_mutations))
             {
-                throw std::runtime_error(
-                    "FWDPP DEBUG: fatal error during mutation/recombination");
+                throw std::runtime_error("FWDPP DEBUG: fatal error during "
+                                         "mutation/recombination");
             }
 #endif
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
