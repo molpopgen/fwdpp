@@ -1,5 +1,5 @@
 pkgincludedir=$(prefix)/include/fwdpp/sugar
 
-SUBDIRS=gsl 
+SUBDIRS=
 
-pkginclude_HEADERS=sugar.hpp add_mutation.hpp change_neutral.hpp
+pkginclude_HEADERS=add_mutation.hpp change_neutral.hpp

@@ -10,13 +10,11 @@ namespace fwdpp
 {
     /*!
       \brief Multilocus simulation.
-      See @ref md_md_sugar for rationale, etc.
-      \ingroup sugar
     */
     template <typename mtype,
               typename diploid_t = std::pair<std::size_t, std::size_t>>
     using mlocuspop
-        = sugar::mlocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
+        = poptypes::mlocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
                            std::vector<std::vector<diploid_t>>,
                            std::vector<mtype>, std::vector<uint_t>,
 						   // fwdpp 0.6.1 changed this from an unordered_set,

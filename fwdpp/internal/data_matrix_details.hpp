@@ -51,7 +51,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      sugar::SINGLELOC_TAG)
+                      poptypes::SINGLELOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             for (auto &&ind : individuals)
@@ -86,7 +86,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      sugar::MULTILOC_TAG)
+                      poptypes::MULTILOC_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             for (auto &&ind : individuals)
@@ -165,7 +165,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            sugar::SINGLELOC_TAG, matrix_type mtype)
+            poptypes::SINGLELOC_TAG, matrix_type mtype)
         {
             for (auto &&mkey : neutral_keys)
                 {
@@ -203,7 +203,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            sugar::MULTILOC_TAG, matrix_type mtype)
+            poptypes::MULTILOC_TAG, matrix_type mtype)
         {
             const auto find_locus = [&pop](const std::size_t key) {
                 double mpos = pop.mutations[key].pos;

@@ -10,17 +10,13 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace poptypes
     {
         /*!
           \brief Abstraction of what is needed to simulate a multilocus
           simulation using an individual-based sampler from fwdpp.
 
           All that is missing is the mutation_type and the container types.
-
-          See @ref md_md_sugar for rationale, etc.
-
-          \ingroup sugar
         */
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
@@ -55,7 +51,7 @@ namespace fwdpp
             using dipvector_t = dipvector;
             using diploid_t = typename dipvector::value_type;
             //! Dispatch tags for other parts of sugar layer
-            using popmodel_t = sugar::MULTILOC_TAG;
+            using popmodel_t = poptypes::MULTILOC_TAG;
             //! Typedef for base class
             using popbase_t = popbase<mutation_type, mcont, gcont, mvector,
                                       ftvector, lookup_table_type>;

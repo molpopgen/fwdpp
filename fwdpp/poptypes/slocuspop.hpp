@@ -11,17 +11,13 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace poptypes
     {
         /*!
           \brief Abstraction of what is needed to simulate a
           single-locus population.
 
           All that is missing is the mutation_type and the container types.
-
-          See @ref md_md_sugar for rationale, etc.
-
-          \ingroup sugar
         */
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
@@ -59,7 +55,7 @@ namespace fwdpp
             using popbase_t = popbase<mutation_type, mcont, gcont, mvector,
                                       ftvector, lookup_table_type>;
             //! Dispatch tag for other parts of sugar layer
-            using popmodel_t = sugar::SINGLELOC_TAG;
+            using popmodel_t = poptypes::SINGLELOC_TAG;
             //! Fitness function signature compatible with this type
             using fitness_t
                 = fwdpp::traits::fitness_fxn_t<dipvector_t,
