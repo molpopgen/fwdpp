@@ -131,7 +131,7 @@ namespace fwdpp
                   typename mutation_handling_policy, typename poptype>
         std::pair<mut_rec_intermediates, mut_rec_intermediates>
         generate_offspring_details(
-            fwdpp::sugar::SINGLELOC_TAG, const gsl_rng* r,
+            fwdpp::poptypes::SINGLELOC_TAG, const gsl_rng* r,
             const std::pair<std::size_t, std::size_t> parents,
             const mutation_handling_policy& mutation_policy, poptype& pop,
             genetic_param_holder& genetics,
