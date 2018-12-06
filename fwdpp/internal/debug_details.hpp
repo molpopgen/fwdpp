@@ -169,7 +169,7 @@ namespace fwdpp
 
             template <typename poptype>
             void
-            validate_pop_data(const poptype &pop, sugar::SINGLELOC_TAG)
+            validate_pop_data(const poptype &pop, poptypes::SINGLELOC_TAG)
             {
 #ifndef NDEBUG
                 for (const auto &d : pop.diploids)
@@ -182,7 +182,7 @@ namespace fwdpp
 
             template <typename poptype>
             void
-            validate_pop_data(const poptype &pop, sugar::MULTILOC_TAG)
+            validate_pop_data(const poptype &pop, poptypes::MULTILOC_TAG)
             {
 #ifndef NDEBUG
                 for (const auto &d : pop.diploids)

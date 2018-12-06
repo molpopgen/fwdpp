@@ -20,7 +20,7 @@ namespace fwdpp
             inline void
             serialize_population_details(streamtype &buffer,
                                          const poptype &pop,
-                                         sugar::SINGLELOC_TAG)
+                                         poptypes::SINGLELOC_TAG)
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
@@ -41,7 +41,7 @@ namespace fwdpp
             inline void
             serialize_population_details(streamtype &buffer,
                                          const poptype &pop,
-                                         sugar::MULTILOC_TAG)
+                                         poptypes::MULTILOC_TAG)
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
@@ -82,7 +82,7 @@ namespace fwdpp
             template <typename streamtype, typename poptype>
             inline void
             deserialize_population_details(poptype &pop, streamtype &buffer,
-                                           sugar::SINGLELOC_TAG)
+                                           poptypes::SINGLELOC_TAG)
             {
                 pop.clear();
                 io::scalar_reader reader;
@@ -115,7 +115,7 @@ namespace fwdpp
             template <typename streamtype, typename poptype>
             inline void
             deserialize_population_details(poptype &pop, streamtype &buffer,
-                                           sugar::MULTILOC_TAG)
+                                           poptypes::MULTILOC_TAG)
             {
                 pop.clear();
                 io::scalar_reader reader;

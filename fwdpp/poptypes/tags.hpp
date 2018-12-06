@@ -5,7 +5,7 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace poptypes
     {
         //! Types of populations supported by sugar layer \ingroup sugar
         enum class FWDPP_SUGAR_POPTYPE

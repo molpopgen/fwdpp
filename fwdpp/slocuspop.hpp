@@ -14,12 +14,11 @@ namespace fwdpp
       \example juvenile_migration.cc
       \example K_linked_regions_extensions.cc
       \example K_linked_regions_generalized_rec.cc
-      \ingroup sugar
     */
     template <typename mtype,
               typename diploid_t = std::pair<std::size_t, std::size_t>>
     using slocuspop
-        = sugar::slocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
+        = poptypes::slocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
                            std::vector<diploid_t>, std::vector<mtype>,
                            std::vector<uint_t>,
 						   // fwdpp 0.6.1 changed this from an unordered_set,

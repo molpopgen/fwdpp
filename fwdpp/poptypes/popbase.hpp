@@ -9,14 +9,13 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace poptypes
     {
         template <typename mutation_type, typename mcont, typename gcont,
                   typename mvector, typename ftvector,
                   typename lookup_table_type>
         class popbase
         /*!
-          \ingroup sugar
           \brief Base class for population objects
           \note Added in fwdpp 0.5.0.  Changed in 0.6.0 to be independent of ploidy.
          */

@@ -154,7 +154,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::SINGLELOC_TAG>::value>>
+                                        fwdpp::poptypes::SINGLELOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<
                                typename poptype::diploid_t::first_type *>>
@@ -190,7 +190,7 @@ namespace fwdpp
 
         template <typename poptype, typename = std::enable_if<std::is_same<
                                         typename poptype::popmodel_t,
-                                        fwdpp::sugar::MULTILOC_TAG>::value>>
+                                        fwdpp::poptypes::MULTILOC_TAG>::value>>
         std::unordered_map<std::size_t,
                            std::vector<typename poptype::diploid_t::
                                            value_type::first_type *>>
@@ -267,7 +267,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLELOC_TAG>::value,
+                                   fwdpp::poptypes::SINGLELOC_TAG>::value,
                       "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks
@@ -291,7 +291,7 @@ namespace fwdpp
         typename poptype::mcont_t::value_type new_mutant(
             std::forward<Args>(args)...);
         auto mindex = sugar::get_mut_index(p.mutations, p.mcounts, new_mutant);
-        auto gams = collect_gametes(p, indlist, clist);
+        auto gams = sugar::collect_gametes(p, indlist, clist);
         sugar::add_mutation_details(p, { mindex }, gams);
         return mindex;
     }
@@ -406,7 +406,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::sugar::SINGLELOC_TAG>::value,
+                                   fwdpp::poptypes::SINGLELOC_TAG>::value,
                       "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks

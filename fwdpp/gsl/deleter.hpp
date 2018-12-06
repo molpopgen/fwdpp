@@ -6,7 +6,7 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace gsl
     {
         /*!
           \brief Smart pointer wrapper to gsl_rng *

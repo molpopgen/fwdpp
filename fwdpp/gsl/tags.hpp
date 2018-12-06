@@ -5,7 +5,7 @@
 
 namespace fwdpp
 {
-    namespace sugar
+    namespace gsl
     {
         /*!
           \brief gsl_rng * types supported by fwdpp's sugar layer
