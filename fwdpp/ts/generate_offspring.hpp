@@ -174,6 +174,38 @@ namespace fwdpp
                     std::move(offspring_first_gamete_data.second),
                     std::move(offspring_second_gamete_data.second));
             }
+
+            template <typename genetic_param_holder,
+                      typename mutation_handling_policy, typename poptype>
+            std::pair<mut_rec_intermediates, mut_rec_intermediates>
+            generate_offspring_details(
+                fwdpp::poptypes::MULTILOC_TAG, const gsl_rng* r,
+                const std::pair<std::size_t, std::size_t> parents,
+                const mutation_handling_policy& mutation_policy, poptype& pop,
+                genetic_param_holder& genetics,
+                typename poptype::diploid_t& offspring)
+            {
+                auto p1g1 = pop.diploids[parents.first][0].first;
+                auto p1g2 = pop.diploids[parents.first][0].second;
+                auto p2g1 = pop.diploids[parents.second][0].first;
+                auto p2g2 = pop.diploids[parents.second][0].second;
+                int swap1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+                int swap2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+                int ttl_swaps_1 = swap1;
+                int ttl_swaps_2 = swap2;
+
+                decltype(mut_rec_intermediates::breakpoints) all_breakpoints_1,
+                    all_breakpoints_2;
+                decltype(mut_rec_intermediates::mutation_keys) all_mut_keys_1,
+                    all_mut_keys_2;
+
+                return std::make_pair(
+                    mut_rec_intermediates(swap1, std::move(all_breakpoints_1),
+                                          std::move(all_breakpoints_2)),
+                    mut_rec_intermediates(swap2, std::move(all_breakpoints_2),
+                                          std::move(all_mut_keys_2)));
+            }
+
         } // namespace detail
 
         template <typename genetic_param_holder,
@@ -210,16 +242,16 @@ namespace fwdpp
         ///
         /// \note The function type genetic_param_holder::generate_mutations must return
         /// std::vector<fwdpp::uint_t>, with the values reflecting the locations of new
-        /// mutations on \a pop.mutations.  Further, this function must already bind 
+        /// mutations on \a pop.mutations.  Further, this function must already bind
         /// any relevant mutation rates (as this generate_offspring does not accept them
         /// as arguments).
         ///
         /// \version 0.7.4 Added to fwdpp::ts.
         ///
         {
-            return detail::generate_offspring_details(typename poptype::popmodel_t(),
-                                              r, parents, mutation_policy, pop,
-                                              genetics, offspring);
+            return detail::generate_offspring_details(
+                typename poptype::popmodel_t(), r, parents, mutation_policy,
+                pop, genetics, offspring);
         }
     } // namespace ts
 } // namespace fwdpp
