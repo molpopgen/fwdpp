@@ -347,10 +347,6 @@ main(int argc, char **argv)
             evolve_generation(rng, pop, genetics, N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
-            //evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,
-            //                  mmodel, mutation_recycling_bin, recmap,
-            //                  generation, tables, first_parental_index,
-            //                  next_index);
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
             if (generation % gcint == 0.0)
