@@ -32,6 +32,7 @@
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
+#include <fwdpp/simparams.hpp>
 #include <boost/program_options.hpp>
 
 #include "simplify_tables.hpp"
@@ -177,7 +178,7 @@ main(int argc, char **argv)
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = []() { return 1.0; };
-    const auto mmodel = [&pop, &rng, &generation, generate_mutation_position,
+    const auto make_mutation = [&pop, &rng, &generation, generate_mutation_position,
                          get_selection_coefficient,
                          generate_h](std::queue<std::size_t> &recbin,
                                      poptype::mcont_t &mutations) {
@@ -188,11 +189,26 @@ main(int argc, char **argv)
             generate_h);
     };
 
+    const auto mmodel = [&rng, mu,
+                         &make_mutation](std::queue<std::size_t> &recbin,
+                                         poptype::mcont_t &mutations) {
+        std::vector<fwdpp::uint_t> rv;
+        unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
+        for (unsigned i = 0; i < nmuts; ++i)
+            {
+                rv.push_back(make_mutation(recbin, mutations));
+            }
+        std::sort(begin(rv), end(rv),
+                  [&mutations](const fwdpp::uint_t a, const fwdpp::uint_t b) {
+                      return mutations[a].pos < mutations[b].pos;
+                  });
+        return rv;
+    };
+
     // Evolve pop for 20N generations
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
-    std::queue<std::size_t> mutation_recycling_bin;
     std::vector<std::size_t> individual_labels(N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
     std::vector<std::size_t> individuals;
@@ -233,6 +249,8 @@ main(int argc, char **argv)
     std::vector<double> possible_mate_fitness;
     std::vector<double> cumw;
     auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(2.0));
+    auto genetics = fwdpp::make_genetic_parameters(
+        std::move(ff), std::move(mmodel), std::move(recmap));
     for (; generation <= 10 * N; ++generation)
         {
             //Clear out offspring coordinates
@@ -287,17 +305,16 @@ main(int argc, char **argv)
                     }
                 return possible_mates[i];
             };
-            evolve_generation(rng, pop, N, mu, pick1, pick2, update_offspring,
-                              mmodel, mutation_recycling_bin, recmap,
-                              generation, tables, first_parental_index,
-                              next_index);
+            evolve_generation(rng, pop, genetics, N, pick1, pick2,
+                              update_offspring, generation, tables,
+                              first_parental_index, next_index);
 
             if (generation % gcint == 0.0)
                 {
                     auto rv = simplify_tables(
                         pop, generation, pop.mcounts_from_preserved_nodes,
                         tables, simplifier, tables.num_nodes() - 2 * N, 2 * N);
-                    mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                   genetics.mutation_recycling_bin = fwdpp::ts::make_mut_queue(
                         pop.mcounts, pop.mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
@@ -403,10 +420,10 @@ main(int argc, char **argv)
     std::iota(s.begin(), s.end(), 0);
     const auto neutral_variant_maker
         = [&rng, &pop,
-           &mutation_recycling_bin](const double left, const double right,
+           &genetics](const double left, const double right,
                                     const fwdpp::uint_t generation) {
               return fwdpp::infsites_popgenmut(
-                  mutation_recycling_bin, pop.mutations, rng.get(),
+                  genetics.mutation_recycling_bin, pop.mutations, rng.get(),
                   pop.mut_lookup, generation, 0.0,
                   [left, right, &rng] {
                       return gsl_ran_flat(rng.get(), left, right);
