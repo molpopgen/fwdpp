@@ -24,6 +24,10 @@ noinst_PROGRAMS+=wfts
 wfts_SOURCES=wfts.cc
 wfts_LDADD=-lboost_program_options
 
+noinst_PROGRAMS+=wfmlts
+wfmlts_SOURCES=wfmlts.cc
+wfmlts_LDADD=-lboost_program_options
+
 noinst_PROGRAMS+=spatialts
 spatialts_SOURCES=spatialts.cc
 spatialts_LDADD=-lboost_program_options
