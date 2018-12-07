@@ -185,6 +185,7 @@ namespace fwdpp
                 genetic_param_holder& genetics,
                 typename poptype::diploid_t& offspring)
             {
+                //TODO need a debugging block on container sizes.
                 int swap1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
                 int swap2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
                 int ttl_swaps_1 = swap1;
