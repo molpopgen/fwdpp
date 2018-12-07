@@ -185,10 +185,6 @@ namespace fwdpp
                 genetic_param_holder& genetics,
                 typename poptype::diploid_t& offspring)
             {
-                auto p1g1 = pop.diploids[parents.first][0].first;
-                auto p1g2 = pop.diploids[parents.first][0].second;
-                auto p2g1 = pop.diploids[parents.second][0].first;
-                auto p2g2 = pop.diploids[parents.second][0].second;
                 int swap1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
                 int swap2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
                 int ttl_swaps_1 = swap1;
@@ -199,23 +195,20 @@ namespace fwdpp
                 decltype(mut_rec_intermediates::mutation_keys) all_mut_keys_1,
                     all_mut_keys_2;
 
+                const auto& irec = genetics.interlocus_recombination;
                 for (std::size_t i = 0; i < offspring.size; ++i)
                     {
                         if (i > 0)
                             {
                                 // between-locus rec, parent 1
-                                ttl_swaps_1
-                                    += genetics
-                                           .interlocus_recombination[i - 1]();
+                                ttl_swaps_1 += irec[i - 1]();
                                 // between-locus rec, parent 2
-                                ttl_swaps_2
-                                    += genetics
-                                           .interlocus_recombination[i - 1]();
+                                ttl_swaps_2 += irec[i - 1]();
                             }
-                        p1g1 = pop.diploids[parents.first][i].first;
-                        p1g2 = pop.diploids[parents.first][i].second;
-                        p2g1 = pop.diploids[parents.second][i].first;
-                        p2g2 = pop.diploids[parents.second][i].second;
+                        auto p1g1 = pop.diploids[parents.first][i].first;
+                        auto p1g2 = pop.diploids[parents.first][i].second;
+                        auto p2g1 = pop.diploids[parents.second][i].first;
+                        auto p2g2 = pop.diploids[parents.second][i].second;
                         if (ttl_swaps_1 % 2 != 0.)
                             {
                                 std::swap(p1g1, p1g2);
