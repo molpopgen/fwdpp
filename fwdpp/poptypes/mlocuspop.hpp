@@ -73,14 +73,10 @@ namespace fwdpp
             /*! Construct with population size, number of loci,
              *  and locus boundaries.
              */
-            mlocuspop(
-                const uint_t &__N, const uint_t &__nloci,
-                const std::vector<std::pair<double, double>> &locus_boundaries_
-                = std::vector<std::pair<double, double>>(),
-                typename popbase_t::gamete_t::mutation_container::size_type
-                    reserve_size
-                = 100)
-                : popbase_t(__nloci * 2 * __N, reserve_size), N(__N),
+            mlocuspop(const uint_t &__N, const uint_t &__nloci,
+                      const std::vector<std::pair<double, double>>
+                          &locus_boundaries_)
+                : popbase_t(__nloci * 2 * __N, 100), N(__N),
                   diploids(__N, diploid_t(__nloci, { 0, 0 })),
                   locus_boundaries(locus_boundaries_)
             {
@@ -88,10 +84,10 @@ namespace fwdpp
 
             template <typename diploids_input, typename gametes_input,
                       typename mutations_input>
-            explicit mlocuspop(
-                diploids_input &&d, gametes_input &&g, mutations_input &&m,
-                const std::vector<std::pair<double, double>> &locus_boundaries_
-                = std::vector<std::pair<double, double>>())
+            mlocuspop(diploids_input &&d, gametes_input &&g,
+                      mutations_input &&m,
+                      const std::vector<std::pair<double, double>>
+                          &locus_boundaries_)
                 : popbase_t(std::forward<gametes_input>(g),
                             std::forward<mutations_input>(m), 100),
                   N(d.size()), diploids(std::forward<diploids_input>(d)),
@@ -117,7 +113,7 @@ namespace fwdpp
                 popbase_t::clear_containers();
             }
         };
-    } // namespace sugar
+    } // namespace poptypes
 } // namespace fwdpp
 
 #endif
