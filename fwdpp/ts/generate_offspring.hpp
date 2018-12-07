@@ -199,6 +199,92 @@ namespace fwdpp
                 decltype(mut_rec_intermediates::mutation_keys) all_mut_keys_1,
                     all_mut_keys_2;
 
+                for (std::size_t i = 0; i < offspring.size; ++i)
+                    {
+                        if (i > 0)
+                            {
+                                // between-locus rec, parent 1
+                                ttl_swaps_1
+                                    += genetics
+                                           .interlocus_recombination[i - 1]();
+                                // between-locus rec, parent 2
+                                ttl_swaps_2
+                                    += genetics
+                                           .interlocus_recombination[i - 1]();
+                            }
+                        p1g1 = pop.diploids[parents.first][i].first;
+                        p1g2 = pop.diploids[parents.first][i].second;
+                        p2g1 = pop.diploids[parents.second][i].first;
+                        p2g2 = pop.diploids[parents.second][i].second;
+                        if (ttl_swaps_1 % 2 != 0.)
+                            {
+                                std::swap(p1g1, p1g2);
+                                if (i > 0)
+                                    {
+                                        all_breakpoints_1.push_back(
+                                            pop.locus_boundaries[i - 1]
+                                                .second);
+                                    }
+                            }
+                        if (ttl_swaps_2 % 2 != 0.)
+                            {
+                                std::swap(p2g1, p2g2);
+                                if (i > 0)
+                                    {
+                                        all_breakpoints_2.push_back(
+                                            pop.locus_boundaries[i - 1]
+                                                .second);
+                                    }
+                            }
+                        auto first_gamete_data = generate_offspring_gamete(
+                            parental_data{ parents.first, p1g1, p1g2, swap1 },
+                            genetics.generate_breakpoints,
+                            genetics.generate_mutations, mutation_policy,
+                            genetics.mutation_recycling_bin,
+                            genetics.gamete_recycling_bin, genetics.neutral,
+                            genetics.selected, pop);
+                        auto second_gamete_data = generate_offspring_gamete(
+                            parental_data{ parents.second, p2g1, p2g2, swap2 },
+                            genetics.generate_breakpoints,
+                            genetics.generate_mutations, mutation_policy,
+                            genetics.mutation_recycling_bin,
+                            genetics.gamete_recycling_bin, genetics.neutral,
+                            genetics.selected, pop);
+                        // Update the offspring's gametes.
+                        offspring[i].first = first_gamete_data.first;
+                        offspring[i].second = second_gamete_data.first;
+                        // Add mutations to the return values
+                        all_mut_keys_1.insert(
+                            end(all_mut_keys_1),
+                            begin(first_gamete_data.mutation_keys),
+                            end(first_gamete_data.mutation_keys));
+                        all_mut_keys_2.insert(
+                            end(all_mut_keys_2),
+                            begin(second_gamete_data.mutation_keys),
+                            end(second_gamete_data.mutation_keys));
+                        // Update recombination breakpoints
+                        if (!first_gamete_data.breakpoints.empty())
+                            {
+                                ttl_swaps_1
+                                    += first_gamete_data.breakpoints.size()
+                                       - 1;
+                                all_breakpoints_1.insert(
+                                    end(all_breakpoints_1),
+                                    begin(first_gamete_data.breakpoints),
+                                    end(first_gamete_data.breakpoints) - 1);
+                            }
+                        if (!second_gamete_data.breakpoints.empty())
+                            {
+                                ttl_swaps_2
+                                    += second_gamete_data.breakpoints.size()
+                                       - 1;
+                                all_breakpoints_2.insert(
+                                    end(all_breakpoints_1),
+                                    begin(second_gamete_data.breakpoints),
+                                    end(second_gamete_data.breakpoints) - 1);
+                            }
+                    }
+
                 return std::make_pair(
                     mut_rec_intermediates(swap1, std::move(all_breakpoints_1),
                                           std::move(all_breakpoints_2)),
