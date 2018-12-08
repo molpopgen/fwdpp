@@ -234,15 +234,15 @@ namespace fwdpp
                             }
                         auto first_gamete_data = generate_offspring_gamete(
                             parental_data{ parents.first, p1g1, p1g2, swap1 },
-                            genetics.generate_breakpoints,
-                            genetics.generate_mutations, mutation_policy,
+                            genetics.generate_breakpoints[i],
+                            genetics.generate_mutations[i], mutation_policy,
                             genetics.mutation_recycling_bin,
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
                         auto second_gamete_data = generate_offspring_gamete(
                             parental_data{ parents.second, p2g1, p2g2, swap2 },
-                            genetics.generate_breakpoints,
-                            genetics.generate_mutations, mutation_policy,
+                            genetics.generate_breakpoints[i],
+                            genetics.generate_mutations[i], mutation_policy,
                             genetics.mutation_recycling_bin,
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
@@ -286,7 +286,7 @@ namespace fwdpp
 
                 return std::make_pair(
                     mut_rec_intermediates(swap1, std::move(all_breakpoints_1),
-                                          std::move(all_breakpoints_2)),
+                                          std::move(all_mut_keys_1)),
                     mut_rec_intermediates(swap2, std::move(all_breakpoints_2),
                                           std::move(all_mut_keys_2)));
             }
