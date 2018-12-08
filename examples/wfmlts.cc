@@ -312,41 +312,44 @@ main(int argc, char **argv)
         }
 
     auto get_selection_coefficient = make_dfe(N, rng, mean, shape, scoeff);
-    const auto generate_mutation_position
-        = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = [dominance]() { return dominance; };
-    const auto make_mutation
-        = [&pop, &rng, &generation, generate_mutation_position,
-           get_selection_coefficient, generate_h](
-              std::queue<std::size_t> &recbin, poptype::mcont_t &mutations) {
-              return fwdpp::infsites_popgenmut(
-                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
-                  // 1.0 signifies 100% of mutations will be selected
-                  1.0, generate_mutation_position, get_selection_coefficient,
-                  generate_h);
-          };
 
-    const auto mmodel = [&rng, mu,
-                         &make_mutation](std::queue<std::size_t> &recbin,
-                                         poptype::mcont_t &mutations) {
-        std::vector<fwdpp::uint_t> rv;
-        unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
-        for (unsigned i = 0; i < nmuts; ++i)
-            {
-                rv.push_back(make_mutation(recbin, mutations));
-            }
-        std::sort(begin(rv), end(rv),
-                  [&mutations](const fwdpp::uint_t a, const fwdpp::uint_t b) {
-                      return mutations[a].pos < mutations[b].pos;
-                  });
-        return rv;
-    };
-    
-    std::vector<std::function<std::vector<fwdpp::uint_t>(std::queue<std::size_t> &,poptype::mcont_t&)>> mmodels;
-    for(int i=0;i<nloci;++i)
-    {
-        mmodels.push_back([](std::queue<std::size_t>&,poptype::mcont_t&){return std::vector<fwdpp::uint_t>();});
-    }
+    std::vector<std::function<std::vector<fwdpp::uint_t>(
+        std::queue<std::size_t> &, poptype::mcont_t &)>>
+        mmodels;
+    for (int i = 0; i < nloci; ++i)
+        {
+            const auto generate_mutation_position
+                = [&rng, i]() { return gsl_ran_flat(rng.get(), i, i + 1); };
+            const auto make_mutation = [&pop, &rng, &generation,
+                                        generate_mutation_position,
+                                        get_selection_coefficient, generate_h](
+                                           std::queue<std::size_t> &recbin,
+                                           poptype::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                    // 1.0 signifies 100% of mutations will be selected
+                    1.0, generate_mutation_position, get_selection_coefficient,
+                    generate_h);
+            };
+            const auto mmodel
+                = [&rng, mu, make_mutation](std::queue<std::size_t> &recbin,
+                                            poptype::mcont_t &mutations) {
+                      std::vector<fwdpp::uint_t> rv;
+                      unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
+                      for (unsigned i = 0; i < nmuts; ++i)
+                          {
+                              rv.push_back(make_mutation(recbin, mutations));
+                          }
+                      std::sort(begin(rv), end(rv),
+                                [&mutations](const fwdpp::uint_t a,
+                                             const fwdpp::uint_t b) {
+                                    return mutations[a].pos < mutations[b].pos;
+                                });
+                      return rv;
+                  };
+            mmodels.emplace_back(std::move(mmodel));
+        }
 
     // Evolve pop for 20N generations
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
