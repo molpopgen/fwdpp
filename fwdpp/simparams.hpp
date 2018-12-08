@@ -51,6 +51,21 @@ namespace fwdpp
               gamete_recycling_bin{}, neutral{}, selected{}
         {
         }
+        template <typename gv, typename mut, typename rec, typename irec>
+        genetic_parameters(gv&& gvalue_param, mut&& generate_mutations_param,
+                           rec&& generate_breakpoints_param,
+                           irec&& interlocus_recombination_param)
+            : gvalue{ std::forward<gv>(gvalue_param) },
+              generate_mutations{ std::forward<mut>(
+                  generate_mutations_param) },
+              generate_breakpoints{ std::forward<rec>(
+                  generate_breakpoints_param) },
+              interlocus_recombination{ std::forward<irec>(
+                  interlocus_recombination_param) },
+              mutation_recycling_bin{},
+              gamete_recycling_bin{}, neutral{}, selected{}
+        {
+        }
     };
 
     template <typename genetic_value, typename mutation_function,
@@ -82,7 +97,8 @@ namespace fwdpp
     /// Create a fwdpp::genetic_parameters for a multi-locus simulation.
     {
         return genetic_parameters<genetic_value, mutation_function,
-                                  recombination_function, std::nullptr_t>(
+                                  recombination_function,
+                                  interlocus_recombination>(
             std::move(gvalue_param), std::move(generate_mutations_param),
             std::move(generate_breakpoints_param), std::move(interlocus_rec));
     }
