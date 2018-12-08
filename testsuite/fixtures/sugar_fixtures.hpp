@@ -113,6 +113,17 @@ class mlocuspop_popgenmut_fixture
         return vdrm_;
     }
 
+    std::vector<std::pair<double, double>>
+    make_boundaries()
+    {
+        std::vector<std::pair<double, double>> rv;
+        for (int i = 0; i < 4; ++i)
+            {
+                rv.emplace_back(i, i + 1);
+            }
+        return rv;
+    }
+
   public:
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     using recmodel = std::function<std::vector<double>()>;
@@ -154,7 +165,7 @@ class mlocuspop_popgenmut_fixture
     std::vector<std::function<std::vector<double>(void)>> bound_recmodels;
     mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
-        : pop(poptype(1000, 4)), generation(0), rng{ seed },
+        : pop(poptype(1000, make_boundaries())), generation(0), rng{ seed },
           mu(std::vector<double>(4, 0.005)),
           rbw(std::vector<double>(3, 0.005)),
           mutmodels(
@@ -208,7 +219,6 @@ class mlocuspop_popgenmut_fixture
     {
         for (unsigned i = 0; i < vdrm.size(); ++i)
             {
-                pop.locus_boundaries.emplace_back(i, i + 1);
                 bound_recmodels.emplace_back(
                     [this, i]() { return vdrm.at(i)(rng.get()); });
             }
@@ -255,11 +265,12 @@ struct mlocuspop_objects
     poptype::dipvector_t diploids;
     poptype::mcont_t mutations;
     poptype::gcont_t gametes;
+    decltype(poptype::locus_boundaries) locus_boundaries;
 
     using mutation_container
         = poptype::gcont_t::value_type::mutation_container;
 
-    mlocuspop_objects() : diploids{}, mutations{}, gametes{}
+    mlocuspop_objects() : diploids{}, mutations{}, gametes{}, locus_boundaries{}
     {
         // Add some mutations
         for (unsigned i = 0; i < 3; ++i)
@@ -278,6 +289,8 @@ struct mlocuspop_objects
         // Add a diploid
         diploids[0].emplace_back(0, 1);
         diploids[1].emplace_back(1, 1);
+        locus_boundaries.emplace_back(0,1);
+        locus_boundaries.emplace_back(1,3);
         assert(gametes.size() == 2);
         assert(mutations.size() == 3);
     }

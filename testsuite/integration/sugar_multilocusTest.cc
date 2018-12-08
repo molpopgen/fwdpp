@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test2)
     simulate_mlocuspop(f.pop, f.rng, f.mutmodels, f.recmodels,
                        mlocuspop_popgenmut_fixture::multilocus_additive(), f.mu,
                        f.rbw, f.generation);
-    poptype pop2(0, 0);
+    poptype pop2(0, decltype(poptype::locus_boundaries)());
     std::stringstream buffer;
     fwdpp::io::serialize_population(buffer, f.pop);
     fwdpp::io::deserialize_population(buffer, pop2);
