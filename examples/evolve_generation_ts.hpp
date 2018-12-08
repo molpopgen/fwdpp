@@ -56,10 +56,8 @@ evolve_generation(const rng_t& rng, poptype& pop,
 
     genetics.gamete_recycling_bin
         = fwdpp::fwdpp_internal::make_gamete_queue(pop.gametes);
-    for (auto& dip : pop.diploids)
-        {
-            pop.gametes[dip.first].n = pop.gametes[dip.second].n = 0;
-        }
+
+    fwdpp::zero_out_gametes(pop);
 
     decltype(pop.diploids) offspring(N_next);
 

@@ -13,5 +13,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	data_matrix_details.hpp \
 	sampling_functions_details.hpp \
 	debug_details.hpp \
-	void_t.hpp
+	void_t.hpp \
+	util.hpp
 
