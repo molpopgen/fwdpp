@@ -71,8 +71,6 @@ evolve_generation(const rng_t& rng, poptype& pop,
             auto& dip = offspring[next_offspring];
             auto offspring_data = generate_offspring(
                 rng, std::make_pair(p1, p2), pop, dip, genetics);
-            pop.gametes[dip.first].n++;
-            pop.gametes[dip.second].n++;
             auto p1id = fwdpp::ts::get_parent_ids(
                 first_parental_index, p1, offspring_data.first.swapped);
             auto p2id = fwdpp::ts::get_parent_ids(
