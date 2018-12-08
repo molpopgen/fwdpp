@@ -199,7 +199,7 @@ namespace fwdpp
                     all_mut_keys_2;
 
                 const auto& irec = genetics.interlocus_recombination;
-                for (std::size_t i = 0; i < offspring.size; ++i)
+                for (std::size_t i = 0; i < offspring.size(); ++i)
                     {
                         if (i > 0)
                             {
@@ -255,32 +255,32 @@ namespace fwdpp
                         // Add mutations to the return values
                         all_mut_keys_1.insert(
                             end(all_mut_keys_1),
-                            begin(first_gamete_data.mutation_keys),
-                            end(first_gamete_data.mutation_keys));
+                            begin(first_gamete_data.second.mutation_keys),
+                            end(first_gamete_data.second.mutation_keys));
                         all_mut_keys_2.insert(
                             end(all_mut_keys_2),
-                            begin(second_gamete_data.mutation_keys),
-                            end(second_gamete_data.mutation_keys));
+                            begin(second_gamete_data.second.mutation_keys),
+                            end(second_gamete_data.second.mutation_keys));
                         // Update recombination breakpoints
-                        if (!first_gamete_data.breakpoints.empty())
+                        if (!first_gamete_data.second.breakpoints.empty())
                             {
                                 ttl_swaps_1
-                                    += first_gamete_data.breakpoints.size()
+                                    += first_gamete_data.second.breakpoints.size()
                                        - 1;
                                 all_breakpoints_1.insert(
                                     end(all_breakpoints_1),
-                                    begin(first_gamete_data.breakpoints),
-                                    end(first_gamete_data.breakpoints) - 1);
+                                    begin(first_gamete_data.second.breakpoints),
+                                    end(first_gamete_data.second.breakpoints) - 1);
                             }
-                        if (!second_gamete_data.breakpoints.empty())
+                        if (!second_gamete_data.second.breakpoints.empty())
                             {
                                 ttl_swaps_2
-                                    += second_gamete_data.breakpoints.size()
+                                    += second_gamete_data.second.breakpoints.size()
                                        - 1;
                                 all_breakpoints_2.insert(
                                     end(all_breakpoints_1),
-                                    begin(second_gamete_data.breakpoints),
-                                    end(second_gamete_data.breakpoints) - 1);
+                                    begin(second_gamete_data.second.breakpoints),
+                                    end(second_gamete_data.second.breakpoints) - 1);
                             }
                     }
 
