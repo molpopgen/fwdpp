@@ -341,6 +341,12 @@ main(int argc, char **argv)
                   });
         return rv;
     };
+    
+    std::vector<std::function<std::vector<fwdpp::uint_t>(std::queue<std::size_t> &,poptype::mcont_t&)>> mmodels;
+    for(int i=0;i<nloci;++i)
+    {
+        mmodels.push_back([](std::queue<std::size_t>&,poptype::mcont_t&){return std::vector<fwdpp::uint_t>();});
+    }
 
     // Evolve pop for 20N generations
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
@@ -373,7 +379,7 @@ main(int argc, char **argv)
         between_locus_recombination_rate.size());
 
     auto genetics = fwdpp::make_genetic_parameters(
-        std::move(ff), std::move(mmodel), std::move(intralocus_recombination),
+        std::move(ff), std::move(mmodels), std::move(intralocus_recombination),
         std::move(interlocus_rec));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
     for (; generation <= 10 * N; ++generation)
