@@ -295,7 +295,7 @@ main(int argc, char **argv)
         {
             locus_boundaries.emplace_back(i, i + 1);
         }
-    poptype pop(N, static_cast<fwdpp::uint_t>(nloci), locus_boundaries);
+    poptype pop(N, locus_boundaries);
 
     //NOTE: genome length must correspond to make position, as specified
     //in locus_boundaries!!!
