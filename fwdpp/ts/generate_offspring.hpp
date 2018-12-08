@@ -199,6 +199,7 @@ namespace fwdpp
                     all_mut_keys_2;
 
                 const auto& irec = genetics.interlocus_recombination;
+				offspring.resize(pop.locus_boundaries.size());
                 for (std::size_t i = 0; i < offspring.size(); ++i)
                     {
                         if (i > 0)
