@@ -256,6 +256,10 @@ main(int argc, char **argv)
         }
 
     // TODO: need parameter validation
+    if (nloci < 2)
+        {
+            throw std::invalid_argument("nloci must be > 1");
+        }
     if (theta < 0. || rho < 0.)
         {
             throw std::invalid_argument("rho and theta must be >= 0.0");
