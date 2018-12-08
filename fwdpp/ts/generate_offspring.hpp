@@ -170,6 +170,8 @@ namespace fwdpp
                 // Update the offspring's gametes.
                 offspring.first = offspring_first_gamete_data.first;
                 offspring.second = offspring_second_gamete_data.first;
+                pop.gametes[offspring.first].n++;
+                pop.gametes[offspring.second].n++;
                 return std::make_pair(
                     std::move(offspring_first_gamete_data.second),
                     std::move(offspring_second_gamete_data.second));
@@ -247,6 +249,9 @@ namespace fwdpp
                         // Update the offspring's gametes.
                         offspring[i].first = first_gamete_data.first;
                         offspring[i].second = second_gamete_data.first;
+						// Update gamete counts
+						pop.gametes[first_gamete_data.first].n++;
+						pop.gametes[second_gamete_data.first].n++;
                         // Add mutations to the return values
                         all_mut_keys_1.insert(
                             end(all_mut_keys_1),
