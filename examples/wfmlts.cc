@@ -26,7 +26,8 @@
 #include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/popgenmut.hpp>
-#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/mlocuspop.hpp>
+#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
@@ -40,7 +41,7 @@
 #include "calculate_fitnesses.hpp"
 
 namespace po = boost::program_options;
-using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
+using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 struct diploid_metadata
@@ -52,6 +53,23 @@ struct diploid_metadata
                      fwdpp::ts::TS_NODE_INT a, fwdpp::ts::TS_NODE_INT b)
         : individual(i), time(t), fitness(w), n1(a), n2(b)
     {
+    }
+};
+
+struct multilocus_multiplicative
+{
+    inline double
+    operator()(const poptype::diploid_t &diploid,
+               const poptype::gcont_t &gametes,
+               const poptype::mcont_t &mutations) const
+    {
+        double rv = 1.;
+        for (auto &&genotype : diploid)
+            {
+                rv *= fwdpp::multiplicative_diploid(fwdpp::fitness(2.))(
+                    genotype, gametes, mutations);
+            }
+        return std::max(0., rv);
     }
 };
 
@@ -192,7 +210,9 @@ main(int argc, char **argv)
     bool leaf_test = false;
     bool matrix_test = false;
     bool preserve_fixations = false;
+    int nloci = -1;
     std::string filename, sfsfilename;
+
     po::options_description options("Simulation options"),
         dfeoptions("Distribution of fitness effects"),
         testing("Testing options");
@@ -201,9 +221,10 @@ main(int argc, char **argv)
         ("N", po::value<unsigned>(&N), "Diploid population size")
         ("gc", po::value<unsigned>(&gcint),
         "Simplification interval. Default is 100 generations.")
-        ("theta", po::value<double>(&theta), "4Nu")
-        ("rho", po::value<double>(&rho), "4Nr")
+        ("theta", po::value<double>(&theta), "4Nu per/within locus.")
+        ("rho", po::value<double>(&rho), "4Nr per/within a locus.")
         ("mu", po::value<double>(&mu), "mutation rate to selected variants")
+        ("nloci", po::value<int>(&nloci), "Number of loci.  Free recombination between them.")
         ("preserve_fixations",po::bool_switch(&preserve_fixations),"If true, do not count mutations and remove fixations during simulation.  Mutation recycling will proceed via the output of mutation simplification.")
         ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
         ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
@@ -269,13 +290,26 @@ main(int argc, char **argv)
 
     GSLrng rng(seed);
 
-    poptype pop(N);
-    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier simplifier(1.0);
+    std::vector<std::pair<double, double>> locus_boundaries;
+    for (int i = 0; i < nloci; ++i)
+        {
+            locus_boundaries.emplace_back(i, i + 1);
+        }
+    poptype pop(N, static_cast<fwdpp::uint_t>(nloci), locus_boundaries);
+
+    //NOTE: genome length must correspond to make position, as specified
+    //in locus_boundaries!!!
+    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, nloci);
+    fwdpp::ts::table_simplifier simplifier(nloci);
     unsigned generation = 1;
     double recrate = rho / static_cast<double>(4 * N);
-    const auto recmap
-        = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
+    std::vector<std::function<std::vector<double>(void)>>
+        intralocus_recombination;
+    for (int i = 0; i < nloci; ++i)
+        {
+            intralocus_recombination.emplace_back(fwdpp::recbinder(
+                fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
+        }
 
     auto get_selection_coefficient = make_dfe(N, rng, mean, shape, scoeff);
     const auto generate_mutation_position
@@ -331,10 +365,16 @@ main(int argc, char **argv)
     // meaning that we can record a correct fitness
     // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
-    auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(scaling));
+    auto ff = multilocus_multiplicative();
+
+    std::vector<double> between_locus_recombination_rate(nloci, 0.5);
+    auto interlocus_rec = fwdpp::make_poisson_interlocus_rec(
+        rng.get(), between_locus_recombination_rate.data(),
+        between_locus_recombination_rate.size());
 
     auto genetics = fwdpp::make_genetic_parameters(
-        std::move(ff), std::move(mmodel), std::move(recmap));
+        std::move(ff), std::move(mmodel), std::move(intralocus_recombination),
+        std::move(interlocus_rec));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
     for (; generation <= 10 * N; ++generation)
         {
@@ -388,7 +428,7 @@ main(int argc, char **argv)
                     first_parental_index = next_index;
                     next_index += 2 * N;
 
-					// TODO: update or remove this bit
+                    // TODO: update or remove this bit
                     // The following (commented-out) block
                     // shows that it is possible to mix mutation
                     // counting strategies in the right situations.
