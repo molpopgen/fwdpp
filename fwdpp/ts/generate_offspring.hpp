@@ -279,7 +279,7 @@ namespace fwdpp
                                     += second_gamete_data.second.breakpoints.size()
                                        - 1;
                                 all_breakpoints_2.insert(
-                                    end(all_breakpoints_1),
+                                    end(all_breakpoints_2),
                                     begin(second_gamete_data.second.breakpoints),
                                     end(second_gamete_data.second.breakpoints) - 1);
                             }
