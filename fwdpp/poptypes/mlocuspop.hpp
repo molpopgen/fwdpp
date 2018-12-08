@@ -73,11 +73,11 @@ namespace fwdpp
             /*! Construct with population size, number of loci,
              *  and locus boundaries.
              */
-            mlocuspop(const uint_t &__N, const uint_t &__nloci,
+            mlocuspop(const uint_t &__N,
                       const std::vector<std::pair<double, double>>
                           &locus_boundaries_)
-                : popbase_t(__nloci * 2 * __N, 100), N(__N),
-                  diploids(__N, diploid_t(__nloci, { 0, 0 })),
+                : popbase_t(locus_boundaries_.size() * 2 * __N, 100), N(__N),
+                  diploids(__N, diploid_t(locus_boundaries_.size(), { 0, 0 })),
                   locus_boundaries(locus_boundaries_)
             {
             }
