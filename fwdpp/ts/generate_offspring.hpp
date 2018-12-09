@@ -182,6 +182,9 @@ namespace fwdpp
                               std::vector<double>& breakpoints,
                               std::vector<uint_t>& mutation_keys)
             {
+                mutation_keys.insert(end(mutation_keys),
+                                     begin(gamete_data.mutation_keys),
+                                     end(gamete_data.mutation_keys));
                 if (gamete_data.breakpoints.empty())
                     {
                         return 0;
@@ -189,10 +192,7 @@ namespace fwdpp
                 breakpoints.insert(end(breakpoints),
                                    begin(gamete_data.breakpoints),
                                    end(gamete_data.breakpoints) - 1);
-                mutation_keys.insert(end(mutation_keys),
-                                     begin(gamete_data.mutation_keys),
-                                     end(gamete_data.mutation_keys));
-                return breakpoints.size() - 1;
+                return gamete_data.breakpoints.size() - 1;
             }
 
             template <typename genetic_param_holder,
