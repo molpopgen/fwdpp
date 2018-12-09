@@ -1,3 +1,4 @@
+#include <iostream>
 #include <config.h>
 #include <cmath>
 #include <queue>
@@ -6,6 +7,7 @@
 #include <numeric>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/generate_offspring.hpp>
+#include <fwdpp/ts/get_parent_ids.hpp>
 #include <fwdpp/simparams.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/mlocuspop.hpp>
@@ -188,7 +190,7 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
         }
 }
 
-BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic,
+BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
                         multilocus_fixture_deterministic)
 {
     auto params = fwdpp::make_genetic_parameters(
@@ -232,4 +234,25 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic,
                       2 * nloci);
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
+
+    //TODO: test that the breakpoints contain the correct data!
+}
+
+BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
+                        multilocus_fixture_deterministic)
+{
+    auto params = fwdpp::make_genetic_parameters(
+        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
+        std::move(interlocus_rec));
+    poptype::diploid_t offspring;
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params, offspring);
+    fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
+    auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
+    auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.first.swapped);
+    tables.add_offspring_data(next_index++, data_to_record.first.breakpoints,
+                              data_to_record.first.mutation_keys, p1d, 0, 1);
+    tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
+                              data_to_record.second.mutation_keys, p2d, 0, 1);
 }
