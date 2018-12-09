@@ -177,6 +177,24 @@ namespace fwdpp
                     std::move(offspring_second_gamete_data.second));
             }
 
+            int
+            multilocus_update(const mut_rec_intermediates& gamete_data,
+                              std::vector<double>& breakpoints,
+                              std::vector<uint_t>& mutation_keys)
+            {
+                if (gamete_data.breakpoints.empty())
+                    {
+                        return 0;
+                    }
+                breakpoints.insert(end(breakpoints),
+                                   begin(gamete_data.breakpoints),
+                                   end(gamete_data.breakpoints) - 1);
+                mutation_keys.insert(end(mutation_keys),
+                                     begin(gamete_data.mutation_keys),
+                                     end(gamete_data.mutation_keys));
+                return breakpoints.size() - 1;
+            }
+
             template <typename genetic_param_holder,
                       typename mutation_handling_policy, typename poptype>
             std::pair<mut_rec_intermediates, mut_rec_intermediates>
@@ -199,7 +217,7 @@ namespace fwdpp
                     all_mut_keys_2;
 
                 const auto& irec = genetics.interlocus_recombination;
-				offspring.resize(pop.locus_boundaries.size());
+                offspring.resize(pop.locus_boundaries.size());
                 for (std::size_t i = 0; i < offspring.size(); ++i)
                     {
                         if (i > 0)
@@ -233,56 +251,30 @@ namespace fwdpp
                                                 .second);
                                     }
                             }
-                        auto first_gamete_data = generate_offspring_gamete(
+                        auto gamete_data = generate_offspring_gamete(
                             parental_data{ parents.first, p1g1, p1g2, swap1 },
                             genetics.generate_breakpoints[i],
                             genetics.generate_mutations[i], mutation_policy,
                             genetics.mutation_recycling_bin,
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
-                        auto second_gamete_data = generate_offspring_gamete(
+                        offspring[i].first = gamete_data.first;
+                        pop.gametes[gamete_data.first].n++;
+                        ttl_swaps_1 += multilocus_update(gamete_data.second,
+                                                         all_breakpoints_1,
+                                                         all_mut_keys_1);
+                        gamete_data = generate_offspring_gamete(
                             parental_data{ parents.second, p2g1, p2g2, swap2 },
                             genetics.generate_breakpoints[i],
                             genetics.generate_mutations[i], mutation_policy,
                             genetics.mutation_recycling_bin,
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
-                        // Update the offspring's gametes.
-                        offspring[i].first = first_gamete_data.first;
-                        offspring[i].second = second_gamete_data.first;
-						// Update gamete counts
-						pop.gametes[first_gamete_data.first].n++;
-						pop.gametes[second_gamete_data.first].n++;
-                        // Add mutations to the return values
-                        all_mut_keys_1.insert(
-                            end(all_mut_keys_1),
-                            begin(first_gamete_data.second.mutation_keys),
-                            end(first_gamete_data.second.mutation_keys));
-                        all_mut_keys_2.insert(
-                            end(all_mut_keys_2),
-                            begin(second_gamete_data.second.mutation_keys),
-                            end(second_gamete_data.second.mutation_keys));
-                        // Update recombination breakpoints
-                        if (!first_gamete_data.second.breakpoints.empty())
-                            {
-                                ttl_swaps_1
-                                    += first_gamete_data.second.breakpoints.size()
-                                       - 1;
-                                all_breakpoints_1.insert(
-                                    end(all_breakpoints_1),
-                                    begin(first_gamete_data.second.breakpoints),
-                                    end(first_gamete_data.second.breakpoints) - 1);
-                            }
-                        if (!second_gamete_data.second.breakpoints.empty())
-                            {
-                                ttl_swaps_2
-                                    += second_gamete_data.second.breakpoints.size()
-                                       - 1;
-                                all_breakpoints_2.insert(
-                                    end(all_breakpoints_2),
-                                    begin(second_gamete_data.second.breakpoints),
-                                    end(second_gamete_data.second.breakpoints) - 1);
-                            }
+                        offspring[i].second = gamete_data.first;
+                        pop.gametes[gamete_data.first].n++;
+                        ttl_swaps_2 += multilocus_update(gamete_data.second,
+                                                         all_breakpoints_2,
+                                                         all_mut_keys_2);
                     }
 
                 return std::make_pair(
@@ -291,7 +283,6 @@ namespace fwdpp
                     mut_rec_intermediates(swap2, std::move(all_breakpoints_2),
                                           std::move(all_mut_keys_2)));
             }
-
         } // namespace detail
 
         template <typename genetic_param_holder,
