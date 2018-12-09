@@ -203,19 +203,29 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic,
     // manually populate mcounts
     pop.mcounts.resize(pop.mutations.size());
     std::fill(begin(pop.mcounts), end(pop.mcounts), 0);
-    for (auto &locus : offspring)
+    for (std::size_t i = 0; i < nloci; ++i)
         {
-            BOOST_CHECK_EQUAL(pop.gametes[locus.first].mutations.size(), 0);
-            BOOST_CHECK_EQUAL(pop.gametes[locus.first].smutations.size(), 1);
-            BOOST_CHECK_EQUAL(pop.gametes[locus.second].mutations.size(), 0);
-            BOOST_CHECK_EQUAL(pop.gametes[locus.second].smutations.size(), 1);
-            for (auto k : pop.gametes[locus.first].smutations)
+            BOOST_CHECK_EQUAL(pop.gametes[offspring[i].first].mutations.size(),
+                              0);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].first].smutations.size(), 1);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].second].mutations.size(), 0);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].second].smutations.size(), 1);
+            for (auto k : pop.gametes[offspring[i].first].smutations)
                 {
                     pop.mcounts[k]++;
                 }
-            for (auto k : pop.gametes[locus.second].smutations)
+            for (auto k : pop.gametes[offspring[i].second].smutations)
                 {
                     pop.mcounts[k]++;
+                }
+            // Check variant positions
+            for (auto k : pop.gametes[offspring[i].first].smutations)
+                {
+                    BOOST_CHECK_EQUAL(pop.mutations[k].pos >= i, true);
+                    BOOST_CHECK_EQUAL(pop.mutations[k].pos < i + 1, true);
                 }
         }
     BOOST_CHECK_EQUAL(std::accumulate(begin(pop.mcounts), end(pop.mcounts), 0),
