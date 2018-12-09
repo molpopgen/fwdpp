@@ -341,7 +341,7 @@ main(int argc, char **argv)
                                             poptype::mcont_t &mutations) {
                       std::vector<fwdpp::uint_t> rv;
                       unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
-                      for (unsigned i = 0; i < nmuts; ++i)
+                      for (unsigned m = 0; m < nmuts; ++m)
                           {
                               rv.push_back(make_mutation(recbin, mutations));
                           }
