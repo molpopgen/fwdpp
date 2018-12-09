@@ -2,6 +2,8 @@
 #include <cmath>
 #include <queue>
 #include <cstdint>
+#include <algorithm>
+#include <numeric>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/generate_offspring.hpp>
 #include <fwdpp/simparams.hpp>
@@ -197,15 +199,27 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic,
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params, offspring);
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
-	BOOST_CHECK_EQUAL(pop.mutations.size(), 2*nloci);
+    BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
+    // manually populate mcounts
+    pop.mcounts.resize(pop.mutations.size());
+    std::fill(begin(pop.mcounts), end(pop.mcounts), 0);
     for (auto &locus : offspring)
         {
             BOOST_CHECK_EQUAL(pop.gametes[locus.first].mutations.size(), 0);
             BOOST_CHECK_EQUAL(pop.gametes[locus.first].smutations.size(), 1);
             BOOST_CHECK_EQUAL(pop.gametes[locus.second].mutations.size(), 0);
-            BOOST_CHECK_EQUAL(pop.gametes[locus.second].smutations.size(),
-                                1);
+            BOOST_CHECK_EQUAL(pop.gametes[locus.second].smutations.size(), 1);
+            for (auto k : pop.gametes[locus.first].smutations)
+                {
+                    pop.mcounts[k]++;
+                }
+            for (auto k : pop.gametes[locus.second].smutations)
+                {
+                    pop.mcounts[k]++;
+                }
         }
+    BOOST_CHECK_EQUAL(std::accumulate(begin(pop.mcounts), end(pop.mcounts), 0),
+                      2 * nloci);
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 }
