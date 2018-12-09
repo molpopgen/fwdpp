@@ -126,7 +126,7 @@ namespace fwdpp
 
             template <typename genetic_param_holder,
                       typename mutation_handling_policy, typename poptype>
-            std::pair<mut_rec_intermediates, mut_rec_intermediates>
+            inline std::pair<mut_rec_intermediates, mut_rec_intermediates>
             generate_offspring_details(
                 fwdpp::poptypes::SINGLELOC_TAG, const gsl_rng* r,
                 const std::pair<std::size_t, std::size_t> parents,
@@ -177,7 +177,7 @@ namespace fwdpp
                     std::move(offspring_second_gamete_data.second));
             }
 
-            int
+            inline int
             multilocus_update(const mut_rec_intermediates& gamete_data,
                               std::vector<double>& breakpoints,
                               std::vector<uint_t>& mutation_keys)
@@ -197,7 +197,7 @@ namespace fwdpp
 
             template <typename genetic_param_holder,
                       typename mutation_handling_policy, typename poptype>
-            std::pair<mut_rec_intermediates, mut_rec_intermediates>
+            inline std::pair<mut_rec_intermediates, mut_rec_intermediates>
             generate_offspring_details(
                 fwdpp::poptypes::MULTILOC_TAG, const gsl_rng* r,
                 const std::pair<std::size_t, std::size_t> parents,
