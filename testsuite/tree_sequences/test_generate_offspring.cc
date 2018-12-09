@@ -196,7 +196,8 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic,
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params, offspring);
-    BOOST_REQUIRE_EQUAL(offspring.size(), nloci);
+    BOOST_CHECK_EQUAL(offspring.size(), nloci);
+	BOOST_CHECK_EQUAL(pop.mutations.size(), 2*nloci);
     for (auto &locus : offspring)
         {
             BOOST_CHECK_EQUAL(pop.gametes[locus.first].mutations.size(), 0);
