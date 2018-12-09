@@ -26,7 +26,7 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 
 integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
 
-tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
+tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc
 
 AM_CXXFLAGS=-W -Wall
 
