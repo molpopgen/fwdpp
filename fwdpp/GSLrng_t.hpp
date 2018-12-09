@@ -121,6 +121,10 @@ namespace fwdpp
         //   fclose(stream);
         // }
     };
+
+	/// Typedef for mersenne twister
+	/// \version 0.7.4 Added to fwdpp
+	using GSLrng_mt = GSLrng_t<GSL_RNG_MT19937>;
 }
 
 #endif
