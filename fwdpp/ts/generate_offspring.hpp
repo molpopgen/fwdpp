@@ -277,6 +277,16 @@ namespace fwdpp
                                                          all_mut_keys_2);
                     }
 
+                if (!all_breakpoints_1.empty())
+                    {
+                        all_breakpoints_1.push_back(
+                            std::numeric_limits<double>::max());
+                    }
+                if (!all_breakpoints_2.empty())
+                    {
+                        all_breakpoints_2.push_back(
+                            std::numeric_limits<double>::max());
+                    }
                 return std::make_pair(
                     mut_rec_intermediates(swap1, std::move(all_breakpoints_1),
                                           std::move(all_mut_keys_1)),
