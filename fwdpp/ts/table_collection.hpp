@@ -51,6 +51,11 @@ namespace fwdpp
                         this->push_back_edge(0., breakpoints.front(),
                                              std::get<0>(parents), next_index);
                     }
+                // TODO: replace with exception via a debug mode
+                assert(std::count(begin(breakpoints), end(breakpoints),
+                                  std::numeric_limits<double>::max())
+                       == 1);
+                assert(breakpoints.back() == std::numeric_limits<double>::max());
                 for (unsigned j = 1; j < breakpoints.size(); ++j)
                     {
                         double a = breakpoints[j - 1];
