@@ -16,7 +16,7 @@ namespace fwdpp
         /*!
           Mechanics of segregation, recombination, and mutation for multi-locus
           API
-*/
+        */
         template <typename diploid_type,
                   typename recombination_policy_container, typename mqueue_t,
                   typename gqueue_t, typename mcont_t, typename gcont_t,
@@ -95,7 +95,7 @@ namespace fwdpp
                 }
             return offspring;
         }
-    }
-}
+    } // namespace fwdpp_internal
+} // namespace fwdpp
 
 #endif
