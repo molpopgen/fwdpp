@@ -19,6 +19,21 @@
 struct multilocus_fixture_deterministic
 // Deterministically adds mutations and recombination
 // events to a multi-locus population
+// The number of cross-overs w/in and b/w loci look like this:
+// Locus Within Between*
+// 0     0      NA
+// 1     1      0
+// 2     0      1
+// 3     1      2
+//
+// *Between refers to the number of crossovers occuring between
+// loci i-1 and i.
+//
+// When a crossover happens w/in locus i, it happens at position i+0.5.
+//
+// Every locus gets 1 mutation uniformly on [i,i+1).  This has to be random,
+// so that we can use existing infinite-sites mutation code.  We fix the RNG
+// seed.
 {
 
   public:
@@ -43,6 +58,23 @@ struct multilocus_fixture_deterministic
             return std::max(0., rv);
         }
     };
+
+    class swap_second_parent_only
+    {
+      private:
+        mutable int ncalls;
+
+      public:
+        swap_second_parent_only() : ncalls(0) {}
+        inline int
+        operator()(const gsl_rng *, std::size_t, std::size_t) const
+        {
+            int rv = ncalls;
+            ncalls++;
+            return rv;
+        }
+    };
+
     static const std::size_t nloci;
     static const fwdpp::uint_t N;
     poptype pop;
@@ -53,12 +85,42 @@ struct multilocus_fixture_deterministic
         mmodels;
     std::vector<std::function<std::vector<double>(void)>> intralocus_rec;
     std::vector<std::function<unsigned(void)>> interlocus_rec;
+    std::function<int(const gsl_rng *, std::size_t, std::size_t)> do_not_swap;
+    swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
     multilocus_fixture_deterministic()
         : pop(N, make_boundaries()), tables(2 * N, 0, 0, nloci), rng(42),
           mmodels(make_mmodels()), intralocus_rec(make_intralocus_rec()),
-          interlocus_rec(make_interlocus_rec()), gvalue()
+          interlocus_rec(make_interlocus_rec()),
+          do_not_swap(
+              [](const gsl_rng *, std::size_t, std::size_t) { return 0; }),
+          swap_second(), gvalue()
     {
+    }
+
+    auto
+    make_params() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
+        std::move(interlocus_rec), do_not_swap))
+    // NOTE: we use do_not_swap to suppress any initial randomness
+    // for the test
+    {
+        return fwdpp::make_genetic_parameters_with_swapper(
+            std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
+            std::move(interlocus_rec), do_not_swap);
+    }
+
+    auto
+    make_params_swap_second()
+        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+            std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
+            std::move(interlocus_rec), swap_second))
+    // NOTE: we use swap_second to suppress any initial randomness
+    // for the test
+    {
+        return fwdpp::make_genetic_parameters_with_swapper(
+            std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
+            std::move(interlocus_rec), swap_second);
     }
 
   private:
@@ -167,9 +229,8 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
     BOOST_REQUIRE_EQUAL(intralocus_rec.size(), nloci);
     BOOST_REQUIRE_EQUAL(interlocus_rec.size(), nloci - 1);
 
-    auto params = fwdpp::make_genetic_parameters(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec));
+    auto params = make_params();
+
     for (std::size_t i = 0; i < nloci; ++i)
         {
             auto k = params.generate_mutations[i](
@@ -198,13 +259,78 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
                         multilocus_fixture_deterministic)
 {
-    auto params = fwdpp::make_genetic_parameters(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec));
+    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params, offspring);
+    for (auto b : data_to_record.first.breakpoints)
+        {
+            std::cout << b << ' ';
+        }
+    std::cout << '\n';
+    for (auto b : data_to_record.second.breakpoints)
+        {
+            std::cout << b << ' ';
+        }
+    std::cout << '\n';
+
+    BOOST_CHECK_EQUAL(offspring.size(), nloci);
+    BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
+    // manually populate mcounts
+    pop.mcounts.resize(pop.mutations.size());
+    std::fill(begin(pop.mcounts), end(pop.mcounts), 0);
+    for (std::size_t i = 0; i < nloci; ++i)
+        {
+            BOOST_CHECK_EQUAL(pop.gametes[offspring[i].first].mutations.size(),
+                              0);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].first].smutations.size(), 1);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].second].mutations.size(), 0);
+            BOOST_CHECK_EQUAL(
+                pop.gametes[offspring[i].second].smutations.size(), 1);
+            for (auto k : pop.gametes[offspring[i].first].smutations)
+                {
+                    pop.mcounts[k]++;
+                }
+            for (auto k : pop.gametes[offspring[i].second].smutations)
+                {
+                    pop.mcounts[k]++;
+                }
+            // Check variant positions
+            for (auto k : pop.gametes[offspring[i].first].smutations)
+                {
+                    BOOST_CHECK_EQUAL(pop.mutations[k].pos >= i, true);
+                    BOOST_CHECK_EQUAL(pop.mutations[k].pos < i + 1, true);
+                }
+        }
+    BOOST_CHECK_EQUAL(std::accumulate(begin(pop.mcounts), end(pop.mcounts), 0),
+                      2 * nloci);
+    BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
+    BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
+
+    //TODO: test that the breakpoints contain the correct data!
+}
+
+BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
+                        multilocus_fixture_deterministic)
+{
+    auto params = make_params_swap_second();
+    poptype::diploid_t offspring;
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params, offspring);
+    for (auto b : data_to_record.first.breakpoints)
+        {
+            std::cout << b << ' ';
+        }
+    std::cout << '\n';
+    for (auto b : data_to_record.second.breakpoints)
+        {
+            std::cout << b << ' ';
+        }
+    std::cout << '\n';
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
     // manually populate mcounts
@@ -246,9 +372,7 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
                         multilocus_fixture_deterministic)
 {
-    auto params = fwdpp::make_genetic_parameters(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec));
+    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
@@ -260,15 +384,18 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
                               data_to_record.first.mutation_keys, p1d, 0, 1);
     tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
                               data_to_record.second.mutation_keys, p2d, 0, 1);
+    for (auto &e : tables.edge_table)
+        {
+            std::cout << e.parent << ' ' << e.child << ' ' << e.left << ' '
+                      << e.right << '\n';
+        }
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
                         multilocus_fixture_deterministic)
 {
-    auto params = fwdpp::make_genetic_parameters(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec));
+    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
