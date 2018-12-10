@@ -259,4 +259,5 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
                               data_to_record.first.mutation_keys, p1d, 0, 1);
     tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
                               data_to_record.second.mutation_keys, p2d, 0, 1);
+    BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
 }
