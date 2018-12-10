@@ -144,8 +144,8 @@ namespace fwdpp
                 auto p2g1 = pop.diploids[parents.second].first;
                 auto p2g2 = pop.diploids[parents.second].second;
 
-                int swap1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
-                int swap2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+                int swap1 = genetics.gamete_swapper(r, p1g1, p1g2);
+                int swap2 = genetics.gamete_swapper(r, p2g1, p2g2);
 
                 if (swap1)
                     {
@@ -206,8 +206,12 @@ namespace fwdpp
                 typename poptype::diploid_t& offspring)
             {
                 //TODO need a debugging block on container sizes.
-                int swap1 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
-                int swap2 = (gsl_rng_uniform(r) < 0.5) ? 1 : 0;
+                int swap1 = genetics.gamete_swapper(
+                    r, pop.diploids[parents.first][0].first,
+                    pop.diploids[parents.first][0].second);
+                int swap2 = genetics.gamete_swapper(
+                    r, pop.diploids[parents.second][0].first,
+                    pop.diploids[parents.second][0].second);
                 int ttl_swaps_1 = swap1;
                 int ttl_swaps_2 = swap2;
 
