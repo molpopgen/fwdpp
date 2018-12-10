@@ -24,6 +24,10 @@ struct multilocus_fixture_deterministic
     using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
     struct multilocus_multiplicative
     {
+        //NOTE: older compilers may not accept initialization
+        //of this type into fwdpp::simparams unless this default
+        //constructor is defined:
+        multilocus_multiplicative() {}
         inline double
         operator()(const poptype::diploid_t &diploid,
                    const poptype::gcont_t &gametes,
