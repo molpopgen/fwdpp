@@ -5,6 +5,7 @@
 #include <queue>
 #include <cstdint>
 #include <utility>
+#include <type_traits>
 #include <gsl/gsl_rng.h>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
@@ -94,17 +95,22 @@ namespace fwdpp
 
     template <typename genetic_value, typename mutation_function,
               typename recombination_function>
-    inline genetic_parameters<genetic_value, mutation_function,
-                              recombination_function, std::nullptr_t, mendel>
+    inline genetic_parameters<
+        typename std::remove_reference<genetic_value>::type,
+        typename std::remove_reference<mutation_function>::type,
+        typename std::remove_reference<recombination_function>::type,
+        std::nullptr_t, mendel>
     make_genetic_parameters(
         genetic_value&& gvalue_param,
         mutation_function&& generate_mutations_param,
         recombination_function&& generate_breakpoints_param)
     /// Create a fwdpp::genetic_parameters for a single-locus simulation.
     {
-        return genetic_parameters<genetic_value, mutation_function,
-                                  recombination_function, std::nullptr_t,
-                                  mendel>(
+        return genetic_parameters<
+            typename std::remove_reference<genetic_value>::type,
+            typename std::remove_reference<mutation_function>::type,
+            typename std::remove_reference<recombination_function>::type,
+            std::nullptr_t, mendel>(
             std::forward<genetic_value>(gvalue_param),
             std::forward<mutation_function>(generate_mutations_param),
             std::forward<recombination_function>(generate_breakpoints_param),
@@ -113,8 +119,11 @@ namespace fwdpp
 
     template <typename genetic_value, typename mutation_function,
               typename recombination_function, typename swapper>
-    inline genetic_parameters<genetic_value, mutation_function,
-                              recombination_function, std::nullptr_t, swapper>
+    inline genetic_parameters<
+        typename std::remove_reference<genetic_value>::type,
+        typename std::remove_reference<mutation_function>::type,
+        typename std::remove_reference<recombination_function>::type,
+        std::nullptr_t, typename std::remove_reference<swapper>::type>
     make_genetic_parameters_with_swapper(
         genetic_value&& gvalue_param,
         mutation_function&& generate_mutations_param,
@@ -122,9 +131,11 @@ namespace fwdpp
         swapper&& swapper_param)
     /// Create a fwdpp::genetic_parameters for a single-locus simulation.
     {
-        return genetic_parameters<genetic_value, mutation_function,
-                                  recombination_function, std::nullptr_t,
-                                  swapper>(
+        return genetic_parameters<
+            typename std::remove_reference<genetic_value>::type,
+            typename std::remove_reference<mutation_function>::type,
+            typename std::remove_reference<recombination_function>::type,
+            std::nullptr_t, typename std::remove_reference<swapper>::type>(
             std::forward<genetic_value>(gvalue_param),
             std::forward<mutation_function>(generate_mutations_param),
             std::forward<recombination_function>(generate_breakpoints_param),
@@ -134,9 +145,11 @@ namespace fwdpp
     template <typename genetic_value, typename mutation_function,
               typename recombination_function,
               typename interlocus_recombination>
-    inline genetic_parameters<genetic_value, mutation_function,
-                              recombination_function, interlocus_recombination,
-                              mendel>
+    inline genetic_parameters<
+        typename std::remove_reference<genetic_value>::type,
+        typename std::remove_reference<mutation_function>::type,
+        typename std::remove_reference<recombination_function>::type,
+        typename std::remove_reference<interlocus_recombination>::type, mendel>
     make_genetic_parameters(
         genetic_value&& gvalue_param,
         mutation_function&& generate_mutations_param,
@@ -144,9 +157,12 @@ namespace fwdpp
         interlocus_recombination&& interlocus_rec)
     /// Create a fwdpp::genetic_parameters for a multi-locus simulation.
     {
-        return genetic_parameters<genetic_value, mutation_function,
-                                  recombination_function,
-                                  interlocus_recombination, mendel>(
+        return genetic_parameters<
+            typename std::remove_reference<genetic_value>::type,
+            typename std::remove_reference<mutation_function>::type,
+            typename std::remove_reference<recombination_function>::type,
+            typename std::remove_reference<interlocus_recombination>::type,
+            mendel>(
             std::forward<genetic_value>(gvalue_param),
             std::forward<mutation_function>(generate_mutations_param),
             std::forward<recombination_function>(generate_breakpoints_param),
@@ -156,9 +172,12 @@ namespace fwdpp
     template <typename genetic_value, typename mutation_function,
               typename recombination_function,
               typename interlocus_recombination, typename swapper>
-    inline genetic_parameters<genetic_value, mutation_function,
-                              recombination_function, interlocus_recombination,
-                              swapper>
+    inline genetic_parameters<
+        typename std::remove_reference<genetic_value>::type,
+        typename std::remove_reference<mutation_function>::type,
+        typename std::remove_reference<recombination_function>::type,
+        typename std::remove_reference<interlocus_recombination>::type,
+        typename std::remove_reference<swapper>::type>
     make_genetic_parameters_with_swapper(
         genetic_value&& gvalue_param,
         mutation_function&& generate_mutations_param,
@@ -166,9 +185,12 @@ namespace fwdpp
         interlocus_recombination&& interlocus_rec, swapper&& swapper_param)
     /// Create a fwdpp::genetic_parameters for a multi-locus simulation.
     {
-        return genetic_parameters<genetic_value, mutation_function,
-                                  recombination_function,
-                                  interlocus_recombination, swapper>(
+        return genetic_parameters<
+            typename std::remove_reference<genetic_value>::type,
+            typename std::remove_reference<mutation_function>::type,
+            typename std::remove_reference<recombination_function>::type,
+            typename std::remove_reference<interlocus_recombination>::type,
+            typename std::remove_reference<swapper>::type>(
             std::forward<genetic_value>(gvalue_param),
             std::forward<mutation_function>(generate_mutations_param),
             std::forward<recombination_function>(generate_breakpoints_param),
