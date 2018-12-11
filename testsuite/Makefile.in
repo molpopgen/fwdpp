@@ -107,10 +107,12 @@ CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am__integration_extensions_integration_tests_SOURCES_DIST =  \
 	integration/extensions_integration_tests.cc \
-	integration/extensions_regionsIntegrationTest.cc
+	integration/extensions_regionsIntegrationTest.cc \
+	fixtures/sugar_fixtures.cc
 am__dirstamp = $(am__leading_dot)dirstamp
 @BUNIT_TEST_PRESENT_TRUE@am_integration_extensions_integration_tests_OBJECTS = integration/extensions_integration_tests.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	integration/extensions_regionsIntegrationTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	integration/extensions_regionsIntegrationTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 integration_extensions_integration_tests_OBJECTS =  \
 	$(am_integration_extensions_integration_tests_OBJECTS)
 integration_extensions_integration_tests_LDADD = $(LDADD)
@@ -118,11 +120,12 @@ am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_integration_tests.cc \
 	integration/sugar_multilocusTest.cc \
 	integration/sugar_singlepop_custom_diploidTest.cc \
-	integration/sugar_singlepopTest.cc
+	integration/sugar_singlepopTest.cc fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_multilocusTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepop_custom_diploidTest.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepopTest.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 integration_sugar_integration_tests_OBJECTS =  \
 	$(am_integration_sugar_integration_tests_OBJECTS)
 integration_sugar_integration_tests_LDADD = $(LDADD)
@@ -153,7 +156,8 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc unit/test_wrapped_range.cc \
-	fixtures/multilocus_fixture_deterministic.cc
+	fixtures/multilocus_fixture_deterministic.cc \
+	fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -169,20 +173,22 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_sampling.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 	unit/sugar_GSLrngTest.cc unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc unit/sugar_construct_pops.cc \
-	unit/sugar_popgenmut.cc
+	unit/sugar_popgenmut.cc fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_sugar_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_GSLrngTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_construct_pops.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 unit_sugar_unit_tests_OBJECTS = $(am_unit_sugar_unit_tests_OBJECTS)
 unit_sugar_unit_tests_LDADD = $(LDADD)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -202,6 +208,7 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade =  \
 	fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po \
+	fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	integration/$(DEPDIR)/extensions_integration_tests.Po \
 	integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po \
 	integration/$(DEPDIR)/sugar_integration_tests.Po \
@@ -595,7 +602,8 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
-@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
 
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
@@ -603,12 +611,17 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_construct_pops.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.cc
+@BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
 
 
 #Integration test targets:
-@BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
-@BUNIT_TEST_PRESENT_TRUE@integration_extensions_integration_tests_SOURCES = integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
+@BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+
+@BUNIT_TEST_PRESENT_TRUE@integration_extensions_integration_tests_SOURCES = integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+
 @BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc
 
@@ -661,6 +674,14 @@ integration/extensions_integration_tests.$(OBJEXT):  \
 integration/extensions_regionsIntegrationTest.$(OBJEXT):  \
 	integration/$(am__dirstamp) \
 	integration/$(DEPDIR)/$(am__dirstamp)
+fixtures/$(am__dirstamp):
+	@$(MKDIR_P) fixtures
+	@: > fixtures/$(am__dirstamp)
+fixtures/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) fixtures/$(DEPDIR)
+	@: > fixtures/$(DEPDIR)/$(am__dirstamp)
+fixtures/sugar_fixtures.$(OBJEXT): fixtures/$(am__dirstamp) \
+	fixtures/$(DEPDIR)/$(am__dirstamp)
 
 integration/extensions_integration_tests$(EXEEXT): $(integration_extensions_integration_tests_OBJECTS) $(integration_extensions_integration_tests_DEPENDENCIES) $(EXTRA_integration_extensions_integration_tests_DEPENDENCIES) integration/$(am__dirstamp)
 	@rm -f integration/extensions_integration_tests$(EXEEXT)
@@ -693,12 +714,6 @@ tree_sequences/tree_sequence_tests.$(OBJEXT):  \
 tree_sequences/test_generate_offspring.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
-fixtures/$(am__dirstamp):
-	@$(MKDIR_P) fixtures
-	@: > fixtures/$(am__dirstamp)
-fixtures/$(DEPDIR)/$(am__dirstamp):
-	@$(MKDIR_P) fixtures/$(DEPDIR)
-	@: > fixtures/$(DEPDIR)/$(am__dirstamp)
 fixtures/multilocus_fixture_deterministic.$(OBJEXT):  \
 	fixtures/$(am__dirstamp) fixtures/$(DEPDIR)/$(am__dirstamp)
 
@@ -781,6 +796,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/sugar_fixtures.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_integration_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_integration_tests.Po@am__quote@ # am--include-marker
@@ -1170,6 +1186,7 @@ clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 		-rm -f fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po
+	-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
 	-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po
@@ -1247,6 +1264,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po
+	-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
 	-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po

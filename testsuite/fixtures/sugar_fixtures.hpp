@@ -48,6 +48,8 @@ class mlocuspop_popgenmut_fixture
     using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
                                                poptype::mcont_t &)>;
 
+    static const int nloci;
+
   private:
     std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>>
     fill_vdmm(std::vector<mutmodel> mutmodels)
@@ -86,7 +88,7 @@ class mlocuspop_popgenmut_fixture
         // set up a vector of extensions::discrete_rec_model
         // with different regions sizes and weights
         std::vector<fwdpp::extensions::discrete_rec_model> vdrm_;
-        for (unsigned i = 0; i < 4; ++i)
+        for (int i = 0; i < nloci; ++i)
             {
                 std::vector<
                     fwdpp::extensions::discrete_rec_model::function_type>
@@ -117,7 +119,7 @@ class mlocuspop_popgenmut_fixture
     make_boundaries()
     {
         std::vector<std::pair<double, double>> rv;
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < nloci; ++i)
             {
                 rv.emplace_back(i, i + 1);
             }
@@ -296,5 +298,6 @@ struct mlocuspop_objects
         assert(mutations.size() == 3);
     }
 };
+
 
 #endif
