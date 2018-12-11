@@ -128,9 +128,11 @@ integration_sugar_integration_tests_OBJECTS =  \
 integration_sugar_integration_tests_LDADD = $(LDADD)
 am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/tree_sequence_tests.cc \
-	tree_sequences/test_generate_offspring.cc
+	tree_sequences/test_generate_offspring.cc \
+	fixtures/multilocus_fixture_deterministic.cc
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.$(OBJEXT)
 tree_sequences_tree_sequence_tests_OBJECTS =  \
 	$(am_tree_sequences_tree_sequence_tests_OBJECTS)
 tree_sequences_tree_sequence_tests_LDADD = $(LDADD)
@@ -150,7 +152,8 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/serializationTest.cc unit/mlocusCrossoverTest.cc \
 	unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
-	unit/test_simparams.cc unit/test_wrapped_range.cc
+	unit/test_simparams.cc unit/test_wrapped_range.cc \
+	fixtures/multilocus_fixture_deterministic.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -165,7 +168,8 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_sampling.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
@@ -197,6 +201,7 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade =  \
+	fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po \
 	integration/$(DEPDIR)/extensions_integration_tests.Po \
 	integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po \
 	integration/$(DEPDIR)/sugar_integration_tests.Po \
@@ -589,7 +594,8 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@unit_fwdpp_unit_tests_SOURCES = unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc
 
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
@@ -603,7 +609,9 @@ top_srcdir = @top_srcdir@
 #Integration test targets:
 @BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc integration/sugar_multilocusTest.cc  integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc
 @BUNIT_TEST_PRESENT_TRUE@integration_extensions_integration_tests_SOURCES = integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
-@BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc
+@BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc
+
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = -W -Wall
 all: all-am
 
@@ -685,6 +693,14 @@ tree_sequences/tree_sequence_tests.$(OBJEXT):  \
 tree_sequences/test_generate_offspring.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+fixtures/$(am__dirstamp):
+	@$(MKDIR_P) fixtures
+	@: > fixtures/$(am__dirstamp)
+fixtures/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) fixtures/$(DEPDIR)
+	@: > fixtures/$(DEPDIR)/$(am__dirstamp)
+fixtures/multilocus_fixture_deterministic.$(OBJEXT):  \
+	fixtures/$(am__dirstamp) fixtures/$(DEPDIR)/$(am__dirstamp)
 
 tree_sequences/tree_sequence_tests$(EXEEXT): $(tree_sequences_tree_sequence_tests_OBJECTS) $(tree_sequences_tree_sequence_tests_DEPENDENCIES) $(EXTRA_tree_sequences_tree_sequence_tests_DEPENDENCIES) tree_sequences/$(am__dirstamp)
 	@rm -f tree_sequences/tree_sequence_tests$(EXEEXT)
@@ -756,6 +772,7 @@ unit/sugar_unit_tests$(EXEEXT): $(unit_sugar_unit_tests_OBJECTS) $(unit_sugar_un
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f fixtures/*.$(OBJEXT)
 	-rm -f integration/*.$(OBJEXT)
 	-rm -f tree_sequences/*.$(OBJEXT)
 	-rm -f unit/*.$(OBJEXT)
@@ -763,6 +780,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_integration_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_integration_tests.Po@am__quote@ # am--include-marker
@@ -1134,6 +1152,8 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f fixtures/$(DEPDIR)/$(am__dirstamp)
+	-rm -f fixtures/$(am__dirstamp)
 	-rm -f integration/$(DEPDIR)/$(am__dirstamp)
 	-rm -f integration/$(am__dirstamp)
 	-rm -f tree_sequences/$(DEPDIR)/$(am__dirstamp)
@@ -1149,7 +1169,8 @@ clean: clean-am
 clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-		-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
+		-rm -f fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po
+	-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/sugar_multilocusTest.Po
@@ -1225,7 +1246,8 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
+		-rm -f fixtures/$(DEPDIR)/multilocus_fixture_deterministic.Po
+	-rm -f integration/$(DEPDIR)/extensions_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/extensions_regionsIntegrationTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/sugar_multilocusTest.Po

@@ -11,7 +11,8 @@ TESTS=$(noinst_PROGRAMS)
 unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/mlocusCrossoverTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc \
-	unit/test_wrapped_range.cc
+	unit/test_wrapped_range.cc \
+	fixtures/multilocus_fixture_deterministic.cc
 
 unit_extensions_unit_tests_SOURCES=unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
@@ -26,7 +27,8 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 
 integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc
 
-tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc
+tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc \
+	fixtures/multilocus_fixture_deterministic.cc
 
 AM_CXXFLAGS=-W -Wall
 
