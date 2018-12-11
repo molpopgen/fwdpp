@@ -47,6 +47,7 @@ class mlocuspop_popgenmut_fixture
                                                poptype::mcont_t &)>;
 
     static const int nloci;
+    static const double per_locus_rate;
 
   public:
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
@@ -90,20 +91,21 @@ class mlocuspop_popgenmut_fixture
     mlocuspop_popgenmut_fixture(const unsigned seed = 0)
         /*! N=1000, 4 loci */
         : pop(poptype(1000, make_boundaries())), generation(0), rng{ seed },
-          mu(std::vector<double>(nloci, 0.005)),
-          rbw(std::vector<double>(nloci - 1, 0.005)),
+          mu(std::vector<double>(nloci, per_locus_rate)),
+          rbw(std::vector<double>(nloci - 1, per_locus_rate)),
           mutmodels{ make_mutmodels() }, recmodels{ make_recmodels() },
           vdmm(fill_vdmm()),
           bound_mmodels(fwdpp::extensions::bind_vec_dmm(rng.get(), vdmm)),
-          vdrm(fill_vdrm()), bound_recmodels{fill_bound_recmodels()}
+          vdrm(fill_vdrm()), bound_recmodels{ fill_bound_recmodels() }
     {
     }
 
   private:
-    std::vector<std::function<std::vector<double>(void)>> fill_bound_recmodels();
+    std::vector<std::function<std::vector<double>(void)>>
+    fill_bound_recmodels();
     std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>>
     fill_vdmm();
-    
+
     /* We are going to generate a set of recombination
      * regions for a multi-locus
      * simulation.  There will be four loci total.  Each locus
@@ -119,12 +121,10 @@ class mlocuspop_popgenmut_fixture
      * The total recombination rate on each region will be 1e-4
      * per diploid, per generation.
      */
-    std::vector<fwdpp::extensions::discrete_rec_model>
-    fill_vdrm();
+    std::vector<fwdpp::extensions::discrete_rec_model> fill_vdrm();
 
-    std::vector<std::pair<double, double>>
-    make_boundaries();
-    
+    std::vector<std::pair<double, double>> make_boundaries();
+
     std::vector<mutmodel> make_mutmodels();
     std::vector<recmodel> make_recmodels();
 };

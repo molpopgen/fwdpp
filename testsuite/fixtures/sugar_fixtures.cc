@@ -4,6 +4,7 @@
 
 // MULTILOCUS
 const int mlocuspop_popgenmut_fixture::nloci = 4;
+const double mlocuspop_popgenmut_fixture::per_locus_rate = 5e-3;
 
 std::vector<std::pair<double, double>>
 mlocuspop_popgenmut_fixture::make_boundaries()
@@ -46,7 +47,8 @@ mlocuspop_popgenmut_fixture::make_recmodels()
     for (int i = 0; i < nloci; ++i)
         {
             rv.emplace_back(fwdpp::recbinder(
-                fwdpp::poisson_xover(5e-3, i, i + 1), this->rng.get()));
+                fwdpp::poisson_xover(per_locus_rate, i, i + 1),
+                this->rng.get()));
         }
     return rv;
 }
