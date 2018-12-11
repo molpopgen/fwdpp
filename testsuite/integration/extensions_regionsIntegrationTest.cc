@@ -167,6 +167,7 @@ BOOST_AUTO_TEST_CASE(test_evolve)
 {
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
+    BOOST_REQUIRE_EQUAL(bound_recmodels.size(), nloci);
     BOOST_TEST_PASSPOINT();
     double wbar = sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
