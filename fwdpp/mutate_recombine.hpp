@@ -79,15 +79,16 @@ namespace fwdpp
     /// the breakpoints are returned and are terminated by
     /// std::numeric_limits<double>::max()
     {
-        auto nm1
-            = gametes[g1].mutations.size() + gametes[g1].smutations.size();
-        auto nm2
-            = gametes[g2].mutations.size() + gametes[g2].smutations.size();
-        if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
-            || gametes[g1] == gametes[g2])
-            {
-                return {};
-            }
+        //TODO: decide if we wish to re-enable the code below.
+        //auto nm1
+        //    = gametes[g1].mutations.size() + gametes[g1].smutations.size();
+        //auto nm2
+        //    = gametes[g2].mutations.size() + gametes[g2].smutations.size();
+        //if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
+        //    || gametes[g1] == gametes[g2])
+        //    {
+        //        return {};
+        //    }
         return dispatch_recombination_policy(
             std::cref(rec_pol), std::cref(diploid), std::cref(gametes[g1]),
             std::cref(gametes[g2]), std::cref(mutations));
