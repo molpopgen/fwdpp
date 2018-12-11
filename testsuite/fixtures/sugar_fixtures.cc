@@ -39,7 +39,7 @@ mlocuspop_popgenmut_fixture::make_recmodels()
 }
 
 std::vector<fwdpp::extensions::discrete_rec_model>
-mlocuspop_popgenmut_fixture::fill_vdrm(const gsl_rng *r)
+mlocuspop_popgenmut_fixture::fill_vdrm()
 {
     double recrate_region = 1e-4;
     // set up a vector of extensions::discrete_rec_model
@@ -50,16 +50,17 @@ mlocuspop_popgenmut_fixture::fill_vdrm(const gsl_rng *r)
             std::vector<fwdpp::extensions::discrete_rec_model::function_type>
                 f;
             std::vector<double> w{ 1., 10., 1. };
-            f.push_back([&r, i](std::vector<double> &b) {
-                b.push_back(gsl_ran_flat(r, static_cast<double>(i),
+            f.push_back([this, i](std::vector<double> &b) {
+                b.push_back(gsl_ran_flat(rng.get(), static_cast<double>(i),
                                          static_cast<double>(i) + 1. / 3.));
             });
-            f.push_back([&r, i](std::vector<double> &b) {
-                b.push_back(gsl_ran_flat(r, static_cast<double>(i) + 1. / 3,
+            f.push_back([this, i](std::vector<double> &b) {
+                b.push_back(gsl_ran_flat(rng.get(),
+                                         static_cast<double>(i) + 1. / 3,
                                          static_cast<double>(i) + 2. / 3.));
             });
-            f.push_back([&r, i](std::vector<double> &b) {
-                b.push_back(gsl_ran_flat(r, static_cast<double>(i),
+            f.push_back([this, i](std::vector<double> &b) {
+                b.push_back(gsl_ran_flat(rng.get(), static_cast<double>(i),
                                          static_cast<double>(i) + 1.));
             });
             fwdpp::extensions::discrete_rec_model drm(
