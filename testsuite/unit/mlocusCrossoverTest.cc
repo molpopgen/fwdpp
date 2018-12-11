@@ -370,7 +370,7 @@ BOOST_FIXTURE_TEST_SUITE(test_multilocus_recombination,
 BOOST_AUTO_TEST_CASE(test_transmission)
 // The expected genotype of all "first" gametes in offspring
 // should be identical to parent1/gamete1 at all loci except
-// on the interval [1.5,2)
+// on the interval [1.5,2) and [3.5,4)
 {
     mutate_parent();
     // This loop essentially unit-tests add_mutation (again).
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(test_transmission)
 BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
 // The expected genotype of all "first" gametes in offspring
 // should be identical to parent1/gamete1 at all loci except
-// on the interval [1.5,2)
+// on the interval [1.5,2) and [3.5,4)
 {
     mutate_parent2();
     for (std::size_t i = 0; i < nloci; ++i)
@@ -561,6 +561,24 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
                 {
                     BOOST_REQUIRE_EQUAL(
                         pop.gametes[offspring[i].first].mutations.size(), 1);
+                    BOOST_REQUIRE_EQUAL(
+                        std::find_if(
+                            begin(pop.gametes[offspring[i].first].mutations),
+                            end(pop.gametes[offspring[i].first].mutations),
+                            [this, i](fwdpp::uint_t k) {
+                                return pop.mutations[k].pos == i;
+                            })
+                            != end(pop.gametes[offspring[i].first].mutations),
+                        true);
+                    BOOST_REQUIRE_EQUAL(
+                        std::find_if(
+                            begin(pop.gametes[offspring[i].first].mutations),
+                            end(pop.gametes[offspring[i].first].mutations),
+                            [this, i](fwdpp::uint_t k) {
+                                return pop.mutations[k].pos == i + 0.51;
+                            })
+                            == end(pop.gametes[offspring[i].first].mutations),
+                        true);
                 }
         }
 
