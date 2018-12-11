@@ -18,7 +18,6 @@
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"
 
-using poptype = mlocuspop_popgenmut_fixture::poptype;
 BOOST_FIXTURE_TEST_SUITE(mlocus_tests, mlocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(mlocuspop_sugar_test1)
