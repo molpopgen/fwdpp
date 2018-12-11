@@ -29,12 +29,6 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
         {
             s = rv.first[s];
         }
-#ifndef NDEBUG
-    for (auto &s : tables.preserved_nodes)
-        {
-            assert(rv.first[s] != -1);
-        }
-#endif
     if (!preserve_fixations)
         {
             fwdpp::ts::count_mutations(tables, pop.mutations, samples,
