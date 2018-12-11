@@ -270,7 +270,8 @@ struct mlocuspop_objects
     using mutation_container
         = poptype::gcont_t::value_type::mutation_container;
 
-    mlocuspop_objects() : diploids{}, mutations{}, gametes{}, locus_boundaries{}
+    mlocuspop_objects()
+        : diploids{}, mutations{}, gametes{}, locus_boundaries{}
     {
         // Add some mutations
         for (unsigned i = 0; i < 3; ++i)
@@ -289,8 +290,8 @@ struct mlocuspop_objects
         // Add a diploid
         diploids[0].emplace_back(0, 1);
         diploids[1].emplace_back(1, 1);
-        locus_boundaries.emplace_back(0,1);
-        locus_boundaries.emplace_back(1,3);
+        locus_boundaries.emplace_back(0, 1);
+        locus_boundaries.emplace_back(1, 3);
         assert(gametes.size() == 2);
         assert(mutations.size() == 3);
     }
