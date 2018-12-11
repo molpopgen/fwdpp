@@ -369,6 +369,9 @@ BOOST_FIXTURE_TEST_SUITE(test_multilocus_recombination,
                          multilocus_fixture_deterministic)
 
 BOOST_AUTO_TEST_CASE(test_transmission)
+// The expected genotype of all "first" gametes in offspring
+// should be identical to parent1/gamete1 at all loci except
+// on the interval [1.5,2)
 {
     std::vector<short> clist(1, 0);
     std::vector<std::size_t> indlist(1, 0);
@@ -379,6 +382,7 @@ BOOST_AUTO_TEST_CASE(test_transmission)
             // Mutation exactly on left edge of locus
             fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
         }
+    // This loop essentially unit-tests add_mutation (again).
     for (std::size_t i = 0; i < nloci; ++i)
         {
             auto &locus = pop.diploids[0][i];
@@ -435,7 +439,6 @@ BOOST_AUTO_TEST_CASE(test_transmission)
         itr != end(pop.gametes[offspring[locus].first].mutations),
         expected_result);
     locus = 2;
-    expected_result = false;
     itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
                        end(pop.gametes[offspring[locus].first].mutations),
                        [this, locus](fwdpp::uint_t m) {
@@ -472,6 +475,9 @@ BOOST_AUTO_TEST_CASE(test_transmission)
 }
 
 BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
+// The expected genotype of all "first" gametes in offspring
+// should be identical to parent1/gamete1 at all loci except
+// on the interval [1.5,2)
 {
     std::vector<short> clist(1, 0);
     std::vector<std::size_t> indlist(1, 0);
@@ -514,24 +520,13 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
         }
 
     auto params = make_params();
-    for(auto & locus : pop.diploids[0])
-    {
-        std::cout << "keys: ";
-        for(auto k : pop.gametes[locus.first].mutations){std::cout<<pop.mutations[k].pos<<' ';}
-        std::cout<<'\n';
-    }
+
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
         params.mutation_recycling_bin, params.gamete_recycling_bin,
         params.generate_breakpoints, params.interlocus_recombination, 0, 0,
         pop.gametes, pop.mutations, params.neutral, params.selected, mu.data(),
         dummy_mmodels);
-    for(auto & locus : offspring)
-    {
-        std::cout << "keys: ";
-        for(auto k : pop.gametes[locus.first].mutations){std::cout<<pop.mutations[k].pos<<' ';}
-        std::cout<<'\n';
-    }
 
     // Check transmission of mutations into offpring's FIRST gamete
     int locus = 0;
@@ -555,7 +550,6 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
         itr != end(pop.gametes[offspring[locus].first].mutations),
         expected_result);
     locus = 2;
-    expected_result = false;
     itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
                        end(pop.gametes[offspring[locus].first].mutations),
                        [this, locus](fwdpp::uint_t m) {
@@ -573,6 +567,21 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
     BOOST_REQUIRE_EQUAL(
         itr != end(pop.gametes[offspring[locus].first].mutations),
         expected_result);
+
+    //Every other locus must have had its internal variant removed
+    for (std::size_t i = 0; i < nloci; ++i)
+        {
+            if (i % 2 == 0.)
+                {
+                    BOOST_REQUIRE_EQUAL(
+                        pop.gametes[offspring[i].first].mutations.size(), 2);
+                }
+            else
+                {
+                    BOOST_REQUIRE_EQUAL(
+                        pop.gametes[offspring[i].first].mutations.size(), 1);
+                }
+        }
 
     // Check transmission of mutations into offpring's SECOND gamete
     for (std::size_t i = 0; i < nloci; ++i)
@@ -657,7 +666,6 @@ BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
         itr != end(pop.gametes[offspring[locus].first].mutations),
         expected_result);
     locus = 2;
-    expected_result = true;
     itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
                        end(pop.gametes[offspring[locus].first].mutations),
                        [this, locus](fwdpp::uint_t m) {
