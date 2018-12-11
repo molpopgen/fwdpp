@@ -4,6 +4,7 @@
 #include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/GSLrng_t.hpp>
+#include <fwdpp/sugar/add_mutation.hpp>
 
 struct multilocus_fixture_deterministic
 // Deterministically adds mutations and recombination
@@ -110,6 +111,49 @@ struct multilocus_fixture_deterministic
         return fwdpp::make_genetic_parameters_with_swapper(
             std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
             std::move(interlocus_rec), swap_second);
+    }
+
+    void
+    mutate_parent()
+    // We add a variant to each gamete that
+    // is exactly at the start of each locus
+    // This happens on diploid 0's first gamete
+    // at all loci
+    {
+        std::vector<short> clist(1, 0);
+        std::vector<std::size_t> indlist(1, 0);
+        for (std::size_t i = 0; i < nloci; ++i)
+            {
+                // Mutation exactly on left edge of locus
+                auto k
+                    = fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
+                tables.mutation_table.emplace_back(
+                    fwdpp::ts::mutation_record{ 0, k });
+            }
+    }
+
+    void
+    mutate_parent2()
+    // We add a variant to each gamete that
+    // is exactly at the start of each locus,
+    // and one mutation within each locus
+    // This happens on diploid 0's first gamete
+    // at all loci.
+    {
+        std::vector<short> clist(1, 0);
+        std::vector<std::size_t> indlist(1, 0);
+        for (std::size_t i = 0; i < nloci; ++i)
+            {
+                // Mutation exactly on left edge of locus
+                auto k
+                    = fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
+                tables.mutation_table.emplace_back(
+                    fwdpp::ts::mutation_record{ 0, k });
+                k = fwdpp::add_mutation(pop, i, indlist, clist, i + 0.51, 0, 0,
+                                        0);
+                tables.mutation_table.emplace_back(
+                    fwdpp::ts::mutation_record{ 0, k });
+            }
     }
 
   private:

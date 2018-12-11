@@ -18,7 +18,6 @@
 #include <functional>
 #include <vector>
 #include <gsl/gsl_rng.h>
-#include <fwdpp/sugar/add_mutation.hpp>
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include "../fixtures/multilocus_fixture_deterministic.hpp"
 
@@ -373,15 +372,7 @@ BOOST_AUTO_TEST_CASE(test_transmission)
 // should be identical to parent1/gamete1 at all loci except
 // on the interval [1.5,2)
 {
-    std::vector<short> clist(1, 0);
-    std::vector<std::size_t> indlist(1, 0);
-    // We add a variant to each gamete that
-    // is exactly at the start of each locus
-    for (std::size_t i = 0; i < nloci; ++i)
-        {
-            // Mutation exactly on left edge of locus
-            fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
-        }
+    mutate_parent();
     // This loop essentially unit-tests add_mutation (again).
     for (std::size_t i = 0; i < nloci; ++i)
         {
@@ -479,17 +470,7 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
 // should be identical to parent1/gamete1 at all loci except
 // on the interval [1.5,2)
 {
-    std::vector<short> clist(1, 0);
-    std::vector<std::size_t> indlist(1, 0);
-    // We add a variant to each gamete that
-    // is exactly at the start of each locus
-    for (std::size_t i = 0; i < nloci; ++i)
-        {
-            // Mutation exactly on left edge of locus
-            fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
-            // Mutation just past internal xover point
-            fwdpp::add_mutation(pop, i, indlist, clist, i + 0.51, 0, 0, 0);
-        }
+    mutate_parent2();
     for (std::size_t i = 0; i < nloci; ++i)
         {
             auto &locus = pop.diploids[0][i];
@@ -602,14 +583,7 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
 
 BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
 {
-    std::vector<short> clist(1, 0);
-    std::vector<std::size_t> indlist(1, 0);
-    // We add a variant to each gamete that
-    // is exactly at the start of each locus
-    for (std::size_t i = 0; i < nloci; ++i)
-        {
-            fwdpp::add_mutation(pop, i, indlist, clist, i, 0, 0, 0);
-        }
+    mutate_parent();
     for (std::size_t i = 0; i < nloci; ++i)
         {
             auto &locus = pop.diploids[0][i];
