@@ -51,6 +51,107 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
         }
 }
 
+BOOST_FIXTURE_TEST_CASE(test_transmission, multilocus_fixture_deterministic)
+// This test applies mutations to a parent and tests transmission
+// of those mutations into the offspring.
+// This test is identical to one in unit/mlocusCrossoverTest.cc at face
+// value.  The difference is that we are testing different machinery
+// (fwdpp::ts::generate_offspring) and thus need a separate test
+// to guard against future errors being introduced.
+{
+    mutate_parent();
+    poptype::diploid_t offspring;
+    auto params = make_params();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params, offspring);
+    // Check transmission of mutations into offpring's FIRST gamete
+    int locus = 0;
+    bool expected_result = true;
+    auto itr
+        = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
+                       end(pop.gametes[offspring[locus].first].mutations),
+                       [this, locus](fwdpp::uint_t m) {
+                           return pop.mutations[m].pos == locus;
+                       });
+    BOOST_REQUIRE_EQUAL(
+        itr != end(pop.gametes[offspring[locus].first].mutations),
+        expected_result);
+    locus = 1;
+    itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
+                       end(pop.gametes[offspring[locus].first].mutations),
+                       [this, locus](fwdpp::uint_t m) {
+                           return pop.mutations[m].pos == locus;
+                       });
+    BOOST_REQUIRE_EQUAL(
+        itr != end(pop.gametes[offspring[locus].first].mutations),
+        expected_result);
+    locus = 2;
+    itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
+                       end(pop.gametes[offspring[locus].first].mutations),
+                       [this, locus](fwdpp::uint_t m) {
+                           return pop.mutations[m].pos == locus;
+                       });
+    BOOST_REQUIRE_EQUAL(
+        itr != end(pop.gametes[offspring[locus].first].mutations),
+        expected_result);
+    locus = 3;
+    itr = std::find_if(begin(pop.gametes[offspring[locus].first].mutations),
+                       end(pop.gametes[offspring[locus].first].mutations),
+                       [this, locus](fwdpp::uint_t m) {
+                           return pop.mutations[m].pos == locus;
+                       });
+    BOOST_REQUIRE_EQUAL(
+        itr != end(pop.gametes[offspring[locus].first].mutations),
+        expected_result);
+
+    // Check transmission of mutations into offpring's SECOND gamete
+    for (std::size_t i = 0; i < nloci; ++i)
+        {
+            locus = static_cast<int>(i);
+            expected_result = false;
+            itr = std::find_if(
+                begin(pop.gametes[offspring[locus].second].mutations),
+                end(pop.gametes[offspring[locus].second].mutations),
+                [this, locus](fwdpp::uint_t m) {
+                    return pop.mutations[m].pos == locus;
+                });
+            BOOST_REQUIRE_EQUAL(
+                itr != end(pop.gametes[offspring[locus].second].mutations),
+                expected_result);
+        }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
+                        multilocus_fixture_deterministic)
+// This test applies mutations to a parent and tests transmission
+// of those mutations into the offspring.
+// This test is identical to one in unit/mlocusCrossoverTest.cc at face
+// value.  The difference is that we are testing different machinery
+// (fwdpp::ts::generate_offspring) and thus need a separate test
+// to guard against future errors being introduced.
+{
+    mutate_parent2();
+    poptype::diploid_t offspring;
+    auto params = make_params();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params, offspring);
+    for (std::size_t i = 0; i < nloci; ++i)
+        {
+            if (i % 2 == 0.)
+                {
+                    BOOST_REQUIRE_EQUAL(
+                        pop.gametes[offspring[i].first].mutations.size(), 2);
+                }
+            else
+                {
+                    BOOST_REQUIRE_EQUAL(
+                        pop.gametes[offspring[i].first].mutations.size(), 1);
+                }
+        }
+}
+
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
                         multilocus_fixture_deterministic)
 {
