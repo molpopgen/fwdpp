@@ -143,14 +143,15 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
  * This test uses the multilocus fixture for the testsuite.
  */
 {
-	BOOST_REQUIRE_EQUAL(vdmm.size(),bound_mmodels.size());
-	BOOST_REQUIRE_EQUAL(vdmm.size(),vdrm.size());
+    BOOST_REQUIRE_EQUAL(vdmm.size(), bound_mmodels.size());
+    BOOST_REQUIRE_EQUAL(vdmm.size(), vdrm.size());
     // create a set of bound callbacks.
     // We use the fixture's mu to imply that
     // mutation rate = recombination rate per region.
 
     // the mutation rates to neutral/selected variants
-    std::vector<double> neutral_mutrates(4, 1e-3), selected_mutrates(4, 0.);
+    std::vector<double> neutral_mutrates(nloci, 1e-3),
+        selected_mutrates(nloci, 0.);
 
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
