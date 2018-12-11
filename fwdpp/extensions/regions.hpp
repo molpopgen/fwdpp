@@ -2,6 +2,7 @@
 #ifndef __FWDPP_EXTENSIONS_REGIONS_HPP__
 #define __FWDPP_EXTENSIONS_REGIONS_HPP__
 
+#include <cassert>
 #include <limits>
 #include <stdexcept>
 #include <algorithm>
@@ -243,6 +244,7 @@ namespace fwdpp
                 for (unsigned i = 0; i < nbreaks; ++i)
                     {
                         auto region = gsl_ran_discrete(r, lookup.get());
+                        assert(region < functions.size());
                         functions.at(region)(rv);
                     }
                 std::sort(rv.begin(), rv.end());
