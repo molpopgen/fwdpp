@@ -6,8 +6,6 @@
 #include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/poisson_xover.hpp>
-#include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
 #include <testsuite/util/custom_dip.hpp>
@@ -95,33 +93,17 @@ class mlocuspop_popgenmut_fixture
           mu(std::vector<double>(nloci, 0.005)),
           rbw(std::vector<double>(nloci - 1, 0.005)),
           mutmodels{ make_mutmodels() }, recmodels{ make_recmodels() },
-          vdmm(this->fill_vdmm(mutmodels)),
+          vdmm(fill_vdmm()),
           bound_mmodels(fwdpp::extensions::bind_vec_dmm(rng.get(), vdmm)),
-          vdrm(this->fill_vdrm(rng.get())), bound_recmodels{}
+          vdrm(fill_vdrm()), bound_recmodels{fill_bound_recmodels()}
     {
-        for (unsigned i = 0; i < vdrm.size(); ++i)
-            {
-                bound_recmodels.emplace_back(
-                    [this, i]() { return vdrm.at(i)(rng.get()); });
-            }
     }
 
   private:
+    std::vector<std::function<std::vector<double>(void)>> fill_bound_recmodels();
     std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>>
-    fill_vdmm(std::vector<mutmodel> mutmodels)
-    {
-        // create a vector of extensions::discrete_mut_model
-        std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>>
-            vdmm_;
-        for (auto &m : mutmodels)
-            {
-                vdmm_.emplace_back(
-                    fwdpp::extensions::discrete_mut_model<poptype::mcont_t>(
-                        std::move(m), std::vector<double>(1, 1.0)));
-            }
-
-        return vdmm_;
-    }
+    fill_vdmm();
+    
     /* We are going to generate a set of recombination
      * regions for a multi-locus
      * simulation.  There will be four loci total.  Each locus
@@ -138,7 +120,7 @@ class mlocuspop_popgenmut_fixture
      * per diploid, per generation.
      */
     std::vector<fwdpp::extensions::discrete_rec_model>
-    fill_vdrm(const gsl_rng *r);
+    fill_vdrm();
 
     std::vector<std::pair<double, double>>
     make_boundaries()

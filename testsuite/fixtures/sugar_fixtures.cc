@@ -1,4 +1,6 @@
 #include "sugar_fixtures.hpp"
+#include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/recbinder.hpp>
 
 // MULTILOCUS
 const int mlocuspop_popgenmut_fixture::nloci = 4;
@@ -36,6 +38,34 @@ mlocuspop_popgenmut_fixture::make_recmodels()
                 fwdpp::poisson_xover(5e-3, i, i + 1), this->rng.get()));
         }
     return rv;
+}
+
+std::vector<std::function<std::vector<double>(void)>>
+mlocuspop_popgenmut_fixture::fill_bound_recmodels()
+{
+    std::vector<std::function<std::vector<double>(void)>> rv;
+    for (unsigned i = 0; i < nloci; ++i)
+        {
+            bound_recmodels.emplace_back(
+                [this, i]() { return vdrm.at(i)(rng.get()); });
+        }
+    return rv;
+}
+
+std::vector<fwdpp::extensions::discrete_mut_model<
+    mlocuspop_popgenmut_fixture::poptype::mcont_t>>
+mlocuspop_popgenmut_fixture::fill_vdmm()
+{
+    // create a vector of extensions::discrete_mut_model
+    std::vector<fwdpp::extensions::discrete_mut_model<poptype::mcont_t>> vdmm_;
+    for (auto m : mutmodels)
+        {
+            vdmm_.emplace_back(
+                fwdpp::extensions::discrete_mut_model<poptype::mcont_t>(
+                    std::move(m), std::vector<double>(1, 1.0)));
+        }
+
+    return vdmm_;
 }
 
 std::vector<fwdpp::extensions::discrete_rec_model>
