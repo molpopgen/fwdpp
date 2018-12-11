@@ -152,6 +152,7 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
 
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
+    BOOST_REQUIRE_EQUAL(interlocus_rec.size(), nloci - 1);
     std::queue<std::size_t> mqueue, gqueue;
     for (auto& dip : pop.diploids)
         {
@@ -166,11 +167,11 @@ BOOST_AUTO_TEST_CASE(test_evolve)
 {
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
+    BOOST_TEST_PASSPOINT();
     double wbar = sample_diploid(
         rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
         pop.N, mu.data(), bound_mmodels, bound_recmodels, interlocus_rec,
-        std::bind(multilocus_additive(), std::placeholders::_1,
-                  std::placeholders::_2, std::placeholders::_3),
+        multilocus_additive(),
         pop.neutral, pop.selected);
     if (!std::isfinite(wbar))
         {
