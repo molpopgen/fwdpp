@@ -56,9 +56,13 @@ namespace fwdpp
                     auto p2g2 = p2->second;
                     // if ttl # recs before now is odd, swap parental pointers
                     if (s1 % 2 != 0.)
-                        std::swap(p1g1, p1g2);
+                        {
+                            std::swap(p1g1, p1g2);
+                        }
                     if (s2 % 2 != 0.)
-                        std::swap(p2g1, p2g2);
+                        {
+                            std::swap(p2g1, p2g2);
+                        }
 
                     auto rm = mutate_recombine_update(
                         r, gametes, mutations,
