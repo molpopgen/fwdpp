@@ -123,15 +123,8 @@ class mlocuspop_popgenmut_fixture
     fill_vdrm();
 
     std::vector<std::pair<double, double>>
-    make_boundaries()
-    {
-        std::vector<std::pair<double, double>> rv;
-        for (int i = 0; i < nloci; ++i)
-            {
-                rv.emplace_back(i, i + 1);
-            }
-        return rv;
-    }
+    make_boundaries();
+    
     std::vector<mutmodel> make_mutmodels();
     std::vector<recmodel> make_recmodels();
 };

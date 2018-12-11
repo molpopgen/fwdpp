@@ -5,6 +5,17 @@
 // MULTILOCUS
 const int mlocuspop_popgenmut_fixture::nloci = 4;
 
+std::vector<std::pair<double, double>>
+mlocuspop_popgenmut_fixture::make_boundaries()
+{
+    std::vector<std::pair<double, double>> rv;
+    for (int i = 0; i < nloci; ++i)
+        {
+            rv.emplace_back(i, i + 1);
+        }
+    return rv;
+}
+
 std::vector<mlocuspop_popgenmut_fixture::mutmodel>
 mlocuspop_popgenmut_fixture::make_mutmodels()
 {
