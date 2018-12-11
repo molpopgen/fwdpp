@@ -3,7 +3,6 @@
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/sugar/add_mutation.hpp>
 
 struct multilocus_fixture_deterministic
 // Deterministically adds mutations and recombination
