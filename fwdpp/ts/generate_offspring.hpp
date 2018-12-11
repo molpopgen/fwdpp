@@ -212,8 +212,9 @@ namespace fwdpp
                 int swap2 = genetics.gamete_swapper(
                     r, pop.diploids[parents.second][0].first,
                     pop.diploids[parents.second][0].second);
-                int ttl_swaps_1 = swap1;
-                int ttl_swaps_2 = swap2;
+                // NOTE: this logic differs from fwdpp_internal::multilocus_mut_rec
+                int ttl_swaps_1 = 0;
+                int ttl_swaps_2 = 0;
 
                 decltype(mut_rec_intermediates::breakpoints) all_breakpoints_1,
                     all_breakpoints_2;
@@ -235,6 +236,15 @@ namespace fwdpp
                         auto p1g2 = pop.diploids[parents.first][i].second;
                         auto p2g1 = pop.diploids[parents.second][i].first;
                         auto p2g2 = pop.diploids[parents.second][i].second;
+                        // NOTE: this logic differs from fwdpp_internal::multilocus_mut_rec
+                        if (swap1)
+                            {
+                                std::swap(p1g1, p1g2);
+                            }
+                        if (swap2)
+                            {
+                                std::swap(p2g1, p2g2);
+                            }
                         if (ttl_swaps_1 % 2 != 0.)
                             {
                                 std::swap(p1g1, p1g2);
