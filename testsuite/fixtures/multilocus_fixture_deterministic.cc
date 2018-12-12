@@ -7,6 +7,7 @@
 using poptype = multilocus_fixture_deterministic::poptype;
 const std::size_t multilocus_fixture_deterministic::nloci = 4;
 const fwdpp::uint_t multilocus_fixture_deterministic::N = 1000;
+const fwdpp::uint_t multilocus_fixture_deterministic::new_mutation_generation = 1;
 
 double
 multilocus_fixture_deterministic::multilocus_multiplicative::
@@ -155,7 +156,8 @@ multilocus_fixture_deterministic::make_mmodels()
                                         h](std::queue<std::size_t> &recbin,
                                            poptype::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
-                    recbin, mutations, rng.get(), pop.mut_lookup, 0,
+                    recbin, mutations, rng.get(), pop.mut_lookup,
+                    new_mutation_generation,
                     // 1.0 signifies 100% of mutations will be selected
                     1.0, generate_mutation_position, s, h);
             };

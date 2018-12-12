@@ -58,6 +58,7 @@ struct multilocus_fixture_deterministic
 
     static const std::size_t nloci;
     static const fwdpp::uint_t N;
+    static const fwdpp::uint_t new_mutation_generation;
     poptype pop;
     fwdpp::ts::table_collection tables;
     fwdpp::GSLrng_mt rng;

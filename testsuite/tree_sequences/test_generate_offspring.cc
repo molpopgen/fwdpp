@@ -1,6 +1,3 @@
-#ifndef FWDPP_TEST_SUITE_MULTILOCUS_DETERMINISTIC_FIXTURE_HPP
-#define FWDPP_TEST_SUITE_MULTILOCUS_DETERMINISTIC_FIXTURE_HPP
-
 #include <iostream>
 #include <config.h>
 #include <cmath>
@@ -425,7 +422,23 @@ BOOST_FIXTURE_TEST_CASE(
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
                         multilocus_fixture_deterministic)
+//Generate a single offspring after mutating parents and then test the
+//transmission of mutations through simplification w.r.to that single
+//offspring
 {
+    // Calling mutate_parent2 places mutations at positions i and i+0.51
+    // for i in [0,4) on all "first" gametes of diploid 0, so that is two mutations per locus.
+    mutate_parent2();
+    // Using params_no swap means that the following mutations will be passed from node zero
+    // to node 2N:
+    // 0, 0.51, 1, 2, 2.51, 3.0
+    // Mutations at the following positions must be simplified out of the mutation table:
+    // 1.51, 2.51
+    // This, we have the following expectations:
+    std::vector<double> muts_on_node_0
+        = { 0., 0.51, 1., 2., 2.51, 3. }, //node_0 means post-simplification!
+        muts_lost = { 1.51, 3.51 };
+    BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
@@ -443,8 +456,61 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
         { next_index - 2, next_index - 1 });
     auto rv = simplifier.simplify(tables, samples, pop.mutations);
 
-    // All variants are new, so must survive simplification
-    BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
+    // We have simplified to the two extant samples, which are the
+    // to genomes of "offspring". Thus, there are zero transmission
+    // events required to describe the ancestry, so the edge table is
+    // empty.
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 0);
+    BOOST_REQUIRE_EQUAL(tables.node_table.size(), 2);
+
+    for (auto& n : tables.node_table)
+        {
+            BOOST_REQUIRE_EQUAL(n.time, 1.);
+        }
+
+    // Check the status of mutations transmitted from parents to offspring
+    for (auto p : muts_on_node_0)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (m.node == 0 && pop.mutations[m.key].pos == p)
+                        {
+                            found = true;
+                        }
+                }
+            BOOST_REQUIRE_EQUAL(found, true);
+        }
+
+    for (auto p : muts_lost)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (pop.mutations[m.key].pos == p)
+                        {
+                            found = true;
+                        }
+                }
+            BOOST_REQUIRE_EQUAL(found, false);
+        }
+    // Count numbers of new mutations
+    int new_node_zero = 0, new_node_one = 0;
+    for (auto& m : tables.mutation_table)
+        {
+            if (m.node == 0 && pop.mutations[m.key].g == 1)
+                {
+                    ++new_node_zero;
+                }
+            if (m.node == 1 && pop.mutations[m.key].g == 1)
+                {
+                    ++new_node_one;
+                }
+        }
+    BOOST_REQUIRE_EQUAL(new_node_zero, 4);
+    BOOST_REQUIRE_EQUAL(new_node_one, 4);
+    BOOST_REQUIRE_EQUAL(tables.mutation_table.size() - new_node_one
+                            - new_node_zero,
+                        muts_on_node_0.size());
 }
 
-#endif
