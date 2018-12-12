@@ -109,9 +109,12 @@
  * for ts recording, meaning that our tests below are 
  * WRONG.
  */
+
 BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
                         multilocus_fixture_deterministic)
+// This just sanity-checks various features of the fixture
 {
+
     BOOST_REQUIRE_EQUAL(tables.genome_length(), nloci);
     BOOST_REQUIRE_EQUAL(pop.locus_boundaries.size(), nloci);
     BOOST_REQUIRE_EQUAL(mmodels.size(), nloci);
@@ -211,6 +214,7 @@ BOOST_FIXTURE_TEST_CASE(test_transmission, multilocus_fixture_deterministic)
                 itr != end(pop.gametes[offspring[locus].second].mutations),
                 expected_result);
         }
+    BOOST_REQUIRE_NO_THROW(validate_mutations_positions_1(offspring));
 }
 
 BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
@@ -267,6 +271,7 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
                         true);
                 }
         }
+    BOOST_REQUIRE_NO_THROW(validate_mutations_positions_2(offspring));
 }
 
 BOOST_FIXTURE_TEST_CASE(

@@ -67,6 +67,8 @@ struct multilocus_fixture_deterministic
     swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
     std::vector<double> expected_breakpoints;
+    std::vector<double> expected_mutation_positions_1,
+        expected_mutation_positions_2;
     decltype(fwdpp::make_genetic_parameters_with_swapper(
         gvalue, mmodels, intralocus_rec, interlocus_rec,
         do_not_swap)) params_no_swap;
@@ -80,8 +82,11 @@ struct multilocus_fixture_deterministic
           interlocus_rec(make_interlocus_rec()),
           do_not_swap(
               [](const gsl_rng *, std::size_t, std::size_t) { return 0; }),
-          swap_second(), gvalue(), 
-          expected_breakpoints{{ 1.5, 2.,  3.5, std::numeric_limits<double>::max() }},
+          swap_second(), gvalue(),
+          expected_breakpoints{ { 1.5, 2., 3.5,
+                                  std::numeric_limits<double>::max() } },
+          expected_mutation_positions_1{ { 1., 2., 3., 0. } },
+          expected_mutation_positions_2{ { 1., 2., 3., 0., 0.51, 2.51 } },
           params_no_swap(make_params()),
           params_swap_second(make_params_swap_second())
     {
@@ -110,6 +115,10 @@ struct multilocus_fixture_deterministic
     // This happens on diploid 0's first gamete
     // at all loci.
     void mutate_parent2();
+
+    void validate_mutations_positions_1(const poptype::diploid_t &offspring);
+
+    void validate_mutations_positions_2(const poptype::diploid_t &offspring);
 
   private:
     std::vector<std::pair<double, double>> make_boundaries();
