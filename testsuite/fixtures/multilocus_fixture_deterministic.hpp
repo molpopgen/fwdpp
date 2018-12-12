@@ -1,3 +1,6 @@
+#ifndef FWDPP_TESTSUITE_MULTILOCUS_FIXTURES_DETERMINISTIC_HPP
+#define FWDPP_TESTSUITE_MULTILOCUS_FIXTURES_DETERMINISTIC_HPP
+
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/simparams.hpp>
 #include <fwdpp/popgenmut.hpp>
@@ -126,7 +129,7 @@ struct multilocus_fixture_deterministic
   private:
     std::vector<std::pair<double, double>> make_boundaries();
 
-    // Every locus gets 1 mutation.  These occur at random 
+    // Every locus gets 1 mutation.  These occur at random
     // positions within each locus
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
@@ -140,3 +143,4 @@ struct multilocus_fixture_deterministic
     std::vector<std::function<unsigned(void)>> make_interlocus_rec();
 };
 
+#endif
