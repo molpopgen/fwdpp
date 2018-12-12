@@ -105,9 +105,6 @@
  * breakpoint never needs to be stored, because parent 
  * gamete swapping, etc., takes care of that implicitly.
  *
- * Currently, we are FAILING to record it as a breakpoint
- * for ts recording, meaning that our tests below are 
- * WRONG.
  */
 
 BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
@@ -423,6 +420,8 @@ BOOST_FIXTURE_TEST_CASE(
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
     BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 8);
 }
+
+//NOTE: test are believed to be correct to this point.
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
                         multilocus_fixture_deterministic)
