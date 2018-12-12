@@ -17,13 +17,10 @@
 #include <string>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
-#include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/recycling.hpp>
-#include <fwdpp/ts/tree_visitor.hpp>
 #include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
-#include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/slocuspop.hpp>
