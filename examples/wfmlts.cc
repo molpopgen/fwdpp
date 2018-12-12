@@ -17,16 +17,8 @@
 #include <string>
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
-#include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/recycling.hpp>
-#include <fwdpp/ts/tree_visitor.hpp>
-#include <fwdpp/ts/mutate_tables.hpp>
-#include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
-#include <fwdpp/ts/serialization.hpp>
-#include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/popgenmut.hpp>
-#include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
@@ -34,7 +26,6 @@
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/simparams.hpp>
-#include <boost/program_options.hpp>
 
 #include "simplify_tables.hpp"
 #include "evolve_generation_ts.hpp"
@@ -43,7 +34,7 @@
 
 namespace po = boost::program_options;
 using poptype = multi_locus_poptype;
-using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
+using GSLrng = fwdpp::GSLrng_mt;
 
 struct multilocus_multiplicative
 {

@@ -18,12 +18,7 @@
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/recycling.hpp>
-#include <fwdpp/ts/mutate_tables.hpp>
-#include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
-#include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/popgenmut.hpp>
-#include <fwdpp/slocuspop.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
