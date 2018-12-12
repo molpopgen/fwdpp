@@ -8,6 +8,7 @@
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/generate_offspring.hpp>
 #include <fwdpp/ts/get_parent_ids.hpp>
+#include <fwdpp/ts/count_mutations.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include "../fixtures/multilocus_fixture_deterministic.hpp"
@@ -512,5 +513,67 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size() - new_node_one
                             - new_node_zero,
                         muts_on_node_0.size());
+}
+
+BOOST_FIXTURE_TEST_CASE(
+    test_multilocus_determinisic_table_simplification_then_count_mutations,
+    multilocus_fixture_deterministic)
+//Same as previous test, then we count mutations
+{
+    // Calling mutate_parent2 places mutations at positions i and i+0.51
+    // for i in [0,4) on all "first" gametes of diploid 0, so that is two mutations per locus.
+    mutate_parent2();
+    // Using params_no swap means that the following mutations will be passed from node zero
+    // to node 2N:
+    // 0, 0.51, 1, 2, 2.51, 3.0
+    // Mutations at the following positions must be simplified out of the mutation table:
+    // 1.51, 2.51
+    // This, we have the following expectations:
+    std::vector<double> muts_on_node_0
+        = { 0., 0.51, 1., 2., 2.51, 3. }, //node_0 means post-simplification!
+        muts_lost = { 1.51, 3.51 };
+    BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
+    poptype::diploid_t offspring;
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params_no_swap, offspring);
+    fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
+    auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
+    auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
+    tables.add_offspring_data(next_index++, data_to_record.first.breakpoints,
+                              data_to_record.first.mutation_keys, p1d, 0, 1);
+    tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
+                              data_to_record.second.mutation_keys, p2d, 0, 1);
+    tables.sort_tables(pop.mutations);
+    fwdpp::ts::table_simplifier simplifier(nloci);
+    std::vector<fwdpp::ts::TS_NODE_INT> samples(
+        { next_index - 2, next_index - 1 });
+    auto rv = simplifier.simplify(tables, samples, pop.mutations);
+    samples = { 0, 1 };
+    fwdpp::ts::count_mutations(tables, pop.mutations, samples, pop.mcounts);
+    decltype(pop.mcounts) mc(pop.mcounts.size(), 0);
+    // NOTE a trick here:
+    // The mutations transmitted from the parents are neutral.
+    // I should probably fix that... ;)
+    for (auto& locus : offspring)
+        {
+            for (auto m : pop.gametes[locus.first].smutations)
+                {
+                    mc[m]++;
+                }
+            for (auto m : pop.gametes[locus.first].mutations)
+                {
+                    mc[m]++;
+                }
+            for (auto m : pop.gametes[locus.second].smutations)
+                {
+                    mc[m]++;
+                }
+            for (auto m : pop.gametes[locus.second].mutations)
+                {
+                    mc[m]++;
+                }
+        }
+    BOOST_REQUIRE_EQUAL(mc == pop.mcounts, true);
 }
 
