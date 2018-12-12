@@ -39,22 +39,11 @@
 #include "simplify_tables.hpp"
 #include "evolve_generation_ts.hpp"
 #include "calculate_fitnesses.hpp"
+#include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
 using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
-
-struct diploid_metadata
-{
-    std::size_t individual;
-    double time, fitness;
-    fwdpp::ts::TS_NODE_INT n1, n2;
-    diploid_metadata(std::size_t i, double t, double w,
-                     fwdpp::ts::TS_NODE_INT a, fwdpp::ts::TS_NODE_INT b)
-        : individual(i), time(t), fitness(w), n1(a), n2(b)
-    {
-    }
-};
 
 struct multilocus_multiplicative
 {
@@ -77,255 +66,63 @@ struct multilocus_multiplicative
     }
 };
 
-void
-expensive_leaf_test(const fwdpp::ts::table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list)
-{
-    fwdpp::ts::tree_visitor mti(tables, sample_list);
-    while (mti(std::true_type(), std::true_type()))
-        {
-            auto &tree = mti.tree();
-            for (auto i : sample_list)
-                {
-                    auto p = i;
-                    while (p != -1)
-                        {
-                            auto l = tree.left_sample[p];
-                            auto ogl = l;
-                            if (l != -1)
-                                {
-                                    auto r = tree.right_sample[p];
-                                    int ns = 0;
-                                    while (true)
-                                        {
-                                            ++ns;
-                                            if (l == r)
-                                                {
-                                                    break;
-                                                }
-                                            l = tree.next_sample[l];
-                                            if (l == ogl)
-                                                {
-                                                    throw std::runtime_error(
-                                                        "loopback error");
-                                                }
-                                        }
-                                    if (ns != tree.leaf_counts[p])
-                                        {
-                                            throw std::runtime_error(
-                                                "bad sample interval");
-                                        }
-                                }
-                            p = tree.parents[p];
-                        }
-                }
-        }
-}
-
-template <typename mcont_t>
-void
-matrix_runtime_test(const fwdpp::ts::table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-                    const mcont_t &mutations,
-                    const std::vector<fwdpp::uint_t> &mcounts)
-{
-    auto dm = fwdpp::ts::generate_data_matrix(tables, samples, mutations, true,
-                                              true);
-    auto rs = fwdpp::row_sums(dm);
-    for (std::size_t i = 0; i < rs.first.size(); ++i)
-        {
-            if (rs.first[i] != mcounts[dm.neutral_keys[i]])
-                {
-                    throw std::runtime_error("bad neutral mutation count");
-                }
-        }
-    for (std::size_t i = 0; i < rs.second.size(); ++i)
-        {
-            if (rs.second[i] != mcounts[dm.selected_keys[i]])
-                {
-                    throw std::runtime_error("bad selected mutation count");
-                }
-        }
-}
-
-void
-test_serialization(const fwdpp::ts::table_collection &tables,
-                   const std::string &filename)
-{
-    std::ofstream o(filename.c_str());
-    fwdpp::ts::io::serialize_tables(o, tables);
-    o.close();
-    std::ifstream i(filename.c_str());
-    auto tables2 = fwdpp::ts::io::deserialize_tables(i);
-
-    if (tables.genome_length() != tables2.genome_length())
-        {
-            throw std::runtime_error("genome_length does not match");
-        }
-    if (tables.edge_offset != tables2.edge_offset)
-        {
-            throw std::runtime_error("edge_offset does not match");
-        }
-
-    if (tables.edge_table != tables2.edge_table)
-        {
-            throw std::runtime_error("edge tables do not match");
-        }
-
-    if (tables.node_table != tables2.node_table)
-        {
-            throw std::runtime_error("node tables do not match");
-        }
-
-    if (tables.mutation_table != tables2.mutation_table)
-        {
-            throw std::runtime_error("mutation tables do not match");
-        }
-    if (tables != tables2)
-        {
-            throw std::runtime_error("tables failed equality check");
-        }
-}
-
-template <typename rng>
-std::function<double()>
-make_dfe(const fwdpp::uint_t N, const rng &r, const double mean,
-         const double shape, const double scoeff)
-{
-    if (std::isfinite(scoeff))
-        {
-            return [scoeff]() { return scoeff; };
-        }
-    fwdpp::extensions::gamma dfe(mean, shape);
-    return
-        [&r, dfe, N]() { return dfe(r.get()) / static_cast<double>(2 * N); };
-}
-
 int
 main(int argc, char **argv)
 {
-    fwdpp::uint_t N, gcint = 100;
-    double theta, rho, mean = 0.0, shape = 1, mu,
-                       scoeff = std::numeric_limits<double>::quiet_NaN(),
-                       dominance = 1.0, scaling = 2.0;
-    unsigned seed = 42;
-    int ancient_sampling_interval = -1;
-    int ancient_sample_size = -1, nsam = 0;
-    bool leaf_test = false;
-    bool matrix_test = false;
-    bool preserve_fixations = false;
-    int nloci = -1;
-    std::string filename, sfsfilename;
+    options o;
 
-    po::options_description options("Simulation options"),
-        dfeoptions("Distribution of fitness effects"),
-        testing("Testing options");
-    // clang-format off
-    options.add_options()("help", "Display help")
-        ("N", po::value<unsigned>(&N), "Diploid population size")
-        ("gc", po::value<unsigned>(&gcint),
-        "Simplification interval. Default is 100 generations.")
-        ("theta", po::value<double>(&theta), "4Nu per/within locus.")
-        ("rho", po::value<double>(&rho), "4Nr per/within a locus.")
-        ("mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ("nloci", po::value<int>(&nloci), "Number of loci.  Free recombination between them.")
-        ("preserve_fixations",po::bool_switch(&preserve_fixations),"If true, do not count mutations and remove fixations during simulation.  Mutation recycling will proceed via the output of mutation simplification.")
-        ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
-        ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
-         "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
-        ("ansam", po::value<int>(&ancient_sample_size),
-         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
-		("sfs", po::value<std::string>(&sfsfilename),"Write the neutral site frequency spectrum of a sample to a file")
-		("nsam", po::value<int>(&nsam), "Sample size for the site frequency spectrum.  Default is 0.  Change when using --sfs");
-        dfeoptions.add_options()
-        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
-        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
-        ("constant",po::value<double>(&scoeff), "Use a constant DFE with fixed selection coefficient s.\nUsing this over-rides gamma DFE parameters.")
-        ("h",po::value<double>(&dominance), "Dominance of selected variants.  Default = 1.0")
-        ("scaling",po::value<double>(&scaling), "Fitness model scaling is 1, 1+hs, 1+scaling*s for AA, Aa, and aa genotypes, resp.  Default = 2.0");
-        testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
-        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
-		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
-    // clang-format on
-    options.add(dfeoptions);
-    options.add(testing);
+    auto main_options = generate_main_options(o);
+    main_options.add_options()(
+        "nloci", po::value<int>(&o.nloci),
+        "Number of loci.  Free recombination between them.");
+
+    auto dfe_options = generate_dfe_options(o);
+    auto testing_options = generate_testing_options(o);
+    main_options.add(dfe_options);
+    main_options.add(testing_options);
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, options), vm);
+    po::store(po::parse_command_line(argc, argv, main_options), vm);
     po::notify(vm);
 
     if (vm.count("help") || argc == 1)
         {
-            std::cout << options << '\n';
+            std::cout << main_options << '\n';
             std::exit(1);
         }
 
-    // TODO: need parameter validation
-    if (nloci < 2)
-        {
-            throw std::invalid_argument("nloci must be > 1");
-        }
-    if (theta < 0. || rho < 0.)
-        {
-            throw std::invalid_argument("rho and theta must be >= 0.0");
-        }
-    if (N < 1)
-        {
-            throw std::invalid_argument("N must be > 0");
-        }
-    if (gcint < 1)
-        {
-            throw std::invalid_argument(
-                "Simplification (gc) interval must be > 0");
-        }
-    if (mu < 0)
-        {
-            throw std::invalid_argument(
-                "Mutation rate to selected variants must be >= 0");
-        }
-    else if (mu > 0)
-        {
-            if (mean == 0.0 && std::isnan(scoeff))
-                {
-                    throw std::invalid_argument(
-                        "mean selection coefficient cannot be zero");
-                }
-        }
-    if (ancient_sampling_interval > 0 && ancient_sample_size < 1)
-        {
-            throw std::invalid_argument(
-                "ansam must be > 0 when tracking ancient samples");
-        }
+    validate_primary_options(o);
 
-    GSLrng rng(seed);
+    GSLrng rng(o.seed);
 
     std::vector<std::pair<double, double>> locus_boundaries;
-    for (int i = 0; i < nloci; ++i)
+    for (int i = 0; i < o.nloci; ++i)
         {
             locus_boundaries.emplace_back(i, i + 1);
         }
-    poptype pop(N, locus_boundaries);
+    poptype pop(o.N, locus_boundaries);
 
     //NOTE: genome length must correspond to make position, as specified
     //in locus_boundaries!!!
-    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, nloci);
-    fwdpp::ts::table_simplifier simplifier(nloci);
+    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, o.nloci);
+    fwdpp::ts::table_simplifier simplifier(o.nloci);
     unsigned generation = 1;
-    double recrate = rho / static_cast<double>(4 * N);
+    double recrate = o.rho / static_cast<double>(4 * o.N);
     std::vector<std::function<std::vector<double>(void)>>
         intralocus_recombination;
-    for (int i = 0; i < nloci; ++i)
+    for (int i = 0; i < o.nloci; ++i)
         {
             intralocus_recombination.emplace_back(fwdpp::recbinder(
                 fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
         }
 
-    auto get_selection_coefficient = make_dfe(N, rng, mean, shape, scoeff);
-    const auto generate_h = [dominance]() { return dominance; };
+    auto get_selection_coefficient
+        = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
+    const auto generate_h = [&o]() { return o.dominance; };
 
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
         mmodels;
-    for (int i = 0; i < nloci; ++i)
+    for (int i = 0; i < o.nloci; ++i)
         {
             const auto generate_mutation_position
                 = [&rng, i]() { return gsl_ran_flat(rng.get(), i, i + 1); };
@@ -341,10 +138,10 @@ main(int argc, char **argv)
                     generate_h);
             };
             const auto mmodel
-                = [&rng, mu, make_mutation](std::queue<std::size_t> &recbin,
+                = [&rng, &o, make_mutation](std::queue<std::size_t> &recbin,
                                             poptype::mcont_t &mutations) {
                       std::vector<fwdpp::uint_t> rv;
-                      unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
+                      unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
                       for (unsigned m = 0; m < nmuts; ++m)
                           {
                               rv.push_back(make_mutation(recbin, mutations));
@@ -363,12 +160,12 @@ main(int argc, char **argv)
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
-    std::vector<std::size_t> individual_labels(N);
+    std::vector<std::size_t> individual_labels(o.N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
     std::vector<std::size_t> individuals;
-    if (ancient_sample_size > 0)
+    if (o.ancient_sample_size > 0)
         {
-            individuals.resize(ancient_sample_size);
+            individuals.resize(o.ancient_sample_size);
         }
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
@@ -384,7 +181,7 @@ main(int argc, char **argv)
     // issue that is easy to goof.
     auto ff = multilocus_multiplicative();
 
-    std::vector<double> between_locus_recombination_rate(nloci, 0.5);
+    std::vector<double> between_locus_recombination_rate(o.nloci, 0.5);
     auto interlocus_rec = fwdpp::make_poisson_interlocus_rec(
         rng.get(), between_locus_recombination_rate.data(),
         between_locus_recombination_rate.size());
@@ -393,7 +190,7 @@ main(int argc, char **argv)
         std::move(ff), std::move(mmodels), std::move(intralocus_recombination),
         std::move(interlocus_rec));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
-    for (; generation <= 10 * N; ++generation)
+    for (; generation <= 10 * o.N; ++generation)
         {
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
@@ -401,18 +198,18 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            evolve_generation(rng, pop, genetics, N, pick1, pick2,
+            evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
-            if (generation % gcint == 0.0)
+            if (generation % o.gcint == 0.0)
                 {
                     auto rv = simplify_tables(
                         pop, generation, pop.mcounts_from_preserved_nodes,
-                        tables, simplifier, tables.num_nodes() - 2 * N, 2 * N,
-                        preserve_fixations);
-                    if (!preserve_fixations)
+                        tables, simplifier, tables.num_nodes() - 2 * o.N,
+                        2 * o.N, o.preserve_fixations);
+                    if (!o.preserve_fixations)
                         {
                             genetics.mutation_recycling_bin
                                 = fwdpp::ts::make_mut_queue(
@@ -443,7 +240,7 @@ main(int argc, char **argv)
                 {
                     simplified = false;
                     first_parental_index = next_index;
-                    next_index += 2 * N;
+                    next_index += 2 * o.N;
 
                     // TODO: update or remove this bit
                     // The following (commented-out) block
@@ -478,11 +275,11 @@ main(int argc, char **argv)
                     //            itr, tables.mutation_table.end());
                     //    }
                 }
-            if (ancient_sampling_interval > 0
-                && generation % ancient_sampling_interval == 0.0
+            if (o.ancient_sampling_interval > 0
+                && generation % o.ancient_sampling_interval == 0.0
                 // This last check forbids us recording the
                 // final generation as ancient samples.
-                && generation < 10 * N)
+                && generation < 10 * o.N)
                 {
                     gsl_ran_choose(
                         rng.get(), individuals.data(), individuals.size(),
@@ -525,11 +322,11 @@ main(int argc, char **argv)
         {
             auto rv = simplify_tables(pop, generation,
                                       pop.mcounts_from_preserved_nodes, tables,
-                                      simplifier, tables.num_nodes() - 2 * N,
-                                      2 * N, preserve_fixations);
-            if (preserve_fixations)
+                                      simplifier, tables.num_nodes() - 2 * o.N,
+                                      2 * o.N, o.preserve_fixations);
+            if (o.preserve_fixations)
                 {
-                    std::vector<std::int32_t> samples(2 * N);
+                    std::vector<std::int32_t> samples(2 * o.N);
                     std::iota(samples.begin(), samples.end(), 0);
                     fwdpp::ts::count_mutations(
                         tables, pop.mutations, samples, pop.mcounts,
@@ -560,7 +357,7 @@ main(int argc, char **argv)
         }
     assert(tables.input_left.size() == tables.edge_table.size());
     assert(tables.output_right.size() == tables.edge_table.size());
-    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
+    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
     const auto neutral_variant_maker
         = [&rng, &pop, &genetics](const double left, const double right,
@@ -575,7 +372,7 @@ main(int argc, char **argv)
           };
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
-                                   theta / static_cast<double>(4 * N));
+                                   o.theta / static_cast<double>(4 * o.N));
     std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
               [&pop](const fwdpp::ts::mutation_record &a,
                      const fwdpp::ts::mutation_record &b) {
@@ -597,7 +394,7 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
-    if (leaf_test)
+    if (o.leaf_test)
         {
             std::cerr << "Starting sample list validation.  This may take a "
                          "while!\n";
@@ -607,7 +404,7 @@ main(int argc, char **argv)
             std::cout << "Passed with respect to preserved samples.\n";
         }
 
-    if (matrix_test)
+    if (o.matrix_test)
         {
             std::cerr << "Matrix test with respect to last generation...";
             matrix_runtime_test(tables, s, pop.mutations, pop.mcounts);
@@ -650,20 +447,20 @@ main(int argc, char **argv)
                     std::cout << "passed\n";
                 }
         }
-    if (!filename.empty())
+    if (!o.filename.empty())
         {
-            test_serialization(tables, filename);
+            test_serialization(tables, o.filename);
         }
 
-    if (!sfsfilename.empty())
+    if (!o.sfsfilename.empty())
         {
-            if (!(nsam > 2))
+            if (!(o.nsam > 2))
                 {
                     throw std::invalid_argument(
                         "sample size for site frequency spectrum must be > 2");
                 }
             // Simplify w.r.to 100 samples
-            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(nsam);
+            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
@@ -675,7 +472,7 @@ main(int argc, char **argv)
                 {
                     sfs[i - 1]++;
                 }
-            std::ofstream sfs_stream(sfsfilename.c_str());
+            std::ofstream sfs_stream(o.sfsfilename.c_str());
             for (std::size_t i = 0; i < sfs.size(); ++i)
                 {
                     sfs_stream << (i + 1) << ' ' << sfs[i] << '\n';

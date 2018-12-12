@@ -25,7 +25,7 @@ wfts_SOURCES=wfts.cc tree_sequence_examples_common.cc
 wfts_LDADD=-lboost_program_options
 
 noinst_PROGRAMS+=wfmlts
-wfmlts_SOURCES=wfmlts.cc
+wfmlts_SOURCES=wfmlts.cc tree_sequence_examples_common.cc
 wfmlts_LDADD=-lboost_program_options
 
 noinst_PROGRAMS+=spatialts

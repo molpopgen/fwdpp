@@ -26,7 +26,7 @@ struct options
     fwdpp::uint_t N, gcint;
     double theta, rho, mean, shape, mu, scoeff, dominance, scaling;
     unsigned seed;
-    int ancient_sampling_interval, ancient_sample_size, nsam;
+    int ancient_sampling_interval, ancient_sample_size, nsam, nloci;
     bool leaf_test, matrix_test, preserve_fixations;
     std::string filename, sfsfilename;
     options();
@@ -36,7 +36,7 @@ boost::program_options::options_description generate_main_options(options &o);
 boost::program_options::options_description generate_dfe_options(options &o);
 boost::program_options::options_description
 generate_testing_options(options &);
-void validate_primary_options(const options&);
+void validate_primary_options(const options &);
 
 std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const fwdpp::GSLrng_mt &r, const double mean,

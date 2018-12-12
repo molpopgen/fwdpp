@@ -43,21 +43,6 @@ using GSLrng = fwdpp::GSLrng_mt;
 int
 main(int argc, char **argv)
 {
-    //fwdpp::uint_t N, gcint = 100;
-    //double theta, rho, mean = 0.0, shape = 1, mu,
-    //                   scoeff = std::numeric_limits<double>::quiet_NaN(),
-    //                   dominance = 1.0, scaling = 2.0;
-    //unsigned seed = 42;
-    //int ancient_sampling_interval = -1;
-    //int ancient_sample_size = -1, nsam = 0;
-    //bool leaf_test = false;
-    //bool matrix_test = false;
-    //bool preserve_fixations = false;
-    //std::string filename, sfsfilename;
-    //po::options_description options("Simulation options");
-    //    dfeoptions("Distribution of fitness effects"),
-    //    testing("Testing options");
-    //options.add(dfeoptions);
     options o;
 
     auto main_options = generate_main_options(o);
