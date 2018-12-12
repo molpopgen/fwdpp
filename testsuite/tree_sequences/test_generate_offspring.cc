@@ -266,8 +266,9 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
         }
 }
 
-BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
-                        multilocus_fixture_deterministic)
+BOOST_FIXTURE_TEST_CASE(
+    test_multilocus_determinisic_breakpoint_and_mutation_correctness,
+    multilocus_fixture_deterministic)
 {
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
@@ -310,7 +311,7 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
     std::vector<double> expected_breakpoints
-        = { 1.5, 3.5, std::numeric_limits<double>::max() };
+        = { 1.5, 2.0, 3.5, std::numeric_limits<double>::max() };
     for (auto e : expected_breakpoints)
         {
             auto itr = std::find(begin(data_to_record.first.breakpoints),
@@ -324,8 +325,9 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
         }
 }
 
-BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
-                        multilocus_fixture_deterministic)
+BOOST_FIXTURE_TEST_CASE(
+    test_multilocus_determinisic_output_breakponint_and_mutation_correctness_swap_second,
+    multilocus_fixture_deterministic)
 {
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
@@ -367,7 +369,7 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
     std::vector<double> expected_breakpoints
-        = { 1.5, 3.5, std::numeric_limits<double>::max() };
+        = { 1.5, 2.,  3.5, std::numeric_limits<double>::max() };
     for (auto e : expected_breakpoints)
         {
             auto itr = std::find(begin(data_to_record.first.breakpoints),
