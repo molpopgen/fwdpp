@@ -338,36 +338,6 @@ main(int argc, char **argv)
 
     execute_expensive_leaf_test(o, tables, s);
     execute_matrix_test(o, pop, tables, s);
-
-    if (!o.filename.empty())
-        {
-            test_serialization(tables, o.filename);
-        }
-
-    if (!o.sfsfilename.empty())
-        {
-            if (!(o.nsam > 2))
-                {
-                    throw std::invalid_argument(
-                        "sample size for site frequency spectrum must be > 2");
-                }
-            // Simplify w.r.to 100 samples
-            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);
-            gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
-                           s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
-            std::iota(small_sample.begin(), small_sample.end(), 0);
-            auto dm = fwdpp::ts::generate_data_matrix(
-                tables, small_sample, pop.mutations, true, false);
-            auto rs = fwdpp::row_sums(dm);
-            std::vector<int> sfs(small_sample.size() - 1);
-            for (auto i : rs.first)
-                {
-                    sfs[i - 1]++;
-                }
-            std::ofstream sfs_stream(o.sfsfilename.c_str());
-            for (std::size_t i = 0; i < sfs.size(); ++i)
-                {
-                    sfs_stream << (i + 1) << ' ' << sfs[i] << '\n';
-                }
-        }
+    execute_serialization_test(o, tables);
+    write_sfs(o, rng, tables, s, pop.mutations);
 }

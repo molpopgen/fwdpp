@@ -2,6 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <fstream>
+#include <gsl/gsl_randist.h>
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/serialization.hpp>
@@ -309,4 +310,49 @@ execute_matrix_test(const options &o, const multi_locus_poptype &pop,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
     execute_matrix_test_detail(o, pop, tables, samples);
+}
+
+void
+execute_serialization_test(const options &o,
+                           const fwdpp::ts::table_collection &tables)
+{
+    if (!o.filename.empty())
+        {
+            test_serialization(tables, o.filename);
+        }
+}
+
+void
+write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
+          const fwdpp::ts::table_collection &tables,
+          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+          const std::vector<fwdpp::popgenmut> &mutations)
+{
+    if (!o.sfsfilename.empty())
+        {
+            if (!(o.nsam > 2))
+                {
+                    throw std::invalid_argument(
+                        "sample size for site frequency spectrum must be > 2");
+                }
+            // Simplify w.r.to 100 samples
+            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);
+            auto s(samples);
+            gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
+                           s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
+            std::iota(small_sample.begin(), small_sample.end(), 0);
+            auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample,
+                                                      mutations, true, false);
+            auto rs = fwdpp::row_sums(dm);
+            std::vector<int> sfs(small_sample.size() - 1);
+            for (auto i : rs.first)
+                {
+                    sfs[i - 1]++;
+                }
+            std::ofstream sfs_stream(o.sfsfilename.c_str());
+            for (std::size_t i = 0; i < sfs.size(); ++i)
+                {
+                    sfs_stream << (i + 1) << ' ' << sfs[i] << '\n';
+                }
+        }
 }

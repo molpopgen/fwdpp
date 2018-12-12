@@ -59,11 +59,15 @@ void execute_expensive_leaf_test(
     const options &o, const fwdpp::ts::table_collection &tables,
     const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
-void matrix_runtime_test(const fwdpp::ts::table_collection &tables,
-                         const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-                         const std::vector<fwdpp::popgenmut> &mutations,
-                         const std::vector<fwdpp::uint_t> &mcounts);
+void execute_serialization_test(const options &,
+                                const fwdpp::ts::table_collection &);
 
 void test_serialization(const fwdpp::ts::table_collection &tables,
                         const std::string &filename);
+void
+write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
+          const fwdpp::ts::table_collection &tables,
+          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+          const std::vector<fwdpp::popgenmut> &mutations);
+
 #endif
