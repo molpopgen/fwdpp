@@ -67,6 +67,9 @@ struct multilocus_fixture_deterministic
     swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
     std::vector<double> expected_breakpoints;
+    // The expected mutation positions are what we expect
+    // after calls to mutate_parent and mutate_parent2,
+    // respectively:
     std::vector<double> expected_mutation_positions_1,
         expected_mutation_positions_2;
     decltype(fwdpp::make_genetic_parameters_with_swapper(
