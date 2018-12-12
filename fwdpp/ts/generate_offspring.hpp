@@ -228,9 +228,23 @@ namespace fwdpp
                         if (i > 0)
                             {
                                 // between-locus rec, parent 1
-                                ttl_swaps_1 += irec[i - 1]();
+                                auto nrec_bw = irec[i - 1]();
+                                if (nrec_bw > 0 && nrec_bw % 2 != 0.)
+                                    {
+                                        all_breakpoints_1.push_back(
+                                            pop.locus_boundaries[i - 1]
+                                                .second);
+                                    }
+                                ttl_swaps_1 += nrec_bw;
                                 // between-locus rec, parent 2
-                                ttl_swaps_2 += irec[i - 1]();
+                                nrec_bw = irec[i - 1]();
+                                ttl_swaps_2 += nrec_bw;
+                                if (nrec_bw > 0 && nrec_bw % 2 != 0.)
+                                    {
+                                        all_breakpoints_2.push_back(
+                                            pop.locus_boundaries[i - 1]
+                                                .second);
+                                    }
                             }
                         auto p1g1 = pop.diploids[parents.first][i].first;
                         auto p1g2 = pop.diploids[parents.first][i].second;
@@ -248,22 +262,10 @@ namespace fwdpp
                         if (ttl_swaps_1 % 2 != 0.)
                             {
                                 std::swap(p1g1, p1g2);
-                                if (i > 0)
-                                    {
-                                        all_breakpoints_1.push_back(
-                                            pop.locus_boundaries[i - 1]
-                                                .second);
-                                    }
                             }
                         if (ttl_swaps_2 % 2 != 0.)
                             {
                                 std::swap(p2g1, p2g2);
-                                if (i > 0)
-                                    {
-                                        all_breakpoints_2.push_back(
-                                            pop.locus_boundaries[i - 1]
-                                                .second);
-                                    }
                             }
                         auto gamete_data = generate_offspring_gamete(
                             parental_data{ parents.first, p1g1, p1g2, swap1 },
