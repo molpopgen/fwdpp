@@ -42,7 +42,7 @@
 #include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
-using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
+using poptype = multi_locus_poptype;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 struct multilocus_multiplicative

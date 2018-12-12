@@ -37,7 +37,7 @@
 #include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
-using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
+using poptype = single_locus_poptype;
 using GSLrng = fwdpp::GSLrng_mt;
 
 int
