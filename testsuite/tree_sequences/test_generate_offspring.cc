@@ -27,7 +27,7 @@
  * 3     1    2
  *
  * *The entry for b/w loci refers to the number of xover events
- * b/w locus i and i+1.
+ * b/w locus i-1 and i.
  *
  * An xover w/in locus i occurs at position i + 0.5
  *
