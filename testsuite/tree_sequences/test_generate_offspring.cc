@@ -93,11 +93,12 @@
  *
  * [1.5, 2.0, 3.5, DBL_MAX],
  *
+ * assuming that 4 is set as the "genome length"
+ * of a table_collection.
+ *
  * These values are stored in "expected_breakpoints"
  * in the fixture.
  *
- * assuming that 4 is set as the "genome length"
- * of a table_collection.
  *
  * For the purpose of generating gametes, that "2.0"
  * breakpoint never needs to be stored, because parent 
