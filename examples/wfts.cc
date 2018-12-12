@@ -33,7 +33,6 @@
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/simparams.hpp>
-#include <boost/program_options.hpp>
 
 #include "simplify_tables.hpp"
 #include "evolve_generation_ts.hpp"
@@ -44,109 +43,58 @@ namespace po = boost::program_options;
 using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_mt;
 
-
 int
 main(int argc, char **argv)
 {
-    fwdpp::uint_t N, gcint = 100;
-    double theta, rho, mean = 0.0, shape = 1, mu,
-                       scoeff = std::numeric_limits<double>::quiet_NaN(),
-                       dominance = 1.0, scaling = 2.0;
-    unsigned seed = 42;
-    int ancient_sampling_interval = -1;
-    int ancient_sample_size = -1, nsam = 0;
-    bool leaf_test = false;
-    bool matrix_test = false;
-    bool preserve_fixations = false;
-    std::string filename, sfsfilename;
-    po::options_description options("Simulation options"),
-        dfeoptions("Distribution of fitness effects"),
-        testing("Testing options");
-    // clang-format off
-    options.add_options()("help", "Display help")
-        ("N", po::value<unsigned>(&N), "Diploid population size")
-        ("gc", po::value<unsigned>(&gcint),
-        "Simplification interval. Default is 100 generations.")
-        ("theta", po::value<double>(&theta), "4Nu")
-        ("rho", po::value<double>(&rho), "4Nr")
-        ("mu", po::value<double>(&mu), "mutation rate to selected variants")
-        ("preserve_fixations",po::bool_switch(&preserve_fixations),"If true, do not count mutations and remove fixations during simulation.  Mutation recycling will proceed via the output of mutation simplification.")
-        ("seed", po::value<unsigned>(&seed), "Random number seed. Default is 42")
-        ("sampling_interval", po::value<int>(&ancient_sampling_interval), 
-         "How often to preserve ancient samples.  Default is -1, which means do not preserve any.")
-        ("ansam", po::value<int>(&ancient_sample_size),
-         "Sample size (no. diploids) of ancient samples to take at each ancient sampling interval.  Default is -1, and must be reset if sampling_interval is used")
-		("sfs", po::value<std::string>(&sfsfilename),"Write the neutral site frequency spectrum of a sample to a file")
-		("nsam", po::value<int>(&nsam), "Sample size for the site frequency spectrum.  Default is 0.  Change when using --sfs");
-        dfeoptions.add_options()
-        ("mean", po::value<double>(&mean), "Mean 2Ns of Gamma distribution of selection coefficients. Default 0.0.")
-        ("shape", po::value<double>(&shape), "Shape of Gamma distribution of selection coefficients. Default = 1.")
-        ("constant",po::value<double>(&scoeff), "Use a constant DFE with fixed selection coefficient s.\nUsing this over-rides gamma DFE parameters.")
-        ("h",po::value<double>(&dominance), "Dominance of selected variants.  Default = 1.0")
-        ("scaling",po::value<double>(&scaling), "Fitness model scaling is 1, 1+hs, 1+scaling*s for AA, Aa, and aa genotypes, resp.  Default = 2.0");
-        testing.add_options()("leaf_test",po::bool_switch(&leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
-        ("matrix_test",po::bool_switch(&matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
-		("serialization_test",po::value<std::string>(&filename),"Test round-trip to/from a file");
-    // clang-format on
-    options.add(dfeoptions);
-    options.add(testing);
+    //fwdpp::uint_t N, gcint = 100;
+    //double theta, rho, mean = 0.0, shape = 1, mu,
+    //                   scoeff = std::numeric_limits<double>::quiet_NaN(),
+    //                   dominance = 1.0, scaling = 2.0;
+    //unsigned seed = 42;
+    //int ancient_sampling_interval = -1;
+    //int ancient_sample_size = -1, nsam = 0;
+    //bool leaf_test = false;
+    //bool matrix_test = false;
+    //bool preserve_fixations = false;
+    //std::string filename, sfsfilename;
+    //po::options_description options("Simulation options");
+    //    dfeoptions("Distribution of fitness effects"),
+    //    testing("Testing options");
+    //options.add(dfeoptions);
+    options o;
+
+    auto main_options = generate_main_options(o);
+    auto dfe_options = generate_dfe_options(o);
+    auto testing_options = generate_testing_options(o);
+    main_options.add(dfe_options);
+    main_options.add(testing_options);
     po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, options), vm);
+    po::store(po::parse_command_line(argc, argv, main_options), vm);
     po::notify(vm);
 
     if (vm.count("help") || argc == 1)
         {
-            std::cout << options << '\n';
+            std::cout << main_options << '\n';
             std::exit(1);
         }
 
-    // TODO: need parameter validation
-    if (theta < 0. || rho < 0.)
-        {
-            throw std::invalid_argument("rho and theta must be >= 0.0");
-        }
-    if (N < 1)
-        {
-            throw std::invalid_argument("N must be > 0");
-        }
-    if (gcint < 1)
-        {
-            throw std::invalid_argument(
-                "Simplification (gc) interval must be > 0");
-        }
-    if (mu < 0)
-        {
-            throw std::invalid_argument(
-                "Mutation rate to selected variants must be >= 0");
-        }
-    else if (mu > 0)
-        {
-            if (mean == 0.0 && std::isnan(scoeff))
-                {
-                    throw std::invalid_argument(
-                        "mean selection coefficient cannot be zero");
-                }
-        }
-    if (ancient_sampling_interval > 0 && ancient_sample_size < 1)
-        {
-            throw std::invalid_argument(
-                "ansam must be > 0 when tracking ancient samples");
-        }
+    validate_primary_options(o);
 
-    GSLrng rng(seed);
+    GSLrng rng(o.seed);
 
-    poptype pop(N);
+    poptype pop(o.N);
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
-    double recrate = rho / static_cast<double>(4 * N);
+    double recrate = o.rho / static_cast<double>(4 * o.N);
     const auto recmap
         = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
 
-    auto get_selection_coefficient = make_dfe(N, rng, mean, shape, scoeff);
+    auto get_selection_coefficient
+        = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
-    const auto generate_h = [dominance]() { return dominance; };
+    const auto generate_h = [&o]() { return o.dominance; };
     const auto make_mutation
         = [&pop, &rng, &generation, generate_mutation_position,
            get_selection_coefficient, generate_h](
@@ -158,11 +106,11 @@ main(int argc, char **argv)
                   generate_h);
           };
 
-    const auto mmodel = [&rng, mu,
+    const auto mmodel = [&rng, &o,
                          &make_mutation](std::queue<std::size_t> &recbin,
                                          poptype::mcont_t &mutations) {
         std::vector<fwdpp::uint_t> rv;
-        unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
+        unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
         for (unsigned i = 0; i < nmuts; ++i)
             {
                 rv.push_back(make_mutation(recbin, mutations));
@@ -178,12 +126,12 @@ main(int argc, char **argv)
     fwdpp::ts::TS_NODE_INT first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
-    std::vector<std::size_t> individual_labels(N);
+    std::vector<std::size_t> individual_labels(o.N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
     std::vector<std::size_t> individuals;
-    if (ancient_sample_size > 0)
+    if (o.ancient_sample_size > 0)
         {
-            individuals.resize(ancient_sample_size);
+            individuals.resize(o.ancient_sample_size);
         }
     std::vector<double> fitnesses;
     std::vector<diploid_metadata> ancient_sample_metadata;
@@ -197,12 +145,12 @@ main(int argc, char **argv)
     // meaning that we can record a correct fitness
     // value as ancient sample metadata.  This is a logic
     // issue that is easy to goof.
-    auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(scaling));
+    auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(o.scaling));
 
     auto genetics = fwdpp::make_genetic_parameters(
         std::move(ff), std::move(mmodel), std::move(recmap));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
-    for (; generation <= 10 * N; ++generation)
+    for (; generation <= 10 * o.N; ++generation)
         {
             auto pick1 = [&lookup, &rng]() {
                 return gsl_ran_discrete(rng.get(), lookup.get());
@@ -210,18 +158,18 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            evolve_generation(rng, pop, genetics, N, pick1, pick2,
+            evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
-            if (generation % gcint == 0.0)
+            if (generation % o.gcint == 0.0)
                 {
                     auto rv = simplify_tables(
                         pop, generation, pop.mcounts_from_preserved_nodes,
-                        tables, simplifier, tables.num_nodes() - 2 * N, 2 * N,
-                        preserve_fixations);
-                    if (!preserve_fixations)
+                        tables, simplifier, tables.num_nodes() - 2 * o.N,
+                        2 * o.N, o.preserve_fixations);
+                    if (!o.preserve_fixations)
                         {
                             genetics.mutation_recycling_bin
                                 = fwdpp::ts::make_mut_queue(
@@ -252,9 +200,9 @@ main(int argc, char **argv)
                 {
                     simplified = false;
                     first_parental_index = next_index;
-                    next_index += 2 * N;
+                    next_index += 2 * o.N;
 
-					// TODO: update or remove this bit
+                    // TODO: update or remove this bit
                     // The following (commented-out) block
                     // shows that it is possible to mix mutation
                     // counting strategies in the right situations.
@@ -287,11 +235,11 @@ main(int argc, char **argv)
                     //            itr, tables.mutation_table.end());
                     //    }
                 }
-            if (ancient_sampling_interval > 0
-                && generation % ancient_sampling_interval == 0.0
+            if (o.ancient_sampling_interval > 0
+                && generation % o.ancient_sampling_interval == 0.0
                 // This last check forbids us recording the
                 // final generation as ancient samples.
-                && generation < 10 * N)
+                && generation < 10 * o.N)
                 {
                     gsl_ran_choose(
                         rng.get(), individuals.data(), individuals.size(),
@@ -334,11 +282,11 @@ main(int argc, char **argv)
         {
             auto rv = simplify_tables(pop, generation,
                                       pop.mcounts_from_preserved_nodes, tables,
-                                      simplifier, tables.num_nodes() - 2 * N,
-                                      2 * N, preserve_fixations);
-            if (preserve_fixations)
+                                      simplifier, tables.num_nodes() - 2 * o.N,
+                                      2 * o.N, o.preserve_fixations);
+            if (o.preserve_fixations)
                 {
-                    std::vector<std::int32_t> samples(2 * N);
+                    std::vector<std::int32_t> samples(2 * o.N);
                     std::iota(samples.begin(), samples.end(), 0);
                     fwdpp::ts::count_mutations(
                         tables, pop.mutations, samples, pop.mcounts,
@@ -369,7 +317,7 @@ main(int argc, char **argv)
         }
     assert(tables.input_left.size() == tables.edge_table.size());
     assert(tables.output_right.size() == tables.edge_table.size());
-    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
+    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
     const auto neutral_variant_maker
         = [&rng, &pop, &genetics](const double left, const double right,
@@ -384,7 +332,7 @@ main(int argc, char **argv)
           };
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
-                                   theta / static_cast<double>(4 * N));
+                                   o.theta / static_cast<double>(4 * o.N));
     std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
               [&pop](const fwdpp::ts::mutation_record &a,
                      const fwdpp::ts::mutation_record &b) {
@@ -406,7 +354,7 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
-    if (leaf_test)
+    if (o.leaf_test)
         {
             std::cerr << "Starting sample list validation.  This may take a "
                          "while!\n";
@@ -416,7 +364,7 @@ main(int argc, char **argv)
             std::cout << "Passed with respect to preserved samples.\n";
         }
 
-    if (matrix_test)
+    if (o.matrix_test)
         {
             std::cerr << "Matrix test with respect to last generation...";
             matrix_runtime_test(tables, s, pop.mutations, pop.mcounts);
@@ -459,20 +407,20 @@ main(int argc, char **argv)
                     std::cout << "passed\n";
                 }
         }
-    if (!filename.empty())
+    if (!o.filename.empty())
         {
-            test_serialization(tables, filename);
+            test_serialization(tables, o.filename);
         }
 
-    if (!sfsfilename.empty())
+    if (!o.sfsfilename.empty())
         {
-            if (!(nsam > 2))
+            if (!(o.nsam > 2))
                 {
                     throw std::invalid_argument(
                         "sample size for site frequency spectrum must be > 2");
                 }
             // Simplify w.r.to 100 samples
-            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(nsam);
+            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
@@ -484,7 +432,7 @@ main(int argc, char **argv)
                 {
                     sfs[i - 1]++;
                 }
-            std::ofstream sfs_stream(sfsfilename.c_str());
+            std::ofstream sfs_stream(o.sfsfilename.c_str());
             for (std::size_t i = 0; i < sfs.size(); ++i)
                 {
                     sfs_stream << (i + 1) << ' ' << sfs[i] << '\n';
