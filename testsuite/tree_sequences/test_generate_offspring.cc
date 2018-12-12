@@ -95,6 +95,9 @@
  *
  * [1.5, 2.0, 3.5, DBL_MAX],
  *
+ * These values are stored in "expected_breakpoints"
+ * in the fixture.
+ *
  * assuming that 4 is set as the "genome length"
  * of a table_collection.
  *
@@ -310,8 +313,6 @@ BOOST_FIXTURE_TEST_CASE(
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
-    std::vector<double> expected_breakpoints
-        = { 1.5, 2.0, 3.5, std::numeric_limits<double>::max() };
     for (auto e : expected_breakpoints)
         {
             auto itr = std::find(begin(data_to_record.first.breakpoints),
@@ -368,8 +369,6 @@ BOOST_FIXTURE_TEST_CASE(
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
-    std::vector<double> expected_breakpoints
-        = { 1.5, 2.,  3.5, std::numeric_limits<double>::max() };
     for (auto e : expected_breakpoints)
         {
             auto itr = std::find(begin(data_to_record.first.breakpoints),

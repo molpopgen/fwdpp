@@ -66,6 +66,7 @@ struct multilocus_fixture_deterministic
     std::function<int(const gsl_rng *, std::size_t, std::size_t)> do_not_swap;
     swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
+    std::vector<double> expected_breakpoints;
     decltype(fwdpp::make_genetic_parameters_with_swapper(
         gvalue, mmodels, intralocus_rec, interlocus_rec,
         do_not_swap)) params_no_swap;
@@ -79,7 +80,9 @@ struct multilocus_fixture_deterministic
           interlocus_rec(make_interlocus_rec()),
           do_not_swap(
               [](const gsl_rng *, std::size_t, std::size_t) { return 0; }),
-          swap_second(), gvalue(), params_no_swap(make_params()),
+          swap_second(), gvalue(), 
+          expected_breakpoints{{ 1.5, 2.,  3.5, std::numeric_limits<double>::max() }},
+          params_no_swap(make_params()),
           params_swap_second(make_params_swap_second())
     {
     }
