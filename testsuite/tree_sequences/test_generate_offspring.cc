@@ -303,6 +303,26 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
     BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 6);
 }
 
+BOOST_FIXTURE_TEST_CASE(
+    test_multilocus_determinisic_table_recording_swap_second,
+    multilocus_fixture_deterministic)
+{
+    auto params = make_params_swap_second();
+    poptype::diploid_t offspring;
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params, offspring);
+    fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
+    auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
+    auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
+    tables.add_offspring_data(next_index++, data_to_record.first.breakpoints,
+                              data_to_record.first.mutation_keys, p1d, 0, 1);
+    tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
+                              data_to_record.second.mutation_keys, p2d, 0, 1);
+    BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 6);
+}
+
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
                         multilocus_fixture_deterministic)
 {
