@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <functional>
+#include <queue>
 #include <boost/program_options.hpp>
 #include <fwdpp/slocuspop.hpp>
 #include <fwdpp/mlocuspop.hpp>
@@ -37,6 +38,18 @@ struct options
     options();
 };
 
+int
+apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+                        fwdpp::ts::table_collection &tables,
+                        single_locus_poptype &pop,
+                        std::queue<std::size_t> &mutation_recycling_bin);
+
+int
+apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+                        fwdpp::ts::table_collection &tables,
+                        multi_locus_poptype &pop,
+                        std::queue<std::size_t> &mutation_recycling_bin);
+
 boost::program_options::options_description generate_main_options(options &o);
 boost::program_options::options_description generate_dfe_options(options &o);
 boost::program_options::options_description
@@ -46,6 +59,7 @@ void validate_primary_options(const options &);
 std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const fwdpp::GSLrng_mt &r, const double mean,
                                  const double shape, const double scoeff);
+
 
 void execute_matrix_test(const options &, const single_locus_poptype &,
                          const fwdpp::ts::table_collection &,

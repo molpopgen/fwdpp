@@ -6,10 +6,64 @@
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/serialization.hpp>
+#include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
+
+template <typename poptype>
+int
+apply_neutral_mutations_details(
+    const options &o, const fwdpp::GSLrng_mt &rng,
+    fwdpp::ts::table_collection &tables, poptype &pop,
+    std::queue<std::size_t> &mutation_recycling_bin)
+{
+    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
+
+    std::iota(s.begin(), s.end(), 0);
+    const auto neutral_variant_maker
+        = [&rng, &pop,
+           &mutation_recycling_bin](const double left, const double right,
+                                    const fwdpp::uint_t generation) {
+              return fwdpp::infsites_popgenmut(
+                  mutation_recycling_bin, pop.mutations, rng.get(),
+                  pop.mut_lookup, generation, 0.0,
+                  [left, right, &rng] {
+                      return gsl_ran_flat(rng.get(), left, right);
+                  },
+                  []() { return 0.0; }, []() { return 0.0; });
+          };
+    auto neutral_muts
+        = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
+                                   o.theta / static_cast<double>(4 * o.N));
+    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
+              [&pop](const fwdpp::ts::mutation_record &a,
+                     const fwdpp::ts::mutation_record &b) {
+                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
+              });
+    return neutral_muts;
+}
+
+int
+apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+                        fwdpp::ts::table_collection &tables,
+                        single_locus_poptype &pop,
+                        std::queue<std::size_t> &mutation_recycling_bin)
+{
+    return apply_neutral_mutations_details(o, rng, tables, pop,
+                                           mutation_recycling_bin);
+}
+
+int
+apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+                        fwdpp::ts::table_collection &tables,
+                        multi_locus_poptype &pop,
+                        std::queue<std::size_t> &mutation_recycling_bin)
+{
+    return apply_neutral_mutations_details(o, rng, tables, pop,
+                                           mutation_recycling_bin);
+}
 
 options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
@@ -175,7 +229,8 @@ expensive_leaf_test(const fwdpp::ts::table_collection &tables,
                                             if (l == ogl)
                                                 {
                                                     throw std::runtime_error(
-                                                        "loopback error");
+                                                        "loopback "
+                                                        "error");
                                                 }
                                         }
                                     if (ns != tree.leaf_counts[p])
@@ -258,8 +313,8 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
             std::cerr << "passed\n";
             if (!tables.preserved_nodes.empty())
                 {
-                    std::cout
-                        << "Matrix test with respect to preserved samples...";
+                    std::cout << "Matrix test with respect to preserved "
+                                 "samples...";
                     matrix_runtime_test(tables, tables.preserved_nodes,
                                         pop.mutations,
                                         pop.mcounts_from_preserved_nodes);
@@ -333,7 +388,8 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
             if (!(o.nsam > 2))
                 {
                     throw std::invalid_argument(
-                        "sample size for site frequency spectrum must be > 2");
+                        "sample size for site frequency spectrum must be "
+                        "> 2");
                 }
             // Simplify w.r.to 100 samples
             std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);

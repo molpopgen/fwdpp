@@ -301,25 +301,10 @@ main(int argc, char **argv)
     assert(tables.output_right.size() == tables.edge_table.size());
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
-    const auto neutral_variant_maker
-        = [&rng, &pop, &genetics](const double left, const double right,
-                                  const fwdpp::uint_t generation) {
-              return fwdpp::infsites_popgenmut(
-                  genetics.mutation_recycling_bin, pop.mutations, rng.get(),
-                  pop.mut_lookup, generation, 0.0,
-                  [left, right, &rng] {
-                      return gsl_ran_flat(rng.get(), left, right);
-                  },
-                  []() { return 0.0; }, []() { return 0.0; });
-          };
-    auto neutral_muts
-        = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
-                                   o.theta / static_cast<double>(4 * o.N));
-    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
-              [&pop](const fwdpp::ts::mutation_record &a,
-                     const fwdpp::ts::mutation_record &b) {
-                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
-              });
+
+    auto neutral_muts = apply_neutral_mutations(
+        o, rng, tables, pop, genetics.mutation_recycling_bin);
+
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
