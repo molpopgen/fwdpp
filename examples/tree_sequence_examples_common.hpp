@@ -5,9 +5,14 @@
 #include <string>
 #include <functional>
 #include <boost/program_options.hpp>
+#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/table_collection.hpp>
+
+using single_locus_poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
+using multi_locus_poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
 
 struct diploid_metadata
 {
@@ -42,14 +47,22 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const fwdpp::GSLrng_mt &r, const double mean,
                                  const double shape, const double scoeff);
 
+void execute_matrix_test(const options &, const single_locus_poptype &,
+                         const fwdpp::ts::table_collection &,
+                         const std::vector<fwdpp::ts::TS_NODE_INT> &);
+
+void execute_matrix_test(const options &, const multi_locus_poptype &,
+                         const fwdpp::ts::table_collection &,
+                         const std::vector<fwdpp::ts::TS_NODE_INT> &);
+
+void execute_expensive_leaf_test(
+    const options &o, const fwdpp::ts::table_collection &tables,
+    const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+
 void matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
                          const std::vector<fwdpp::popgenmut> &mutations,
                          const std::vector<fwdpp::uint_t> &mcounts);
-
-void
-expensive_leaf_test(const fwdpp::ts::table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list);
 
 void test_serialization(const fwdpp::ts::table_collection &tables,
                         const std::string &filename);

@@ -394,59 +394,9 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
-    if (o.leaf_test)
-        {
-            std::cerr << "Starting sample list validation.  This may take a "
-                         "while!\n";
-            expensive_leaf_test(tables, s);
-            std::cout << "Passed with respect to last generation.\n";
-            expensive_leaf_test(tables, tables.preserved_nodes);
-            std::cout << "Passed with respect to preserved samples.\n";
-        }
+    execute_expensive_leaf_test(o, tables, s);
+    execute_matrix_test(o, pop, tables, s);
 
-    if (o.matrix_test)
-        {
-            std::cerr << "Matrix test with respect to last generation...";
-            matrix_runtime_test(tables, s, pop.mutations, pop.mcounts);
-            std::cerr << "passed\n";
-            if (!tables.preserved_nodes.empty())
-                {
-                    std::cout
-                        << "Matrix test with respect to preserved samples...";
-                    matrix_runtime_test(tables, tables.preserved_nodes,
-                                        pop.mutations,
-                                        pop.mcounts_from_preserved_nodes);
-                    std::cerr << "passed\n";
-                    auto sc = s;
-                    sc.insert(sc.end(), tables.preserved_nodes.begin(),
-                              tables.preserved_nodes.end());
-                    auto mc(pop.mcounts);
-                    std::transform(mc.begin(), mc.end(),
-                                   pop.mcounts_from_preserved_nodes.begin(),
-                                   mc.begin(), std::plus<fwdpp::uint_t>());
-                    std::cout << "Matrix test with respect to last generation "
-                                 "+ preserved nodes...";
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
-                    std::cout << "passed.\n";
-                    std::cout << "Matrix test with respect to most recent "
-                                 "ancient sampling time point...";
-                    sc.clear();
-                    std::copy_if(
-                        tables.preserved_nodes.begin(),
-                        tables.preserved_nodes.end(), std::back_inserter(sc),
-                        [&tables](const fwdpp::ts::TS_NODE_INT n) {
-                            return tables.node_table[n].time
-                                   == tables
-                                          .node_table[tables.preserved_nodes
-                                                          .back()]
-                                          .time;
-                        });
-                    mc.clear();
-                    fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
-                    std::cout << "passed\n";
-                }
-        }
     if (!o.filename.empty())
         {
             test_serialization(tables, o.filename);
