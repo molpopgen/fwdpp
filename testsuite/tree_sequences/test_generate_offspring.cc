@@ -187,16 +187,6 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params, offspring);
-    for (auto b : data_to_record.first.breakpoints)
-        {
-            std::cout << b << ' ';
-        }
-    std::cout << '\n';
-    for (auto b : data_to_record.second.breakpoints)
-        {
-            std::cout << b << ' ';
-        }
-    std::cout << '\n';
 
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
@@ -244,16 +234,6 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params, offspring);
-    for (auto b : data_to_record.first.breakpoints)
-        {
-            std::cout << b << ' ';
-        }
-    std::cout << '\n';
-    for (auto b : data_to_record.second.breakpoints)
-        {
-            std::cout << b << ' ';
-        }
-    std::cout << '\n';
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
     // manually populate mcounts
@@ -289,7 +269,19 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
-    //TODO: test that the breakpoints contain the correct data!
+    std::vector<double> expected_breakpoints
+        = { 1.5, 3.5, std::numeric_limits<double>::max() };
+    for (auto e : expected_breakpoints)
+        {
+            auto itr = std::find(begin(data_to_record.first.breakpoints),
+                                 end(data_to_record.first.breakpoints), e);
+            auto itr2 = std::find(begin(data_to_record.second.breakpoints),
+                                  end(data_to_record.second.breakpoints), e);
+            BOOST_REQUIRE_EQUAL(itr != end(data_to_record.first.breakpoints),
+                                true);
+            BOOST_REQUIRE_EQUAL(itr2 != end(data_to_record.second.breakpoints),
+                                true);
+        }
 }
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
@@ -307,12 +299,8 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
                               data_to_record.first.mutation_keys, p1d, 0, 1);
     tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
                               data_to_record.second.mutation_keys, p2d, 0, 1);
-    for (auto &e : tables.edge_table)
-        {
-            std::cout << e.parent << ' ' << e.child << ' ' << e.left << ' '
-                      << e.right << '\n';
-        }
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 6);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
