@@ -12,7 +12,7 @@ namespace fwdpp
     {
         namespace detail
         {
-            void
+            inline void
             outgoing_leaf_counts(marginal_tree&, const std::int32_t,
                                  const std::int32_t, const std::false_type)
             {
