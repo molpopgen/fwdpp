@@ -223,7 +223,19 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
     BOOST_CHECK_EQUAL(data_to_record.first.mutation_keys.size(), nloci);
     BOOST_CHECK_EQUAL(data_to_record.second.mutation_keys.size(), nloci);
 
-    //TODO: test that the breakpoints contain the correct data!
+    std::vector<double> expected_breakpoints
+        = { 1.5, 3.5, std::numeric_limits<double>::max() };
+    for (auto e : expected_breakpoints)
+        {
+            auto itr = std::find(begin(data_to_record.first.breakpoints),
+                                 end(data_to_record.first.breakpoints), e);
+            auto itr2 = std::find(begin(data_to_record.second.breakpoints),
+                                  end(data_to_record.second.breakpoints), e);
+            BOOST_REQUIRE_EQUAL(itr != end(data_to_record.first.breakpoints),
+                                true);
+            BOOST_REQUIRE_EQUAL(itr2 != end(data_to_record.second.breakpoints),
+                                true);
+        }
 }
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
