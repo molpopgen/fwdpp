@@ -397,7 +397,7 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
     tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
                               data_to_record.second.mutation_keys, p2d, 0, 1);
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
-    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 6);
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 8);
 }
 
 BOOST_FIXTURE_TEST_CASE(
@@ -416,7 +416,7 @@ BOOST_FIXTURE_TEST_CASE(
     tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
                               data_to_record.second.mutation_keys, p2d, 0, 1);
     BOOST_REQUIRE_EQUAL(tables.mutation_table.size(), 8);
-    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 6);
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 8);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
