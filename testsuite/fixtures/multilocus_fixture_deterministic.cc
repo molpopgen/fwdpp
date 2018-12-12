@@ -55,25 +55,22 @@ multilocus_fixture_deterministic::mutate_parent2()
 auto
 multilocus_fixture_deterministic::make_params()
     -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec), do_not_swap))
+        gvalue, mmodels, intralocus_rec, interlocus_rec, do_not_swap))
 // NOTE: we use do_not_swap to suppress any initial randomness
 // for the test
 {
     return fwdpp::make_genetic_parameters_with_swapper(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec), do_not_swap);
+        gvalue, mmodels, intralocus_rec, interlocus_rec, do_not_swap);
 }
 
 auto
 multilocus_fixture_deterministic::make_params_swap_second()
     -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec), swap_second))
+        gvalue, mmodels, intralocus_rec, interlocus_rec, swap_second))
 {
     return fwdpp::make_genetic_parameters_with_swapper(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec), swap_second);
+        gvalue, mmodels, intralocus_rec, interlocus_rec,
+        swap_second_parent_only());
 }
 // PRIVATE FUNCTIONS
 

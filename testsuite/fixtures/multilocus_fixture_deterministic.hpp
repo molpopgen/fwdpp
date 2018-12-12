@@ -66,30 +66,34 @@ struct multilocus_fixture_deterministic
     std::function<int(const gsl_rng *, std::size_t, std::size_t)> do_not_swap;
     swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
+    decltype(fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec, interlocus_rec,
+        do_not_swap)) params_no_swap;
+    decltype(fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec, interlocus_rec,
+        swap_second)) params_swap_second;
+
     multilocus_fixture_deterministic()
         : pop(N, make_boundaries()), tables(2 * N, 0, 0, nloci), rng(42),
           mmodels(make_mmodels()), intralocus_rec(make_intralocus_rec()),
           interlocus_rec(make_interlocus_rec()),
           do_not_swap(
               [](const gsl_rng *, std::size_t, std::size_t) { return 0; }),
-          swap_second(), gvalue()
+          swap_second(), gvalue(), params_no_swap(make_params()),
+          params_swap_second(make_params_swap_second())
     {
     }
 
     // NOTE: we use do_not_swap to suppress any initial randomness
     // for the test
-    auto
-    make_params() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-        std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-        std::move(interlocus_rec), do_not_swap));
+    auto make_params() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec, interlocus_rec, do_not_swap));
 
     // NOTE: we use swap_second to suppress any initial randomness
     // for the test
-    auto
-    make_params_swap_second()
+    auto make_params_swap_second()
         -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-            std::move(gvalue), std::move(mmodels), std::move(intralocus_rec),
-            std::move(interlocus_rec), swap_second));
+            gvalue, mmodels, intralocus_rec, interlocus_rec, swap_second));
 
     // We add a variant to each gamete that
     // is exactly at the start of each locus

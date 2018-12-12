@@ -24,16 +24,14 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
     BOOST_REQUIRE_EQUAL(intralocus_rec.size(), nloci);
     BOOST_REQUIRE_EQUAL(interlocus_rec.size(), nloci - 1);
 
-    auto params = make_params();
-
     for (std::size_t i = 0; i < nloci; ++i)
         {
-            auto k = params.generate_mutations[i](
-                params.mutation_recycling_bin, pop.mutations);
+            auto k = params_no_swap.generate_mutations[i](
+                params_no_swap.mutation_recycling_bin, pop.mutations);
             BOOST_REQUIRE_EQUAL(k.size(), 1);
             BOOST_REQUIRE_EQUAL(pop.mutations[k[0]].pos >= i, true);
             BOOST_REQUIRE_EQUAL(pop.mutations[k[0]].pos < i + 1, true);
-            auto r = params.generate_breakpoints[i]();
+            auto r = params_no_swap.generate_breakpoints[i]();
             if (i % 2 == 0.)
                 {
                     BOOST_REQUIRE_EQUAL(r.size(), 0);
@@ -45,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(check_multilocus_deterministic_fixture,
                 }
             if (i)
                 {
-                    auto ir = params.interlocus_recombination[i - 1]();
+                    auto ir = params_no_swap.interlocus_recombination[i - 1]();
                     BOOST_REQUIRE_EQUAL(ir, i - 1);
                 }
         }
@@ -61,10 +59,9 @@ BOOST_FIXTURE_TEST_CASE(test_transmission, multilocus_fixture_deterministic)
 {
     mutate_parent();
     poptype::diploid_t offspring;
-    auto params = make_params();
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_no_swap, offspring);
     // Check transmission of mutations into offpring's FIRST gamete
     int locus = 0;
     bool expected_result = true;
@@ -133,10 +130,9 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
 {
     mutate_parent2();
     poptype::diploid_t offspring;
-    auto params = make_params();
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_no_swap, offspring);
     for (std::size_t i = 0; i < nloci; ++i)
         {
             if (i % 2 == 0.)
@@ -182,11 +178,10 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_with_extra_variants,
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
                         multilocus_fixture_deterministic)
 {
-    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_no_swap, offspring);
 
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
@@ -241,11 +236,10 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output,
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
                         multilocus_fixture_deterministic)
 {
-    auto params = make_params_swap_second();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_swap_second, offspring);
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
     // manually populate mcounts
@@ -299,11 +293,10 @@ BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_output_swap_second,
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_recording,
                         multilocus_fixture_deterministic)
 {
-    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_no_swap, offspring);
     fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
     auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
     auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
@@ -319,11 +312,10 @@ BOOST_FIXTURE_TEST_CASE(
     test_multilocus_determinisic_table_recording_swap_second,
     multilocus_fixture_deterministic)
 {
-    auto params = make_params_swap_second();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_swap_second, offspring);
     fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
     auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
     auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
@@ -338,11 +330,10 @@ BOOST_FIXTURE_TEST_CASE(
 BOOST_FIXTURE_TEST_CASE(test_multilocus_determinisic_table_simplification,
                         multilocus_fixture_deterministic)
 {
-    auto params = make_params();
     poptype::diploid_t offspring;
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
-        pop, params, offspring);
+        pop, params_no_swap, offspring);
     fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
     auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
     auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
