@@ -157,8 +157,9 @@ am__wfmlts_SOURCES_DIST = wfmlts.cc
 @BPO_PRESENT_TRUE@am_wfmlts_OBJECTS = wfmlts.$(OBJEXT)
 wfmlts_OBJECTS = $(am_wfmlts_OBJECTS)
 wfmlts_DEPENDENCIES =
-am__wfts_SOURCES_DIST = wfts.cc
-@BPO_PRESENT_TRUE@am_wfts_OBJECTS = wfts.$(OBJEXT)
+am__wfts_SOURCES_DIST = wfts.cc tree_sequence_examples_common.cc
+@BPO_PRESENT_TRUE@am_wfts_OBJECTS = wfts.$(OBJEXT) \
+@BPO_PRESENT_TRUE@	tree_sequence_examples_common.$(OBJEXT)
 wfts_OBJECTS = $(am_wfts_OBJECTS)
 wfts_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
@@ -182,6 +183,7 @@ am__depfiles_remade = ./$(DEPDIR)/K_linked_regions_extensions.Po \
 	./$(DEPDIR)/custom_diploid.Po ./$(DEPDIR)/custom_mutation.Po \
 	./$(DEPDIR)/diploid_fixed_sh_ind.Po ./$(DEPDIR)/diploid_ind.Po \
 	./$(DEPDIR)/juvenile_migration.Po ./$(DEPDIR)/spatialts.Po \
+	./$(DEPDIR)/tree_sequence_examples_common.Po \
 	./$(DEPDIR)/wfmlts.Po ./$(DEPDIR)/wfts.Po
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -355,7 +357,7 @@ K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc c
 juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
-@BPO_PRESENT_TRUE@wfts_SOURCES = wfts.cc
+@BPO_PRESENT_TRUE@wfts_SOURCES = wfts.cc tree_sequence_examples_common.cc
 @BPO_PRESENT_TRUE@wfts_LDADD = -lboost_program_options
 @BPO_PRESENT_TRUE@wfmlts_SOURCES = wfmlts.cc
 @BPO_PRESENT_TRUE@wfmlts_LDADD = -lboost_program_options
@@ -461,6 +463,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spatialts.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree_sequence_examples_common.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfmlts.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts.Po@am__quote@ # am--include-marker
 
@@ -619,6 +622,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/diploid_ind.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/spatialts.Po
+	-rm -f ./$(DEPDIR)/tree_sequence_examples_common.Po
 	-rm -f ./$(DEPDIR)/wfmlts.Po
 	-rm -f ./$(DEPDIR)/wfts.Po
 	-rm -f Makefile
@@ -675,6 +679,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/diploid_ind.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/spatialts.Po
+	-rm -f ./$(DEPDIR)/tree_sequence_examples_common.Po
 	-rm -f ./$(DEPDIR)/wfmlts.Po
 	-rm -f ./$(DEPDIR)/wfts.Po
 	-rm -f Makefile
