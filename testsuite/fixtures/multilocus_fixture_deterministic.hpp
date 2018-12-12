@@ -126,7 +126,8 @@ struct multilocus_fixture_deterministic
   private:
     std::vector<std::pair<double, double>> make_boundaries();
 
-    // Every locus gets 1 mutation.
+    // Every locus gets 1 mutation.  These occur at random 
+    // positions within each locus
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
     make_mmodels();
