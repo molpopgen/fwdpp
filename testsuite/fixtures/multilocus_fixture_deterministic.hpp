@@ -125,6 +125,9 @@ struct multilocus_fixture_deterministic
     // at all loci.
     void mutate_parent2();
 
+    // Mutate both chromosomes of both parents
+    void mutate_both_parents();
+
     void validate_mutations_positions_1(const poptype::diploid_t &offspring);
 
     void validate_mutations_positions_2(const poptype::diploid_t &offspring);
