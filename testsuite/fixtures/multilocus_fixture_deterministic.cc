@@ -251,6 +251,7 @@ multilocus_fixture_deterministic::make_interlocus_rec2()
 {
     std::vector<std::function<unsigned(void)>> rv;
     rv.push_back([]() -> unsigned { return 1; });
+    rv.push_back([]() -> unsigned { return 1; });
     rv.push_back([]() -> unsigned { return 0; });
     return rv;
 }

@@ -578,3 +578,40 @@ BOOST_FIXTURE_TEST_CASE(
     BOOST_REQUIRE_EQUAL(mc == pop.mcounts, true);
 }
 
+/* Tests based on a second, different set of w/in and b/w locus breakpoints
+ *
+ * The setup is as follows:
+ *
+ * Locus w/in b/w
+ * 0     1    N/A
+ * 1     2    1
+ * 2     1    1
+ * 3     0    0
+ *
+ * The expected breakpoints are as in expected_breakpoints in the fixture.
+ */
+
+BOOST_FIXTURE_TEST_CASE(test_breakpoints2, multilocus_fixture_deterministic)
+{
+    poptype::diploid_t offspring;
+
+    BOOST_TEST_PASSPOINT();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params_no_swap2, offspring);
+    auto expected = begin(expected_breakpoints2);
+    auto brk = begin(data_to_record.first.breakpoints);
+
+    BOOST_TEST_PASSPOINT();
+
+    BOOST_REQUIRE_EQUAL(
+        std::distance(expected, end(expected_breakpoints2)),
+        std::distance(brk, end(data_to_record.first.breakpoints)));
+
+    while (expected < end(expected_breakpoints2))
+        {
+            BOOST_REQUIRE_EQUAL(*expected, *brk);
+            ++expected;
+            ++brk;
+        }
+}

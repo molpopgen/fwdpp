@@ -65,12 +65,14 @@ struct multilocus_fixture_deterministic
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
         mmodels;
-    std::vector<std::function<std::vector<double>(void)>> intralocus_rec, intralocus_rec2;
-    std::vector<std::function<unsigned(void)>> interlocus_rec,interlocus_rec2;
+    std::vector<std::function<std::vector<double>(void)>> intralocus_rec,
+        intralocus_rec2;
+    std::vector<std::function<unsigned(void)>> interlocus_rec, interlocus_rec2;
     std::function<int(const gsl_rng *, std::size_t, std::size_t)> do_not_swap;
     swap_second_parent_only swap_second;
     multilocus_multiplicative gvalue;
     std::vector<double> expected_breakpoints;
+    std::vector<double> expected_breakpoints2;
     // The expected mutation positions are what we expect
     // after calls to mutate_parent and mutate_parent2,
     // respectively:
@@ -97,10 +99,13 @@ struct multilocus_fixture_deterministic
           swap_second(), gvalue(),
           expected_breakpoints{ { 1.5, 2., 3.5,
                                   std::numeric_limits<double>::max() } },
+          expected_breakpoints2({ 0.5, 1., 1.25, 1.75, 2., 2.5,
+                                  std::numeric_limits<double>::max() }),
           expected_mutation_positions_1{ { 1., 2., 3., 0. } },
           expected_mutation_positions_2{ { 1., 2., 3., 0., 0.51, 2.51 } },
           params_no_swap(make_params()),
-          params_swap_second(make_params_swap_second()),params_no_swap2(make_params2())
+          params_swap_second(make_params_swap_second()),
+          params_no_swap2(make_params2())
     {
     }
 
@@ -115,9 +120,9 @@ struct multilocus_fixture_deterministic
         -> decltype(fwdpp::make_genetic_parameters_with_swapper(
             gvalue, mmodels, intralocus_rec, interlocus_rec, swap_second));
 
-
-    auto make_params2() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-        gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap));
+    auto make_params2()
+        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+            gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap));
     // We add a variant to each gamete that
     // is exactly at the start of each locus
     // This happens on diploid 0's first gamete
