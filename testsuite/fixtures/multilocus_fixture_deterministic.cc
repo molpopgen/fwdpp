@@ -11,6 +11,28 @@ const fwdpp::uint_t multilocus_fixture_deterministic::N = 1000;
 const fwdpp::uint_t multilocus_fixture_deterministic::new_mutation_generation
     = 1;
 
+//only valid in conjunction w/make_params2 and swapping NEITHER PARENTAL GAMETE
+//p1g1 is mutated at 0.1, 0.41, 1.1, 1.41, 2.1, 2.41, 3.1, 3.41
+//p1g2 is mutated at 0.21, 0.61, 1.21, 1.61, 2.21, 2.61, 3.21, 3.61
+//p2g1 is mutated at 0.05, 0.45, 1.05, 1.45, 2.05, 2.45, 3.05, 3.45
+//p2g2 is mutated at 0.15, 0.75, 1.15, 1.75, 2.15, 2.75, 3.15, 3.75
+//p1g1 passes on the following intervals: [0,0.5), [1,1.25), [1.75,2.), [2.5,4.)
+//p1g2 passes on the following intervals: [0.5,1), [1.25,1.75), [2,.2.5)
+const std::vector<double> multilocus_fixture_deterministic::
+    expected_transmitted_mutations_mutate_both_parents_gamete_1
+    = {
+          0.1,  0.41, 1.1, 3.1, 3.41, // from p1g1
+          0.61, 1.61, 2.21            // from p1g2
+      };
+//p2g1 passes on the following intervals: [0,0.5), [1,1.25), [1.75,2.), [2.5,4.)
+//p2g2 passes on the following intervals: [0.5,1), [1.25,1.75), [2,.2.5)
+const std::vector<double> multilocus_fixture_deterministic::
+    expected_transmitted_mutations_mutate_both_parents_gamete_2
+    = {
+          0.05, 0.45, 1.05, 3.05, 3.45, //from p2g1
+          0.75, 2.15                    // from p2g2
+      };
+
 double
 multilocus_fixture_deterministic::multilocus_multiplicative::
 operator()(const poptype::diploid_t &diploid, const poptype::gcont_t &gametes,

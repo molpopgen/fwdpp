@@ -79,6 +79,9 @@ struct multilocus_fixture_deterministic
     std::vector<double> expected_mutation_positions_1,
         expected_mutation_positions_2,
         expected_mutation_positions_1_recparams2;
+    static const std::vector<double>
+        expected_transmitted_mutations_mutate_both_parents_gamete_1,
+        expected_transmitted_mutations_mutate_both_parents_gamete_2;
     decltype(fwdpp::make_genetic_parameters_with_swapper(
         gvalue, mmodels, intralocus_rec, interlocus_rec,
         do_not_swap)) params_no_swap;
@@ -150,7 +153,7 @@ struct multilocus_fixture_deterministic
     auto make_params2()
         -> decltype(fwdpp::make_genetic_parameters_with_swapper(
             gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap));
-        std::vector<std::pair<double, double>> make_boundaries();
+    std::vector<std::pair<double, double>> make_boundaries();
 
     // Every locus gets 1 mutation.  These occur at random
     // positions within each locus

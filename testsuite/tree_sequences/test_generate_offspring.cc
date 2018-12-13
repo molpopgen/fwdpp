@@ -716,4 +716,85 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_rec2_both_parents_mutated,
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params_no_swap2, offspring);
+
+    BOOST_REQUIRE_EQUAL(
+        data_to_record.first.breakpoints == expected_breakpoints2, true);
+    BOOST_REQUIRE_EQUAL(
+        data_to_record.second.breakpoints == expected_breakpoints2, true);
+
+    std::vector<fwdpp::uint_t> g1keys, g2keys, g1keys_sel, g2keys_sel;
+    for (auto& locus : offspring)
+        {
+            g1keys.insert(end(g1keys),
+                          begin(pop.gametes[locus.first].mutations),
+                          end(pop.gametes[locus.first].mutations));
+            g2keys.insert(end(g2keys),
+                          begin(pop.gametes[locus.second].mutations),
+                          end(pop.gametes[locus.second].mutations));
+            g1keys_sel.insert(end(g1keys_sel),
+                              begin(pop.gametes[locus.first].smutations),
+                              end(pop.gametes[locus.first].smutations));
+            g2keys_sel.insert(end(g2keys_sel),
+                              begin(pop.gametes[locus.second].smutations),
+                              end(pop.gametes[locus.second].smutations));
+        }
+    // Validate gamete 1 of offspring
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_1)
+        {
+            auto itr = std::find_if(
+                begin(g1keys), end(g1keys), [this, p](fwdpp::uint_t k) {
+                    return std::fabs(pop.mutations[k].pos - p) <= 1e-6;
+                });
+            BOOST_REQUIRE_EQUAL(itr == end(g1keys), false);
+        }
+    // Validate gamete 2 of offspring
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_2)
+        {
+            auto itr = std::find_if(
+                begin(g2keys), end(g2keys), [this, p](fwdpp::uint_t k) {
+                    return std::fabs(pop.mutations[k].pos - p) <= 1e-6;
+                });
+            BOOST_REQUIRE_EQUAL(itr == end(g2keys), false);
+        }
+
+    // Finally, test that the RAW NUMBER of mutations inherited from time 0
+    // == the expected number.  This is partly a test to ensure that
+    // we've set the fixture up properly.
+    int g1t0 = 0, g1t1 = 0, g2t0 = 0, g2t1 = 0;
+    for (auto k : g1keys)
+        {
+            if (pop.mutations[k].g == 0)
+                {
+                    ++g1t0;
+                }
+        }
+    for (auto k : g1keys_sel)
+        {
+            if (pop.mutations[k].g == 1)
+                {
+                    ++g1t1;
+                }
+        }
+    for (auto k : g2keys)
+        {
+            if (pop.mutations[k].g == 0)
+                {
+                    ++g2t0;
+                }
+        }
+    for (auto k : g2keys_sel)
+        {
+            if (pop.mutations[k].g == 1)
+                {
+                    ++g2t1;
+                }
+        }
+    BOOST_REQUIRE_EQUAL(
+        g1t0,
+        expected_transmitted_mutations_mutate_both_parents_gamete_1.size());
+    BOOST_REQUIRE_EQUAL(
+        g2t0,
+        expected_transmitted_mutations_mutate_both_parents_gamete_2.size());
+    BOOST_REQUIRE_EQUAL(g1t1, 4);
+    BOOST_REQUIRE_EQUAL(g2t1, 4);
 }
