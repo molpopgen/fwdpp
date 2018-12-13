@@ -104,27 +104,14 @@ struct multilocus_fixture_deterministic
                                   std::numeric_limits<double>::max() }),
           expected_mutation_positions_1{ { 1., 2., 3., 0. } },
           expected_mutation_positions_2{ { 1., 2., 3., 0., 0.51, 2.51 } },
-          expected_mutation_positions_1_recparams2{ {0.,1.,2.51,3.,3.51} },
+          expected_mutation_positions_1_recparams2{ { 0., 1., 2.51, 3.,
+                                                      3.51 } },
           params_no_swap(make_params()),
           params_swap_second(make_params_swap_second()),
           params_no_swap2(make_params2())
     {
     }
 
-    // NOTE: we use do_not_swap to suppress any initial randomness
-    // for the test
-    auto make_params() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-        gvalue, mmodels, intralocus_rec, interlocus_rec, do_not_swap));
-
-    // NOTE: we use swap_second to suppress any initial randomness
-    // for the test
-    auto make_params_swap_second()
-        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-            gvalue, mmodels, intralocus_rec, interlocus_rec, swap_second));
-
-    auto make_params2()
-        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
-            gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap));
     // We add a variant to each gamete that
     // is exactly at the start of each locus
     // This happens on diploid 0's first gamete
@@ -146,7 +133,21 @@ struct multilocus_fixture_deterministic
         const poptype::diploid_t &offspring);
 
   private:
-    std::vector<std::pair<double, double>> make_boundaries();
+    // NOTE: we use do_not_swap to suppress any initial randomness
+    // for the test
+    auto make_params() -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec, interlocus_rec, do_not_swap));
+
+    // NOTE: we use swap_second to suppress any initial randomness
+    // for the test
+    auto make_params_swap_second()
+        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+            gvalue, mmodels, intralocus_rec, interlocus_rec, swap_second));
+
+    auto make_params2()
+        -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+            gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap));
+        std::vector<std::pair<double, double>> make_boundaries();
 
     // Every locus gets 1 mutation.  These occur at random
     // positions within each locus
