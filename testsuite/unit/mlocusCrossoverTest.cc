@@ -692,4 +692,34 @@ BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
                 expected_result);
         }
 }
+
+BOOST_AUTO_TEST_CASE(test_transmission_2)
+{
+    mutate_parent2();
+    std::vector<double> mu(nloci, 0.);
+    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+                                          poptype::mcont_t &)>>
+        dummy_mmodels;
+    int generation = 0;
+    for (unsigned i = 0; i < nloci; ++i)
+        {
+            dummy_mmodels.push_back([this, &generation,
+                                     i](std::queue<std::size_t> &recbin,
+                                        poptype::mcont_t &mutations) {
+                return fwdpp::infsites_popgenmut(
+                    recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                    0.0,
+                    [this, i]() { return gsl_ran_flat(rng.get(), i, i + 1); },
+                    []() { return 0.0; }, []() { return 0.0; });
+            });
+        }
+
+    auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
+        rng.get(), pop.diploids[0], pop.diploids[1],
+        params_no_swap2.mutation_recycling_bin, params_no_swap2.gamete_recycling_bin,
+        params_no_swap2.generate_breakpoints, params_no_swap2.interlocus_recombination, 1, 0,
+        pop.gametes, pop.mutations, params_no_swap2.neutral, params_no_swap2.selected, mu.data(),
+        dummy_mmodels);
+
+}
 BOOST_AUTO_TEST_SUITE_END()
