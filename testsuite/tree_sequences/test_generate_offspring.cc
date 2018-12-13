@@ -716,37 +716,4 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_rec2_both_parents_mutated,
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params_no_swap2, offspring);
-
-    BOOST_TEST_PASSPOINT();
-    BOOST_REQUIRE_NO_THROW(
-        validate_mutations_positions_1_recparams2(offspring));
-
-    //Detailed test of offspring gametes
-    std::vector<double> expected_lost_muts = { 0.51, 1.51, 2. };
-    std::vector<fwdpp::uint_t> keys_first, keys_second;
-    for (auto& l : offspring)
-        {
-            for (auto m : pop.gametes[l.first].mutations)
-                {
-                    keys_first.push_back(m);
-                }
-            for (auto m : pop.gametes[l.second].mutations)
-                {
-                    keys_second.push_back(m);
-                }
-        }
-    BOOST_REQUIRE_EQUAL(keys_second.size(), 0);
-    for (auto p : expected_lost_muts)
-        {
-            auto itr = std::find_if(begin(keys_first), end(keys_first),
-                                    [this, p](fwdpp::uint_t k) {
-                                        return pop.mutations[k].pos == p;
-                                    });
-            BOOST_REQUIRE_EQUAL((itr == end(keys_first)), true);
-            itr = std::find_if(begin(keys_second), end(keys_second),
-                               [this, p](fwdpp::uint_t k) {
-                                   return pop.mutations[k].pos == p;
-                               });
-            BOOST_REQUIRE_EQUAL((itr == end(keys_second)), true);
-        }
 }
