@@ -77,7 +77,8 @@ struct multilocus_fixture_deterministic
     // after calls to mutate_parent and mutate_parent2,
     // respectively:
     std::vector<double> expected_mutation_positions_1,
-        expected_mutation_positions_2;
+        expected_mutation_positions_2,
+        expected_mutation_positions_1_recparams2;
     decltype(fwdpp::make_genetic_parameters_with_swapper(
         gvalue, mmodels, intralocus_rec, interlocus_rec,
         do_not_swap)) params_no_swap;
@@ -103,6 +104,7 @@ struct multilocus_fixture_deterministic
                                   std::numeric_limits<double>::max() }),
           expected_mutation_positions_1{ { 1., 2., 3., 0. } },
           expected_mutation_positions_2{ { 1., 2., 3., 0., 0.51, 2.51 } },
+          expected_mutation_positions_1_recparams2{ {0.,1.,2.51,3.,3.51} },
           params_no_swap(make_params()),
           params_swap_second(make_params_swap_second()),
           params_no_swap2(make_params2())
@@ -139,6 +141,9 @@ struct multilocus_fixture_deterministic
     void validate_mutations_positions_1(const poptype::diploid_t &offspring);
 
     void validate_mutations_positions_2(const poptype::diploid_t &offspring);
+
+    void validate_mutations_positions_1_recparams2(
+        const poptype::diploid_t &offspring);
 
   private:
     std::vector<std::pair<double, double>> make_boundaries();

@@ -135,6 +135,32 @@ multilocus_fixture_deterministic::validate_mutations_positions_2(
                 }
         }
 }
+
+void
+multilocus_fixture_deterministic::validate_mutations_positions_1_recparams2(
+    const multilocus_fixture_deterministic::poptype::diploid_t &offspring)
+{
+    std::vector<fwdpp::uint_t> all_gamete_mut_keys;
+    for (auto &locus : offspring)
+        {
+            all_gamete_mut_keys.insert(
+                end(all_gamete_mut_keys),
+                begin(pop.gametes[locus.first].mutations),
+                end(pop.gametes[locus.first].mutations));
+        }
+    for (auto p : expected_mutation_positions_1_recparams2)
+        {
+            auto itr = std::find_if(begin(all_gamete_mut_keys),
+                                    end(all_gamete_mut_keys),
+                                    [this, p](fwdpp::uint_t k) {
+                                        return pop.mutations[k].pos == p;
+                                    });
+            if (itr == end(all_gamete_mut_keys))
+                {
+                    throw std::runtime_error("mutation position not found");
+                }
+        }
+}
 // PRIVATE FUNCTIONS
 
 std::vector<std::pair<double, double>>

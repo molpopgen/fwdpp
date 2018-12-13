@@ -615,6 +615,22 @@ BOOST_FIXTURE_TEST_CASE(test_breakpoints2, multilocus_fixture_deterministic)
             ++brk;
         }
 }
+
+BOOST_FIXTURE_TEST_CASE(test_transmission2, multilocus_fixture_deterministic)
+{
+    mutate_parent2();
+    poptype::diploid_t offspring;
+
+    BOOST_TEST_PASSPOINT();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params_no_swap2, offspring);
+
+    BOOST_TEST_PASSPOINT();
+    BOOST_REQUIRE_NO_THROW(
+        validate_mutations_positions_1_recparams2(offspring));
+}
+
 BOOST_FIXTURE_TEST_CASE(test_edges2, multilocus_fixture_deterministic)
 {
     poptype::diploid_t offspring;
