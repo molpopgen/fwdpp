@@ -98,23 +98,20 @@ main(int argc, char **argv)
     fwdpp::ts::table_simplifier simplifier(o.nloci);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
-    std::vector<std::function<std::vector<double>(void)>>
-        intralocus_recombination;
-    for (int i = 0; i < o.nloci; ++i)
-        {
-            intralocus_recombination.emplace_back(fwdpp::recbinder(
-                fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
-        }
 
     auto get_selection_coefficient
         = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
     const auto generate_h = [&o]() { return o.dominance; };
+    std::vector<std::function<std::vector<double>(void)>>
+        intralocus_recombination;
 
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
         mmodels;
     for (int i = 0; i < o.nloci; ++i)
         {
+            intralocus_recombination.emplace_back(fwdpp::recbinder(
+                fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
             const auto generate_mutation_position
                 = [&rng, i]() { return gsl_ran_flat(rng.get(), i, i + 1); };
             const auto make_mutation = [&pop, &rng, &generation,
