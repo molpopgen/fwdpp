@@ -335,6 +335,8 @@ BOOST_FIXTURE_TEST_CASE(
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params_swap_second, offspring);
+    BOOST_REQUIRE_EQUAL(data_to_record.first.swapped, 0);
+    BOOST_REQUIRE_EQUAL(data_to_record.second.swapped, 1);
     BOOST_CHECK_EQUAL(offspring.size(), nloci);
     BOOST_CHECK_EQUAL(pop.mutations.size(), 2 * nloci);
     // manually populate mcounts
@@ -599,6 +601,8 @@ BOOST_FIXTURE_TEST_CASE(test_breakpoints2, multilocus_fixture_deterministic)
     auto data_to_record = fwdpp::ts::generate_offspring(
         rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
         pop, params_no_swap2, offspring);
+    BOOST_REQUIRE_EQUAL(data_to_record.first.swapped, 0);
+    BOOST_REQUIRE_EQUAL(data_to_record.second.swapped, 0);
     auto expected = begin(expected_breakpoints2);
     auto brk = begin(data_to_record.first.breakpoints);
 
