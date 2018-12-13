@@ -798,3 +798,115 @@ BOOST_FIXTURE_TEST_CASE(test_transmission_rec2_both_parents_mutated,
     BOOST_REQUIRE_EQUAL(g1t1, 4);
     BOOST_REQUIRE_EQUAL(g2t1, 4);
 }
+
+BOOST_FIXTURE_TEST_CASE(test_ts_recording_rec2_both_parents_mutated,
+                        multilocus_fixture_deterministic)
+// Same data as previous test, but now we simplify.
+{
+    BOOST_REQUIRE_NO_THROW(mutate_both_parents());
+    poptype::diploid_t offspring;
+
+    BOOST_TEST_PASSPOINT();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params_no_swap2, offspring);
+    fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
+    auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
+    auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
+    tables.add_offspring_data(next_index++, data_to_record.first.breakpoints,
+                              data_to_record.first.mutation_keys, p1d, 0, 1);
+    tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
+                              data_to_record.second.mutation_keys, p2d, 0, 1);
+    tables.sort_tables(pop.mutations);
+
+    // All expected variants must be in the mutation table PRIOR TO SIMPLIFICATION
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_1)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (std::fabs(pop.mutations[m.key].pos - p) <= 1e-6)
+                        {
+                            found = true;
+                            break;
+                        }
+                }
+            BOOST_REQUIRE_EQUAL(found, true);
+        }
+
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_2)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (std::fabs(pop.mutations[m.key].pos - p) <= 1e-6)
+                        {
+                            found = true;
+                            break;
+                        }
+                }
+            BOOST_REQUIRE_EQUAL(found, true);
+        }
+
+    fwdpp::ts::table_simplifier simplifier(nloci);
+    std::vector<fwdpp::ts::TS_NODE_INT> samples(
+        { next_index - 2, next_index - 1 });
+    auto rv = simplifier.simplify(tables, samples, pop.mutations);
+
+    // All expected variants must be in the mutation table!
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_1)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (std::fabs(pop.mutations[m.key].pos - p) <= 1e-6)
+                        {
+                            found = true;
+                            break;
+                        }
+                }
+            BOOST_CHECK_EQUAL(found, true);
+        }
+
+    for (auto p : expected_transmitted_mutations_mutate_both_parents_gamete_2)
+        {
+            bool found = false;
+            for (auto m : tables.mutation_table)
+                {
+                    if (std::fabs(pop.mutations[m.key].pos - p) <= 1e-6)
+                        {
+                            found = true;
+                            break;
+                        }
+                }
+            BOOST_TEST_CHECKPOINT("Checking for mutation in gamete 2 after "
+                                  "simplification at position "
+                                  << p);
+            BOOST_CHECK_EQUAL(found, true);
+        }
+    // Count the number of mutations surviving simplification
+    // from generation 0 to 1 (parents to offspring):
+
+    int muts_sample_0 = 0, muts_sample_1 = 0;
+    for (auto& m : tables.mutation_table)
+        {
+            if (m.node == 0 && pop.mutations[m.key].g == 0)
+                {
+                    std::cout << m.node << ' ' << pop.mutations[m.key].g << ' '
+                              << pop.mutations[m.key].pos << '\n';
+                    ++muts_sample_0;
+                }
+            if (m.node == 1 && pop.mutations[m.key].g == 0)
+                {
+                    std::cout << m.node << ' ' << pop.mutations[m.key].g << ' '
+                              << pop.mutations[m.key].pos << '\n';
+                    ++muts_sample_1;
+                }
+        }
+    BOOST_REQUIRE_EQUAL(
+        muts_sample_0,
+        expected_transmitted_mutations_mutate_both_parents_gamete_1.size());
+    BOOST_REQUIRE_EQUAL(
+        muts_sample_1,
+        expected_transmitted_mutations_mutate_both_parents_gamete_2.size());
+}
