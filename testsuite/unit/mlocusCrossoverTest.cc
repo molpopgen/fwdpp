@@ -400,13 +400,14 @@ BOOST_AUTO_TEST_CASE(test_transmission)
             });
         }
 
-    auto params = make_params();
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params.mutation_recycling_bin, params.gamete_recycling_bin,
-        params.generate_breakpoints, params.interlocus_recombination, 0, 0,
-        pop.gametes, pop.mutations, params.neutral, params.selected, mu.data(),
-        dummy_mmodels);
+        params_no_swap.mutation_recycling_bin,
+        params_no_swap.gamete_recycling_bin,
+        params_no_swap.generate_breakpoints,
+        params_no_swap.interlocus_recombination, 0, 0, pop.gametes,
+        pop.mutations, params_no_swap.neutral, params_no_swap.selected,
+        mu.data(), dummy_mmodels);
 
     // Check transmission of mutations into offpring's FIRST gamete
     int locus = 0;
@@ -500,13 +501,11 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
             });
         }
 
-    auto params = make_params();
-
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params.mutation_recycling_bin, params.gamete_recycling_bin,
-        params.generate_breakpoints, params.interlocus_recombination, 0, 0,
-        pop.gametes, pop.mutations, params.neutral, params.selected, mu.data(),
+        params_no_swap.mutation_recycling_bin, params_no_swap.gamete_recycling_bin,
+        params_no_swap.generate_breakpoints, params_no_swap.interlocus_recombination, 0, 0,
+        pop.gametes, pop.mutations, params_no_swap.neutral, params_no_swap.selected, mu.data(),
         dummy_mmodels);
 
     // Check transmission of mutations into offpring's FIRST gamete
@@ -628,12 +627,11 @@ BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
             });
         }
 
-    auto params = make_params();
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params.mutation_recycling_bin, params.gamete_recycling_bin,
-        params.generate_breakpoints, params.interlocus_recombination, 1, 0,
-        pop.gametes, pop.mutations, params.neutral, params.selected, mu.data(),
+        params_no_swap.mutation_recycling_bin, params_no_swap.gamete_recycling_bin,
+        params_no_swap.generate_breakpoints, params_no_swap.interlocus_recombination, 1, 0,
+        pop.gametes, pop.mutations, params_no_swap.neutral, params_no_swap.selected, mu.data(),
         dummy_mmodels);
 
     // Check transmission of mutations into offpring's FIRST gamete
@@ -716,10 +714,11 @@ BOOST_AUTO_TEST_CASE(test_transmission_2)
 
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params_no_swap2.mutation_recycling_bin, params_no_swap2.gamete_recycling_bin,
-        params_no_swap2.generate_breakpoints, params_no_swap2.interlocus_recombination, 1, 0,
-        pop.gametes, pop.mutations, params_no_swap2.neutral, params_no_swap2.selected, mu.data(),
-        dummy_mmodels);
-
+        params_no_swap2.mutation_recycling_bin,
+        params_no_swap2.gamete_recycling_bin,
+        params_no_swap2.generate_breakpoints,
+        params_no_swap2.interlocus_recombination, 1, 0, pop.gametes,
+        pop.mutations, params_no_swap2.neutral, params_no_swap2.selected,
+        mu.data(), dummy_mmodels);
 }
 BOOST_AUTO_TEST_SUITE_END()
