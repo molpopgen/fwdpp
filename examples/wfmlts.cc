@@ -173,7 +173,7 @@ main(int argc, char **argv)
     auto ff = multilocus_multiplicative();
 
     std::vector<double> between_locus_recombination_rate(o.nloci, 0.5);
-    auto interlocus_rec = fwdpp::make_poisson_interlocus_rec(
+    auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), between_locus_recombination_rate.data(),
         between_locus_recombination_rate.size());
 
