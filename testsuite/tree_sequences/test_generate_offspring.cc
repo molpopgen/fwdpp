@@ -847,10 +847,10 @@ BOOST_FIXTURE_TEST_CASE(test_ts_recording_rec2_both_parents_mutated,
                 }
             BOOST_REQUIRE_EQUAL(found, true);
         }
-
     fwdpp::ts::table_simplifier simplifier(nloci);
     std::vector<fwdpp::ts::TS_NODE_INT> samples(
         { next_index - 2, next_index - 1 });
+    for(auto n : samples){BOOST_REQUIRE_EQUAL(tables.node_table[n].time,1.);}
     auto rv = simplifier.simplify(tables, samples, pop.mutations);
 
     // All expected variants must be in the mutation table!
@@ -888,21 +888,28 @@ BOOST_FIXTURE_TEST_CASE(test_ts_recording_rec2_both_parents_mutated,
     // from generation 0 to 1 (parents to offspring):
 
     int muts_sample_0 = 0, muts_sample_1 = 0;
+    int new_muts_0 = 0, new_muts_1 = 0;
     for (auto& m : tables.mutation_table)
         {
             if (m.node == 0 && pop.mutations[m.key].g == 0)
                 {
-                    std::cout << m.node << ' ' << pop.mutations[m.key].g << ' '
-                              << pop.mutations[m.key].pos << '\n';
                     ++muts_sample_0;
+                }
+            if (m.node == 0 && pop.mutations[m.key].g == 1)
+                {
+                    ++new_muts_0;
                 }
             if (m.node == 1 && pop.mutations[m.key].g == 0)
                 {
-                    std::cout << m.node << ' ' << pop.mutations[m.key].g << ' '
-                              << pop.mutations[m.key].pos << '\n';
                     ++muts_sample_1;
                 }
+            if (m.node == 1 && pop.mutations[m.key].g == 1)
+                {
+                    ++new_muts_1;
+                }
         }
+    BOOST_REQUIRE_EQUAL(new_muts_0,4);
+    BOOST_REQUIRE_EQUAL(new_muts_1,4);
     BOOST_REQUIRE_EQUAL(
         muts_sample_0,
         expected_transmitted_mutations_mutate_both_parents_gamete_1.size());

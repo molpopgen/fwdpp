@@ -88,6 +88,7 @@ multilocus_fixture_deterministic::mutate_both_parents()
         {
             std::vector<short> clist(1, 0);
             std::vector<std::size_t> indlist(1, 0);
+            parent_node = 0;
             auto k = fwdpp::add_mutation(pop, i, indlist, clist, i + 0.1, 0, 0,
                                          0);
             tables.mutation_table.emplace_back(
@@ -98,7 +99,7 @@ multilocus_fixture_deterministic::mutate_both_parents()
             // Add mutations to second parental gamete,
             // which corresponds to node 1
             clist = { 1 };
-            parent_node++;
+            parent_node = 1;
             k = fwdpp::add_mutation(pop, i, indlist, clist, i + 0.21, 0, 0, 0);
             tables.mutation_table.emplace_back(
                 fwdpp::ts::mutation_record{ parent_node, k });
@@ -107,9 +108,9 @@ multilocus_fixture_deterministic::mutate_both_parents()
                 fwdpp::ts::mutation_record{ parent_node, k });
         }
     // Add het mutations to diploid 1, whose nodes are 2 and 3.
-    parent_node++;
     for (std::size_t i = 0; i < nloci; ++i)
         {
+            parent_node = 2;
             std::vector<short> clist(1, 0);
             std::vector<std::size_t> indlist(1, 1);
             auto k = fwdpp::add_mutation(pop, i, indlist, clist, i + 0.05, 0,
@@ -121,7 +122,7 @@ multilocus_fixture_deterministic::mutate_both_parents()
                 fwdpp::ts::mutation_record{ parent_node, k });
             // add mutations to the second gamete of this parent
             clist = { 1 };
-            parent_node++;
+            parent_node = 3;
             k = fwdpp::add_mutation(pop, i, indlist, clist, i + 0.15, 0, 0, 0);
             tables.mutation_table.emplace_back(
                 fwdpp::ts::mutation_record{ parent_node, k });
