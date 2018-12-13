@@ -615,3 +615,43 @@ BOOST_FIXTURE_TEST_CASE(test_breakpoints2, multilocus_fixture_deterministic)
             ++brk;
         }
 }
+BOOST_FIXTURE_TEST_CASE(test_edges2, multilocus_fixture_deterministic)
+{
+    poptype::diploid_t offspring;
+
+    BOOST_TEST_PASSPOINT();
+    auto data_to_record = fwdpp::ts::generate_offspring(
+        rng.get(), std::make_pair(0, 1), fwdpp::ts::selected_variants_only(),
+        pop, params_no_swap2, offspring);
+
+    BOOST_TEST_PASSPOINT();
+
+    fwdpp::ts::TS_NODE_INT next_index = tables.node_table.size();
+    auto p1d = fwdpp::ts::get_parent_ids(0, 0, data_to_record.first.swapped);
+    auto p2d = fwdpp::ts::get_parent_ids(0, 1, data_to_record.second.swapped);
+    tables.add_offspring_data(next_index++, data_to_record.first.breakpoints,
+                              data_to_record.first.mutation_keys, p1d, 0, 1);
+    tables.add_offspring_data(next_index++, data_to_record.second.breakpoints,
+                              data_to_record.second.mutation_keys, p2d, 0, 1);
+    BOOST_REQUIRE_EQUAL(tables.edge_table.size(), 14);
+    std::vector<std::pair<double, double>> expected_left_right
+        = { { 0., 0.5 },  { 0.5, 1. }, { 1., 1.25 }, { 1.25, 1.75 },
+            { 1.75, 2. }, { 2., 2.5 }, { 2.5, 4. } };
+    std::size_t idx = 0, pidx = 0;
+    fwdpp::ts::TS_NODE_INT parents[2] = { p1d.first, p1d.second };
+    for (auto e : tables.edge_table)
+        {
+            BOOST_REQUIRE_EQUAL(e.left, expected_left_right[idx].first);
+            BOOST_REQUIRE_EQUAL(e.right, expected_left_right[idx].second);
+            BOOST_REQUIRE_EQUAL(parents[pidx], e.parent);
+            ++idx;
+            pidx = !pidx;
+            if (idx == expected_left_right.size())
+                {
+                    idx = 0;
+                    parents[0] = p2d.first;
+                    parents[1] = p2d.second;
+                    pidx = 0;
+                }
+        }
+}
