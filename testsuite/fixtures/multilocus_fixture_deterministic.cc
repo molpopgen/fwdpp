@@ -7,7 +7,8 @@
 using poptype = multilocus_fixture_deterministic::poptype;
 const std::size_t multilocus_fixture_deterministic::nloci = 4;
 const fwdpp::uint_t multilocus_fixture_deterministic::N = 1000;
-const fwdpp::uint_t multilocus_fixture_deterministic::new_mutation_generation = 1;
+const fwdpp::uint_t multilocus_fixture_deterministic::new_mutation_generation
+    = 1;
 
 double
 multilocus_fixture_deterministic::multilocus_multiplicative::
@@ -72,6 +73,15 @@ multilocus_fixture_deterministic::make_params_swap_second()
     return fwdpp::make_genetic_parameters_with_swapper(
         gvalue, mmodels, intralocus_rec, interlocus_rec,
         swap_second_parent_only());
+}
+
+auto
+multilocus_fixture_deterministic::make_params2()
+    -> decltype(fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap))
+{
+    return fwdpp::make_genetic_parameters_with_swapper(
+        gvalue, mmodels, intralocus_rec2, interlocus_rec2, do_not_swap);
 }
 
 void
@@ -203,6 +213,26 @@ multilocus_fixture_deterministic::make_intralocus_rec()
     return rv;
 }
 
+std::vector<std::function<std::vector<double>(void)>>
+multilocus_fixture_deterministic::make_intralocus_rec2()
+{
+    std::vector<std::function<std::vector<double>(void)>> rv;
+    rv.emplace_back([]() {
+        return std::vector<double>(
+            { 0.5, std::numeric_limits<double>::max() });
+    });
+    rv.emplace_back([]() {
+        return std::vector<double>(
+            { 1.25, 1.75, std::numeric_limits<double>::max() });
+    });
+    rv.emplace_back([]() {
+        return std::vector<double>(
+            { 2.5, std::numeric_limits<double>::max() });
+    });
+    rv.emplace_back([]() { return std::vector<double>(); });
+    return rv;
+}
+
 std::vector<std::function<unsigned(void)>>
 multilocus_fixture_deterministic::make_interlocus_rec()
 // The number of recombination events between
@@ -213,6 +243,15 @@ multilocus_fixture_deterministic::make_interlocus_rec()
         {
             rv.push_back([i]() -> unsigned { return i; });
         }
+    return rv;
+}
+
+std::vector<std::function<unsigned(void)>>
+multilocus_fixture_deterministic::make_interlocus_rec2()
+{
+    std::vector<std::function<unsigned(void)>> rv;
+    rv.push_back([]() -> unsigned { return 1; });
+    rv.push_back([]() -> unsigned { return 0; });
     return rv;
 }
 
