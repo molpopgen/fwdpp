@@ -76,10 +76,12 @@ main(int argc, char **argv)
     auto dfe_options = generate_dfe_options(o);
     auto testing_options = generate_testing_options(o);
     bool suppress_mendel = false;
+    bool fixed_number_mutations = false;
     // clang-format off
     po::options_description debug_options("Debugging options");
     debug_options.add_options()
-    ("suppress_mendel",po::bool_switch(&suppress_mendel),"Suppress Mendelian inheritance.  This means that parent genomes 1 and 2 are not randomly swapped at the beginning of \"meoisis\"");
+    ("suppress_mendel",po::bool_switch(&suppress_mendel),"Suppress Mendelian inheritance.  This means that parent genomes 1 and 2 are not randomly swapped at the beginning of \"meoisis\"")
+    ("fixed_number_mutations",po::bool_switch(&fixed_number_mutations),"Apply one mutation per locus, per gamete, to each offspring");
     // clang-format on
     main_options.add(dfe_options);
     main_options.add(testing_options);
@@ -130,6 +132,13 @@ main(int argc, char **argv)
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
         mmodels;
+
+    std::function<unsigned()> mutnumber
+        = [&rng, &o]() { return gsl_ran_poisson(rng.get(), o.mu); };
+    if (fixed_number_mutations == true)
+        {
+            mutnumber = []() -> unsigned { return 1.; };
+        }
     for (int i = 0; i < nloci; ++i)
         {
             intralocus_recombination.emplace_back(fwdpp::recbinder(
@@ -148,10 +157,10 @@ main(int argc, char **argv)
                     generate_h);
             };
             const auto mmodel
-                = [&rng, &o, make_mutation](std::queue<std::size_t> &recbin,
+                = [mutnumber, make_mutation](std::queue<std::size_t> &recbin,
                                             poptype::mcont_t &mutations) {
                       std::vector<fwdpp::uint_t> rv;
-                      unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
+                      unsigned nmuts = mutnumber();
                       for (unsigned m = 0; m < nmuts; ++m)
                           {
                               rv.push_back(make_mutation(recbin, mutations));
