@@ -68,7 +68,7 @@ main(int argc, char **argv)
     bool no_interlocus_rec = false;
     // clang-format off
     main_options.add_options()
-        ("nloci", po::value<int>(&o.nloci), "Number of loci.  Free recombination between them.")
+        ("nloci", po::value<int>(&o.nloci), "Number of loci.  Free recombination between them by default.")
         ("no_interlocus_rec", po::bool_switch(&no_interlocus_rec), "Suppress recombination between loci");
     // clang-format on
 
