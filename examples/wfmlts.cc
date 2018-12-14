@@ -36,6 +36,8 @@ namespace po = boost::program_options;
 using poptype = multi_locus_poptype;
 using GSLrng = fwdpp::GSLrng_mt;
 
+static const double INTERLOCUS_REC_PROB = 0.5;
+
 struct multilocus_multiplicative
 {
     //NOTE: older compilers may not accept initialization
@@ -169,7 +171,8 @@ main(int argc, char **argv)
     // issue that is easy to goof.
     auto ff = multilocus_multiplicative();
 
-    std::vector<double> between_locus_recombination_rate(o.nloci - 1, 0.5);
+    std::vector<double> between_locus_recombination_rate(o.nloci - 1,
+                                                         INTERLOCUS_REC_PROB);
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), between_locus_recombination_rate.data(),
         between_locus_recombination_rate.size());
