@@ -200,6 +200,18 @@ main(int argc, char **argv)
             evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
+            for (auto &e : tables.edge_table)
+                {
+                    std::cout << generation << ' ' << e.parent << ' '
+                              << e.child << ' ' << e.left << ' ' << e.right
+                              << std::endl;
+                }
+            for (auto &m : tables.mutation_table)
+                {
+                    std::cerr << generation << ' ' << m.node << ' '
+                              << pop.mutations[m.key].g << ' '
+                              << pop.mutations[m.key].pos << std::endl;
+                }
 #ifndef NDEBUG
             // Check that all variants in a diploid are w/in the locus boundaries
             for (auto &dip : pop.diploids)
@@ -207,13 +219,16 @@ main(int argc, char **argv)
                     assert(dip.size() == o.nloci);
                     for (std::size_t i = 0; i < o.nloci; ++i)
                         {
+                            assert(pop.gametes[dip[i].first].n > 0);
+                            assert(pop.gametes[dip[i].second].n > 0);
                             for (auto k : pop.gametes[dip[i].first].smutations)
                                 {
                                     double p = pop.mutations[k].pos;
                                     assert(p >= pop.locus_boundaries[i].first);
                                     assert(p < pop.locus_boundaries[i].second);
                                 }
-                            for (auto k : pop.gametes[dip[i].second].smutations)
+                            for (auto k :
+                                 pop.gametes[dip[i].second].smutations)
                                 {
                                     double p = pop.mutations[k].pos;
                                     assert(p >= pop.locus_boundaries[i].first);
