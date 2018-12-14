@@ -239,6 +239,33 @@ namespace fwdpp
                 neutral.insert(neutral.end(), nb, ne);
                 selected.insert(selected.end(), sb, se);
 
+#ifndef NDEBUG
+                std::size_t new_neutral = 0, new_selected = 0;
+                for (auto m : new_mutations)
+                    {
+                        if (mutations[m].neutral)
+                            {
+                                ++new_neutral;
+                            }
+                        if (!mutations[m].neutral)
+                            {
+                                ++new_selected;
+                            }
+                    }
+                if (neutral.size()
+                    != gametes[g1].mutations.size() + new_neutral)
+                    {
+                        throw std::runtime_error("FWDPP DEBUG: failure to add "
+                                                 "all new neutral mutations");
+                    }
+                if (selected.size()
+                    != gametes[g1].smutations.size() + new_selected)
+                    {
+                        throw std::runtime_error("FWDPP DEBUG: failure to add "
+                                                 "all new selected mutations");
+                    }
+#endif
+
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
             }

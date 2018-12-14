@@ -7,6 +7,7 @@
 #include <utility>
 #include <type_traits>
 #include <gsl/gsl_rng.h>
+#include <fwdpp/debug.hpp>
 #include <fwdpp/wrapped_range.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/mutate_recombine.hpp>
@@ -285,6 +286,8 @@ namespace fwdpp
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
                         offspring[i].first = gamete_data.first;
+                        debug::gamete_is_sorted(
+                            pop.gametes[offspring[i].first], pop.mutations);
                         pop.gametes[gamete_data.first].n++;
                         ttl_swaps_1 += multilocus_update(gamete_data.second,
                                                          all_breakpoints_1,
@@ -297,6 +300,8 @@ namespace fwdpp
                             genetics.gamete_recycling_bin, genetics.neutral,
                             genetics.selected, pop);
                         offspring[i].second = gamete_data.first;
+                        debug::gamete_is_sorted(
+                            pop.gametes[offspring[i].second], pop.mutations);
                         pop.gametes[gamete_data.first].n++;
                         ttl_swaps_2 += multilocus_update(gamete_data.second,
                                                          all_breakpoints_2,
