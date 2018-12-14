@@ -158,7 +158,7 @@ main(int argc, char **argv)
             };
             const auto mmodel
                 = [mutnumber, make_mutation](std::queue<std::size_t> &recbin,
-                                            poptype::mcont_t &mutations) {
+                                             poptype::mcont_t &mutations) {
                       std::vector<fwdpp::uint_t> rv;
                       unsigned nmuts = mutnumber();
                       for (unsigned m = 0; m < nmuts; ++m)
@@ -239,6 +239,16 @@ main(int argc, char **argv)
                     assert(dip.size() == nloci);
                     for (std::size_t i = 0; i < nloci; ++i)
                         {
+                            //TODO: sanitize this check. It only works w/o intralocus recombination
+                            if (generation > 1
+                                && fixed_number_mutations == true)
+                                {
+                                    if(pop.gametes[dip[i].first].smutations.size() != generation-1)
+                                    {
+                                        std::cout<<"FOO "<<generation<<' '<<pop.gametes[dip[i].first].smutations.size()<<'\n';
+                                        throw std::runtime_error("incorrect number of mutations");
+                                    }
+                                }
                             assert(pop.gametes[dip[i].first].n > 0);
                             assert(pop.gametes[dip[i].second].n > 0);
                             for (auto k : pop.gametes[dip[i].first].smutations)
