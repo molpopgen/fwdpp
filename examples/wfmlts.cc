@@ -36,7 +36,7 @@ namespace po = boost::program_options;
 using poptype = multi_locus_poptype;
 using GSLrng = fwdpp::GSLrng_mt;
 
-static const double INTERLOCUS_REC_PROB = 0.5;
+double INTERLOCUS_REC_PROB = 0.5;
 
 struct multilocus_multiplicative
 {
@@ -65,9 +65,13 @@ main(int argc, char **argv)
     options o;
 
     auto main_options = generate_main_options(o);
-    main_options.add_options()(
-        "nloci", po::value<int>(&o.nloci),
-        "Number of loci.  Free recombination between them.");
+    bool no_interlocus_rec = false;
+    // clang-format off
+    main_options.add_options()
+        ("nloci", po::value<int>(&o.nloci), "Number of loci.  Free recombination between them.")
+        ("no_interlocus_rec", po::bool_switch(&no_interlocus_rec), "Suppress recombination between loci");
+    // clang-format on
+
 
     auto dfe_options = generate_dfe_options(o);
     auto testing_options = generate_testing_options(o);
@@ -81,6 +85,11 @@ main(int argc, char **argv)
         {
             std::cout << main_options << '\n';
             std::exit(1);
+        }
+
+    if (no_interlocus_rec)
+        {
+            INTERLOCUS_REC_PROB = 0.0;
         }
 
     validate_primary_options(o);
