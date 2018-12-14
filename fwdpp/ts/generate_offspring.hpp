@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_GENERATE_OFFSPRING_HPP
 #define FWDPP_TS_GENERATE_OFFSPRING_HPP
 
+#include <stdexcept>
 #include <tuple>
 #include <vector>
 #include <utility>
@@ -189,6 +190,15 @@ namespace fwdpp
                     {
                         return 0;
                     }
+#ifndef NDEBUG
+                if (gamete_data.breakpoints.back()
+                    != std::numeric_limits<double>::max())
+                    {
+                        throw std::runtime_error(
+                            "FWDPP DEBUG: breakpoints vector missing sentinel "
+                            "value");
+                    }
+#endif
                 breakpoints.insert(end(breakpoints),
                                    begin(gamete_data.breakpoints),
                                    end(gamete_data.breakpoints) - 1);
