@@ -20,27 +20,37 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
 {
-    tables.sort_tables(pop.mutations);
-    std::vector<std::int32_t> samples(num_samples);
-    std::iota(samples.begin(), samples.end(), first_sample_node);
-    //TODO remove
-    std::cerr << "before simplification:\n";
+    std::cout << "before simplification\n";
     //TODO remove
     for (auto &m : tables.mutation_table)
         {
-            std::cerr << generation << ' ' << m.node << ' '
-                      << pop.mutations[m.key].g << ' '
+            std::cout << m.node << ' ' << pop.mutations[m.key].g << ' '
                       << pop.mutations[m.key].pos << std::endl;
         }
+    //TODO remove
+    for (auto &e : tables.edge_table)
+        {
+            std::cout << e.parent << ' ' << e.child << ' ' << e.left << ' '
+                      << e.right << std::endl;
+        }
+
+    tables.sort_tables(pop.mutations);
+    std::vector<std::int32_t> samples(num_samples);
+    std::iota(samples.begin(), samples.end(), first_sample_node);
     auto rv = simplifier.simplify(tables, samples, pop.mutations);
     //TODO remove
     std::cerr << "after simplification:\n";
     //TODO remove
     for (auto &m : tables.mutation_table)
         {
-            std::cerr << generation << ' ' << m.node << ' '
-                      << pop.mutations[m.key].g << ' '
+            std::cerr << m.node << ' ' << pop.mutations[m.key].g << ' '
                       << pop.mutations[m.key].pos << std::endl;
+        }
+    //TODO remove
+    for (auto &e : tables.edge_table)
+        {
+            std::cerr << e.parent << ' ' << e.child << ' ' << e.left << ' '
+                      << e.right << std::endl;
         }
     tables.build_indexes();
     for (auto &s : samples)
@@ -72,8 +82,8 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                     std::cerr << "counts:\n";
                     for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                         {
-                            std::cerr << pop.mcounts[i] << ' ' << mc[i]
-                                      << std::endl;
+                            std::cerr << pop.mcounts[i] << ' ' << mc[i] << ' '
+                                      << pop.mutations[i].pos << std::endl;
                         }
                 }
             assert(mc == pop.mcounts);
