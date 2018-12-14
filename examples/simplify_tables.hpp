@@ -23,17 +23,60 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
     tables.sort_tables(pop.mutations);
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
+    //TODO remove
+    std::cerr << "before simplification:\n";
+    //TODO remove
+    for (auto &m : tables.mutation_table)
+        {
+            std::cerr << generation << ' ' << m.node << ' '
+                      << pop.mutations[m.key].g << ' '
+                      << pop.mutations[m.key].pos << std::endl;
+        }
     auto rv = simplifier.simplify(tables, samples, pop.mutations);
+    //TODO remove
+    std::cerr << "after simplification:\n";
+    //TODO remove
+    for (auto &m : tables.mutation_table)
+        {
+            std::cerr << generation << ' ' << m.node << ' '
+                      << pop.mutations[m.key].g << ' '
+                      << pop.mutations[m.key].pos << std::endl;
+        }
     tables.build_indexes();
     for (auto &s : samples)
         {
             s = rv.first[s];
+            assert(s != fwdpp::ts::TS_NULL_NODE);
         }
     if (!preserve_fixations)
         {
             fwdpp::ts::count_mutations(tables, pop.mutations, samples,
                                        pop.mcounts,
                                        mcounts_from_preserved_nodes);
+            //TODO remove
+            std::vector<fwdpp::uint_t> mc(pop.mutations.size(), 0);
+            //TODO remove
+            for (auto &g : pop.gametes)
+                {
+                    if (g.n)
+                        {
+                            for (auto &k : g.smutations)
+                                {
+                                    mc[k] += g.n;
+                                }
+                        }
+                }
+            //TODO remove
+            if (mc != pop.mcounts)
+                {
+                    std::cerr << "counts:\n";
+                    for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
+                        {
+                            std::cerr << pop.mcounts[i] << ' ' << mc[i]
+                                      << std::endl;
+                        }
+                }
+            assert(mc == pop.mcounts);
             auto itr = std::remove_if(
                 tables.mutation_table.begin(), tables.mutation_table.end(),
                 [&pop, &mcounts_from_preserved_nodes](
@@ -42,6 +85,16 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });
             tables.mutation_table.erase(itr, tables.mutation_table.end());
+            //TODO remove
+            std::cerr << "after purge:\n";
+            //TODO remove
+            for (auto &m : tables.mutation_table)
+                {
+                    std::cerr << generation << ' ' << m.node << ' '
+                              << pop.mutations[m.key].g << ' '
+                              << pop.mutations[m.key].pos << std::endl;
+                }
+            confirm_mutation_counts(pop, tables);
             fwdpp::ts::remove_fixations_from_gametes(
                 pop.gametes, pop.mutations, pop.mcounts,
                 mcounts_from_preserved_nodes, 2 * pop.diploids.size(), false);

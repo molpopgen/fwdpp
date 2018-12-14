@@ -200,12 +200,14 @@ main(int argc, char **argv)
             evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
+            //TODO remove
             for (auto &e : tables.edge_table)
                 {
                     std::cout << generation << ' ' << e.parent << ' '
                               << e.child << ' ' << e.left << ' ' << e.right
                               << std::endl;
                 }
+            //TODO remove
             for (auto &m : tables.mutation_table)
                 {
                     std::cerr << generation << ' ' << m.node << ' '
