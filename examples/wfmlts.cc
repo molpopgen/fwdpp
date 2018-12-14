@@ -245,7 +245,6 @@ main(int argc, char **argv)
                                 {
                                     if(pop.gametes[dip[i].first].smutations.size() != generation-1)
                                     {
-                                        std::cout<<"FOO "<<generation<<' '<<pop.gametes[dip[i].first].smutations.size()<<'\n';
                                         throw std::runtime_error("incorrect number of mutations");
                                     }
                                 }
