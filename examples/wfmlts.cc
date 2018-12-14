@@ -72,7 +72,6 @@ main(int argc, char **argv)
         ("no_interlocus_rec", po::bool_switch(&no_interlocus_rec), "Suppress recombination between loci");
     // clang-format on
 
-
     auto dfe_options = generate_dfe_options(o);
     auto testing_options = generate_testing_options(o);
     main_options.add(dfe_options);
@@ -202,14 +201,35 @@ main(int argc, char **argv)
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
 #ifndef NDEBUG
-            if(recrate == 0. && no_interlocus_rec == true)
-            {
-                for(auto & e : tables.edge_table)
+            // Check that all variants in a diploid are w/in the locus boundaries
+            for (auto &dip : pop.diploids)
                 {
-                    assert(e.left == 0.);
-                    assert(e.right == static_cast<double>(o.nloci));
+                    assert(dip.size() == o.nloci);
+                    for (std::size_t i = 0; i < o.nloci; ++i)
+                        {
+                            for (auto k : pop.gametes[dip[i].first].smutations)
+                                {
+                                    double p = pop.mutations[k].pos;
+                                    assert(p >= pop.locus_boundaries[i].first);
+                                    assert(p < pop.locus_boundaries[i].second);
+                                }
+                            for (auto k : pop.gametes[dip[i].second].smutations)
+                                {
+                                    double p = pop.mutations[k].pos;
+                                    assert(p >= pop.locus_boundaries[i].first);
+                                    assert(p < pop.locus_boundaries[i].second);
+                                }
+                        }
                 }
-            }
+
+            if (recrate == 0. && no_interlocus_rec == true)
+                {
+                    for (auto &e : tables.edge_table)
+                        {
+                            assert(e.left == 0.);
+                            assert(e.right == static_cast<double>(o.nloci));
+                        }
+                }
 #endif
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
