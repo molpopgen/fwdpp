@@ -66,9 +66,10 @@ main(int argc, char **argv)
 
     auto main_options = generate_main_options(o);
     bool no_interlocus_rec = false;
+    int nloci = -1;
     // clang-format off
     main_options.add_options()
-        ("nloci", po::value<int>(&o.nloci), "Number of loci.  Free recombination between them by default.")
+        ("nloci", po::value<int>(&nloci), "Number of loci.  Free recombination between them by default.")
         ("no_interlocus_rec", po::bool_switch(&no_interlocus_rec), "Suppress recombination between loci");
     // clang-format on
 
@@ -92,11 +93,15 @@ main(int argc, char **argv)
         }
 
     validate_primary_options(o);
+    if (nloci < 2)
+        {
+            throw std::invalid_argument("number of nloci must be > 1");
+        }
 
     GSLrng rng(o.seed);
 
     std::vector<std::pair<double, double>> locus_boundaries;
-    for (int i = 0; i < o.nloci; ++i)
+    for (int i = 0; i < nloci; ++i)
         {
             locus_boundaries.emplace_back(i, i + 1);
         }
@@ -104,8 +109,8 @@ main(int argc, char **argv)
 
     //NOTE: genome length must correspond to make position, as specified
     //in locus_boundaries!!!
-    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, o.nloci);
-    fwdpp::ts::table_simplifier simplifier(o.nloci);
+    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, nloci);
+    fwdpp::ts::table_simplifier simplifier(nloci);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
 
@@ -118,7 +123,7 @@ main(int argc, char **argv)
     std::vector<std::function<std::vector<fwdpp::uint_t>(
         std::queue<std::size_t> &, poptype::mcont_t &)>>
         mmodels;
-    for (int i = 0; i < o.nloci; ++i)
+    for (int i = 0; i < nloci; ++i)
         {
             intralocus_recombination.emplace_back(fwdpp::recbinder(
                 fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
@@ -179,7 +184,7 @@ main(int argc, char **argv)
     // issue that is easy to goof.
     auto ff = multilocus_multiplicative();
 
-    std::vector<double> between_locus_recombination_rate(o.nloci - 1,
+    std::vector<double> between_locus_recombination_rate(nloci - 1,
                                                          INTERLOCUS_REC_PROB);
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), between_locus_recombination_rate.data(),
@@ -215,13 +220,13 @@ main(int argc, char **argv)
                               << pop.mutations[m.key].pos << std::endl;
                 }
             fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
-                                                     2 * o.N * o.nloci);
+                                                     2 * o.N * nloci);
 #ifndef NDEBUG
             // Check that all variants in a diploid are w/in the locus boundaries
             for (auto &dip : pop.diploids)
                 {
-                    assert(dip.size() == o.nloci);
-                    for (std::size_t i = 0; i < o.nloci; ++i)
+                    assert(dip.size() == nloci);
+                    for (std::size_t i = 0; i < nloci; ++i)
                         {
                             assert(pop.gametes[dip[i].first].n > 0);
                             assert(pop.gametes[dip[i].second].n > 0);
@@ -246,7 +251,7 @@ main(int argc, char **argv)
                     for (auto &e : tables.edge_table)
                         {
                             assert(e.left == 0.);
-                            assert(e.right == static_cast<double>(o.nloci));
+                            assert(e.right == static_cast<double>(nloci));
                         }
                 }
 #endif

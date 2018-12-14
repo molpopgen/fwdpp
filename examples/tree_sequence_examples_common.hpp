@@ -32,7 +32,7 @@ struct options
     fwdpp::uint_t N, gcint;
     double theta, rho, mean, shape, mu, scoeff, dominance, scaling;
     unsigned seed;
-    int ancient_sampling_interval, ancient_sample_size, nsam, nloci;
+    int ancient_sampling_interval, ancient_sample_size, nsam;
     bool leaf_test, matrix_test, preserve_fixations;
     std::string filename, sfsfilename;
     options();

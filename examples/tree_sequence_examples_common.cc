@@ -69,7 +69,7 @@ options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
       scoeff(std::numeric_limits<double>::max()), dominance(1.), scaling(2.),
       seed(42), ancient_sampling_interval(-1), ancient_sample_size(-1),
-      nsam(0), nloci(0), leaf_test(false), matrix_test(false),
+      nsam(0), leaf_test(false), matrix_test(false),
       preserve_fixations(false), filename(), sfsfilename()
 {
 }
