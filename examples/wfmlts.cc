@@ -212,6 +212,8 @@ main(int argc, char **argv)
                               << pop.mutations[m.key].g << ' '
                               << pop.mutations[m.key].pos << std::endl;
                 }
+            fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
+                                                     2 * o.N * o.nloci);
 #ifndef NDEBUG
             // Check that all variants in a diploid are w/in the locus boundaries
             for (auto &dip : pop.diploids)
