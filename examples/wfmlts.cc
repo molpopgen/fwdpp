@@ -201,6 +201,16 @@ main(int argc, char **argv)
             evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
                               update_offspring, generation, tables,
                               first_parental_index, next_index);
+#ifndef NDEBUG
+            if(recrate == 0. && no_interlocus_rec == true)
+            {
+                for(auto & e : tables.edge_table)
+                {
+                    assert(e.left == 0.);
+                    assert(e.right == static_cast<double>(o.nloci));
+                }
+            }
+#endif
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
             if (generation % o.gcint == 0.0)
