@@ -169,7 +169,7 @@ main(int argc, char **argv)
     // issue that is easy to goof.
     auto ff = multilocus_multiplicative();
 
-    std::vector<double> between_locus_recombination_rate(o.nloci, 0.5);
+    std::vector<double> between_locus_recombination_rate(o.nloci - 1, 0.5);
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), between_locus_recombination_rate.data(),
         between_locus_recombination_rate.size());
