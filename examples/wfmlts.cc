@@ -75,8 +75,15 @@ main(int argc, char **argv)
 
     auto dfe_options = generate_dfe_options(o);
     auto testing_options = generate_testing_options(o);
+    bool suppress_mendel = false;
+    // clang-format off
+    po::options_description debug_options("Debugging options");
+    debug_options.add_options()
+    ("suppress_mendel",po::bool_switch(&suppress_mendel),"Suppress Mendelian inheritance.  This means that parent genomes 1 and 2 are not randomly swapped at the beginning of \"meoisis\"");
+    // clang-format on
     main_options.add(dfe_options);
     main_options.add(testing_options);
+    main_options.add(debug_options);
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, main_options), vm);
     po::notify(vm);
@@ -190,9 +197,18 @@ main(int argc, char **argv)
         rng.get(), between_locus_recombination_rate.data(),
         between_locus_recombination_rate.size());
 
-    auto genetics = fwdpp::make_genetic_parameters(
-        std::move(ff), std::move(mmodels), std::move(intralocus_recombination),
-        std::move(interlocus_rec));
+    std::function<int(const gsl_rng *r, std::size_t, std::size_t)> mendel
+        = fwdpp::mendel();
+    std::function<int(const gsl_rng *r, std::size_t, std::size_t)> no_swap
+        = [](const gsl_rng *, std::size_t, std::size_t) -> int { return 0; };
+
+    decltype(fwdpp::make_genetic_parameters_with_swapper(
+        ff, mmodels, intralocus_recombination, interlocus_rec,
+        mendel)) genetics
+        = fwdpp::make_genetic_parameters_with_swapper(
+            ff, mmodels, intralocus_recombination, interlocus_rec,
+            (suppress_mendel == false) ? mendel : no_swap);
+
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
     for (; generation <= 10 * o.N; ++generation)
         {
