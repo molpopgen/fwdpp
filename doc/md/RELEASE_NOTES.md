@@ -5,6 +5,8 @@ milestones (target version numbers for these features to go live) because that i
 
 ## 0.7.4
 
+This release has a lot of big changes.
+
 [PR 178](https://github.com/molpopgen/fwdpp/pull/178) introduced several improvements related to tree sequence
 recording, as well as cleaning up a variety of other, smaller, issues:
 
@@ -26,6 +28,14 @@ custom replacements for the functionality of fwdpp::mendel.
 * Fixed a bug in lambda captures affecting some test suite fixtures. [commit](https://github.com/molpopgen/fwdpp/pull/178/commits/7ace1fb9f4efa0c963c13150ddfd023786f31d28)
 * Added a new test suite module that stress-tests fwdpp::ts::generate_offspring for the multi-locus case.  The new test
   suite fixtures are also used as more/better unit tests of fwdpp::fwdpp_internal::multilocus_rec_mut.
+
+Other changes:
+
+* fwdpp::multiplicative_diploid and fwdpp::additive_diploid constructors have been refactored to use strong types
+to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://github.com/molpopgen/fwdpp/pull/175)
+* Many types have been moved into the main library. **Breaks API due to change of header names** [PR 176](https://github.com/molpopgen/fwdpp/pull/176), [PR 180](https://github.com/molpopgen/fwdpp/pull/180)
+* Added fwdpp::genetic_parameters. [PR 177](https://github.com/molpopgen/fwdpp/pull/177)
+* Fixed [issue 182](https://github.com/molpopgen/fwdpp/issues/182)
 
 ## 0.7.3
 
