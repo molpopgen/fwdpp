@@ -36,6 +36,7 @@ to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://
 * Many types have been moved into the main library. **Breaks API due to change of header names** [PR 176](https://github.com/molpopgen/fwdpp/pull/176), [PR 180](https://github.com/molpopgen/fwdpp/pull/180)
 * Added fwdpp::genetic_parameters. [PR 177](https://github.com/molpopgen/fwdpp/pull/177)
 * Fixed [issue 182](https://github.com/molpopgen/fwdpp/issues/182)
+* Fixed [issue 181](https://github.com/molpopgen/fwdpp/issues/181)
 
 ## 0.7.3
 
