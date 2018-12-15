@@ -82,7 +82,7 @@ namespace fwdpp
         std::vector<std::size_t> selected_keys;
         //! Number of columns in the matrix
         std::size_t ncol;
-        data_matrix(const std::size_t ncol_)
+        explicit data_matrix(const std::size_t ncol_)
             /*!
              * Constructor
              *
@@ -92,11 +92,9 @@ namespace fwdpp
              * Changed from rows are sites to rows are individuals. Removed
              * default value of zero from constructor.
              */
-            : neutral{},
-              selected{},
-              neutral_keys{},
-              selected_keys{},
-              ncol{ ncol_ }
+            : neutral{}, selected{}, neutral_keys{}, selected_keys{}, ncol{
+                  ncol_
+              }
         {
         }
     };
