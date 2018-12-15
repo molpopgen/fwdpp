@@ -22,8 +22,8 @@ namespace fwdpp
                 {
                     for (auto &locus : dip)
                         {
-                            pop.gametes[locus.first] = 0;
-                            pop.gametes[locus.second] = 0;
+                            pop.gametes[locus.first].n = 0;
+                            pop.gametes[locus.second].n = 0;
                         }
                 }
         }
