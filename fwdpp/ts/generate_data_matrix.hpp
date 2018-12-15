@@ -1,5 +1,5 @@
 #ifndef FWDPP_TS_GENERATE_DATA_MATRIX_HPP
-#define FWDPP_TS_DATA_GENERATE_MATRIX_HPP
+#define FWDPP_TS_GENERATE_DATA_MATRIX_HPP
 
 #include <vector>
 #include <type_traits>
