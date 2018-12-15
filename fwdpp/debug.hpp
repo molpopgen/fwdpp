@@ -101,6 +101,15 @@ namespace fwdpp
         {
             detail::check_mutation_neutrality(mutation, expected_neutrality);
         }
+
+        template <typename poptype>
+        /// Throw exception if gametes contain keys to extinct gametes
+        /// \version 0.7.4 Added to fwdpp
+        void
+        all_gametes_extant(const poptype &pop)
+        {
+            detail::all_gametes_extant(pop, typename poptype::popmodel_t());
+        }
     } // namespace debug
 } // namespace fwdpp
 

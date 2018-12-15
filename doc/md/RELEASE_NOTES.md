@@ -3,6 +3,30 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.7.4
+
+[PR 178](https://github.com/molpopgen/fwdpp/pull/178) introduced several improvements related to tree sequence
+recording, as well as cleaning up a variety of other, smaller, issues:
+
+* Added fwdpp::ts::generate_offspring, which is implemented in terms of fwdpp::mutate_recombine, and returns the 
+data structures needed for edge recording after creating an offspring individual.  This new function streamlines
+the API for "meiosis", with the same function applicable to fwdpp::slocuspop and fwdpp::mlocuspop objects.
+* The constructor for fwdpp::poptypes::mlocuspop is changed to require the locus boundaries.  **This change breaks
+  API**.  The result is a much safer type.
+* Added fwdpp::GSLrng_mt as a typedef for a mersenne twister
+* Added fwdpp::zero_out_gametes, which is a convenience functions for a routine step needed each generation
+* Added fwdpp::mendel, which is a convenience function for a routine step needed each generation
+* Made updates to fwdpp::make_genetic_parameters, fixing the perfect forwarding and adding the ability to have
+custom replacements for the functionality of fwdpp::mendel.
+* The constructor of fwdpp::gamete_base taking an unsigned int is now marked explicit.  (Having it non-expicit was a
+  bone-headed error that made an initial bug in fwdpp::zero_out_gametes very difficult to track down. See [this
+  commit](https://github.com/molpopgen/fwdpp/pull/178/commits/6af6a101db08a688ea030509c27f0acea41dab1f).
+* Adds example program wfmlts.cc
+* wfts.cc and wfmlts.cc now share a lot of common code, showing the power of a generic API.
+* Fixed a bug in lambda captures affecting some test suite fixtures. [commit](https://github.com/molpopgen/fwdpp/pull/178/commits/7ace1fb9f4efa0c963c13150ddfd023786f31d28)
+* Added a new test suite module that stress-tests fwdpp::ts::generate_offspring for the multi-locus case.  The new test
+  suite fixtures are also used as more/better unit tests of fwdpp::fwdpp_internal::multilocus_rec_mut.
+
 ## 0.7.3
 
 * The return value of fwdpp::ts::table_simplifier::simplify has been changed to include a list of indexes to mutations

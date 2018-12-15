@@ -13,7 +13,7 @@ namespace fwdpp
     namespace ts
     {
         // TODO: consider flattening the return value to a vector
-        std::map<TS_NODE_INT, std::vector<std::pair<double, double>>>
+        inline std::map<TS_NODE_INT, std::vector<std::pair<double, double>>>
         mark_multiple_roots(const table_collection &tables,
                             const std::vector<TS_NODE_INT> &samples)
         /// \brief Identify root nodes in "marginal forests".

@@ -79,15 +79,16 @@ namespace fwdpp
     /// the breakpoints are returned and are terminated by
     /// std::numeric_limits<double>::max()
     {
-        auto nm1
-            = gametes[g1].mutations.size() + gametes[g1].smutations.size();
-        auto nm2
-            = gametes[g2].mutations.size() + gametes[g2].smutations.size();
-        if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
-            || gametes[g1] == gametes[g2])
-            {
-                return {};
-            }
+        //TODO: decide if we wish to re-enable the code below.
+        //auto nm1
+        //    = gametes[g1].mutations.size() + gametes[g1].smutations.size();
+        //auto nm2
+        //    = gametes[g2].mutations.size() + gametes[g2].smutations.size();
+        //if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
+        //    || gametes[g1] == gametes[g2])
+        //    {
+        //        return {};
+        //    }
         return dispatch_recombination_policy(
             std::cref(rec_pol), std::cref(diploid), std::cref(gametes[g1]),
             std::cref(gametes[g2]), std::cref(mutations));
@@ -167,11 +168,12 @@ namespace fwdpp
         }
     } // namespace fwdpp_internal
 
-    template <typename gcont_t, typename mcont_t, typename queue_type>
+    template <typename gcont_t, typename mcont_t, typename queue_type,
+              typename new_mutations_type, typename breakpoints_type>
     uint_t
     mutate_recombine(
-        const std::vector<uint_t> &new_mutations,
-        const std::vector<double> &breakpoints, const std::size_t g1,
+        const new_mutations_type &new_mutations,
+        const breakpoints_type &breakpoints, const std::size_t g1,
         const std::size_t g2, gcont_t &gametes, mcont_t &mutations,
         queue_type &gamete_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
@@ -180,8 +182,9 @@ namespace fwdpp
     /// Update apply new mutations and recombination events to
     /// an offspring's gamete.
     ///
-    /// \param new_mutations Keys to new mutations
-    /// \param breakpoints Recombination breakpoints
+    /// \param new_mutations A range referring to new mutation keys.  Must be traversable via non-member begin/end
+    /// functions using argument-dependent lookup (ADL).
+    /// \param breakpoints A range of recombination breakpoints traversable via non-member begin/end functions.
     /// \param g1 Parental gamete 1
     /// \param g2 Parental gamete 2
     /// \param gametes The vector of gametes in the population
@@ -192,6 +195,7 @@ namespace fwdpp
     ///
     /// \return The index of the new offspring gamete in \a gametes.
     ///
+    /// TODO: unit test this note.  I simply cannot believe it! :)
     /// \note For efficiency, it is helpful if \a new_mutations is sorted
     /// by mutation position.  fwdpp::generate_new_mutations exists to help in
     /// that
@@ -199,14 +203,18 @@ namespace fwdpp
     /// packages by the author will use fwdpp::generate_breakpoints to
     /// generate \a breakpoints.  That is not, however, required.
     ///
+    /// \todo Need a unit test on what happens if \a mutation_keys is not a sorted range
+    ///
     /// \version
     /// This function was added in fwdpp 0.5.7.
     {
-        if (new_mutations.empty() && breakpoints.empty())
+        if (begin(new_mutations) == end(new_mutations)
+            && begin(breakpoints) == end(breakpoints))
             {
                 return g1;
             }
-        else if (breakpoints.empty()) // only mutations to deal with
+        else if (begin(breakpoints)
+                 == end(breakpoints)) // only mutations to deal with
             {
                 fwdpp_internal::prep_temporary_containers(g1, g2, gametes,
                                                           neutral, selected);
@@ -214,21 +222,49 @@ namespace fwdpp
                      sb = gametes[g1].smutations.begin();
                 const auto ne = gametes[g1].mutations.end(),
                            se = gametes[g1].smutations.end();
-                for (auto &&m : new_mutations)
+                for (auto m = begin(new_mutations); m < end(new_mutations);
+                     ++m)
                     {
-                        if (mutations[m].neutral)
+                        if (mutations[*m].neutral)
                             {
                                 nb = fwdpp_internal::insert_new_mutation(
-                                    nb, ne, m, mutations, neutral);
+                                    nb, ne, *m, mutations, neutral);
                             }
                         else
                             {
                                 sb = fwdpp_internal::insert_new_mutation(
-                                    sb, se, m, mutations, selected);
+                                    sb, se, *m, mutations, selected);
                             }
                     }
                 neutral.insert(neutral.end(), nb, ne);
                 selected.insert(selected.end(), sb, se);
+
+#ifndef NDEBUG
+                std::size_t new_neutral = 0, new_selected = 0;
+                for (auto m : new_mutations)
+                    {
+                        if (mutations[m].neutral)
+                            {
+                                ++new_neutral;
+                            }
+                        if (!mutations[m].neutral)
+                            {
+                                ++new_selected;
+                            }
+                    }
+                if (neutral.size()
+                    != gametes[g1].mutations.size() + new_neutral)
+                    {
+                        throw std::runtime_error("FWDPP DEBUG: failure to add "
+                                                 "all new neutral mutations");
+                    }
+                if (selected.size()
+                    != gametes[g1].smutations.size() + new_selected)
+                    {
+                        throw std::runtime_error("FWDPP DEBUG: failure to add "
+                                                 "all new selected mutations");
+                    }
+#endif
 
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
@@ -247,10 +283,10 @@ namespace fwdpp
         auto jtr_e = gametes[g2].mutations.cend();
         auto jtr_s_e = gametes[g2].smutations.cend();
 
-        auto next_mutation = new_mutations.cbegin();
-        for (auto i = breakpoints.cbegin(); i != breakpoints.cend();)
+        auto next_mutation = begin(new_mutations);
+        for (auto i = begin(breakpoints); i != end(breakpoints);)
             {
-                if (next_mutation != new_mutations.cend()
+                if (next_mutation != end(new_mutations)
                     && mutations[*next_mutation].pos < *i)
                     {
                         const auto mut = &mutations[*next_mutation];
@@ -290,10 +326,10 @@ namespace fwdpp
                     }
             }
 #ifndef NDEBUG
-        if (next_mutation != new_mutations.cend())
+        if (next_mutation != end(new_mutations))
             {
-                throw std::runtime_error(
-                    "FWDPP DEBUG: fatal error during mutation/recombination");
+                throw std::runtime_error("FWDPP DEBUG: fatal error during "
+                                         "mutation/recombination");
             }
 #endif
         return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,

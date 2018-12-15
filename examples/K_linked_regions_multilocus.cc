@@ -77,7 +77,12 @@ main(int argc, char **argv)
     // Initiate random number generation system
     GSLrng r(seed);
 
-    multiloc_t pop(N, K);
+    std::vector<std::pair<double, double>> boundaries;
+    for (int i = 0; i < K; ++i)
+        {
+            boundaries.emplace_back(i, i + 1);
+        }
+    multiloc_t pop(N, boundaries);
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;

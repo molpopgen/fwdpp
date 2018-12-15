@@ -3,6 +3,8 @@
 *.trs
 *.log
 *.pyc
+*.gcda
+*.gcno
 Makefile
 config.h
 config.status

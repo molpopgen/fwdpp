@@ -21,8 +21,12 @@ custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
 if BPO_PRESENT
 if BPO_PRESENT
 noinst_PROGRAMS+=wfts
-wfts_SOURCES=wfts.cc
+wfts_SOURCES=wfts.cc tree_sequence_examples_common.cc
 wfts_LDADD=-lboost_program_options
+
+noinst_PROGRAMS+=wfmlts
+wfmlts_SOURCES=wfmlts.cc tree_sequence_examples_common.cc
+wfmlts_LDADD=-lboost_program_options
 
 noinst_PROGRAMS+=spatialts
 spatialts_SOURCES=spatialts.cc

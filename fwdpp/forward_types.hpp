@@ -131,7 +131,7 @@ namespace fwdpp
           \param icount The number of occurrences of this gamete in the
           population
         */
-        gamete_base(const uint_t &icount) noexcept
+        explicit gamete_base(const uint_t &icount) noexcept
             : n(icount), mutations(mutation_container()),
               smutations(mutation_container())
         {
