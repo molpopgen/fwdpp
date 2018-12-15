@@ -55,7 +55,8 @@ namespace fwdpp
                 assert(std::count(begin(breakpoints), end(breakpoints),
                                   std::numeric_limits<double>::max())
                        == 1);
-                assert(breakpoints.back() == std::numeric_limits<double>::max());
+                assert(breakpoints.back()
+                       == std::numeric_limits<double>::max());
                 for (unsigned j = 1; j < breakpoints.size(); ++j)
                     {
                         double a = breakpoints[j - 1];
@@ -150,7 +151,7 @@ namespace fwdpp
             /// A vector of dead/ancient sample nodes
             std::vector<TS_NODE_INT> preserved_nodes;
 
-            table_collection(const double maxpos)
+            explicit table_collection(const double maxpos)
                 : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
                   input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}

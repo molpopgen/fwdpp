@@ -37,6 +37,7 @@ to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://
 * Added fwdpp::genetic_parameters. [PR 177](https://github.com/molpopgen/fwdpp/pull/177)
 * Fixed [issue 182](https://github.com/molpopgen/fwdpp/issues/182)
 * Fixed [issue 181](https://github.com/molpopgen/fwdpp/issues/181)
+* Constructors for fwdpp::ts::table_simplifier and fwdpp::ts::table_collection marked explicit where appropriate.
 
 ## 0.7.3
 

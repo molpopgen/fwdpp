@@ -499,7 +499,7 @@ namespace fwdpp
             }
 
           public:
-            table_simplifier(const double maxpos)
+            explicit table_simplifier(const double maxpos)
                 : new_edge_table{}, new_node_table{}, segment_queue{},
                   Ancestry{}, E{}, L{ maxpos }, o{}, mutation_map{}
             {
