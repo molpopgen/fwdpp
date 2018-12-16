@@ -4,6 +4,7 @@
 #include <queue>
 #include <stdexcept>
 #include <type_traits>
+#include <fwdpp/named_type.hpp>
 
 namespace fwdpp
 {
@@ -11,6 +12,22 @@ namespace fwdpp
     using recycling_bin_t =
         typename std::conditional<std::is_unsigned<T>::value, std::queue<T>,
                                   void>::type;
+    namespace tags
+    {
+        struct mutation_recycling
+        {
+        };
+        struct gamete_recycling
+        {
+        };
+    } // namespace tags
+
+    using mutation_recycling_bin
+        = strong_types::named_type<std::queue<std::size_t>,
+                                   tags::mutation_recycling>;
+    using gamete_recycling_bin
+        = strong_types::named_type<std::queue<std::size_t>,
+                                   tags::mutation_recycling>;
 
     template <typename mcount_vec>
     recycling_bin_t<typename mcount_vec::size_type>
