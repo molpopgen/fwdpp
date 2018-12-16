@@ -22,55 +22,57 @@ namespace fwdpp
         };
     } // namespace tags
 
-    using mutation_recycling_bin
+    using flagged_mutation_queue
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::mutation_recycling>;
-    using gamete_recycling_bin
+    using flagged_gamete_queue
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::mutation_recycling>;
 
     template <typename mcount_vec>
-    recycling_bin_t<typename mcount_vec::size_type>
+    inline flagged_mutation_queue
     make_mut_queue(const mcount_vec &mcounts)
     /// \brief Make a FIFO recycling queue for mutations
     ///
     /// \note Simulations with tree sequences should use fwdpp::ts::make_mut_queue
     {
-        recycling_bin_t<typename mcount_vec::size_type> rv;
+        std::queue<std::size_t> rv;
         const auto msize = mcounts.size();
         for (typename mcount_vec::size_type i = 0; i < msize; ++i)
             {
                 if (!mcounts[i])
                     rv.push(i);
             }
-        return rv;
+        return flagged_mutation_queue(std::move(rv));
     }
 
     template <typename gvec_t>
-    recycling_bin_t<typename gvec_t::size_type>
+    inline flagged_gamete_queue
     make_gamete_queue(const gvec_t &gametes)
     {
-        recycling_bin_t<typename gvec_t::size_type> rv;
+        std::queue<std::size_t> rv;
         const auto gsize = gametes.size();
         for (typename gvec_t::size_type i = 0; i < gsize; ++i)
             {
                 if (!gametes[i].n)
                     rv.push(i);
             }
-        return rv;
+        return flagged_gamete_queue(std::move(rv));
     }
 
-    template <typename gcont_t, typename queue_t>
-    inline typename queue_t::value_type
-    recycle_gamete(gcont_t &gametes, queue_t &gamete_recycling_bin,
+    template <typename gcont_t>
+    inline std::size_t
+    recycle_gamete(gcont_t &gametes,
+                   flagged_gamete_queue &gamete_recycling_bin,
                    typename gcont_t::value_type::mutation_container &neutral,
                    typename gcont_t::value_type::mutation_container &selected)
     {
         // Try to recycle
-        if (!gamete_recycling_bin.empty())
+        auto &ref = gamete_recycling_bin.get();
+        if (!ref.empty())
             {
-                auto idx = gamete_recycling_bin.front();
-                gamete_recycling_bin.pop();
+                auto idx = ref.front();
+                ref.pop();
 #ifndef NDEBUG
                 if (gametes[idx].n)
                     {
@@ -100,15 +102,16 @@ namespace fwdpp
           \param args Parameter pack to be passed to constructor of an
           mcont_t::value_type
          */
-    template <typename queue_t, typename mcont_t, class... Args>
-    typename queue_t::value_type
-    recycle_mutation_helper(queue_t &mutation_recycling_bin,
+    template <typename mcont_t, class... Args>
+		inline std::size_t
+    recycle_mutation_helper(flagged_mutation_queue &mutation_recycling_bin,
                             mcont_t &mutations, Args &&... args)
     {
-        if (!mutation_recycling_bin.empty())
+		auto & ref = mutation_recycling_bin.get();
+        if (!ref.empty())
             {
-                auto rv = mutation_recycling_bin.front();
-                mutation_recycling_bin.pop();
+                auto rv = ref.front();
+                ref.pop();
                 mutations[rv] =
                     typename mcont_t::value_type(std::forward<Args>(args)...);
                 return rv;
