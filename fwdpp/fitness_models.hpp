@@ -372,45 +372,38 @@ namespace fwdpp
     /// Typical use would be to assign values 0, sh, scaling*s to
     /// genotypes AA, Aa, aa
     using trait = strong_types::named_type<double, genetic_value_is_trait>;
-    /// Strong wrapper around a boolean to signify that a genetic value represents
-    /// a trait value/phenytype
-    using is_trait_value
-        = strong_types::named_type<bool, genetic_value_is_trait>;
+
     /// Strong wrapper around a double signifying the scaling of a model.
     /// Typical use would be to assign values 0, sh, scaling*s to
     /// genotypes AA, Aa, aa
     using fitness = strong_types::named_type<double, genetic_value_is_fitness>;
-    /// Strong wrapper around a boolean to signify that a genetic value represents
-    /// fitness
-    using is_fitness_value
-        = strong_types::named_type<bool, genetic_value_is_fitness>;
 
-    inline is_trait_value
+    inline bool
     assign_is_trait_value(const trait &)
     /// Helper function for genetic value object constructors
     {
-        return is_trait_value(true);
+        return true;
     }
 
-    inline is_trait_value
+    inline bool
     assign_is_trait_value(const fitness &)
     /// Helper function for genetic value object constructors
     {
-        return is_trait_value(false);
+        return false;
     }
 
-    inline is_fitness_value
+    inline bool
     assign_is_fitness_value(const trait &)
     /// Helper function for genetic value object constructors
     {
-        return is_fitness_value(false);
+        return false;
     }
 
-    inline is_fitness_value
+    inline bool
     assign_is_fitness_value(const fitness &)
     /// Helper function for genetic value object constructors
     {
-        return is_fitness_value(true);
+        return true;
     }
 
     /// \brief Multiplicative fitness or trait value across sites
@@ -439,8 +432,8 @@ namespace fwdpp
             return [](const double d) { return std::max(0.0, d); };
         }
         const double scaling;
-        const is_trait_value gvalue_is_trait;
-        const is_fitness_value gvalue_is_fitness;
+        const bool gvalue_is_trait;
+        const bool gvalue_is_fitness;
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
         multiplicative_diploid(trait t)
@@ -549,8 +542,8 @@ namespace fwdpp
             return [](const double d) { return std::max(0.0, 1.0 + d); };
         }
         const double scaling;
-        const is_trait_value gvalue_is_trait;
-        const is_fitness_value gvalue_is_fitness;
+        const bool gvalue_is_trait;
+        const bool gvalue_is_fitness;
         const std::function<double(double)> make_return_value;
         using result_type = site_dependent_genetic_value::result_type;
 
