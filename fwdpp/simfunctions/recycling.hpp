@@ -25,6 +25,18 @@ namespace fwdpp
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::gamete_recycling>;
 
+    inline flagged_mutation_queue
+    empty_mutation_queue()
+    {
+        return flagged_mutation_queue(std::queue<std::size_t>());
+    }
+
+    inline flagged_gamete_queue
+    empty_gamete_queue()
+    {
+        return flagged_gamete_queue(std::queue<std::size_t>());
+    }
+
     template <typename mcount_vec>
     inline flagged_mutation_queue
     make_mut_queue(const mcount_vec &mcounts)

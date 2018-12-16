@@ -153,8 +153,8 @@ BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
     auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
         rng.get(), rbw.data(), rbw.size());
     BOOST_REQUIRE_EQUAL(interlocus_rec.size(), nloci - 1);
-    fwdpp::flagged_mutation_queue mqueue{ {} };
-    fwdpp::flagged_gamete_queue gqueue{ {} };
+    fwdpp::flagged_mutation_queue mqueue{ fwdpp::empty_mutation_queue() };
+    fwdpp::flagged_gamete_queue gqueue{ fwdpp::empty_gamete_queue() };
     for (auto& dip : pop.diploids)
         {
             auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(

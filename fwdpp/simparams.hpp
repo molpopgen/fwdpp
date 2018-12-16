@@ -70,8 +70,9 @@ namespace fwdpp
                   generate_breakpoints_param) },
               interlocus_recombination{},
               gamete_swapper{ std::forward<swapper>(gamete_swapper_param) },
-              mutation_recycling_bin{ {} },
-              gamete_recycling_bin{ {} }, neutral{}, selected{}
+              mutation_recycling_bin{ empty_mutation_queue() },
+              gamete_recycling_bin{ empty_gamete_queue() }, neutral{},
+              selected{}
         {
         }
 
@@ -89,8 +90,9 @@ namespace fwdpp
               interlocus_recombination{ std::forward<irec>(
                   interlocus_recombination_param) },
               gamete_swapper{ std::forward<swapper>(gamete_swapper_param) },
-              mutation_recycling_bin{ {} },
-              gamete_recycling_bin{ {} }, neutral{}, selected{}
+              mutation_recycling_bin{ empty_mutation_queue() },
+              gamete_recycling_bin{ empty_gamete_queue() }, neutral{},
+              selected{}
         {
         }
     };
