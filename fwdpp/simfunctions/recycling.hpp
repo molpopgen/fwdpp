@@ -18,21 +18,28 @@ namespace fwdpp
         };
     } // namespace tags
 
+    /// \brief FIFO queue for mutation recycling
+    /// \version 0.7.4 added to fwdpp
     using flagged_mutation_queue
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::mutation_recycling>;
+
+    /// \brief FIFO queue for gamete recycling
+    /// \version 0.7.4 added to fwdpp
     using flagged_gamete_queue
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::gamete_recycling>;
 
     inline flagged_mutation_queue
     empty_mutation_queue()
+    /// \brief Generate an empty flagged_mutation_queue
     {
         return flagged_mutation_queue(std::queue<std::size_t>());
     }
 
     inline flagged_gamete_queue
     empty_gamete_queue()
+    //// \brief Generate an empty flagged_gamete_queue
     {
         return flagged_gamete_queue(std::queue<std::size_t>());
     }
@@ -41,7 +48,7 @@ namespace fwdpp
     inline flagged_mutation_queue
     make_mut_queue(const mcount_vec &mcounts)
     /// \brief Make a FIFO recycling queue for mutations
-    ///
+    /// \param mcounts Vector of mutation counts
     /// \note Simulations with tree sequences should use fwdpp::ts::make_mut_queue
     {
         std::queue<std::size_t> rv;
@@ -57,6 +64,8 @@ namespace fwdpp
     template <typename gvec_t>
     inline flagged_gamete_queue
     make_gamete_queue(const gvec_t &gametes)
+    /// \brief Make a FIFO queue for recycling extinct gametes
+    /// \param gametes Vector of gametes
     {
         std::queue<std::size_t> rv;
         const auto gsize = gametes.size();
@@ -74,6 +83,12 @@ namespace fwdpp
                    flagged_gamete_queue &gamete_recycling_bin,
                    typename gcont_t::value_type::mutation_container &neutral,
                    typename gcont_t::value_type::mutation_container &selected)
+    /// \brief Return location of a new gamete, recycling available memory if possible
+    /// \param gametes vector of gametes
+    /// \param gamete_recycling_bin A flagged_gamete_queue
+    /// \param neutral Data for new gamete's neutral variants
+    /// \param selected Data for new gamete's selected variants
+    /// \return A location in \a gametes
     {
         // Try to recycle
         auto &ref = gamete_recycling_bin.get();
@@ -114,6 +129,11 @@ namespace fwdpp
     inline std::size_t
     recycle_mutation_helper(flagged_mutation_queue &mutation_recycling_bin,
                             mcont_t &mutations, Args &&... args)
+    /// \brief Helper function for implementing mutation generation functions.
+    /// \param mutation_recycling_bin A flagged_mutation_queue
+    /// \param mutations Container of mutations
+    /// \param args Constructor arguments to create a new mutation
+    /// \returns the location of the new variant in \a mutations
     {
         auto &ref = mutation_recycling_bin.get();
         if (!ref.empty())
