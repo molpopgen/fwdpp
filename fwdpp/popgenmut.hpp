@@ -7,6 +7,7 @@
 #include <fwdpp/tags/tags.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <fwdpp/io/mutation.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <limits>
 #include <tuple>
 
@@ -79,8 +80,9 @@ namespace fwdpp
                        const uint_t &generation, const double pselected,
                        const position_function &posmaker,
                        const effect_size_function &esize_maker,
-                       const dominance_function &hmaker, const decltype(popgenmut::xtra) x = 0)
-	/*!
+                       const dominance_function &hmaker,
+                       const decltype(popgenmut::xtra) x = 0)
+    /*!
 	 * Mutation function to add a fwdpp::popgenmut to a population.
 	 *
 	 * In order to use this function, it must be bound to a callable
@@ -109,11 +111,11 @@ namespace fwdpp
                 pos = posmaker();
             }
         bool selected = (gsl_rng_uniform(r) < pselected);
-        auto idx =  fwdpp_internal::recycle_mutation_helper(
+        auto idx = recycle_mutation_helper(
             recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
             (selected) ? hmaker() : 0., generation, x);
-		lookup.emplace(pos,idx);
-		return idx;
+        lookup.emplace(pos, idx);
+        return idx;
     }
 
     namespace io
@@ -157,6 +159,6 @@ namespace fwdpp
                 return popgenmut(pos, s, h, g, xtra);
             }
         };
-    }
-}
+    } // namespace io
+} // namespace fwdpp
 #endif

@@ -8,11 +8,11 @@
 
 #ifndef FWDPP_SAMPLE_DIPLOID_TCC
 #define FWDPP_SAMPLE_DIPLOID_TCC
-   
+
 #include <cassert>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/mutate_recombine.hpp>
-#include <fwdpp/internal/recycling.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
@@ -127,8 +127,8 @@ namespace fwdpp
           The details of recycling are implemented in
           fwdpp/internal/recycling.hpp
         */
-        auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
-        auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+        auto mut_recycling_bin = make_mut_queue(mcounts);
+        auto gam_recycling_bin = make_gamete_queue(gametes);
 
         // Calculate fitness for each diploid:
 
@@ -269,7 +269,10 @@ namespace fwdpp
 #ifndef NDEBUG
         for (const auto &mc : mcounts)
             {
-                if(mc > 2*N_next){throw std::runtime_error("mutation size too large");}
+                if (mc > 2 * N_next)
+                    {
+                        throw std::runtime_error("mutation size too large");
+                    }
             }
 #endif
 
@@ -349,8 +352,8 @@ namespace fwdpp
         // Vector of parental fitnesses
         std::vector<double> fitnesses(N_curr);
         double wbar = 0.;
-        auto mut_recycling_bin = fwdpp_internal::make_mut_queue(mcounts);
-        auto gamete_recycling_bin = fwdpp_internal::make_gamete_queue(gametes);
+        auto mut_recycling_bin = make_mut_queue(mcounts);
+        auto gamete_recycling_bin = make_gamete_queue(gametes);
         // Go over parents
         for (uint_t i = 0; i < N_curr; ++i)
             {
@@ -397,7 +400,6 @@ namespace fwdpp
             {
                 diploids.resize(N_next);
             }
-
 
         for (auto &dip : diploids)
             {

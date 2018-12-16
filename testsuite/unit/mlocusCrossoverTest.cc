@@ -114,10 +114,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -178,10 +176,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -246,10 +242,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -312,10 +306,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
     std::vector<double> r_bw_loci = { 1., 1. };
     std::vector<diploid_t> diploids({ diploid });
 
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 

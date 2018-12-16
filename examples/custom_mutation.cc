@@ -14,7 +14,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <fwdpp/io/mutation.hpp>
-#include <fwdpp/internal/recycling.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/type_traits.hpp>
 
 struct TwoDmutation : public fwdpp::mutation_base
@@ -94,8 +94,8 @@ namespace fwdpp
                 return TwoDmutation(std::move(s), std::move(h), pos, g, xtra);
             }
         };
-    }
-}
+    } // namespace io
+} // namespace fwdpp
 
 template <typename queue_t, typename mcont_t, typename lookup_table_t,
           typename position_function>
@@ -122,9 +122,9 @@ infsites_TwoDmutation_additive(queue_t &recycling_bin, mcont_t &mutations,
             gsl_ran_bivariate_gaussian(r, sigma_x, sigma_y, rho, &s[0], &s[1]);
         }
 
-    auto idx = fwdpp::fwdpp_internal::recycle_mutation_helper(
-        recycling_bin, mutations, std::move(s), std::move(h), pos, generation,
-        x);
+    auto idx = fwdpp::recycle_mutation_helper(recycling_bin, mutations,
+                                              std::move(s), std::move(h), pos,
+                                              generation, x);
     lookup.emplace(pos, idx);
     return idx;
 }
@@ -201,7 +201,7 @@ main(int argc, char **argv)
                                          singlepop_t::gcont_t>::value,
         "Error: isotropic_mutation is not a valid mutation function");
 
-    auto recbin = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
+    auto recbin = fwdpp::make_mut_queue(pop.mcounts);
 
     auto new_mutation_index = isotropic_mutation(recbin, pop.mutations);
 

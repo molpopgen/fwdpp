@@ -182,8 +182,8 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
                  const rec_fxn &recfxn, const mut_fxn &mutfxn)
 {
     // Handle mutation/gamete "recycling":
-    auto mut_recycling_bin = fwdpp_internal::make_mut_queue(pop.mcounts);
-    auto gam_recycling_bin = fwdpp_internal::make_gamete_queue(pop.gametes);
+    auto mut_recycling_bin = make_mut_queue(pop.mcounts);
+    auto gam_recycling_bin = make_gamete_queue(pop.gametes);
 
     // Migration and build lookup tables:
     auto lookups = migrate_and_calc_fitness(r, pop, wfxn, N1, N2, m12, m21);

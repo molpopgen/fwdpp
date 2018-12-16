@@ -265,8 +265,8 @@ namespace fwdpp
                                                  "all new selected mutations");
                     }
 #endif
-                return fwdpp_internal::recycle_gamete(
-                    gametes, gamete_recycling_bin, neutral, selected);
+                return recycle_gamete(gametes, gamete_recycling_bin, neutral,
+                                      selected);
             }
         if (breakpoints.size() == 1)
             {
@@ -336,8 +336,8 @@ namespace fwdpp
                                          "mutation/recombination");
             }
 #endif
-        return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
-                                              neutral, selected);
+        return recycle_gamete(gametes, gamete_recycling_bin, neutral,
+                              selected);
     }
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,

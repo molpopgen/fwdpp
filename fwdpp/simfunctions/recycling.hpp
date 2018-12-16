@@ -1,5 +1,5 @@
-#ifndef FWDPP_INTERNAL_RECYCLING
-#define FWDPP_INTERNAL_RECYCLING
+#ifndef FWDPP_RECYCLING
+#define FWDPP_RECYCLING
 
 #include <queue>
 #include <stdexcept>

@@ -10,7 +10,7 @@
 #include <gsl/gsl_randist.h>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/internal/gsl_discrete.hpp>
-#include <fwdpp/internal/recycling.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 
 namespace fwdpp

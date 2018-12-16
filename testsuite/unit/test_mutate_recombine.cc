@@ -23,7 +23,7 @@ BOOST_FIXTURE_TEST_CASE(test_boundary, slocuspop_objects)
     BOOST_REQUIRE_EQUAL(pop.mutations.back().pos, 1.5);
     std::vector<fwdpp::uint_t> new_mutations;
     std::vector<double> breakpoints{ 1.5, std::numeric_limits<double>::max() };
-    auto q = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
+    auto q = fwdpp::make_mut_queue(pop.mcounts);
     BOOST_REQUIRE_EQUAL(q.empty(), true);
 
     auto new_gamete_index = fwdpp::mutate_recombine(
@@ -77,7 +77,7 @@ BOOST_FIXTURE_TEST_CASE(test_boundary_with_recurrent_mutation,
     // The new mutation at 1.5 is at the end
     std::vector<fwdpp::uint_t> new_mutations(1, pop.mutations.size() - 1);
     std::vector<double> breakpoints{ 1.5, std::numeric_limits<double>::max() };
-    auto q = fwdpp::fwdpp_internal::make_mut_queue(pop.mcounts);
+    auto q = fwdpp::make_mut_queue(pop.mcounts);
     BOOST_REQUIRE_EQUAL(q.empty(), true);
 
     auto new_gamete_index = fwdpp::mutate_recombine(
