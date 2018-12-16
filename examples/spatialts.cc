@@ -178,19 +178,20 @@ main(int argc, char **argv)
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = []() { return 1.0; };
-    const auto make_mutation = [&pop, &rng, &generation, generate_mutation_position,
-                         get_selection_coefficient,
-                         generate_h](std::queue<std::size_t> &recbin,
-                                     poptype::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation,
-            // 1.0 signifies 100% of mutations will be selected
-            1.0, generate_mutation_position, get_selection_coefficient,
-            generate_h);
-    };
+    const auto make_mutation
+        = [&pop, &rng, &generation, generate_mutation_position,
+           get_selection_coefficient,
+           generate_h](fwdpp::flagged_mutation_queue &recbin,
+                       poptype::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                  // 1.0 signifies 100% of mutations will be selected
+                  1.0, generate_mutation_position, get_selection_coefficient,
+                  generate_h);
+          };
 
     const auto mmodel = [&rng, mu,
-                         &make_mutation](std::queue<std::size_t> &recbin,
+                         &make_mutation](fwdpp::flagged_mutation_queue &recbin,
                                          poptype::mcont_t &mutations) {
         std::vector<fwdpp::uint_t> rv;
         unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
@@ -314,8 +315,9 @@ main(int argc, char **argv)
                     auto rv = simplify_tables(
                         pop, generation, pop.mcounts_from_preserved_nodes,
                         tables, simplifier, tables.num_nodes() - 2 * N, 2 * N);
-                   genetics.mutation_recycling_bin = fwdpp::ts::make_mut_queue(
-                        pop.mcounts, pop.mcounts_from_preserved_nodes);
+                    genetics.mutation_recycling_bin
+                        = fwdpp::ts::make_mut_queue(
+                            pop.mcounts, pop.mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
@@ -419,9 +421,8 @@ main(int argc, char **argv)
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
     std::iota(s.begin(), s.end(), 0);
     const auto neutral_variant_maker
-        = [&rng, &pop,
-           &genetics](const double left, const double right,
-                                    const fwdpp::uint_t generation) {
+        = [&rng, &pop, &genetics](const double left, const double right,
+                                  const fwdpp::uint_t generation) {
               return fwdpp::infsites_popgenmut(
                   genetics.mutation_recycling_bin, pop.mutations, rng.get(),
                   pop.mut_lookup, generation, 0.0,

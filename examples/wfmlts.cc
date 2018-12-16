@@ -130,7 +130,7 @@ main(int argc, char **argv)
         intralocus_recombination;
 
     std::vector<std::function<std::vector<fwdpp::uint_t>(
-        std::queue<std::size_t> &, poptype::mcont_t &)>>
+        fwdpp::flagged_mutation_queue &, poptype::mcont_t &)>>
         mmodels;
 
     std::function<unsigned()> mutnumber
@@ -145,33 +145,34 @@ main(int argc, char **argv)
                 fwdpp::poisson_xover(recrate, i, i + 1), rng.get()));
             const auto generate_mutation_position
                 = [&rng, i]() { return gsl_ran_flat(rng.get(), i, i + 1); };
-            const auto make_mutation = [&pop, &rng, &generation,
-                                        generate_mutation_position,
-                                        get_selection_coefficient, generate_h](
-                                           std::queue<std::size_t> &recbin,
-                                           poptype::mcont_t &mutations) {
-                return fwdpp::infsites_popgenmut(
-                    recbin, mutations, rng.get(), pop.mut_lookup, generation,
-                    // 1.0 signifies 100% of mutations will be selected
-                    1.0, generate_mutation_position, get_selection_coefficient,
-                    generate_h);
-            };
-            const auto mmodel
-                = [mutnumber, make_mutation](std::queue<std::size_t> &recbin,
-                                             poptype::mcont_t &mutations) {
-                      std::vector<fwdpp::uint_t> rv;
-                      unsigned nmuts = mutnumber();
-                      for (unsigned m = 0; m < nmuts; ++m)
-                          {
-                              rv.push_back(make_mutation(recbin, mutations));
-                          }
-                      std::sort(begin(rv), end(rv),
-                                [&mutations](const fwdpp::uint_t a,
-                                             const fwdpp::uint_t b) {
-                                    return mutations[a].pos < mutations[b].pos;
-                                });
-                      return rv;
+            const auto make_mutation
+                = [&pop, &rng, &generation, generate_mutation_position,
+                   get_selection_coefficient,
+                   generate_h](fwdpp::flagged_mutation_queue &recbin,
+                               poptype::mcont_t &mutations) {
+                      return fwdpp::infsites_popgenmut(
+                          recbin, mutations, rng.get(), pop.mut_lookup,
+                          generation,
+                          // 1.0 signifies 100% of mutations will be selected
+                          1.0, generate_mutation_position,
+                          get_selection_coefficient, generate_h);
                   };
+            const auto mmodel = [mutnumber, make_mutation](
+                                    fwdpp::flagged_mutation_queue &recbin,
+                                    poptype::mcont_t &mutations) {
+                std::vector<fwdpp::uint_t> rv;
+                unsigned nmuts = mutnumber();
+                for (unsigned m = 0; m < nmuts; ++m)
+                    {
+                        rv.push_back(make_mutation(recbin, mutations));
+                    }
+                std::sort(begin(rv), end(rv),
+                          [&mutations](const fwdpp::uint_t a,
+                                       const fwdpp::uint_t b) {
+                              return mutations[a].pos < mutations[b].pos;
+                          });
+                return rv;
+            };
             mmodels.emplace_back(std::move(mmodel));
         }
 
@@ -243,10 +244,14 @@ main(int argc, char **argv)
                             if (generation > 1
                                 && fixed_number_mutations == true)
                                 {
-                                    if(pop.gametes[dip[i].first].smutations.size() != generation-1)
-                                    {
-                                        throw std::runtime_error("incorrect number of mutations");
-                                    }
+                                    if (pop.gametes[dip[i].first]
+                                            .smutations.size()
+                                        != generation - 1)
+                                        {
+                                            throw std::runtime_error(
+                                                "incorrect number of "
+                                                "mutations");
+                                        }
                                 }
                             assert(pop.gametes[dip[i].first].n > 0);
                             assert(pop.gametes[dip[i].second].n > 0);

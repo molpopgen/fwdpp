@@ -10,12 +10,13 @@
 #include <deque>
 #include <queue>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 
 namespace fwdpp
 {
     namespace ts
     {
-        std::queue<std::size_t>
+        inline flagged_mutation_queue
         make_mut_queue(
             const std::vector<std::uint32_t> &mcounts,
             const std::vector<std::uint32_t> &counts_from_preserved_nodes)
@@ -35,10 +36,10 @@ namespace fwdpp
                             mutation_recycling_bin.push(i);
                         }
                 }
-            return mutation_recycling_bin;
+            return flagged_mutation_queue(std::move(mutation_recycling_bin));
         }
 
-        std::queue<std::size_t>
+        inline flagged_mutation_queue
         make_mut_queue(std::vector<std::size_t> &preserved_mutation_indexes,
                        const std::size_t num_mutations)
         /// \brief Make a mutation recycling queue for simulations with tree sequences
@@ -57,9 +58,9 @@ namespace fwdpp
         /// The first two conditions are required for correct results.  The third condition is optional,
         /// but big speedups will be seen for that case.
         ///
-        /// This function generates a recycling queue by taking the set difference of 
+        /// This function generates a recycling queue by taking the set difference of
         /// \a preserved_mutation_indexes and all possible mutation indexes, \f$[0,num\_mutations)\f$.
-        /// The algorithm is a fast Nlog(N) method, and it will outperform the other overload based 
+        /// The algorithm is a fast Nlog(N) method, and it will outperform the other overload based
         /// on tree traversal when the number of trees is very large, as is the case when large numbers
         /// of ancestral samples are registered during a simulation.
         ///
@@ -75,7 +76,7 @@ namespace fwdpp
                                 preserved_mutation_indexes.end(),
                                 std::back_inserter(diff));
             std::queue<std::size_t> rv(std::move(diff));
-            return rv;
+            return flagged_mutation_queue(std::move(rv));
         }
 
         namespace detail

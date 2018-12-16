@@ -9,6 +9,7 @@
 #include <gsl/gsl_rng.h>
 #include <fwdpp/type_traits.hpp>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 
 namespace fwdpp
 {
@@ -53,7 +54,8 @@ namespace fwdpp
         const recombination_function generate_breakpoints;
         const interlocus_recombination_function interlocus_recombination;
         const parent_gamete_swapping_function gamete_swapper;
-        std::queue<std::size_t> mutation_recycling_bin, gamete_recycling_bin;
+        flagged_mutation_queue mutation_recycling_bin;
+        flagged_gamete_queue gamete_recycling_bin;
         std::vector<uint_t> neutral;
         std::vector<uint_t> selected;
 
@@ -68,8 +70,8 @@ namespace fwdpp
                   generate_breakpoints_param) },
               interlocus_recombination{},
               gamete_swapper{ std::forward<swapper>(gamete_swapper_param) },
-              mutation_recycling_bin{},
-              gamete_recycling_bin{}, neutral{}, selected{}
+              mutation_recycling_bin{ {} },
+              gamete_recycling_bin{ {} }, neutral{}, selected{}
         {
         }
 
@@ -87,8 +89,8 @@ namespace fwdpp
               interlocus_recombination{ std::forward<irec>(
                   interlocus_recombination_param) },
               gamete_swapper{ std::forward<swapper>(gamete_swapper_param) },
-              mutation_recycling_bin{},
-              gamete_recycling_bin{}, neutral{}, selected{}
+              mutation_recycling_bin{ {} },
+              gamete_recycling_bin{ {} }, neutral{}, selected{}
         {
         }
     };

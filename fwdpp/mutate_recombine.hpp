@@ -348,9 +348,8 @@ namespace fwdpp
         std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
             parental_gametes,
         const recmodel &rec_pol, const mutmodel &mmodel, const double mu,
-        typename traits::recycling_bin_t<gcont_t> &gamete_recycling_bin,
-        typename traits::recycling_bin_t<mcont_t> &mutation_recycling_bin,
-        diploid_t &dip,
+        flagged_gamete_queue &gamete_recycling_bin,
+        flagged_mutation_queue &mutation_recycling_bin, diploid_t &dip,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///

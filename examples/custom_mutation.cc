@@ -97,17 +97,15 @@ namespace fwdpp
     } // namespace io
 } // namespace fwdpp
 
-template <typename queue_t, typename mcont_t, typename lookup_table_t,
+template <typename mcont_t, typename lookup_table_t,
           typename position_function>
 std::size_t
-infsites_TwoDmutation_additive(queue_t &recycling_bin, mcont_t &mutations,
-                               const gsl_rng *r, lookup_table_t &lookup,
-                               const fwdpp::uint_t &generation,
-                               const double pselected,
-                               const position_function &posmaker,
-                               const double sigma_x, const double sigma_y,
-                               const double rho,
-                               const decltype(TwoDmutation::xtra) x = 0)
+infsites_TwoDmutation_additive(
+    fwdpp::flagged_mutation_queue &recycling_bin, mcont_t &mutations,
+    const gsl_rng *r, lookup_table_t &lookup, const fwdpp::uint_t &generation,
+    const double pselected, const position_function &posmaker,
+    const double sigma_x, const double sigma_y, const double rho,
+    const decltype(TwoDmutation::xtra) x = 0)
 {
     TwoDmutation::array_t s{ 0., 0. }, h{ 1., 1. };
 
@@ -187,13 +185,13 @@ main(int argc, char **argv)
 
     singlepop_t pop(1000);
     unsigned generation = 0;
-    const auto isotropic_mutation
-        = [r, &pop, &generation](std::queue<std::size_t> &mutation_recbin,
-                                 singlepop_t::mcont_t &mutations) {
-              return infsites_TwoDmutation_additive(
-                  mutation_recbin, mutations, r, pop.mut_lookup, generation,
-                  1.0, [r]() { return gsl_rng_uniform(r); }, 0.1, 0.1, 0.0);
-          };
+    const auto isotropic_mutation =
+        [r, &pop, &generation](fwdpp::flagged_mutation_queue &mutation_recbin,
+                               singlepop_t::mcont_t &mutations) {
+            return infsites_TwoDmutation_additive(
+                mutation_recbin, mutations, r, pop.mut_lookup, generation, 1.0,
+                [r]() { return gsl_rng_uniform(r); }, 0.1, 0.1, 0.0);
+        };
 
     static_assert(
         fwdpp::traits::is_mutation_model<decltype(isotropic_mutation),

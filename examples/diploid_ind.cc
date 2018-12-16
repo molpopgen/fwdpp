@@ -80,7 +80,7 @@ main(int argc, char **argv)
             double wbar;
 
             const auto mmodel =
-                [&pop, &r, &generation](std::queue<std::size_t> &recbin,
+                [&pop, &r, &generation](fwdpp::flagged_gamete_queue &recbin,
                                         singlepop_t::mcont_t &mutations) {
                     return fwdpp::infsites_popgenmut(
                         recbin, mutations, r.get(), pop.mut_lookup, generation,
@@ -131,8 +131,8 @@ main(int argc, char **argv)
                           multiplicative
                           models are very common in population genetics
                         */
-                        fwdpp::multiplicative_diploid(fwdpp::fitness(2.)), pop.neutral,
-                        pop.selected);
+                        fwdpp::multiplicative_diploid(fwdpp::fitness(2.)),
+                        pop.neutral, pop.selected);
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, twoN);

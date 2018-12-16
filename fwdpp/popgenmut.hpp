@@ -71,11 +71,11 @@ namespace fwdpp
         }
     };
 
-    template <typename queue_t, typename mcont_t, typename lookup_table_t,
+    template < typename mcont_t, typename lookup_table_t,
               typename position_function, typename effect_size_function,
               typename dominance_function>
     std::size_t
-    infsites_popgenmut(queue_t &recycling_bin, mcont_t &mutations,
+    infsites_popgenmut(flagged_mutation_queue &recycling_bin, mcont_t &mutations,
                        const gsl_rng *r, lookup_table_t &lookup,
                        const uint_t &generation, const double pselected,
                        const position_function &posmaker,
@@ -88,7 +88,7 @@ namespace fwdpp
 	 * In order to use this function, it must be bound to a callable
 	 * that is a valid mutation function.  See examples for details.
 	 *
-	 * \param recycling_bin Recycling queue for mutations.
+	 * \param recycling_bin Recycling queue for mutations (fwdpp::flagged_mutation_queue).
 	 * \param mutations Container of mutations
 	 * \param r A random-number generator
 	 * \param lookup Lookup table for mutation positions

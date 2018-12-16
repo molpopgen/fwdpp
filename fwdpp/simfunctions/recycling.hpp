@@ -8,10 +8,6 @@
 
 namespace fwdpp
 {
-    template <class T>
-    using recycling_bin_t =
-        typename std::conditional<std::is_unsigned<T>::value, std::queue<T>,
-                                  void>::type;
     namespace tags
     {
         struct mutation_recycling
