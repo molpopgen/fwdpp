@@ -8,8 +8,7 @@ namespace fwdpp
     namespace gsl
     {
         /*!
-          \brief gsl_rng * types supported by fwdpp's sugar layer
-          \ingroup sugar
+          \brief gsl_rng * types supported by fwdpp
          */
         enum class GSL_RNG_TYPE
         {
@@ -18,7 +17,6 @@ namespace fwdpp
         };
         /*!
           \brief Dispatch tag for gsl_rng * types
-          \ingroup sugar
         */
         template <GSL_RNG_TYPE> struct GSL_RNG_TYPE_TAG
         {

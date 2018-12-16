@@ -1,5 +1,5 @@
-#ifndef FWDPP_SUGAR_POPBASE_HPP
-#define FWDPP_SUGAR_POPBASE_HPP
+#ifndef FWDPP_POPBASE_HPP
+#define FWDPP_POPBASE_HPP
 
 #include <type_traits>
 #include <vector>
@@ -110,7 +110,7 @@ namespace fwdpp
             /// Be aware of the following issue regarding
             /// serialization: mcounts/mcounts_from_preserved_nodes
             /// are NOT serialized in fwdpp::serialize_population.
-            /// Further, when pops are deserialized, mcounts is 
+            /// Further, when pops are deserialized, mcounts is
             /// filled by a call to fwdpp_internal::process_gametes.
             /// This behavior is generally incorrect for simulations
             /// involving tree sequence recording, and a call to
@@ -142,9 +142,6 @@ namespace fwdpp
               appropriately
               and efficiently cleared, but only when needed.
 
-              \note: if not using the sugar features, you can create these
-              vectors
-              only once per simulation...
             */
             typename gamete_t::mutation_container neutral, selected;
 
@@ -202,7 +199,8 @@ namespace fwdpp
             {
                 return this->mutations == rhs.mutations
                        && this->mcounts == rhs.mcounts
-                       && this->mcounts_from_preserved_nodes == rhs.mcounts_from_preserved_nodes
+                       && this->mcounts_from_preserved_nodes
+                              == rhs.mcounts_from_preserved_nodes
                        && this->gametes == rhs.gametes
                        && this->fixations == rhs.fixations
                        && this->fixation_times == rhs.fixation_times;
@@ -289,6 +287,6 @@ namespace fwdpp
                 }
             fwdpp_internal::process_gametes(gametes, mutations, mcounts);
         }
-    } // namespace sugar
+    } // namespace poptypes
 } // namespace fwdpp
 #endif
