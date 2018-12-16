@@ -39,7 +39,7 @@ to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://
 * Fixed [issue 181](https://github.com/molpopgen/fwdpp/issues/181)
 * Constructors for fwdpp::ts::table_simplifier and fwdpp::ts::table_collection marked explicit where appropriate.
 * Fixed error in return value of fwdpp::general_rec_variation::operator(), and fwdpp::mutate_recombine now explicitly
-  tests for correct use of sentinel values.
+  tests for correct use of sentinel values. [PR 184](https://github.com/molpopgen/fwdpp/pull/184)
 
 ## 0.7.3
 
