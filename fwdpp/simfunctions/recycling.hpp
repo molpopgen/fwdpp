@@ -23,7 +23,7 @@ namespace fwdpp
                                    tags::mutation_recycling>;
     using flagged_gamete_queue
         = strong_types::named_type<std::queue<std::size_t>,
-                                   tags::mutation_recycling>;
+                                   tags::gamete_recycling>;
 
     template <typename mcount_vec>
     inline flagged_mutation_queue
@@ -99,11 +99,11 @@ namespace fwdpp
           mcont_t::value_type
          */
     template <typename mcont_t, class... Args>
-		inline std::size_t
+    inline std::size_t
     recycle_mutation_helper(flagged_mutation_queue &mutation_recycling_bin,
                             mcont_t &mutations, Args &&... args)
     {
-		auto & ref = mutation_recycling_bin.get();
+        auto &ref = mutation_recycling_bin.get();
         if (!ref.empty())
             {
                 auto rv = ref.front();
