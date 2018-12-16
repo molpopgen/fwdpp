@@ -7,7 +7,6 @@ pkginclude_HEADERS=mutation_internal.hpp \
 	multilocus_rec.hpp \
 	ms_sampling.hpp \
 	gamete_cleaner.hpp \
-	recycling.hpp \
 	sample_diploid_helpers.hpp \
 	type_traits.hpp \
 	data_matrix_details.hpp \
