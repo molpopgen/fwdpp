@@ -70,7 +70,6 @@ namespace fwdpp
         crossover_point(const double rate, const double pos_,
                         const double poisson = true)
             /*!
-             * \param r_ A gsl_rng that must be initialized.
              * \param rate The crossover rate. See note below.
              * \param pos_ The crossover position to return.
              * \param poisson Whether \a rate represents a Poisson process
@@ -124,11 +123,13 @@ namespace fwdpp
      * \example K_linked_regions_generalized_rec.cc
      */
     {
-        std::vector<std::function<void(const gsl_rng *, std::vector<double>&)>> recmap;
+        std::vector<std::function<void(const gsl_rng*, std::vector<double>&)>>
+            recmap;
 
         general_rec_variation() : recmap{} {}
 
-        inline std::vector<double> operator()(const gsl_rng* r) const
+        inline std::vector<double>
+        operator()(const gsl_rng* r) const
         {
             std::vector<double> breakpoints;
             for (const auto& f : recmap)
@@ -140,6 +141,6 @@ namespace fwdpp
             return breakpoints;
         }
     };
-}
+} // namespace fwdpp
 
 #endif

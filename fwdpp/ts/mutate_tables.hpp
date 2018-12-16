@@ -21,6 +21,7 @@ namespace fwdpp
         ///
         /// \param r fwdpp::GSLrng_t
         /// \param make_mutation A mutation function.  See below.
+        /// \param tables A fwdpp::ts::table_collection
         /// \param samples A list of sample nodes corresponding to "currently-alive" nodes
         /// \param mu Mutation rate (per gamete, per generation)
         ///
@@ -31,7 +32,7 @@ namespace fwdpp
         /// The mutations should be neutral, although that requirement is not enforced. (It simply
         /// makes little sense to apply selected mutations to the entire edge table post-hoc.)
         ///
-        /// The result of this function is to populate @tables.mutation_table with neutral variants.
+        /// The result of this function is to populate \a tables.mutation_table with neutral variants.
         ///
         /// The parameter \a make_mutation is a function that must conform to
         /// std::function<std::size_t(double, double, fwdpp::uint_t)>.  The three arguments

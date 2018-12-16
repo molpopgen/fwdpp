@@ -1,7 +1,7 @@
-/*! \file fwdpp/sugar/gsl/tags.hpp
+/*! \file fwdpp/gsl/tags.hpp
  */
-#ifndef __FWDPP_SUGAR_GSL_TAGS_HPP__
-#define __FWDPP_SUGAR_GSL_TAGS_HPP__
+#ifndef __FWDPP_GSL_TAGS_HPP__
+#define __FWDPP_GSL_TAGS_HPP__
 
 namespace fwdpp
 {

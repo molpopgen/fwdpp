@@ -1,28 +1,27 @@
-/*! \file fwdpp/sugar/poptypes/tags.hpp
+/*! \file fwdpp/poptypes/tags.hpp
  */
-#ifndef __FWDPP_SUGAR_POPTYPES_TAGS_HPP__
-#define __FWDPP_SUGAR_POPTYPES_TAGS_HPP__
+#ifndef __FWDPP_POPTYPES_TAGS_HPP__
+#define __FWDPP_POPTYPES_TAGS_HPP__
 
 namespace fwdpp
 {
     namespace poptypes
     {
         //! Types of populations supported by sugar layer \ingroup sugar
-        enum class FWDPP_SUGAR_POPTYPE
+        enum class FWDPP_POPTYPE
         {
             SINGLELOC,
             MULTILOC
         };
         //! Dispatch tag template for population types supported by sugar layer
-        //! \ingroup sugar
-        template <FWDPP_SUGAR_POPTYPE> struct FWDPP_SUGAR_POPTAG
+        template <FWDPP_POPTYPE> struct FWDPP_POPTAG
         {
         };
-        //! Single-locus simulations \ingroup sugar
-        using SINGLELOC_TAG = FWDPP_SUGAR_POPTAG<FWDPP_SUGAR_POPTYPE::SINGLELOC>;
-        //! Multi-locus simulations \ingroup sugar
+        //! Single-locus simulations
+        using SINGLELOC_TAG = FWDPP_POPTAG<FWDPP_POPTYPE::SINGLELOC>;
+        //! Multi-locus simulations
         using MULTILOC_TAG
-            = FWDPP_SUGAR_POPTAG<FWDPP_SUGAR_POPTYPE::MULTILOC>;
+            = FWDPP_POPTAG<FWDPP_POPTYPE::MULTILOC>;
     }
 }
 

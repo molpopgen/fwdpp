@@ -4,6 +4,7 @@
 #include <cmath>
 #include <limits>
 #include <functional>
+#include <algorithm> //for std::min/max
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -53,5 +54,5 @@ namespace fwdpp
             return m.neutral;
         }
     };
-}
+} // namespace fwdpp
 #endif /* _FWD_FUNCTIONAL_HPP_ */

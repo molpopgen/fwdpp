@@ -457,7 +457,7 @@ namespace fwdpp
               gvalue_is_fitness(assign_is_fitness_value(gvtype)),
               make_return_value{ assign_f(gvtype) }
         /// Construct an object to calculate fitness values.
-        /// \param t fwdpp::fitness, where the double repsresents the scaling of "aa" trait values.
+        /// \param gvtype fwdpp::fitness, where the double repsresents the scaling of "aa" trait values.
         {
             if (!std::isfinite(scaling))
                 {
@@ -490,7 +490,7 @@ namespace fwdpp
                    const mcont_t &mutations) const noexcept
         ///  \param g1 A gamete
         ///  \param g2 A gamete
-        ///  \param mutation Container of mutations
+        ///  \param mutations Container of mutations
         ///  \return Multiplicative genetic value across sites.
         {
             using __mtype = typename mcont_t::value_type;
