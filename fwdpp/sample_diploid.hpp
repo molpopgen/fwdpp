@@ -25,8 +25,6 @@ namespace fwdpp
       \param f Probability that a mating is a selfing event
       \param mp Policy determining how whether or not to remove fixed variants
       from the gametes.
-      \param gpolicy_mut Policy determining how new gametes are added to
-      population after a mutation event
 
       \note diploids will be updated to reflect the new diploid genotypes
       post-sampling (the descedants).  Gametes will be changed by mutation,
@@ -79,8 +77,6 @@ namespace fwdpp
       \param f Probability that a mating is a selfing event
       \param mp Policy determining how whether or not to remove fixed variants
       from the gametes.
-      \param gpolicy_mut Policy determining how new gametes are added to
-      population after a mutation event
 
       \note diploids will be updated to reflect the new diploid genotypes
       post-sampling (the descedants).  Gametes will be changed by mutation,
