@@ -25,7 +25,7 @@ mlocuspop_popgenmut_fixture::make_mutmodels()
         {
             auto mm =
                 [this,
-                 i](std::queue<std::size_t> &recbin,
+                 i](fwdpp::flagged_mutation_queue &recbin,
                     mlocuspop_popgenmut_fixture::poptype::mcont_t &mutations) {
                     return fwdpp::infsites_popgenmut(
                         recbin, mutations, rng.get(), pop.mut_lookup,

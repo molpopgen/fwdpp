@@ -80,7 +80,7 @@ main(int argc, char **argv)
             double wbar;
 
             const auto mmodel =
-                [&pop, &r, &generation](fwdpp::flagged_gamete_queue &recbin,
+                [&pop, &r, &generation](fwdpp::flagged_mutation_queue &recbin,
                                         singlepop_t::mcont_t &mutations) {
                     return fwdpp::infsites_popgenmut(
                         recbin, mutations, r.get(), pop.mut_lookup, generation,

@@ -25,9 +25,8 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
     using poptype = slocuspop_popgenmut_fixture::poptype;
     using mmodel_type = fwdpp::traits::mutation_model<poptype::mcont_t>;
     rng_t rng{ 42 };
-    const auto mmodel
-        = [](std::queue<std::size_t> &,
-                 poptype::mcont_t &) -> std::size_t { return 1; };
+    const auto mmodel = [](fwdpp::flagged_mutation_queue &,
+                           poptype::mcont_t &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mcont_t> m(
         std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });
@@ -47,8 +46,8 @@ BOOST_AUTO_TEST_CASE(bind_gamete_dependent_mutation_model)
                                                              poptype::gcont_t>;
     rng_t rng{ 42 };
     const auto mmodel
-        = [](std::queue<std::size_t> &, const poptype::gamete_t &,
-                 poptype::mcont_t &) -> std::size_t { return 1; };
+        = [](fwdpp::flagged_mutation_queue &, const poptype::gamete_t &,
+             poptype::mcont_t &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mcont_t, poptype::gcont_t>
         m(std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });

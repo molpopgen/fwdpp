@@ -8,6 +8,7 @@
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <testsuite/util/custom_dip.hpp>
 #include <functional>
 #include <numeric>
@@ -43,7 +44,7 @@ class mlocuspop_popgenmut_fixture
 {
   public:
     using poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
-    using mutmodel = std::function<std::size_t(std::queue<std::size_t> &,
+    using mutmodel = std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                                poptype::mcont_t &)>;
 
     static const int nloci;

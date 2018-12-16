@@ -272,13 +272,13 @@ multilocus_fixture_deterministic::make_boundaries()
     return rv;
 }
 
-std::vector<std::function<std::vector<fwdpp::uint_t>(std::queue<std::size_t> &,
-                                                     poptype::mcont_t &)>>
+std::vector<std::function<std::vector<fwdpp::uint_t>(
+    fwdpp::flagged_mutation_queue &, poptype::mcont_t &)>>
 multilocus_fixture_deterministic::make_mmodels()
 // Every locus gets 1 mutation.
 {
     std::vector<std::function<std::vector<fwdpp::uint_t>(
-        std::queue<std::size_t> &, poptype::mcont_t &)>>
+        fwdpp::flagged_mutation_queue &, poptype::mcont_t &)>>
         rv;
     const auto s = []() { return -0.01; };
     const auto h = []() { return 1.; };
@@ -286,17 +286,18 @@ multilocus_fixture_deterministic::make_mmodels()
         {
             const auto generate_mutation_position
                 = [this, i]() { return gsl_ran_flat(rng.get(), i, i + 1); };
-            const auto make_mutation = [this, generate_mutation_position, s,
-                                        h](std::queue<std::size_t> &recbin,
-                                           poptype::mcont_t &mutations) {
-                return fwdpp::infsites_popgenmut(
-                    recbin, mutations, rng.get(), pop.mut_lookup,
-                    new_mutation_generation,
-                    // 1.0 signifies 100% of mutations will be selected
-                    1.0, generate_mutation_position, s, h);
-            };
+            const auto make_mutation
+                = [this, generate_mutation_position, s,
+                   h](fwdpp::flagged_mutation_queue &recbin,
+                      poptype::mcont_t &mutations) {
+                      return fwdpp::infsites_popgenmut(
+                          recbin, mutations, rng.get(), pop.mut_lookup,
+                          new_mutation_generation,
+                          // 1.0 signifies 100% of mutations will be selected
+                          1.0, generate_mutation_position, s, h);
+                  };
             const auto mmodel
-                = [make_mutation](std::queue<std::size_t> &recbin,
+                = [make_mutation](fwdpp::flagged_mutation_queue &recbin,
                                   poptype::mcont_t &mutations) {
                       std::vector<fwdpp::uint_t> keys;
                       unsigned nmuts = 1;

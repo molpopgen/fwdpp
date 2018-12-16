@@ -137,7 +137,7 @@ main(int argc, char **argv)
         {
             locus_weights.push_back(1.0);
             functions.push_back([&pop, &r, &generation, pselected,
-                                 i](fwdpp::flagged_gamete_queue &recbin,
+                                 i](fwdpp::flagged_mutation_queue &recbin,
                                     singlepop_t::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
