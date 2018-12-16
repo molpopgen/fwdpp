@@ -9,6 +9,20 @@ namespace fwdpp
     namespace strong_types
     {
         template <typename T, typename parameter_name> struct named_type
+        /*! \brief Implementation of "strong types"
+         *  
+         *  Allows the construction of strong/unambiguous interfaces
+         *  via thin aliases.  
+         *
+         *  At optimization levels like -O2 and higher, access 
+         *  via get will be completely optimized out.
+         *
+         *  Example use includes fwdpp::trait and fwdpp::fitness
+         *  as arguments to fwdpp::additive_diploid and
+         *  fwdpp::multiplicative_diploid.
+         *
+         * \version 0.7.4 Added to fwdpp
+         */
         {
           private:
             T value_;
