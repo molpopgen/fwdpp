@@ -169,8 +169,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
     auto MVAL = std::numeric_limits<double>::max();
     auto rec1
         = std::vector<std::vector<double>>{ std::vector<double>{ 0.45, MVAL },
-                                            std::vector<double>{ MVAL },
-                                            std::vector<double>{ MVAL } };
+                                            std::vector<double>{},
+                                            std::vector<double>{} };
 
     // We use these to "fake" what we want to happen between loci.
     std::vector<double> r_bw_loci = { 1., 0. };
@@ -236,8 +236,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
     // positions of x-overs within loci
     auto MVAL = std::numeric_limits<double>::max();
     auto rec1 = std::vector<std::vector<double>>{
-        std::vector<double>{ 0.1, 0.45, MVAL }, std::vector<double>{ MVAL },
-        std::vector<double>{ MVAL }
+        std::vector<double>{ 0.1, 0.45, MVAL }, std::vector<double>{},
+        std::vector<double>{}
     };
 
     // We use these to "fake" what we want to happen between loci.
@@ -503,10 +503,12 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
 
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params_no_swap.mutation_recycling_bin, params_no_swap.gamete_recycling_bin,
-        params_no_swap.generate_breakpoints, params_no_swap.interlocus_recombination, 0, 0,
-        pop.gametes, pop.mutations, params_no_swap.neutral, params_no_swap.selected, mu.data(),
-        dummy_mmodels);
+        params_no_swap.mutation_recycling_bin,
+        params_no_swap.gamete_recycling_bin,
+        params_no_swap.generate_breakpoints,
+        params_no_swap.interlocus_recombination, 0, 0, pop.gametes,
+        pop.mutations, params_no_swap.neutral, params_no_swap.selected,
+        mu.data(), dummy_mmodels);
 
     // Check transmission of mutations into offpring's FIRST gamete
     int locus = 0;
@@ -629,10 +631,12 @@ BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
 
     auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         rng.get(), pop.diploids[0], pop.diploids[1],
-        params_no_swap.mutation_recycling_bin, params_no_swap.gamete_recycling_bin,
-        params_no_swap.generate_breakpoints, params_no_swap.interlocus_recombination, 1, 0,
-        pop.gametes, pop.mutations, params_no_swap.neutral, params_no_swap.selected, mu.data(),
-        dummy_mmodels);
+        params_no_swap.mutation_recycling_bin,
+        params_no_swap.gamete_recycling_bin,
+        params_no_swap.generate_breakpoints,
+        params_no_swap.interlocus_recombination, 1, 0, pop.gametes,
+        pop.mutations, params_no_swap.neutral, params_no_swap.selected,
+        mu.data(), dummy_mmodels);
 
     // Check transmission of mutations into offpring's FIRST gamete
     int locus = 0;
