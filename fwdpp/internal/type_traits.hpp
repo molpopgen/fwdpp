@@ -27,9 +27,9 @@ namespace fwdpp
             };
 
             template <typename T>
-            struct is_diploid<T, typename traits::internal::void_t<
-                                     typename T::first_type,
-                                     typename T::second_type>::type>
+            struct is_diploid<
+                T, typename traits::internal::void_t<
+                       typename T::first_type, typename T::second_type>::type>
                 /* If T does not have member type name first_type and
                  * second_type, this will fail to compile, and the fallback
                  * template type will be used.
@@ -42,13 +42,11 @@ namespace fwdpp
                  * requirement
                                  * for a diploid.
                  */
-                : std::integral_constant<bool,
-                                         std::is_integral<
-                                             typename T::first_type>::value
-                                             && std::is_same<
-                                                    typename T::first_type,
-                                                    typename T::second_type>::
-                                                    value>
+                : std::integral_constant<
+                      bool,
+                      std::is_integral<typename T::first_type>::value
+                          && std::is_same<typename T::first_type,
+                                          typename T::second_type>::value>
             {
             };
 
@@ -58,11 +56,10 @@ namespace fwdpp
             };
 
             template <typename T>
-            struct is_multilocus_diploid<T, typename void_t<
-                                                typename T::value_type>::type>
-                : std::integral_constant<bool,
-                                         is_diploid<
-                                             typename T::value_type>::value>
+            struct is_multilocus_diploid<
+                T, typename void_t<typename T::value_type>::type>
+                : std::integral_constant<
+                      bool, is_diploid<typename T::value_type>::value>
             {
             };
 
@@ -72,19 +69,15 @@ namespace fwdpp
             };
 
             template <typename T>
-            struct is_custom_diploid<T, typename void_t<
-                                            typename T::first_type,
-                                            typename T::second_type>::type>
-                : std::
-                      integral_constant<bool,
-                                        is_diploid<T>::value
-                                            && !std::
-                                                   is_same<std::pair<
-                                                               typename T::
-                                                                   first_type,
-                                                               typename T::
-                                                                   second_type>,
-                                                           T>::value>
+            struct is_custom_diploid<
+                T, typename void_t<typename T::first_type,
+                                   typename T::second_type>::type>
+                : std::integral_constant<
+                      bool,
+                      is_diploid<T>::value
+                          && !std::is_same<std::pair<typename T::first_type,
+                                                     typename T::second_type>,
+                                           T>::value>
             {
             };
 
@@ -97,18 +90,17 @@ namespace fwdpp
             };
 
             template <typename dipvector_t, typename gcont_t, typename mcont_t>
-            struct fitness_fxn<dipvector_t, gcont_t, mcont_t,
-                               typename void_t<
-                                   typename dipvector_t::value_type,
-                                   typename gcont_t::value_type,
-                                   typename mcont_t::value_type>::type,
-                               typename std::enable_if<is_diploid<
-                                   typename dipvector_t::value_type>::value>::
-                                   type,
-                               typename std::enable_if<is_gamete<
-                                   typename gcont_t::value_type>::value>::type,
-                               typename std::enable_if<is_mutation<
-                                   typename mcont_t::value_type>::value>::type>
+            struct fitness_fxn<
+                dipvector_t, gcont_t, mcont_t,
+                typename void_t<typename dipvector_t::value_type,
+                                typename gcont_t::value_type,
+                                typename mcont_t::value_type>::type,
+                typename std::enable_if<
+                    is_diploid<typename dipvector_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_gamete<typename gcont_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type>
 
             {
                 using type = std::function<double(
@@ -116,17 +108,14 @@ namespace fwdpp
                     const mcont_t &)>;
             };
 
-            template <
-                typename ff, typename dipvector_t, typename gcont_t,
-                typename mcont_t,
-                typename ffxn_t =
-                    typename fitness_fxn<dipvector_t, gcont_t, mcont_t>::type>
+            template <typename ff, typename dipvector_t, typename gcont_t,
+                      typename mcont_t,
+                      typename ffxn_t = typename fitness_fxn<
+                          dipvector_t, gcont_t, mcont_t>::type>
             struct is_fitness_fxn
-                : std::integral_constant<bool,
-                                         !std::is_void<ffxn_t>::value
-                                             && std::is_convertible<ff,
-                                                                    ffxn_t>::
-                                                    value>
+                : std::integral_constant<
+                      bool, !std::is_void<ffxn_t>::value
+                                && std::is_convertible<ff, ffxn_t>::value>
             {
             };
 
@@ -137,34 +126,28 @@ namespace fwdpp
             };
 
             template <typename mmodel_t, typename mcont_t, typename gcont_t>
-            struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
-                                     typename void_t<
-                                         typename std::result_of<mmodel_t(
-                                             recycling_bin_t<mcont_t> &,
-                                             mcont_t &)>::type>::type,
-                                     typename std::enable_if<is_mutation<
-                                         typename mcont_t::value_type>::
-                                                                 value>::type,
-                                     typename std::enable_if<is_gamete<
-                                         typename gcont_t::value_type>::
-                                                                 value>::type>
+            struct is_mutation_model<
+                mmodel_t, mcont_t, gcont_t,
+                typename void_t<typename std::result_of<mmodel_t(
+                    flagged_mutation_queue &, mcont_t &)>::type>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_gamete<typename gcont_t::value_type>::value>::type>
                 : std::true_type
             {
             };
 
             template <typename mmodel_t, typename mcont_t, typename gcont_t>
-            struct is_mutation_model<mmodel_t, mcont_t, gcont_t,
-                                     typename void_t<
-                                         typename std::result_of<mmodel_t(
-                                             recycling_bin_t<mcont_t> &,
-                                             typename gcont_t::value_type &,
-                                             mcont_t &)>::type>::type,
-                                     typename std::enable_if<is_mutation<
-                                         typename mcont_t::value_type>::
-                                                                 value>::type,
-                                     typename std::enable_if<is_gamete<
-                                         typename gcont_t::value_type>::
-                                                                 value>::type>
+            struct is_mutation_model<
+                mmodel_t, mcont_t, gcont_t,
+                typename void_t<typename std::result_of<mmodel_t(
+                    flagged_mutation_queue &, typename gcont_t::value_type &,
+                    mcont_t &)>::type>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_gamete<typename gcont_t::value_type>::value>::type>
                 : std::true_type
             {
             };
@@ -178,52 +161,45 @@ namespace fwdpp
 
             template <typename recmodel_t, typename diploid_t,
                       typename gamete_t, typename mcont_t>
-            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
-                                typename void_t<
-                                    typename std::result_of<recmodel_t()>::
-                                        type>::type,
-                                typename std::enable_if<is_diploid<diploid_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_gamete<gamete_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_mutation<
-                                    typename mcont_t::value_type>::value>::
-                                    type> : std::true_type
+            struct is_rec_model<
+                recmodel_t, diploid_t, gamete_t, mcont_t,
+                typename void_t<
+                    typename std::result_of<recmodel_t()>::type>::type,
+                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                typename std::enable_if<is_gamete<gamete_t>::value>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type>
+                : std::true_type
             {
             };
 
             template <typename recmodel_t, typename diploid_t,
                       typename gamete_t, typename mcont_t>
-            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
-                                typename void_t<
-                                    typename std::result_of<recmodel_t(
-                                        const gamete_t &, const gamete_t &,
-                                        const mcont_t &)>::type>::type,
-                                typename std::enable_if<is_diploid<diploid_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_gamete<gamete_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_mutation<
-                                    typename mcont_t::value_type>::value>::
-                                    type> : std::true_type
+            struct is_rec_model<
+                recmodel_t, diploid_t, gamete_t, mcont_t,
+                typename void_t<typename std::result_of<recmodel_t(
+                    const gamete_t &, const gamete_t &,
+                    const mcont_t &)>::type>::type,
+                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                typename std::enable_if<is_gamete<gamete_t>::value>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type>
+                : std::true_type
             {
             };
 
             template <typename recmodel_t, typename diploid_t,
                       typename gamete_t, typename mcont_t>
-            struct is_rec_model<recmodel_t, diploid_t, gamete_t, mcont_t,
-                                typename void_t<
-                                    typename std::result_of<recmodel_t(
-                                        const diploid_t &, const gamete_t &,
-                                        const gamete_t &,
-                                        const mcont_t &)>::type>::type,
-                                typename std::enable_if<is_diploid<diploid_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_gamete<gamete_t>::
-                                                            value>::type,
-                                typename std::enable_if<is_mutation<
-                                    typename mcont_t::value_type>::value>::
-                                    type> : std::true_type
+            struct is_rec_model<
+                recmodel_t, diploid_t, gamete_t, mcont_t,
+                typename void_t<typename std::result_of<recmodel_t(
+                    const diploid_t &, const gamete_t &, const gamete_t &,
+                    const mcont_t &)>::type>::type,
+                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                typename std::enable_if<is_gamete<gamete_t>::value>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type>
+                : std::true_type
             {
             };
 
@@ -233,13 +209,12 @@ namespace fwdpp
             };
 
             template <typename mcont_t>
-            struct mutation_model<mcont_t,
-                                  typename std::enable_if<is_mutation<
-                                      typename mcont_t::value_type>::value>::
-                                      type>
+            struct mutation_model<
+                mcont_t, typename std::enable_if<is_mutation<
+                             typename mcont_t::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    recycling_bin_t<mcont_t> &, mcont_t &)>;
+                    flagged_mutation_queue &, mcont_t &)>;
             };
 
             template <typename mcont_t, typename gcont_t, typename = void,
@@ -250,16 +225,15 @@ namespace fwdpp
             };
 
             template <typename mcont_t, typename gcont_t>
-            struct mutation_model_gamete<mcont_t, gcont_t,
-                                         typename std::enable_if<is_mutation<
-                                             typename mcont_t::
-                                                 value_type>::value>::type,
-                                         typename std::enable_if<is_gamete<
-                                             typename gcont_t::
-                                                 value_type>::value>::type>
+            struct mutation_model_gamete<
+                mcont_t, gcont_t,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_gamete<typename gcont_t::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    recycling_bin_t<mcont_t> &,
+                    flagged_mutation_queue &,
                     const typename gcont_t::value_type &, mcont_t &)>;
             };
 
@@ -271,23 +245,20 @@ namespace fwdpp
             };
 
             template <typename diploid_t, typename mcont_t, typename gcont_t>
-            struct mutation_model_diploid<diploid_t, mcont_t, gcont_t,
-                                          typename std::
-                                              enable_if<is_diploid<diploid_t>::
-                                                            value>::type,
-                                          typename std::enable_if<is_mutation<
-                                              typename mcont_t::
-                                                  value_type>::value>::type,
-                                          typename std::enable_if<is_gamete<
-                                              typename gcont_t::
-                                                  value_type>::value>::type>
+            struct mutation_model_diploid<
+                diploid_t, mcont_t, gcont_t,
+                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                typename std::enable_if<
+                    is_mutation<typename mcont_t::value_type>::value>::type,
+                typename std::enable_if<
+                    is_gamete<typename gcont_t::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    recycling_bin_t<mcont_t> &, const diploid_t &,
+                    flagged_mutation_queue &, const diploid_t &,
                     const typename gcont_t::value_type &, mcont_t &)>;
             };
-        }
-    }
-}
+        } // namespace internal
+    }     // namespace traits
+} // namespace fwdpp
 
 #endif
