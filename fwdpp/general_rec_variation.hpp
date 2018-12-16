@@ -126,9 +126,7 @@ namespace fwdpp
         std::vector<std::function<void(const gsl_rng*, std::vector<double>&)>>
             recmap;
 
-        general_rec_variation() : recmap{}
-        {
-        }
+        general_rec_variation() : recmap{} {}
 
         inline std::vector<double>
         operator()(const gsl_rng* r) const
@@ -140,6 +138,10 @@ namespace fwdpp
             for (const auto& f : recmap)
                 {
                     f(r, breakpoints);
+                }
+            if (breakpoints.empty())
+                {
+                    return breakpoints;
                 }
             std::sort(breakpoints.begin(), breakpoints.end());
             breakpoints.push_back(std::numeric_limits<double>::max());
