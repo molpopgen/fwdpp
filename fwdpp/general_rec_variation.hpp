@@ -126,10 +126,15 @@ namespace fwdpp
         std::vector<std::function<void(const gsl_rng*, std::vector<double>&)>>
             recmap;
 
-        general_rec_variation() : recmap{} {}
+        general_rec_variation() : recmap{}
+        {
+        }
 
         inline std::vector<double>
         operator()(const gsl_rng* r) const
+        /// Call operator.
+        /// \param r Random number generator
+        /// \return Vector of crossover positions
         {
             std::vector<double> breakpoints;
             for (const auto& f : recmap)

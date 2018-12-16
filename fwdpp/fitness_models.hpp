@@ -299,7 +299,7 @@ namespace fwdpp
         ///
         ///\param g1 A gamete
         ///\param g2 A gamete
-        ///\param mutation Container of mutations
+        ///\param mutations Container of mutations
         ///\param hpol A policy whose first argument is an iterator to
         /// a gamete.
         /// Remaining arguments may be bound via std::bind or the
@@ -332,7 +332,7 @@ namespace fwdpp
                    const diploid_policy &dpol) const noexcept
         ///\param diploid a diploid
         ///\param gametes Container of gametes
-        ///\param mutation Container of mutations
+        ///\param mutations Container of mutations
         ///\param hpol A policy whose first argument is an iterator to a
         /// gamete.
         /// Remaining arguments may be bound via std::bind or the

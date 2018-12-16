@@ -14,14 +14,12 @@
 
 namespace fwdpp
 {
-    /// \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
-    /// std::numeric_limits<T>::epsilon()
     struct equal_eps
     {
-        /*! \brief Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
+        /*! \brief Returns true if max(lhs,rhs)-min(lhs,rhs) <=
           std::numeric_limits<T>::epsilon()
-          Returns true if std::max(lhs,rhs)-std::min(lhs,rhs) <=
-          std::numeric_limits<T>::epsilon()
+          Returns true if max(lhs,rhs)-min(lhs,rhs) <=
+          numeric_limits<T>::epsilon()
         */
         using result_type = bool;
         template <typename T>

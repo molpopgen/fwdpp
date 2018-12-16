@@ -76,7 +76,7 @@ namespace fwdpp
     /*!
       Label all extinct  variants for recycling
 
-      \Note: lookup must be compatible with lookup->erase(lookup->find(double))
+      \note: lookup must be compatible with lookup->erase(lookup->find(double))
     */
     template <typename mcont_t, typename mutation_lookup_table>
     void
