@@ -37,7 +37,7 @@ namespace fwdpp
           \param __s Selection coefficient
           \param __h Dominance coefficient
           \param __g Generation when mutation arose
-          \param __x Value to assign to mutation_base::xtra
+          \param x Value to assign to mutation_base::xtra
         */
         popgenmut(const double &__pos, const double &__s, const double &__h,
                   const unsigned &__g, const std::uint16_t x = 0) noexcept
@@ -95,6 +95,7 @@ namespace fwdpp
 	 * \param posmaker A function generating a mutation position.  Must be convertible to std::function<double()>.
 	 * \param esize_maker A function to generate an effect size, given that a mutation affects fitness. Must be convertible to std::function<double()>.
 	 * \param hmaker A function to generate a dominance value, given that a mutation affects fitness. Must be convertible to std::function<double()>.
+     * \param x Value to pass as popgenmut::xtra
 	 *
 	 * \note "Neutral" mutations get assigned a dominance of zero.  The xtra field is not written to.
 	 *

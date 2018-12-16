@@ -58,8 +58,7 @@ namespace fwdpp
       \param p A population
       \param mindex The key of the mutation you wish to change.
 
-      This function changes mutation_base::neutral to !mutation_base::neutral
-      at position
+      This function negates mutation_base::neutral at position
       mindex and updates the storage of this mutation in all gametes.
 
       \note This function does not change any other member data at

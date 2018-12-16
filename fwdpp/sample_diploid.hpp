@@ -25,8 +25,6 @@ namespace fwdpp
       \param f Probability that a mating is a selfing event
       \param mp Policy determining how whether or not to remove fixed variants
       from the gametes.
-      \param gpolicy_mut Policy determining how new gametes are added to
-      population after a mutation event
 
       \note diploids will be updated to reflect the new diploid genotypes
       post-sampling (the descedants).  Gametes will be changed by mutation,
@@ -79,8 +77,6 @@ namespace fwdpp
       \param f Probability that a mating is a selfing event
       \param mp Policy determining how whether or not to remove fixed variants
       from the gametes.
-      \param gpolicy_mut Policy determining how new gametes are added to
-      population after a mutation event
 
       \note diploids will be updated to reflect the new diploid genotypes
       post-sampling (the descedants).  Gametes will be changed by mutation,
@@ -113,35 +109,34 @@ namespace fwdpp
         const double f = 0.,
         const mutation_removal_policy mp = mutation_removal_policy());
 
-
     /*! \brief Single deme, multilocus model, changing population size
      */
-    template <
-        typename diploid_geno_t, typename gamete_type,
-        typename gamete_cont_type_allocator, typename mutation_type,
-        typename mutation_cont_type_allocator,
-        typename diploid_vector_type_allocator,
-        typename locus_vector_type_allocator,
-        typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container,
-        template <typename, typename> class gamete_cont_type,
-        template <typename, typename> class mutation_cont_type,
-        template <typename, typename> class diploid_vector_type,
-        template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy = std::true_type>
+    template <typename diploid_geno_t, typename gamete_type,
+              typename gamete_cont_type_allocator, typename mutation_type,
+              typename mutation_cont_type_allocator,
+              typename diploid_vector_type_allocator,
+              typename locus_vector_type_allocator,
+              typename diploid_fitness_function,
+              typename mutation_model_container,
+              typename recombination_policy_container,
+              template <typename, typename> class gamete_cont_type,
+              template <typename, typename> class mutation_cont_type,
+              template <typename, typename> class diploid_vector_type,
+              template <typename, typename> class locus_vector_type,
+              typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
-        diploid_vector_type<locus_vector_type<diploid_geno_t,
-                                              locus_vector_type_allocator>,
-                            diploid_vector_type_allocator> &diploids,
+        diploid_vector_type<
+            locus_vector_type<diploid_geno_t, locus_vector_type_allocator>,
+            diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N_curr,
         const uint_t &N_next, const double *mu,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
-		const std::vector<std::function<unsigned(void)>> & interlocus_rec,
+        const std::vector<std::function<unsigned(void)>> &interlocus_rec,
         const diploid_fitness_function &ff,
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
@@ -149,40 +144,39 @@ namespace fwdpp
         const mutation_removal_policy &mp = mutation_removal_policy());
 
     /*! \brief Single deme, multilocus model, constant population size
-      \example diploid_ind_2locus.cc
     */
     // single deme, constant N
-    template <
-        typename diploid_geno_t, typename gamete_type,
-        typename gamete_cont_type_allocator, typename mutation_type,
-        typename mutation_cont_type_allocator,
-        typename diploid_vector_type_allocator,
-        typename locus_vector_type_allocator,
-        typename diploid_fitness_function, typename mutation_model_container,
-        typename recombination_policy_container,
-        template <typename, typename> class gamete_cont_type,
-        template <typename, typename> class mutation_cont_type,
-        template <typename, typename> class diploid_vector_type,
-        template <typename, typename> class locus_vector_type,
-        typename mutation_removal_policy = std::true_type>
+    template <typename diploid_geno_t, typename gamete_type,
+              typename gamete_cont_type_allocator, typename mutation_type,
+              typename mutation_cont_type_allocator,
+              typename diploid_vector_type_allocator,
+              typename locus_vector_type_allocator,
+              typename diploid_fitness_function,
+              typename mutation_model_container,
+              typename recombination_policy_container,
+              template <typename, typename> class gamete_cont_type,
+              template <typename, typename> class mutation_cont_type,
+              template <typename, typename> class diploid_vector_type,
+              template <typename, typename> class locus_vector_type,
+              typename mutation_removal_policy = std::true_type>
     double sample_diploid(
         const gsl_rng *r,
         gamete_cont_type<gamete_type, gamete_cont_type_allocator> &gametes,
-        diploid_vector_type<locus_vector_type<diploid_geno_t,
-                                              locus_vector_type_allocator>,
-                            diploid_vector_type_allocator> &diploids,
+        diploid_vector_type<
+            locus_vector_type<diploid_geno_t, locus_vector_type_allocator>,
+            diploid_vector_type_allocator> &diploids,
         mutation_cont_type<mutation_type, mutation_cont_type_allocator>
             &mutations,
         std::vector<uint_t> &mcounts, const uint_t &N, const double *mu,
         const mutation_model_container &mmodel,
         const recombination_policy_container &rec_policies,
-		const std::vector<std::function<unsigned(void)>> & interlocus_rec,
+        const std::vector<std::function<unsigned(void)>> &interlocus_rec,
         const diploid_fitness_function &ff,
         typename gamete_type::mutation_container &neutral,
         typename gamete_type::mutation_container &selected,
         const double &f = 0,
         const mutation_removal_policy &mp = mutation_removal_policy());
-}
+} // namespace fwdpp
 
 #include <fwdpp/sample_diploid.tcc>
 #endif

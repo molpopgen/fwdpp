@@ -50,7 +50,7 @@ namespace fwdpp
             mlocuspop &operator=(const mlocuspop &) = default;
             using dipvector_t = dipvector;
             using diploid_t = typename dipvector::value_type;
-            //! Dispatch tags for other parts of sugar layer
+            //! Dispatch tag
             using popmodel_t = poptypes::MULTILOC_TAG;
             //! Typedef for base class
             using popbase_t = popbase<mutation_type, mcont, gcont, mvector,

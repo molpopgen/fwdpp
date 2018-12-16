@@ -183,7 +183,7 @@ namespace fwdpp
             serialize_tables(ostreamtype& o, const table_collection& tables)
             /*! \brief Write a fwdpp::ts::table_collection to a binary format.
 			 *
-			 *  \param ostreamtype A model of std::ostream
+			 *  \param o A model of std::ostream
 			 *  \param tables A fwdpp::ts::table_collection
 			 *
 			 *  The result is that the data in \a tables are written

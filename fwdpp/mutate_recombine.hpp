@@ -265,9 +265,13 @@ namespace fwdpp
                                                  "all new selected mutations");
                     }
 #endif
-
                 return fwdpp_internal::recycle_gamete(
                     gametes, gamete_recycling_bin, neutral, selected);
+            }
+        if (breakpoints.size() == 1)
+            {
+                throw std::runtime_error(
+                    "invalid number of breakpoints. likely sentinel error");
             }
         // If we get here, there are mutations and
         // recombinations to handle

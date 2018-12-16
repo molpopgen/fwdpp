@@ -15,7 +15,7 @@ namespace fwdpp
          * Convert the index of a parent into the two node IDs.
          *
          * \param first_parental_index First index of possible parents for offspring
-         * \param Index of parent in the population
+         * \param parent Index of parent in the population
          * \param did_swap This is the "Mendel" step.
          *
          * \note This function is trivial in implementation and is easily replaced
