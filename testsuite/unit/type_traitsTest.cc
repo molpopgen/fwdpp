@@ -68,14 +68,14 @@ BOOST_AUTO_TEST_CASE(is_custom_diploid_test)
 
 BOOST_AUTO_TEST_CASE(is_mmodel_test)
 {
-    auto mut_recycling_bin = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
+    auto mut_recycling_bin = fwdpp::make_mut_queue(mcounts);
     std::size_t i = 0;
     std::vector<double> next_mut_pos{ 0.0, 0.1, 0.2 };
     auto mmodel = [&next_mut_pos, &i](decltype(mut_recycling_bin) &rbin,
                                       std::vector<mtype> &__mvector) {
         // mutations are all neutral
-        return fwdpp::fwdpp_internal::recycle_mutation_helper(
-            rbin, __mvector, next_mut_pos[i++], 0.);
+        return fwdpp::recycle_mutation_helper(rbin, __mvector,
+                                              next_mut_pos[i++], 0.);
     };
     auto v
         = std::is_convertible<decltype(mmodel),
@@ -92,13 +92,19 @@ BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
     // Fake a mutation model requiring a gamete.
     // The function itself is invalid in implementation,
     // but the purpose here is to test the signature.
-    auto m = [](fwdpp::traits::recycling_bin_t<mcont_t> &,
-                const gcont_t::value_type &,
+    auto m = [](fwdpp::flagged_mutation_queue &, const gcont_t::value_type &,
                 const mcont_t &) -> std::size_t { return 1; };
     auto v = std::is_convertible<
         decltype(m),
         fwdpp::traits::mutation_model_gamete<mcont_t, gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
+
+    // Test of strong types
+    auto m2 = [](fwdpp::flagged_gamete_queue &, const gcont_t::value_type &,
+                 const mcont_t &) -> std::size_t { return 1; };
+    v = std::is_convertible<decltype(m2), fwdpp::traits::mutation_model_gamete<
+                                             mcont_t, gcont_t>>::value;
+    BOOST_REQUIRE_EQUAL(v, false);
 }
 
 // Mocks a custom diploid
@@ -115,7 +121,7 @@ BOOST_AUTO_TEST_CASE(is_mmodel_diploid_test)
     // Fake a mutation model requiring a diploid.
     // The function itself is invalid in implementation,
     // but the purpose here is to test the signature.
-    auto m = [](fwdpp::traits::recycling_bin_t<mcont_t> &, const fake_dip &,
+    auto m = [](fwdpp::flagged_mutation_queue &, const fake_dip &,
                 const gcont_t::value_type &,
                 const mcont_t &) -> std::size_t { return 1; };
     auto v = std::is_convertible<

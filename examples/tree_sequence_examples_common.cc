@@ -17,7 +17,7 @@ int
 apply_neutral_mutations_details(
     const options &o, const fwdpp::GSLrng_mt &rng,
     fwdpp::ts::table_collection &tables, poptype &pop,
-    std::queue<std::size_t> &mutation_recycling_bin)
+    fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
 
@@ -49,7 +49,7 @@ int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
                         single_locus_poptype &pop,
-                        std::queue<std::size_t> &mutation_recycling_bin)
+                        fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     return apply_neutral_mutations_details(o, rng, tables, pop,
                                            mutation_recycling_bin);
@@ -59,7 +59,7 @@ int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
                         multi_locus_poptype &pop,
-                        std::queue<std::size_t> &mutation_recycling_bin)
+                        fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     return apply_neutral_mutations_details(o, rng, tables, pop,
                                            mutation_recycling_bin);

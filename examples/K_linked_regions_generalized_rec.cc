@@ -82,7 +82,7 @@ main(int argc, char **argv)
     auto recmap = fwdpp::recbinder(recvar, r.get());
 
     const auto mmodel
-        = [&pop, &r, &generation, K](std::queue<std::size_t> &recbin,
+        = [&pop, &r, &generation, K](fwdpp::flagged_mutation_queue &recbin,
                                      singlepop_t::mcont_t &mutations) {
               return fwdpp::infsites_popgenmut(
                   recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,

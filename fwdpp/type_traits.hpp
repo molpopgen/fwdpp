@@ -4,7 +4,7 @@
 #include <type_traits>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/void_t.hpp>
-#include <fwdpp/internal/recycling.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 
 namespace fwdpp
@@ -41,17 +41,6 @@ namespace fwdpp
         //! Convenience wrapper for fwdpp::traits::is_mutation<T>::Type.
         template <typename T>
         using is_mutation_t = typename is_mutation<T>::type;
-
-        //! Gives the "recycling bin" type corresponding to cont_t
-        template <typename cont_t> struct recycling_bin_type
-        {
-            using type = fwdpp::fwdpp_internal::recycling_bin_t<
-                typename cont_t::size_type>;
-        };
-
-        // Evaluates to fwdpp::traits::recycling_bin_type<T>::type
-        template <typename T>
-        using recycling_bin_t = typename recycling_bin_type<T>::type;
     }
 }
 

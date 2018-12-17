@@ -26,13 +26,14 @@ BOOST_AUTO_TEST_CASE(test_compilation)
     poptype pop(1000);
     GSLrng r(42);
     unsigned generation = 0;
-    auto mmodel = [&pop, &r, &generation](std::queue<std::size_t> &recbin,
-                                          poptype::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,
-            [&r]() { return gsl_rng_uniform(r.get()); }, []() { return 0.0; },
-            []() { return 0.0; });
-    };
+    auto mmodel
+        = [&pop, &r, &generation](fwdpp::flagged_mutation_queue &recbin,
+                                  poptype::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,
+                  [&r]() { return gsl_rng_uniform(r.get()); },
+                  []() { return 0.0; }, []() { return 0.0; });
+          };
     const double littler = 10;
     auto rec
         = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());

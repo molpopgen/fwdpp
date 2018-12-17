@@ -32,7 +32,7 @@ simulate_slocuspop(slocuspop_object_t &pop, const unsigned simlen = 10,
     fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     unsigned generation = 0;
     const auto mmodel = [&pop, &rng, &generation](
-                            std::queue<std::size_t> &recbin,
+                            fwdpp::flagged_mutation_queue &recbin,
                             typename slocuspop_object_t::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
@@ -72,7 +72,7 @@ simulate_slocuspop(slocuspop_object_t &pop, const rng_type &rng,
     unsigned g = generation;
 
     const auto mmodel = [&pop, &rng, &generation](
-                            std::queue<std::size_t> &recbin,
+                            fwdpp::flagged_mutation_queue &recbin,
                             typename slocuspop_object_t::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,

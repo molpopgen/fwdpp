@@ -74,14 +74,13 @@ namespace fwdpp
                 return make_wrapped_range(begin(new_mutation_keys), itr);
             }
 
-            template <typename poptype, typename recmodel, typename mutmodel,
-                      typename recycling_bin>
+            template <typename poptype, typename recmodel, typename mutmodel>
             inline mut_rec_intermediates
             generate_mutations_and_breakpoints(
                 std::size_t parent, std::size_t parental_gamete, int swapped,
                 const recmodel& generate_breakpoints,
                 const mutmodel& generate_mutations,
-                recycling_bin& mutation_recycling_bin, poptype& pop)
+                flagged_mutation_queue& mutation_recycling_bin, poptype& pop)
             {
                 auto breakpoints = generate_breakpoints();
                 auto new_mutation_keys = fwdpp_internal::mmodel_dispatcher(
@@ -99,7 +98,7 @@ namespace fwdpp
             };
 
             template <typename poptype, typename recmodel, typename mutmodel,
-                      typename recycling_bin, typename mutation_key_container,
+                      typename mutation_key_container,
                       typename mutation_handling_policy>
             inline std::pair<std::size_t, mut_rec_intermediates>
             generate_offspring_gamete(
@@ -107,8 +106,8 @@ namespace fwdpp
                 const recmodel& generate_breakpoints,
                 const mutmodel& generate_mutations,
                 const mutation_handling_policy& mutation_policy,
-                recycling_bin& mutation_recycling_bin,
-                recycling_bin& gamete_recycling_bin,
+                flagged_mutation_queue& mutation_recycling_bin,
+                flagged_gamete_queue& gamete_recycling_bin,
                 mutation_key_container& neutral,
                 mutation_key_container& selected, poptype& pop)
             {

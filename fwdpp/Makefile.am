@@ -1,6 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp
 
-SUBDIRS=internal tags sugar gsl extensions io meta algorithm ts poptypes
+SUBDIRS=internal tags sugar gsl extensions io meta algorithm ts poptypes simfunctions
 pkginclude_HEADERS=debug.hpp \
 	diploid.hh \
 	fitness_models.hpp \

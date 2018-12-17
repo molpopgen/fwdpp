@@ -88,7 +88,7 @@ main(int argc, char **argv)
     unsigned generation = 0;
 
     std::vector<std::function<std::vector<double>()>> recpols;
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           multiloc_t::mcont_t &)>>
         mmodels;
     for (unsigned i = 0; i < K; ++i)
@@ -97,7 +97,7 @@ main(int argc, char **argv)
             recpols.emplace_back(fwdpp::recbinder(
                 fwdpp::poisson_xover(littler, i, i + 1), r.get()));
             mmodels.push_back([&pop, &r, &generation,
-                               i](std::queue<std::size_t> &recbin,
+                               i](fwdpp::flagged_mutation_queue &recbin,
                                   multiloc_t::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,

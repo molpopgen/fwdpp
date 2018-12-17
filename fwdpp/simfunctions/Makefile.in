@@ -85,7 +85,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = fwdpp/internal
+subdir = fwdpp/simfunctions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
 	$(top_srcdir)/configure.ac
@@ -166,7 +166,7 @@ ETAGS = etags
 CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkgincludedir = $(prefix)/include/fwdpp/internal
+pkgincludedir = $(prefix)/include/fwdpp/simfunctions
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -265,21 +265,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = mutation_internal.hpp \
-	rec_gamete_updater.hpp \
-	recombination_common.hpp \
-	gsl_discrete.hpp \
-	multilocus_rec.hpp \
-	ms_sampling.hpp \
-	gamete_cleaner.hpp \
-	sample_diploid_helpers.hpp \
-	type_traits.hpp \
-	data_matrix_details.hpp \
-	sampling_functions_details.hpp \
-	debug_details.hpp \
-	void_t.hpp \
-	util.hpp
-
+pkginclude_HEADERS = recycling.hpp
 all: all-am
 
 .SUFFIXES:
@@ -292,9 +278,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/internal/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/simfunctions/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu fwdpp/internal/Makefile
+	  $(AUTOMAKE) --gnu fwdpp/simfunctions/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

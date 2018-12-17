@@ -94,13 +94,14 @@ namespace fwdpp
             std::cref(gametes[g2]), std::cref(mutations));
     }
 
-    template <typename queue_type, typename mutation_model, typename diploid_t,
-              typename gcont_t, typename mcont_t>
+    template <typename mutation_model, typename diploid_t, typename gcont_t,
+              typename mcont_t>
     std::vector<uint_t>
-    generate_new_mutations(queue_type &recycling_bin, const gsl_rng *r,
-                           const double &mu, const diploid_t &dip,
-                           gcont_t &gametes, mcont_t &mutations,
-                           const std::size_t g, const mutation_model &mmodel)
+    generate_new_mutations(flagged_mutation_queue &recycling_bin,
+                           const gsl_rng *r, const double &mu,
+                           const diploid_t &dip, gcont_t &gametes,
+                           mcont_t &mutations, const std::size_t g,
+                           const mutation_model &mmodel)
     ///
     /// Return a vector of keys to new mutations.  The keys
     /// will be sorted according to mutation postition.
@@ -265,8 +266,8 @@ namespace fwdpp
                                                  "all new selected mutations");
                     }
 #endif
-                return fwdpp_internal::recycle_gamete(
-                    gametes, gamete_recycling_bin, neutral, selected);
+                return recycle_gamete(gametes, gamete_recycling_bin, neutral,
+                                      selected);
             }
         if (breakpoints.size() == 1)
             {
@@ -336,8 +337,8 @@ namespace fwdpp
                                          "mutation/recombination");
             }
 #endif
-        return fwdpp_internal::recycle_gamete(gametes, gamete_recycling_bin,
-                                              neutral, selected);
+        return recycle_gamete(gametes, gamete_recycling_bin, neutral,
+                              selected);
     }
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,
@@ -348,9 +349,8 @@ namespace fwdpp
         std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
             parental_gametes,
         const recmodel &rec_pol, const mutmodel &mmodel, const double mu,
-        typename traits::recycling_bin_t<gcont_t> &gamete_recycling_bin,
-        typename traits::recycling_bin_t<mcont_t> &mutation_recycling_bin,
-        diploid_t &dip,
+        flagged_gamete_queue &gamete_recycling_bin,
+        flagged_mutation_queue &mutation_recycling_bin, diploid_t &dip,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///

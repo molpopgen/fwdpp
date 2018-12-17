@@ -40,6 +40,8 @@ to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://
 * Constructors for fwdpp::ts::table_simplifier and fwdpp::ts::table_collection marked explicit where appropriate.
 * Fixed error in return value of fwdpp::general_rec_variation::operator(), and fwdpp::mutate_recombine now explicitly
   tests for correct use of sentinel values. [PR 184](https://github.com/molpopgen/fwdpp/pull/184)
+* The recycling machinery was moved from an internal namespace to the main namespace.  The API was refactored in terms 
+of strong types fwdpp::flagged_mutation_queue and fwdpp::flagged_gamete_queue. [PR 185](https://github.com/molpopgen/fwdpp/pull/185)
 
 ## 0.7.3
 

@@ -114,10 +114,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -138,9 +136,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_1)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
 
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    auto fake_mut_pol = [](fwdpp::flagged_mutation_queue &,
+                           decltype(mutations) &) { return 0; };
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           decltype(mutations) &)>>
         mutation_models(3, fake_mut_pol);
 
@@ -178,10 +176,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -202,9 +198,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_2)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
 
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    auto fake_mut_pol = [](fwdpp::flagged_mutation_queue &,
+                           decltype(mutations) &) { return 0; };
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           decltype(mutations) &)>>
         mutation_models{ fake_mut_pol, fake_mut_pol };
 
@@ -246,10 +242,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
 
     // auto gamete_lookup =
     // fwdpp::fwdpp_internal::gamete_lookup_table(gametes,mutations);
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -269,9 +263,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_3)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    auto fake_mut_pol = [](fwdpp::flagged_mutation_queue &,
+                           decltype(mutations) &) { return 0; };
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           decltype(mutations) &)>>
         mutation_models{ fake_mut_pol, fake_mut_pol };
 
@@ -312,10 +306,8 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
     std::vector<double> r_bw_loci = { 1., 1. };
     std::vector<diploid_t> diploids({ diploid });
 
-    auto mutation_recycling_bin
-        = fwdpp::fwdpp_internal::make_mut_queue(mcounts);
-    auto gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(gametes);
+    auto mutation_recycling_bin = fwdpp::make_mut_queue(mcounts);
+    auto gamete_recycling_bin = fwdpp::make_gamete_queue(gametes);
     gcont_t::value_type::mutation_container neutral,
         selected; // req'd as of 0.3.3
 
@@ -335,9 +327,9 @@ BOOST_AUTO_TEST_CASE(three_locus_test_4)
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[0]); },
         [&r_bw_loci]() { return static_cast<unsigned>(r_bw_loci[1]); }
     };
-    auto fake_mut_pol
-        = [](std::queue<std::size_t> &, decltype(mutations) &) { return 0; };
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    auto fake_mut_pol = [](fwdpp::flagged_mutation_queue &,
+                           decltype(mutations) &) { return 0; };
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           decltype(mutations) &)>>
         mutation_models(3, fake_mut_pol);
 
@@ -383,14 +375,14 @@ BOOST_AUTO_TEST_CASE(test_transmission)
                 pop.locus_boundaries[i].first);
         }
     std::vector<double> mu(nloci, 0.);
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           poptype::mcont_t &)>>
         dummy_mmodels;
     int generation = 0;
     for (unsigned i = 0; i < nloci; ++i)
         {
             dummy_mmodels.push_back([this, &generation,
-                                     i](std::queue<std::size_t> &recbin,
+                                     i](fwdpp::flagged_mutation_queue &recbin,
                                         poptype::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, rng.get(), pop.mut_lookup, generation,
@@ -484,14 +476,14 @@ BOOST_AUTO_TEST_CASE(test_transmission_with_extra_variants)
                 pop.locus_boundaries[i].first + 0.51, 1e-5);
         }
     std::vector<double> mu(nloci, 0.);
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           poptype::mcont_t &)>>
         dummy_mmodels;
     int generation = 0;
     for (unsigned i = 0; i < nloci; ++i)
         {
             dummy_mmodels.push_back([this, &generation,
-                                     i](std::queue<std::size_t> &recbin,
+                                     i](fwdpp::flagged_mutation_queue &recbin,
                                         poptype::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, rng.get(), pop.mut_lookup, generation,
@@ -612,14 +604,14 @@ BOOST_AUTO_TEST_CASE(test_transmission_swap_1)
                 pop.locus_boundaries[i].first);
         }
     std::vector<double> mu(nloci, 0.);
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           poptype::mcont_t &)>>
         dummy_mmodels;
     int generation = 0;
     for (unsigned i = 0; i < nloci; ++i)
         {
             dummy_mmodels.push_back([this, &generation,
-                                     i](std::queue<std::size_t> &recbin,
+                                     i](fwdpp::flagged_mutation_queue &recbin,
                                         poptype::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, rng.get(), pop.mut_lookup, generation,
@@ -699,14 +691,14 @@ BOOST_AUTO_TEST_CASE(test_transmission_2)
 {
     mutate_parent2();
     std::vector<double> mu(nloci, 0.);
-    std::vector<std::function<std::size_t(std::queue<std::size_t> &,
+    std::vector<std::function<std::size_t(fwdpp::flagged_mutation_queue &,
                                           poptype::mcont_t &)>>
         dummy_mmodels;
     int generation = 0;
     for (unsigned i = 0; i < nloci; ++i)
         {
             dummy_mmodels.push_back([this, &generation,
-                                     i](std::queue<std::size_t> &recbin,
+                                     i](fwdpp::flagged_mutation_queue &recbin,
                                         poptype::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, rng.get(), pop.mut_lookup, generation,

@@ -56,7 +56,7 @@ evolve_generation(const rng_t& rng, poptype& pop,
     fwdpp::debug::all_gametes_extant(pop);
 
     genetics.gamete_recycling_bin
-        = fwdpp::fwdpp_internal::make_gamete_queue(pop.gametes);
+        = fwdpp::make_gamete_queue(pop.gametes);
 
     fwdpp::zero_out_gametes(pop);
 

@@ -2,6 +2,7 @@
 #define FWDPP_TESTSUITE_MULTILOCUS_FIXTURES_DETERMINISTIC_HPP
 
 #include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/simparams.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/mlocuspop.hpp>
@@ -63,7 +64,7 @@ struct multilocus_fixture_deterministic
     fwdpp::ts::table_collection tables;
     fwdpp::GSLrng_mt rng;
     std::vector<std::function<std::vector<fwdpp::uint_t>(
-        std::queue<std::size_t> &, poptype::mcont_t &)>>
+        fwdpp::flagged_mutation_queue &, poptype::mcont_t &)>>
         mmodels;
     std::vector<std::function<std::vector<double>(void)>> intralocus_rec,
         intralocus_rec2;
@@ -158,7 +159,7 @@ struct multilocus_fixture_deterministic
     // Every locus gets 1 mutation.  These occur at random
     // positions within each locus
     std::vector<std::function<std::vector<fwdpp::uint_t>(
-        std::queue<std::size_t> &, poptype::mcont_t &)>>
+        fwdpp::flagged_mutation_queue &, poptype::mcont_t &)>>
     make_mmodels();
 
     std::vector<std::function<std::vector<double>(void)>>

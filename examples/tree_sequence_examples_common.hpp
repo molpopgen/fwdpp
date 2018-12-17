@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <string>
 #include <functional>
-#include <queue>
 #include <boost/program_options.hpp>
+#include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/slocuspop.hpp>
 #include <fwdpp/mlocuspop.hpp>
 #include <fwdpp/popgenmut.hpp>
@@ -42,13 +42,13 @@ int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
                         single_locus_poptype &pop,
-                        std::queue<std::size_t> &mutation_recycling_bin);
+                        fwdpp::flagged_mutation_queue &mutation_recycling_bin);
 
 int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
                         multi_locus_poptype &pop,
-                        std::queue<std::size_t> &mutation_recycling_bin);
+                        fwdpp::flagged_mutation_queue &mutation_recycling_bin);
 
 boost::program_options::options_description generate_main_options(options &o);
 boost::program_options::options_description generate_dfe_options(options &o);
