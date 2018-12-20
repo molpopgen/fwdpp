@@ -75,12 +75,13 @@ namespace fwdpp
                     return nmuts;
                 }
             auto mr = mark_multiple_roots(tables, samples);
+            const double L = tables.genome_length();
             for (auto &i : mr)
                 {
                     auto dt = tables.node_table[i.first].time;
                     for (auto j : i.second)
                         {
-                            double mean = dt * (j.second - j.first) * mu;
+                            double mean = dt * (j.second - j.first) * mu / L;
                             auto nm = gsl_ran_poisson(r.get(), mean);
                             nmuts += nm;
                             for (unsigned m = 0; m < nm; ++m)
@@ -99,7 +100,7 @@ namespace fwdpp
                     auto ct = tables.node_table[e.child].time;
                     auto pt = tables.node_table[e.parent].time;
                     auto dt = ct - pt;
-                    double mean = dt * (e.right - e.left) * mu;
+                    double mean = dt * (e.right - e.left) * mu / L;
                     auto nm = gsl_ran_poisson(r.get(), mean);
                     for (unsigned m = 0; m < nm; ++m)
                         {
