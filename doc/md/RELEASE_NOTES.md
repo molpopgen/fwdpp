@@ -42,6 +42,7 @@ to distinguish trait from fitness calculations. **Breaks API** [PR 175](https://
   tests for correct use of sentinel values. [PR 184](https://github.com/molpopgen/fwdpp/pull/184)
 * The recycling machinery was moved from an internal namespace to the main namespace.  The API was refactored in terms 
 of strong types fwdpp::flagged_mutation_queue and fwdpp::flagged_gamete_queue. [PR 185](https://github.com/molpopgen/fwdpp/pull/185)
+* Fixed bug in mutating tables where the genome length is not 1.0.  [Issue 186](https://github.com/molpopgen/fwdpp/issues/186).
 
 ## 0.7.3
 
