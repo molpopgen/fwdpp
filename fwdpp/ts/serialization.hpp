@@ -205,22 +205,41 @@ namespace fwdpp
                 sw(o, &num_edges);
                 sw(o, &num_nodes);
                 sw(o, &num_mutations);
-                serialize_edge<TS_TABLES_VERSION> edge_writer;
-                serialize_node<TS_TABLES_VERSION> node_writer;
-                serialize_mutation_record<TS_TABLES_VERSION>
-                    mutation_record_writer;
-                for (auto& e : tables.edge_table)
+                if (!tables.edge_table.empty())
                     {
-                        edge_writer(o, e);
+                        o.write(reinterpret_cast<const char*>(
+                                    tables.edge_table.data()),
+                                tables.edge_table.size() * sizeof(edge));
                     }
-                for (auto& n : tables.node_table)
+                if (!tables.node_table.empty())
                     {
-                        node_writer(o, n);
+                        o.write(reinterpret_cast<const char*>(
+                                    tables.node_table.data()),
+                                tables.node_table.size() * sizeof(node));
                     }
-                for (auto& m : tables.mutation_table)
+                if (!tables.mutation_table.empty())
                     {
-                        mutation_record_writer(o, m);
+                        o.write(reinterpret_cast<const char*>(
+                                    tables.mutation_table.data()),
+                                tables.mutation_table.size()
+                                    * sizeof(mutation_record));
                     }
+                //serialize_edge<TS_TABLES_VERSION> edge_writer;
+                //serialize_node<TS_TABLES_VERSION> node_writer;
+                //serialize_mutation_record<TS_TABLES_VERSION>
+                //    mutation_record_writer;
+                //for (auto& e : tables.edge_table)
+                //    {
+                //        edge_writer(o, e);
+                //    }
+                //for (auto& n : tables.node_table)
+                //    {
+                //        node_writer(o, n);
+                //    }
+                //for (auto& m : tables.mutation_table)
+                //    {
+                //        mutation_record_writer(o, m);
+                //    }
                 std::size_t num_preserved_samples
                     = tables.preserved_nodes.size();
                 sw(o, &num_preserved_samples);
@@ -256,11 +275,11 @@ namespace fwdpp
                 std::uint32_t format;
                 fwdpp::io::scalar_reader sr;
                 sr(i, &format);
-                if (format != TS_TABLES_VERSION)
-                    {
-                        throw std::runtime_error(
-                            "invalid serialization version detected");
-                    }
+                //if (format != TS_TABLES_VERSION)
+                //    {
+                //        throw std::runtime_error(
+                //            "invalid serialization version detected");
+                //    }
                 double L;
                 sr(i, &L);
                 table_collection tables(L);
@@ -269,25 +288,50 @@ namespace fwdpp
                 sr(i, &num_edges);
                 sr(i, &num_nodes);
                 sr(i, &num_mutations);
-                deserialize_edge<TS_TABLES_VERSION> edge_reader;
-                deserialize_node<TS_TABLES_VERSION> node_reader;
-                deserialize_mutation_record<TS_TABLES_VERSION>
-                    mutation_record_reader;
-                tables.edge_table.reserve(num_edges);
-                for (std::size_t j = 0; j < num_edges; ++j)
+                if (format == TS_TABLES_VERSION)
                     {
-                        tables.edge_table.emplace_back(edge_reader(i));
+                        std::cout << "V2\n";
+                        tables.edge_table.resize(num_edges);
+                        i.read(
+                            reinterpret_cast<char*>(tables.edge_table.data()),
+                            num_edges * sizeof(edge));
+                        tables.node_table.resize(num_nodes);
+                        i.read(
+                            reinterpret_cast<char*>(tables.node_table.data()),
+                            num_nodes * sizeof(node));
+                        tables.mutation_table.resize(num_mutations);
+                        i.read(reinterpret_cast<char*>(
+                                   tables.mutation_table.data()),
+                               num_mutations * sizeof(mutation_record));
                     }
-                tables.node_table.reserve(num_nodes);
-                for (std::size_t j = 0; j < num_nodes; ++j)
+                else if (format == 1)
                     {
-                        tables.node_table.emplace_back(node_reader(i));
+                        std::cout << "V1\n";
+                        deserialize_edge<TS_TABLES_VERSION> edge_reader;
+                        deserialize_node<TS_TABLES_VERSION> node_reader;
+                        deserialize_mutation_record<TS_TABLES_VERSION>
+                            mutation_record_reader;
+                        tables.edge_table.reserve(num_edges);
+                        for (std::size_t j = 0; j < num_edges; ++j)
+                            {
+                                tables.edge_table.emplace_back(edge_reader(i));
+                            }
+                        tables.node_table.reserve(num_nodes);
+                        for (std::size_t j = 0; j < num_nodes; ++j)
+                            {
+                                tables.node_table.emplace_back(node_reader(i));
+                            }
+                        tables.mutation_table.reserve(num_mutations);
+                        for (std::size_t j = 0; j < num_mutations; ++j)
+                            {
+                                tables.mutation_table.emplace_back(
+                                    mutation_record_reader(i));
+                            }
                     }
-                tables.mutation_table.reserve(num_mutations);
-                for (std::size_t j = 0; j < num_mutations; ++j)
+                else
                     {
-                        tables.mutation_table.emplace_back(
-                            mutation_record_reader(i));
+                        throw std::runtime_error(
+                            "invalid serialization version detected");
                     }
                 std::size_t num_preserved_samples;
                 sr(i, &num_preserved_samples);
