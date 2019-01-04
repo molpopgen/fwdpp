@@ -224,22 +224,6 @@ namespace fwdpp
                                 tables.mutation_table.size()
                                     * sizeof(mutation_record));
                     }
-                //serialize_edge<TS_TABLES_VERSION> edge_writer;
-                //serialize_node<TS_TABLES_VERSION> node_writer;
-                //serialize_mutation_record<TS_TABLES_VERSION>
-                //    mutation_record_writer;
-                //for (auto& e : tables.edge_table)
-                //    {
-                //        edge_writer(o, e);
-                //    }
-                //for (auto& n : tables.node_table)
-                //    {
-                //        node_writer(o, n);
-                //    }
-                //for (auto& m : tables.mutation_table)
-                //    {
-                //        mutation_record_writer(o, m);
-                //    }
                 std::size_t num_preserved_samples
                     = tables.preserved_nodes.size();
                 sw(o, &num_preserved_samples);
