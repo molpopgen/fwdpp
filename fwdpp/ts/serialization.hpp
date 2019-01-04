@@ -290,7 +290,6 @@ namespace fwdpp
                 sr(i, &num_mutations);
                 if (format == TS_TABLES_VERSION)
                     {
-                        std::cout << "V2\n";
                         tables.edge_table.resize(num_edges);
                         i.read(
                             reinterpret_cast<char*>(tables.edge_table.data()),
@@ -306,7 +305,6 @@ namespace fwdpp
                     }
                 else if (format == 1)
                     {
-                        std::cout << "V1\n";
                         deserialize_edge<TS_TABLES_VERSION> edge_reader;
                         deserialize_node<TS_TABLES_VERSION> node_reader;
                         deserialize_mutation_record<TS_TABLES_VERSION>
