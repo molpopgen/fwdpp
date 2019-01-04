@@ -10,6 +10,7 @@ namespace fwdpp
         {
 			/*! \brief Current version number of binary formats
 			 *  \version 0.7.0 Added to library
+             *  \version 0.7.4 Updated value to 2
 			 */
             constexpr const std::uint32_t TS_TABLES_VERSION = 2;
         }

@@ -191,6 +191,8 @@ namespace fwdpp
 			 *
 			 *  This function always outputs to the format version
 			 *  specified by fwdpp::ts::io::TS_TABLES_VERSION.
+             *
+             *  \version 0.7.4 Tables are written in a single call
 			 */
             {
                 o << "fwdppts";
@@ -245,6 +247,8 @@ namespace fwdpp
 			 *
 			 *  \note The return value has its index vectors populated.
 			 *  See fwdpp::ts::table_collection::build_indexes
+             *
+             *  \version 0.7.4 Tables are read in a single call
 			 */
             {
                 //Reading data back in has to manage versions
