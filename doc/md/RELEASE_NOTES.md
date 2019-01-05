@@ -7,6 +7,10 @@ milestones (target version numbers for these features to go live) because that i
 
 This release has a lot of big changes.
 
+GitHub [Issue 186](https://github.com/molpopgen/fwdpp/issues/186) was fixed.
+The "genome length" was not correctly accounted for in fwdpp::ts::mutate_tables.  The
+problem was fixed in [this commit](https://github.com/molpopgen/fwdpp/commit/4443c40638c2f2a2e309e842be213469e1f680d1).
+
 [PR 187](https://github.com/molpopgen/fwdpp/pull/187) Improves the performance of serializing
 fwdpp::ts::table_collection objects.  The output files are slightly bigger, but the IO is faster. This changes the 
 value of fwdpp::ts::TS_TABLES_VERSION from 1 to 2, and we retain the ability to read in "version 1" files. 
