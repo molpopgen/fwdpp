@@ -7,6 +7,10 @@ milestones (target version numbers for these features to go live) because that i
 
 This release has a lot of big changes.
 
+[PR 187](https://github.com/molpopgen/fwdpp/pull/187) Improves the performance of serializing
+fwdpp::ts::table_collection objects.  The output files are slightly bigger, but the IO is faster. This changes the 
+value of fwdpp::ts::TS_TABLES_VERSION from 1 to 2, and we retain the ability to read in "version 1" files. 
+
 [PR 178](https://github.com/molpopgen/fwdpp/pull/178) introduced several improvements related to tree sequence
 recording, as well as cleaning up a variety of other, smaller, issues:
 
