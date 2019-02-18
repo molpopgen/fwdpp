@@ -8,7 +8,7 @@ namespace fwdpp
 {
     namespace ts
     {
-        std::pair<TS_NODE_INT, TS_NODE_INT>
+        inline std::pair<TS_NODE_INT, TS_NODE_INT>
         get_parent_ids(const TS_NODE_INT first_parental_index,
                        const TS_NODE_INT parent, const int did_swap)
         /*! 
