@@ -19,6 +19,7 @@ namespace fwdpp
         /// \brief Identify root nodes in "marginal forests".
         ///
         /// \version 0.7.0 Added to library
+        /// \version 0.7.4 Refactored to use root tracking method
         ///
         /// See fwdpp::ts::mutate_tables for discussion.
         {
