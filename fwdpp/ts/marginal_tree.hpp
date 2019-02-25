@@ -22,7 +22,7 @@ namespace fwdpp
         /// \version 0.7.0 Added to fwdpp
         /// \version 0.7.1 Constructors throw exceptions when sample lists contain the
         /// same node ID more than once. Changed from struct to class in order
-        /// to reuse some code in a private function. Initialization also 
+        /// to reuse some code in a private function. Initialization also
         /// tracks the total sample size, which is number of nonzero elements
         /// in sample_index_map.
         {
@@ -31,9 +31,9 @@ namespace fwdpp
             init_samples(const std::vector<TS_NODE_INT>& samples,
                          std::vector<TS_NODE_INT>& lc)
             {
-                int i = 0;
-                for (auto s : samples)
+                for (std::size_t i = 0; i < samples.size(); ++i)
                     {
+                        auto s = samples[i];
                         if (static_cast<std::size_t>(s) >= leaf_counts.size())
                             {
                                 throw std::invalid_argument(
@@ -49,7 +49,16 @@ namespace fwdpp
                         sample_index_map[s] = i;
                         ++sample_size;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
-                        i++;
+                        above_sample[s] = 1;
+                        // Initialize roots
+                        if (i < samples.size() - 1)
+                            {
+                                right_sib[s] = samples[i + 1];
+                            }
+                        if (i > 0)
+                            {
+                                left_sib[s] = samples[i - 1];
+                            }
                     }
             }
 
@@ -58,8 +67,9 @@ namespace fwdpp
                 preserved_leaf_counts, left_sib, right_sib, left_child,
                 right_child, left_sample, right_sample, next_sample,
                 sample_index_map;
+            std::vector<std::int8_t> above_sample;
             double left, right;
-            TS_NODE_INT sample_size;
+            TS_NODE_INT sample_size, left_root;
             marginal_tree(TS_NODE_INT nnodes,
                           const std::vector<TS_NODE_INT>& samples)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
@@ -72,13 +82,15 @@ namespace fwdpp
                   right_sample(nnodes, TS_NULL_NODE),
                   next_sample(nnodes, TS_NULL_NODE),
                   sample_index_map(nnodes, TS_NULL_NODE),
-                  left{ std::numeric_limits<double>::quiet_NaN() }, right{
-                      std::numeric_limits<double>::quiet_NaN()
-                  },sample_size(0)
+                  above_sample(nnodes, 0),
+                  left{ std::numeric_limits<double>::quiet_NaN() },
+                  right{ std::numeric_limits<double>::quiet_NaN() },
+                  sample_size(0), left_root(TS_NULL_NODE)
             /// Constructor
             /// \todo Document
             {
                 init_samples(samples, leaf_counts);
+                left_root = samples[0];
             }
 
             marginal_tree(TS_NODE_INT nnodes,
@@ -94,14 +106,18 @@ namespace fwdpp
                   right_sample(nnodes, TS_NULL_NODE),
                   next_sample(nnodes, TS_NULL_NODE),
                   sample_index_map(nnodes, TS_NULL_NODE),
-                  left{ std::numeric_limits<double>::quiet_NaN() }, right{
-                      std::numeric_limits<double>::quiet_NaN()
-                  },sample_size(0)
+                  above_sample(nnodes, 0),
+                  left{ std::numeric_limits<double>::quiet_NaN() },
+                  right{ std::numeric_limits<double>::quiet_NaN() },
+                  sample_size(0), left_root(TS_NULL_NODE)
             /// Constructor
             /// \todo Document
             {
+                // NOTE: this may not be correct
+                // w.r.to root initialization
                 init_samples(samples, leaf_counts);
                 init_samples(preserved_nodes, preserved_leaf_counts);
+                left_root = samples[0];
             }
             marginal_tree(TS_NODE_INT nnodes)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts{},
@@ -113,12 +129,31 @@ namespace fwdpp
                   right_sample(nnodes, TS_NULL_NODE),
                   next_sample(nnodes, TS_NULL_NODE),
                   sample_index_map(nnodes, TS_NULL_NODE),
-                  left{ std::numeric_limits<double>::quiet_NaN() }, right{
-                      std::numeric_limits<double>::quiet_NaN()
-                  },sample_size(0)
+                  above_sample(nnodes, 0),
+                  left{ std::numeric_limits<double>::quiet_NaN() },
+                  right{ std::numeric_limits<double>::quiet_NaN() },
+                  sample_size(0), left_root(TS_NULL_NODE)
             /// Constructor
             /// \todo Document
             {
+            }
+
+            int
+            num_roots() const
+            /// Return number of roots
+            {
+                if (left_root == TS_NULL_NODE)
+                    {
+                        throw std::runtime_error("left_root is NULL");
+                    }
+                int nroots = 0;
+                auto lr = left_root;
+                while (lr != TS_NULL_NODE)
+                    {
+                        ++nroots;
+                        lr = right_sib[lr];
+                    }
+                return nroots;
             }
         };
     } // namespace ts
