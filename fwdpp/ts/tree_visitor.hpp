@@ -18,7 +18,7 @@ namespace fwdpp
         /// whose integrity are tied to the lifetime
         /// of the table_collection used to construct
         /// a tree_visitor!
-        /// 
+        ///
         /// \version 0.7.0 Added to fwdpp
         {
           private:
@@ -26,12 +26,122 @@ namespace fwdpp
             double x, maxpos;
             marginal_tree marginal;
 
+            void
+            update_roots_outgoing(TS_NODE_INT p, TS_NODE_INT c,
+                                  marginal_tree& marginal)
+            {
+                if (marginal.above_sample[c] == 1)
+                    {
+                        auto x = p;
+                        auto root = x;
+                        std::int8_t above_sample = 0;
+                        while (x != TS_NULL_NODE && above_sample == 0)
+                            {
+                                above_sample = (marginal.sample_index_map[x]
+                                                != TS_NULL_NODE);
+                                auto lc = marginal.left_child[x];
+                                while (lc != TS_NULL_NODE && above_sample == 0)
+                                    {
+                                        above_sample
+                                            = above_sample
+                                              || marginal.above_sample[lc];
+                                        lc = marginal.right_sib[lc];
+                                    }
+                                marginal.above_sample[x] = above_sample;
+                                root = x;
+                                x = marginal.parents[x];
+                            }
+                        if (above_sample == 0)
+                            {
+                                // Remove root from list of roots
+                                auto lroot = marginal.left_sib[root];
+                                auto rroot = marginal.right_sib[root];
+                                marginal.left_root = TS_NULL_NODE;
+                                if (lroot != TS_NULL_NODE)
+                                    {
+                                        marginal.right_sib[lroot] = rroot;
+                                        marginal.left_root = lroot;
+                                    }
+                                if (rroot != TS_NULL_NODE)
+                                    {
+                                        marginal.left_sib[rroot] = lroot;
+                                        marginal.left_root = rroot;
+                                    }
+                                marginal.left_sib[root] = TS_NULL_NODE;
+                                marginal.right_sib[root] = TS_NULL_NODE;
+                            }
+                        if (marginal.left_root != TS_NULL_NODE)
+                            {
+                                auto lroot
+                                    = marginal.left_sib[marginal.left_root];
+                                if (lroot != TS_NULL_NODE)
+                                    {
+                                        marginal.right_sib[lroot] = c;
+                                    }
+                                marginal.left_sib[c] = lroot;
+                                marginal.left_sib[marginal.left_root] = c;
+                            }
+                        marginal.right_sib[c] = marginal.left_root;
+                        marginal.left_root = c;
+                    }
+            }
+
+            void
+            update_roots_incoming(TS_NODE_INT p, TS_NODE_INT c,
+                                  TS_NODE_INT lsib, TS_NODE_INT rsib,
+                                  marginal_tree& marginal)
+            {
+                if (marginal.above_sample[c])
+                    {
+                        auto x = p;
+                        auto root = x;
+                        std::int8_t above_sample = 0;
+                        while (x != TS_NULL_NODE && above_sample == 0)
+                            {
+                                above_sample = marginal.above_sample[x];
+                                marginal.above_sample[x]
+                                    = marginal.above_sample[c];
+                                root = x;
+                                x = marginal.parents[x];
+                            }
+                        if (above_sample == 0)
+                            {
+                                if (lsib != TS_NULL_NODE)
+                                    {
+                                        marginal.right_sib[lsib] = root;
+                                    }
+                                if (rsib != TS_NULL_NODE)
+                                    {
+                                        marginal.left_sib[rsib] = root;
+                                    }
+                                marginal.left_sib[root] = lsib;
+                                marginal.right_sib[root] = rsib;
+                                marginal.left_root = root;
+                            }
+                        else
+                            {
+                                marginal.left_root = TS_NULL_NODE;
+                                if (lsib != TS_NULL_NODE)
+                                    {
+                                        marginal.right_sib[lsib] = rsib;
+                                        marginal.left_root = lsib;
+                                    }
+                                if (rsib != TS_NULL_NODE)
+                                    {
+                                        marginal.left_sib[rsib] = lsib;
+                                        marginal.left_root = rsib;
+                                    }
+                            }
+                    }
+            }
+
           public:
             tree_visitor(const table_collection& tables,
                          const std::vector<TS_NODE_INT>& samples)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.genome_length()),
+                  kM(tables.output_right.cend()), x(0.0),
+                  maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples)
             {
             }
@@ -57,7 +167,8 @@ namespace fwdpp
                          const std::vector<TS_NODE_INT>& preserved_nodes)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0), maxpos(tables.genome_length()),
+                  kM(tables.output_right.cend()), x(0.0),
+                  maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes)
             {
             }
@@ -97,6 +208,7 @@ namespace fwdpp
                                     marginal, k->parent, k->child, lp);
                                 detail::update_sample_list(marginal, k->parent,
                                                            slp);
+                                update_roots_outgoing(p, c, marginal);
                                 ++k;
                             }
                         while (j < jM && j->pos == x) // Step T2
@@ -104,6 +216,8 @@ namespace fwdpp
                                 const auto p = j->parent;
                                 const auto c = j->child;
                                 const auto rchild = marginal.right_child[p];
+                                const auto lsib = marginal.left_sib[c];
+                                const auto rsib = marginal.right_sib[c];
                                 if (rchild == TS_NULL_NODE)
                                     {
                                         marginal.left_child[p] = c;
@@ -124,9 +238,25 @@ namespace fwdpp
                                     marginal, j->parent, j->child, lp);
                                 detail::update_sample_list(marginal, j->parent,
                                                            slp);
+                                update_roots_incoming(p, c, lsib, rsib,
+                                                      marginal);
+
                                 ++j;
                             }
 
+                        // The root tracking functions will sometimes
+                        // result if left_root actually being the right-most
+                        // root.  We loop through the sibs to fix that.
+                        if (marginal.left_root != TS_NULL_NODE)
+                            {
+                                while (marginal.left_sib[marginal.left_root]
+                                       != TS_NULL_NODE)
+                                    {
+                                        marginal.left_root
+                                            = marginal.left_sib
+                                                  [marginal.left_root];
+                                    }
+                            }
                         double right = maxpos;
                         if (j < jM)
                             {
@@ -139,7 +269,7 @@ namespace fwdpp
                         marginal.left = x;
                         marginal.right = right;
                         // Must set return value before
-                        // updating right, else the 
+                        // updating right, else the
                         // last tree will be skipped.
                         bool rv = j < jM || x < maxpos;
                         x = right;
