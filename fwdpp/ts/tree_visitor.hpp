@@ -20,6 +20,7 @@ namespace fwdpp
         /// a tree_visitor!
         ///
         /// \version 0.7.0 Added to fwdpp
+        /// \version 0.7.4 Updates tree roots during traversal.
         {
           private:
             indexed_edge_container::const_iterator j, jM, k, kM;

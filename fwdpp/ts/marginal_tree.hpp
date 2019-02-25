@@ -25,6 +25,7 @@ namespace fwdpp
         /// to reuse some code in a private function. Initialization also
         /// tracks the total sample size, which is number of nonzero elements
         /// in sample_index_map.
+        /// \version 0.7.4 Update to include data structures for root tracking
         {
           private:
             void
