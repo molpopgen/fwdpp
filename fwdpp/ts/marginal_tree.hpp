@@ -29,24 +29,17 @@ namespace fwdpp
         {
           private:
             void
-            init_samples(const std::vector<TS_NODE_INT>& samples,
-                         std::vector<TS_NODE_INT>& lc)
+            init_samples(const std::vector<TS_NODE_INT>& samples)
             {
                 for (std::size_t i = 0; i < samples.size(); ++i)
                     {
                         auto s = samples[i];
-                        if (static_cast<std::size_t>(s) >= leaf_counts.size())
-                            {
-                                throw std::invalid_argument(
-                                    "sample index out of range");
-                            }
                         // See GitHub issue #158 for background
                         if (sample_index_map[s] != TS_NULL_NODE)
                             {
                                 throw std::invalid_argument(
                                     "invalid sample list");
                             }
-                        lc[s] = 1;
                         sample_index_map[s] = i;
                         ++sample_size;
                         left_sample[s] = right_sample[s] = sample_index_map[s];
@@ -90,7 +83,11 @@ namespace fwdpp
             /// Constructor
             /// \todo Document
             {
-                init_samples(samples, leaf_counts);
+                init_samples(samples);
+                for (auto s : samples)
+                    {
+                        leaf_counts[s] = 1;
+                    }
                 left_root = samples[0];
             }
 
@@ -114,11 +111,23 @@ namespace fwdpp
             /// Constructor
             /// \todo Document
             {
-                // NOTE: this may not be correct
-                // w.r.to root initialization
-                init_samples(samples, leaf_counts);
-                init_samples(preserved_nodes, preserved_leaf_counts);
+                auto merged_samples(samples);
+                if (!preserved_nodes.empty())
+                    {
+                        merged_samples.insert(merged_samples.end(),
+                                              begin(preserved_nodes),
+                                              end(preserved_nodes));
+                    }
+                init_samples(merged_samples);
                 left_root = samples[0];
+                for (auto s : samples)
+                    {
+                        leaf_counts[s] = 1;
+                    }
+                for (auto s : preserved_nodes)
+                    {
+                        preserved_leaf_counts[s] = 1;
+                    }
             }
             marginal_tree(TS_NODE_INT nnodes)
                 : parents(nnodes, TS_NULL_NODE), leaf_counts{},
