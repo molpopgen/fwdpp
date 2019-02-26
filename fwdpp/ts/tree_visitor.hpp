@@ -73,6 +73,7 @@ namespace fwdpp
                             }
                         if (marginal.left_root != TS_NULL_NODE)
                             {
+                                //Put c into root list
                                 auto lroot
                                     = marginal.left_sib[marginal.left_root];
                                 if (lroot != TS_NULL_NODE)
@@ -107,6 +108,7 @@ namespace fwdpp
                             }
                         if (above_sample == 0)
                             {
+                                // Replace c with root in root list
                                 if (lsib != TS_NULL_NODE)
                                     {
                                         marginal.right_sib[lsib] = root;
@@ -121,6 +123,7 @@ namespace fwdpp
                             }
                         else
                             {
+                                // Remove c from root list
                                 marginal.left_root = TS_NULL_NODE;
                                 if (lsib != TS_NULL_NODE)
                                     {
