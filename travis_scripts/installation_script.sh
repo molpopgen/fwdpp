@@ -22,7 +22,7 @@ then
     # Useful for debugging any issues with conda
     conda info -a
     conda install gcc zlib gsl
-    conda install -c conda-forge boost-cpp
+    conda install -c conda-forge boost-cpp==1.63.0
     ls -lhrt $HOME/miniconda/lib | grep boost_program
     # conda install -c bioconda libsequence
 else
