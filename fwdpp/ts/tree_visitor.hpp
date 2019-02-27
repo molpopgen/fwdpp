@@ -30,6 +30,25 @@ namespace fwdpp
             void
             update_roots_outgoing(TS_NODE_INT p, TS_NODE_INT c,
                                   marginal_tree& marginal)
+            // This is the algorithm used by tskit.
+            // The method is applied to nodes p and c
+            // AFTER the output index has been applied
+            // to a marginal tree.
+            //
+            // The criteria to mark something as a root
+            // are that its parent is NULL and it is
+            // above a sample. Here, c's parent is NULL
+            // because that is the result of processing
+            // "outgoing" nodes.  Thus, c will be
+            // added to the list of nodes.
+            //
+            // The trick is to determine if the most
+            // ancient ancestor of p is NOT a root,
+            // which occurs if that node is not above any samples.
+            //
+            // While we are at it, we update above_sample.
+            // A node is above a sample if it is a sample
+            // or if any of its children are above a sample.
             {
                 if (marginal.above_sample[c] == 1)
                     {
@@ -38,6 +57,9 @@ namespace fwdpp
                         std::int8_t above_sample = 0;
                         while (x != TS_NULL_NODE && above_sample == 0)
                             {
+                                // If this node is a sample, then
+                                // it must descend from a root,
+                                // which is why we OR this in the loop below.
                                 above_sample = (marginal.sample_index_map[x]
                                                 != TS_NULL_NODE);
                                 auto lc = marginal.left_child[x];
@@ -52,6 +74,8 @@ namespace fwdpp
                                 root = x;
                                 x = marginal.parents[x];
                             }
+                        // Now, root refers to the most ancient
+                        // ancestor of p found in the above loop
                         if (above_sample == 0)
                             {
                                 // Remove root from list of roots
@@ -73,7 +97,7 @@ namespace fwdpp
                             }
                         if (marginal.left_root != TS_NULL_NODE)
                             {
-                                //Put c into root list
+                                //Put c into a pre-existing root list
                                 auto lroot
                                     = marginal.left_sib[marginal.left_root];
                                 if (lroot != TS_NULL_NODE)
@@ -92,21 +116,40 @@ namespace fwdpp
             update_roots_incoming(TS_NODE_INT p, TS_NODE_INT c,
                                   TS_NODE_INT lsib, TS_NODE_INT rsib,
                                   marginal_tree& marginal)
+            // This is the algorithm used by tskit.  It is applied
+            // AFTER the incoming node list has updated marginal.
+            // Thus, p is parent to c.
+            //
+            // lsib and rsib are with respect to c BEFORE the incoming
+            // node list has updated marginal.  This is a bit confusing:
+            // these values are used to remove c from the root list if
+            // necessary.
+            //
+            // NOTE: all values of c for which above_sample[c] == 1
+            // are in the root list.
             {
                 if (marginal.above_sample[c])
                     {
                         auto x = p;
                         auto root = x;
+
                         std::int8_t above_sample = 0;
                         while (x != TS_NULL_NODE && above_sample == 0)
                             {
                                 above_sample = marginal.above_sample[x];
-                                marginal.above_sample[x]
-                                    = marginal.above_sample[c];
+                                // c is above_sample and p is c's parent.
+                                // Thus, all parents to p are above_sample, too.
+                                marginal.above_sample[x] = 1;
                                 root = x;
                                 x = marginal.parents[x];
                             }
                         if (above_sample == 0)
+                            // If we are here, then the above loop terminated
+                            // by encountering a NULL node, because above_sample[x]
+                            // must have been 0 for all x. However, because c is
+                            // above sample, all nodes encountered have been update
+                            // to be above_sample as well. Thus, the new value of root
+                            // replaces c in the root list.
                             {
                                 // Replace c with root in root list
                                 if (lsib != TS_NULL_NODE)
@@ -122,6 +165,11 @@ namespace fwdpp
                                 marginal.left_root = root;
                             }
                         else
+                            // If we are here, then we encountered a node
+                            // ancestral to c where above_sample == 1.
+                            // Thus, c can no longer be a root.  If the current
+                            // p is also a c in a later call to this function, then
+                            // it may also be removed, etc..
                             {
                                 // Remove c from root list
                                 marginal.left_root = TS_NULL_NODE;
@@ -248,9 +296,10 @@ namespace fwdpp
                                 ++j;
                             }
 
+                        // This is a big "gotcha".
                         // The root tracking functions will sometimes
-                        // result if left_root actually being the right-most
-                        // root.  We loop through the sibs to fix that.
+                        // result in left_root not actually being the left_root.
+                        // We loop through the left_sibs to fix that.
                         if (marginal.left_root != TS_NULL_NODE)
                             {
                                 while (marginal.left_sib[marginal.left_root]
