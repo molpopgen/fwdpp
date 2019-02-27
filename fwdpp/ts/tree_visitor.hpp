@@ -310,6 +310,51 @@ namespace fwdpp
                                                   [marginal.left_root];
                                     }
                             }
+#ifndef NDEBUG
+                        // Validate the roots via brute-force.
+                        auto lr = marginal.left_root;
+                        if (lr == TS_NULL_NODE)
+                            {
+                                throw std::runtime_error(
+                                    "FWDPP DEBUG: left_root is null");
+                            }
+                        std::vector<int> is_root(
+                            marginal.sample_index_map.size(), 0);
+                        for (auto s : marginal.sample_index_map)
+                            {
+                                if (s != TS_NULL_NODE)
+                                    {
+                                        auto u = s;
+                                        auto root = u;
+                                        while (u != TS_NULL_NODE)
+                                            {
+                                                root = u;
+                                                u = marginal.parents[u];
+                                            }
+                                        is_root[root] = 1;
+                                    }
+                            }
+                        int nroots_brute = 0;
+                        for (auto r : is_root)
+                            {
+                                nroots_brute += r;
+                            }
+                        if (nroots_brute != marginal.num_roots())
+                            {
+                                throw std::runtime_error(
+                                    "FWDPP DEBUG: num_roots disagreement");
+                            }
+                        while (lr != TS_NULL_NODE)
+                            {
+                                if (is_root[lr] != 1)
+                                    {
+                                        throw std::runtime_error(
+                                            "FWDPP DEBUG: root contents "
+                                            "disagreement");
+                                    }
+                                lr = marginal.right_sib[lr];
+                            }
+#endif
                         double right = maxpos;
                         if (j < jM)
                             {
