@@ -12,6 +12,7 @@ unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/g
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \
+	unit/test_recombination.cc \
 	fixtures/multilocus_fixture_deterministic.cc \
 	fixtures/sugar_fixtures.cc
 

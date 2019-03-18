@@ -156,6 +156,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc unit/test_wrapped_range.cc \
+	unit/test_recombination.cc \
 	fixtures/multilocus_fixture_deterministic.cc \
 	fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
@@ -173,6 +174,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_sampling.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
@@ -235,6 +237,7 @@ am__depfiles_remade =  \
 	unit/$(DEPDIR)/sugar_unit_tests.Po \
 	unit/$(DEPDIR)/test_general_rec_variation.Po \
 	unit/$(DEPDIR)/test_mutate_recombine.Po \
+	unit/$(DEPDIR)/test_recombination.Po \
 	unit/$(DEPDIR)/test_sampling.Po \
 	unit/$(DEPDIR)/test_simparams.Po \
 	unit/$(DEPDIR)/test_wrapped_range.Po \
@@ -602,6 +605,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/multilocus_fixture_deterministic.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
 
@@ -764,6 +768,8 @@ unit/test_simparams.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/test_wrapped_range.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
+unit/test_recombination.$(OBJEXT): unit/$(am__dirstamp) \
+	unit/$(DEPDIR)/$(am__dirstamp)
 
 unit/fwdpp_unit_tests$(EXEEXT): $(unit_fwdpp_unit_tests_OBJECTS) $(unit_fwdpp_unit_tests_DEPENDENCIES) $(EXTRA_unit_fwdpp_unit_tests_DEPENDENCIES) unit/$(am__dirstamp)
 	@rm -f unit/fwdpp_unit_tests$(EXEEXT)
@@ -823,6 +829,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_unit_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_general_rec_variation.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_mutate_recombine.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_recombination.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_sampling.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_simparams.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_wrapped_range.Po@am__quote@ # am--include-marker
@@ -1213,6 +1220,7 @@ distclean: distclean-am
 	-rm -f unit/$(DEPDIR)/sugar_unit_tests.Po
 	-rm -f unit/$(DEPDIR)/test_general_rec_variation.Po
 	-rm -f unit/$(DEPDIR)/test_mutate_recombine.Po
+	-rm -f unit/$(DEPDIR)/test_recombination.Po
 	-rm -f unit/$(DEPDIR)/test_sampling.Po
 	-rm -f unit/$(DEPDIR)/test_simparams.Po
 	-rm -f unit/$(DEPDIR)/test_wrapped_range.Po
@@ -1291,6 +1299,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f unit/$(DEPDIR)/sugar_unit_tests.Po
 	-rm -f unit/$(DEPDIR)/test_general_rec_variation.Po
 	-rm -f unit/$(DEPDIR)/test_mutate_recombine.Po
+	-rm -f unit/$(DEPDIR)/test_recombination.Po
 	-rm -f unit/$(DEPDIR)/test_sampling.Po
 	-rm -f unit/$(DEPDIR)/test_simparams.Po
 	-rm -f unit/$(DEPDIR)/test_wrapped_range.Po

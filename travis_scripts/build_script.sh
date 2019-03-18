@@ -15,3 +15,4 @@ fi
 
 fwdppConfig --version
 make check
+./testsuite/unit/fwdpp_unit_tests --log_level=all
