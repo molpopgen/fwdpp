@@ -146,6 +146,7 @@ BOOST_AUTO_TEST_CASE(compare_single_vs_multi_locus_rec)
                     pooled.push_back(k);
                 }
         }
+    gsl_rng_free(r);
     BOOST_REQUIRE_EQUAL(gametes[offspring].mutations == pooled, true);
 }
 
