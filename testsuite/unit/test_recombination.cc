@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(compare_single_vs_multi_locus_rec)
             });
         }
     auto mbin = fwdpp::empty_mutation_queue();
-    std::vector<double> mu(2, 0.0);
+    std::vector<double> mu(3, 0.0);
     gsl_rng *r = gsl_rng_alloc(gsl_rng_ranlxs2);
     auto ml_offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
         r, diploids[0], diploids[1], mbin, rbin, intralocus_rec,
