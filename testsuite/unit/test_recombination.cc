@@ -59,11 +59,6 @@ BOOST_AUTO_TEST_CASE(compare_single_vs_multi_locus_rec)
     auto offspring
         = fwdpp::mutate_recombine(new_mutations, breakpoints, 0, 1, gametes,
                                   mutations, rbin, neutral, selected);
-    for (auto x : gametes[offspring].mutations)
-        {
-            std::cout << x << ' ' << mutations[x].pos << '\n';
-        }
-
     //Now, set up the multi-locus version
     //Locus boundaries are 2 and 4
     std::vector<std::vector<std::pair<fwdpp::uint_t, fwdpp::uint_t>>> diploids;
