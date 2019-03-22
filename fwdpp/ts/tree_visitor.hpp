@@ -320,18 +320,29 @@ namespace fwdpp
                             }
                         std::vector<int> is_root(
                             marginal.sample_index_map.size(), 0);
+                        std::vector<int> processed(is_root.size(), 0);
                         for (auto s : marginal.sample_index_map)
                             {
                                 if (s != TS_NULL_NODE)
                                     {
                                         auto u = s;
                                         auto root = u;
+                                        bool early_exit = false;
                                         while (u != TS_NULL_NODE)
                                             {
+                                                if (processed[u])
+                                                    {
+                                                        early_exit = true;
+                                                        break;
+                                                    }
+                                                processed[u] = 1;
                                                 root = u;
                                                 u = marginal.parents[u];
                                             }
-                                        is_root[root] = 1;
+                                        if (early_exit == false)
+                                            {
+                                                is_root[root] = 1;
+                                            }
                                     }
                             }
                         int nroots_brute = 0;
