@@ -25,6 +25,7 @@ namespace fwdpp
         /// \todo Document
         /// \version 0.7.0 Added to library
         /// \version 0.7.1 Change behavior to skip sites fixed in the sample
+        /// \version 0.7.4 Add [start, stop) arguments
         {
             if (!(stop > start))
                 {
