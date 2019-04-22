@@ -20,12 +20,12 @@ namespace fwdpp
                              const std::vector<TS_NODE_INT>& samples,
                              const mcont_t& mutations,
                              const bool record_neutral,
-                             const bool record_selected, const double start,
-                             const double stop)
+                             const bool record_selected, const bool skip_fixed,
+                             const double start, const double stop)
         /// \todo Document
         /// \version 0.7.0 Added to library
         /// \version 0.7.1 Change behavior to skip sites fixed in the sample
-        /// \version 0.7.4 Add [start, stop) arguments
+        /// \version 0.7.4 Add [start, stop) arguments. Add option to skip fixed variants.
         {
             if (!(stop > start))
                 {
@@ -61,7 +61,9 @@ namespace fwdpp
                                     auto tc = tree.leaf_counts[mut->node]
                                               + tree.preserved_leaf_counts
                                                     [mut->node];
-                                    if (tc < tree.sample_size)
+                                    if (!skip_fixed
+                                        || (skip_fixed
+                                            && tc < tree.sample_size))
                                         {
                                             // Mutation leads to a polymorphism
                                             bool is_neutral
@@ -109,11 +111,11 @@ namespace fwdpp
                              const std::vector<TS_NODE_INT>& samples,
                              const mcont_t& mutations,
                              const bool record_neutral,
-                             const bool record_selected)
+                             const bool record_selected, const bool skip_fixed)
         {
-            return generate_data_matrix(tables, samples, mutations,
-                                        record_neutral, record_selected, 0.,
-                                        tables.genome_length());
+            return generate_data_matrix(
+                tables, samples, mutations, record_neutral, record_selected,
+                skip_fixed, 0., tables.genome_length());
         }
 
     } // namespace ts

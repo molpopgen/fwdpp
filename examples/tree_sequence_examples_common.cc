@@ -181,7 +181,7 @@ matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
     auto dm = fwdpp::ts::generate_data_matrix(tables, samples, mutations, true,
-                                              true);
+                                              true, false);
     auto rs = fwdpp::row_sums(dm);
     for (std::size_t i = 0; i < rs.first.size(); ++i)
         {
@@ -398,7 +398,7 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
             auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample,
-                                                      mutations, true, false);
+                                                      mutations, true, false, true);
             auto rs = fwdpp::row_sums(dm);
             std::vector<int> sfs(small_sample.size() - 1);
             for (auto i : rs.first)
