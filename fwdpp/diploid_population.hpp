@@ -1,5 +1,5 @@
-#ifndef __FWDPP_SUGAR_SINGLEPOP_HPP__
-#define __FWDPP_SUGAR_SINGLEPOP_HPP__
+#ifndef __FWDPP_SUGAR_DIPLOID_POPULATION_HPP__
+#define __FWDPP_SUGAR_DIPLOID_POPULATION_HPP__
 
 #include <utility>
 #include <vector>
