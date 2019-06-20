@@ -14,7 +14,6 @@
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
-#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
