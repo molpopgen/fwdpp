@@ -265,7 +265,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = tags.hpp popbase.hpp slocuspop.hpp mlocuspop.hpp
+pkginclude_HEADERS = tags.hpp popbase.hpp diploid_population.hpp
 all: all-am
 
 .SUFFIXES:

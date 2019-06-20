@@ -9,14 +9,14 @@
 #include <fwdpp/simparams.hpp>
 
 //TODO: implement fixtures
-#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/diploid_population.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 
-using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
+using poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 BOOST_AUTO_TEST_SUITE(test_simparams)

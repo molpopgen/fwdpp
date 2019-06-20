@@ -32,7 +32,6 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/general_rec_variation.hpp>
 #include <fwdpp/poisson_xover.hpp>
-#include <fwdpp/interlocus_recombination.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #endif
 
@@ -61,10 +60,6 @@
 
   See @ref md_md_sugar for a full description of the features that fwdpp's
   sugar layer provides.
- */
-
-/*! @defgroup mlocus Multi-locus/region simulations
- * \brief Functions related to modeling multi-locus/region simulations
  */
 
 /*! \namespace fwdpp::sugar

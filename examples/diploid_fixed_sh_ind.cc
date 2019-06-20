@@ -16,12 +16,11 @@
 #include <fwdpp/debug.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/algorithm/compact_mutations.hpp>
-#define SINGLEPOP_SIM
+#define DIPLOID_POPULATION_SIM
 // the type of mutation
 using mtype = fwdpp::popgenmut;
 #include <common_ind.hpp>
 #include <gsl/gsl_randist.h>
-using namespace fwdpp;
 
 int
 main(int argc, char **argv)
@@ -64,14 +63,14 @@ main(int argc, char **argv)
 
     while (nreps--)
         {
-            singlepop_t pop(N);
+            diploid_population pop(N);
             pop.mutations.reserve(
                 size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                                  + 0.667 * (theta_neutral + theta_del))));
             unsigned generation = 0;
             const auto mmodel = [&pop, &r, &generation, s, h,
                                  pselected](fwdpp::flagged_mutation_queue &recbin,
-                                            singlepop_t::mcont_t &mutations) {
+                                            diploid_population::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
                     pselected, [&r]() { return gsl_rng_uniform(r.get()); },

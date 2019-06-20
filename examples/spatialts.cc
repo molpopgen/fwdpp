@@ -26,7 +26,7 @@
 #include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/popgenmut.hpp>
-#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/diploid_population.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
@@ -40,7 +40,7 @@
 #include "calculate_fitnesses.hpp"
 
 namespace po = boost::program_options;
-using poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
+using poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
 using GSLrng = fwdpp::GSLrng_t<fwdpp::GSL_RNG_MT19937>;
 
 struct location

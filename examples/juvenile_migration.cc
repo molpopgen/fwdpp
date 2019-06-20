@@ -72,12 +72,11 @@
 #include <unordered_set>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/popgenmut.hpp>
-#define SINGLEPOP_SIM
+#define DIPLOID_POPULATION_SIM
 // the type of mutation
 using mtype = fwdpp::popgenmut;
 #include <common_ind.hpp>
 #include <gsl/gsl_randist.h>
-using namespace fwdpp;
 
 struct parent_lookup_tables
 // Our object for choosing parents each generation
@@ -85,7 +84,7 @@ struct parent_lookup_tables
     // These return indexes of parents from demes 1 and 2,
     // resp, chosen in O(1) time proportional to
     // relative fitness within each deme
-    gsl_ran_discrete_t_ptr lookup1, lookup2;
+    fwdpp::gsl_ran_discrete_t_ptr lookup1, lookup2;
     // These vectors map indexes returned from sampling
     // lookup1 and lookup2 to diploids in the population
     // object.
@@ -94,9 +93,10 @@ struct parent_lookup_tables
 
 template <typename fitness_fxn>
 parent_lookup_tables
-migrate_and_calc_fitness(const gsl_rng *r, singlepop_t &pop,
-                         const fitness_fxn &wfxn, const uint_t N1,
-                         const uint_t N2, const double m12, const double m21)
+migrate_and_calc_fitness(const gsl_rng *r, diploid_population &pop,
+                         const fitness_fxn &wfxn, const fwdpp::uint_t N1,
+                         const fwdpp::uint_t N2, const double m12,
+                         const double m21)
 // This function will be called at the start of each generation.
 // The main goal is to return the lookup tables described above.
 // But, "while we're at it", it does some other stuff that
@@ -116,7 +116,7 @@ migrate_and_calc_fitness(const gsl_rng *r, singlepop_t &pop,
     unsigned nmig21 = gsl_ran_poisson(r, static_cast<double>(N2) * m21);
 
     // Fill a vector of N1 zeros and N2 ones:
-    std::vector<uint_t> deme_labels(N1, 0);
+    std::vector<fwdpp::uint_t> deme_labels(N1, 0);
     deme_labels.resize(N1 + N2, 1);
     assert(deme_labels.size() == pop.diploids.size());
 
@@ -176,14 +176,15 @@ migrate_and_calc_fitness(const gsl_rng *r, singlepop_t &pop,
 
 template <typename fitness_fxn, typename rec_fxn, typename mut_fxn>
 void
-evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
-                 const uint_t N2, const double m12, const double m21,
-                 const double mu, const fitness_fxn &wfxn,
-                 const rec_fxn &recfxn, const mut_fxn &mutfxn)
+evolve_two_demes(const gsl_rng *r, diploid_population &pop,
+                 const fwdpp::uint_t N1, const fwdpp::uint_t N2,
+                 const double m12, const double m21, const double mu,
+                 const fitness_fxn &wfxn, const rec_fxn &recfxn,
+                 const mut_fxn &mutfxn)
 {
     // Handle mutation/gamete "recycling":
-    auto mut_recycling_bin = make_mut_queue(pop.mcounts);
-    auto gam_recycling_bin = make_gamete_queue(pop.gametes);
+    auto mut_recycling_bin = fwdpp::make_mut_queue(pop.mcounts);
+    auto gam_recycling_bin = fwdpp::make_gamete_queue(pop.gametes);
 
     // Migration and build lookup tables:
     auto lookups = migrate_and_calc_fitness(r, pop, wfxn, N1, N2, m12, m21);
@@ -199,7 +200,7 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
     // Fill in the next generation!
     // We generate the offspring for deme 1 first,
     // and then for deme 2
-    for (uint_t i = 0; i < N1 + N2; ++i)
+    for (fwdpp::uint_t i = 0; i < N1 + N2; ++i)
         {
             std::size_t p1 = std::numeric_limits<std::size_t>::max();
             std::size_t p2 = std::numeric_limits<std::size_t>::max();
@@ -253,7 +254,8 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
 #endif
 
     // Update mutation counts
-    fwdpp_internal::process_gametes(pop.gametes, pop.mutations, pop.mcounts);
+    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
+                                           pop.mcounts);
 
     assert(pop.mcounts.size() == pop.mutations.size());
 #ifndef NDEBUG
@@ -262,11 +264,12 @@ evolve_two_demes(const gsl_rng *r, singlepop_t &pop, const uint_t N1,
             assert(mc <= 2 * (N1 + N2));
         }
 #endif
-    debug::validate_pop_data(pop);
+    fwdpp::debug::validate_pop_data(pop);
 
     // Prune fixations from gametes
-    fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations, pop.mcounts,
-                                   2 * (N1 + N2), std::true_type());
+    fwdpp::fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations,
+                                          pop.mcounts, 2 * (N1 + N2),
+                                          std::true_type());
 }
 
 int
@@ -312,14 +315,14 @@ main(int argc, char **argv)
     const double pselected = mu_del / (mu_del + mu_neutral);
 
     auto wfxn = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
-    singlepop_t pop(N);
+    diploid_population pop(N);
     pop.mutations.reserve(
         size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                          + 0.667 * (theta_neutral + theta_del))));
     unsigned generation = 0;
     const auto mmodel = [&pop, &r, &generation, s, h,
                          pselected](fwdpp::flagged_mutation_queue &recbin,
-                                    singlepop_t::mcont_t &mutations) {
+                                    diploid_population::mcont_t &mutations) {
         return fwdpp::infsites_popgenmut(
             recbin, mutations, r.get(), pop.mut_lookup, generation, pselected,
             [&r]() { return gsl_rng_uniform(r.get()); }, [s]() { return s; },

@@ -1,14 +1,14 @@
 #include <iostream>
 #include <cassert>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/slocuspop.hpp>
+#include <fwdpp/diploid_population.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
 BOOST_AUTO_TEST_SUITE(test_mutate_recombine)
 
-BOOST_FIXTURE_TEST_CASE(test_boundary, slocuspop_objects)
+BOOST_FIXTURE_TEST_CASE(test_boundary, diploid_population_objects)
 {
     poptype pop(diploids, gametes, mutations);
 
@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE(test_boundary, slocuspop_objects)
 }
 
 BOOST_FIXTURE_TEST_CASE(test_boundary_with_recurrent_mutation,
-                        slocuspop_objects)
+                        diploid_population_objects)
     /// This test is similar to the above, but we use the xtra field of
     /// fwdpp::popgenmut for extra resolution about how mutation vs
     /// inherited mutations are treated vis-a-vis crossover breakpoints

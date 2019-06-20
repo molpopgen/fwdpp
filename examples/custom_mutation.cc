@@ -129,7 +129,7 @@ infsites_TwoDmutation_additive(
 
 // For testing, we'll define a single-locus pop type in terms of the above.
 using mtype = TwoDmutation;
-#define SINGLEPOP_SIM
+#define DIPLOID_POPULATION_SIM
 #include "common_ind.hpp"
 
 int
@@ -183,11 +183,11 @@ main(int argc, char **argv)
     gsl_rng *r = gsl_rng_alloc(gsl_rng_mt19937);
     gsl_rng_set(r, 42);
 
-    singlepop_t pop(1000);
+    diploid_population pop(1000);
     unsigned generation = 0;
     const auto isotropic_mutation =
         [r, &pop, &generation](fwdpp::flagged_mutation_queue &mutation_recbin,
-                               singlepop_t::mcont_t &mutations) {
+                               diploid_population::mcont_t &mutations) {
             return infsites_TwoDmutation_additive(
                 mutation_recbin, mutations, r, pop.mut_lookup, generation, 1.0,
                 [r]() { return gsl_rng_uniform(r); }, 0.1, 0.1, 0.0);
@@ -195,8 +195,8 @@ main(int argc, char **argv)
 
     static_assert(
         fwdpp::traits::is_mutation_model<decltype(isotropic_mutation),
-                                         singlepop_t::mcont_t,
-                                         singlepop_t::gcont_t>::value,
+                                         diploid_population::mcont_t,
+                                         diploid_population::gcont_t>::value,
         "Error: isotropic_mutation is not a valid mutation function");
 
     auto recbin = fwdpp::make_mut_queue(pop.mcounts);

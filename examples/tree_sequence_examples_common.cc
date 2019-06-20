@@ -55,16 +55,6 @@ apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                                            mutation_recycling_bin);
 }
 
-int
-apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
-                        fwdpp::ts::table_collection &tables,
-                        multi_locus_poptype &pop,
-                        fwdpp::flagged_mutation_queue &mutation_recycling_bin)
-{
-    return apply_neutral_mutations_details(o, rng, tables, pop,
-                                           mutation_recycling_bin);
-}
-
 options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
       scoeff(std::numeric_limits<double>::max()), dominance(1.), scaling(2.),
@@ -359,13 +349,6 @@ execute_matrix_test(const options &o, const single_locus_poptype &pop,
     execute_matrix_test_detail(o, pop, tables, samples);
 }
 
-void
-execute_matrix_test(const options &o, const multi_locus_poptype &pop,
-                    const fwdpp::ts::table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
-{
-    execute_matrix_test_detail(o, pop, tables, samples);
-}
 
 void
 execute_serialization_test(const options &o,

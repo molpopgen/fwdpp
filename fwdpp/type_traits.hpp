@@ -54,18 +54,6 @@ namespace fwdpp
         template <typename T>
         using is_diploid = traits::internal::is_diploid<T>;
 
-        //! Wraps a static constant allowing a test that T is a multi-locus
-        //! diploid.
-        template <typename T>
-        using is_multilocus_diploid
-            = traits::internal::is_multilocus_diploid<T>;
-
-        //! Convenience wrapper for
-        //! fwdpp::traits::is_multilocus_diploid<T>::type
-        template <typename T>
-        using is_multilocus_diploid_t =
-            typename is_multilocus_diploid<T>::type;
-
         //! Wraps a static constant allowing a test that T is a custom diploid
         template <typename T>
         using is_custom_diploid = traits::internal::is_custom_diploid<T>;
@@ -228,11 +216,6 @@ namespace fwdpp
         //! \ingroup Cpp14
         template <typename T>
         constexpr bool is_custom_diploid_v = is_custom_diploid<T>::value;
-
-        //! \ingroup Cpp14
-        template <typename T>
-        constexpr bool is_multilocus_diploid_v
-            = is_multilocus_diploid<T>::value;
 
         //! \ingroup Cpp14
         template <typename T>

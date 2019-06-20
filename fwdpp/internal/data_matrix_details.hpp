@@ -51,7 +51,7 @@ namespace fwdpp
                       const gcont_t &gametes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
-                      poptypes::SINGLELOC_TAG)
+                      poptypes::DIPLOID_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             for (auto &&ind : individuals)
@@ -78,49 +78,6 @@ namespace fwdpp
                                       s.begin(), s.end()));
         }
 
-        template <typename dipvector_t, typename gcont_t>
-        std::pair<std::vector<std::pair<std::size_t, uint_t>>,
-                  std::vector<std::pair<std::size_t, uint_t>>>
-        mutation_keys(const dipvector_t &diploids,
-                      const std::vector<std::size_t> &individuals,
-                      const gcont_t &gametes,
-                      const std::vector<uint_t> &mcounts,
-                      const bool include_neutral, const bool include_selected,
-                      poptypes::MULTILOC_TAG)
-        {
-            std::unordered_map<std::size_t, uint_t> n, s;
-            for (auto &&ind : individuals)
-                {
-                    auto &dip = diploids[ind];
-                    for (auto &&locus : dip)
-                        {
-                            if (include_neutral)
-                                {
-                                    update_mutation_keys(
-                                        n, gametes[locus.first].mutations,
-                                        mcounts);
-                                    update_mutation_keys(
-                                        n, gametes[locus.second].mutations,
-                                        mcounts);
-                                }
-                            if (include_selected)
-                                {
-                                    update_mutation_keys(
-                                        s, gametes[locus.first].smutations,
-                                        mcounts);
-                                    update_mutation_keys(
-                                        s, gametes[locus.second].smutations,
-                                        mcounts);
-                                }
-                        }
-                }
-            return std::make_pair(std::vector<std::pair<std::size_t, uint_t>>(
-                                      std::make_move_iterator(n.begin()),
-                                      std::make_move_iterator(n.end())),
-                                  std::vector<std::pair<std::size_t, uint_t>>(
-                                      std::make_move_iterator(s.begin()),
-                                      std::make_move_iterator(s.end())));
-        }
 
         template <typename mcont_t, typename key_container>
         inline void
@@ -165,7 +122,7 @@ namespace fwdpp
             const std::vector<std::size_t> &individuals,
             const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
             const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            poptypes::SINGLELOC_TAG, matrix_type mtype)
+            poptypes::DIPLOID_TAG, matrix_type mtype)
         {
             for (auto &&mkey : neutral_keys)
                 {
@@ -189,111 +146,6 @@ namespace fwdpp
                                             .smutations,
                                         m.selected.data, mkey, mtype);
                         }
-                    m.selected_keys.push_back(mkey.first);
-                }
-            // fill out other data fields
-            update_pos(pop.mutations, neutral_keys, m.neutral);
-            update_pos(pop.mutations, selected_keys, m.selected);
-        }
-
-        template <typename poptype>
-        void
-        fill_matrix(
-            const poptype &pop, data_matrix &m,
-            const std::vector<std::size_t> &individuals,
-            const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-            const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            poptypes::MULTILOC_TAG, matrix_type mtype)
-        {
-            const auto find_locus = [&pop](const std::size_t key) {
-                double mpos = pop.mutations[key].pos;
-                std::size_t locus_index
-                    = std::numeric_limits<std::size_t>::max();
-                for (std::size_t i = 0;
-                     i < pop.locus_boundaries.size()
-                     && locus_index == std::numeric_limits<std::size_t>::max();
-                     ++i)
-                    {
-                        if (mpos >= pop.locus_boundaries[i].first
-                            && mpos < pop.locus_boundaries[i].second)
-                            {
-                                locus_index = i;
-                            }
-                    }
-                if (locus_index == std::numeric_limits<std::size_t>::max())
-                    {
-                        throw std::runtime_error(
-                            "mutation position not found in "
-                            "pop.locus_boundaries");
-                    }
-                return locus_index;
-            };
-
-            const auto check_invariant_site
-                = [](const std::vector<std::int8_t> &site,
-                     const std::size_t offset) {
-                      if (std::accumulate(site.begin() + offset, site.end(), 0)
-                          == 0)
-                          {
-                              throw std::runtime_error(
-                                  "no variation found at site in this sample");
-                          }
-                  };
-
-            for (auto &mkey : neutral_keys)
-                {
-                    debug::check_mutation_neutrality(pop.mutations[mkey.first],
-                                                     true);
-#ifndef NDEBUG
-                    if (!pop.mcounts[mkey.first])
-                        {
-                            throw std::runtime_error(
-                                "extinct mutation encountered");
-                        }
-#endif
-                    //We need to find out what locus this mutation is in
-                    auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.neutral.data.size();
-                    for (auto &ind : individuals)
-                        {
-                            auto locus = pop.diploids[ind][locus_index];
-                            fwdpp::debug::gamete_is_extant(
-                                pop.gametes[locus.first]);
-                            fwdpp::debug::gamete_is_extant(
-                                pop.gametes[locus.second]);
-                            update_site(pop.gametes[locus.first].mutations,
-                                        pop.gametes[locus.second].mutations,
-                                        m.neutral.data, mkey, mtype);
-                        }
-                    check_invariant_site(m.neutral.data, current_size);
-                    m.neutral_keys.push_back(mkey.first);
-                }
-            for (auto &mkey : selected_keys)
-                {
-                    debug::check_mutation_neutrality(pop.mutations[mkey.first],
-                                                     false);
-#ifndef NDEBUG
-                    if (!pop.mcounts[mkey.first])
-                        {
-                            throw std::runtime_error(
-                                "extinct mutation encountered");
-                        }
-#endif
-                    //We need to find out what locus this mutation is in
-                    auto locus_index = find_locus(mkey.first);
-                    auto current_size = m.selected.data.size();
-                    for (auto &ind : individuals)
-                        {
-                            auto locus = pop.diploids[ind][locus_index];
-                            fwdpp::debug::gamete_is_extant(
-                                pop.gametes[locus.first]);
-                            fwdpp::debug::gamete_is_extant(
-                                pop.gametes[locus.second]);
-                            update_site(pop.gametes[locus.first].smutations,
-                                        pop.gametes[locus.second].smutations,
-                                        m.selected.data, mkey, mtype);
-                        }
-                    check_invariant_site(m.selected.data, current_size);
                     m.selected_keys.push_back(mkey.first);
                 }
             // fill out other data fields

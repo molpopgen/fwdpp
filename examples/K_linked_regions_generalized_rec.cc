@@ -14,7 +14,7 @@
 // Use mutation model from sugar layer
 #include <fwdpp/popgenmut.hpp>
 using mtype = fwdpp::popgenmut;
-#define SINGLEPOP_SIM
+#define DIPLOID_POPULATION_SIM
 #include <common_ind.hpp>
 
 int
@@ -62,7 +62,7 @@ main(int argc, char **argv)
     // Initiate random number generation system
     GSLrng r(seed);
 
-    singlepop_t pop(N);
+    diploid_population pop(N);
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
@@ -83,7 +83,7 @@ main(int argc, char **argv)
 
     const auto mmodel
         = [&pop, &r, &generation, K](fwdpp::flagged_mutation_queue &recbin,
-                                     singlepop_t::mcont_t &mutations) {
+                                     diploid_population::mcont_t &mutations) {
               return fwdpp::infsites_popgenmut(
                   recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,
                   [&r, K]() { return gsl_ran_flat(r.get(), 0, K); },
