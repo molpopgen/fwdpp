@@ -6,14 +6,12 @@
 #include <functional>
 #include <boost/program_options.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
-#include <fwdpp/slocuspop.hpp>
-#include <fwdpp/mlocuspop.hpp>
+#include <fwdpp/diploid_population.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/table_collection.hpp>
 
-using single_locus_poptype = fwdpp::slocuspop<fwdpp::popgenmut>;
-using multi_locus_poptype = fwdpp::mlocuspop<fwdpp::popgenmut>;
+using single_locus_poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
 
 struct diploid_metadata
 {
@@ -44,12 +42,6 @@ apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         single_locus_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin);
 
-int
-apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
-                        fwdpp::ts::table_collection &tables,
-                        multi_locus_poptype &pop,
-                        fwdpp::flagged_mutation_queue &mutation_recycling_bin);
-
 boost::program_options::options_description generate_main_options(options &o);
 boost::program_options::options_description generate_dfe_options(options &o);
 boost::program_options::options_description
@@ -62,10 +54,6 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
 
 
 void execute_matrix_test(const options &, const single_locus_poptype &,
-                         const fwdpp::ts::table_collection &,
-                         const std::vector<fwdpp::ts::TS_NODE_INT> &);
-
-void execute_matrix_test(const options &, const multi_locus_poptype &,
                          const fwdpp::ts::table_collection &,
                          const std::vector<fwdpp::ts::TS_NODE_INT> &);
 

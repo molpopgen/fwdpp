@@ -15,12 +15,9 @@
    to including this header, and is an alias to the simulation's
    mutation type
 */
-#ifdef SINGLEPOP_SIM
-#include <fwdpp/slocuspop.hpp>
-using singlepop_t = fwdpp::slocuspop<mtype>;
-#elif defined(MULTILOCUS_SIM)
-#include <fwdpp/mlocuspop.hpp>
-using multiloc_t = fwdpp::mlocuspop<mtype>;
+#ifdef DIPLOID_POPULATION_SIM
+#include <fwdpp/diploid_population.hpp>
+using diploid_population = fwdpp::diploid_population<mtype>;
 #endif
 
 // RNG type

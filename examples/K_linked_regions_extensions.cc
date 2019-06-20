@@ -15,7 +15,7 @@
 #include <fwdpp/extensions/regions.hpp>
 
 using mtype = fwdpp::popgenmut;
-#define SINGLEPOP_SIM
+#define DIPLOID_POPULATION_SIM
 #include <common_ind.hpp>
 
 // This is our fitness model
@@ -117,7 +117,7 @@ main(int argc, char **argv)
     // Initiate random number generation system
     GSLrng r(seed);
 
-    singlepop_t pop(N);
+    diploid_population pop(N);
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
@@ -127,7 +127,7 @@ main(int argc, char **argv)
     std::vector<double> locus_starts(K);
     std::vector<double> locus_ends(K);
     std::vector<double> locus_weights, locus_rec_weights;
-    std::vector<fwdpp::traits::mutation_model<singlepop_t::mcont_t>> functions;
+    std::vector<fwdpp::traits::mutation_model<diploid_population::mcont_t>> functions;
     std::vector<fwdpp::extensions::discrete_rec_model::function_type>
         rec_functions;
 
@@ -138,7 +138,7 @@ main(int argc, char **argv)
             locus_weights.push_back(1.0);
             functions.push_back([&pop, &r, &generation, pselected,
                                  i](fwdpp::flagged_mutation_queue &recbin,
-                                    singlepop_t::mcont_t &mutations) {
+                                    diploid_population::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
                     pselected,
@@ -159,7 +159,7 @@ main(int argc, char **argv)
                 }
         }
 
-    fwdpp::extensions::discrete_mut_model<singlepop_t::mcont_t> mmodels(
+    fwdpp::extensions::discrete_mut_model<diploid_population::mcont_t> mmodels(
         std::move(functions), std::move(locus_weights));
 
     const auto bound_mmodels = fwdpp::extensions::bind_dmm(r.get(), mmodels);

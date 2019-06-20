@@ -168,30 +168,13 @@ namespace fwdpp
 
             template <typename poptype>
             void
-            validate_pop_data(const poptype &pop, poptypes::SINGLELOC_TAG)
+            validate_pop_data(const poptype &pop, poptypes::DIPLOID_TAG)
             {
 #ifndef NDEBUG
                 for (const auto &d : pop.diploids)
                     {
                         validate_pop_data_common(d, pop.gametes, pop.mutations,
                                                  pop.mcounts);
-                    }
-#endif
-            }
-
-            template <typename poptype>
-            void
-            validate_pop_data(const poptype &pop, poptypes::MULTILOC_TAG)
-            {
-#ifndef NDEBUG
-                for (const auto &d : pop.diploids)
-                    {
-                        for (const auto &locus : d)
-                            {
-                                validate_pop_data_common(locus, pop.gametes,
-                                                         pop.mutations,
-                                                         pop.mcounts);
-                            }
                     }
 #endif
             }
@@ -223,7 +206,7 @@ namespace fwdpp
             template <typename poptype>
             void
             all_gametes_extant(const poptype &pop,
-                               const fwdpp::poptypes::SINGLELOC_TAG)
+                               const fwdpp::poptypes::DIPLOID_TAG)
             {
 #ifndef NEBUG
                 for (auto &dip : pop.diploids)
@@ -239,27 +222,6 @@ namespace fwdpp
 #endif
             }
 
-            template <typename poptype>
-            void
-            all_gametes_extant(const poptype &pop,
-                               const fwdpp::poptypes::MULTILOC_TAG)
-            {
-#ifndef NEBUG
-                for (auto &dip : pop.diploids)
-                    {
-                        for (auto &locus : dip)
-                            {
-                                if (pop.gametes[locus.first].n == 0
-                                    || pop.gametes[locus.second].n == 0)
-                                    {
-                                        throw std::runtime_error(
-                                            "FWDPP DEBUG: diploid refers to "
-                                            "extinct gamete");
-                                    }
-                            }
-                    }
-#endif
-            }
         } // namespace detail
     }     // namespace debug
 } // namespace fwdpp
