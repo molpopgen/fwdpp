@@ -268,7 +268,6 @@ top_srcdir = @top_srcdir@
 pkginclude_HEADERS = mutation_internal.hpp \
 	rec_gamete_updater.hpp \
 	recombination_common.hpp \
-	multilocus_rec.hpp \
 	ms_sampling.hpp \
 	gamete_cleaner.hpp \
 	sample_diploid_helpers.hpp \
