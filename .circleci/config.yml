@@ -1,0 +1,39 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.6-stretch
+    working_directory: /home/circleci/fwdpp
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci *
+      - restore_cache:
+          key: fwdpp-{{ .Branch }}
+      - run:
+          name: Checkout submodules
+          command: |
+            git submodule update --init --recursive 
+            # Write out the status for debugging purposes. Are we checked out at tags?
+            git submodule status --recursive
+      - run:
+          name: Install dependencies and set path
+          command: |
+            sudo apt-get update
+            sudo apt-get install libgsl0-dev libboost-*dev
+            # way to set path persistently https://circleci.com/docs/2.0/env-vars/#setting-path
+            echo 'export PATH=/home/circleci/.local/bin:$PATH' >> $BASH_ENV
+      - save_cache:
+          key: fwdpp-{{ .Branch }}
+          paths:
+            - "/home/circleci/.local"
+
+      - run:
+          name: Compile package
+          command: |
+              ./configure
+              make
+
+      - run:
+          name: Run test suite
+          command: |
+              make check
