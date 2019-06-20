@@ -41,8 +41,8 @@ There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) f
 
 # Build status
 
-* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp)
-* Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp)
+* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/master.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/master)
+* Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/dev.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/dev)
 
 # Introduction
 
