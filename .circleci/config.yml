@@ -31,9 +31,9 @@ jobs:
           name: Compile package
           command: |
               ./configure
-              make
+              make -j 2
 
       - run:
           name: Run test suite
           command: |
-              make check
+              make check -j 2
