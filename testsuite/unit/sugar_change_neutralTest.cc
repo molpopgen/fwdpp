@@ -11,9 +11,9 @@
 #include <fwdpp/sugar/change_neutral.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
-BOOST_FIXTURE_TEST_SUITE(test_change_neutral, slocuspop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_change_neutral, diploid_population_popgenmut_fixture)
 
-BOOST_AUTO_TEST_CASE(test_change_neutral_slocuspop)
+BOOST_AUTO_TEST_CASE(test_change_neutral_diploid_population)
 {
 
     fwdpp::add_mutation(pop,

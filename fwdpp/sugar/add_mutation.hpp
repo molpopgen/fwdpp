@@ -151,10 +151,9 @@ namespace fwdpp
                 }
         }
 
-        template <typename poptype,
-                  typename = std::enable_if<
-                      std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::poptypes::SINGLELOC_TAG>::value>>
+        template <typename poptype, typename = std::enable_if<std::is_same<
+                                        typename poptype::popmodel_t,
+                                        fwdpp::poptypes::DIPLOID_TAG>::value>>
         std::unordered_map<
             std::size_t,
             std::vector<typename poptype::diploid_t::first_type *>>
@@ -183,46 +182,6 @@ namespace fwdpp
                         {
                             gams[p.diploids[indlist[i]].second].push_back(
                                 &p.diploids[indlist[i]].second);
-                        }
-                }
-            return gams;
-        }
-
-        template <typename poptype, typename = std::enable_if<std::is_same<
-                                        typename poptype::popmodel_t,
-                                        fwdpp::poptypes::MULTILOC_TAG>::value>>
-        std::unordered_map<
-            std::size_t,
-            std::vector<typename poptype::diploid_t::value_type::first_type *>>
-        collect_gametes(poptype &p, const std::size_t locus,
-                        const std::vector<std::size_t> &indlist,
-                        const std::vector<short> &clist)
-        /*!
-          \brief Helper function for add_mutation and add_mutations.
-
-          Collects together all the gametes that will be updated, to minimize
-          the number of
-          new gametes created.
-        */
-        {
-            std::unordered_map<
-                std::size_t,
-                std::vector<
-                    typename poptype::diploid_t::value_type::first_type *>>
-                gams;
-            for (std::size_t ind = 0; ind < indlist.size(); ++ind)
-                {
-                    if (clist[ind] == 0 || clist[ind] == 2)
-                        {
-                            gams[p.diploids[indlist[ind]][locus].first]
-                                .push_back(
-                                    &p.diploids[indlist[ind]][locus].first);
-                        }
-                    if (clist[ind] > 0)
-                        {
-                            gams[p.diploids[indlist[ind]][locus].second]
-                                .push_back(
-                                    &p.diploids[indlist[ind]][locus].second);
                         }
                 }
             return gams;
@@ -268,7 +227,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::poptypes::SINGLELOC_TAG>::value,
+                                   fwdpp::poptypes::DIPLOID_TAG>::value,
                       "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks
@@ -407,7 +366,7 @@ namespace fwdpp
     */
     {
         static_assert(std::is_same<typename poptype::popmodel_t,
-                                   fwdpp::poptypes::SINGLELOC_TAG>::value,
+                                   fwdpp::poptypes::DIPLOID_TAG>::value,
                       "poptype must be a single-locus object type");
 
         // Before we go deep into creating objects, let's do some checks

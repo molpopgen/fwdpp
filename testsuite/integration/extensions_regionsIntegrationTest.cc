@@ -13,7 +13,7 @@
 
 using namespace fwdpp;
 
-BOOST_FIXTURE_TEST_SUITE(test_regions, slocuspop_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_regions, diploid_population_popgenmut_fixture)
 
 // Check that extensions::discrete_mut_model::operator() can be bound
 // with placeholders, that the resulting type is a valid
@@ -132,52 +132,3 @@ BOOST_FIXTURE_TEST_SUITE(test_regions, slocuspop_popgenmut_fixture)
 
 BOOST_AUTO_TEST_SUITE_END()
 
-BOOST_FIXTURE_TEST_SUITE(test_multilocus_regions, mlocuspop_popgenmut_fixture)
-
-BOOST_AUTO_TEST_CASE(test_bind_vec_dmm_drm)
-/* Test vectors of mutation/recombination regions
- * The recombination region scheme is same as unit
- * test bind_vec_drm_test in file testsuite/unit/extensions_regionsTest.cc
- *
- * The mutation setup is simpler--just neutral mutations.
- *
- * This test uses the multilocus fixture for the testsuite.
- */
-{
-    BOOST_REQUIRE_EQUAL(vdmm.size(), bound_mmodels.size());
-    BOOST_REQUIRE_EQUAL(vdmm.size(), vdrm.size());
-    // create a set of bound callbacks.
-    // We use the fixture's mu to imply that
-    // mutation rate = recombination rate per region.
-
-    auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
-        rng.get(), rbw.data(), rbw.size());
-    BOOST_REQUIRE_EQUAL(interlocus_rec.size(), nloci - 1);
-    fwdpp::flagged_mutation_queue mqueue{ fwdpp::empty_mutation_queue() };
-    fwdpp::flagged_gamete_queue gqueue{ fwdpp::empty_gamete_queue() };
-    for (auto& dip : pop.diploids)
-        {
-            auto offspring = fwdpp::fwdpp_internal::multilocus_rec_mut(
-                rng.get(), dip, dip, mqueue, gqueue, bound_recmodels,
-                interlocus_rec, 0, 0, pop.gametes, pop.mutations, pop.neutral,
-                pop.selected, mu.data(), bound_mmodels);
-        }
-}
-
-BOOST_AUTO_TEST_CASE(test_evolve)
-{
-    auto interlocus_rec = fwdpp::make_binomial_interlocus_rec(
-        rng.get(), rbw.data(), rbw.size());
-    BOOST_REQUIRE_EQUAL(bound_recmodels.size(), nloci);
-    BOOST_TEST_PASSPOINT();
-    double wbar = sample_diploid(
-        rng.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-        pop.N, mu.data(), bound_mmodels, bound_recmodels, interlocus_rec,
-        multilocus_additive(), pop.neutral, pop.selected);
-    if (!std::isfinite(wbar))
-        {
-            throw std::runtime_error("wbar not finite");
-        }
-}
-
-BOOST_AUTO_TEST_SUITE_END()

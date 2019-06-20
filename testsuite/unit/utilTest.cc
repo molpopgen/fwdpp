@@ -132,7 +132,7 @@ BOOST_FIXTURE_TEST_CASE(only_recycle_neutral_fixations,
 // is that, for the bug to have an effect, a series of rare events
 // must happen multiple times.
 
-BOOST_FIXTURE_TEST_CASE(issue_130_slocuspop_test_update_mutations,
+BOOST_FIXTURE_TEST_CASE(issue_130_diploid_population_test_update_mutations,
                         standard_empty_single_deme_fixture)
 {
     fwdpp::uint_t N = 1000;
@@ -166,7 +166,7 @@ BOOST_FIXTURE_TEST_CASE(issue_130_slocuspop_test_update_mutations,
         }
 }
 
-BOOST_FIXTURE_TEST_CASE(issue_130_slocuspop_test_update_mutations_extinct_only,
+BOOST_FIXTURE_TEST_CASE(issue_130_diploid_population_test_update_mutations_extinct_only,
                         standard_empty_single_deme_fixture)
 {
     fwdpp::uint_t N = 1000;
@@ -199,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(issue_130_slocuspop_test_update_mutations_extinct_only,
         }
 }
 BOOST_FIXTURE_TEST_CASE(
-    issue_130_slocuspop_test_update_mutations_do_not_record_fixations,
+    issue_130_diploid_population_test_update_mutations_do_not_record_fixations,
     standard_empty_single_deme_fixture)
 {
     fwdpp::uint_t N = 1000;
@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE(
         }
 }
 
-BOOST_FIXTURE_TEST_CASE(issue_130_slocuspop_test_update_mutations_n,
+BOOST_FIXTURE_TEST_CASE(issue_130_diploid_population_test_update_mutations_n,
                         standard_empty_single_deme_fixture)
 {
     fwdpp::uint_t N = 1000;

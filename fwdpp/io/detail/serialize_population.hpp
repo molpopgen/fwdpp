@@ -20,7 +20,7 @@ namespace fwdpp
             inline void
             serialize_population_details(streamtype &buffer,
                                          const poptype &pop,
-                                         poptypes::SINGLELOC_TAG)
+                                         poptypes::DIPLOID_TAG)
             {
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
@@ -39,50 +39,8 @@ namespace fwdpp
 
             template <typename streamtype, typename poptype>
             inline void
-            serialize_population_details(streamtype &buffer,
-                                         const poptype &pop,
-                                         poptypes::MULTILOC_TAG)
-            {
-                io::scalar_writer writer;
-                writer(buffer, &pop.N);
-                unsigned nloci = unsigned(pop.diploids[0].size());
-                writer(buffer, &nloci);
-                // write mutations
-                io::write_mutations(buffer, pop.mutations);
-                io::write_gametes(buffer, pop.gametes);
-                unsigned ndips = unsigned(pop.diploids.size());
-                writer(buffer, &ndips);
-                io::serialize_diploid<
-                    typename poptype::dipvector_t::value_type::value_type>
-                    dipwriter;
-                for (const auto &dip : pop.diploids)
-                    {
-                        for (const auto &genotype : dip)
-                            {
-                                dipwriter(buffer, genotype);
-                            }
-                    }
-                // Step 2: output fixations
-                fwdpp::io::write_mutations(buffer, pop.fixations);
-                if (!pop.fixations.empty())
-                    {
-                        // Step 3:the fixation times
-                        writer(buffer, &pop.fixation_times[0],
-                               pop.fixations.size());
-                    }
-                std::size_t temp = std::size_t(pop.locus_boundaries.size());
-                writer(buffer, &temp);
-                for (std::size_t i = 0; i < temp; ++i)
-                    {
-                        writer(buffer, &pop.locus_boundaries[i].first);
-                        writer(buffer, &pop.locus_boundaries[i].second);
-                    }
-            }
-
-            template <typename streamtype, typename poptype>
-            inline void
             deserialize_population_details(poptype &pop, streamtype &buffer,
-                                           poptypes::SINGLELOC_TAG)
+                                           poptypes::DIPLOID_TAG)
             {
                 pop.clear();
                 io::scalar_reader reader;
@@ -101,73 +59,6 @@ namespace fwdpp
                         pop.fixation_times.resize(pop.fixations.size());
                         reader(buffer, &pop.fixation_times[0],
                                pop.fixations.size());
-                    }
-
-                // Finally, fill the lookup table:
-                for (unsigned i = 0; i < pop.mcounts.size(); ++i)
-                    {
-                        if (pop.mcounts[i])
-                            pop.mut_lookup.emplace(pop.mutations[i].pos,
-                                                   static_cast<uint_t>(i));
-                    }
-            }
-
-            template <typename streamtype, typename poptype>
-            inline void
-            deserialize_population_details(poptype &pop, streamtype &buffer,
-                                           poptypes::MULTILOC_TAG)
-            {
-                pop.clear();
-                io::scalar_reader reader;
-                // Step 0: read N
-                reader(buffer, &pop.N);
-                unsigned nloci;
-                reader(buffer, &nloci);
-                // Read the mutations from the buffer
-                io::read_mutations(buffer, pop.mutations);
-                io::read_gametes(buffer, pop.gametes);
-                unsigned ndips;
-                reader(buffer, &ndips);
-                pop.diploids.resize(
-                    ndips, typename poptype::dipvector_t::value_type(nloci));
-                io::deserialize_diploid<
-                    typename poptype::dipvector_t::value_type::value_type>
-                    dipreader;
-                for (auto &dip : pop.diploids)
-                    {
-                        if (dip.size() != nloci)
-                            {
-                                throw std::runtime_error(
-                                    "serialization error: diploid has "
-                                    "unexpected number of loci");
-                            }
-
-                        for (auto &genotype : dip)
-                            {
-                                dipreader(buffer, genotype);
-                            }
-                    }
-
-                // update the mutation counts
-                fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
-                                                pop.mcounts);
-                std::size_t temp;
-                fwdpp::io::read_mutations(buffer, pop.fixations);
-                if (!pop.fixations.empty())
-                    {
-                        pop.fixation_times.resize(pop.fixations.size());
-                        reader(buffer, &pop.fixation_times[0],
-                               pop.fixations.size());
-                    }
-                reader(buffer, &temp);
-                if (temp)
-                    {
-                        double x[2];
-                        for (std::size_t i = 0; i < temp; ++i)
-                            {
-                                reader(buffer, &x[0], 2);
-                                pop.locus_boundaries.emplace_back(x[0], x[1]);
-                            }
                     }
 
                 // Finally, fill the lookup table:

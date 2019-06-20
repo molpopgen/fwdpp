@@ -10,21 +10,21 @@
 
 using mutation_t = fwdpp::popgenmut;
 
-BOOST_FIXTURE_TEST_SUITE(test_slocuspop_custom,
-                         slocuspop_popgenmut_custom_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_diploid_population_custom,
+                         diploid_population_popgenmut_custom_fixture)
 
-BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test1)
+BOOST_AUTO_TEST_CASE(diploid_population_sugar_custom_test1)
 {
-    simulate_slocuspop(pop);
+    simulate_diploid_population(pop);
 
     auto pop2(pop);
 
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }
 
-BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test3)
+BOOST_AUTO_TEST_CASE(diploid_population_sugar_custom_test3)
 {
-    simulate_slocuspop(pop);
+    simulate_diploid_population(pop);
 
     auto pop2(std::move(pop));
     // Should be false b/c move will leave
@@ -32,9 +32,9 @@ BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test3)
     BOOST_CHECK_EQUAL(pop == pop2, false);
 }
 
-BOOST_AUTO_TEST_CASE(slocuspop_sugar_custom_test4)
+BOOST_AUTO_TEST_CASE(diploid_population_sugar_custom_test4)
 {
-    simulate_slocuspop(pop);
+    simulate_diploid_population(pop);
 
     auto pop2 = std::move(pop);
     // Should be false b/c move will leave
