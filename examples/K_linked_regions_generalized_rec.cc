@@ -94,14 +94,15 @@ main(int argc, char **argv)
         {
             // Iterate the population through 1 generation
             fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, mu, mmodel, recmap,
+                r.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
+                pop.mcounts, N, mu, mmodel, recmap,
                 fwdpp::multiplicative_diploid(fwdpp::fitness(2.)), pop.neutral,
                 pop.selected);
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2 * N);
+            fwdpp::debug::validate_sum_haploid_genome_counts(
+                pop.haploid_genomes, 2 * N);
             fwdpp::debug::validate_pop_data(pop);
         }
 #ifdef HAVE_LIBSEQUENCE

@@ -23,20 +23,20 @@ struct additive_over_loci
 {
     template <typename diploid_t, typename gcont_t, typename mcont_t>
     inline double
-    operator()(const diploid_t &dip, const gcont_t &gametes,
+    operator()(const diploid_t &dip, const gcont_t &haploid_genomes,
                const mcont_t &mutations, const unsigned K) const noexcept
     /*
       The fitness model is additive over loci, multiplicative within loci
      */
     {
         double rv = 0.0;
-        auto &g1 = gametes[dip.first];
-        auto &g2 = gametes[dip.second];
+        auto &g1 = haploid_genomes[dip.first];
+        auto &g2 = haploid_genomes[dip.second];
         for (unsigned i = 0; i < K; ++i)
             {
                 /*
                   Find the iterators corrsponding to locus 1 in g1 and g2.
-                  Because gamete store mutation keys sorted by mutation
+                  Because haploid_genome store mutation keys sorted by mutation
                   position,
                   we can use efficient binary searches.
 
@@ -127,7 +127,8 @@ main(int argc, char **argv)
     std::vector<double> locus_starts(K);
     std::vector<double> locus_ends(K);
     std::vector<double> locus_weights, locus_rec_weights;
-    std::vector<fwdpp::traits::mutation_model<diploid_population::mcont_t>> functions;
+    std::vector<fwdpp::traits::mutation_model<diploid_population::mcont_t>>
+        functions;
     std::vector<fwdpp::extensions::discrete_rec_model::function_type>
         rec_functions;
 
@@ -176,8 +177,9 @@ main(int argc, char **argv)
         {
             // Iterate the population through 1 generation
             fwdpp::sample_diploid(
-                r.get(), pop.gametes, pop.diploids, pop.mutations, pop.mcounts,
-                N, double(K) * (mutrate_region + mutrate_del_region),
+                r.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
+                pop.mcounts, N,
+                double(K) * (mutrate_region + mutrate_del_region),
                 // This is the synthesized function bound to operator() of
                 // mmodels:
                 bound_mmodels, bound_recmap,
@@ -187,7 +189,8 @@ main(int argc, char **argv)
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2 * N);
+            fwdpp::debug::validate_sum_haploid_genome_counts(
+                pop.haploid_genomes, 2 * N);
             fwdpp::debug::validate_pop_data(pop);
         }
     for (unsigned i = 0; i < pop.mcounts.size(); ++i)

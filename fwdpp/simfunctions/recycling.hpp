@@ -13,7 +13,7 @@ namespace fwdpp
         struct mutation_recycling
         {
         };
-        struct gamete_recycling
+        struct haploid_genome_recycling
         {
         };
     } // namespace tags
@@ -24,11 +24,11 @@ namespace fwdpp
         = strong_types::named_type<std::queue<std::size_t>,
                                    tags::mutation_recycling>;
 
-    /// \brief FIFO queue for gamete recycling
+    /// \brief FIFO queue for haploid_genome recycling
     /// \version 0.7.4 added to fwdpp
-    using flagged_gamete_queue
+    using flagged_haploid_genome_queue
         = strong_types::named_type<std::queue<std::size_t>,
-                                   tags::gamete_recycling>;
+                                   tags::haploid_genome_recycling>;
 
     inline flagged_mutation_queue
     empty_mutation_queue()
@@ -37,11 +37,11 @@ namespace fwdpp
         return flagged_mutation_queue(std::queue<std::size_t>());
     }
 
-    inline flagged_gamete_queue
-    empty_gamete_queue()
-    //// \brief Generate an empty flagged_gamete_queue
+    inline flagged_haploid_genome_queue
+    empty_haploid_genome_queue()
+    //// \brief Generate an empty flagged_haploid_genome_queue
     {
-        return flagged_gamete_queue(std::queue<std::size_t>());
+        return flagged_haploid_genome_queue(std::queue<std::size_t>());
     }
 
     template <typename mcount_vec>
@@ -62,54 +62,56 @@ namespace fwdpp
     }
 
     template <typename gvec_t>
-    inline flagged_gamete_queue
-    make_gamete_queue(const gvec_t &gametes)
-    /// \brief Make a FIFO queue for recycling extinct gametes
-    /// \param gametes Vector of gametes
+    inline flagged_haploid_genome_queue
+    make_haploid_genome_queue(const gvec_t &haploid_genomes)
+    /// \brief Make a FIFO queue for recycling extinct haploid_genomes
+    /// \param haploid_genomes Vector of haploid_genomes
     {
         std::queue<std::size_t> rv;
-        const auto gsize = gametes.size();
+        const auto gsize = haploid_genomes.size();
         for (typename gvec_t::size_type i = 0; i < gsize; ++i)
             {
-                if (!gametes[i].n)
+                if (!haploid_genomes[i].n)
                     rv.push(i);
             }
-        return flagged_gamete_queue(std::move(rv));
+        return flagged_haploid_genome_queue(std::move(rv));
     }
 
     template <typename gcont_t>
     inline std::size_t
-    recycle_gamete(gcont_t &gametes,
-                   flagged_gamete_queue &gamete_recycling_bin,
-                   typename gcont_t::value_type::mutation_container &neutral,
-                   typename gcont_t::value_type::mutation_container &selected)
-    /// \brief Return location of a new gamete, recycling available memory if possible
-    /// \param gametes vector of gametes
-    /// \param gamete_recycling_bin A flagged_gamete_queue
-    /// \param neutral Data for new gamete's neutral variants
-    /// \param selected Data for new gamete's selected variants
-    /// \return A location in \a gametes
+    recycle_haploid_genome(
+        gcont_t &haploid_genomes,
+        flagged_haploid_genome_queue &haploid_genome_recycling_bin,
+        typename gcont_t::value_type::mutation_container &neutral,
+        typename gcont_t::value_type::mutation_container &selected)
+    /// \brief Return location of a new haploid_genome, recycling available memory if possible
+    /// \param haploid_genomes vector of haploid_genomes
+    /// \param haploid_genome_recycling_bin A flagged_haploid_genome_queue
+    /// \param neutral Data for new haploid_genome's neutral variants
+    /// \param selected Data for new haploid_genome's selected variants
+    /// \return A location in \a haploid_genomes
     {
         // Try to recycle
-        auto &ref = gamete_recycling_bin.get();
+        auto &ref = haploid_genome_recycling_bin.get();
         if (!ref.empty())
             {
                 auto idx = ref.front();
                 ref.pop();
 #ifndef NDEBUG
-                if (gametes[idx].n)
+                if (haploid_genomes[idx].n)
                     {
                         throw std::runtime_error(
                             "FWDPP DEBUG: attempting to recycle an extant "
-                            "gamete");
+                            "haploid_genome");
                     }
 #endif
-                gametes[idx].mutations.swap(neutral);
-                gametes[idx].smutations.swap(selected);
+                haploid_genomes[idx].mutations.swap(neutral);
+                haploid_genomes[idx].smutations.swap(selected);
                 return idx;
             }
-        gametes.emplace_back(0u, std::move(neutral), std::move(selected));
-        return (gametes.size() - 1);
+        haploid_genomes.emplace_back(0u, std::move(neutral),
+                                     std::move(selected));
+        return (haploid_genomes.size() - 1);
     }
 
     /*!

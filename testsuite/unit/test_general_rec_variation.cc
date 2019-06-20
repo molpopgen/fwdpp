@@ -20,7 +20,7 @@ struct fixture
     fwdpp::crossover_point ci1;
     fwdpp::crossover_point ci2;
     fwdpp::crossover_point ci3;
-    fwdpp::gamete g;
+    fwdpp::haploid_genome g;
     std::pair<std::size_t, std::size_t> diploid;
     std::vector<fwdpp::mutation> mutations;
 

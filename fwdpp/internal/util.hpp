@@ -6,11 +6,12 @@ namespace fwdpp
     {
         template <typename poptype>
         void
-        zero_out_gametes(poptype &pop, fwdpp::poptypes::DIPLOID_TAG)
+        zero_out_haploid_genomes(poptype &pop, fwdpp::poptypes::DIPLOID_TAG)
         {
             for (auto &dip : pop.diploids)
                 {
-                    pop.gametes[dip.first].n = pop.gametes[dip.second].n = 0;
+                    pop.haploid_genomes[dip.first].n
+                        = pop.haploid_genomes[dip.second].n = 0;
                 }
         }
     } // namespace fwdpp_internal

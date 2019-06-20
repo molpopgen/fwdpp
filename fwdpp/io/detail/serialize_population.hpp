@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <fwdpp/io/mutation.hpp>
-#include <fwdpp/io/gamete.hpp>
+#include <fwdpp/io/haploid_genome.hpp>
 #include <fwdpp/io/diploid.hpp>
 #include <fwdpp/poptypes/tags.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
@@ -25,7 +25,7 @@ namespace fwdpp
                 io::scalar_writer writer;
                 writer(buffer, &pop.N);
                 io::write_mutations(buffer, pop.mutations);
-                io::write_gametes(buffer, pop.gametes);
+                io::write_haploid_genomes(buffer, pop.haploid_genomes);
                 io::write_diploids(buffer, pop.diploids);
                 // Step 2: output fixations
                 fwdpp::io::write_mutations(buffer, pop.fixations);
@@ -47,11 +47,11 @@ namespace fwdpp
                 // Step 0: read N
                 reader(buffer, &pop.N);
                 io::read_mutations(buffer, pop.mutations);
-                io::read_gametes(buffer, pop.gametes);
+                io::read_haploid_genomes(buffer, pop.haploid_genomes);
                 io::read_diploids(buffer, pop.diploids);
 
                 // update the mutation counts
-                fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
+                fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations,
                                                 pop.mcounts);
                 fwdpp::io::read_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())

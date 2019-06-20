@@ -48,7 +48,7 @@ namespace fwdpp
                   std::vector<std::pair<std::size_t, uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
-                      const gcont_t &gametes,
+                      const gcont_t &haploid_genomes,
                       const std::vector<uint_t> &mcounts,
                       const bool include_neutral, const bool include_selected,
                       poptypes::DIPLOID_TAG)
@@ -60,16 +60,20 @@ namespace fwdpp
                     if (include_neutral)
                         {
                             update_mutation_keys(
-                                n, gametes[dip.first].mutations, mcounts);
+                                n, haploid_genomes[dip.first].mutations,
+                                mcounts);
                             update_mutation_keys(
-                                n, gametes[dip.second].mutations, mcounts);
+                                n, haploid_genomes[dip.second].mutations,
+                                mcounts);
                         }
                     if (include_selected)
                         {
                             update_mutation_keys(
-                                s, gametes[dip.first].smutations, mcounts);
+                                s, haploid_genomes[dip.first].smutations,
+                                mcounts);
                             update_mutation_keys(
-                                s, gametes[dip.second].smutations, mcounts);
+                                s, haploid_genomes[dip.second].smutations,
+                                mcounts);
                         }
                 }
             return std::make_pair(std::vector<std::pair<std::size_t, uint_t>>(
@@ -77,7 +81,6 @@ namespace fwdpp
                                   std::vector<std::pair<std::size_t, uint_t>>(
                                       s.begin(), s.end()));
         }
-
 
         template <typename mcont_t, typename key_container>
         inline void
@@ -129,8 +132,9 @@ namespace fwdpp
                     for (auto &ind : individuals)
                         {
                             update_site(
-                                pop.gametes[pop.diploids[ind].first].mutations,
-                                pop.gametes[pop.diploids[ind].second]
+                                pop.haploid_genomes[pop.diploids[ind].first]
+                                    .mutations,
+                                pop.haploid_genomes[pop.diploids[ind].second]
                                     .mutations,
                                 m.neutral.data, mkey, mtype);
                         }
@@ -140,11 +144,12 @@ namespace fwdpp
                 {
                     for (auto &ind : individuals)
                         {
-                            update_site(pop.gametes[pop.diploids[ind].first]
-                                            .smutations,
-                                        pop.gametes[pop.diploids[ind].second]
-                                            .smutations,
-                                        m.selected.data, mkey, mtype);
+                            update_site(
+                                pop.haploid_genomes[pop.diploids[ind].first]
+                                    .smutations,
+                                pop.haploid_genomes[pop.diploids[ind].second]
+                                    .smutations,
+                                m.selected.data, mkey, mtype);
                         }
                     m.selected_keys.push_back(mkey.first);
                 }

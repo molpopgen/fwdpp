@@ -94,7 +94,7 @@ namespace fwdpp
                              const std::vector<std::size_t> &mindexes,
                              const map_t &gams)
         {
-            auto gam_recycling_bin = make_gamete_queue(p.gametes);
+            auto gam_recycling_bin = make_haploid_genome_queue(p.haploid_genomes);
             // Function object for calls to upper bound
             auto inserter
                 = [&p](const double &__value, const std::size_t __mut) noexcept
@@ -104,8 +104,8 @@ namespace fwdpp
 
             for (const auto &gi : gams)
                 {
-                    auto n = p.gametes[gi.first].mutations;
-                    auto s = p.gametes[gi.first].smutations;
+                    auto n = p.haploid_genomes[gi.first].mutations;
+                    auto s = p.haploid_genomes[gi.first].smutations;
                     for (auto mindex : mindexes)
                         {
                             auto pos = p.mutations[mindex].pos;
@@ -133,20 +133,20 @@ namespace fwdpp
                                 typename poptype::mcount_t::value_type(
                                     gi.second.size());
                         }
-                    // get new gamete
-                    auto new_gamete_key
-                        = recycle_gamete(p.gametes, gam_recycling_bin, n, s);
-                    // update gamete count
-                    p.gametes[gi.first].n
-                        -= decltype(p.gametes[gi.first].n)(gi.second.size());
-                    p.gametes[new_gamete_key].n += decltype(
-                        p.gametes[new_gamete_key].n)(gi.second.size());
+                    // get new haploid_genome
+                    auto new_haploid_genome_key
+                        = recycle_haploid_genome(p.haploid_genomes, gam_recycling_bin, n, s);
+                    // update haploid_genome count
+                    p.haploid_genomes[gi.first].n
+                        -= decltype(p.haploid_genomes[gi.first].n)(gi.second.size());
+                    p.haploid_genomes[new_haploid_genome_key].n += decltype(
+                        p.haploid_genomes[new_haploid_genome_key].n)(gi.second.size());
 
                     // This updates every diploid to have a key to
-                    // p.gametes[new_gamete_key]
+                    // p.haploid_genomes[new_haploid_genome_key]
                     for (auto i : gi.second)
                         {
-                            *i = new_gamete_key;
+                            *i = new_haploid_genome_key;
                         }
                 }
         }
@@ -157,14 +157,14 @@ namespace fwdpp
         std::unordered_map<
             std::size_t,
             std::vector<typename poptype::diploid_t::first_type *>>
-        collect_gametes(poptype &p, const std::vector<std::size_t> &indlist,
+        collect_haploid_genomes(poptype &p, const std::vector<std::size_t> &indlist,
                         const std::vector<short> &clist)
         /*!
           \brief Helper function for add_mutation and add_mutations.
 
-          Collects together all the gametes that will be updated, to minimize
+          Collects together all the haploid_genomes that will be updated, to minimize
           the number of
-          new gametes created.
+          new haploid_genomes created.
         */
         {
             std::unordered_map<
@@ -198,7 +198,7 @@ namespace fwdpp
       \param p A single locus population object.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
-      \param clist A list of gametes.  See below.
+      \param clist A list of haploid_genomes.  See below.
       \param args Values required to cosnstruct a new mutation.  See below.
 
       \return The key referring to the location of the new mutation in the
@@ -210,7 +210,7 @@ namespace fwdpp
 
       Values in \a clist must be 0, 1, or 2. These values mean to add the
       mutation to the first,
-      second, or both gametes, resepectively, of each diploid in \a indlist.
+      second, or both haploid_genomes, resepectively, of each diploid in \a indlist.
 
       Note that \a args can take on a few different forms.  First, it can be a
       raw set of values
@@ -251,7 +251,7 @@ namespace fwdpp
         typename poptype::mcont_t::value_type new_mutant(
             std::forward<Args>(args)...);
         auto mindex = sugar::get_mut_index(p.mutations, p.mcounts, new_mutant);
-        auto gams = sugar::collect_gametes(p, indlist, clist);
+        auto gams = sugar::collect_haploid_genomes(p, indlist, clist);
         sugar::add_mutation_details(p, { mindex }, gams);
         return mindex;
     }
@@ -267,7 +267,7 @@ namespace fwdpp
 	  \param p A diploid population object.
       \param indlist A list of indexes of diploids into which to add the new
       mutations.
-      \param clist A list of gametes. See below.
+      \param clist A list of haploid_genomes. See below.
       \param mutation_indexes The set of mutations to add.  See below.
 
       \return Nothing (void)
@@ -278,7 +278,7 @@ namespace fwdpp
 
       Values in \a clist must be 0, 1, or 2. These values mean to add the
       mutation to the first,
-      second, or both gametes, resepectively, of each diploid in \a indlist.
+      second, or both haploid_genomes, resepectively, of each diploid in \a indlist.
 
       \note \a mutation_indexes refers to the locations of mutations found in
       \a p.mutations.
@@ -323,7 +323,7 @@ namespace fwdpp
         if (p.mcounts.size() != p.mutations.size())
             throw std::invalid_argument(
                 "p.mcounts.size() != p.mutations.size()");
-        auto gams = sugar::collect_gametes(p, indlist, clist);
+        auto gams = sugar::collect_haploid_genomes(p, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }
 

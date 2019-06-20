@@ -36,11 +36,12 @@ namespace fwdpp
     {
         template <typename gcont_t>
         void
-        validate_sum_gamete_counts(const gcont_t &gametes,
-                                   const uint_t expected_sum)
-        /// Throw exception if sum of all gamete counts != \a expected_sum
+        validate_sum_haploid_genome_counts(const gcont_t &haploid_genomes,
+                                           const uint_t expected_sum)
+        /// Throw exception if sum of all haploid_genome counts != \a expected_sum
         {
-            detail::validate_sum_gamete_counts(gametes, expected_sum);
+            detail::validate_sum_haploid_genome_counts(haploid_genomes,
+                                                       expected_sum);
         }
 
         template <typename mcont_t, typename iterator>
@@ -53,34 +54,36 @@ namespace fwdpp
             detail::validate_mutation_key_ranges(mutations, beg, end);
         }
 
-        template <typename gamete_t>
+        template <typename haploid_genome_t>
         void
-        gamete_is_extant(const gamete_t &gamete)
-        /// Throw exception of gamete.n == 0
+        haploid_genome_is_extant(const haploid_genome_t &haploid_genome)
+        /// Throw exception of haploid_genome.n == 0
         {
-            detail::gamete_is_extant(gamete);
+            detail::haploid_genome_is_extant(haploid_genome);
         }
 
-        template <typename gamete_t, typename mcont_t>
+        template <typename haploid_genome_t, typename mcont_t>
         void
-        gamete_is_sorted(const gamete_t &g, const mcont_t &mutations)
+        haploid_genome_is_sorted(const haploid_genome_t &g,
+                                 const mcont_t &mutations)
         /*!
           \brief Check that neutral mutation keys are sorted according to mutation
           position
         */
         {
-            detail::gamete_is_sorted(g, mutations);
+            detail::haploid_genome_is_sorted(g, mutations);
         }
 
-        template <typename gamete_t, typename mcont_t>
+        template <typename haploid_genome_t, typename mcont_t>
         void
-        gamete_data_valid(const gamete_t &g, const mcont_t &mutations,
-                          const std::vector<uint_t> &mutcounts)
-        /// Throw exception if gamete data are unsorted or if mutation
+        haploid_genome_data_valid(const haploid_genome_t &g,
+                                  const mcont_t &mutations,
+                                  const std::vector<uint_t> &mutcounts)
+        /// Throw exception if haploid_genome data are unsorted or if mutation
         /// key storage is invalid.
-        /// \note Only call this if the gamete is extant!!!!
+        /// \note Only call this if the haploid_genome is extant!!!!
         {
-            detail::gamete_data_valid(g, mutations, mutcounts);
+            detail::haploid_genome_data_valid(g, mutations, mutcounts);
         }
 
         template <typename poptype>
@@ -103,12 +106,13 @@ namespace fwdpp
         }
 
         template <typename poptype>
-        /// Throw exception if gametes contain keys to extinct gametes
+        /// Throw exception if haploid_genomes contain keys to extinct haploid_genomes
         /// \version 0.7.4 Added to fwdpp
         void
-        all_gametes_extant(const poptype &pop)
+        all_haploid_genomes_extant(const poptype &pop)
         {
-            detail::all_gametes_extant(pop, typename poptype::popmodel_t());
+            detail::all_haploid_genomes_extant(pop,
+                                               typename poptype::popmodel_t());
         }
     } // namespace debug
 } // namespace fwdpp

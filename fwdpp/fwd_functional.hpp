@@ -31,7 +31,7 @@ namespace fwdpp
         }
     };
 
-    /* \brief Policy telling library not to remove any mutations from gametes
+    /* \brief Policy telling library not to remove any mutations from haploid_genomes
        after sampling
        \note This is an empty struct that functions as a dispatch tag for
        library internals
@@ -40,7 +40,7 @@ namespace fwdpp
     {
     };
 
-    /*! \brief Policy telling library to remove neutral mutations from gametes
+    /*! \brief Policy telling library to remove neutral mutations from haploid_genomes
      * after sampling
      */
     struct remove_neutral

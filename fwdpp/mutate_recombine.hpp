@@ -22,38 +22,40 @@
 namespace fwdpp
 {
     template <typename recombination_policy, typename diploid_t,
-              typename gamete_t, typename mcont_t>
+              typename haploid_genome_t, typename mcont_t>
     inline typename std::result_of<recombination_policy()>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  diploid_t &&, gamete_t &&, gamete_t &&,
-                                  mcont_t &&)
+                                  diploid_t &&, haploid_genome_t &&,
+                                  haploid_genome_t &&, mcont_t &&)
     {
         return rec_pol();
     }
 
     template <typename recombination_policy, typename diploid_t,
-              typename gamete_t, typename mcont_t>
-    inline
-        typename std::result_of<recombination_policy(gamete_t &&, gamete_t &&,
-                                                     mcont_t &&)>::type
-        dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                      diploid_t &&, gamete_t &&g1,
-                                      gamete_t &&g2, mcont_t &&mutations)
+              typename haploid_genome_t, typename mcont_t>
+    inline typename std::result_of<recombination_policy(
+        haploid_genome_t &&, haploid_genome_t &&, mcont_t &&)>::type
+    dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                  diploid_t &&, haploid_genome_t &&g1,
+                                  haploid_genome_t &&g2, mcont_t &&mutations)
     {
-        return rec_pol(std::forward<gamete_t>(g1), std::forward<gamete_t>(g2),
+        return rec_pol(std::forward<haploid_genome_t>(g1),
+                       std::forward<haploid_genome_t>(g2),
                        std::forward<mcont_t>(mutations));
     }
 
     template <typename recombination_policy, typename diploid_t,
-              typename gamete_t, typename mcont_t>
-    inline typename std::result_of<recombination_policy(
-        diploid_t &&, gamete_t &&, gamete_t &&, mcont_t &&)>::type
+              typename haploid_genome_t, typename mcont_t>
+    inline typename std::result_of<
+        recombination_policy(diploid_t &&, haploid_genome_t &&,
+                             haploid_genome_t &&, mcont_t &&)>::type
     dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  diploid_t &&diploid, gamete_t &&g1,
-                                  gamete_t &&g2, mcont_t &&mutations)
+                                  diploid_t &&diploid, haploid_genome_t &&g1,
+                                  haploid_genome_t &&g2, mcont_t &&mutations)
     {
         return rec_pol(std::forward<diploid_t>(diploid),
-                       std::forward<gamete_t>(g1), std::forward<gamete_t>(g2),
+                       std::forward<haploid_genome_t>(g1),
+                       std::forward<haploid_genome_t>(g2),
                        std::forward<mcont_t>(mutations));
     }
 
@@ -61,15 +63,15 @@ namespace fwdpp
               typename gcont_t, typename mcont_t>
     std::vector<double>
     generate_breakpoints(const diploid_t &diploid, const std::size_t g1,
-                         const std::size_t g2, const gcont_t &gametes,
+                         const std::size_t g2, const gcont_t &haploid_genomes,
                          const mcont_t &mutations,
                          const recombination_policy &rec_pol)
     /// Generate vector of recombination breakpoints
     ///
     /// \param diploid A single-locus diploid.
-    /// \param g1 Index of gamete 1
-    /// \param g2 Index of gamete 2
-    /// \param gametes Vector of gametes
+    /// \param g1 Index of haploid_genome 1
+    /// \param g2 Index of haploid_genome 2
+    /// \param haploid_genomes Vector of haploid_genomes
     /// \param mutations Vector of mutations
     /// \param rec_pol Function to generate breakpoints
     ///
@@ -81,17 +83,18 @@ namespace fwdpp
     {
         //TODO: decide if we wish to re-enable the code below.
         //auto nm1
-        //    = gametes[g1].mutations.size() + gametes[g1].smutations.size();
+        //    = haploid_genomes[g1].mutations.size() + haploid_genomes[g1].smutations.size();
         //auto nm2
-        //    = gametes[g2].mutations.size() + gametes[g2].smutations.size();
+        //    = haploid_genomes[g2].mutations.size() + haploid_genomes[g2].smutations.size();
         //if ((std::min(nm1, nm2) == 0 && std::max(nm1, nm2) == 1)
-        //    || gametes[g1] == gametes[g2])
+        //    || haploid_genomes[g1] == haploid_genomes[g2])
         //    {
         //        return {};
         //    }
         return dispatch_recombination_policy(
-            std::cref(rec_pol), std::cref(diploid), std::cref(gametes[g1]),
-            std::cref(gametes[g2]), std::cref(mutations));
+            std::cref(rec_pol), std::cref(diploid),
+            std::cref(haploid_genomes[g1]), std::cref(haploid_genomes[g2]),
+            std::cref(mutations));
     }
 
     template <typename mutation_model, typename diploid_t, typename gcont_t,
@@ -99,7 +102,7 @@ namespace fwdpp
     std::vector<uint_t>
     generate_new_mutations(flagged_mutation_queue &recycling_bin,
                            const gsl_rng *r, const double &mu,
-                           const diploid_t &dip, gcont_t &gametes,
+                           const diploid_t &dip, gcont_t &haploid_genomes,
                            mcont_t &mutations, const std::size_t g,
                            const mutation_model &mmodel)
     ///
@@ -110,9 +113,9 @@ namespace fwdpp
     /// \param r A random number generator
     /// \param mu The total mutation rate
     /// \param dip A single-locus diploid
-    /// \param gametes Vector of gametes
+    /// \param haploid_genomes Vector of haploid_genomes
     /// \param mutations Vector of mutations
-    /// \param g index of gamete to mutate
+    /// \param g index of haploid_genome to mutate
     /// \param mmodel The mutation policy
     ///
     /// \return Vector of mutation keys, sorted according to position
@@ -124,7 +127,8 @@ namespace fwdpp
         for (unsigned i = 0; i < nm; ++i)
             {
                 rv.emplace_back(fwdpp_internal::mmodel_dispatcher(
-                    mmodel, dip, gametes[g], mutations, recycling_bin));
+                    mmodel, dip, haploid_genomes[g], mutations,
+                    recycling_bin));
             }
         std::sort(rv.begin(), rv.end(),
                   [&mutations](const uint_t a, const uint_t b) {
@@ -156,16 +160,16 @@ namespace fwdpp
         template <typename gcont_t, typename container>
         void
         prep_temporary_containers(const std::size_t g1, const std::size_t g2,
-                                  const gcont_t &gametes, container &neutral,
-                                  container &selected)
+                                  const gcont_t &haploid_genomes,
+                                  container &neutral, container &selected)
         // Clear temporary containers and reserve memory
         {
             neutral.clear();
             selected.clear();
-            neutral.reserve(std::max(gametes[g1].mutations.size(),
-                                     gametes[g2].mutations.size()));
-            selected.reserve(std::max(gametes[g1].smutations.size(),
-                                      gametes[g2].smutations.size()));
+            neutral.reserve(std::max(haploid_genomes[g1].mutations.size(),
+                                     haploid_genomes[g2].mutations.size()));
+            selected.reserve(std::max(haploid_genomes[g1].smutations.size(),
+                                      haploid_genomes[g2].smutations.size()));
         }
     } // namespace fwdpp_internal
 
@@ -175,26 +179,26 @@ namespace fwdpp
     mutate_recombine(
         const new_mutations_type &new_mutations,
         const breakpoints_type &breakpoints, const std::size_t g1,
-        const std::size_t g2, gcont_t &gametes, mcont_t &mutations,
-        queue_type &gamete_recycling_bin,
+        const std::size_t g2, gcont_t &haploid_genomes, mcont_t &mutations,
+        queue_type &haploid_genome_recycling_bin,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///
     /// Update apply new mutations and recombination events to
-    /// an offspring's gamete.
+    /// an offspring's haploid_genome.
     ///
     /// \param new_mutations A range referring to new mutation keys.  Must be traversable via non-member begin/end
     /// functions using argument-dependent lookup (ADL).
     /// \param breakpoints A range of recombination breakpoints traversable via non-member begin/end functions.
-    /// \param g1 Parental gamete 1
-    /// \param g2 Parental gamete 2
-    /// \param gametes The vector of gametes in the population
+    /// \param g1 Parental haploid_genome 1
+    /// \param g2 Parental haploid_genome 2
+    /// \param haploid_genomes The vector of haploid_genomes in the population
     /// \param mutations The vector of mutations in the population
-    /// \param gamete_recycling_bin FIFO queue for gamete recycling
+    /// \param haploid_genome_recycling_bin FIFO queue for haploid_genome recycling
     /// \param neutral Temporary container for updating neutral mutations
     /// \param selected Temporary container for updatng selected positions
     ///
-    /// \return The index of the new offspring gamete in \a gametes.
+    /// \return The index of the new offspring haploid_genome in \a haploid_genomes.
     ///
     /// TODO: unit test this note.  I simply cannot believe it! :)
     /// \note For efficiency, it is helpful if \a new_mutations is sorted
@@ -217,12 +221,12 @@ namespace fwdpp
         else if (begin(breakpoints)
                  == end(breakpoints)) // only mutations to deal with
             {
-                fwdpp_internal::prep_temporary_containers(g1, g2, gametes,
-                                                          neutral, selected);
-                auto nb = gametes[g1].mutations.begin(),
-                     sb = gametes[g1].smutations.begin();
-                const auto ne = gametes[g1].mutations.end(),
-                           se = gametes[g1].smutations.end();
+                fwdpp_internal::prep_temporary_containers(
+                    g1, g2, haploid_genomes, neutral, selected);
+                auto nb = haploid_genomes[g1].mutations.begin(),
+                     sb = haploid_genomes[g1].smutations.begin();
+                const auto ne = haploid_genomes[g1].mutations.end(),
+                           se = haploid_genomes[g1].smutations.end();
                 for (auto m = begin(new_mutations); m < end(new_mutations);
                      ++m)
                     {
@@ -254,20 +258,21 @@ namespace fwdpp
                             }
                     }
                 if (neutral.size()
-                    != gametes[g1].mutations.size() + new_neutral)
+                    != haploid_genomes[g1].mutations.size() + new_neutral)
                     {
                         throw std::runtime_error("FWDPP DEBUG: failure to add "
                                                  "all new neutral mutations");
                     }
                 if (selected.size()
-                    != gametes[g1].smutations.size() + new_selected)
+                    != haploid_genomes[g1].smutations.size() + new_selected)
                     {
                         throw std::runtime_error("FWDPP DEBUG: failure to add "
                                                  "all new selected mutations");
                     }
 #endif
-                return recycle_gamete(gametes, gamete_recycling_bin, neutral,
-                                      selected);
+                return recycle_haploid_genome(haploid_genomes,
+                                              haploid_genome_recycling_bin,
+                                              neutral, selected);
             }
         if (breakpoints.size() == 1)
             {
@@ -276,17 +281,17 @@ namespace fwdpp
             }
         // If we get here, there are mutations and
         // recombinations to handle
-        fwdpp_internal::prep_temporary_containers(g1, g2, gametes, neutral,
-                                                  selected);
+        fwdpp_internal::prep_temporary_containers(g1, g2, haploid_genomes,
+                                                  neutral, selected);
 
-        auto itr = gametes[g1].mutations.cbegin();
-        auto jtr = gametes[g2].mutations.cbegin();
-        auto itr_s = gametes[g1].smutations.cbegin();
-        auto jtr_s = gametes[g2].smutations.cbegin();
-        auto itr_e = gametes[g1].mutations.cend();
-        auto itr_s_e = gametes[g1].smutations.cend();
-        auto jtr_e = gametes[g2].mutations.cend();
-        auto jtr_s_e = gametes[g2].smutations.cend();
+        auto itr = haploid_genomes[g1].mutations.cbegin();
+        auto jtr = haploid_genomes[g2].mutations.cbegin();
+        auto itr_s = haploid_genomes[g1].smutations.cbegin();
+        auto jtr_s = haploid_genomes[g2].smutations.cbegin();
+        auto itr_e = haploid_genomes[g1].mutations.cend();
+        auto itr_s_e = haploid_genomes[g1].smutations.cend();
+        auto jtr_e = haploid_genomes[g2].mutations.cend();
+        auto jtr_s_e = haploid_genomes[g2].smutations.cend();
 
         auto next_mutation = begin(new_mutations);
         for (auto i = begin(breakpoints); i != end(breakpoints);)
@@ -337,60 +342,60 @@ namespace fwdpp
                                          "mutation/recombination");
             }
 #endif
-        return recycle_gamete(gametes, gamete_recycling_bin, neutral,
-                              selected);
+        return recycle_haploid_genome(
+            haploid_genomes, haploid_genome_recycling_bin, neutral, selected);
     }
 
     template <typename diploid_t, typename gcont_t, typename mcont_t,
               typename recmodel, typename mutmodel>
     std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
     mutate_recombine_update(
-        const gsl_rng *r, gcont_t &gametes, mcont_t &mutations,
+        const gsl_rng *r, gcont_t &haploid_genomes, mcont_t &mutations,
         std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
-            parental_gametes,
+            parental_haploid_genomes,
         const recmodel &rec_pol, const mutmodel &mmodel, const double mu,
-        flagged_gamete_queue &gamete_recycling_bin,
+        flagged_haploid_genome_queue &haploid_genome_recycling_bin,
         flagged_mutation_queue &mutation_recycling_bin, diploid_t &dip,
         typename gcont_t::value_type::mutation_container &neutral,
         typename gcont_t::value_type::mutation_container &selected)
     ///
-    /// "Convenience" function for generating offspring gametes.
+    /// "Convenience" function for generating offspring haploid_genomes.
     ///
     /// This function calls fwdpp::generate_breakpoints,
     /// fwdpp::generate_new_mutations, and fwdpp::mutate_recombine,
-    /// resulting in two offspring gametes.
+    /// resulting in two offspring haploid_genomes.
     ///
     /// \param r A gsl_rng *
-    /// \param gametes Vector of gametes in population
+    /// \param haploid_genomes Vector of haploid_genomes in population
     /// \param mutations Vector of mutations in population
-    /// \param parental_gametes Tuple of gamete keys for each parent
+    /// \param parental_haploid_genomes Tuple of haploid_genome keys for each parent
     /// \param rec_pol Policy to generate recombination breakpoints
     /// \param mmodel Policy to generate new mutations
-    /// \param mu Total mutation rate (per gamete).
-    /// \param gamete_recycling_bin FIFO queue for gamete recycling
+    /// \param mu Total mutation rate (per haploid_genome).
+    /// \param haploid_genome_recycling_bin FIFO queue for haploid_genome recycling
     /// \param mutation_recycling_bin FIFO queue for mutation recycling
     /// \param dip The offspring
     /// \param neutral Temporary container for updating neutral mutations
     /// \param selected Temporary container for updating selected mutations
     ///
     /// \return Number of recombination breakpoints and mutations for each
-    /// gamete.
+    /// haploid_genome.
     ///
     /// \note
-    /// \a parental_gametes should contain parent one/gamete one,
-    /// parent one/gamete two, parent two/gamete one,
-    /// and parent two/gamete two, in that order.
+    /// \a parental_haploid_genomes should contain parent one/haploid_genome one,
+    /// parent one/haploid_genome two, parent two/haploid_genome one,
+    /// and parent two/haploid_genome two, in that order.
     ///
     /// \version
     /// Added in fwdpp 0.5.7.
     {
-        auto p1g1 = std::get<0>(parental_gametes);
-        auto p1g2 = std::get<1>(parental_gametes);
-        auto p2g1 = std::get<2>(parental_gametes);
-        auto p2g2 = std::get<3>(parental_gametes);
+        auto p1g1 = std::get<0>(parental_haploid_genomes);
+        auto p1g2 = std::get<1>(parental_haploid_genomes);
+        auto p2g1 = std::get<2>(parental_haploid_genomes);
+        auto p2g2 = std::get<3>(parental_haploid_genomes);
         // Now, we generate the crossover breakpoints for
         // both parents,as well as the new mutations that we'll place
-        // onto each gamete.  The specific order of operations below
+        // onto each haploid_genome.  The specific order of operations below
         // is done to ensure the exact same output as fwdpp 0.5.6 and
         // earlier.
         // The breakpoints are of type std::vector<double>, and
@@ -398,39 +403,40 @@ namespace fwdpp
         // the integers representing the locations of the new mutations
         // in "mutations".
 
-        auto breakpoints = generate_breakpoints(dip, p1g1, p1g2, gametes,
-                                                mutations, rec_pol);
-        auto breakpoints2 = generate_breakpoints(dip, p2g1, p2g2, gametes,
-                                                 mutations, rec_pol);
+        auto breakpoints = generate_breakpoints(
+            dip, p1g1, p1g2, haploid_genomes, mutations, rec_pol);
+        auto breakpoints2 = generate_breakpoints(
+            dip, p2g1, p2g2, haploid_genomes, mutations, rec_pol);
         auto new_mutations
             = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
-                                     gametes, mutations, p1g1, mmodel);
+                                     haploid_genomes, mutations, p1g1, mmodel);
         auto new_mutations2
             = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
-                                     gametes, mutations, p2g1, mmodel);
+                                     haploid_genomes, mutations, p2g1, mmodel);
 
         // Pass the breakpoints and new mutation keys on to
         // fwdpp::mutate_recombine (defined in
         // fwdpp/mutate_recombine.hpp),
-        // which splices together the offspring gamete and returns its
-        // location in gametes.  The location of the offspring gamete
+        // which splices together the offspring haploid_genome and returns its
+        // location in haploid_genomes.  The location of the offspring haploid_genome
         // is
-        // either reycled from an extinct gamete or it is the location
+        // either reycled from an extinct haploid_genome or it is the location
         // of a
-        // new gamete emplace_back'd onto the end.
-        dip.first = mutate_recombine(new_mutations, breakpoints, p1g1, p1g2,
-                                     gametes, mutations, gamete_recycling_bin,
-                                     neutral, selected);
-        debug::gamete_is_sorted(gametes[dip.first], mutations);
-        dip.second = mutate_recombine(new_mutations2, breakpoints2, p2g1, p2g2,
-                                      gametes, mutations, gamete_recycling_bin,
-                                      neutral, selected);
-        debug::gamete_is_sorted(gametes[dip.second], mutations);
-        gametes[dip.first].n++;
-        gametes[dip.second].n++;
+        // new haploid_genome emplace_back'd onto the end.
+        dip.first = mutate_recombine(
+            new_mutations, breakpoints, p1g1, p1g2, haploid_genomes, mutations,
+            haploid_genome_recycling_bin, neutral, selected);
+        debug::haploid_genome_is_sorted(haploid_genomes[dip.first], mutations);
+        dip.second = mutate_recombine(
+            new_mutations2, breakpoints2, p2g1, p2g2, haploid_genomes,
+            mutations, haploid_genome_recycling_bin, neutral, selected);
+        debug::haploid_genome_is_sorted(haploid_genomes[dip.second],
+                                        mutations);
+        haploid_genomes[dip.first].n++;
+        haploid_genomes[dip.second].n++;
 
-        debug::gamete_is_extant(gametes[dip.first]);
-        debug::gamete_is_extant(gametes[dip.second]);
+        debug::haploid_genome_is_extant(haploid_genomes[dip.first]);
+        debug::haploid_genome_is_extant(haploid_genomes[dip.second]);
 
         auto nrec = (!breakpoints.empty()) ? breakpoints.size() - 1 : 0;
         auto nrec2 = (!breakpoints2.empty()) ? breakpoints2.size() - 1 : 0;

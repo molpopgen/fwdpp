@@ -12,16 +12,16 @@ namespace fwdpp
         template <typename gcont_t, typename mcont_t,
                   typename mutation_count_container>
         void
-        remove_fixations_from_gametes(
-            gcont_t &gametes, const mcont_t &mutations,
+        remove_fixations_from_haploid_genomes(
+            gcont_t &haploid_genomes, const mcont_t &mutations,
             const mutation_count_container &mcounts,
             const mutation_count_container &mcounts_from_preserved_nodes,
             const fwdpp::uint_t twoN, const bool preserve_selected_fixations)
-        /*! \brief Removed fixed variants from gametes
+        /*! \brief Removed fixed variants from haploid_genomes
          *
          * This function should be called immediately after simplification and mutation counting.
          *
-         * \param gametes A gamete container
+         * \param haploid_genomes A haploid_genome container
          * \param mutations A mutation container
          * \param mcounts A container stating how many times each element in \a mutations is present in the
          * currently-alive population
@@ -29,7 +29,7 @@ namespace fwdpp
          * \param twoN Twice the current population size
          * \param preserve_selected_fixations If true, do not mark selected fixations for recycling.
          *
-         * A mutation is removed from a gamete if one of the following conditions holds:
+         * A mutation is removed from a haploid_genome if one of the following conditions holds:
          * 1. The sum of \a mcounts and \a mcounts_from_preserved_nodes is zero.
          * 2. \a mcounts == \a twoN, mcounts_from_preserved_nodes is zero, 
          * and \a preserve_selected_fixations is false or the mutation is neutral.
@@ -70,7 +70,7 @@ namespace fwdpp
                                      && (!preserve_selected_fixations
                                          || mutations[key].neutral);
                           };
-                    for (auto &g : gametes)
+                    for (auto &g : haploid_genomes)
                         {
                             if (g.n)
                                 {

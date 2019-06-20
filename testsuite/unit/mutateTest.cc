@@ -1,7 +1,7 @@
 /*!
   \file mutateTest.cc
   \ingroup unit
-  \brief Tests fwdpp::mutation, fwdpp::gamete
+  \brief Tests fwdpp::mutation, fwdpp::haploid_genome
 */
 
 #include <config.h>
@@ -10,7 +10,7 @@
 
 // trivial ways to play with the fwdpp::mutation type
 using mut = fwdpp::mutation;
-using gtype = fwdpp::gamete;
+using gtype = fwdpp::haploid_genome;
 
 BOOST_AUTO_TEST_CASE(make_mutation_1)
 {
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(assign_1)
 //     This is the important test:
 
 //     The library assumes that the iterators to mutations
-//     stored by gametes are sorted w.r.to position.
+//     stored by haploid_genomes are sorted w.r.to position.
 
 //     The mutation functions take care of that.
 //    */

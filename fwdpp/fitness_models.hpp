@@ -17,14 +17,14 @@
   KRT June 9 2016:
   1. Added range-based operator() to additive/multiplicative models.
   1a. I have not (yet) made these new operator() called by the old ones taking
-  gametes as args.
+  haploid_genomes as args.
   2. Updated documentation for site_dependent_genetic_value
   3. Changed typedef for result_type in additive/multiplicative models to refer
   to value from site_dependent_genetic_value
 
   KRT June 8 2016:
   1. Added range-based operator() to site_dependent_genetic_value.
-  2. Changed site_dependent_genetic_value::operator() that took gametes as
+  2. Changed site_dependent_genetic_value::operator() that took haploid_genomes as
   arguments
   to call the new range-based function.
   3. Fixed site_dependent_genetic_value::operator() for custom diploids.
@@ -69,10 +69,10 @@ namespace fwdpp
 {
     /*! \brief Returns a fitness of 1
       \return A fitness of 1
-      \param g1 A gamete
-      \param g2 A gamete
+      \param g1 A haploid_genome
+      \param g2 A haploid_genome
 
-      \note g1 and g2 must be part of the gamete_base hierarchy
+      \note g1 and g2 must be part of the haploid_genome_base hierarchy
       \ingroup fitness
     */
     struct no_selection
@@ -81,13 +81,15 @@ namespace fwdpp
           \brief Method for standard diploid simulations of a single locus.
         */
         using result_type = double;
-        template <typename gamete_type, typename mcont_t>
+        template <typename haploid_genome_type, typename mcont_t>
         inline result_type
-        operator()(const gamete_type &, const gamete_type &,
+        operator()(const haploid_genome_type &, const haploid_genome_type &,
                    const mcont_t &) const noexcept
         {
-            static_assert(traits::is_gamete<gamete_type>::value,
-                          "gamete_type::value_type must be a gamete type");
+            static_assert(
+                traits::is_haploid_genome<haploid_genome_type>::value,
+                "haploid_genome_type::value_type must be a haploid_genome "
+                "type");
             static_assert(
                 traits::is_mutation<typename mcont_t::value_type>::value,
                 "mcont_t::value_type must be a mutation type");
@@ -133,14 +135,14 @@ namespace fwdpp
           Range-based call operator.  Calculates genetic values over ranges of
           mutation keys first1/last1
           and first2/last2, which are iterators derived from the 'smutations'
-          of two gametes in a diploid.
+          of two haploid_genomes in a diploid.
 
-          \param first1 Iterator to first mutation derived from gamete 1
+          \param first1 Iterator to first mutation derived from haploid_genome 1
           \param last1 Iterator to one past the last mutation derived from
-          gamete 1
-          \param first2 Iterator to first mutation derived from gamete 2
+          haploid_genome 1
+          \param first2 Iterator to first mutation derived from haploid_genome 2
           \param last2 Iterator to one past the last mutation derived from
-          gamete 2
+          haploid_genome 2
           \param mutations The container of mutations for the simulation
           \param fpol_hom Policy that updates genetic value for a homozygous
           mutation.
@@ -216,20 +218,20 @@ namespace fwdpp
             return w;
         }
 
-        template <typename gamete_type, typename mcont_t,
+        template <typename haploid_genome_type, typename mcont_t,
                   typename updating_policy_hom, typename updating_policy_het>
         inline result_type
-        operator()(const gamete_type &g1, const gamete_type &g2,
-                   const mcont_t &mutations,
+        operator()(const haploid_genome_type &g1,
+                   const haploid_genome_type &g2, const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
                    const double starting_value = 1.) const noexcept
         /*!
           Calculates genetic value for a diploid whose genotype
-          across sites is given by gametes g1 and  g2.
+          across sites is given by haploid_genomes g1 and  g2.
 
-          \param g1 A gamete
-          \param g2 A gamete
+          \param g1 A haploid_genome
+          \param g2 A haploid_genome
           \param mutations The container of mutations for the simulation
           \param fpol_hom Policy that updates genetic value for a homozygous
           mutation.
@@ -240,8 +242,10 @@ namespace fwdpp
           \returns Fitness (double)
         */
         {
-            static_assert(traits::is_gamete<gamete_type>::value,
-                          "gamete_type::value_type must be a gamete type");
+            static_assert(
+                traits::is_haploid_genome<haploid_genome_type>::value,
+                "haploid_genome_type::value_type must be a haploid_genome "
+                "type");
             return this->operator()(
                 g1.smutations.cbegin(), g1.smutations.cend(),
                 g2.smutations.cbegin(), g2.smutations.cend(), mutations,
@@ -251,7 +255,7 @@ namespace fwdpp
         template <typename diploid, typename gcont_t, typename mcont_t,
                   typename updating_policy_hom, typename updating_policy_het>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &gametes,
+        operator()(const diploid &dip, const gcont_t &haploid_genomes,
                    const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
@@ -260,7 +264,7 @@ namespace fwdpp
           Calculates genetic value for a diploid type.
 
           \param dip A diploid
-          \param gametes The container of gametes for the simulation.
+          \param haploid_genomes The container of haploid_genomes for the simulation.
           \param mutations The container of mutations for the simulation
           \param fpol_hom Policy that updates genetic value for a homozygous
           mutation.
@@ -271,9 +275,9 @@ namespace fwdpp
           \returns Fitness (double)
         */
         {
-            return this->operator()(gametes[dip.first], gametes[dip.second],
-                                    mutations, fpol_hom, fpol_het,
-                                    starting_value);
+            return this->operator()(haploid_genomes[dip.first],
+                                    haploid_genomes[dip.second], mutations,
+                                    fpol_hom, fpol_het, starting_value);
         }
     };
 
@@ -290,18 +294,19 @@ namespace fwdpp
     struct haplotype_dependent_trait_value
     {
         using result_type = double;
-        template <typename gamete_type, typename mcont_t,
+        template <typename haploid_genome_type, typename mcont_t,
                   typename haplotype_policy, typename diploid_policy>
         inline result_type
-        operator()(const gamete_type &g1, const gamete_type &g2,
-                   const mcont_t &mutations, const haplotype_policy &hpol,
+        operator()(const haploid_genome_type &g1,
+                   const haploid_genome_type &g2, const mcont_t &mutations,
+                   const haplotype_policy &hpol,
                    const diploid_policy &dpol) const noexcept
         ///
-        ///\param g1 A gamete
-        ///\param g2 A gamete
+        ///\param g1 A haploid_genome
+        ///\param g2 A haploid_genome
         ///\param mutations Container of mutations
         ///\param hpol A policy whose first argument is an iterator to
-        /// a gamete.
+        /// a haploid_genome.
         /// Remaining arguments may be bound via std::bind or the
         /// equivalent.  The
         /// policy returns a double representing the effect of this
@@ -317,8 +322,9 @@ namespace fwdpp
         ///\return dpol( hpol(g1,mutations), hpol(g2,mutations) )
         ///
         {
-            static_assert(typename traits::is_gamete<gamete_type>::type(),
-                          "gamete_type must be a gamete type");
+            static_assert(typename traits::is_haploid_genome<
+                              haploid_genome_type>::type(),
+                          "haploid_genome_type must be a haploid_genome type");
             static_assert(
                 traits::is_mutation<typename mcont_t::value_type>::value,
                 "mcont_t::value_type must be a mutation type");
@@ -327,14 +333,14 @@ namespace fwdpp
         template <typename diploid_t, typename gcont_t, typename mcont_t,
                   typename haplotype_policy, typename diploid_policy>
         inline result_type
-        operator()(const diploid_t &diploid, const gcont_t &gametes,
+        operator()(const diploid_t &diploid, const gcont_t &haploid_genomes,
                    const mcont_t &mutations, const haplotype_policy &hpol,
                    const diploid_policy &dpol) const noexcept
         ///\param diploid a diploid
-        ///\param gametes Container of gametes
+        ///\param haploid_genomes Container of haploid_genomes
         ///\param mutations Container of mutations
         ///\param hpol A policy whose first argument is an iterator to a
-        /// gamete.
+        /// haploid_genome.
         /// Remaining arguments may be bound via std::bind or the
         /// equivalent.  The
         /// policy returns a double representing the effect of this
@@ -351,9 +357,9 @@ namespace fwdpp
         {
             static_assert(traits::is_diploid<diploid_t>::value,
                           "diploid_t must represent a diploid");
-            return this->operator()(gametes[diploid.first],
-                                    gametes[diploid.second], mutations, hpol,
-                                    dpol);
+            return this->operator()(haploid_genomes[diploid.first],
+                                    haploid_genomes[diploid.second], mutations,
+                                    hpol, dpol);
         }
     };
 
@@ -484,12 +490,13 @@ namespace fwdpp
                 1.));
         }
 
-        template <typename gamete_type, typename mcont_t>
+        template <typename haploid_genome_type, typename mcont_t>
         inline double
-        operator()(const gamete_type &g1, const gamete_type &g2,
+        operator()(const haploid_genome_type &g1,
+                   const haploid_genome_type &g2,
                    const mcont_t &mutations) const noexcept
-        ///  \param g1 A gamete
-        ///  \param g2 A gamete
+        ///  \param g1 A haploid_genome
+        ///  \param g2 A haploid_genome
         ///  \param mutations Container of mutations
         ///  \return Multiplicative genetic value across sites.
         {
@@ -507,13 +514,13 @@ namespace fwdpp
 
         template <typename diploid, typename gcont_t, typename mcont_t>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &gametes,
+        operator()(const diploid &dip, const gcont_t &haploid_genomes,
                    const mcont_t &mutations) const noexcept
         ///  \brief Overload for diploids.  This is what a programmer's
         ///  functions will call.
         {
-            return this->operator()(gametes[dip.first], gametes[dip.second],
-                                    mutations);
+            return this->operator()(haploid_genomes[dip.first],
+                                    haploid_genomes[dip.second], mutations);
         }
     };
 
@@ -593,15 +600,16 @@ namespace fwdpp
                 0.));
         }
 
-        template <typename gamete_type, typename mcont_t>
+        template <typename haploid_genome_type, typename mcont_t>
         inline result_type
-        operator()(const gamete_type &g1, const gamete_type &g2,
+        operator()(const haploid_genome_type &g1,
+                   const haploid_genome_type &g2,
                    const mcont_t &mutations) const noexcept
-        ///  \param g1 A gamete
-        ///  \param g2 A gamete
+        ///  \param g1 A haploid_genome
+        ///  \param g2 A haploid_genome
         ///  \param mutations A container of mutations
         ///  \return Additive genetic value across sites.
-        ///  \note g1 and g2 must be part of the gamete_base hierarchy
+        ///  \note g1 and g2 must be part of the haploid_genome_base hierarchy
         {
             using __mtype = typename mcont_t::value_type;
             return make_return_value(site_dependent_genetic_value()(
@@ -619,11 +627,11 @@ namespace fwdpp
         ///  functions will call.
         template <typename diploid, typename gcont_t, typename mcont_t>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &gametes,
+        operator()(const diploid &dip, const gcont_t &haploid_genomes,
                    const mcont_t &mutations) const noexcept
         {
-            return this->operator()(gametes[dip.first], gametes[dip.second],
-                                    mutations);
+            return this->operator()(haploid_genomes[dip.first],
+                                    haploid_genomes[dip.second], mutations);
         }
     };
 } // namespace fwdpp

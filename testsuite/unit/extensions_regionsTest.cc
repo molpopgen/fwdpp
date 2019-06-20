@@ -39,14 +39,14 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
     BOOST_REQUIRE(is_a_mutation_model);
 }
 
-BOOST_AUTO_TEST_CASE(bind_gamete_dependent_mutation_model)
+BOOST_AUTO_TEST_CASE(bind_haploid_genome_dependent_mutation_model)
 {
     using poptype = diploid_population_popgenmut_fixture::poptype;
-    using mmodel_type = fwdpp::traits::mutation_model_gamete<poptype::mcont_t,
+    using mmodel_type = fwdpp::traits::mutation_model_haploid_genome<poptype::mcont_t,
                                                              poptype::gcont_t>;
     rng_t rng{ 42 };
     const auto mmodel
-        = [](fwdpp::flagged_mutation_queue &, const poptype::gamete_t &,
+        = [](fwdpp::flagged_mutation_queue &, const poptype::haploid_genome_t &,
              poptype::mcont_t &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mcont_t, poptype::gcont_t>

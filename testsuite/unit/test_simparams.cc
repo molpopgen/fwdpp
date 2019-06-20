@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_compilation)
     static_assert(
         fwdpp::traits::is_rec_model<
             decltype(params.generate_breakpoints), typename poptype::diploid_t,
-            typename poptype::gamete_t, typename poptype::mcont_t>::value,
+            typename poptype::haploid_genome_t, typename poptype::mcont_t>::value,
         "invalid recombination model");
     static_assert(std::is_same<typename std::remove_const<decltype(
                                    params.interlocus_recombination)>::type,

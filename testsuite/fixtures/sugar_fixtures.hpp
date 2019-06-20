@@ -27,8 +27,8 @@ struct diploid_population_popgenmut_fixture
 
 struct diploid_population_popgenmut_custom_fixture
 {
-    using poptype
-        = fwdpp::diploid_population<fwdpp::popgenmut, custom_diploid_testing_t>;
+    using poptype = fwdpp::diploid_population<fwdpp::popgenmut,
+                                              custom_diploid_testing_t>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     poptype pop;
     rng_t rng;
@@ -45,12 +45,12 @@ struct diploid_population_objects
 
     poptype::dipvector_t diploids;
     poptype::mcont_t mutations;
-    poptype::gcont_t gametes;
+    poptype::gcont_t haploid_genomes;
 
     using mutation_container
         = poptype::gcont_t::value_type::mutation_container;
 
-    diploid_population_objects() : diploids{}, mutations{}, gametes{}
+    diploid_population_objects() : diploids{}, mutations{}, haploid_genomes{}
     {
         // Add some mutations
         for (unsigned i = 0; i < 3; ++i)
@@ -60,14 +60,15 @@ struct diploid_population_objects
                 mutations.emplace_back(i, i, 1, 0);
             }
 
-        // Add two gametes
-        gametes.emplace_back(1, mutation_container{ 0 },
-                             mutation_container{ 1 });
-        gametes.emplace_back(1, mutation_container{}, mutation_container{ 2 });
+        // Add two haploid_genomes
+        haploid_genomes.emplace_back(1, mutation_container{ 0 },
+                                     mutation_container{ 1 });
+        haploid_genomes.emplace_back(1, mutation_container{},
+                                     mutation_container{ 2 });
 
         // Add a diploid
         diploids.emplace_back(0, 1);
-        assert(gametes.size() == 2);
+        assert(haploid_genomes.size() == 2);
         assert(mutations.size() == 3);
     }
 };

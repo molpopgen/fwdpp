@@ -68,9 +68,9 @@ main(int argc, char **argv)
                 size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
                                  + 0.667 * (theta_neutral + theta_del))));
             unsigned generation = 0;
-            const auto mmodel = [&pop, &r, &generation, s, h,
-                                 pselected](fwdpp::flagged_mutation_queue &recbin,
-                                            diploid_population::mcont_t &mutations) {
+            const auto mmodel = [&pop, &r, &generation, s, h, pselected](
+                                    fwdpp::flagged_mutation_queue &recbin,
+                                    diploid_population::mcont_t &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
                     pselected, [&r]() { return gsl_rng_uniform(r.get()); },
@@ -81,8 +81,9 @@ main(int argc, char **argv)
             for (generation = 0; generation < ngens; ++generation)
                 {
                     wbar = fwdpp::sample_diploid(
-                        r.get(), pop.gametes, pop.diploids, pop.mutations,
-                        pop.mcounts, N, mu_neutral + mu_del, mmodel,
+                        r.get(), pop.haploid_genomes, pop.diploids,
+                        pop.mutations, pop.mcounts, N, mu_neutral + mu_del,
+                        mmodel,
                         // The function to generation recombination positions:
                         rec, fwdpp::multiplicative_diploid(fwdpp::fitness(1.)),
                         pop.neutral, pop.selected);
@@ -93,8 +94,8 @@ main(int argc, char **argv)
                         {
                             fwdpp::compact_mutations(pop);
                         }
-                    fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
-                                                             2 * N);
+                    fwdpp::debug::validate_sum_haploid_genome_counts(
+                        pop.haploid_genomes, 2 * N);
                 }
             for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                 {

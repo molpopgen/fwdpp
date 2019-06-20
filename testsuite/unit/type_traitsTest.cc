@@ -47,13 +47,13 @@ BOOST_AUTO_TEST_CASE(is_diploid_test)
     BOOST_REQUIRE_EQUAL(v, false);
 }
 
-BOOST_AUTO_TEST_CASE(is_gamete_test)
+BOOST_AUTO_TEST_CASE(is_haploid_genome_test)
 {
-    auto v = fwdpp::traits::is_gamete<fwdpp::gamete>::value;
+    auto v = fwdpp::traits::is_haploid_genome<fwdpp::haploid_genome>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = fwdpp::traits::is_gamete<gcont_t::value_type>::value;
+    v = fwdpp::traits::is_haploid_genome<gcont_t::value_type>::value;
     BOOST_REQUIRE_EQUAL(v, true);
-    v = fwdpp::traits::is_gamete<mtype>::value;
+    v = fwdpp::traits::is_haploid_genome<mtype>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
 
@@ -87,22 +87,22 @@ BOOST_AUTO_TEST_CASE(is_mmodel_test)
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
-BOOST_AUTO_TEST_CASE(is_mmodel_gamete_test)
+BOOST_AUTO_TEST_CASE(is_mmodel_haploid_genome_test)
 {
-    // Fake a mutation model requiring a gamete.
+    // Fake a mutation model requiring a haploid_genome.
     // The function itself is invalid in implementation,
     // but the purpose here is to test the signature.
     auto m = [](fwdpp::flagged_mutation_queue &, const gcont_t::value_type &,
                 const mcont_t &) -> std::size_t { return 1; };
     auto v = std::is_convertible<
         decltype(m),
-        fwdpp::traits::mutation_model_gamete<mcont_t, gcont_t>>::value;
+        fwdpp::traits::mutation_model_haploid_genome<mcont_t, gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, true);
 
     // Test of strong types
-    auto m2 = [](fwdpp::flagged_gamete_queue &, const gcont_t::value_type &,
+    auto m2 = [](fwdpp::flagged_haploid_genome_queue &, const gcont_t::value_type &,
                  const mcont_t &) -> std::size_t { return 1; };
-    v = std::is_convertible<decltype(m2), fwdpp::traits::mutation_model_gamete<
+    v = std::is_convertible<decltype(m2), fwdpp::traits::mutation_model_haploid_genome<
                                              mcont_t, gcont_t>>::value;
     BOOST_REQUIRE_EQUAL(v, false);
 }
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
     BOOST_REQUIRE_EQUAL(v, true);
 }
 
-BOOST_AUTO_TEST_CASE(is_gamete_recmodel_test)
+BOOST_AUTO_TEST_CASE(is_haploid_genome_recmodel_test)
 {
     const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
     auto mock_rec

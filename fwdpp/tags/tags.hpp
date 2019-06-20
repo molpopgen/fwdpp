@@ -5,8 +5,8 @@ namespace fwdpp
 {
     namespace tags
     {
-        //! Empty struct acts like a dispatch tag for fwdpp::gamete_base 
-        struct standard_gamete
+        //! Empty struct acts like a dispatch tag for fwdpp::haploid_genome_base 
+        struct standard_haploid_genome
         {
         };
     }

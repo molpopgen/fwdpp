@@ -16,7 +16,7 @@ namespace fwdpp
     /// Reorders the population mutation container
     /// so that it is sorted by increasing mutation position.
     /// The reordering requires assigning new key values into
-    /// all gametes, which is also done. The mutation counts
+    /// all haploid_genomes, which is also done. The mutation counts
     /// and mut_lookup data structures also get updated.
     ///
     /// Running this periodically is a performance increase
@@ -45,7 +45,7 @@ namespace fwdpp
             {
                 reindex[indexes[i]] = i;
             }
-        for (auto &g : pop.gametes)
+        for (auto &g : pop.haploid_genomes)
             {
                 if (g.n)
                     {

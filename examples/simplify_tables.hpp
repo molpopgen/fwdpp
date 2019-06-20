@@ -44,8 +44,8 @@ tables.sort_tables(pop.mutations);
                 });
             tables.mutation_table.erase(itr, tables.mutation_table.end());
             confirm_mutation_counts(pop, tables);
-            fwdpp::ts::remove_fixations_from_gametes(
-                pop.gametes, pop.mutations, pop.mcounts,
+            fwdpp::ts::remove_fixations_from_haploid_genomes(
+                pop.haploid_genomes, pop.mutations, pop.mcounts,
                 mcounts_from_preserved_nodes, 2 * pop.diploids.size(), false);
 
             fwdpp::ts::flag_mutations_for_recycling(

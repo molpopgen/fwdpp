@@ -17,7 +17,7 @@ BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,
                          standard_empty_single_deme_fixture)
 /*
   This test creates a situation
-  where gamete1 has a selected mutation and gamete2 does not.
+  where haploid_genome1 has a selected mutation and haploid_genome2 does not.
   If issue #8 were to cause fitness to be mis-calculated,
   then this test will fail.
 
@@ -26,7 +26,7 @@ BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,
 */
 BOOST_AUTO_TEST_CASE(simple_multiplicative1)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
     // the dominance...)
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative1)
 
 BOOST_AUTO_TEST_CASE(simple_multiplicative_trait)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
     // the dominance...)
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative_trait)
 */
 BOOST_AUTO_TEST_CASE(simple_multiplicative2)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
     // the dominance...)
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative2)
 */
 BOOST_AUTO_TEST_CASE(simple_multiplicative3)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
     // the dominance...)
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative3)
 */
 BOOST_AUTO_TEST_CASE(simple_multiplicative4)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
     // the dominance...)
@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative4)
 
 BOOST_AUTO_TEST_CASE(simple_additive_1)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=1.0
     mutations.emplace_back(0.1, 0.1, 1);
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(simple_additive_1)
 
 BOOST_AUTO_TEST_CASE(simple_additive_trait)
 {
-    fwdpp::gamete g1(1), g2(1);
+    fwdpp::haploid_genome g1(1), g2(1);
 
     // add mutation at position 0.1, s=0.1,n=1,dominance=1.0
     mutations.emplace_back(0.1, 0.1, 1);
@@ -205,9 +205,9 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
                   "Fitness function signature evaluated to void.");
 
     // Do bare minimum setup to be able to make calls to functions
-    gametes.emplace_back(200);
+    haploid_genomes.emplace_back(200);
     mutations.emplace_back(1.0, 0.1); // position 1.0, s = 0.1
-    gametes[0].smutations.push_back(0);
+    haploid_genomes[0].smutations.push_back(0);
 
     {
         // Test reassignment of the SAME fitness model type
@@ -219,10 +219,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
                         std::placeholders::_1, std::placeholders::_2,
                         std::placeholders::_3);
 
-        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit = fwdpp::multiplicative_diploid(fwdpp::fitness(2.));
-        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
 
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
@@ -233,10 +233,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
 
         // assign a fitness model with default scaling = 1.
         fitness_model_t dipfit = fwdpp::additive_diploid(fwdpp::fitness(1.));
-        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit = fwdpp::additive_diploid(fwdpp::fitness(2.));
-        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
 
@@ -248,10 +248,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_1)
 
         fitness_model_t dipfit
             = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
-        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto a = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
         // Now, reassign it to addtive model with scaling = 2.
         dipfit = fwdpp::additive_diploid(fwdpp::fitness(2.0));
-        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, gametes, mutations);
+        auto b = dipfit(dipvector_t::value_type{ 0, 0 }, haploid_genomes, mutations);
         // With only 1 mutation in play, additive & multiplicative will give
         // same result:
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
@@ -272,9 +272,9 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
     // Bare minimum setup for testing
     std::vector<custom_diploid_testing_t> cdiploids(
         1, custom_diploid_testing_t(0, 0));
-    gametes.emplace_back(200);
+    haploid_genomes.emplace_back(200);
     mutations.emplace_back(1.0, 0.1); // position 1.0, s = 0.1
-    gametes[0].smutations.push_back(0);
+    haploid_genomes[0].smutations.push_back(0);
 
     {
         // Test reassignment of the SAME fitness model type
@@ -283,11 +283,11 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
         // assign a fitness model with default scaling = 1.
         fitness_model_t dipfit
             = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
-        auto a = dipfit(cdiploids[0], gametes, mutations);
+        auto a = dipfit(cdiploids[0], haploid_genomes, mutations);
 
         // Now, reassign it with scaling = 2.
         dipfit = fwdpp::multiplicative_diploid(fwdpp::fitness(2.));
-        auto b = dipfit(cdiploids[0], gametes, mutations);
+        auto b = dipfit(cdiploids[0], haploid_genomes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
 
@@ -297,10 +297,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
 
         // assign a fitness model with default scaling = 1.
         fitness_model_t dipfit = fwdpp::additive_diploid(fwdpp::fitness(1.));
-        auto a = dipfit(cdiploids[0], gametes, mutations);
+        auto a = dipfit(cdiploids[0], haploid_genomes, mutations);
         // Now, reassign it with scaling = 2.
         dipfit = fwdpp::additive_diploid(fwdpp::fitness(2.));
-        auto b = dipfit(cdiploids[0], gametes, mutations);
+        auto b = dipfit(cdiploids[0], haploid_genomes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
 
@@ -312,10 +312,10 @@ BOOST_AUTO_TEST_CASE(reassign_test_2)
 
         fitness_model_t dipfit
             = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
-        auto a = dipfit(cdiploids[0], gametes, mutations);
+        auto a = dipfit(cdiploids[0], haploid_genomes, mutations);
         // Now, reassign it to addtive model with scaling = 2.
         dipfit = fwdpp::additive_diploid(fwdpp::fitness(2.));
-        auto b = dipfit(cdiploids[0], gametes, mutations);
+        auto b = dipfit(cdiploids[0], haploid_genomes, mutations);
         BOOST_CHECK_CLOSE(a - 1.0, 0.5 * (b - 1.0), 1e-6);
     }
 }
