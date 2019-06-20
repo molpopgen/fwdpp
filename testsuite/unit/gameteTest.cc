@@ -1,7 +1,7 @@
 /*!
-  \file gameteTest.cc
+  \file haploid_genomeTest.cc
   \ingroup unit
-  \brief Tests construction and assigment to fwdpp::gamete via std::move
+  \brief Tests construction and assigment to fwdpp::haploid_genome via std::move
 */
 
 #include <boost/test/unit_test.hpp>
@@ -9,9 +9,9 @@
 #include <config.h>
 
 using mut = fwdpp::mutation;
-using gtype = fwdpp::gamete;
+using gtype = fwdpp::haploid_genome;
 
-BOOST_AUTO_TEST_SUITE(test_gamete_base)
+BOOST_AUTO_TEST_SUITE(test_haploid_genome_base)
 
 BOOST_AUTO_TEST_CASE(move_construct)
 {

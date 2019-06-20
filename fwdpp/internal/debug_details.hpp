@@ -27,19 +27,19 @@ namespace fwdpp
         {
             template <typename gcont_t>
             void
-            validate_sum_gamete_counts(const gcont_t &gametes,
+            validate_sum_haploid_genome_counts(const gcont_t &haploid_genomes,
                                        const uint_t expected_sum)
             {
 #ifndef NDEBUG
                 uint_t s = 0;
-                for (auto &g : gametes)
+                for (auto &g : haploid_genomes)
                     {
                         s += g.n;
                     }
                 if (s != expected_sum)
                     {
                         throw std::runtime_error(
-                            "FWDPP DEBUG: unexpectd sum of gamete counts");
+                            "FWDPP DEBUG: unexpectd sum of haploid_genome counts");
                     }
 #endif
             }
@@ -61,22 +61,22 @@ namespace fwdpp
 #endif
             }
 
-            template <typename gamete_t>
+            template <typename haploid_genome_t>
             void
-            gamete_is_extant(const gamete_t &gamete)
+            haploid_genome_is_extant(const haploid_genome_t &haploid_genome)
             {
 #ifndef NDEBUG
-                if (!gamete.n)
+                if (!haploid_genome.n)
                     {
                         throw std::runtime_error(
-                            "FWDPP DEBUG: unexpected extinct gamete");
+                            "FWDPP DEBUG: unexpected extinct haploid_genome");
                     }
 #endif
             }
 
-            template <typename gamete_t, typename mcont_t>
+            template <typename haploid_genome_t, typename mcont_t>
             void
-            gamete_is_sorted(const gamete_t &g, const mcont_t &m)
+            haploid_genome_is_sorted(const haploid_genome_t &g, const mcont_t &m)
             /*!
              * \brief Check that neutral mutation keys are sorted according to mutation
              * position
@@ -104,7 +104,7 @@ namespace fwdpp
 
             template <typename key_container, typename mcont_t>
             void
-            gamete_data_valid(const key_container &keys,
+            haploid_genome_data_valid(const key_container &keys,
                               const mcont_t &mutations,
                               const std::vector<uint_t> &mutcounts,
                               const bool expected_neutrality)
@@ -116,7 +116,7 @@ namespace fwdpp
                             {
                                 throw std::runtime_error(
                                     "FWDPP DEBUG: extinct mutation in extant "
-                                    "gamete");
+                                    "haploid_genome");
                             }
                         if (mutations[k].neutral != expected_neutrality)
                             {
@@ -128,9 +128,9 @@ namespace fwdpp
 #endif
             }
 
-            template <typename gamete_t, typename mcont_t>
+            template <typename haploid_genome_t, typename mcont_t>
             void
-            gamete_data_valid(const gamete_t &g, const mcont_t &mutations,
+            haploid_genome_data_valid(const haploid_genome_t &g, const mcont_t &mutations,
                               const std::vector<uint_t> &mutcounts)
             /*
       \brief Check that "neutral" and "non-neutral" mutations are where we
@@ -138,10 +138,10 @@ namespace fwdpp
      */
             {
 #ifndef NDEBUG
-                detail::gamete_is_sorted(g, mutations);
-                detail::gamete_data_valid(g.mutations, mutations, mutcounts,
+                detail::haploid_genome_is_sorted(g, mutations);
+                detail::haploid_genome_data_valid(g.mutations, mutations, mutcounts,
                                           true);
-                detail::gamete_data_valid(g.smutations, mutations, mutcounts,
+                detail::haploid_genome_data_valid(g.smutations, mutations, mutcounts,
                                           false);
 #endif
             }
@@ -149,20 +149,20 @@ namespace fwdpp
             template <typename diploid, typename gcont_t, typename mcont_t>
             void
             validate_pop_data_common(const diploid &dip,
-                                     const gcont_t &gametes,
+                                     const gcont_t &haploid_genomes,
                                      const mcont_t &mutations,
                                      const std::vector<uint_t> &mutcounts)
             {
 #ifndef NDEBUG
-                if (!gametes[dip.first].n || !gametes[dip.second].n)
+                if (!haploid_genomes[dip.first].n || !haploid_genomes[dip.second].n)
                     {
                         throw std::runtime_error(
-                            "FWDPP DEBUG: gamete count is zero");
+                            "FWDPP DEBUG: haploid_genome count is zero");
                     }
-                gamete_is_sorted(gametes[dip.first], mutations);
-                gamete_is_sorted(gametes[dip.second], mutations);
-                gamete_data_valid(gametes[dip.first], mutations, mutcounts);
-                gamete_data_valid(gametes[dip.second], mutations, mutcounts);
+                haploid_genome_is_sorted(haploid_genomes[dip.first], mutations);
+                haploid_genome_is_sorted(haploid_genomes[dip.second], mutations);
+                haploid_genome_data_valid(haploid_genomes[dip.first], mutations, mutcounts);
+                haploid_genome_data_valid(haploid_genomes[dip.second], mutations, mutcounts);
 #endif
             }
 
@@ -173,7 +173,7 @@ namespace fwdpp
 #ifndef NDEBUG
                 for (const auto &d : pop.diploids)
                     {
-                        validate_pop_data_common(d, pop.gametes, pop.mutations,
+                        validate_pop_data_common(d, pop.haploid_genomes, pop.mutations,
                                                  pop.mcounts);
                     }
 #endif
@@ -205,18 +205,18 @@ namespace fwdpp
 
             template <typename poptype>
             void
-            all_gametes_extant(const poptype &pop,
+            all_haploid_genomes_extant(const poptype &pop,
                                const fwdpp::poptypes::DIPLOID_TAG)
             {
 #ifndef NEBUG
                 for (auto &dip : pop.diploids)
                     {
-                        if (pop.gametes[dip.first].n == 0
-                            || pop.gametes[dip.second].n == 0)
+                        if (pop.haploid_genomes[dip.first].n == 0
+                            || pop.haploid_genomes[dip.second].n == 0)
                             {
                                 throw std::runtime_error(
                                     "FWDPP DEBUG: diploid refers to "
-                                    "extinct gamete");
+                                    "extinct haploid_genome");
                             }
                     }
 #endif

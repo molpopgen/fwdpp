@@ -142,29 +142,29 @@ migrate_and_calc_fitness(const gsl_rng *r, diploid_population &pop,
             deme_labels[migrants[i]] = !deme_labels[migrants[i]];
         }
 
-    // Go over all parents, set gametes counts to zero,
+    // Go over all parents, set haploid_genomes counts to zero,
     // and put individual IDs and fitnesses into
     // the right vectors:
     for (std::size_t i = 0; i < deme_labels.size(); ++i)
         {
-            // fwdpp requires that we zero out gamete
+            // fwdpp requires that we zero out haploid_genome
             // counts each generation.  Since we're looping
             // over diploids here, now is a good time to
             // handle this task, which saves us from having to
             // do another O(N1+N2) loop:
-            pop.gametes[pop.diploids[i].first].n
-                = pop.gametes[pop.diploids[i].second].n = 0;
+            pop.haploid_genomes[pop.diploids[i].first].n
+                = pop.haploid_genomes[pop.diploids[i].second].n = 0;
             if (deme_labels[i] == 0)
                 {
                     rv.parents1.push_back(i);
                     w1.push_back(
-                        wfxn(pop.diploids[i], pop.gametes, pop.mutations));
+                        wfxn(pop.diploids[i], pop.haploid_genomes, pop.mutations));
                 }
             else
                 {
                     rv.parents2.push_back(i);
                     w2.push_back(
-                        wfxn(pop.diploids[i], pop.gametes, pop.mutations));
+                        wfxn(pop.diploids[i], pop.haploid_genomes, pop.mutations));
                 }
         }
 
@@ -182,15 +182,15 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
                  const fitness_fxn &wfxn, const rec_fxn &recfxn,
                  const mut_fxn &mutfxn)
 {
-    // Handle mutation/gamete "recycling":
+    // Handle mutation/haploid_genome "recycling":
     auto mut_recycling_bin = fwdpp::make_mut_queue(pop.mcounts);
-    auto gam_recycling_bin = fwdpp::make_gamete_queue(pop.gametes);
+    auto gam_recycling_bin = fwdpp::make_haploid_genome_queue(pop.haploid_genomes);
 
     // Migration and build lookup tables:
     auto lookups = migrate_and_calc_fitness(r, pop, wfxn, N1, N2, m12, m21);
 
 #ifndef NDEBUG
-    for (const auto &g : pop.gametes)
+    for (const auto &g : pop.haploid_genomes)
         assert(!g.n);
 #endif
 
@@ -222,7 +222,7 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
             assert(p2 < parents.size());
 
             /*
-              These are the gametes from each parent.
+              These are the haploid_genomes from each parent.
             */
             auto p1g1 = parents[p1].first;
             auto p1g2 = parents[p1].second;
@@ -235,26 +235,26 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
             if (gsl_rng_uniform(r) < 0.5)
                 std::swap(p2g1, p2g2);
 
-            mutate_recombine_update(r, pop.gametes, pop.mutations,
+            mutate_recombine_update(r, pop.haploid_genomes, pop.mutations,
                                     std::make_tuple(p1g1, p1g2, p2g1, p2g2),
                                     recfxn, mutfxn, mu, gam_recycling_bin,
                                     mut_recycling_bin, pop.diploids[i],
                                     pop.neutral, pop.selected);
         }
-    fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
+    fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
                                              2 * pop.diploids.size());
 #ifndef NDEBUG
     for (const auto &dip : pop.diploids)
         {
-            assert(pop.gametes[dip.first].n > 0);
-            assert(pop.gametes[dip.first].n <= 2 * (N1 + N2));
-            assert(pop.gametes[dip.second].n > 0);
-            assert(pop.gametes[dip.second].n <= 2 * (N1 + N2));
+            assert(pop.haploid_genomes[dip.first].n > 0);
+            assert(pop.haploid_genomes[dip.first].n <= 2 * (N1 + N2));
+            assert(pop.haploid_genomes[dip.second].n > 0);
+            assert(pop.haploid_genomes[dip.second].n <= 2 * (N1 + N2));
         }
 #endif
 
     // Update mutation counts
-    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations,
+    fwdpp::fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations,
                                            pop.mcounts);
 
     assert(pop.mcounts.size() == pop.mutations.size());
@@ -266,8 +266,8 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
 #endif
     fwdpp::debug::validate_pop_data(pop);
 
-    // Prune fixations from gametes
-    fwdpp::fwdpp_internal::gamete_cleaner(pop.gametes, pop.mutations,
+    // Prune fixations from haploid_genomes
+    fwdpp::fwdpp_internal::haploid_genome_cleaner(pop.haploid_genomes, pop.mutations,
                                           pop.mcounts, 2 * (N1 + N2),
                                           std::true_type());
 }
@@ -332,7 +332,7 @@ main(int argc, char **argv)
     double wbar = 1;
     for (generation = 0; generation < ngens; ++generation)
         {
-            fwdpp::debug::validate_sum_gamete_counts(pop.gametes,
+            fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
                                                      2 * (N1 + N2));
 
             // Call our fancy new evolve function
@@ -341,6 +341,6 @@ main(int argc, char **argv)
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2 * N);
+            fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes, 2 * N);
         }
 }

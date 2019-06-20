@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(test_change_neutral_diploid_population)
                         // individuals where we want to place the mutation
                         { 0, 1, 3, 5, 7, 9 },
                         /*
-                          gametes in each individual: 0 = .first, 1 = .second,
+                          haploid_genomes in each individual: 0 = .first, 1 = .second,
                           2 = .first and .second
                           Thus, there should be 1+1+1+2+2+1=8 copies of the
                           mutation in the population
@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(test_change_neutral_diploid_population)
                         // Parameters to pass on to create a new mutation
                         0.1, -0.1, 1, 0);
     BOOST_REQUIRE_NO_THROW(
-        fwdpp::debug::validate_sum_gamete_counts(pop.gametes, 2000));
-    BOOST_REQUIRE_EQUAL(pop.gametes.size(), 2);
+        fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes, 2000));
+    BOOST_REQUIRE_EQUAL(pop.haploid_genomes.size(), 2);
     BOOST_REQUIRE_EQUAL(pop.mutations.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts.size(), 1);
     BOOST_REQUIRE_EQUAL(pop.mcounts[0], 8);

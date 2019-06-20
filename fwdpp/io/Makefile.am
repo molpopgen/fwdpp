@@ -4,7 +4,7 @@ SUBDIRS=detail
 
 pkginclude_HEADERS=scalar_serialization.hpp \
 				   mutation.hpp \
-				   gamete.hpp \
+				   haploid_genome.hpp \
 				   diploid.hpp \
 				   serialize_population.hpp
 

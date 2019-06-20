@@ -18,8 +18,8 @@ namespace fwdpp
     template <typename mtype,
               typename diploid_t = std::pair<std::size_t, std::size_t>>
     using diploid_population = poptypes::diploid_population<
-        mtype, std::vector<mtype>, std::vector<gamete>, std::vector<diploid_t>,
-        std::vector<mtype>, std::vector<uint_t>,
+        mtype, std::vector<mtype>, std::vector<haploid_genome>,
+        std::vector<diploid_t>, std::vector<mtype>, std::vector<uint_t>,
         // fwdpp 0.6.1 changed this from an unordered_set,
         // in order to address a rare bug. See GitHub
         // issue 130 for details.

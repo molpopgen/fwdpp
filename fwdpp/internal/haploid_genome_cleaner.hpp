@@ -1,5 +1,5 @@
-#ifndef __FWDPP_INTERNAL_GAMETE_CLEANER_HPP__
-#define __FWDPP_INTERNAL_GAMETE_CLEANER_HPP__
+#ifndef __FWDPP_INTERNAL_HAPLOID_GENOME_CLEANER_HPP__
+#define __FWDPP_INTERNAL_HAPLOID_GENOME_CLEANER_HPP__
 
 #include <vector>
 #include <algorithm>
@@ -10,9 +10,9 @@
 #include <fwdpp/fwd_functional.hpp>
 
 /*!
-  \file gamete_cleaner.hpp
+  \file haploid_genome_cleaner.hpp
 
-  This file handles the "pruning" of fixations from gametes.
+  This file handles the "pruning" of fixations from haploid_genomes.
 
   Whether or not any pruning happens depends on policies.
 
@@ -22,7 +22,7 @@
   Consider the case of neutral mutations occurring at rate mu (per site,
   per generation).  The rate of fixation is also mu.  Thus, when mu is low,
   the rate of fixation is low, and the expected time in generations between
-  fixations is 1/mu.  In other words, calling gamete_cleaner every generation
+  fixations is 1/mu.  In other words, calling haploid_genome_cleaner every generation
   is an unnecessary run-time cost.  Now, we check if any fixations exist, and
   return
   if there are none.  We check separately for neutral- and non-neutral
@@ -32,15 +32,15 @@
   simulation for fixations.
   But, we can do better than that because:
 
-  1. Fixations are, by definition, found in all gametes.  Thus, it suffices to
+  1. Fixations are, by definition, found in all haploid_genomes.  Thus, it suffices to
   check the
-  first (extant) gamete.
+  first (extant) haploid_genome.
 
-  2. When we find the first fixation in a gamete, it is by definition the
+  2. When we find the first fixation in a haploid_genome, it is by definition the
   fixation with the smallest
   position, out of all fixations.  We can store its value and use it to look up
   the first fixation
-  in all of the remaining gametes.  Searching for the first fixation in this
+  in all of the remaining haploid_genomes.  Searching for the first fixation in this
   way avoids cache misses that
   are unavoidable when we do out-of-order lookups in "mcounts" for the
   remaining fixations.
@@ -53,10 +53,10 @@ namespace fwdpp
 
         // First, we have a set of helper functions:
 
-        //! Wrapper around std::find_if to find next gamete where n > 0
+        //! Wrapper around std::find_if to find next haploid_genome where n > 0
         template <typename gcont_t_iterator>
         inline gcont_t_iterator
-        next_extant_gamete(gcont_t_iterator beg, gcont_t_iterator end) noexcept
+        next_extant_haploid_genome(gcont_t_iterator beg, gcont_t_iterator end) noexcept
         {
             return std::find_if(
                 beg, end, [](const typename gcont_t_iterator::value_type
@@ -64,7 +64,7 @@ namespace fwdpp
         }
 
         struct find_fixation
-        //! Find the first mutation in a gamete that is also a fixation
+        //! Find the first mutation in a haploid_genome that is also a fixation
         {
             template <typename mut_index_cont, typename mcounts_t>
             inline typename mut_index_cont::const_iterator
@@ -93,7 +93,7 @@ namespace fwdpp
             }
         };
 
-        struct gamete_cleaner_erase_remove_idiom_wrapper
+        struct haploid_genome_cleaner_erase_remove_idiom_wrapper
         //! Wrapper for erase/remove idiom.
         {
             template <typename mut_index_cont, typename mcounts_t>
@@ -195,7 +195,7 @@ namespace fwdpp
             }
         };
 
-        /*! \brief Handles removal of indexes to mutations from gametes after
+        /*! \brief Handles removal of indexes to mutations from haploid_genomes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
           fwdpp::remove_nothing >::type is true.
@@ -206,7 +206,7 @@ namespace fwdpp
         inline typename std::
             enable_if<std::is_same<mutation_removal_policy,
                                    fwdpp::remove_nothing>::value>::type
-            gamete_cleaner(gcont_t &, const mcont_t &,
+            haploid_genome_cleaner(gcont_t &, const mcont_t &,
                            const std::vector<uint_t> &, const uint_t,
                            const mutation_removal_policy &)
         {
@@ -216,59 +216,59 @@ namespace fwdpp
         template <typename gcont_t, typename fixation_finder,
                   typename idiom_wrapper>
         inline void
-        gamete_cleaner_details(gcont_t &gametes, const fixation_finder &ff,
+        haploid_genome_cleaner_details(gcont_t &haploid_genomes, const fixation_finder &ff,
                                const idiom_wrapper &iw) noexcept
         /*!
-          The two overloads of gamete_cleaner dispatch the above policies into
+          The two overloads of haploid_genome_cleaner dispatch the above policies into
           this function.
         */
         {
-            auto extant_gamete
-                = next_extant_gamete(gametes.begin(), gametes.end());
-            const auto fixation_n = ff(extant_gamete->mutations);
+            auto extant_haploid_genome
+                = next_extant_haploid_genome(haploid_genomes.begin(), haploid_genomes.end());
+            const auto fixation_n = ff(extant_haploid_genome->mutations);
             bool neutral_fixations_exist
-                = (fixation_n != extant_gamete->mutations.cend());
-            const auto fixation_s = ff(extant_gamete->smutations);
+                = (fixation_n != extant_haploid_genome->mutations.cend());
+            const auto fixation_s = ff(extant_haploid_genome->smutations);
             bool selected_fixations_exist
-                = (fixation_s != extant_gamete->smutations.cend());
+                = (fixation_s != extant_haploid_genome->smutations.cend());
             if (!neutral_fixations_exist && !selected_fixations_exist)
                 return;
 
-            const auto gend = gametes.end();
+            const auto gend = haploid_genomes.end();
             // Assign values to avoid tons of de-referencing later
             const auto fixation_n_value
-                = (fixation_n == extant_gamete->mutations.cend())
+                = (fixation_n == extant_haploid_genome->mutations.cend())
                       ? typename decltype(fixation_n)::value_type()
                       : *fixation_n;
             const auto fixation_s_value
-                = (fixation_s == extant_gamete->smutations.cend())
+                = (fixation_s == extant_haploid_genome->smutations.cend())
                       ? typename decltype(fixation_s)::value_type()
                       : *fixation_s;
-            while (extant_gamete < gend)
+            while (extant_haploid_genome < gend)
                 {
                     if (neutral_fixations_exist)
                         {
-                            iw(extant_gamete->mutations, fixation_n_value);
+                            iw(extant_haploid_genome->mutations, fixation_n_value);
                         }
                     if (selected_fixations_exist)
                         {
-                            iw(extant_gamete->smutations, fixation_s_value);
+                            iw(extant_haploid_genome->smutations, fixation_s_value);
                         }
-                    extant_gamete
-                        = next_extant_gamete(extant_gamete + 1, gend);
+                    extant_haploid_genome
+                        = next_extant_haploid_genome(extant_haploid_genome + 1, gend);
                 }
         }
 
         template <typename gcont_t, typename fixation_finder>
         std::pair<bool, bool>
-        fixation_finder_search_all(const gcont_t &gametes,
+        fixation_finder_search_all(const gcont_t &haploid_genomes,
                                    const fixation_finder &ff) noexcept
         /*!
-          Determines whether a fixation exists in ANY gamete.
+          Determines whether a fixation exists in ANY haploid_genome.
          */
         {
             bool neutral = false, selected = false;
-            for (const auto &g : gametes)
+            for (const auto &g : haploid_genomes)
                 {
                     if (!neutral)
                         {
@@ -295,51 +295,51 @@ namespace fwdpp
         template <typename gcont_t, typename fixation_finder,
                   typename idiom_wrapper>
         inline void
-        gamete_cleaner_details(gcont_t &gametes, const fixation_finder &ff,
+        haploid_genome_cleaner_details(gcont_t &haploid_genomes, const fixation_finder &ff,
                                const idiom_wrapper &iw,
                                std::true_type) noexcept
         /*!
-          The two overloads of gamete_cleaner dispatch the above policies into
+          The two overloads of haploid_genome_cleaner dispatch the above policies into
           this function.
-          \brief Overload for case where a model must search all gametes to
+          \brief Overload for case where a model must search all haploid_genomes to
           figure out if a fixation exists.
           Use case is the multi-locus API.
           \note Added in 0.5.0 to address issue #41 where the logic of this
           routine failed if the first
-          extant gamete was in "locus 1" but the first fixation is in "locus 0"
+          extant haploid_genome was in "locus 1" but the first fixation is in "locus 0"
         */
         {
-            auto t = fixation_finder_search_all(gametes, ff);
+            auto t = fixation_finder_search_all(haploid_genomes, ff);
             auto neutral_fixations_exist = t.first;
             auto selected_fixations_exist = t.second;
             if (!neutral_fixations_exist && !selected_fixations_exist)
                 return;
 
-            auto extant_gamete
-                = next_extant_gamete(gametes.begin(), gametes.end());
-            const auto gend = gametes.end();
-            while (extant_gamete < gend)
+            auto extant_haploid_genome
+                = next_extant_haploid_genome(haploid_genomes.begin(), haploid_genomes.end());
+            const auto gend = haploid_genomes.end();
+            while (extant_haploid_genome < gend)
                 {
                     if (neutral_fixations_exist)
                         {
-                            iw(extant_gamete->mutations);
+                            iw(extant_haploid_genome->mutations);
                         }
                     if (selected_fixations_exist)
                         {
-                            iw(extant_gamete->smutations);
+                            iw(extant_haploid_genome->smutations);
                         }
-                    extant_gamete
-                        = next_extant_gamete(extant_gamete + 1, gend);
+                    extant_haploid_genome
+                        = next_extant_haploid_genome(extant_haploid_genome + 1, gend);
                 }
         }
 
         /*
-          Now, we have the two overloads of gamete_cleaner.
+          Now, we have the two overloads of haploid_genome_cleaner.
           The std::cref(...) below are required, o/w copies will get bound,
           which is bad for performance.
         */
 
-        /*! \brief Handles removal of indexes to mutations from gametes after
+        /*! \brief Handles removal of indexes to mutations from haploid_genomes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
           fwdpp::true_type >::type is true.
@@ -350,12 +350,12 @@ namespace fwdpp
         inline
             typename std::enable_if<std::is_same<mutation_removal_policy,
                                                  std::true_type>::value>::type
-            gamete_cleaner(gcont_t &gametes, const mcont_t &,
+            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN, const mutation_removal_policy &)
         {
-            gamete_cleaner_details(
-                gametes,
+            haploid_genome_cleaner_details(
+                haploid_genomes,
                 [&mcounts,
                  twoN](const typename gcont_t::value_type::mutation_container
                            &mc) { return find_fixation()(mc, mcounts, twoN); },
@@ -363,12 +363,12 @@ namespace fwdpp
                  twoN](typename gcont_t::value_type::mutation_container &mc,
                        const typename gcont_t::value_type::mutation_container::
                            value_type v) {
-                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                    return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mcounts, v, twoN);
                 });
         }
 
-        /*! \brief Handles removal of indexes to mutations from gametes after
+        /*! \brief Handles removal of indexes to mutations from haploid_genomes after
           sampling
           This overload handles truly custom policies, which must take a
           mutation type as an argument.
@@ -381,13 +381,13 @@ namespace fwdpp
                                     std::true_type>::value
                       && !std::is_same<mutation_removal_policy,
                                        fwdpp::remove_nothing>::value>::type
-            gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
+            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &mutations,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN,
                            const mutation_removal_policy &mp)
         {
-            gamete_cleaner_details(
-                gametes,
+            haploid_genome_cleaner_details(
+                haploid_genomes,
                 [&mutations, &mcounts, &mp,
                  twoN](const typename gcont_t::value_type::mutation_container
                            &mc) {
@@ -397,12 +397,12 @@ namespace fwdpp
                  twoN](typename gcont_t::value_type::mutation_container &mc,
                        typename gcont_t::value_type::mutation_container::
                            value_type v) {
-                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                    return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mutations, mcounts, v, twoN, mp);
                 });
         }
 
-        /*! \brief Handles removal of indexes to mutations from gametes after
+        /*! \brief Handles removal of indexes to mutations from haploid_genomes after
           sampling
           Intended use is when std::is_same< mutation_removal_policy,
           fwdpp::true_type >::type is true.
@@ -416,25 +416,25 @@ namespace fwdpp
         inline
             typename std::enable_if<std::is_same<mutation_removal_policy,
                                                  std::true_type>::value>::type
-            gamete_cleaner(gcont_t &gametes, const mcont_t &,
+            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN, const mutation_removal_policy &,
                            std::true_type)
         {
-            gamete_cleaner_details(
-                gametes,
+            haploid_genome_cleaner_details(
+                haploid_genomes,
                 [&mcounts,
                  twoN](const typename gcont_t::value_type::mutation_container
                            &mc) { return find_fixation()(mc, mcounts, twoN); },
                 [&mcounts,
                  twoN](typename gcont_t::value_type::mutation_container &mc) {
-                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                    return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mcounts, twoN);
                 },
                 std::true_type());
         }
 
-        /*! \brief Handles removal of indexes to mutations from gametes after
+        /*! \brief Handles removal of indexes to mutations from haploid_genomes after
           sampling
           This overload handles truly custom policies, which must take a
           mutation type as an argument.
@@ -450,13 +450,13 @@ namespace fwdpp
                                     std::true_type>::value
                       && !std::is_same<mutation_removal_policy,
                                        fwdpp::remove_nothing>::value>::type
-            gamete_cleaner(gcont_t &gametes, const mcont_t &mutations,
+            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &mutations,
                            const std::vector<uint_t> &mcounts,
                            const uint_t twoN,
                            const mutation_removal_policy &mp, std::true_type)
         {
-            gamete_cleaner_details(
-                gametes,
+            haploid_genome_cleaner_details(
+                haploid_genomes,
                 [&mutations, &mcounts, &mp,
                  twoN](const typename gcont_t::value_type::mutation_container
                            &mc) {
@@ -464,7 +464,7 @@ namespace fwdpp
                 },
                 [&mutations, &mcounts, &mp,
                  twoN](typename gcont_t::value_type::mutation_container &mc) {
-                    return gamete_cleaner_erase_remove_idiom_wrapper()(
+                    return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mutations, mcounts, twoN, mp);
                 },
                 std::true_type());

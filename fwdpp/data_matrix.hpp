@@ -145,7 +145,7 @@ namespace fwdpp
      */
     {
         return data_matrix_details::mutation_keys(
-            pop.diploids, individuals, pop.gametes, pop.mcounts,
+            pop.diploids, individuals, pop.haploid_genomes, pop.mcounts,
             include_neutral, include_selected, typename poptype::popmodel_t());
     }
 

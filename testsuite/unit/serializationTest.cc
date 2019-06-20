@@ -11,7 +11,7 @@
 #include <fwdpp/io/scalar_serialization.hpp>
 #include <boost/test/unit_test.hpp>
 
-using gtype = fwdpp::gamete;
+using gtype = fwdpp::haploid_genome;
 
 struct scalar_fixture
 {

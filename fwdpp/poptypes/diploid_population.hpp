@@ -30,7 +30,7 @@ namespace fwdpp
             void
             process_individual_input()
             {
-                std::vector<uint_t> gcounts(this->gametes.size(), 0);
+                std::vector<uint_t> gcounts(this->haploid_genomes.size(), 0);
                 for (auto &&dip : diploids)
                     {
                         this->validate_individual_keys(dip.first);
@@ -38,7 +38,7 @@ namespace fwdpp
                         gcounts[dip.first]++;
                         gcounts[dip.second]++;
                     }
-                this->validate_gamete_counts(gcounts);
+                this->validate_haploid_genome_counts(gcounts);
             }
 
           public:
@@ -70,20 +70,20 @@ namespace fwdpp
             //! Constructor
             explicit diploid_population(
                 const uint_t &popsize,
-                typename popbase_t::gamete_t::mutation_container::size_type
+                typename popbase_t::haploid_genome_t::mutation_container::size_type
                     reserve_size
                 = 100)
                 : popbase_t(2 * popsize, reserve_size), N(popsize),
-                  // All N diploids contain the only gamete in the pop
+                  // All N diploids contain the only haploid_genome in the pop
                   diploids(dipvector_t(popsize, diploid_t(0, 0)))
             {
             }
 
-            template <typename diploids_input, typename gametes_input,
+            template <typename diploids_input, typename haploid_genomes_input,
                       typename mutations_input>
-            explicit diploid_population(diploids_input &&d, gametes_input &&g,
+            explicit diploid_population(diploids_input &&d, haploid_genomes_input &&g,
                                         mutations_input &&m)
-                : popbase_t(std::forward<gametes_input>(g),
+                : popbase_t(std::forward<haploid_genomes_input>(g),
                             std::forward<mutations_input>(m), 100),
                   N{ static_cast<decltype(N)>(d.size()) },
                   diploids(std::forward<diploids_input>(d))

@@ -26,7 +26,7 @@ namespace fwdpp
          */
         {
             /*
-              Ask if gamete has this mutation.  We do a linear
+              Ask if haploid_genome has this mutation.  We do a linear
               search here in case of finite-site schemes and we
               also do not expect this function to be called a whole lot.
             */
@@ -47,7 +47,7 @@ namespace fwdpp
                     { return p < mutations[vt].pos; }),
                 mindex);
         }
-    }
+    } // namespace sugar
 
     template <typename poptype>
     void
@@ -59,7 +59,7 @@ namespace fwdpp
       \param mindex The key of the mutation you wish to change.
 
       This function negates mutation_base::neutral at position
-      mindex and updates the storage of this mutation in all gametes.
+      mindex and updates the storage of this mutation in all haploid_genomes.
 
       \note This function does not change any other member data at
       p.mutations[mindex]!!  Thus, if you change a mutation
@@ -84,7 +84,7 @@ namespace fwdpp
         p.mutations[mindex].neutral = !p.mutations[mindex].neutral;
         const auto pos = p.mutations[mindex].pos;
 
-        for (auto &g : p.gametes)
+        for (auto &g : p.haploid_genomes)
             {
                 if (g.n)
                     {
@@ -100,10 +100,11 @@ namespace fwdpp
                                     p.mutations, pos, mindex, g.smutations,
                                     g.mutations);
                             }
-                        debug::gamete_data_valid(g,p.mutations,p.mcounts);
+                        debug::haploid_genome_data_valid(g, p.mutations,
+                                                         p.mcounts);
                     }
             }
     }
-}
+} // namespace fwdpp
 
 #endif

@@ -1,7 +1,7 @@
 /*!
   \file forward_types.hpp
-  \defgroup basicTypes Mutation and gamete data types
-  These are the basic types common to all simulations: mutations and gametes.
+  \defgroup basicTypes Mutation and genome data types
+  These are the basic types common to all simulations: mutations and genome.
   See @ref md_md_policies for more details.
 */
 #ifndef _FORWARD_TYPES_HPP_
@@ -88,9 +88,9 @@ namespace fwdpp
         }
     };
 
-    /*! \brief Base class for gametes.
+    /*! \brief Base class for genomes.
 
-      A gamete contains one container of keys to neutral mutations, and another
+      A haploid_genome contains one container of keys to neutral mutations, and another
           to selected mutations.  It also keeps track of its count (number of
       occurrences).
 
@@ -101,19 +101,19 @@ namespace fwdpp
 
       \note The typical use of this class is simply to define your mutation
       type (see @ref md_md_policies)
-      and then use a typedef to define your gamete type in the simulations:
+      and then use a typedef to define your haploid_genome type in the simulations:
       \code
-      using gamete_t = fwdpp::gamete_base<mutation_type>
+      using haploid_genome_t = fwdpp::haploid_genome_base<mutation_type>
       \endcode
       See @ref md_md_policies for examples of this.
       \ingroup basicTypes
     */
-    template <typename TAG = tags::standard_gamete> struct gamete_base
+    template <typename TAG = tags::standard_haploid_genome> struct haploid_genome_base
     {
         //! Count in population
         uint_t n;
         //! Dispatch tag type
-        using gamete_tag = TAG;
+        using haploid_genome_tag = TAG;
         using index_t = std::uint32_t;
         using mutation_container = std::vector<index_t>;
         //! Container of mutations not affecting trait value/fitness ("neutral
@@ -128,54 +128,54 @@ namespace fwdpp
             = std::tuple<uint_t, mutation_container, mutation_container>;
 
         /*! @brief Constructor
-          \param icount The number of occurrences of this gamete in the
+          \param icount The number of occurrences of this haploid_genome in the
           population
         */
-        explicit gamete_base(const uint_t &icount) noexcept
+        explicit haploid_genome_base(const uint_t &icount) noexcept
             : n(icount), mutations(mutation_container()),
               smutations(mutation_container())
         {
         }
 
         /*! @brief "Perfect-forwarding" constructor
-          \param icount The number of occurrences of this gamete in the
+          \param icount The number of occurrences of this haploid_genome in the
           population
           \param n A container of mutations not affecting trait value/fitness
           \param s A container of mutations affecting trait value/fitness
         */
         template <typename T>
-        gamete_base(const uint_t &icount, T &&n, T &&s) noexcept
+        haploid_genome_base(const uint_t &icount, T &&n, T &&s) noexcept
             : n(icount), mutations(std::forward<T>(n)),
               smutations(std::forward<T>(s))
         {
         }
 
         //! Construct from n, mutations, smutations tuple
-        gamete_base(constructor_tuple t)
+        haploid_genome_base(constructor_tuple t)
             : n(std::get<0>(t)), mutations(std::move(std::get<1>(t))),
               smutations(std::move(std::get<2>(t)))
         {
         }
 
         //! Destructor is virtual, so you may inherit from this type
-        virtual ~gamete_base() noexcept {}
+        virtual ~haploid_genome_base() noexcept {}
         //! Copy constructor
-        gamete_base(gamete_base &) = default;
+        haploid_genome_base(haploid_genome_base &) = default;
         //! Copy constructor
-        gamete_base(gamete_base const &) = default;
+        haploid_genome_base(haploid_genome_base const &) = default;
         //! Move constructor
-        gamete_base(gamete_base &&) = default;
+        haploid_genome_base(haploid_genome_base &&) = default;
 
         //! Assignment operator
-        gamete_base &operator=(gamete_base &) = default;
+        haploid_genome_base &operator=(haploid_genome_base &) = default;
         //! Assignment operator
-        gamete_base &operator=(gamete_base const &) = default;
+        haploid_genome_base &operator=(haploid_genome_base const &) = default;
         //! Move assignment operator
-        gamete_base &operator=(gamete_base &&) = default;
+        haploid_genome_base &operator=(haploid_genome_base &&) = default;
         /*! \brief Equality operation
         */
         inline bool
-        operator==(const gamete_base<TAG> &rhs) const
+        operator==(const haploid_genome_base<TAG> &rhs) const
         {
             return (this->mutations == rhs.mutations
                     && this->smutations == rhs.smutations);
@@ -183,16 +183,16 @@ namespace fwdpp
 // The following type traits are not implemented in GCC 4.
 #if (defined __GNUG__ && __GNUC__ >= 5) || !defined __GNUG__                  \
     || defined __clang__
-        static_assert(std::is_trivially_constructible<gamete_tag>::value,
-                      "Typename gamete_tag must refer to a "
+        static_assert(std::is_trivially_constructible<haploid_genome_tag>::value,
+                      "Typename haploid_genome_tag must refer to a "
                       "trivially-constrictible type");
-        static_assert(std::is_nothrow_default_constructible<gamete_tag>::value,
-                      "Typename gamete_tag must refer to a type that is "
+        static_assert(std::is_nothrow_default_constructible<haploid_genome_tag>::value,
+                      "Typename haploid_genome_tag must refer to a type that is "
                       "default- and nothrow-constructible");
 #endif
     };
 
-    /// Default gamete type
-    using gamete = gamete_base<tags::standard_gamete>;
+    /// Default haploid_genome type
+    using haploid_genome = haploid_genome_base<tags::standard_haploid_genome>;
 }
 #endif /* _FORWARD_TYPES_HPP_ */

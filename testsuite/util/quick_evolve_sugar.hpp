@@ -20,8 +20,9 @@
 
 template <typename diploid_population_object_t>
 void
-simulate_diploid_population(diploid_population_object_t &pop, const unsigned simlen = 10,
-                   const unsigned popsize = 5000)
+simulate_diploid_population(diploid_population_object_t &pop,
+                            const unsigned simlen = 10,
+                            const unsigned popsize = 5000)
 /*!
   \brief Quick function for evolving a single-deme simulation
   \ingroup testing
@@ -30,18 +31,19 @@ simulate_diploid_population(diploid_population_object_t &pop, const unsigned sim
 {
     fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2> rng(0u);
     unsigned generation = 0;
-    const auto mmodel = [&pop, &rng, &generation](
-                            fwdpp::flagged_mutation_queue &recbin,
-                            typename diploid_population_object_t::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
-            [&rng]() { return gsl_rng_uniform(rng.get()); },
-            []() { return -0.01; }, []() { return 1.; });
-    };
+    const auto mmodel
+        = [&pop, &rng, &generation](
+              fwdpp::flagged_mutation_queue &recbin,
+              typename diploid_population_object_t::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                  0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
+                  []() { return -0.01; }, []() { return 1.; });
+          };
     for (; generation < simlen; ++generation)
         {
             double wbar = fwdpp::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
+                rng.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
                 pop.mcounts, pop.N, popsize, 0.005, mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),
@@ -60,8 +62,9 @@ simulate_diploid_population(diploid_population_object_t &pop, const unsigned sim
 
 template <typename diploid_population_object_t, typename rng_type>
 unsigned
-simulate_diploid_population(diploid_population_object_t &pop, const rng_type &rng,
-                   const unsigned generation, const unsigned simlen)
+simulate_diploid_population(diploid_population_object_t &pop,
+                            const rng_type &rng, const unsigned generation,
+                            const unsigned simlen)
 /*!
   \brief Quick function for evolving a single-deme simulation
   \ingroup testing
@@ -70,18 +73,19 @@ simulate_diploid_population(diploid_population_object_t &pop, const rng_type &rn
 {
     unsigned g = generation;
 
-    const auto mmodel = [&pop, &rng, &generation](
-                            fwdpp::flagged_mutation_queue &recbin,
-                            typename diploid_population_object_t::mcont_t &mutations) {
-        return fwdpp::infsites_popgenmut(
-            recbin, mutations, rng.get(), pop.mut_lookup, generation, 0.5,
-            [&rng]() { return gsl_rng_uniform(rng.get()); },
-            []() { return -0.01; }, []() { return 1.; });
-    };
+    const auto mmodel
+        = [&pop, &rng, &generation](
+              fwdpp::flagged_mutation_queue &recbin,
+              typename diploid_population_object_t::mcont_t &mutations) {
+              return fwdpp::infsites_popgenmut(
+                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                  0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
+                  []() { return -0.01; }, []() { return 1.; });
+          };
     for (; g < generation + simlen; ++g)
         {
             double wbar = fwdpp::sample_diploid(
-                rng.get(), pop.gametes, pop.diploids, pop.mutations,
+                rng.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, 0.005, mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),

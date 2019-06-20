@@ -16,9 +16,9 @@ BOOST_FIXTURE_TEST_SUITE(test_sampling, diploid_population_objects)
 BOOST_AUTO_TEST_CASE(test_taking_sample)
 {
     diploids.emplace_back(0, 1);
-    gametes[0].n++;
-    gametes[1].n++;
-    poptype p(diploids, gametes, mutations);
+    haploid_genomes[0].n++;
+    haploid_genomes[1].n++;
+    poptype p(diploids, haploid_genomes, mutations);
     auto m = fwdpp::sample_individuals(p, std::vector<std::size_t>{ 0, 1 },
                                        true, true, true);
     for (auto k : m.neutral_keys)
