@@ -99,12 +99,12 @@ The version of fwdpp used in that publication is 0.2.4.
 
 The published version of fwdpp described a library with the following features:
 
-* Objects (mutations and gametes) are stored only once in _doubly-linked lists_.
-* Diploids are pairs of pointers to gametes (technically, pairs of iterators derived from the list of gametes).
+* Objects (mutations and haploid genomes) are stored only once in _doubly-linked lists_.
+* Diploids are pairs of pointers to haploid genomes (technically, pairs of iterators derived from the list of haploid genomes).
 * Gametes contain vectors of pointers (again, C++ iterators) to mutations.
-* Each generation, extinct mutations and gametes are removed from the population.  This removal is a constant-time operation due to the use of linked lists.
+* Each generation, extinct mutations and haploid genomes are removed from the population.  This removal is a constant-time operation due to the use of linked lists.
 
-This design had a certain elegance to it.  A pointer to a diploid gave you immediate access to the mutations by means of the pointer structure.  It was also compact in memory, because iterators are only 8 bytes (on a 64-bit system) while gametes and mutations are 64 and _at least_ 48 bytes, respectively.
+This design had a certain elegance to it.  A pointer to a diploid gave you immediate access to the mutations by means of the pointer structure.  It was also compact in memory, because iterators are only 8 bytes (on a 64-bit system) while haploid genomes and mutations are 64 and _at least_ 48 bytes, respectively.
 
 The fwdpp publication showed that the library performs well in terms of speed compared to other tools out there.  However, the original design had the following problems:
 
@@ -125,9 +125,9 @@ Release 0.4.4 introduced a fundamental change in the library design:
 * Thus, we can replace doubly-linked lists with vectors.
 * Further, we can replace iterators with integers.
 
-All of these changes were introduced in one fell swoop in 0.4.4, along with a set of other API changes that I'd wanted to make for a while.  The current design is conceptually the same as the published version, with 8 byte keys representing where mutations and gametes are, thus ensuring that an object is only represented once in memory.
+All of these changes were introduced in one fell swoop in 0.4.4, along with a set of other API changes that I'd wanted to make for a while.  The current design is conceptually the same as the published version, with 8 byte keys representing where mutations and haploid genomes are, thus ensuring that an object is only represented once in memory.
 
-However, the new design is also less elegant.  Now, the vectors of gametes and mutations have to be passed along with the diploids.
+However, the new design is also less elegant.  Now, the vectors of haploid genomes and mutations have to be passed along with the diploids.
 
 So, why do this? __It is a lot faster!__  Simulations of large genomic regions in large populations can be up to 80% faster!  In fact, tcmalloc isn't necessary to get really good performance any more.  Using it still improves run-times by about 10% (on Intel systems at least...), but that isn't a lot compared to the 50% improvement that it gave to previous versions of the library.
 
