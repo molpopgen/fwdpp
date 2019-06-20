@@ -51,19 +51,6 @@ namespace fwdpp
             };
 
             template <typename T, typename = void>
-            struct is_multilocus_diploid : std::false_type
-            {
-            };
-
-            template <typename T>
-            struct is_multilocus_diploid<
-                T, typename void_t<typename T::value_type>::type>
-                : std::integral_constant<
-                      bool, is_diploid<typename T::value_type>::value>
-            {
-            };
-
-            template <typename T, typename = void>
             struct is_custom_diploid : std::false_type
             {
             };

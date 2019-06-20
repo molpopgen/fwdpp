@@ -177,34 +177,6 @@ namespace fwdpp
                     std::move(offspring_first_gamete_data.second),
                     std::move(offspring_second_gamete_data.second));
             }
-
-            inline int
-            multilocus_update(const mut_rec_intermediates& gamete_data,
-                              std::vector<double>& breakpoints,
-                              std::vector<uint_t>& mutation_keys)
-            {
-                mutation_keys.insert(end(mutation_keys),
-                                     begin(gamete_data.mutation_keys),
-                                     end(gamete_data.mutation_keys));
-                if (gamete_data.breakpoints.empty())
-                    {
-                        return 0;
-                    }
-#ifndef NDEBUG
-                if (gamete_data.breakpoints.back()
-                    != std::numeric_limits<double>::max())
-                    {
-                        throw std::runtime_error(
-                            "FWDPP DEBUG: breakpoints vector missing sentinel "
-                            "value");
-                    }
-#endif
-                breakpoints.insert(end(breakpoints),
-                                   begin(gamete_data.breakpoints),
-                                   end(gamete_data.breakpoints) - 1);
-                return gamete_data.breakpoints.size() - 1;
-            }
-
         } // namespace detail
 
         template <typename genetic_param_holder,
@@ -220,7 +192,7 @@ namespace fwdpp
         /// \param r Random number generator
         /// \param parents Indexes of the offspring parents in \a pop
         /// \param mutation_policy Either all_mutations or selected_variants_only.  See below.
-        /// \param pop Either fwdpp::poptypes::slocuspop or fwdpp::poptypes::mlocuspop.
+        /// \param pop fwdpp::poptypes::diploid_population
         /// \param genetics A duck type of fwdpp::genetic_parameters.
         /// \param offspring The offspring for which we will generate gametes.
         ///

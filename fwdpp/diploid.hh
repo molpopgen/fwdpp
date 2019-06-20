@@ -62,10 +62,6 @@
   sugar layer provides.
  */
 
-/*! @defgroup mlocus Multi-locus/region simulations
- * \brief Functions related to modeling multi-locus/region simulations
- */
-
 /*! \namespace fwdpp::sugar
   \brief Nested namespace for sugar layer.
 
