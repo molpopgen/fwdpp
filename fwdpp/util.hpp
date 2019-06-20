@@ -5,7 +5,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/internal/gsl_discrete.hpp>
+#include <fwdpp/gsl_discrete.hpp>
 #include <fwdpp/internal/util.hpp>
 #include <set>
 #include <map>

@@ -9,7 +9,7 @@
 #include <memory>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/internal/gsl_discrete.hpp>
+#include <fwdpp/gsl_discrete.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 
@@ -50,7 +50,7 @@ namespace fwdpp
           private:
             std::vector<mutation_model_signature> functions;
             std::vector<double> weights;
-            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+            fwdpp::gsl_ran_discrete_t_ptr lookup;
 
           public:
             using function_type = mutation_model_signature;
@@ -72,7 +72,7 @@ namespace fwdpp
                     }
                 if (!weights.empty())
                     {
-                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                        lookup = fwdpp::gsl_ran_discrete_t_ptr(
                             gsl_ran_discrete_preproc(weights.size(),
                                                      weights.data()));
                     }
@@ -89,7 +89,7 @@ namespace fwdpp
             {
                 if (!weights.empty())
                     {
-                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                        lookup = fwdpp::gsl_ran_discrete_t_ptr(
                             gsl_ran_discrete_preproc(weights.size(),
                                                      weights.data()));
                     }
@@ -183,7 +183,7 @@ namespace fwdpp
             double recrate;
             std::vector<std::function<void(std::vector<double> &)>> functions;
             std::vector<double> weights;
-            fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr lookup;
+            fwdpp::gsl_ran_discrete_t_ptr lookup;
 
           public:
             using result_type = std::vector<double>;
@@ -206,7 +206,7 @@ namespace fwdpp
                     }
                 if (!weights.empty())
                     {
-                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                        lookup = fwdpp::gsl_ran_discrete_t_ptr(
                             gsl_ran_discrete_preproc(weights.size(),
                                                      weights.data()));
                     }
@@ -223,7 +223,7 @@ namespace fwdpp
             {
                 if (!weights.empty())
                     {
-                        lookup = fwdpp::fwdpp_internal::gsl_ran_discrete_t_ptr(
+                        lookup = fwdpp::gsl_ran_discrete_t_ptr(
                             gsl_ran_discrete_preproc(weights.size(),
                                                      weights.data()));
                     }

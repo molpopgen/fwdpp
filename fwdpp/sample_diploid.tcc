@@ -13,7 +13,7 @@
 #include <fwdpp/debug.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
-#include <fwdpp/internal/gsl_discrete.hpp>
+#include <fwdpp/gsl_discrete.hpp>
 #include <fwdpp/internal/gamete_cleaner.hpp>
 #include <fwdpp/internal/multilocus_rec.hpp>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
@@ -180,7 +180,7 @@ namespace fwdpp
           is required to make this work, which is why there is no cleanup call
           down below.
         */
-        fwdpp_internal::gsl_ran_discrete_t_ptr lookup(
+        gsl_ran_discrete_t_ptr lookup(
             gsl_ran_discrete_preproc(N_curr, fitnesses.data()));
         const auto parents(diploids); // Copy the parents, which is trivally
         // fast for the vast majority of use
@@ -388,7 +388,7 @@ namespace fwdpp
             }
 #endif
 
-        fwdpp_internal::gsl_ran_discrete_t_ptr lookup(
+        gsl_ran_discrete_t_ptr lookup(
             gsl_ran_discrete_preproc(fitnesses.size(), fitnesses.data()));
 
         const auto parents(diploids); // Copy the parents.  Exact copy of

@@ -85,7 +85,7 @@ struct parent_lookup_tables
     // These return indexes of parents from demes 1 and 2,
     // resp, chosen in O(1) time proportional to
     // relative fitness within each deme
-    fwdpp_internal::gsl_ran_discrete_t_ptr lookup1, lookup2;
+    gsl_ran_discrete_t_ptr lookup1, lookup2;
     // These vectors map indexes returned from sampling
     // lookup1 and lookup2 to diploids in the population
     // object.

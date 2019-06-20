@@ -24,7 +24,9 @@ pkginclude_HEADERS=debug.hpp \
 	mlocuspop.hpp \
 	popgenmut.hpp \
 	simparams.hpp \
-	wrapped_range.hpp
+	wrapped_range.hpp \
+	GSLrng_t.hpp \
+	gsl_discrete.hpp
 
 
 
