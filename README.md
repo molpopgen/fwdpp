@@ -148,7 +148,6 @@ The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutoria
 
 * @ref md_md_datatypes
 * @ref md_md_policies
-* @ref md_md_multiloc
 * @ref md_md_serialization
 * @ref md_md_devtools
 * @ref md_md_sugar
