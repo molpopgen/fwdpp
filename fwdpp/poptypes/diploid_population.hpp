@@ -22,8 +22,9 @@ namespace fwdpp
         template <typename mutation_type, typename mcont, typename gcont,
                   typename dipvector, typename mvector, typename ftvector,
                   typename lookup_table_type>
-        class slocuspop : public popbase<mutation_type, mcont, gcont, mvector,
-                                         ftvector, lookup_table_type>
+        class diploid_population
+            : public popbase<mutation_type, mcont, gcont, mvector, ftvector,
+                             lookup_table_type>
         {
           private:
             void
@@ -41,11 +42,12 @@ namespace fwdpp
             }
 
           public:
-            virtual ~slocuspop() = default;
-            slocuspop(slocuspop &&) = default;
-            slocuspop(const slocuspop &) = default;
-            slocuspop &operator=(slocuspop &&) = default;
-            slocuspop &operator=(const slocuspop &) = default;
+            virtual ~diploid_population() = default;
+            diploid_population(diploid_population &&) = default;
+            diploid_population(const diploid_population &) = default;
+            diploid_population &operator=(diploid_population &&) = default;
+            diploid_population &operator=(const diploid_population &)
+                = default;
             //! Population size
             uint_t N;
 
@@ -55,7 +57,7 @@ namespace fwdpp
             using popbase_t = popbase<mutation_type, mcont, gcont, mvector,
                                       ftvector, lookup_table_type>;
             //! Dispatch tag
-            using popmodel_t = poptypes::SINGLELOC_TAG;
+            using popmodel_t = poptypes::DIPLOID_TAG;
             //! Fitness function signature compatible with this type
             using fitness_t
                 = fwdpp::traits::fitness_fxn_t<dipvector_t,
@@ -66,7 +68,7 @@ namespace fwdpp
             dipvector_t diploids;
 
             //! Constructor
-            explicit slocuspop(
+            explicit diploid_population(
                 const uint_t &popsize,
                 typename popbase_t::gamete_t::mutation_container::size_type
                     reserve_size
@@ -79,8 +81,8 @@ namespace fwdpp
 
             template <typename diploids_input, typename gametes_input,
                       typename mutations_input>
-            explicit slocuspop(diploids_input &&d, gametes_input &&g,
-                               mutations_input &&m)
+            explicit diploid_population(diploids_input &&d, gametes_input &&g,
+                                        mutations_input &&m)
                 : popbase_t(std::forward<gametes_input>(g),
                             std::forward<mutations_input>(m), 100),
                   N{ static_cast<decltype(N)>(d.size()) },
@@ -91,7 +93,7 @@ namespace fwdpp
             }
 
             bool
-            operator==(const slocuspop &rhs) const
+            operator==(const diploid_population &rhs) const
             {
                 return this->diploids == rhs.diploids
                        && popbase_t::is_equal(rhs);

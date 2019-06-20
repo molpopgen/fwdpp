@@ -20,8 +20,7 @@ pkginclude_HEADERS=debug.hpp \
 	data_matrix.hpp \
 	recbinder.hpp \
 	named_type.hpp \
-	slocuspop.hpp \
-	mlocuspop.hpp \
+	diploid_population.hpp \
 	popgenmut.hpp \
 	simparams.hpp \
 	wrapped_range.hpp \

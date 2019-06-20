@@ -5,7 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include <fwdpp/fwd_functional.hpp>
-#include <fwdpp/poptypes/slocuspop.hpp>
+#include <fwdpp/poptypes/diploid_population.hpp>
 
 namespace fwdpp
 {
@@ -17,13 +17,12 @@ namespace fwdpp
     */
     template <typename mtype,
               typename diploid_t = std::pair<std::size_t, std::size_t>>
-    using slocuspop
-        = poptypes::slocuspop<mtype, std::vector<mtype>, std::vector<gamete>,
-                           std::vector<diploid_t>, std::vector<mtype>,
-                           std::vector<uint_t>,
-						   // fwdpp 0.6.1 changed this from an unordered_set,
-						   // in order to address a rare bug. See GitHub
-						   // issue 130 for details.
-                           std::unordered_multimap<double, std::uint32_t>>;
-}
+    using diploid_population = poptypes::diploid_population<
+        mtype, std::vector<mtype>, std::vector<gamete>, std::vector<diploid_t>,
+        std::vector<mtype>, std::vector<uint_t>,
+        // fwdpp 0.6.1 changed this from an unordered_set,
+        // in order to address a rare bug. See GitHub
+        // issue 130 for details.
+        std::unordered_multimap<double, std::uint32_t>>;
+} // namespace fwdpp
 #endif
