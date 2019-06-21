@@ -165,5 +165,4 @@ There is some (limited) support for quick-starting projects based on __fwdpp__:
 
 Finally, there are more advanced topics:
 
-* @ref md_md_multiloc
 * @ref md_md_serialization
