@@ -10,7 +10,7 @@ namespace fwdpp
 {
     struct poisson_interval : public genetic_map_unit
     {
-        double beg, end, mean;
+        const double beg, end, mean;
         poisson_interval(double b, double e, double m)
             : genetic_map_unit(), beg(b), end(e), mean(m)
         {
