@@ -14,6 +14,7 @@ unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/g
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \
 	unit/test_recombination.cc \
+	unit/test_genetic_map.cc \
 	fixtures/sugar_fixtures.cc
 
 unit_extensions_unit_tests_SOURCES=unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
