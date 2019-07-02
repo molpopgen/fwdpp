@@ -65,11 +65,11 @@ namespace fwdpp
             gsl_rng_set(r.get(), seed);
         }
 
+        ~GSLrng_t() = default;
         GSLrng_t(const GSLrng_t &rng) = delete;
-
         GSLrng_t(GSLrng_t &&) = default;
-
         GSLrng_t &operator=(GSLrng_t &) = delete;
+        GSLrng_t &operator=(GSLrng_t &&) = default;
 
         //! Return underlying pointer
         const gsl_rng *

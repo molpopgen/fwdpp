@@ -48,10 +48,8 @@ namespace fwdpp
         {
         }
         virtual ~mutation_base() noexcept {}
-        mutation_base(mutation_base &) = default;
         mutation_base(mutation_base const &) = default;
         mutation_base(mutation_base &&) = default;
-        mutation_base &operator=(mutation_base &) = default;
         mutation_base &operator=(mutation_base const &) = default;
         mutation_base &operator=(mutation_base &&) = default;
 
@@ -160,14 +158,10 @@ namespace fwdpp
         //! Destructor is virtual, so you may inherit from this type
         virtual ~haploid_genome_base() noexcept {}
         //! Copy constructor
-        haploid_genome_base(haploid_genome_base &) = default;
-        //! Copy constructor
         haploid_genome_base(haploid_genome_base const &) = default;
         //! Move constructor
         haploid_genome_base(haploid_genome_base &&) = default;
 
-        //! Assignment operator
-        haploid_genome_base &operator=(haploid_genome_base &) = default;
         //! Assignment operator
         haploid_genome_base &operator=(haploid_genome_base const &) = default;
         //! Move assignment operator
