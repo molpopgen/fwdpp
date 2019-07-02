@@ -9,9 +9,9 @@ namespace fwdpp
 {
     struct genetic_map_unit : public util::abstract_cloneable<genetic_map_unit>
     {
+        genetic_map_unit() : util::abstract_cloneable<genetic_map_unit>() {}
         virtual void operator()(const gsl_rng *,
                                 std::vector<double> &) const = 0;
-        genetic_map_unit() : util::abstract_cloneable<genetic_map_unit>() {}
     };
 } // namespace fwdpp
 
