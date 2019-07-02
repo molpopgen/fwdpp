@@ -1,6 +1,7 @@
 #include <config.h>
 #include <cmath>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
+#include <fwdpp/genetic_map/poisson_point.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <boost/test/unit_test.hpp>
@@ -28,6 +29,19 @@ BOOST_AUTO_TEST_CASE(test_poisson_interval)
     });
 }
 
+BOOST_AUTO_TEST_CASE(test_poisson_point)
+{
+    BOOST_REQUIRE_NO_THROW(fwdpp::poisson_point(0., 1e-3));
+    BOOST_REQUIRE_THROW(fwdpp::poisson_point(0., -1e-3),
+                        std::invalid_argument);
+    BOOST_REQUIRE_THROW(
+        fwdpp::poisson_point(1., std::numeric_limits<double>::quiet_NaN()),
+        std::invalid_argument);
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::poisson_point p(0, 1e-3);
+        apply_callback(p, rng.get());
+    });
+}
 BOOST_AUTO_TEST_CASE(test_genetic_map_moving_vector)
 {
     BOOST_REQUIRE_NO_THROW({
