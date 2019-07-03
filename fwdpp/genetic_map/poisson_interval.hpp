@@ -12,13 +12,13 @@ namespace fwdpp
     {
         const double beg, end, mean;
         poisson_interval(double b, double e, double m)
-            : genetic_map_unit(), beg(b), end(e), mean(m)
+            : beg(b), end(e), mean(m)
         {
-            if (!std::isfinite(b))
+            if (!std::isfinite(beg))
                 {
                     throw std::invalid_argument("beg must be finite");
                 }
-            if (!std::isfinite(e))
+            if (!std::isfinite(end))
                 {
                     throw std::invalid_argument("end must be finite");
                 }
@@ -26,7 +26,7 @@ namespace fwdpp
                 {
                     throw std::invalid_argument("mean must be finite");
                 }
-            if (e <= b)
+            if (end <= beg)
                 {
                     throw std::invalid_argument(
                         "end must be greater than beg");
