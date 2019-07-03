@@ -12,7 +12,7 @@ namespace fwdpp
     {
         const double position, mean;
         poisson_point(const double pos, const double m)
-            : position(pos), mean(m)
+            : genetic_map_unit(), position(pos), mean(m)
         {
             if (!std::isfinite(pos))
                 {
