@@ -12,7 +12,7 @@ namespace fwdpp
     {
         const double beg, end, mean;
         poisson_interval(double b, double e, double m)
-            : beg(b), end(e), mean(m)
+            : genetic_map_unit(), beg(b), end(e), mean(m)
         {
             if (!std::isfinite(beg))
                 {
