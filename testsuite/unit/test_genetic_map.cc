@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/genetic_map/poisson_point.hpp>
+#include <fwdpp/genetic_map/binomial_interval.hpp>
 #include <fwdpp/genetic_map/binomial_point.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/recbinder.hpp>
@@ -51,6 +52,45 @@ BOOST_AUTO_TEST_CASE(test_clone_and_cast)
     BOOST_REQUIRE_EQUAL(cast->beg, p.beg);
     BOOST_REQUIRE_EQUAL(cast->end, p.end);
     BOOST_REQUIRE_EQUAL(cast->mean, p.mean);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(test_binomial_interval, rng_fixture)
+
+BOOST_AUTO_TEST_CASE(test_construction)
+{
+    BOOST_REQUIRE_NO_THROW(fwdpp::binomial_interval(0., 1., 1e-3));
+    BOOST_REQUIRE_THROW(fwdpp::binomial_interval(0., 1., -1e-3),
+                        std::invalid_argument);
+    BOOST_REQUIRE_THROW(fwdpp::binomial_interval(1., 0., 1e-3),
+                        std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE(test_callback_nothrow)
+{
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::binomial_interval p(0, 1, 1e-3);
+        apply_callback(p, rng.get());
+    });
+}
+
+BOOST_AUTO_TEST_CASE(test_clone_and_cast)
+{
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::binomial_interval p(0, 1, 1e-3);
+        auto c = p.clone();
+        apply_callback(*c, rng.get());
+    });
+    fwdpp::binomial_interval p(0, 1, 1e-3);
+    auto c = p.clone();
+    BOOST_REQUIRE_EQUAL(c == nullptr, false);
+    auto cast = dynamic_cast<fwdpp::binomial_interval*>(c.release());
+    BOOST_REQUIRE_EQUAL(cast != nullptr, true);
+    BOOST_REQUIRE_EQUAL(c == nullptr, true);
+    BOOST_REQUIRE_EQUAL(cast->beg, p.beg);
+    BOOST_REQUIRE_EQUAL(cast->end, p.end);
+    BOOST_REQUIRE_EQUAL(cast->prob, p.prob);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
