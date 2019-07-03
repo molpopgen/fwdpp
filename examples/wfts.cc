@@ -22,7 +22,8 @@
 #include <fwdpp/util.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
-#include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/genetic_map/genetic_map.hpp>
+#include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/simparams.hpp>
 
@@ -64,8 +65,9 @@ main(int argc, char **argv)
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
-    const auto recmap
-        = fwdpp::recbinder(fwdpp::poisson_xover(recrate, 0., 1.), rng.get());
+    fwdpp::genetic_map gm;
+    gm.add_callback(fwdpp::poisson_interval(0., 1., recrate));
+    const auto recmap = fwdpp::recbinder(std::cref(gm), rng.get());
 
     auto get_selection_coefficient
         = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
