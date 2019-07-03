@@ -95,25 +95,36 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_FIXTURE_TEST_SUITE(test_genetic_map, rng_fixture)
 
-BOOST_AUTO_TEST_CASE(test_genetic_map_moving_vector)
+BOOST_AUTO_TEST_CASE(test_moving_vector)
 {
     BOOST_REQUIRE_NO_THROW({
         std::vector<std::unique_ptr<fwdpp::genetic_map_unit>> callbacks;
         callbacks.emplace_back(new fwdpp::poisson_interval(0., 1., 1e-3));
         fwdpp::genetic_map gm(std::move(callbacks));
         BOOST_REQUIRE_EQUAL(gm.size(), 1);
-    });
-}
-
-BOOST_AUTO_TEST_CASE(test_genetic_map_binding)
-{
-    BOOST_REQUIRE_NO_THROW({
-        std::vector<std::unique_ptr<fwdpp::genetic_map_unit>> callbacks;
-        callbacks.emplace_back(new fwdpp::poisson_interval(0., 1., 1e-3));
-        fwdpp::genetic_map gm(std::move(callbacks));
         auto r = fwdpp::recbinder(std::cref(gm), rng.get());
         auto breakpoints = r();
     });
+}
+
+BOOST_AUTO_TEST_CASE(test_adding_poisson_interval)
+{
+    fwdpp::poisson_interval p(0, 1, 1e-1);
+    fwdpp::genetic_map gm;
+    gm.add_callback(p);
+    BOOST_REQUIRE_EQUAL(gm.size(), 1);
+    auto r = fwdpp::recbinder(std::cref(gm), rng.get());
+    auto breakpoints = r();
+}
+
+BOOST_AUTO_TEST_CASE(test_adding_poisson_point)
+{
+    fwdpp::poisson_point p(0, 1);
+    fwdpp::genetic_map gm;
+    gm.add_callback(p);
+    BOOST_REQUIRE_EQUAL(gm.size(), 1);
+    auto r = fwdpp::recbinder(std::cref(gm), rng.get());
+    auto breakpoints = r();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
