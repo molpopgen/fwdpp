@@ -1,5 +1,6 @@
 #include <config.h>
 #include <cmath>
+#include <iostream>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/genetic_map/poisson_point.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
@@ -14,23 +15,32 @@ apply_callback(const fwdpp::genetic_map_unit& gu, const gsl_rng* r)
     gu(r, breakpoints);
 }
 
-BOOST_FIXTURE_TEST_SUITE(test_genetic_map, rng_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_poisson_interval, rng_fixture)
 
-BOOST_AUTO_TEST_CASE(test_poisson_interval)
+BOOST_AUTO_TEST_CASE(test_construction)
 {
     BOOST_REQUIRE_NO_THROW(fwdpp::poisson_interval(0., 1., 1e-3));
     BOOST_REQUIRE_THROW(fwdpp::poisson_interval(0., 1., -1e-3),
                         std::invalid_argument);
     BOOST_REQUIRE_THROW(fwdpp::poisson_interval(1., 0., 1e-3),
                         std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE(test_callback_nothrow)
+{
     BOOST_REQUIRE_NO_THROW({
         fwdpp::poisson_interval p(0, 1, 1e-3);
         apply_callback(p, rng.get());
     });
 }
 
-BOOST_AUTO_TEST_CASE(test_poisson_interval_clone_and_cast)
+BOOST_AUTO_TEST_CASE(test_clone_and_cast)
 {
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::poisson_interval p(0, 1, 1e-3);
+        auto c = p.clone();
+        apply_callback(*c, rng.get());
+    });
     fwdpp::poisson_interval p(0, 1, 1e-3);
     auto c = p.clone();
     BOOST_REQUIRE_EQUAL(c == nullptr, false);
@@ -42,7 +52,11 @@ BOOST_AUTO_TEST_CASE(test_poisson_interval_clone_and_cast)
     BOOST_REQUIRE_EQUAL(cast->mean, p.mean);
 }
 
-BOOST_AUTO_TEST_CASE(test_poisson_point)
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(test_poisson_point, rng_fixture)
+
+BOOST_AUTO_TEST_CASE(test_construction)
 {
     BOOST_REQUIRE_NO_THROW(fwdpp::poisson_point(0., 1e-3));
     BOOST_REQUIRE_THROW(fwdpp::poisson_point(0., -1e-3),
@@ -50,14 +64,23 @@ BOOST_AUTO_TEST_CASE(test_poisson_point)
     BOOST_REQUIRE_THROW(
         fwdpp::poisson_point(1., std::numeric_limits<double>::quiet_NaN()),
         std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE(test_callback_nothrow)
+{
     BOOST_REQUIRE_NO_THROW({
         fwdpp::poisson_point p(0, 1e-3);
         apply_callback(p, rng.get());
     });
 }
 
-BOOST_AUTO_TEST_CASE(test_poisson_point_clone_and_cast)
+BOOST_AUTO_TEST_CASE(test_clone_and_cast)
 {
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::poisson_point p(0, 1e-3);
+        auto c = p.clone();
+        apply_callback(*c, rng.get());
+    });
     fwdpp::poisson_point p(0, 1e-3);
     auto c = p.clone();
     BOOST_REQUIRE_EQUAL(c == nullptr, false);
@@ -67,6 +90,10 @@ BOOST_AUTO_TEST_CASE(test_poisson_point_clone_and_cast)
     BOOST_REQUIRE_EQUAL(cast->position, p.position);
     BOOST_REQUIRE_EQUAL(cast->mean, p.mean);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(test_genetic_map, rng_fixture)
 
 BOOST_AUTO_TEST_CASE(test_genetic_map_moving_vector)
 {
