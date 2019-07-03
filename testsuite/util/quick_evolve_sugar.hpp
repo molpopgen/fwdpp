@@ -89,7 +89,7 @@ simulate_diploid_population(diploid_population_object_t &pop,
                 pop.mcounts, 1000, 0.005, mmodel,
                 fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
                                  rng.get()),
-                fwdpp::multiplicative_diploid(2.), pop.neutral, pop.selected);
+                fwdpp::multiplicative_diploid(fwdpp::fitness(2.)), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {
                     throw std::runtime_error("fitness not finite");
