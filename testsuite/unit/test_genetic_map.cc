@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/genetic_map/poisson_point.hpp>
+#include <fwdpp/genetic_map/binomial_point.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <boost/test/unit_test.hpp>
@@ -93,6 +94,45 @@ BOOST_AUTO_TEST_CASE(test_clone_and_cast)
 
 BOOST_AUTO_TEST_SUITE_END()
 
+BOOST_FIXTURE_TEST_SUITE(test_binomial_point, rng_fixture)
+
+BOOST_AUTO_TEST_CASE(test_construction)
+{
+    BOOST_REQUIRE_NO_THROW(fwdpp::binomial_point(0., 1e-3));
+    BOOST_REQUIRE_THROW(fwdpp::binomial_point(0., -1e-3),
+                        std::invalid_argument);
+    BOOST_REQUIRE_THROW(
+        fwdpp::binomial_point(1., std::numeric_limits<double>::quiet_NaN()),
+        std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_CASE(test_callback_nothrow)
+{
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::binomial_point p(0, 1e-3);
+        apply_callback(p, rng.get());
+    });
+}
+
+BOOST_AUTO_TEST_CASE(test_clone_and_cast)
+{
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::binomial_point p(0, 1e-3);
+        auto c = p.clone();
+        apply_callback(*c, rng.get());
+    });
+    fwdpp::binomial_point p(0, 1e-3);
+    auto c = p.clone();
+    BOOST_REQUIRE_EQUAL(c == nullptr, false);
+    auto cast = dynamic_cast<fwdpp::binomial_point*>(c.release());
+    BOOST_REQUIRE_EQUAL(cast != nullptr, true);
+    BOOST_REQUIRE_EQUAL(c == nullptr, true);
+    BOOST_REQUIRE_EQUAL(cast->position, p.position);
+    BOOST_REQUIRE_EQUAL(cast->prob, p.prob);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_FIXTURE_TEST_SUITE(test_genetic_map, rng_fixture)
 
 BOOST_AUTO_TEST_CASE(test_moving_vector)
@@ -120,6 +160,16 @@ BOOST_AUTO_TEST_CASE(test_adding_poisson_interval)
 BOOST_AUTO_TEST_CASE(test_adding_poisson_point)
 {
     fwdpp::poisson_point p(0, 1);
+    fwdpp::genetic_map gm;
+    gm.add_callback(p);
+    BOOST_REQUIRE_EQUAL(gm.size(), 1);
+    auto r = fwdpp::recbinder(std::cref(gm), rng.get());
+    auto breakpoints = r();
+}
+
+BOOST_AUTO_TEST_CASE(test_adding_binomial_point)
+{
+    fwdpp::binomial_point p(0, 1);
     fwdpp::genetic_map gm;
     gm.add_callback(p);
     BOOST_REQUIRE_EQUAL(gm.size(), 1);
