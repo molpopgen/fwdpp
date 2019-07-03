@@ -1,5 +1,6 @@
 #include <config.h>
 #include <cmath>
+#include <iostream>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/genetic_map/poisson_point.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
@@ -42,6 +43,18 @@ BOOST_AUTO_TEST_CASE(test_poisson_point)
         apply_callback(p, rng.get());
     });
 }
+
+BOOST_AUTO_TEST_CASE(test_poisson_point_clone_and_cast)
+{
+        fwdpp::poisson_point p(0, 1e-3);
+        auto c = p.clone();
+        auto cast = dynamic_cast<fwdpp::poisson_point*>(c.release());
+        BOOST_REQUIRE_EQUAL(cast != nullptr, true);
+        BOOST_REQUIRE_EQUAL(c == nullptr, true);
+        BOOST_REQUIRE_EQUAL(cast->position, p.position);
+        BOOST_REQUIRE_EQUAL(cast->mean, p.mean);
+}
+
 BOOST_AUTO_TEST_CASE(test_genetic_map_moving_vector)
 {
     BOOST_REQUIRE_NO_THROW({
