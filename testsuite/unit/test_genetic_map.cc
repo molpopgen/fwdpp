@@ -72,8 +72,9 @@ BOOST_AUTO_TEST_CASE(test_construction)
 BOOST_AUTO_TEST_CASE(test_callback_nothrow)
 {
     BOOST_REQUIRE_NO_THROW({
-        fwdpp::binomial_interval p(0, 1, 1e-3);
-        apply_callback(p, rng.get());
+        fwdpp::binomial_interval p(0, 1, 1);
+        auto rv = apply_callback(p, rng.get());
+        BOOST_REQUIRE_EQUAL(rv.size(), 1);
     });
 }
 
@@ -151,8 +152,10 @@ BOOST_AUTO_TEST_CASE(test_construction)
 BOOST_AUTO_TEST_CASE(test_callback_nothrow)
 {
     BOOST_REQUIRE_NO_THROW({
-        fwdpp::binomial_point p(0, 1e-3);
-        apply_callback(p, rng.get());
+        fwdpp::binomial_point p(0, 1);
+        auto rv = apply_callback(p, rng.get());
+        BOOST_REQUIRE_EQUAL(rv.size(), 1);
+        BOOST_REQUIRE_EQUAL(rv.front(), 0);
     });
 }
 
