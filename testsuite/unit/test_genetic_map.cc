@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(test_clone_and_cast)
     BOOST_REQUIRE_EQUAL(c == nullptr, false);
     auto cast = dynamic_cast<fwdpp::poisson_interval*>(c.release());
     BOOST_REQUIRE_EQUAL(cast != nullptr, true);
-    BOOST_REQUIRE_EQUAL(c == nullptr, false);
+    BOOST_REQUIRE_EQUAL(c == nullptr, true);
     BOOST_REQUIRE_EQUAL(cast->beg, p.beg);
     BOOST_REQUIRE_EQUAL(cast->end, p.end);
     BOOST_REQUIRE_EQUAL(cast->mean, p.mean);

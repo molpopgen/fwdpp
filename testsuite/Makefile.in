@@ -90,6 +90,7 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/extensions_unit_tests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests$(EXEEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/genetic_map_tests$(EXEEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_integration_tests$(EXEEXT)
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -132,8 +133,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/test_general_rec_variation.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc unit/test_wrapped_range.cc \
-	unit/test_recombination.cc unit/test_genetic_map.cc \
-	fixtures/sugar_fixtures.cc
+	unit/test_recombination.cc fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -149,10 +149,16 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
+am__unit_genetic_map_tests_SOURCES_DIST = unit/genetic_map_tests.cc \
+	unit/test_genetic_map.cc
+@BUNIT_TEST_PRESENT_TRUE@am_unit_genetic_map_tests_OBJECTS =  \
+@BUNIT_TEST_PRESENT_TRUE@	unit/genetic_map_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.$(OBJEXT)
+unit_genetic_map_tests_OBJECTS = $(am_unit_genetic_map_tests_OBJECTS)
+unit_genetic_map_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 	unit/sugar_GSLrngTest.cc unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc unit/sugar_construct_pops.cc \
@@ -192,6 +198,7 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	unit/$(DEPDIR)/fwdpp_unit_tests.Po \
 	unit/$(DEPDIR)/gameteTest.Po \
 	unit/$(DEPDIR)/gamete_cleanerTest.Po \
+	unit/$(DEPDIR)/genetic_map_tests.Po \
 	unit/$(DEPDIR)/mutateTest.Po \
 	unit/$(DEPDIR)/serializationTest.Po \
 	unit/$(DEPDIR)/siteDepFitnessTest.Po \
@@ -226,11 +233,13 @@ am__v_CXXLD_1 =
 SOURCES = $(integration_sugar_integration_tests_SOURCES) \
 	$(unit_extensions_unit_tests_SOURCES) \
 	$(unit_fwdpp_unit_tests_SOURCES) \
+	$(unit_genetic_map_tests_SOURCES) \
 	$(unit_sugar_unit_tests_SOURCES)
 DIST_SOURCES =  \
 	$(am__integration_sugar_integration_tests_SOURCES_DIST) \
 	$(am__unit_extensions_unit_tests_SOURCES_DIST) \
 	$(am__unit_fwdpp_unit_tests_SOURCES_DIST) \
+	$(am__unit_genetic_map_tests_SOURCES_DIST) \
 	$(am__unit_sugar_unit_tests_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -572,8 +581,10 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+
+@BUNIT_TEST_PRESENT_TRUE@unit_genetic_map_tests_SOURCES = unit/genetic_map_tests.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.cc
 
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
@@ -704,12 +715,18 @@ unit/test_wrapped_range.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/test_recombination.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
-unit/test_genetic_map.$(OBJEXT): unit/$(am__dirstamp) \
-	unit/$(DEPDIR)/$(am__dirstamp)
 
 unit/fwdpp_unit_tests$(EXEEXT): $(unit_fwdpp_unit_tests_OBJECTS) $(unit_fwdpp_unit_tests_DEPENDENCIES) $(EXTRA_unit_fwdpp_unit_tests_DEPENDENCIES) unit/$(am__dirstamp)
 	@rm -f unit/fwdpp_unit_tests$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(unit_fwdpp_unit_tests_OBJECTS) $(unit_fwdpp_unit_tests_LDADD) $(LIBS)
+unit/genetic_map_tests.$(OBJEXT): unit/$(am__dirstamp) \
+	unit/$(DEPDIR)/$(am__dirstamp)
+unit/test_genetic_map.$(OBJEXT): unit/$(am__dirstamp) \
+	unit/$(DEPDIR)/$(am__dirstamp)
+
+unit/genetic_map_tests$(EXEEXT): $(unit_genetic_map_tests_OBJECTS) $(unit_genetic_map_tests_DEPENDENCIES) $(EXTRA_unit_genetic_map_tests_DEPENDENCIES) unit/$(am__dirstamp)
+	@rm -f unit/genetic_map_tests$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(unit_genetic_map_tests_OBJECTS) $(unit_genetic_map_tests_LDADD) $(LIBS)
 unit/sugar_unit_tests.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/sugar_GSLrngTest.$(OBJEXT): unit/$(am__dirstamp) \
@@ -746,6 +763,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/fwdpp_unit_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/gameteTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/gamete_cleanerTest.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/genetic_map_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/mutateTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/serializationTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/siteDepFitnessTest.Po@am__quote@ # am--include-marker
@@ -1001,6 +1019,13 @@ unit/sugar_unit_tests.log: unit/sugar_unit_tests$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+unit/genetic_map_tests.log: unit/genetic_map_tests$(EXEEXT)
+	@p='unit/genetic_map_tests$(EXEEXT)'; \
+	b='unit/genetic_map_tests'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 integration/sugar_integration_tests.log: integration/sugar_integration_tests$(EXEEXT)
 	@p='integration/sugar_integration_tests$(EXEEXT)'; \
 	b='integration/sugar_integration_tests'; \
@@ -1115,6 +1140,7 @@ distclean: distclean-am
 	-rm -f unit/$(DEPDIR)/fwdpp_unit_tests.Po
 	-rm -f unit/$(DEPDIR)/gameteTest.Po
 	-rm -f unit/$(DEPDIR)/gamete_cleanerTest.Po
+	-rm -f unit/$(DEPDIR)/genetic_map_tests.Po
 	-rm -f unit/$(DEPDIR)/mutateTest.Po
 	-rm -f unit/$(DEPDIR)/serializationTest.Po
 	-rm -f unit/$(DEPDIR)/siteDepFitnessTest.Po
@@ -1188,6 +1214,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f unit/$(DEPDIR)/fwdpp_unit_tests.Po
 	-rm -f unit/$(DEPDIR)/gameteTest.Po
 	-rm -f unit/$(DEPDIR)/gamete_cleanerTest.Po
+	-rm -f unit/$(DEPDIR)/genetic_map_tests.Po
 	-rm -f unit/$(DEPDIR)/mutateTest.Po
 	-rm -f unit/$(DEPDIR)/serializationTest.Po
 	-rm -f unit/$(DEPDIR)/siteDepFitnessTest.Po
