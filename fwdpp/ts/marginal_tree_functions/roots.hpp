@@ -46,17 +46,24 @@ namespace fwdpp
             }
         };
 
-        std::vector<TS_NODE_INT>
-        get_roots(const marginal_tree& m)
+        template <typename F>
+        inline void
+        process_roots(const marginal_tree& m, const F& f)
         {
             root_iterator ri(m);
-            std::vector<TS_NODE_INT> rv;
             auto r = ri();
             while (r != TS_NULL_NODE)
                 {
-                    rv.push_back(r);
+                    f(r);
                     r = ri();
                 }
+        }
+
+        inline std::vector<TS_NODE_INT>
+        get_roots(const marginal_tree& m)
+        {
+            std::vector<TS_NODE_INT> rv;
+            process_roots(m, [&rv](const TS_NODE_INT r) { rv.push_back(r); });
             return rv;
         }
 
@@ -64,14 +71,8 @@ namespace fwdpp
         num_roots(const marginal_tree& m)
         /// Return number of roots
         {
-            root_iterator ri(m);
-            auto lr = ri();
             int nroots = 0;
-            while (lr != TS_NULL_NODE)
-                {
-                    ++nroots;
-                    lr = ri();
-                }
+            process_roots(m, [&nroots](const TS_NODE_INT /*r*/) { ++nroots; });
             return nroots;
         }
 

@@ -57,32 +57,36 @@ namespace fwdpp
             }
         };
 
-        std::vector<TS_NODE_INT>
+        template <typename F>
+        inline void
+        process_children(const marginal_tree& m, TS_NODE_INT n,
+                         bool left_to_right_traversal, const F& f)
+        {
+            child_iterator ci(m, n, left_to_right_traversal);
+            auto c = ci();
+            while (c != TS_NULL_NODE)
+                {
+                    f(c);
+                    c = ci();
+                }
+        }
+
+        inline std::vector<TS_NODE_INT>
         get_children(const marginal_tree& m, TS_NODE_INT n,
                      bool left_to_right_traversal)
         {
-            child_iterator ci(m, n, left_to_right_traversal);
             std::vector<TS_NODE_INT> rv;
-            auto c = ci();
-            while (c != TS_NULL_NODE)
-                {
-                    rv.push_back(c);
-                    c = ci();
-                }
+            process_children(m, n, left_to_right_traversal,
+                             [&rv](const TS_NODE_INT c) { rv.push_back(c); });
             return rv;
         }
 
-        int
+        inline int
         num_children(const marginal_tree& m, TS_NODE_INT n)
         {
-            child_iterator ci(m, n, true);
             int nc = 0;
-            auto c = ci();
-            while (c != TS_NULL_NODE)
-                {
-                    nc++;
-                    c = ci();
-                }
+            process_children(m, n, true,
+                             [&nc](const TS_NODE_INT /*c*/) { ++nc; });
             return nc;
         }
     } // namespace ts
