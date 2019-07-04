@@ -67,6 +67,7 @@ namespace fwdpp
             while (c != TS_NULL_NODE)
                 {
                     rv.push_back(c);
+                    c = ci();
                 }
             return rv;
         }
@@ -80,6 +81,7 @@ namespace fwdpp
             while (c != TS_NULL_NODE)
                 {
                     nc++;
+                    c = ci();
                 }
             return nc;
         }

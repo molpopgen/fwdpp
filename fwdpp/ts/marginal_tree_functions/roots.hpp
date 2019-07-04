@@ -1,5 +1,5 @@
-#ifndef FWDPP_TS_MARGINAL_TREE_ROOT_ITERATOR_HPP
-#define FWDPP_TS_MARGINAL_TREE_ROOT_ITERATOR_HPP
+#ifndef FWDPP_TS_MARGINAL_TREE_FUNCTIONS_ROOTS_ITERATOR_HPP
+#define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_ROOTS_ITERATOR_HPP
 
 #include <stdexcept>
 #include "../marginal_tree.hpp"
@@ -45,6 +45,36 @@ namespace fwdpp
                 return croot;
             }
         };
+
+        std::vector<TS_NODE_INT>
+        get_roots(const marginal_tree& m)
+        {
+            root_iterator ri(m);
+            std::vector<TS_NODE_INT> rv;
+            auto r = ri();
+            while (r != TS_NULL_NODE)
+                {
+                    rv.push_back(r);
+                    r = ri();
+                }
+            return rv;
+        }
+
+        inline int
+        num_roots(const marginal_tree& m)
+        /// Return number of roots
+        {
+            root_iterator ri(m);
+            auto lr = ri();
+            int nroots = 0;
+            while (lr != TS_NULL_NODE)
+                {
+                    ++nroots;
+                    lr = ri();
+                }
+            return nroots;
+        }
+
     } // namespace ts
 } // namespace fwdpp
 #endif
