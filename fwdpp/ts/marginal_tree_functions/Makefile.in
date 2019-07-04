@@ -266,7 +266,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = num_roots.hpp \
-					root_iterator.hpp
+					children.hpp
 
 all: all-am
 
@@ -527,6 +527,7 @@ uninstall-am: uninstall-pkgincludeHEADERS
 
 .PRECIOUS: Makefile
 
+					root_iterator.hpp
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
