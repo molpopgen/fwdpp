@@ -44,6 +44,19 @@ namespace fwdpp
                 current_root = *(rsib_beg + croot);
                 return croot;
             }
+
+            template <typename F>
+            inline bool
+            operator()(const F& f)
+            {
+                auto croot = this->operator()();
+                bool rv = (croot != TS_NULL_NODE);
+                if (rv)
+                    {
+                        f(croot);
+                    }
+                return rv;
+            }
         };
 
         template <typename F>
@@ -51,11 +64,8 @@ namespace fwdpp
         process_roots(const marginal_tree& m, const F& f)
         {
             root_iterator ri(m);
-            auto r = ri();
-            while (r != TS_NULL_NODE)
+            while (ri(f))
                 {
-                    f(r);
-                    r = ri();
                 }
         }
 

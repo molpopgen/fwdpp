@@ -50,6 +50,19 @@ namespace fwdpp
                 current_child = *(sib_begin + current_child);
                 return c;
             }
+
+            template <typename F>
+            inline bool
+            operator()(const F& f)
+            {
+                auto c = this->operator()();
+                bool rv = (c != TS_NULL_NODE);
+                if (rv)
+                    {
+                        f(c);
+                    }
+                return rv;
+            }
         };
 
         template <typename F>
@@ -58,11 +71,8 @@ namespace fwdpp
                          bool left_to_right_traversal, const F& f)
         {
             child_iterator ci(m, n, left_to_right_traversal);
-            auto c = ci();
-            while (c != TS_NULL_NODE)
+            while (ci(f))
                 {
-                    f(c);
-                    c = ci();
                 }
         }
 
