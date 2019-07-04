@@ -12,8 +12,7 @@ namespace fwdpp
           private:
             bool left_to_right;
             TS_NODE_INT current_child;
-            std::vector<TS_NODE_INT>::const_iterator child_begin, child_end,
-                sib_begin, sib_end;
+            std::vector<TS_NODE_INT>::const_iterator sib_begin, sib_end;
 
             inline TS_NODE_INT
             init_current_child(const marginal_tree& m, TS_NODE_INT n)
@@ -34,13 +33,9 @@ namespace fwdpp
                            bool left_to_right_traversal)
                 : left_to_right(left_to_right_traversal),
                   current_child(init_current_child(m, n)),
-                  child_begin(left_to_right ? begin(m.left_child)
-                                            : begin(m.right_child)),
-                  child_end(left_to_right ? end(m.left_child)
-                                          : end(m.right_child)),
-                  sib_begin(left_to_right ? begin(m.left_sib)
-                                          : begin(m.right_sib)),
-                  sib_end(left_to_right ? end(m.left_sib) : end(m.right_sib))
+                  sib_begin(left_to_right ? begin(m.right_sib)
+                                          : begin(m.left_sib)),
+                  sib_end(left_to_right ? end(m.right_sib) : end(m.left_sib))
             {
             }
 
@@ -48,7 +43,7 @@ namespace fwdpp
             operator()()
             {
                 auto c = current_child;
-                if (sib_begin + current_child >= child_end)
+                if (sib_begin + current_child >= sib_end)
                     {
                         throw std::runtime_error("child iteration error");
                     }
