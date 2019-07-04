@@ -17,7 +17,11 @@ namespace fwdpp
             inline TS_NODE_INT
             init_current_child(const marginal_tree& m, TS_NODE_INT n)
             {
-                if (n >= m.left_child.size())
+                if (n == TS_NULL_NODE)
+                    {
+                        throw std::invalid_argument("node is NULL");
+                    }
+                if (static_cast<std::size_t>(n) >= m.left_child.size())
                     {
                         throw std::invalid_argument("node id is out of range");
                     }
