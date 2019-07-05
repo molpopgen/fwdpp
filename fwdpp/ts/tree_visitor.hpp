@@ -196,7 +196,7 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples)
             {
-                if (j == jM || k == kM)
+                if ((j == jM || k == kM) && !tables.edge_table.empty())
                     {
                         throw std::invalid_argument("tables are not indexed");
                     }
@@ -231,7 +231,7 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes)
             {
-                if (j == jM || k == kM)
+                if ((j == jM || k == kM) && !tables.edge_table.empty())
                     {
                         throw std::invalid_argument("tables are not indexed");
                     }
