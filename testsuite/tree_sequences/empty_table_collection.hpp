@@ -6,8 +6,9 @@
 struct empty_table_collection
 {
     fwdpp::ts::table_collection tables;
+    std::vector<fwdpp::ts::TS_NODE_INT> empty_samples;
 
-    empty_table_collection() : tables(1.) {}
+    empty_table_collection() : tables(1.), empty_samples{} {}
 };
 
 #endif

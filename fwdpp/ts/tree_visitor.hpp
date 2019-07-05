@@ -196,6 +196,14 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples)
             {
+                if (j == jM || k == kM)
+                    {
+                        throw std::invalid_argument("tables are not indexed");
+                    }
+                if (samples.empty())
+                    {
+                        throw std::invalid_argument("empty sample list");
+                    }
             }
 
             const marginal_tree&
@@ -223,6 +231,15 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes)
             {
+                if (j == jM || k == kM)
+                    {
+                        throw std::invalid_argument("tables are not indexed");
+                    }
+                if (samples.empty() && preserved_nodes.empty())
+                    {
+                        throw std::invalid_argument(
+                            "one or both sample lists are empty");
+                    }
             }
 
             template <typename leaf_policy, typename sample_list_policy>
