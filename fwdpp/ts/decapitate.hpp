@@ -8,7 +8,7 @@ namespace fwdpp
 {
     namespace ts
     {
-        void
+        inline void
         decapitate(table_collection& tables, double time)
         /// \ brief "Decaptitate" a table_collection.
 		///
