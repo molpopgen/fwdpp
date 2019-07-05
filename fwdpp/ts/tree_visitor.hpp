@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include "exceptions.hpp"
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
@@ -202,7 +203,7 @@ namespace fwdpp
                     }
                 if (samples.empty())
                     {
-                        throw std::invalid_argument("empty sample list");
+                        throw empty_samples("empty sample list");
                     }
             }
 
@@ -237,7 +238,7 @@ namespace fwdpp
                     }
                 if (samples.empty() && preserved_nodes.empty())
                     {
-                        throw std::invalid_argument(
+                        throw empty_samples(
                             "one or both sample lists are empty");
                     }
             }

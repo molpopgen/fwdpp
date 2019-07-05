@@ -6,6 +6,7 @@
 #include <limits>
 #include <cstdint>
 #include "definitions.hpp"
+#include "exceptions.hpp"
 
 namespace fwdpp
 {
@@ -85,7 +86,7 @@ namespace fwdpp
             {
                 if (samples.empty())
                     {
-                        throw std::invalid_argument(
+                        throw empty_samples(
                             "marginal_tree: empty sample list");
                     }
                 init_samples(samples);
@@ -125,7 +126,7 @@ namespace fwdpp
                     }
                 if (merged_samples.empty())
                     {
-                        throw std::invalid_argument(
+                        throw empty_samples(
                             "marginal_tree: empty sample list");
                     }
                 init_samples(merged_samples);

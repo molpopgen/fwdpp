@@ -30,7 +30,7 @@ BOOST_FIXTURE_TEST_SUITE(test_tree_visitor_with_empty_table_collection,
 BOOST_AUTO_TEST_CASE(test_construction)
 {
     BOOST_REQUIRE_THROW(fwdpp::ts::tree_visitor tv(tables, empty_samples),
-                        std::invalid_argument);
+                        fwdpp::ts::empty_samples);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
