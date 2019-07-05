@@ -5,6 +5,14 @@
 #include <fwdpp/ts/tree_visitor.hpp>
 
 class simple_table_collection
+//        6
+//      ------
+//  	|    |
+//  	|    5
+//  	4   ---
+//	   ---  | |
+//	   | |  | |
+//	   0 1  2 3
 {
   private:
     fwdpp::ts::table_collection
