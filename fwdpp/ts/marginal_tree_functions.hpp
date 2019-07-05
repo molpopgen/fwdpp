@@ -3,5 +3,6 @@
 
 #include "marginal_tree_functions/roots.hpp"
 #include "marginal_tree_functions/children.hpp"
+#include "marginal_tree_functions/nodes.hpp"
 
 #endif

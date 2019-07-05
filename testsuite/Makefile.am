@@ -2,10 +2,10 @@ if BUNIT_TEST_PRESENT
 
 noinst_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
 				unit/genetic_map_tests \
-				integration/sugar_integration_tests 
+				integration/sugar_integration_tests \
+				tree_sequences/tree_sequence_tests
 
-# integration/extensions_integration_tests \
-# tree_sequences/tree_sequence_tests
+# integration/extensions_integration_tests 
 
 TESTS=$(noinst_PROGRAMS)
 
@@ -38,7 +38,10 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 # integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc \
 # 	fixtures/sugar_fixtures.cc
 
-# tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc tree_sequences/test_generate_offspring.cc
+tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc \
+										tree_sequences/test_generate_offspring.cc \
+									    tree_sequences/test_node_traversal.cc
+										   
 
 AM_CXXFLAGS=-W -Wall
 

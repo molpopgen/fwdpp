@@ -267,6 +267,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = roots.hpp \
 					children.hpp \
+					nodes.hpp \
 					root_iterator.hpp
 
 all: all-am
