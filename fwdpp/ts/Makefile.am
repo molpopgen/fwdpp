@@ -19,6 +19,7 @@ pkginclude_HEADERS= definitions.hpp \
 			serialization_version.hpp \
 			serialization.hpp \
 			marginal_tree_functions.hpp \
-			decapitate.hpp
+			decapitate.hpp \
+			exceptions.hpp
 
 
