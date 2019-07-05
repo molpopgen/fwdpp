@@ -18,6 +18,7 @@ pkginclude_HEADERS= definitions.hpp \
 			recycling.hpp \
 			serialization_version.hpp \
 			serialization.hpp \
-			marginal_tree_functions.hpp
+			marginal_tree_functions.hpp \
+			decapitate.hpp
 
 
