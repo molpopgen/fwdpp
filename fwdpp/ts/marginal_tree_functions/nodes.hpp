@@ -65,7 +65,7 @@ namespace fwdpp
             node_stack nstack;
 
           public:
-            node_iterator(const marginal_tree &m)
+            explicit node_iterator(const marginal_tree &m)
                 : t(m), ri(m), current_root(ri()),
                   current_node(current_root), nstack{ { current_root } }
             {
