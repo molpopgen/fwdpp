@@ -6,6 +6,42 @@
 #include <fwdpp/ts/decapitate.hpp>
 #include <fwdpp/ts/marginal_tree_functions.hpp>
 
+BOOST_AUTO_TEST_SUITE(test_traverse_children)
+
+BOOST_FIXTURE_TEST_CASE(test_polytomy, simple_table_collection_polytomy)
+{
+    auto c = fwdpp::ts::get_children(tv.tree(), 7, true);
+    decltype(c) expected = { 5, 6 };
+    BOOST_REQUIRE(c == expected);
+
+    c = fwdpp::ts::get_children(tv.tree(), 7, false);
+    expected = { 6, 5 };
+    BOOST_REQUIRE(c == expected);
+
+    c = fwdpp::ts::get_children(tv.tree(), 5, false);
+    expected = { 2, 1, 0 };
+    BOOST_REQUIRE(c == expected);
+
+    decltype(c) c2;
+    fwdpp::ts::process_children(
+        tv.tree(), 5, false,
+        [&c2](fwdpp::ts::TS_NODE_INT u) { c2.push_back(u); });
+    BOOST_REQUIRE(c == c2);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_polytomy_decapitate,
+                        simple_table_collection_polytomy)
+{
+    fwdpp::ts::decapitate(tables, 0.);
+    tv = fwdpp::ts::tree_visitor(tables, samples);
+    tv(std::false_type(), std::false_type());
+    auto c = fwdpp::ts::get_children(tv.tree(), 5, false);
+    decltype(c) expected = { 2, 1, 0 };
+    BOOST_REQUIRE(c == expected);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
 BOOST_FIXTURE_TEST_SUITE(test_root_traversal_simple_table_collection,
                          simple_table_collection)
 
