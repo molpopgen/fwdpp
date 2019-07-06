@@ -107,5 +107,19 @@ BOOST_AUTO_TEST_CASE(test_preorder_traversal)
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
+BOOST_AUTO_TEST_CASE(test_preorder_traversal_subtree)
+{
+    auto n = fwdpp::ts::get_nodes(tv.tree(), 5, fwdpp::ts::nodes_preorder());
+    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{ 5, 0, 1, 2 };
+    BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
+}
+
+BOOST_AUTO_TEST_CASE(test_preorder_traversal_other_subtree)
+{
+    auto n = fwdpp::ts::get_nodes(tv.tree(), 6, fwdpp::ts::nodes_preorder());
+    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{ 6, 3, 4 };
+    BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
 
