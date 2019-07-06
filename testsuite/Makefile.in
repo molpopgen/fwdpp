@@ -122,12 +122,14 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/test_generate_offspring.cc \
 	tree_sequences/test_node_traversal.cc \
 	tree_sequences/test_tree_visitor.cc \
-	tree_sequences/test_decapitate.cc
+	tree_sequences/test_decapitate.cc \
+	tree_sequences/test_marginal_tree_statistics.cc
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_node_traversal.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_tree_visitor.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_decapitate.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_decapitate.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_marginal_tree_statistics.$(OBJEXT)
 tree_sequences_tree_sequence_tests_OBJECTS =  \
 	$(am_tree_sequences_tree_sequence_tests_OBJECTS)
 tree_sequences_tree_sequence_tests_LDADD = $(LDADD)
@@ -209,6 +211,7 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po \
 	tree_sequences/$(DEPDIR)/test_decapitate.Po \
 	tree_sequences/$(DEPDIR)/test_generate_offspring.Po \
+	tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po \
 	tree_sequences/$(DEPDIR)/test_node_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_tree_visitor.Po \
 	tree_sequences/$(DEPDIR)/tree_sequence_tests.Po \
@@ -630,7 +633,8 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_offspring.cc \
 @BUNIT_TEST_PRESENT_TRUE@									    tree_sequences/test_node_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_tree_visitor.cc \
-@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_decapitate.cc
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_decapitate.cc \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_marginal_tree_statistics.cc
 
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = -W -Wall
 all: all-am
@@ -715,6 +719,9 @@ tree_sequences/test_tree_visitor.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
 tree_sequences/test_decapitate.$(OBJEXT):  \
+	tree_sequences/$(am__dirstamp) \
+	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+tree_sequences/test_marginal_tree_statistics.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
 
@@ -810,6 +817,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_decapitate.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_generate_offspring.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_node_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_tree_visitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/tree_sequence_tests.Po@am__quote@ # am--include-marker
@@ -1201,6 +1209,7 @@ distclean: distclean-am
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_decapitate.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/tree_sequence_tests.Po
@@ -1280,6 +1289,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_decapitate.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/tree_sequence_tests.Po

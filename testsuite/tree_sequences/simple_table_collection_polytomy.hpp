@@ -46,8 +46,9 @@ class simple_table_collection_polytomy
 	// NOTE: tv is auto advanced to the first tree
 	// by the constructor
     fwdpp::ts::tree_visitor tv;
+	double total_time;
     explicit simple_table_collection_polytomy()
-        : tables(init_tables()), samples{ { 0, 1, 2, 3, 4 } }, tv(tables, samples)
+        : tables(init_tables()), samples{ { 0, 1, 2, 3, 4 } }, tv(tables, samples), total_time(10)
     {
         tv(std::false_type(), std::false_type());
     }
