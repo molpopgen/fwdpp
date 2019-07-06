@@ -38,6 +38,8 @@ BOOST_FIXTURE_TEST_CASE(test_polytomy_decapitate,
     auto c = fwdpp::ts::get_children(tv.tree(), 5, false);
     decltype(c) expected = { 2, 1, 0 };
     BOOST_REQUIRE(c == expected);
+    BOOST_REQUIRE(fwdpp::ts::num_children(tv.tree(), 5) == 3);
+    BOOST_REQUIRE(fwdpp::ts::num_children(tv.tree(), 0) == 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
