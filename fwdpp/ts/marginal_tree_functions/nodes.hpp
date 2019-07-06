@@ -3,6 +3,7 @@
 
 #include <stack>
 #include <vector>
+#include <algorithm>
 #include "roots.hpp"
 #include "children.hpp"
 #include "../marginal_tree.hpp"
@@ -60,13 +61,51 @@ namespace fwdpp
                 = std::stack<TS_NODE_INT, std::vector<TS_NODE_INT>>;
 
             const marginal_tree &t;
-            root_iterator ri;
+            std::vector<TS_NODE_INT> subtree_roots;
             TS_NODE_INT current_root, current_node;
             node_stack nstack;
 
+            std::vector<TS_NODE_INT>
+            init_subtree_roots()
+            {
+                auto r = get_roots(t);
+                std::reverse(begin(r), end(r));
+                return r;
+            }
+
+            std::vector<TS_NODE_INT>
+            init_subtree_roots(TS_NODE_INT u)
+            {
+                if (static_cast<std::size_t>(u) >= t.left_child.size())
+                    {
+                        throw std::invalid_argument("node it out of range");
+                    }
+                return { u };
+            }
+
+            TS_NODE_INT
+            init_current_root()
+            {
+                if (subtree_roots.empty())
+                    {
+                        return TS_NULL_NODE;
+                    }
+                auto rv = subtree_roots.back();
+                subtree_roots.pop_back();
+                return rv;
+            }
+
           public:
             explicit node_iterator(const marginal_tree &m)
-                : t(m), ri(m), current_root(ri()),
+                : t(m), subtree_roots(init_subtree_roots()),
+                  current_root(init_current_root()),
+                  current_node(current_root), nstack{ { current_root } }
+            {
+            }
+
+            node_iterator(const marginal_tree &m, TS_NODE_INT u)
+                : t(m), subtree_roots(init_subtree_roots(u)),
+                  current_root(init_current_root()),
                   current_node(current_root), nstack{ { current_root } }
             {
             }
@@ -81,12 +120,12 @@ namespace fwdpp
                             = node_traversal_dispatch(t, nstack, order);
                         if (current_node == TS_NULL_NODE)
                             {
-                                current_root = ri();
+                                current_root = init_current_root();
                                 return current_root;
                             }
                         return current_node;
                     }
-                current_root = ri();
+                current_root = init_current_root();
                 return current_root; // must be TS_NULL_NODE
             }
 
@@ -114,6 +153,17 @@ namespace fwdpp
                 }
         }
 
+        template <typename ORDER, typename F>
+        inline void
+        process_nodes(const marginal_tree &m, TS_NODE_INT u, ORDER order,
+                      const F &f)
+        {
+            node_iterator ni(m, u);
+            while (ni(order, f))
+                {
+                }
+        }
+
         inline int
         num_nodes(const marginal_tree &m)
         {
@@ -129,6 +179,17 @@ namespace fwdpp
         {
             std::vector<TS_NODE_INT> nodes;
             process_nodes(m, order, [&nodes](const TS_NODE_INT n) {
+                nodes.push_back(n);
+            });
+            return nodes;
+        }
+
+        template <typename ORDER>
+        inline std::vector<TS_NODE_INT>
+        get_nodes(const marginal_tree &m, TS_NODE_INT u, ORDER order)
+        {
+            std::vector<TS_NODE_INT> nodes;
+            process_nodes(m, u, order, [&nodes](const TS_NODE_INT n) {
                 nodes.push_back(n);
             });
             return nodes;
