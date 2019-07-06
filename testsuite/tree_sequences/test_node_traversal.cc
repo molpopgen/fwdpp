@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 #include "simple_table_collection.hpp"
+#include "simple_table_collection_polytomy.hpp"
 #include <fwdpp/ts/tree_visitor.hpp>
 #include <fwdpp/ts/decapitate.hpp>
 #include <fwdpp/ts/marginal_tree_functions.hpp>
@@ -89,6 +90,21 @@ BOOST_AUTO_TEST_CASE(test_preorder_traversal_after_decaptitation)
     std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes = { 4, 0, 1, 2, 3 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(nodes.size() == expected_nodes.size(), true);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_FIXTURE_TEST_SUITE(test_simple_table_collection_polytomy_traversal,
+                         simple_table_collection_polytomy)
+
+BOOST_AUTO_TEST_CASE(test_preorder_traversal)
+{
+    auto n = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
+    BOOST_REQUIRE_EQUAL(n.size(), tables.num_nodes());
+    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{
+        7, 5, 0, 1, 2, 6, 3, 4
+    };
+    BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
