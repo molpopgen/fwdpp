@@ -8,8 +8,9 @@ namespace fwdpp
     namespace ts
     {
         struct node_traversal_order
-        /// Interface class for dependency injection
-        /// into node_iterator
+        /// \brief Interface class for dependency injection
+        ///        into node_iterator
+        /// \headerfile fwdpp/ts/marginal_tree_functions/node_traversal_order.hpp
         {
             node_traversal_order() = default;
             virtual ~node_traversal_order() = default;

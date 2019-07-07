@@ -12,6 +12,8 @@ namespace fwdpp
     namespace ts
     {
         class node_traversal_preorder : public node_traversal_order
+        /// \brief Preorder traversal of nodes for a node_iterator
+        /// \headerfile fwdpp/ts/marginal_tree_functions/node_traversal_preorder.hpp
         {
           private:
             using node_stack
@@ -53,12 +55,13 @@ namespace fwdpp
         };
 
         struct nodes_preorder
+        /// Dispatch tage for node_traversal_preorder
         {
         };
 
         inline std::unique_ptr<node_traversal_order>
-        node_traversal_dispatch(TS_NODE_INT root,
-                                nodes_preorder)
+        node_traversal_dispatch(TS_NODE_INT root, nodes_preorder)
+        /// Handles dependency injection of node_traversal_preorder into node_iterator
         {
             return std::unique_ptr<node_traversal_order>(
                 new node_traversal_preorder(root));

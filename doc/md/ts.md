@@ -113,6 +113,8 @@ The library provide classes and functions for iterating over the tree roots and 
 * fwdpp::ts::get_children returns a vector of the children descending from a node
 * fwdpp::ts::process_children allows a function to be applied to all children of a node.
 
+The classes and functions listed above may be included via fwdpp/ts/marginal_tree_functions.hpp or via the individual headers included therein.
+
 #### Node traversal order
 
 The node traversal method is determined by a dependency injection into fwdpp::ts::node_iterator.  The dependency must publicly inherit from the abstract class fwdpp::ts::node_traversal_order.  The construction of a fwdpp::ts::node_iterator object is done via tag dispatch to a function called fwdpp::ts::node_traversal_dispatch.  For example, setting up preorder traversal works like this:
