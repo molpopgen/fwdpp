@@ -7,6 +7,7 @@
 #include "definitions.hpp"
 #include "table_collection.hpp"
 #include "tree_visitor.hpp"
+#include "marginal_tree_functions/roots.hpp"
 
 namespace fwdpp
 {
@@ -20,22 +21,21 @@ namespace fwdpp
         ///
         /// \version 0.7.0 Added to library
         /// \version 0.7.4 Refactored to use root tracking method
+		/// \version 0.8.0 Refactored to use ts::num_roots and ts::process_roots
         ///
         /// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
             tree_visitor mti(tables, samples);
-            while (mti(std::true_type(), std::false_type()))
+            while (mti(std::false_type(), std::false_type()))
                 {
                     auto &tree = mti.tree();
-                    if (tree.num_roots() > 1)
+                    if (num_roots(tree) > 1)
                         {
-                            auto lr = tree.left_root;
-                            while (lr != TS_NULL_NODE)
-                                {
-                                    rv[lr].emplace_back(tree.left, tree.right);
-                                    lr = tree.right_sib[lr];
-                                }
+                            const auto func = [&rv, &tree](TS_NODE_INT root) {
+                                rv[root].emplace_back(tree.left, tree.right);
+                            };
+                            process_roots(tree, func);
                         }
                 }
             return rv;
