@@ -8,7 +8,7 @@ then
     export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
     export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
     LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
-    else
+else
     CXXFLAGS="-std=$CXXSTANDARD -O2"
     ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
 fi
