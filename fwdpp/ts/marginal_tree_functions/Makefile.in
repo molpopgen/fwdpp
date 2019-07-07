@@ -268,7 +268,9 @@ top_srcdir = @top_srcdir@
 pkginclude_HEADERS = roots.hpp \
 					children.hpp \
 					nodes.hpp \
-					statistics.hpp
+					statistics.hpp \
+					node_traversal_order.hpp \
+					node_traversal_preorder.hpp
 
 all: all-am
 

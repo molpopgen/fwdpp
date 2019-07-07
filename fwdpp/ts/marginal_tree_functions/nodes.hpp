@@ -1,69 +1,26 @@
 #ifndef FWDPP_TS_MARGINAL_TREE_FUNCTIONS_NODES_HPP
 #define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_NODES_HPP
 
-#include <stack>
 #include <vector>
 #include <algorithm>
+#include <memory>
 #include "roots.hpp"
 #include "children.hpp"
+#include "node_traversal_order.hpp"
+#include "node_traversal_preorder.hpp"
 #include "../marginal_tree.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        namespace detail
-        {
-            template <typename STACK>
-            inline TS_NODE_INT
-            node_traversal_preorder(const marginal_tree &m, STACK &nstack)
-            {
-                if (!nstack.empty())
-                    {
-                        auto rv = nstack.top();
-                        nstack.pop();
-                        if (num_children(m, rv) != 0)
-                            {
-                                // traverse children right to left
-                                process_children(m, rv, false,
-                                                 [&nstack](TS_NODE_INT x) {
-                                                     nstack.push(x);
-                                                 });
-                            }
-                        return rv;
-                    }
-                return TS_NULL_NODE;
-            }
-        }; // namespace detail
-
-        struct nodes_preorder
-        {
-        };
-
-        struct nodes_inorder
-        {
-        };
-
-        template <typename STACK>
-        inline TS_NODE_INT
-        node_traversal_dispatch(const marginal_tree &m, STACK &nstack,
-                                nodes_preorder)
-        {
-            return detail::node_traversal_preorder(m, nstack);
-        }
-
         class node_iterator
         {
           private:
-            // NOTE: default is std::deque, but there is no way that that
-            // is the optimal choice.
-            using node_stack
-                = std::stack<TS_NODE_INT, std::vector<TS_NODE_INT>>;
-
             const marginal_tree &t;
             std::vector<TS_NODE_INT> subtree_roots;
-            TS_NODE_INT current_root, current_node;
-            node_stack nstack;
+            TS_NODE_INT current_root;
+            std::unique_ptr<node_traversal_order> order;
 
             std::vector<TS_NODE_INT>
             init_subtree_roots()
@@ -96,44 +53,52 @@ namespace fwdpp
             }
 
           public:
-            explicit node_iterator(const marginal_tree &m)
+            template <typename ORDER>
+            node_iterator(const marginal_tree &m, ORDER order_policy)
                 : t(m), subtree_roots(init_subtree_roots()),
                   current_root(init_current_root()),
-                  current_node(current_root), nstack{ { current_root } }
-            {
-            }
-
-            node_iterator(const marginal_tree &m, TS_NODE_INT u)
-                : t(m), subtree_roots(init_subtree_roots(u)),
-                  current_root(init_current_root()),
-                  current_node(current_root), nstack{ { current_root } }
+                  order(node_traversal_dispatch(current_root, order_policy))
             {
             }
 
             template <typename ORDER>
+            node_iterator(const marginal_tree &m, TS_NODE_INT u,
+                          ORDER order_policy)
+                : t(m), subtree_roots(init_subtree_roots(u)),
+                  current_root(init_current_root()),
+                  order(node_traversal_dispatch(current_root, order_policy))
+            {
+            }
+
             inline TS_NODE_INT
-            operator()(ORDER order)
+            operator()()
             {
                 if (current_root != TS_NULL_NODE)
                     {
-                        current_node
-                            = node_traversal_dispatch(t, nstack, order);
-                        if (current_node == TS_NULL_NODE)
+                        auto rv = order->operator()(t);
+                        if (rv == TS_NULL_NODE)
                             {
                                 current_root = init_current_root();
-                                return current_root;
+                                if (current_root != TS_NULL_NODE)
+                                    {
+                                        order->initialize(current_root);
+                                        rv = order->operator()(t);
+                                    }
+                                else
+                                    {
+                                        rv = current_root;
+                                    }
                             }
-                        return current_node;
+                        return rv;
                     }
-                current_root = init_current_root();
-                return current_root; // must be TS_NULL_NODE
+                return TS_NULL_NODE;
             }
 
-            template <typename ORDER, typename F>
+            template <typename F>
             inline TS_NODE_INT
-            operator()(ORDER order, const F &f)
+            operator()(const F &f)
             {
-                auto v = this->operator()(order);
+                auto v = this->operator()();
                 bool rv = (v != TS_NULL_NODE);
                 if (rv)
                     {
@@ -147,8 +112,8 @@ namespace fwdpp
         inline void
         process_nodes(const marginal_tree &m, ORDER order, const F &f)
         {
-            node_iterator ni(m);
-            while (ni(order, f))
+            node_iterator ni(m, order);
+            while (ni(f))
                 {
                 }
         }
@@ -158,8 +123,8 @@ namespace fwdpp
         process_nodes(const marginal_tree &m, TS_NODE_INT u, ORDER order,
                       const F &f)
         {
-            node_iterator ni(m, u);
-            while (ni(order, f))
+            node_iterator ni(m, u, order);
+            while (ni(f))
                 {
                 }
         }
