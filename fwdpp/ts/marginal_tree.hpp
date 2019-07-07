@@ -6,6 +6,7 @@
 #include <limits>
 #include <cstdint>
 #include "definitions.hpp"
+#include "exceptions.hpp"
 
 namespace fwdpp
 {
@@ -83,6 +84,11 @@ namespace fwdpp
             /// Constructor
             /// \todo Document
             {
+                if (samples.empty())
+                    {
+                        throw empty_samples(
+                            "marginal_tree: empty sample list");
+                    }
                 init_samples(samples);
                 for (auto s : samples)
                     {
@@ -117,6 +123,11 @@ namespace fwdpp
                         merged_samples.insert(merged_samples.end(),
                                               begin(preserved_nodes),
                                               end(preserved_nodes));
+                    }
+                if (merged_samples.empty())
+                    {
+                        throw empty_samples(
+                            "marginal_tree: empty sample list");
                     }
                 init_samples(merged_samples);
                 left_root = samples[0];

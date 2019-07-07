@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <algorithm>
+#include "exceptions.hpp"
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
@@ -196,6 +197,14 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples)
             {
+                if ((j == jM || k == kM) && !tables.edge_table.empty())
+                    {
+                        throw std::invalid_argument("tables are not indexed");
+                    }
+                if (samples.empty())
+                    {
+                        throw empty_samples("empty sample list");
+                    }
             }
 
             const marginal_tree&
@@ -223,6 +232,15 @@ namespace fwdpp
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes)
             {
+                if ((j == jM || k == kM) && !tables.edge_table.empty())
+                    {
+                        throw std::invalid_argument("tables are not indexed");
+                    }
+                if (samples.empty() && preserved_nodes.empty())
+                    {
+                        throw empty_samples(
+                            "one or both sample lists are empty");
+                    }
             }
 
             template <typename leaf_policy, typename sample_list_policy>

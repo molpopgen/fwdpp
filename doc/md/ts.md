@@ -65,13 +65,62 @@ Iteration over parents is trivial:
 ```cpp
 void visit_parents(const fwdpp::ts::TS_NODE_INT n, const fwdpp::ts::marginal_tree & m)
 {
- auto p = n;
- while(p != fwdpp::ts::TS_NULL_NODE)
- {
-    p = m.parents[p];
- }
+    auto p = n;
+    while (p != fwdpp::ts::TS_NULL_NODE)
+        {
+            p = m.parents[p];
+        }
 }
 ```
 
 Of course, a real-world application would have to provide bounds-checking, and would probably actually *do* something
 with `p` at each iteration.
+
+### Traversing the nodes in a tree
+
+In general, a node table is as least as large as the number of nodes in any one tree.  We therefore need a way to access the nodes
+that actually *are* in a given tree.  The class fwdpp::ts::node_iterator facilitates efficient traversal of the nodes in a fwdpp::ts::marginal_tree.  Direct interaction with fwdpp::ts:node_iterator is often unnecessary.  It will often be more convenient to use the function fwdpp::ts::process_nodes.  For example, to obtain a mapping of nodes to the number of children descending from each node:
+
+```cpp
+#include <vector>
+#include <utility>
+#include <fwdpp/ts/marginal_tree_functions.hpp>
+
+std::vector<std::pair<fwdpp::ts::TS_NODE_INT, int>>
+nchildren_per_node(const fwdpp::ts::marginal_tree & m)
+{
+	std::vector<std::pair<fwdpp::ts::TS_NODE_INT, int>> rv;
+	fwdpp::ts::process_nodes(m,
+				 fwdpp::ts::nodes_preorder(),
+				 [&m,&rv](fwdpp::ts::TS_NODE_INT u)
+				 {
+					 rv.emplace_back(u, fwdpp::ts::num_children(m,u));
+				 });
+	return rv;
+}
+```
+
+Internally, the above code constructs a fwdpp::ts::node_iterator object that conducts a preorder traversal of \a m.  The type fwdpp::ts::nodes_preorder is a dispatch tag that facilitates the dependency injection of the traversal order policy when constructing the fwdpp::ts::node_iterator.  The lambda function gets the number of children for each node via a call to fwdpp::ts::num_children (which dispatches its own work to fwdpp::ts::child_iterator).
+
+The library provide classes and functions for iterating over the tree roots and the children of nodes:
+
+* fwdpp::ts::root_iterator allows left-to-right traversal of all nodes in a fwdpp::ts::marginal_tree
+* fwdpp::ts::num_roots returns the number of roots in a fwdpp::ts::marginal_tree
+* fwdpp::ts::get_roots returns a vector of the roots of the tree.
+* fwdpp::ts::process_roots allows a function to be applied to all roots of a tree.
+* fwdpp::ts::child_iterator allows left-to-right or right-to-left iteration over all children of a node.
+* fwdpp::ts::num_children returns the number of children descending from a node
+* fwdpp::ts::get_children returns a vector of the children descending from a node
+* fwdpp::ts::process_children allows a function to be applied to all children of a node.
+
+The classes and functions listed above may be included via fwdpp/ts/marginal_tree_functions.hpp or via the individual headers included therein.
+
+#### Node traversal order
+
+The node traversal method is determined by a dependency injection into fwdpp::ts::node_iterator.  The dependency must publicly inherit from the abstract class fwdpp::ts::node_traversal_order.  The construction of a fwdpp::ts::node_iterator object is done via tag dispatch to a function called fwdpp::ts::node_traversal_dispatch.  For example, setting up preorder traversal works like this:
+
+```cpp
+fwdpp::ts::node_iterator mi(m, fwdpp::ts::nodes_preorder());
+```
+
+The reason to use tag dispatch here is that you may implement a traversal order that fwdpp does not provide.  To do so, you have to include fwdpp/ts/marginal_tree_functions/node_traversal_order.hpp and define your new class, a tag dispatch struct and an overload of node_traversal_dispatch **before** including fwdpp/ts/marginal_tree_functions.hpp or fwdpp/ts/marginal_tree_functions/nodes.hpp.  For a concrete example, see the implementation of fwdpp::ts::node_traversal_preorder.  Note that you do not need to put your own classes and functions into the fwdpp namespaces because argument-dependent lookup (ADL) should apply here, which is tested in the test suite.

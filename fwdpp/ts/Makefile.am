@@ -17,6 +17,9 @@ pkginclude_HEADERS= definitions.hpp \
 			remove_fixations_from_gametes.hpp \
 			recycling.hpp \
 			serialization_version.hpp \
-			serialization.hpp
+			serialization.hpp \
+			marginal_tree_functions.hpp \
+			decapitate.hpp \
+			exceptions.hpp
 
 

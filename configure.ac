@@ -33,7 +33,7 @@ AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwd
                  fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/poptypes/Makefile
                  fwdpp/gsl/Makefile fwdpp/extensions/Makefile fwdpp/meta/Makefile
 				 fwdpp/simfunctions/Makefile
-                 fwdpp/ts/Makefile fwdpp/ts/detail/Makefile
+                 fwdpp/ts/Makefile fwdpp/ts/detail/Makefile fwdpp/ts/marginal_tree_functions/Makefile
 				 fwdpp/util/Makefile
 				 fwdpp/genetic_map/Makefile
 				 examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen]) 

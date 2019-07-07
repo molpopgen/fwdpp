@@ -85,7 +85,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-subdir = fwdpp/ts
+subdir = fwdpp/ts/marginal_tree_functions
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
 	$(top_srcdir)/configure.ac
@@ -166,7 +166,7 @@ ETAGS = etags
 CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkgincludedir = $(prefix)/include/fwdpp/ts
+pkgincludedir = $(prefix)/include/fwdpp/ts/marginal_tree_functions
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -265,27 +265,12 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-pkginclude_HEADERS = definitions.hpp \
-			node.hpp \
-			edge.hpp \
-			table_collection.hpp \
-			table_simplifier.hpp \
-			get_parent_ids.hpp \
-			generate_data_matrix.hpp \
-			indexed_edge.hpp \
-			marginal_tree.hpp \
-			tree_visitor.hpp \
-			mark_multiple_roots.hpp \
-			mutate_tables.hpp \
-			count_mutations.hpp \
-			mutation_record.hpp \
-			remove_fixations_from_gametes.hpp \
-			recycling.hpp \
-			serialization_version.hpp \
-			serialization.hpp \
-			marginal_tree_functions.hpp \
-			decapitate.hpp \
-			exceptions.hpp
+pkginclude_HEADERS = roots.hpp \
+					children.hpp \
+					nodes.hpp \
+					statistics.hpp \
+					node_traversal_order.hpp \
+					node_traversal_preorder.hpp
 
 all: all-am
 
@@ -299,9 +284,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/ts/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu fwdpp/ts/marginal_tree_functions/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu fwdpp/ts/Makefile
+	  $(AUTOMAKE) --gnu fwdpp/ts/marginal_tree_functions/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
