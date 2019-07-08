@@ -1,11 +1,11 @@
 language: cpp
 matrix:
-    include:
-    - os: linux
-      dist: trusty
-      env: 
-         - CXXSTANDARD="c++11"
-         - USECONDA=1
+    # include:
+    # - os: linux
+    #   dist: trusty
+    #   env: 
+    #      - CXXSTANDARD="c++11"
+    #      - USECONDA=1
    # works on Precise and Trusty
     - os: linux
       dist: trusty
