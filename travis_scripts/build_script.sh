@@ -2,12 +2,11 @@
 
 if [ "$USECONDA" == "1" ];
 then
+    echo "details..."
     echo `g++ -v`
     echo $CXX
-    export LD_LIBRARY_PATH=$HOME/miniconda/lib
-    export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
-    export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
-    CXX=$CXX LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
+    echo "details done..."
+    ./configure --prefix=$HOME && make -j 3 &&  make install
 else
     CXXFLAGS="-std=$CXXSTANDARD -O2"
     ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
@@ -15,4 +14,3 @@ fi
 
 fwdppConfig --version
 make check
-./testsuite/unit/fwdpp_unit_tests --log_level=all
