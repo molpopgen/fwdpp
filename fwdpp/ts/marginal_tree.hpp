@@ -40,7 +40,7 @@ namespace fwdpp
         /// tracks the total sample size, which is number of nonzero elements
         /// in sample_index_map.
         /// \version 0.7.4 Update to include data structures for root tracking
-        /// \version 0.8.0 Now holds a list of samples.
+        /// \version 0.8.0 Now holds a list of samples. Samples may be assigned to groups.
         {
           private:
             std::size_t num_nodes;
