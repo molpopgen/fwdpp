@@ -4,8 +4,8 @@ if [ "$USECONDA" == "1" ];
 then
     echo "details..."
     echo `g++ -v`
-    echo "details done..."
     echo `gcc -v`
+    echo "details done..."
     CXX=g++ CC=gcc ./configure --prefix=$HOME && make -j 3 &&  make install
 else
     CXXFLAGS="-std=$CXXSTANDARD -O2"
