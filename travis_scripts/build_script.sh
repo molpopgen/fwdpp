@@ -6,7 +6,7 @@ then
     echo `g++ -v`
     echo `gcc -v`
     echo "details done..."
-    CXX=g++ CC=gcc CPPFLAGS=-I$HOME/miniconda/include ./configure --prefix=$HOME && make -j 3 &&  make install
+    CXX=g++ CC=gcc CPPFLAGS=-I$HOME/miniconda/include LDFLAGS="-L$HOME/miniconda/lib -Wl,-rpath,$HOME/miniconda/lib" ./configure --prefix=$HOME && make -j 3 &&  make install
 else
     ./configure CXXFLAGS="$CXXFLAGS" --prefix=$HOME && make -j 3 && make install
 fi
