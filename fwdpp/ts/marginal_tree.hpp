@@ -14,6 +14,17 @@ namespace fwdpp
 {
     namespace ts
     {
+        struct sample_group_map
+        /// Maps a node id to a sample group
+        {
+            TS_NODE_INT node_id;
+            std::int32_t group;
+            sample_group_map(TS_NODE_INT n, std::int32_t g)
+                : node_id(n), group(g)
+            {
+            }
+        };
+
         class marginal_tree
         /// \brief A non-recombining tree
         ///
@@ -32,7 +43,77 @@ namespace fwdpp
         /// \version 0.8.0 Now holds a list of samples.
         {
           private:
+            std::size_t num_nodes;
+            std::vector<std::int32_t> sample_groups;
             std::vector<TS_NODE_INT> samples_list;
+
+            std::vector<std::int32_t>
+            fill_sample_groups(const std::vector<TS_NODE_INT>& samples)
+            {
+                std::vector<std::int32_t> rv(
+                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                for (auto i : samples)
+                    {
+                        rv[i] = 0;
+                    }
+                return rv;
+            }
+
+            std::vector<std::int32_t>
+            fill_sample_groups(const std::vector<sample_group_map>& samples)
+            {
+                std::vector<std::int32_t> rv(
+                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                for (auto i : samples)
+                    {
+                        rv[i.node_id] = i.group;
+                    }
+                return rv;
+            }
+
+            std::vector<std::int32_t>
+            fill_sample_groups(const std::vector<TS_NODE_INT>& samples_a,
+                               const std::vector<TS_NODE_INT>& samples_b)
+            {
+                std::vector<std::int32_t> rv(
+                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                for (auto i : samples_a)
+                    {
+                        rv[i] = 0;
+                    }
+                for (auto i : samples_b)
+                    {
+                        rv[i] = 1;
+                    }
+                return rv;
+                return rv;
+            }
+
+            std::vector<TS_NODE_INT>
+            forward_input_samples(const std::vector<sample_group_map>& a)
+            {
+                std::vector<TS_NODE_INT> rv;
+                rv.reserve(a.size());
+                for (auto i : a)
+                    {
+                        rv.emplace_back(i.node_id);
+                    }
+                return rv;
+            }
+
+            std::vector<TS_NODE_INT>
+            forward_input_samples(std::vector<TS_NODE_INT>&& a)
+            {
+                auto rv(std::move(a));
+                return rv;
+            }
+
+            std::vector<TS_NODE_INT>
+            forward_input_samples(const std::vector<TS_NODE_INT>& a)
+            {
+                auto rv(a);
+                return rv;
+            }
 
             std::vector<TS_NODE_INT>
             forward_input_samples(std::vector<TS_NODE_INT>&& a,
@@ -90,7 +171,10 @@ namespace fwdpp
 
             template <typename SAMPLES>
             marginal_tree(TS_NODE_INT nnodes, SAMPLES&& samples)
-                : samples_list(std::forward<SAMPLES>(samples)),
+                : num_nodes(nnodes),
+                  sample_groups(fill_sample_groups(samples)),
+                  samples_list(
+                      forward_input_samples(std::forward<SAMPLES>(samples))),
                   parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -124,9 +208,11 @@ namespace fwdpp
             template <typename SAMPLES>
             marginal_tree(TS_NODE_INT nnodes, SAMPLES&& samples,
                           SAMPLES&& preserved_nodes)
-                : samples_list(forward_input_samples(
-                    std::forward<SAMPLES>(samples),
-                    std::forward<SAMPLES>(preserved_nodes))),
+                : num_nodes(nnodes),
+                  sample_groups(fill_sample_groups(samples, preserved_nodes)),
+                  samples_list(forward_input_samples(
+                      std::forward<SAMPLES>(samples),
+                      std::forward<SAMPLES>(preserved_nodes))),
                   parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -162,7 +248,8 @@ namespace fwdpp
             }
 
             marginal_tree(TS_NODE_INT nnodes)
-                : parents(nnodes, TS_NULL_NODE), leaf_counts{},
+                : num_nodes(nnodes), sample_groups{}, samples_list{},
+                  parents(nnodes, TS_NULL_NODE), leaf_counts{},
                   preserved_leaf_counts{}, left_sib(nnodes, TS_NULL_NODE),
                   right_sib(nnodes, TS_NULL_NODE),
                   left_child(nnodes, TS_NULL_NODE),
@@ -214,6 +301,16 @@ namespace fwdpp
             samples_list_end() const
             {
                 return end(samples_list);
+            }
+
+            inline std::int32_t
+            sample_group(TS_NODE_INT u) const
+            {
+                if (static_cast<std::size_t>(u) >= num_nodes)
+                    {
+                        throw std::invalid_argument("invalid node id");
+                    }
+                return sample_groups[u];
             }
         };
     } // namespace ts
