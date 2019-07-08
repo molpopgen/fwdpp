@@ -3,6 +3,7 @@
 if [ "$USECONDA" == "1" ];
 then
     echo `g++ -v`
+    echo $CXX
     export LD_LIBRARY_PATH=$HOME/miniconda/lib
     export CPPFLAGS="-I$HOME/miniconda/include $CPPFLAGS"
     export LDFLAGS="-L$HOME/miniconda/lib $LDFLAGS"
