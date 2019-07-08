@@ -63,7 +63,7 @@ namespace fwdpp
                                                     [mut->node];
                                     if (!skip_fixed
                                         || (skip_fixed
-                                            && tc < tree.sample_size))
+                                            && tc < tree.sample_size()))
                                         {
                                             // Mutation leads to a polymorphism
                                             bool is_neutral
