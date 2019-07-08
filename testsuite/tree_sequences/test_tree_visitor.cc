@@ -2,6 +2,7 @@
 #include <boost/test/unit_test.hpp>
 #include "empty_table_collection.hpp"
 #include "simple_table_collection.hpp"
+#include "simple_table_collection_polytomy.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(test_tree_visitor_with_simple_table_collection,
                          simple_table_collection)
@@ -31,6 +32,31 @@ BOOST_AUTO_TEST_CASE(test_construction)
 {
     BOOST_REQUIRE_THROW(fwdpp::ts::tree_visitor tv(tables, empty_samples),
                         fwdpp::ts::empty_samples);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(test_sample_groups)
+
+BOOST_FIXTURE_TEST_CASE(test_group_labels, simple_table_collection_polytomy)
+{
+    std::vector<fwdpp::ts::sample_group_map> groups;
+    for (auto i : samples)
+        {
+            groups.emplace_back(i, 0);
+        }
+    groups[2].group = 1;
+    tv = fwdpp::ts::tree_visitor(tables, groups);
+    tv(std::true_type(), std::true_type());
+    auto c = tv.tree().left_sample[5];
+    BOOST_REQUIRE(c == 0);
+    BOOST_REQUIRE(tv.tree().sample_group(c) == 0);
+    c = tv.tree().next_sample[c];
+    BOOST_REQUIRE(c == 1);
+    BOOST_REQUIRE(tv.tree().sample_group(c) == 0);
+    c = tv.tree().next_sample[c];
+    BOOST_REQUIRE(c == 2);
+    BOOST_REQUIRE(tv.tree().sample_group(c) == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
