@@ -340,6 +340,13 @@ namespace fwdpp
             {
                 return advancing_sample_list_;
             }
+
+            inline std::size_t
+            size() const
+            /// Return the length of the internal vectors.
+            {
+                return num_nodes;
+            }
         };
     } // namespace ts
 } // namespace fwdpp
