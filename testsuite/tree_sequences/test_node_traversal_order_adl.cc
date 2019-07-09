@@ -1,6 +1,6 @@
 #include "preorder_adl.hpp"
 #include "simple_table_collection.hpp"
-#include <fwdpp/ts/marginal_tree_functions.hpp>
+#include <fwdpp/ts/marginal_tree_functions/nodes.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(test_adl)
