@@ -34,6 +34,31 @@ naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
     return n;
 }
 
+void
+get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
+        std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+{
+    if (fwdpp::ts::num_children(m, u) > 0)
+        {
+            fwdpp::ts::process_children(
+                m, u, true, [&m, &samples](fwdpp::ts::TS_NODE_INT x) {
+                    get_tip(m, x, samples);
+                });
+            return;
+        }
+    samples.push_back(u);
+}
+
+std::vector<fwdpp::ts::TS_NODE_INT>
+naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+// NOTE: only works if all tips are samples
+{
+    std::vector<fwdpp::ts::TS_NODE_INT> rv;
+    get_tip(m, u, rv);
+    std::sort(begin(rv), end(rv));
+    return rv;
+}
+
 BOOST_AUTO_TEST_SUITE(test_traverse_children)
 
 BOOST_FIXTURE_TEST_CASE(test_polytomy, simple_table_collection_polytomy)
@@ -122,14 +147,26 @@ BOOST_AUTO_TEST_SUITE(test_sample_traversal)
 BOOST_FIXTURE_TEST_CASE(num_samples_simple_table_collection,
                         simple_table_collection)
 {
-	// NOTE: only works b/c no recombination, so node table size
-	// is the number of nodes in the tree.  More generally,
-	// we need to do a node traveral, but that hasn't been tested yet
-	// (see below).
+    // NOTE: only works b/c no recombination, so node table size
+    // is the number of nodes in the tree.  More generally,
+    // we need to do a node traveral, but that hasn't been tested yet
+    // (see below).
     for (int i = 0; i < tables.node_table.size(); ++i)
         {
             BOOST_REQUIRE_EQUAL(fwdpp::ts::num_samples(tv.tree(), i),
                                 naive_num_samples(tv.tree(), i));
+        }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_sample_lists, simple_table_collection)
+{
+    for (std::size_t i = 0; i < tables.node_table.size(); ++i)
+        {
+            auto x = fwdpp::ts::get_samples(tv.tree(), i);
+            auto y = naive_get_samples(tv.tree(), i);
+            BOOST_CHECK_EQUAL(x.size(), y.size());
+            BOOST_CHECK(fwdpp::ts::get_samples(tv.tree(), i)
+                        == naive_get_samples(tv.tree(), i));
         }
 }
 
