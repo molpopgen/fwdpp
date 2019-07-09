@@ -36,21 +36,23 @@ class simple_table_collection_polytomy
         t.push_back_edge(0, 1, 5, 1);
         t.push_back_edge(0, 1, 5, 2);
         t.sort_edges();
-		t.build_indexes(); //NOTE: critical!
+        t.build_indexes(); //NOTE: critical!
         return t;
     }
 
   public:
     fwdpp::ts::table_collection tables;
     std::vector<fwdpp::ts::TS_NODE_INT> samples;
-	// NOTE: tv is auto advanced to the first tree
-	// by the constructor
+    // NOTE: tv is auto advanced to the first tree
+    // by the constructor
     fwdpp::ts::tree_visitor tv;
-	double total_time;
+    double total_time;
     explicit simple_table_collection_polytomy()
-        : tables(init_tables()), samples{ { 0, 1, 2, 3, 4 } }, tv(tables, samples), total_time(10)
+        : tables(init_tables()), samples{ { 0, 1, 2, 3, 4 } },
+          tv(tables, samples, fwdpp::ts::update_samples_list(true)),
+          total_time(10)
     {
-        tv(std::false_type(), std::false_type());
+        tv();
     }
 };
 

@@ -28,8 +28,8 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            tree_visitor mti(tables, samples);
-            while (mti(std::true_type(), std::false_type()))
+            tree_visitor mti(tables, samples, update_samples_list(false));
+            while (mti())
                 {
                     auto& tree = mti.tree();
                     while (mtable_itr < mtable_end
@@ -70,9 +70,9 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            tree_visitor mti(tables, samples,
-                                       tables.preserved_nodes);
-            while (mti(std::true_type(), std::false_type()))
+            tree_visitor mti(tables, samples, tables.preserved_nodes,
+                             update_samples_list(false));
+            while (mti())
                 {
                     auto& tree = mti.tree();
                     while (mtable_itr < mtable_end

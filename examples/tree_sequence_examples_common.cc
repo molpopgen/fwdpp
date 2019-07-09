@@ -59,8 +59,8 @@ options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
       scoeff(std::numeric_limits<double>::max()), dominance(1.), scaling(2.),
       seed(42), ancient_sampling_interval(-1), ancient_sample_size(-1),
-      nsam(0), leaf_test(false), matrix_test(false),
-      preserve_fixations(false), filename(), sfsfilename()
+      nsam(0), leaf_test(false), matrix_test(false), preserve_fixations(false),
+      filename(), sfsfilename()
 {
 }
 
@@ -193,8 +193,9 @@ void
 expensive_leaf_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list)
 {
-    fwdpp::ts::tree_visitor mti(tables, sample_list);
-    while (mti(std::true_type(), std::true_type()))
+    fwdpp::ts::tree_visitor mti(tables, sample_list,
+                                fwdpp::ts::update_samples_list(true));
+    while (mti())
         {
             auto &tree = mti.tree();
             for (auto i : sample_list)
@@ -349,7 +350,6 @@ execute_matrix_test(const options &o, const single_locus_poptype &pop,
     execute_matrix_test_detail(o, pop, tables, samples);
 }
 
-
 void
 execute_serialization_test(const options &o,
                            const fwdpp::ts::table_collection &tables)
@@ -380,8 +380,8 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
-            auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample,
-                                                      mutations, true, false, true);
+            auto dm = fwdpp::ts::generate_data_matrix(
+                tables, small_sample, mutations, true, false, true);
             auto rs = fwdpp::row_sums(dm);
             std::vector<int> sfs(small_sample.size() - 1);
             for (auto i : rs.first)

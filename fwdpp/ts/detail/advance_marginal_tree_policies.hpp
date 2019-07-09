@@ -13,22 +13,9 @@ namespace fwdpp
         namespace detail
         {
             inline void
-            outgoing_leaf_counts(marginal_tree&, const std::int32_t,
-                                 const std::int32_t, const std::false_type)
-            {
-            }
-
-            inline void
-            incoming_leaf_counts(marginal_tree&, const std::int32_t,
-                                 const std::int32_t, const std::false_type)
-            {
-            }
-
-            inline void
             outgoing_leaf_counts(marginal_tree& marginal,
                                  const std::int32_t parent,
-                                 const std::int32_t child,
-                                 const std::true_type)
+                                 const std::int32_t child)
             {
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
@@ -46,8 +33,7 @@ namespace fwdpp
             inline void
             incoming_leaf_counts(marginal_tree& marginal,
                                  const std::int32_t parent,
-                                 const std::int32_t child,
-                                 const std::true_type)
+                                 const std::int32_t child)
             {
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
@@ -61,8 +47,8 @@ namespace fwdpp
             }
 
             inline void
-            update_sample_list(marginal_tree& marginal,
-                               const std::int32_t node, const std::true_type)
+            update_samples_list(marginal_tree& marginal,
+                                const std::int32_t node)
             {
                 const auto& parents = marginal.parents;
                 const auto& sample_map = marginal.sample_index_map;
@@ -103,12 +89,6 @@ namespace fwdpp
                                     }
                             }
                     }
-            }
-
-            inline void
-            update_sample_list(marginal_tree&, const std::int32_t,
-                               const std::false_type)
-            {
             }
         } // namespace detail
     }     // namespace ts

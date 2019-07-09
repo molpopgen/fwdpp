@@ -21,13 +21,13 @@ namespace fwdpp
         ///
         /// \version 0.7.0 Added to library
         /// \version 0.7.4 Refactored to use root tracking method
-		/// \version 0.8.0 Refactored to use ts::num_roots and ts::process_roots
+        /// \version 0.8.0 Refactored to use ts::num_roots and ts::process_roots
         ///
         /// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
-            tree_visitor mti(tables, samples);
-            while (mti(std::false_type(), std::false_type()))
+            tree_visitor mti(tables, samples, update_samples_list(false));
+            while (mti())
                 {
                     auto &tree = mti.tree();
                     if (num_roots(tree) > 1)

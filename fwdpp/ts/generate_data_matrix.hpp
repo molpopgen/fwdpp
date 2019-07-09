@@ -33,10 +33,10 @@ namespace fwdpp
                 }
             auto mut = tables.mutation_table.cbegin();
             const auto mut_end = tables.mutation_table.cend();
-            tree_visitor tv(tables, samples);
+            tree_visitor tv(tables, samples, update_samples_list(true));
             std::vector<std::int8_t> genotypes(samples.size(), 0);
             data_matrix rv(samples.size());
-            while (tv(std::true_type(), std::true_type()))
+            while (tv())
                 {
                     // Advance the mutation table records until we are
                     // in the current tree
