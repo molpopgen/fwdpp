@@ -89,11 +89,6 @@ BOOST_AUTO_TEST_CASE(test_preorder_traversal_after_decaptitation)
                                  fwdpp::ts::update_samples_list(false));
     tv();
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    for (auto n : nodes)
-        {
-            std::cout << n << ' ';
-        }
-    std::cout << '\n';
     std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes
         = { 5, 0, 1, 2, 6, 3, 4 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
