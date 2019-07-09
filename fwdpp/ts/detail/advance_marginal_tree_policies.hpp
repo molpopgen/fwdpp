@@ -61,8 +61,8 @@ namespace fwdpp
             }
 
             inline void
-            update_sample_list(marginal_tree& marginal,
-                               const std::int32_t node, const std::true_type)
+            update_samples_list(marginal_tree& marginal,
+                                const std::int32_t node, const std::true_type)
             {
                 const auto& parents = marginal.parents;
                 const auto& sample_map = marginal.sample_index_map;
@@ -106,8 +106,8 @@ namespace fwdpp
             }
 
             inline void
-            update_sample_list(marginal_tree&, const std::int32_t,
-                               const std::false_type)
+            update_samples_list(marginal_tree&, const std::int32_t,
+                                const std::false_type)
             {
             }
         } // namespace detail

@@ -57,8 +57,8 @@ BOOST_FIXTURE_TEST_CASE(test_total_time_polytomy_decapitate,
                         simple_table_collection_polytomy)
 {
     fwdpp::ts::decapitate(tables, 0.);
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples, fwdpp::ts::update_samples_list(false));
+    tv();
     auto ttime = fwdpp::ts::total_time(tv.tree(), tables.node_table, true);
     BOOST_REQUIRE(ttime != total_time);
     BOOST_REQUIRE_EQUAL(ttime, naive_branch_length(tv.tree(), samples,

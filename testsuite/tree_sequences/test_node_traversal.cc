@@ -33,8 +33,9 @@ BOOST_FIXTURE_TEST_CASE(test_polytomy_decapitate,
                         simple_table_collection_polytomy)
 {
     fwdpp::ts::decapitate(tables, 0.);
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     auto c = fwdpp::ts::get_children(tv.tree(), 5, false);
     decltype(c) expected = { 2, 1, 0 };
     BOOST_REQUIRE(c == expected);
@@ -58,16 +59,18 @@ BOOST_AUTO_TEST_CASE(test_roots_after_decapitation)
 {
     fwdpp::ts::decapitate(tables, 0.);
     std::vector<fwdpp::ts::TS_NODE_INT> expected_roots{ 4, 5 };
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     auto r = fwdpp::ts::get_roots(tv.tree());
     BOOST_REQUIRE_EQUAL(r.size(), 2);
     BOOST_REQUIRE_EQUAL(r == expected_roots, true);
 
     fwdpp::ts::decapitate(tables, 1);
     expected_roots = { 2, 3, 4 };
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     r = fwdpp::ts::get_roots(tv.tree());
     std::sort(begin(r), end(r));
     BOOST_REQUIRE_EQUAL(r.size(), 3);
@@ -75,8 +78,9 @@ BOOST_AUTO_TEST_CASE(test_roots_after_decapitation)
 
     fwdpp::ts::decapitate(tables, 2);
     expected_roots = { 0, 1, 2, 3 };
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     r = fwdpp::ts::get_roots(tv.tree());
     std::sort(begin(r), end(r));
     BOOST_REQUIRE_EQUAL(r.size(), 4);
@@ -90,7 +94,8 @@ BOOST_FIXTURE_TEST_SUITE(test_simple_table_collection_traversal,
 
 BOOST_AUTO_TEST_CASE(test_construction)
 {
-    BOOST_REQUIRE_NO_THROW({ fwdpp::ts::node_iterator(tv.tree(), fwdpp::ts::nodes_preorder()); });
+    BOOST_REQUIRE_NO_THROW(
+        { fwdpp::ts::node_iterator(tv.tree(), fwdpp::ts::nodes_preorder()); });
 }
 
 BOOST_AUTO_TEST_CASE(test_preorder_traversal)
@@ -122,8 +127,9 @@ BOOST_AUTO_TEST_CASE(test_preorder_traversal_subtree)
 BOOST_AUTO_TEST_CASE(test_preorder_traversal_after_decaptitation)
 {
     fwdpp::ts::decapitate(tables, 1.);
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
     std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes = { 4, 0, 1, 2, 3 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
@@ -162,10 +168,15 @@ BOOST_AUTO_TEST_CASE(test_preorder_traversal_other_subtree)
 BOOST_AUTO_TEST_CASE(test_preorder_traversal_after_decaptitation)
 {
     fwdpp::ts::decapitate(tables, 0.);
-    tv = fwdpp::ts::tree_visitor(tables, samples);
-    tv(std::false_type(), std::false_type());
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(false));
+    tv();
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    for(auto n:nodes){std::cout<<n<<' ';}std::cout<<'\n';
+    for (auto n : nodes)
+        {
+            std::cout << n << ' ';
+        }
+    std::cout << '\n';
     std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes
         = { 5, 0, 1, 2, 6, 3, 4 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
