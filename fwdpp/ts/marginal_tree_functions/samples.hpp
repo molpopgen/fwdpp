@@ -15,6 +15,7 @@ namespace fwdpp
           private:
             const marginal_tree &t;
             TS_NODE_INT current_sample, right_sample;
+            bool convert_to_nodes;
 
             inline const marginal_tree &
             init_marginal(const marginal_tree &m)
@@ -48,9 +49,10 @@ namespace fwdpp
             }
 
           public:
-            samples_iterator(const marginal_tree &m, TS_NODE_INT u)
+            samples_iterator(const marginal_tree &m, TS_NODE_INT u,
+                             bool convert)
                 : t(init_marginal(m)), current_sample{ init_left_sample(u) },
-                  right_sample(init_right_sample(u))
+                  right_sample(init_right_sample(u)), convert_to_nodes(convert)
             /// \param m A marginal_tree
             /// \param u A node index
             {
@@ -78,7 +80,7 @@ namespace fwdpp
                     {
                         current_sample = t.next_sample[current_sample];
                     }
-                return c;
+                return (convert_to_nodes) ? t.sample_index_to_node(c) : c;
             }
 
             template <typename F>
@@ -101,13 +103,28 @@ namespace fwdpp
 
         template <typename F>
         inline void
+        process_samples_indexes(const marginal_tree &m, TS_NODE_INT u,
+                                const F &f)
+        /// \brief Apply a function to the indexes of each sample descending of node \a u
+        /// \param m A fwdpp::ts::marginal_tree
+        /// \param u Index a fwdpp::ts::node
+        /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
+        {
+            samples_iterator si(m, u, false);
+            while (si(f))
+                {
+                }
+        }
+
+        template <typename F>
+        inline void
         process_samples(const marginal_tree &m, TS_NODE_INT u, const F &f)
         /// \brief Apply a function to samples of node \a u
         /// \param m A fwdpp::ts::marginal_tree
         /// \param u Index a fwdpp::ts::node
         /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
         {
-            samples_iterator si(m, u);
+            samples_iterator si(m, u, true);
             while (si(f))
                 {
                 }
@@ -116,9 +133,12 @@ namespace fwdpp
         inline std::vector<TS_NODE_INT>
         get_samples(const marginal_tree &m, TS_NODE_INT u)
         /// Return a vector of samples descending from node \a u in marginal_tree \a m.
+        /// The return value contains node ids (as opposed to sample indexes)
         {
             std::vector<TS_NODE_INT> rv;
-            process_samples(m, u, [&rv](TS_NODE_INT x) { rv.push_back(x); });
+            process_samples(m, u, [&rv](TS_NODE_INT x) {
+                rv.push_back(x);
+            });
             return rv;
         }
 
