@@ -347,6 +347,14 @@ namespace fwdpp
             {
                 return num_nodes;
             }
+
+            inline TS_NODE_INT
+            sample_index_to_node(TS_NODE_INT u) const
+            /// If u is a sample index, return the associated 
+            /// node id.
+            {
+                return samples_list[u];
+            }
         };
     } // namespace ts
 } // namespace fwdpp
