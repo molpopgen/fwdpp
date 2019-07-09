@@ -14,10 +14,9 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename mcont_t>
+        template <typename SAMPLES, typename mcont_t>
         data_matrix
-        generate_data_matrix(const table_collection& tables,
-                             const std::vector<TS_NODE_INT>& samples,
+        generate_data_matrix(const table_collection& tables, SAMPLES&& samples,
                              const mcont_t& mutations,
                              const bool record_neutral,
                              const bool record_selected, const bool skip_fixed,
@@ -33,7 +32,8 @@ namespace fwdpp
                 }
             auto mut = tables.mutation_table.cbegin();
             const auto mut_end = tables.mutation_table.cend();
-            tree_visitor tv(tables, samples, update_samples_list(true));
+            tree_visitor tv(tables, std::forward<SAMPLES>(samples),
+                            update_samples_list(true));
             std::vector<std::int8_t> genotypes(samples.size(), 0);
             data_matrix rv(samples.size());
             while (tv())
@@ -105,17 +105,17 @@ namespace fwdpp
             return rv;
         }
 
-        template <typename mcont_t>
+        template <typename SAMPLES, typename mcont_t>
         data_matrix
-        generate_data_matrix(const table_collection& tables,
-                             const std::vector<TS_NODE_INT>& samples,
+        generate_data_matrix(const table_collection& tables, SAMPLES&& samples,
                              const mcont_t& mutations,
                              const bool record_neutral,
                              const bool record_selected, const bool skip_fixed)
         {
-            return generate_data_matrix(
-                tables, samples, mutations, record_neutral, record_selected,
-                skip_fixed, 0., tables.genome_length());
+            return generate_data_matrix(tables, std::forward<SAMPLES>(samples),
+                                        mutations, record_neutral,
+                                        record_selected, skip_fixed, 0.,
+                                        tables.genome_length());
         }
 
     } // namespace ts

@@ -14,9 +14,9 @@ namespace fwdpp
     namespace ts
     {
         // TODO: consider flattening the return value to a vector
+        template <typename SAMPLES>
         inline std::map<TS_NODE_INT, std::vector<std::pair<double, double>>>
-        mark_multiple_roots(const table_collection &tables,
-                            const std::vector<TS_NODE_INT> &samples)
+        mark_multiple_roots(const table_collection &tables, SAMPLES &&samples)
         /// \brief Identify root nodes in "marginal forests".
         ///
         /// \version 0.7.0 Added to library
@@ -26,7 +26,8 @@ namespace fwdpp
         /// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<TS_NODE_INT, std::vector<std::pair<double, double>>> rv;
-            tree_visitor mti(tables, samples, update_samples_list(false));
+            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
+                             update_samples_list(false));
             while (mti())
                 {
                     auto &tree = mti.tree();
