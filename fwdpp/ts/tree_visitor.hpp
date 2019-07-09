@@ -285,13 +285,11 @@ namespace fwdpp
                                 marginal.left_sib[c] = TS_NULL_NODE;
                                 marginal.right_sib[c] = TS_NULL_NODE;
                                 detail::outgoing_leaf_counts(
-                                    marginal, k->parent, k->child,
-                                    std::true_type());
+                                    marginal, k->parent, k->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(
-                                            marginal, k->parent,
-                                            std::true_type());
+                                        detail::update_samples_list(marginal,
+                                                                    k->parent);
                                     }
                                 update_roots_outgoing(p, c, marginal);
                                 ++k;
@@ -320,13 +318,11 @@ namespace fwdpp
                                 marginal.parents[c] = j->parent;
                                 marginal.right_child[p] = c;
                                 detail::incoming_leaf_counts(
-                                    marginal, j->parent, j->child,
-                                    std::true_type());
+                                    marginal, j->parent, j->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(
-                                            marginal, j->parent,
-                                            std::true_type());
+                                        detail::update_samples_list(marginal,
+                                                                    j->parent);
                                     }
                                 update_roots_incoming(p, c, lsib, rsib,
                                                       marginal);
