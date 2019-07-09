@@ -51,7 +51,8 @@ get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
 
 std::vector<fwdpp::ts::TS_NODE_INT>
 naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-// NOTE: only works if all tips are samples
+// NOTE: only works if all tips are samples.  This test can be used also 
+// as an independent count of the number of samples for this case.
 {
     std::vector<fwdpp::ts::TS_NODE_INT> rv;
     get_tip(m, u, rv);
