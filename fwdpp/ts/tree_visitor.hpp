@@ -7,11 +7,20 @@
 #include "marginal_tree.hpp"
 #include "table_collection.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
+#include <fwdpp/named_type.hpp>
 
 namespace fwdpp
 {
     namespace ts
     {
+        struct update_samples_list_t
+        {
+        };
+
+        /// Policy dictating if a tree_visitor updates sample lists.
+        using update_samples_list
+            = strong_types::named_type<bool, update_samples_list_t>;
+
         class tree_visitor
         /// \brief Class that iterates over marginal trees.
         ///
@@ -27,6 +36,7 @@ namespace fwdpp
             indexed_edge_container::const_iterator j, jM, k, kM;
             double x, maxpos;
             marginal_tree marginal;
+            bool advancing_sample_list;
 
             void
             update_roots_outgoing(TS_NODE_INT p, TS_NODE_INT c,
@@ -190,12 +200,14 @@ namespace fwdpp
 
           public:
             template <typename SAMPLES>
-            tree_visitor(const table_collection& tables, SAMPLES&& samples)
+            tree_visitor(const table_collection& tables, SAMPLES&& samples,
+                         update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), std::forward<SAMPLES>(samples))
+                  marginal(tables.num_nodes(), std::forward<SAMPLES>(samples)),
+                  advancing_sample_list(update.get())
             /// \todo Document
             {
                 if ((j == jM || k == kM) && !tables.edge_table.empty())
@@ -222,12 +234,14 @@ namespace fwdpp
 
             tree_visitor(const table_collection& tables,
                          const std::vector<TS_NODE_INT>& samples,
-                         const std::vector<TS_NODE_INT>& preserved_nodes)
+                         const std::vector<TS_NODE_INT>& preserved_nodes,
+                         update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), samples, preserved_nodes)
+                  marginal(tables.num_nodes(), samples, preserved_nodes),
+                  advancing_sample_list(update.get())
             {
                 if ((j == jM || k == kM) && !tables.edge_table.empty())
                     {
@@ -240,9 +254,8 @@ namespace fwdpp
                     }
             }
 
-            template <typename leaf_policy, typename sample_list_policy>
             inline bool
-            operator()(const leaf_policy lp, const sample_list_policy slp)
+            operator()()
             {
                 if (j < jM || x < maxpos)
                     {
@@ -272,9 +285,14 @@ namespace fwdpp
                                 marginal.left_sib[c] = TS_NULL_NODE;
                                 marginal.right_sib[c] = TS_NULL_NODE;
                                 detail::outgoing_leaf_counts(
-                                    marginal, k->parent, k->child, lp);
-                                detail::update_sample_list(marginal, k->parent,
-                                                           slp);
+                                    marginal, k->parent, k->child,
+                                    std::true_type());
+                                if (advancing_sample_list)
+                                    {
+                                        detail::update_samples_list(
+                                            marginal, k->parent,
+                                            std::true_type());
+                                    }
                                 update_roots_outgoing(p, c, marginal);
                                 ++k;
                             }
@@ -302,9 +320,14 @@ namespace fwdpp
                                 marginal.parents[c] = j->parent;
                                 marginal.right_child[p] = c;
                                 detail::incoming_leaf_counts(
-                                    marginal, j->parent, j->child, lp);
-                                detail::update_sample_list(marginal, j->parent,
-                                                           slp);
+                                    marginal, j->parent, j->child,
+                                    std::true_type());
+                                if (advancing_sample_list)
+                                    {
+                                        detail::update_samples_list(
+                                            marginal, j->parent,
+                                            std::true_type());
+                                    }
                                 update_roots_incoming(p, c, lsib, rsib,
                                                       marginal);
 
