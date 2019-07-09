@@ -12,11 +12,10 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename mcont_t>
+        template <typename SAMPLES, typename mcont_t>
         void
         count_mutations(const table_collection& tables,
-                        const mcont_t& mutations,
-                        const std::vector<TS_NODE_INT>& samples,
+                        const mcont_t& mutations, SAMPLES&& samples,
                         std::vector<fwdpp::uint_t>& mcounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
@@ -28,7 +27,8 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            tree_visitor mti(tables, samples, update_samples_list(false));
+            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
+                             update_samples_list(false));
             while (mti())
                 {
                     auto& tree = mti.tree();
@@ -51,11 +51,10 @@ namespace fwdpp
                 }
         }
 
-        template <typename mcont_t>
+        template <typename SAMPLES, typename mcont_t>
         void
         count_mutations(const table_collection& tables,
-                        const mcont_t& mutations,
-                        const std::vector<TS_NODE_INT>& samples,
+                        const mcont_t& mutations, SAMPLES&& samples,
                         std::vector<fwdpp::uint_t>& mcounts,
                         std::vector<fwdpp::uint_t>& acounts)
         {
@@ -70,7 +69,8 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutation_table.begin();
             auto mtable_end = tables.mutation_table.end();
-            tree_visitor mti(tables, samples, tables.preserved_nodes,
+            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
+                             tables.preserved_nodes,
                              update_samples_list(false));
             while (mti())
                 {

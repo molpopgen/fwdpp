@@ -12,11 +12,11 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename rng, typename mfunction>
+        template <typename SAMPLES, typename rng, typename mfunction>
         unsigned
         mutate_tables(const rng &r, const mfunction &make_mutation,
-                      table_collection &tables,
-                      const std::vector<TS_NODE_INT> &samples, const double mu)
+                      table_collection &tables, SAMPLES &&samples,
+                      const double mu)
         /// \brief Apply a mutation scheme to add neutral mutations to a fwdpp::ts::table_collection.
         ///
         /// \param r fwdpp::GSLrng_t
@@ -74,7 +74,8 @@ namespace fwdpp
                 {
                     return nmuts;
                 }
-            auto mr = mark_multiple_roots(tables, samples);
+            auto mr
+                = mark_multiple_roots(tables, std::forward<SAMPLES>(samples));
             const double L = tables.genome_length();
             for (auto &i : mr)
                 {
