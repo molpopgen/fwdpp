@@ -206,7 +206,8 @@ namespace fwdpp
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), std::forward<SAMPLES>(samples)),
+                  marginal(tables.num_nodes(), std::forward<SAMPLES>(samples),
+                           update.get()),
                   advancing_sample_list(update.get())
             /// \todo Document
             {
@@ -240,7 +241,8 @@ namespace fwdpp
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), samples, preserved_nodes),
+                  marginal(tables.num_nodes(), samples, preserved_nodes,
+                           update.get()),
                   advancing_sample_list(update.get())
             {
                 if ((j == jM || k == kM) && !tables.edge_table.empty())

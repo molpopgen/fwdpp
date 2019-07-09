@@ -54,6 +54,7 @@ namespace fwdpp
             std::size_t num_nodes;
             std::vector<std::int32_t> sample_groups;
             std::vector<TS_NODE_INT> samples_list;
+            bool advancing_sample_list_;
 
             std::vector<std::int32_t>
             fill_sample_groups(const std::vector<TS_NODE_INT>& samples)
@@ -178,11 +179,13 @@ namespace fwdpp
             TS_NODE_INT left_root;
 
             template <typename SAMPLES>
-            marginal_tree(TS_NODE_INT nnodes, SAMPLES&& samples)
+            marginal_tree(TS_NODE_INT nnodes, SAMPLES&& samples,
+                          bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples)),
                   samples_list(
                       forward_input_samples(std::forward<SAMPLES>(samples))),
+                  advancing_sample_list_(advancing_sample_list),
                   parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -219,12 +222,14 @@ namespace fwdpp
 
             template <typename SAMPLES>
             marginal_tree(TS_NODE_INT nnodes, SAMPLES&& samples,
-                          SAMPLES&& preserved_nodes)
+                          SAMPLES&& preserved_nodes,
+                          bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples, preserved_nodes)),
                   samples_list(forward_input_samples(
                       std::forward<SAMPLES>(samples),
                       std::forward<SAMPLES>(preserved_nodes))),
+                  advancing_sample_list_(advancing_sample_list),
                   parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
                   left_sib(nnodes, TS_NULL_NODE),
@@ -261,8 +266,9 @@ namespace fwdpp
 
             marginal_tree(TS_NODE_INT nnodes)
                 : num_nodes(nnodes), sample_groups{}, samples_list{},
-                  parents(nnodes, TS_NULL_NODE), leaf_counts{},
-                  preserved_leaf_counts{}, left_sib(nnodes, TS_NULL_NODE),
+                  advancing_sample_list_(false), parents(nnodes, TS_NULL_NODE),
+                  leaf_counts{}, preserved_leaf_counts{},
+                  left_sib(nnodes, TS_NULL_NODE),
                   right_sib(nnodes, TS_NULL_NODE),
                   left_child(nnodes, TS_NULL_NODE),
                   right_child(nnodes, TS_NULL_NODE),
@@ -327,6 +333,12 @@ namespace fwdpp
                         throw std::invalid_argument("invalid node id");
                     }
                 return sample_groups[u];
+            }
+
+            inline bool
+            advancing_sample_list() const
+            {
+                return advancing_sample_list_;
             }
         };
     } // namespace ts
