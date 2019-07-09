@@ -2,12 +2,21 @@
 #define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_SAMPLES_HPP__
 
 #include <stdexcept>
+#include <fwdpp/named_type.hpp>
 #include "../marginal_tree.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
+        struct convert_sample_index_to_nodes_t
+        {
+        };
+
+        /// Policy affecting behavior of samples_iterator
+        using convert_sample_index_to_nodes
+            = strong_types::named_type<bool, convert_sample_index_to_nodes_t>;
+
         class samples_iterator
         /// \brief Faciliate traversal of the samples descending from a node
         /// \headerfile fwdpp/ts/marginal_tree_functions/samples.hpp
@@ -50,9 +59,10 @@ namespace fwdpp
 
           public:
             samples_iterator(const marginal_tree &m, TS_NODE_INT u,
-                             bool convert)
+                             convert_sample_index_to_nodes convert)
                 : t(init_marginal(m)), current_sample{ init_left_sample(u) },
-                  right_sample(init_right_sample(u)), convert_to_nodes(convert)
+                  right_sample(init_right_sample(u)),
+                  convert_to_nodes(convert.get())
             /// \param m A marginal_tree
             /// \param u A node index
             {
@@ -110,7 +120,7 @@ namespace fwdpp
         /// \param u Index a fwdpp::ts::node
         /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
         {
-            samples_iterator si(m, u, false);
+            samples_iterator si(m, u, convert_sample_index_to_nodes(false));
             while (si(f))
                 {
                 }
@@ -124,7 +134,7 @@ namespace fwdpp
         /// \param u Index a fwdpp::ts::node
         /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
         {
-            samples_iterator si(m, u, true);
+            samples_iterator si(m, u, convert_sample_index_to_nodes(true));
             while (si(f))
                 {
                 }
@@ -136,9 +146,7 @@ namespace fwdpp
         /// The return value contains node ids (as opposed to sample indexes)
         {
             std::vector<TS_NODE_INT> rv;
-            process_samples(m, u, [&rv](TS_NODE_INT x) {
-                rv.push_back(x);
-            });
+            process_samples(m, u, [&rv](TS_NODE_INT x) { rv.push_back(x); });
             return rv;
         }
 
