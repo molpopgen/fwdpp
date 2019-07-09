@@ -76,7 +76,7 @@ namespace fwdpp
                     }
                 else
                     {
-                        current_sample = t.right_sib[current_sample];
+                        current_sample = t.next_sample[current_sample];
                     }
                 return c;
             }
@@ -90,7 +90,7 @@ namespace fwdpp
             /// Returns false to signify end of iteration.
             {
                 auto s = this->operator()();
-                bool rv = (s == TS_NULL_NODE);
+                bool rv = (s != TS_NULL_NODE);
                 if (rv)
                     {
                         f(s);
