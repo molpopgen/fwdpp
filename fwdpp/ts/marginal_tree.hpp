@@ -15,12 +15,20 @@ namespace fwdpp
     namespace ts
     {
         struct sample_group_map
-        /// Maps a node id to a sample group
+        /// \brief Maps a node id to a sample group
+        ///
+        /// When constructing a fwdpp::ts::tree_visitor,
+        /// vectors of this type may be used to mark
+        /// sample nodes as beloning to different "groups".
         {
+            /// fwdpp::ts::node id
             TS_NODE_INT node_id;
+            /// group label
             std::int32_t group;
             sample_group_map(TS_NODE_INT n, std::int32_t g)
                 : node_id(n), group(g)
+            /// \param n A node id
+            /// \param g A gropup label
             {
             }
         };
@@ -189,8 +197,12 @@ namespace fwdpp
                   left{ std::numeric_limits<double>::quiet_NaN() },
                   right{ std::numeric_limits<double>::quiet_NaN() },
                   left_root(TS_NULL_NODE)
-            /// Constructor
-            /// \todo Document
+            /// \param nnodes Number of nodes in table_collection
+            /// \param samples The sample list
+            ///
+            /// \a samples may be either std::vector<TS_NODE_INT> or
+            /// std::vector<fwdpp::ts::sample_group_map>.  For the former, all
+            /// sample nodes will be assigned group 0.
             {
                 if (samples_list.empty())
                     {
@@ -228,7 +240,7 @@ namespace fwdpp
                   right{ std::numeric_limits<double>::quiet_NaN() },
                   left_root(TS_NULL_NODE)
             /// Constructor
-            /// \todo Document
+            /// \deprecated Multiple sample groups should use forwarding constructor
             {
                 if (samples_list.empty())
                     {
@@ -287,24 +299,28 @@ namespace fwdpp
 
             inline std::size_t
             sample_size() const
+            /// Number of samples
             {
                 return samples_list.size();
             }
 
             inline std::vector<TS_NODE_INT>::const_iterator
             samples_list_begin() const
+            /// Beginning of samples list
             {
                 return begin(samples_list);
             }
 
             inline std::vector<TS_NODE_INT>::const_iterator
             samples_list_end() const
+            /// End itertor for samples list
             {
                 return end(samples_list);
             }
 
             inline std::int32_t
             sample_group(TS_NODE_INT u) const
+            /// Return the sample group for node \u
             {
                 if (static_cast<std::size_t>(u) >= num_nodes)
                     {

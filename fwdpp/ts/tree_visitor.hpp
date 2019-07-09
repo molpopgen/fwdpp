@@ -196,6 +196,7 @@ namespace fwdpp
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), std::forward<SAMPLES>(samples))
+            /// \todo Document
             {
                 if ((j == jM || k == kM) && !tables.edge_table.empty())
                     {
