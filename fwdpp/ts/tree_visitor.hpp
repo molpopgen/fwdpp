@@ -189,21 +189,18 @@ namespace fwdpp
             }
 
           public:
-            tree_visitor(const table_collection& tables,
-                         const std::vector<TS_NODE_INT>& samples)
+            template <typename SAMPLES>
+            tree_visitor(const table_collection& tables, SAMPLES&& samples)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()),
                   kM(tables.output_right.cend()), x(0.0),
                   maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), samples)
+                  marginal(tables.num_nodes(), std::forward<SAMPLES>(samples))
+            /// \todo Document
             {
                 if ((j == jM || k == kM) && !tables.edge_table.empty())
                     {
                         throw std::invalid_argument("tables are not indexed");
-                    }
-                if (samples.empty())
-                    {
-                        throw empty_samples("empty sample list");
                     }
             }
 
