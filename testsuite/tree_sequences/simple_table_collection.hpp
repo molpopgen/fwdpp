@@ -46,7 +46,7 @@ class simple_table_collection
     double total_time;
     explicit simple_table_collection()
         : tables(init_tables()), samples{ { 0, 1, 2, 3 } },
-          tv(tables, samples, fwdpp::ts::update_samples_list(false)),
+          tv(tables, samples, fwdpp::ts::update_samples_list(true)),
           total_time(9)
     {
         tv();

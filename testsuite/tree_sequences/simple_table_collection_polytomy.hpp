@@ -49,7 +49,7 @@ class simple_table_collection_polytomy
     double total_time;
     explicit simple_table_collection_polytomy()
         : tables(init_tables()), samples{ { 0, 1, 2, 3, 4 } },
-          tv(tables, samples, fwdpp::ts::update_samples_list(false)),
+          tv(tables, samples, fwdpp::ts::update_samples_list(true)),
           total_time(10)
     {
         tv();
