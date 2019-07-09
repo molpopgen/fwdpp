@@ -6,6 +6,34 @@
 #include <fwdpp/ts/decapitate.hpp>
 #include <fwdpp/ts/marginal_tree_functions.hpp>
 
+int
+naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+{
+    if (!m.advancing_sample_list())
+        {
+            throw std::runtime_error(
+                "testsuite error: sample lists not being updated");
+        }
+    if (static_cast<std::size_t>(u) >= m.size())
+        {
+            throw std::runtime_error("testsuite error: node out of range");
+        }
+    int n = 0;
+    auto l = m.left_sample[u];
+    auto r = m.right_sample[u];
+    while (true)
+        {
+            if (l == r)
+                {
+                    ++n;
+                    break;
+                }
+            ++n;
+            l = m.next_sample[l];
+        }
+    return n;
+}
+
 BOOST_AUTO_TEST_SUITE(test_traverse_children)
 
 BOOST_FIXTURE_TEST_CASE(test_polytomy, simple_table_collection_polytomy)
@@ -85,6 +113,29 @@ BOOST_AUTO_TEST_CASE(test_roots_after_decapitation)
     std::sort(begin(r), end(r));
     BOOST_REQUIRE_EQUAL(r.size(), 4);
     BOOST_REQUIRE_EQUAL(r == expected_roots, true);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(test_sample_traversal)
+
+BOOST_FIXTURE_TEST_CASE(num_samples_simple_table_collection,
+                        simple_table_collection)
+{
+	// NOTE: only works b/c no recombination, so node table size
+	// is the number of nodes in the tree.  More generally,
+	// we need to do a node traveral, but that hasn't been tested yet
+	// (see below).
+    for (int i = 0; i < tables.node_table.size(); ++i)
+        {
+            BOOST_REQUIRE_EQUAL(fwdpp::ts::num_samples(tv.tree(), i),
+                                naive_num_samples(tv.tree(), i));
+        }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_exception, simple_table_collection)
+{
+    // need a visitor that does NOT update samples lists
 }
 
 BOOST_AUTO_TEST_SUITE_END()
