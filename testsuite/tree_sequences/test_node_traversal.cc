@@ -51,7 +51,7 @@ get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
 
 std::vector<fwdpp::ts::TS_NODE_INT>
 naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-// NOTE: only works if all tips are samples.  This test can be used also 
+// NOTE: only works if all tips are samples.  This test can be used also
 // as an independent count of the number of samples for this case.
 {
     std::vector<fwdpp::ts::TS_NODE_INT> rv;
@@ -169,6 +169,19 @@ BOOST_FIXTURE_TEST_CASE(test_sample_lists, simple_table_collection)
             BOOST_CHECK(fwdpp::ts::get_samples(tv.tree(), i)
                         == naive_get_samples(tv.tree(), i));
         }
+}
+
+BOOST_FIXTURE_TEST_CASE(test_subset_of_nodes_as_samples,
+                        simple_table_collection)
+{
+    samples = { 0, 1, 3 };
+    tv = fwdpp::ts::tree_visitor(tables, samples,
+                                 fwdpp::ts::update_samples_list(true));
+    tv();
+    BOOST_REQUIRE_EQUAL(naive_num_samples(tv.tree(), 6), samples.size());
+    auto x = fwdpp::ts::get_samples(tv.tree(), 6);
+    BOOST_CHECK(x.size() == samples.size());
+    BOOST_CHECK(x == samples);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_exception, simple_table_collection)
