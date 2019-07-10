@@ -4,46 +4,7 @@
 #include <fwdpp/ts/marginal_tree_functions/children.hpp>
 #include <fwdpp/ts/marginal_tree_functions/samples.hpp>
 #include "simple_table_collection.hpp"
-
-void
-get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
-        std::vector<fwdpp::ts::TS_NODE_INT> &samples)
-{
-    if (fwdpp::ts::num_children(m, u) > 0)
-        {
-            fwdpp::ts::process_children(
-                m, u, true, [&m, &samples](fwdpp::ts::TS_NODE_INT x) {
-                    get_tip(m, x, samples);
-                });
-            return;
-        }
-    samples.push_back(u);
-}
-
-std::vector<fwdpp::ts::TS_NODE_INT>
-naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-{
-    if (!m.advancing_sample_list())
-        {
-            throw std::invalid_argument("sample lists are not being updated");
-        }
-    std::vector<fwdpp::ts::TS_NODE_INT> temp,
-        samples_list(m.samples_list_begin(), m.samples_list_end()),
-        intersection;
-    std::sort(begin(samples_list), end(samples_list));
-    get_tip(m, u, temp);
-    std::sort(begin(temp), end(temp));
-    std::set_intersection(begin(temp), end(temp), begin(samples_list),
-                          end(samples_list), std::back_inserter(intersection));
-    return intersection;
-}
-
-std::size_t
-naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-{
-    auto s = naive_get_samples(m, u);
-    return s.size();
-}
+#include "independent_implementations.hpp"
 
 BOOST_AUTO_TEST_SUITE(test_sample_traversal)
 
