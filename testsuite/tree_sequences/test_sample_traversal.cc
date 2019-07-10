@@ -1,35 +1,9 @@
+#include <stdexcept>
+#include <algorithm>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/ts/marginal_tree_functions/children.hpp>
 #include <fwdpp/ts/marginal_tree_functions/samples.hpp>
 #include "simple_table_collection.hpp"
-
-//int
-//naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-//{
-//    if (!m.advancing_sample_list())
-//        {
-//            throw std::runtime_error(
-//                "testsuite error: sample lists not being updated");
-//        }
-//    if (static_cast<std::size_t>(u) >= m.size())
-//        {
-//            throw std::runtime_error("testsuite error: node out of range");
-//        }
-//    int n = 0;
-//    auto l = m.left_sample[u];
-//    auto r = m.right_sample[u];
-//    while (true)
-//        {
-//            if (l == r)
-//                {
-//                    ++n;
-//                    break;
-//                }
-//            ++n;
-//            l = m.next_sample[l];
-//        }
-//    return n;
-//}
 
 void
 get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
@@ -48,13 +22,20 @@ get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
 
 std::vector<fwdpp::ts::TS_NODE_INT>
 naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-// NOTE: only works if all tips are samples.  This test can be used also
-// as an independent count of the number of samples for this case.
 {
-    std::vector<fwdpp::ts::TS_NODE_INT> rv;
-    get_tip(m, u, rv);
-    std::sort(begin(rv), end(rv));
-    return rv;
+    if (!m.advancing_sample_list())
+        {
+            throw std::invalid_argument("sample lists are not being updated");
+        }
+    std::vector<fwdpp::ts::TS_NODE_INT> temp,
+        samples_list(m.samples_list_begin(), m.samples_list_end()),
+        intersection;
+    std::sort(begin(samples_list), end(samples_list));
+    get_tip(m, u, temp);
+    std::sort(begin(temp), end(temp));
+    std::set_intersection(begin(temp), end(temp), begin(samples_list),
+                          end(samples_list), std::back_inserter(intersection));
+    return intersection;
 }
 
 std::size_t
