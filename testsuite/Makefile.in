@@ -120,7 +120,7 @@ integration_sugar_integration_tests_LDADD = $(LDADD)
 am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/tree_sequence_tests.cc \
 	tree_sequences/test_generate_offspring.cc \
-	tree_sequences/test_node_traversal.cc \
+	tree_sequences/test_preorder_node_traversal.cc \
 	tree_sequences/test_tree_visitor.cc \
 	tree_sequences/test_decapitate.cc \
 	tree_sequences/test_marginal_tree_statistics.cc \
@@ -130,7 +130,7 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/test_node_children_traversal.cc
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_node_traversal.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_preorder_node_traversal.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_tree_visitor.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_decapitate.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_marginal_tree_statistics.$(OBJEXT) \
@@ -221,8 +221,8 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	tree_sequences/$(DEPDIR)/test_generate_offspring.Po \
 	tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po \
 	tree_sequences/$(DEPDIR)/test_node_children_traversal.Po \
-	tree_sequences/$(DEPDIR)/test_node_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_node_traversal_order_adl.Po \
+	tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_root_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_sample_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_tree_visitor.Po \
@@ -643,7 +643,7 @@ top_srcdir = @top_srcdir@
 # 	fixtures/sugar_fixtures.cc
 @BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_offspring.cc \
-@BUNIT_TEST_PRESENT_TRUE@									    tree_sequences/test_node_traversal.cc \
+@BUNIT_TEST_PRESENT_TRUE@									    tree_sequences/test_preorder_node_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_tree_visitor.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_decapitate.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_marginal_tree_statistics.cc \
@@ -728,7 +728,7 @@ tree_sequences/tree_sequence_tests.$(OBJEXT):  \
 tree_sequences/test_generate_offspring.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
-tree_sequences/test_node_traversal.$(OBJEXT):  \
+tree_sequences/test_preorder_node_traversal.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
 tree_sequences/test_tree_visitor.$(OBJEXT):  \
@@ -847,8 +847,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_generate_offspring.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_node_children_traversal.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_node_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_node_traversal_order_adl.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_root_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_sample_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_tree_visitor.Po@am__quote@ # am--include-marker
@@ -1243,8 +1243,8 @@ distclean: distclean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_children_traversal.Po
-	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal_order_adl.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
@@ -1327,8 +1327,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_children_traversal.Po
-	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_traversal_order_adl.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
