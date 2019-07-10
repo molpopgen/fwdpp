@@ -51,6 +51,27 @@ class simple_table_collection
     {
         tv();
     }
+
+    void
+    reset_visitor(bool update_samples_list)
+    {
+        tv = fwdpp::ts::tree_visitor(
+            tables, samples,
+            fwdpp::ts::update_samples_list(update_samples_list));
+        tv();
+    }
+
+    void
+    reset_visitor_and_samples(
+        const std::vector<fwdpp::ts::TS_NODE_INT>& new_samples_list,
+        bool update_samples_list)
+    {
+        samples = new_samples_list;
+        tv = fwdpp::ts::tree_visitor(
+            tables, new_samples_list,
+            fwdpp::ts::update_samples_list(update_samples_list));
+        tv();
+    }
 };
 
 #endif

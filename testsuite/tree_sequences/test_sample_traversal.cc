@@ -89,9 +89,7 @@ BOOST_FIXTURE_TEST_CASE(test_subset_of_nodes_as_samples,
                         simple_table_collection)
 {
     samples = { 0, 1, 3 };
-    tv = fwdpp::ts::tree_visitor(tables, samples,
-                                 fwdpp::ts::update_samples_list(true));
-    tv();
+    reset_visitor_and_samples(samples, true);
     BOOST_REQUIRE_EQUAL(naive_num_samples(tv.tree(), 6), samples.size());
     auto x = fwdpp::ts::get_samples(tv.tree(), 6);
     BOOST_CHECK(x.size() == samples.size());
@@ -103,9 +101,7 @@ BOOST_FIXTURE_TEST_CASE(test_exception, simple_table_collection)
     // need a visitor that does NOT update samples lists
     BOOST_REQUIRE_THROW(
         {
-            tv = fwdpp::ts::tree_visitor(
-                tables, samples, fwdpp::ts::update_samples_list(false));
-            tv();
+            reset_visitor(false);
             // Throws b/c tv is not updating samples lists
             fwdpp::ts::num_samples(tv.tree(), 6);
         },

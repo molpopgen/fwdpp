@@ -31,9 +31,7 @@ BOOST_FIXTURE_TEST_CASE(test_polytomy_decapitate,
                         simple_table_collection_polytomy)
 {
     fwdpp::ts::decapitate(tables, 0.);
-    tv = fwdpp::ts::tree_visitor(tables, samples,
-                                 fwdpp::ts::update_samples_list(false));
-    tv();
+	reset_visitor(false);
     auto c = fwdpp::ts::get_children(tv.tree(), 5, false);
     decltype(c) expected = { 2, 1, 0 };
     BOOST_REQUIRE(c == expected);
