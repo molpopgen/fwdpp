@@ -3,33 +3,33 @@
 #include <fwdpp/ts/marginal_tree_functions/samples.hpp>
 #include "simple_table_collection.hpp"
 
-int
-naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
-{
-    if (!m.advancing_sample_list())
-        {
-            throw std::runtime_error(
-                "testsuite error: sample lists not being updated");
-        }
-    if (static_cast<std::size_t>(u) >= m.size())
-        {
-            throw std::runtime_error("testsuite error: node out of range");
-        }
-    int n = 0;
-    auto l = m.left_sample[u];
-    auto r = m.right_sample[u];
-    while (true)
-        {
-            if (l == r)
-                {
-                    ++n;
-                    break;
-                }
-            ++n;
-            l = m.next_sample[l];
-        }
-    return n;
-}
+//int
+//naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+//{
+//    if (!m.advancing_sample_list())
+//        {
+//            throw std::runtime_error(
+//                "testsuite error: sample lists not being updated");
+//        }
+//    if (static_cast<std::size_t>(u) >= m.size())
+//        {
+//            throw std::runtime_error("testsuite error: node out of range");
+//        }
+//    int n = 0;
+//    auto l = m.left_sample[u];
+//    auto r = m.right_sample[u];
+//    while (true)
+//        {
+//            if (l == r)
+//                {
+//                    ++n;
+//                    break;
+//                }
+//            ++n;
+//            l = m.next_sample[l];
+//        }
+//    return n;
+//}
 
 void
 get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
@@ -55,6 +55,13 @@ naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
     get_tip(m, u, rv);
     std::sort(begin(rv), end(rv));
     return rv;
+}
+
+std::size_t
+naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+{
+    auto s = naive_get_samples(m, u);
+    return s.size();
 }
 
 BOOST_AUTO_TEST_SUITE(test_sample_traversal)
