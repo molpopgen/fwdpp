@@ -18,6 +18,9 @@ namespace fwdpp
             /// The index of the mutation in the
             /// population's mutation container
             std::size_t key;
+            double position;
+            std::int32_t derived_state; // TODO: should this be a template type?
+            bool neutral;
         };
 
         inline bool
