@@ -338,18 +338,20 @@ namespace fwdpp
                 return node_table.size() - 1;
             }
 
-            void
+            std::size_t
             push_back_edge(double l, double r, TS_NODE_INT parent,
                            TS_NODE_INT child)
             {
                 edge_table.push_back(edge{ l, r, parent, child });
+                return edge_table.size();
             }
 
             template <typename... args>
-            void
+            std::size_t
             emplace_back_edge(args&&... Args)
             {
                 edge_table.emplace_back(edge{ std::forward<args>(Args)... });
+                return edge_table.size();
             }
 
             template <typename... args>
@@ -369,19 +371,21 @@ namespace fwdpp
             }
 
             template <typename... args>
-            void
+            std::size_t
             push_back_mutation(args&&... Args)
             {
                 mutation_table.push_back(
                     mutation_record{ std::forward<args>(Args)... });
+                return mutation_table.size() - 1;
             }
 
             template <typename... args>
-            void
+            std::size_t
             emplace_back_mutation(args&&... Args)
             {
                 mutation_table.emplace_back(
                     mutation_record{ std::forward<args>(Args)... });
+                return mutation_table.size() - 1;
             }
 
             void
