@@ -163,6 +163,7 @@ namespace fwdpp
             // their allocated memory persistent.
             edge_vector new_edge_table;
             node_vector new_node_table;
+            site_vector new_site_table;
             // segment_queue mimics a min queue of segments w.r.to
             // segment::left.
             std::vector<segment> segment_queue;
@@ -182,6 +183,7 @@ namespace fwdpp
             {
                 new_edge_table.clear();
                 new_node_table.clear();
+                new_site_table.clear();
                 E.clear();
                 // It is tempting to
                 // just clear out each
@@ -500,8 +502,9 @@ namespace fwdpp
 
           public:
             explicit table_simplifier(const double maxpos)
-                : new_edge_table{}, new_node_table{}, segment_queue{},
-                  Ancestry{}, E{}, L{ maxpos }, o{}, mutation_map{}
+                : new_edge_table{}, new_node_table{}, new_site_table{},
+                  segment_queue{}, Ancestry{}, E{}, L{ maxpos }, o{},
+                  mutation_map{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
                     {
