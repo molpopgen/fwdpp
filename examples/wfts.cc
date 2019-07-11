@@ -283,6 +283,25 @@ main(int argc, char **argv)
                     assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                 }
         }
+    // This is an infinite-sites simulation, so we can do some
+    // simple tests on our site table:
+    if (tables.site_table.size() != tables.mutation_table.size())
+        {
+            throw std::runtime_error("mutation and site table sizes differ");
+        }
+    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+        {
+            throw std::runtime_error("site table is not sorted");
+        }
+    for (std::size_t i = 0; i < tables.site_table.size(); ++i)
+        {
+            if (tables.site_table[i].position
+                != pop.mutations[tables.mutation_table[i].key].pos)
+                {
+                    throw std::runtime_error("site table data are incorrect");
+                }
+        }
+
     // If we have done things correctly, then our
     // ancient sample metadata must match up with
     // what is in our node table.
