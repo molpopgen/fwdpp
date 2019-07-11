@@ -3,6 +3,7 @@ pkgincludedir=$(prefix)/include/fwdpp/ts
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \
 			edge.hpp \
+			site.hpp \
 			table_collection.hpp \
 			table_simplifier.hpp \
 			get_parent_ids.hpp \
