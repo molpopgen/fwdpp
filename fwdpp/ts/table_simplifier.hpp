@@ -392,10 +392,23 @@ namespace fwdpp
                           });
             }
 
+            void
+            record_site(const site_vector& sites, const double input_pos,
+                        mutation_record& mr)
+            {
+                double pos = sites[mr.site].position;
+                if (new_site_table.empty()
+                    || new_site_table.back().position != pos)
+                    {
+                        new_site_table.push_back(sites[mr.site]);
+                    }
+                mr.site = new_site_table.size() - 1;
+            }
+
             template <typename mcont_t>
             std::vector<std::size_t>
             simplify_mutations(const mcont_t& mutations,
-                               mutation_key_vector& mt) const
+                               mutation_key_vector& mt, site_vector& sites)
             // Remove all mutations that do not map to nodes
             // in the simplified tree.  The key here is
             // that Ancestry contains the history of
@@ -460,6 +473,7 @@ namespace fwdpp
                 preserved_variants.reserve(std::distance(itr, mt.end()));
                 for (auto i = mt.begin(); i != itr; ++i)
                     {
+                        record_site(sites, mutations[i->key].pos, *i);
                         preserved_variants.push_back(i->key);
                     }
 
@@ -471,6 +485,7 @@ namespace fwdpp
                                           return mutations[a.key].pos
                                                  < mutations[b.key].pos;
                                       }));
+                sites.swap(new_site_table);
                 return preserved_variants;
             }
 
@@ -590,8 +605,8 @@ namespace fwdpp
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_sorted());
                 tables.update_offset();
-                auto preserved_variants
-                    = simplify_mutations(mutations, tables.mutation_table);
+                auto preserved_variants = simplify_mutations(
+                    mutations, tables.mutation_table, tables.site_table);
 
                 cleanup();
                 std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
