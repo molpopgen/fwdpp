@@ -337,6 +337,36 @@ namespace fwdpp
                 edge_table.emplace_back(edge{ std::forward<args>(Args)... });
             }
 
+            template <typename... args>
+            void
+            push_back_site(args&&... Args)
+            {
+                site_table.push_back(site{ std::forward<args>(Args)... });
+            }
+
+            template <typename... args>
+            void
+            emplace_back_site(args&&... Args)
+            {
+                site_table.emplace_back(site{ std::forward<args>(Args)... });
+            }
+
+            template <typename... args>
+            void
+            push_back_mutation(args&&... Args)
+            {
+                mutation_table.push_back(
+                    mutation_record{ std::forward<args>(Args)... });
+            }
+
+            template <typename... args>
+            void
+            emplace_back_mutation(args&&... Args)
+            {
+                mutation_table.emplace_back(
+                    mutation_record{ std::forward<args>(Args)... });
+            }
+
             void
             build_indexes()
             /// Generates the index vectors referred to
@@ -366,8 +396,8 @@ namespace fwdpp
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
-			// TODO: decide if next_index needs to be part of the 
-			// API.  It should be the return value, right?
+            // TODO: decide if next_index needs to be part of the
+            // API.  It should be the return value, right?
             {
                 // TODO: carefully document how to index node times.
                 emplace_back_node(population, time);
