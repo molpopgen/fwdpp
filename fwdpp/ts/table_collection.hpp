@@ -310,17 +310,19 @@ namespace fwdpp
                     }
             }
 
-            void
+            std::size_t
             push_back_node(double time, std::int32_t pop)
             {
                 node_table.push_back(node{ pop, time });
+                return node_table.size() - 1;
             }
 
             template <typename... args>
-            void
+            std::size_t
             emplace_back_node(args&&... Args)
             {
                 node_table.emplace_back(node{ std::forward<args>(Args)... });
+                return node_table.size() - 1;
             }
 
             void
@@ -338,17 +340,19 @@ namespace fwdpp
             }
 
             template <typename... args>
-            void
+            std::size_t
             push_back_site(args&&... Args)
             {
                 site_table.push_back(site{ std::forward<args>(Args)... });
+                return site_table.size() - 1;
             }
 
             template <typename... args>
-            void
+            std::size_t
             emplace_back_site(args&&... Args)
             {
                 site_table.emplace_back(site{ std::forward<args>(Args)... });
+                return site_table.size() - 1;
             }
 
             template <typename... args>
@@ -390,9 +394,8 @@ namespace fwdpp
                 std::sort(output_right.begin(), output_right.end());
             }
 
-            void
+            std::size_t
             register_diploid_offspring(
-                const TS_NODE_INT next_index,
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
@@ -400,27 +403,13 @@ namespace fwdpp
             // API.  It should be the return value, right?
             {
                 // TODO: carefully document how to index node times.
-                emplace_back_node(population, time);
-                split_breakpoints(breakpoints, parents, next_index);
-            }
-
-            void
-            add_offspring_data(
-                const TS_NODE_INT next_index,
-                const std::vector<double>& breakpoints,
-                const std::vector<std::uint32_t>& new_mutations,
-                const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const std::int32_t population, const double time)
-            {
-                register_diploid_offspring(next_index, breakpoints, parents,
-                                           population, time);
-                for (auto& m : new_mutations)
+                auto next_index = emplace_back_node(population, time);
+                if (next_index >= std::numeric_limits<TS_NODE_INT>::max())
                     {
-                        mutation_table.emplace_back(
-                            mutation_record{ next_index, m });
-                        assert(mutation_table.back().node == next_index);
-                        assert(mutation_table.back().key == m);
+                        throw std::runtime_error("node index too large");
                     }
+                split_breakpoints(breakpoints, parents, next_index);
+                return next_index;
             }
 
             std::size_t
@@ -456,6 +445,29 @@ namespace fwdpp
         operator!=(const table_collection& a, const table_collection& b)
         {
             return !(a == b);
+        }
+
+        template <typename mcont_t>
+        void
+        record_mutations_infinite_sites(
+            const TS_NODE_INT u, const mcont_t& mutations,
+            const std::vector<std::uint32_t>& new_mutation_keys,
+            table_collection& tables)
+        /// \version Added in 0.8.0
+        {
+            std::int8_t ancestral_state = 0, derived_state = 1;
+            for (auto& k : new_mutation_keys)
+                {
+                    auto site = tables.emplace_back_site(mutations[k].pos,
+                                                         ancestral_state);
+                    if (site >= std::numeric_limits<TS_NODE_INT>::max())
+                        {
+                            throw std::runtime_error(
+                                "site index out of range");
+                        }
+                    tables.push_back_mutation(u, k, site, derived_state,
+                                              mutations[k].neutral);
+                }
         }
     } // namespace ts
 } // namespace fwdpp

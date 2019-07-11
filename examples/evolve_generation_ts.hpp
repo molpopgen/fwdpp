@@ -76,12 +76,16 @@ evolve_generation(const rng_t& rng, poptype& pop,
                 first_parental_index, p1, offspring_data.first.swapped);
             auto p2id = fwdpp::ts::get_parent_ids(
                 first_parental_index, p2, offspring_data.second.swapped);
-            tables.add_offspring_data(
-                next_index_local++, offspring_data.first.breakpoints,
-                offspring_data.first.mutation_keys, p1id, 0, generation);
-            tables.add_offspring_data(
-                next_index_local++, offspring_data.second.breakpoints,
-                offspring_data.second.mutation_keys, p2id, 0, generation);
+            next_index_local = tables.register_diploid_offspring(
+                offspring_data.first.breakpoints, p1id, 0, generation);
+            fwdpp::ts::record_mutations_infinite_sites(
+                next_index_local, pop.mutations,
+                offspring_data.first.mutation_keys, tables);
+            next_index_local = tables.register_diploid_offspring(
+                offspring_data.second.breakpoints, p2id, 0, generation);
+            fwdpp::ts::record_mutations_infinite_sites(
+                next_index_local, pop.mutations,
+                offspring_data.second.mutation_keys, tables);
 
             // Give the caller a chance to generate
             // any metadata for the offspring that
