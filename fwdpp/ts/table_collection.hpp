@@ -13,6 +13,7 @@
 #include <fwdpp/forward_types.hpp>
 #include "node.hpp"
 #include "edge.hpp"
+#include "site.hpp"
 #include "mutation_record.hpp"
 #include "indexed_edge.hpp" //TODO: create fewer header dependencies
 
@@ -29,6 +30,9 @@ namespace fwdpp
         /// A "mutation table"
         ///  \version 0.7.0 Added to fwdpp
         using mutation_key_vector = std::vector<mutation_record>;
+        /// \brief Site table
+        /// \version 0.8.0 Added to fwdpp
+        using site_vector = std::vector<site>;
 
         struct table_collection
         /*!
@@ -139,6 +143,8 @@ namespace fwdpp
             edge_vector edge_table;
             /// Mutation table for this simulation;
             mutation_key_vector mutation_table;
+            /// Site table
+            site_vector site_table;
             /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
             indexed_edge_container input_left;
             /// The output edge vector. "O" in \cite Kelleher2016-cb, page 13
@@ -153,7 +159,7 @@ namespace fwdpp
 
             explicit table_collection(const double maxpos)
                 : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
-                  input_left{}, output_right{}, edge_offset{ 0 },
+                  site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -167,7 +173,7 @@ namespace fwdpp
                              const double initial_time, TS_NODE_INT pop,
                              const double maxpos)
                 : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
-                  input_left{}, output_right{}, edge_offset{ 0 },
+                  site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -407,6 +413,7 @@ namespace fwdpp
         operator==(const table_collection& a, const table_collection& b)
         {
             return a.genome_length() == b.genome_length()
+                   && a.site_table == b.site_table
                    && a.edge_table == b.edge_table
                    && a.node_table == b.node_table
                    && a.mutation_table == b.mutation_table
