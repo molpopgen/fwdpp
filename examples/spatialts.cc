@@ -24,6 +24,7 @@
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
 #include <fwdpp/ts/serialization.hpp>
+#include <fwdpp/ts/mutation_tools.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/diploid_population.hpp>
@@ -420,17 +421,19 @@ main(int argc, char **argv)
     assert(tables.output_right.size() == tables.edge_table.size());
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
     std::iota(s.begin(), s.end(), 0);
-    const auto neutral_variant_maker
-        = [&rng, &pop, &genetics](const double left, const double right,
-                                  const fwdpp::uint_t generation) {
-              return fwdpp::infsites_popgenmut(
-                  genetics.mutation_recycling_bin, pop.mutations, rng.get(),
-                  pop.mut_lookup, generation, 0.0,
-                  [left, right, &rng] {
-                      return gsl_ran_flat(rng.get(), left, right);
-                  },
-                  []() { return 0.0; }, []() { return 0.0; });
-          };
+    const auto neutral_variant_maker =
+        [&rng, &pop, &genetics](const double left, const double right,
+                                const fwdpp::uint_t generation) {
+            auto key = fwdpp::infsites_popgenmut(
+                genetics.mutation_recycling_bin, pop.mutations, rng.get(),
+                pop.mut_lookup, generation, 0.0,
+                [left, right, &rng] {
+                    return gsl_ran_flat(rng.get(), left, right);
+                },
+                []() { return 0.0; }, []() { return 0.0; });
+            return fwdpp::ts::new_variant_record(
+                pop.mutations[key].pos, 0, key, pop.mutations[key].neutral, 1);
+        };
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
                                    theta / static_cast<double>(4 * N));
