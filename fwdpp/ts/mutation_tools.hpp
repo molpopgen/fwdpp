@@ -11,9 +11,12 @@ namespace fwdpp
         {
             site s;
             std::size_t key;
+            bool neutral;
+            std::int8_t derived_state;
             new_variant_record(double position, std::int8_t ancestral_state,
-                               std::size_t index)
-                : s{ position, ancestral_state }, key{ index }
+                               std::size_t index, bool n, std::int8_t d)
+                : s{ position, ancestral_state }, key{ index }, neutral{ n },
+                  derived_state{ d }
             /// \version 0.8.0 Added to library
             {
             }
