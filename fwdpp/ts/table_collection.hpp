@@ -136,6 +136,19 @@ namespace fwdpp
                     }
             }
 
+            template <typename mcont_t>
+            void
+            record_site(const site_vector& sites, const mcont_t& mutations,
+                        mutation_record& mr)
+            {
+                double pos = mutations[mr.key].pos;
+                if (site_table.empty() || site_table.back().position != pos)
+                    {
+                        emplace_back_site(sites[mr.site], pos);
+                    }
+                mr.site = site_table.size() - 1;
+            }
+
           public:
             /// Node table for this simulation
             node_vector node_table;
@@ -410,6 +423,20 @@ namespace fwdpp
                     }
                 split_breakpoints(breakpoints, parents, next_index);
                 return next_index;
+            }
+
+            template <typename mcont_t>
+            void
+            rebuild_site_table(const mcont_t& mutations)
+            /// O(n) time plus O(n) additional memory.
+            {
+                auto new_site_table(site_table);
+                site_table.clear();
+                for (auto& mr : mutation_table)
+                    {
+                        record_site(new_site_table, mutations, mr);
+                    }
+                site_table.swap(new_site_table);
             }
 
             std::size_t
