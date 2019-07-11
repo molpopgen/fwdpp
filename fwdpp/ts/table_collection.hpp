@@ -136,15 +136,15 @@ namespace fwdpp
                     }
             }
 
-            template <typename mcont_t>
             void
-            record_site(const site_vector& sites, const mcont_t& mutations,
-                        mutation_record& mr)
+            record_site_during_rebuild(const site_vector& sites,
+                                       mutation_record& mr)
             {
-                double pos = mutations[mr.key].pos;
+                double pos = sites[mr.site].position;
                 if (site_table.empty() || site_table.back().position != pos)
                     {
-                        emplace_back_site(sites[mr.site], pos);
+                        emplace_back_site(sites[mr.site].position,
+                                          sites[mr.site].ancestral_state);
                     }
                 mr.site = site_table.size() - 1;
             }
@@ -429,16 +429,15 @@ namespace fwdpp
                 return next_index;
             }
 
-            template <typename mcont_t>
             void
-            rebuild_site_table(const mcont_t& mutations)
+            rebuild_site_table()
             /// O(n) time plus O(n) additional memory.
             {
                 auto new_site_table(site_table);
                 site_table.clear();
                 for (auto& mr : mutation_table)
                     {
-                        record_site(new_site_table, mutations, mr);
+                        record_site_during_rebuild(new_site_table, mr);
                     }
                 site_table.swap(new_site_table);
             }
