@@ -17,6 +17,12 @@ namespace fwdpp
         };
 
         inline bool
+        operator<(const site& a, const site& b)
+        {
+            return a.position < b.position;
+        }
+
+        inline bool
         operator==(const site& a, const site& b)
         {
             return std::tie(a.position, a.ancestral_state)
