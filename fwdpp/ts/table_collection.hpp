@@ -361,11 +361,13 @@ namespace fwdpp
             }
 
             void
-            add_offspring_data(
+            register_diploid_offspring(
                 const TS_NODE_INT next_index,
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
+			// TODO: decide if next_index needs to be part of the 
+			// API.  It should be the return value, right?
             {
                 // TODO: carefully document how to index node times.
                 emplace_back_node(population, time);
@@ -380,8 +382,8 @@ namespace fwdpp
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
             {
-                add_offspring_data(next_index, breakpoints, parents,
-                                   population, time);
+                register_diploid_offspring(next_index, breakpoints, parents,
+                                           population, time);
                 for (auto& m : new_mutations)
                     {
                         mutation_table.emplace_back(
