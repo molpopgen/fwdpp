@@ -23,7 +23,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
     tables.sort_tables_for_simplification();
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
-    auto rv = simplifier.simplify(tables, samples, pop.mutations);
+    auto rv = simplifier.simplify(tables, samples);
     tables.build_indexes();
     for (auto &s : samples)
         {
