@@ -40,11 +40,6 @@ apply_neutral_mutations_details(
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
                                    o.theta / static_cast<double>(4 * o.N));
-    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
-              [&pop](const fwdpp::ts::mutation_record &a,
-                     const fwdpp::ts::mutation_record &b) {
-                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
-              });
     return neutral_muts;
 }
 

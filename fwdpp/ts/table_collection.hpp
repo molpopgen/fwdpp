@@ -137,14 +137,12 @@ namespace fwdpp
             }
 
             void
-            record_site_during_rebuild(const site_vector& sites,
-                                       mutation_record& mr)
+            record_site_during_rebuild(const site& s, mutation_record& mr)
             {
-                double pos = sites[mr.site].position;
-                if (site_table.empty() || site_table.back().position != pos)
+                if (site_table.empty()
+                    || site_table.back().position != s.position)
                     {
-                        emplace_back_site(sites[mr.site].position,
-                                          sites[mr.site].ancestral_state);
+                        emplace_back_site(s);
                     }
                 mr.site = site_table.size() - 1;
             }
@@ -430,16 +428,34 @@ namespace fwdpp
             }
 
             void
-            rebuild_site_table()
-            /// O(n) time plus O(n) additional memory.
+            sort_mutations_rebuild_site_table()
+            /// O(n*log(n)) time plus O(n) additional memory.
             {
-                auto new_site_table(site_table);
+                std::sort(begin(mutation_table), end(mutation_table),
+                          [this](const mutation_record& a,
+                                 const mutation_record& b) {
+                              return site_table[a.site].position
+                                     < site_table[b.site].position;
+                          });
+
+                auto site_table_copy(site_table);
                 site_table.clear();
                 for (auto& mr : mutation_table)
                     {
-                        record_site_during_rebuild(new_site_table, mr);
+                        auto os = mr.site;
+                        record_site_during_rebuild(site_table_copy[mr.site], mr);
+                        if (site_table_copy[os].position
+                            != site_table[mr.site].position)
+                            {
+                                throw std::runtime_error(
+                                    "error rebuilding site table");
+                            }
                     }
-                site_table.swap(new_site_table);
+                if (site_table.size() != mutation_table.size())
+                    {
+                        throw std::runtime_error(
+                            "error rebuilding site table");
+                    }
             }
 
             std::size_t

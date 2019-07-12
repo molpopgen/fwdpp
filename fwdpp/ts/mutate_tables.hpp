@@ -122,6 +122,7 @@ namespace fwdpp
                         }
                     nmuts += nm;
                 }
+            tables.sort_mutations_rebuild_site_table();
             return nmuts;
         }
     } // namespace ts

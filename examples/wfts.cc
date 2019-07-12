@@ -321,12 +321,18 @@ main(int argc, char **argv)
 
     auto neutral_muts = apply_neutral_mutations(
         o, rng, tables, pop, genetics.mutation_recycling_bin);
+    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+        {
+            throw std::runtime_error(
+                "site table is not sorted after adding neutral mutations");
+        }
     for (auto &mr : tables.mutation_table)
         {
             if (pop.mutations[mr.key].pos
                 != tables.site_table[mr.site].position)
                 {
-                    throw std::runtime_error("site table data incorrect");
+                    throw std::runtime_error("site table data incorrect after "
+                                             "adding neutral mutations");
                 }
         }
 

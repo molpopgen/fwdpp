@@ -437,11 +437,6 @@ main(int argc, char **argv)
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
                                    theta / static_cast<double>(4 * N));
-    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
-              [&pop](const fwdpp::ts::mutation_record &a,
-                     const fwdpp::ts::mutation_record &b) {
-                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
-              });
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
