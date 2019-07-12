@@ -39,22 +39,21 @@ namespace fwdpp
                     }
             }
 
-            template <typename mcont_t>
             inline void
-            update_data_matrix(const mcont_t& mutations, const std::size_t key,
+            update_data_matrix(const std::size_t key, const double position,
+                               const bool neutral,
                                const std::vector<std::int8_t>& genotypes,
                                data_matrix& rv)
             {
-                auto n = mutations[key].neutral;
-                auto& sm = (n) ? rv.neutral : rv.selected;
-                auto& k = (n) ? rv.neutral_keys : rv.selected_keys;
-                sm.positions.push_back(mutations[key].pos);
+                auto& sm = (neutral) ? rv.neutral : rv.selected;
+                auto& k = (neutral) ? rv.neutral_keys : rv.selected_keys;
+                sm.positions.push_back(position);
                 sm.data.insert(sm.data.end(), genotypes.begin(),
                                genotypes.end());
                 k.push_back(key);
             }
         } // namespace detail
-    } // namespace ts
+    }     // namespace ts
 } // namespace fwdpp
 
 #endif

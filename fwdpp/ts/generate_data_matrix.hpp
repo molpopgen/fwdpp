@@ -14,10 +14,9 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename SAMPLES, typename mcont_t>
+        template <typename SAMPLES>
         data_matrix
         generate_data_matrix(const table_collection& tables, SAMPLES&& samples,
-                             const mcont_t& mutations,
                              const bool record_neutral,
                              const bool record_selected, const bool skip_fixed,
                              const double start, const double stop)
@@ -42,16 +41,18 @@ namespace fwdpp
                     // in the current tree
                     const auto& tree = tv.tree();
                     while (mut < mut_end
-                           && mutations[mut->key].pos < tree.left)
+                           && tables.site_table[mut->site].position
+                                  < tree.left)
                         {
                             ++mut;
                         }
                     // Process mutations on this tree
                     for (;
-                         mut < mut_end && mutations[mut->key].pos < tree.right;
+                         mut < mut_end
+                         && tables.site_table[mut->site].position < tree.right;
                          ++mut)
                         {
-                            auto pos = mutations[mut->key].pos;
+                            auto pos = tables.site_table[mut->site].position;
                             if (pos >= start)
                                 {
                                     if (!(pos < stop))
@@ -66,8 +67,7 @@ namespace fwdpp
                                             && tc < tree.sample_size()))
                                         {
                                             // Mutation leads to a polymorphism
-                                            bool is_neutral
-                                                = mutations[mut->key].neutral;
+                                            bool is_neutral = mut->neutral;
                                             if ((is_neutral && record_neutral)
                                                 || (!is_neutral
                                                     && record_selected))
@@ -85,12 +85,14 @@ namespace fwdpp
                                                                     index,
                                                                     genotypes);
                                                             // Update our return value
-                                                            detail::
-                                                                update_data_matrix(
-                                                                    mutations,
-                                                                    mut->key,
-                                                                    genotypes,
-                                                                    rv);
+                                                            detail::update_data_matrix(
+                                                                mut->key,
+                                                                tables
+                                                                    .site_table
+                                                                        [mut->site]
+                                                                    .position,
+                                                                mut->neutral,
+                                                                genotypes, rv);
                                                         }
                                                 }
                                         }
@@ -105,17 +107,15 @@ namespace fwdpp
             return rv;
         }
 
-        template <typename SAMPLES, typename mcont_t>
+        template <typename SAMPLES>
         data_matrix
         generate_data_matrix(const table_collection& tables, SAMPLES&& samples,
-                             const mcont_t& mutations,
                              const bool record_neutral,
                              const bool record_selected, const bool skip_fixed)
         {
-            return generate_data_matrix(tables, std::forward<SAMPLES>(samples),
-                                        mutations, record_neutral,
-                                        record_selected, skip_fixed, 0.,
-                                        tables.genome_length());
+            return generate_data_matrix(
+                tables, std::forward<SAMPLES>(samples), record_neutral,
+                record_selected, skip_fixed, 0., tables.genome_length());
         }
 
     } // namespace ts
