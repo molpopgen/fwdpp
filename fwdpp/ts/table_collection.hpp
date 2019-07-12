@@ -298,14 +298,12 @@ namespace fwdpp
             void
             clear() noexcept
             /// Clears internal vectors.
-            /// Mostly used during simplification
-            /// where a table_collection is
-            /// used as a temp object.
             {
                 node_table.clear();
                 edge_table.clear();
                 mutation_table.clear();
                 preserved_nodes.clear();
+                site_table.clear();
             }
 
             void
