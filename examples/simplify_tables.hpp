@@ -42,7 +42,12 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                     return pop.mcounts[mr.key] == 2 * pop.diploids.size()
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });
+            auto d = std::distance(itr, end(tables.mutation_table));
             tables.mutation_table.erase(itr, tables.mutation_table.end());
+            if (d)
+                {
+                    tables.rebuild_site_table();
+                }
             confirm_mutation_counts(pop, tables);
             fwdpp::ts::remove_fixations_from_haploid_genomes(
                 pop.haploid_genomes, pop.mutations, pop.mcounts,
