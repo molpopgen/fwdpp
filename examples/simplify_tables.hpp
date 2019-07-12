@@ -20,7 +20,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
 {
-    tables.sort_tables(pop.mutations);
+    tables.sort_tables_for_simplification();
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
     auto rv = simplifier.simplify(tables, samples, pop.mutations);

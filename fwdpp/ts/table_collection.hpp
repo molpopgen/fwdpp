@@ -241,28 +241,31 @@ namespace fwdpp
                 assert(edges_are_sorted());
             }
 
-            template <typename mutation_container>
             void
-            sort_mutations(const mutation_container& mutations)
+            sort_mutations()
             {
+                if (site_table.size() != mutation_table.size())
+                    {
+                        throw std::runtime_error(
+                            "mutation and site table sizes differ");
+                    }
                 //mutations are sorted by increasing position
                 std::sort(mutation_table.begin(), mutation_table.end(),
-                          [&mutations](const mutation_record& a,
-                                       const mutation_record& b) {
-                              return mutations[a.key].pos
-                                     < mutations[b.key].pos;
+                          [this](const mutation_record& a,
+                                 const mutation_record& b) {
+                              return site_table[a.site].position
+                                     < site_table[b.site].position;
                           });
             }
 
-            template <typename mutation_container>
             void
-            sort_tables(const mutation_container& mutations)
-            /// Sorts the tables
-            /// Note that mutations can be mocked via any struct
-            /// containing double pos
+            sort_tables_for_simplification()
+            /// Sorts the tables for simplification, which means only
+            /// sorting edge and mutation tables, as the site table
+            /// will be rebuilt during simplification.
             {
                 sort_edges();
-                sort_mutations(mutations);
+                sort_mutations();
             }
 
             bool
@@ -443,7 +446,8 @@ namespace fwdpp
                 for (auto& mr : mutation_table)
                     {
                         auto os = mr.site;
-                        record_site_during_rebuild(site_table_copy[mr.site], mr);
+                        record_site_during_rebuild(site_table_copy[mr.site],
+                                                   mr);
                         if (site_table_copy[os].position
                             != site_table[mr.site].position)
                             {
