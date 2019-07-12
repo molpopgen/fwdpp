@@ -93,7 +93,7 @@ evolve_generation(const rng_t& rng, poptype& pop,
             update_offspring(next_offspring, p1, p2);
         }
     assert(next_index_local
-           == next_index + 2 * static_cast<std::int32_t>(N_next));
+           == next_index + 2 * static_cast<std::int32_t>(N_next) - 1);
     // This is constant-time
     pop.diploids.swap(offspring);
 }
