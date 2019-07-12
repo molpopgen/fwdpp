@@ -268,6 +268,14 @@ namespace fwdpp
                 sort_mutations();
             }
 
+            void
+            sort_tables()
+            /// Sort all tables.  The site table is rebuilt.
+            {
+                sort_edges();
+                sort_mutations_rebuild_site_table();
+            }
+
             bool
             edges_are_sorted() const noexcept
             /// Test the MINIMAL sorting requirement.
