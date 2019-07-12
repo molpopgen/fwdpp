@@ -423,8 +423,6 @@ namespace fwdpp
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
-            // TODO: decide if next_index needs to be part of the
-            // API.  It should be the return value, right?
             {
                 // TODO: carefully document how to index node times.
                 auto next_index = emplace_back_node(population, time);
