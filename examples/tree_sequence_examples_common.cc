@@ -55,10 +55,10 @@ apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
 
 options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
-      scoeff(std::numeric_limits<double>::quiet_NaN()), dominance(1.), scaling(2.),
-      seed(42), ancient_sampling_interval(-1), ancient_sample_size(-1),
-      nsam(0), leaf_test(false), matrix_test(false), preserve_fixations(false),
-      filename(), sfsfilename()
+      scoeff(std::numeric_limits<double>::quiet_NaN()), dominance(1.),
+      scaling(2.), seed(42), ancient_sampling_interval(-1),
+      ancient_sample_size(-1), nsam(0), leaf_test(false), matrix_test(false),
+      preserve_fixations(false), filename(), sfsfilename()
 {
 }
 
@@ -168,8 +168,8 @@ matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::popgenmut> &mutations,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
-    auto dm = fwdpp::ts::generate_data_matrix(tables, samples, mutations, true,
-                                              true, false);
+    auto dm
+        = fwdpp::ts::generate_data_matrix(tables, samples, true, true, false);
     auto rs = fwdpp::row_sums(dm);
     for (std::size_t i = 0; i < rs.first.size(); ++i)
         {
@@ -379,7 +379,7 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
             auto dm = fwdpp::ts::generate_data_matrix(
-                tables, small_sample, mutations, true, false, true);
+                tables, small_sample, true, false, true);
             auto rs = fwdpp::row_sums(dm);
             std::vector<int> sfs(small_sample.size() - 1);
             for (auto i : rs.first)
