@@ -435,16 +435,9 @@ namespace fwdpp
             }
 
             void
-            sort_mutations_rebuild_site_table()
-            /// O(n*log(n)) time plus O(n) additional memory.
+            rebuild_site_table()
+            /// Complete rebuild of the site table.
             {
-                std::sort(begin(mutation_table), end(mutation_table),
-                          [this](const mutation_record& a,
-                                 const mutation_record& b) {
-                              return site_table[a.site].position
-                                     < site_table[b.site].position;
-                          });
-
                 auto site_table_copy(site_table);
                 site_table.clear();
                 for (auto& mr : mutation_table)
@@ -459,6 +452,17 @@ namespace fwdpp
                                     "error rebuilding site table");
                             }
                     }
+            }
+
+            void
+            sort_mutations_rebuild_site_table()
+            /// O(n*log(n)) time plus O(n) additional memory.
+            /// This is called by sort_tables, but also should
+            /// be called after adding mutations by some manual
+            /// means to a table collection.
+            {
+                sort_mutations();
+                rebuild_site_table();
                 if (site_table.size() != mutation_table.size())
                     {
                         throw std::runtime_error(
