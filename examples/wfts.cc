@@ -321,6 +321,14 @@ main(int argc, char **argv)
 
     auto neutral_muts = apply_neutral_mutations(
         o, rng, tables, pop, genetics.mutation_recycling_bin);
+    for (auto &mr : tables.mutation_table)
+        {
+            if (pop.mutations[mr.key].pos
+                != tables.site_table[mr.site].position)
+                {
+                    throw std::runtime_error("site table data incorrect");
+                }
+        }
 
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
