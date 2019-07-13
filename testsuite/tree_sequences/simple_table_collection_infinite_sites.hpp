@@ -7,11 +7,12 @@
 class simple_table_collection_infinite_sites : public simple_table_collection
 {
   private:
-    static const std::int8_t ancestral_state{ 0 };
-    static const std::int8_t derived_state{ 1 };
+    const std::int8_t ancestral_state;
+    const std::int8_t derived_state;
 
   public:
-    simple_table_collection_infinite_sites() : simple_table_collection()
+    simple_table_collection_infinite_sites()
+        : simple_table_collection(), ancestral_state{ 0 }, derived_state{ 1 }
     {
         add_x_mutations_per_branch(1, 1);
     }
