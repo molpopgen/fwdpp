@@ -141,7 +141,8 @@ namespace fwdpp
                 }
             };
 
-            template <> struct serialize_mutation_record<TS_TABLES_VERSION>
+            template <> struct serialize_mutation_record<2>
+            /// \version 0.8.0 Changes from TS_TABLES_VERSION to 2
             {
                 template <typename ostreamtype>
                 inline void
@@ -163,7 +164,10 @@ namespace fwdpp
                 }
             };
 
-            template <> struct deserialize_mutation_record<TS_TABLES_VERSION>
+            template <> struct deserialize_mutation_record<2>
+            /// \version 0.8.0 Changed from TS_TABLES_VERSION to 2
+            /// \note The fields site, derived_state, and neutral
+            ///       are filled in with "junk" values.
             {
                 template <typename istreamtype>
                 inline mutation_record
@@ -174,7 +178,10 @@ namespace fwdpp
                     decltype(mutation_record::key) key;
                     sr(i, &node);
                     sr(i, &key);
-                    return mutation_record{ node, key };
+                    return mutation_record{
+                        node, key, std::numeric_limits<std::size_t>::max(),
+                        std::numeric_limits<std::int8_t>::max(), true
+                    };
                 }
             };
 
@@ -338,6 +345,41 @@ namespace fwdpp
                 tables.build_indexes();
                 return tables;
             }
+
+            template <typename mcont_t>
+            inline void
+            fix_mutation_table_repopulate_site_table(table_collection& tables,
+                                                     const mcont_t& mutations)
+            /// \brief Helper function when reading back from old file formats
+            /// \version 0.8.0 Added to library
+            ///
+            /// When calling deserialize_tables to read in table_collection
+            /// objects generated with fwdpp versions < 0.8.0, the
+            /// mutation_record object differs from the current version
+            /// and no site_table is present.  This function fixes that.
+            {
+                tables.site_table.clear();
+                for (auto& mr : tables.mutation_table)
+                    {
+                        if (mr.key >= mutations.size())
+                            {
+                                throw std::runtime_error(
+                                    "mutation key out of range");
+                            }
+                        mr.neutral = mutations[mr.key].neutral;
+                        mr.derived_state = default_derived_state;
+                        mr.site = tables.emplace_back_site(
+                            mutations[mr.key].position,
+                            default_ancestral_state);
+                    }
+                // This is almost certainly not necessary,
+                // but we may as well be super-extra safe.
+                // Calling this will fix any issues due
+                // to recording the same position more than
+                // once in the site table.
+                tables.sort_mutations_rebuild_site_table();
+            }
+
         } // namespace io
     }     // namespace ts
 } // namespace fwdpp
