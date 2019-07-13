@@ -267,6 +267,10 @@ test_serialization(const fwdpp::ts::table_collection &tables,
         {
             throw std::runtime_error("mutation tables do not match");
         }
+    if (tables.site_table != tables2.site_table)
+        {
+            throw std::runtime_error("site tables do no match");
+        }
     if (tables != tables2)
         {
             throw std::runtime_error("tables failed equality check");
@@ -378,8 +382,8 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
-            auto dm = fwdpp::ts::generate_data_matrix(
-                tables, small_sample, true, false, true);
+            auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample,
+                                                      true, false, true);
             auto rs = fwdpp::row_sums(dm);
             std::vector<int> sfs(small_sample.size() - 1);
             for (auto i : rs.first)
