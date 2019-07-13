@@ -78,9 +78,10 @@ namespace fwdpp
                                                 = tree.leaf_counts[mut->node]
                                                   + tree.preserved_leaf_counts
                                                         [mut->node];
-                                            if (!skip_fixed
-                                                || (skip_fixed
-                                                    && tc < tree.sample_size()))
+                                            if (tc
+                                                && (!skip_fixed
+                                                    || (skip_fixed
+                                                        && tc < tree.sample_size())))
                                                 {
                                                     // Mutation leads to a polymorphism
                                                     bool is_neutral
