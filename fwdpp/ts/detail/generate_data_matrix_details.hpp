@@ -20,9 +20,11 @@ namespace fwdpp
             {
                 auto right = marginal.right_sample[node];
                 // Set all genotypes to ancestral state
-                std::fill(genotypes.begin(), genotypes.end(), 0);
+                //std::fill(genotypes.begin(), genotypes.end(), 0);
+                int x = 0;
                 while (true)
                     {
+                        ++x;
                         if (genotypes[index] == 1)
                             {
                                 throw std::runtime_error("inconsist"
