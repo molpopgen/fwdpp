@@ -244,11 +244,6 @@ namespace fwdpp
             void
             sort_mutations()
             {
-                if (site_table.size() != mutation_table.size())
-                    {
-                        throw std::runtime_error(
-                            "mutation and site table sizes differ");
-                    }
                 //mutations are sorted by increasing position
                 std::sort(mutation_table.begin(), mutation_table.end(),
                           [this](const mutation_record& a,
