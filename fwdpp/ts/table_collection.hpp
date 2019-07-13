@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
+#include <fwdpp/ts/exceptions.hpp>
 #include "node.hpp"
 #include "edge.hpp"
 #include "site.hpp"
@@ -69,8 +70,7 @@ namespace fwdpp
                                        : L;
                         if (b <= a)
                             {
-                                throw std::runtime_error(
-                                    "right must be > left");
+                                throw std::invalid_argument("right must be > left");
                             }
                         if (j % 2 == 0.)
                             {
@@ -423,7 +423,7 @@ namespace fwdpp
                 auto next_index = emplace_back_node(population, time);
                 if (next_index >= std::numeric_limits<TS_NODE_INT>::max())
                     {
-                        throw std::runtime_error("node index too large");
+                        throw std::invalid_argument("node index too large");
                     }
                 split_breakpoints(breakpoints, parents, next_index);
                 return next_index;
@@ -443,7 +443,7 @@ namespace fwdpp
                         if (site_table_copy[os].position
                             != site_table[mr.site].position)
                             {
-                                throw std::runtime_error(
+                                throw tables_error(
                                     "error rebuilding site table");
                             }
                     }
@@ -510,7 +510,7 @@ namespace fwdpp
                                                          ancestral_state);
                     if (site >= std::numeric_limits<TS_NODE_INT>::max())
                         {
-                            throw std::runtime_error(
+                            throw std::invalid_argument(
                                 "site index out of range");
                         }
                     tables.push_back_mutation(u, k, site, derived_state,
