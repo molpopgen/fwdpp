@@ -458,11 +458,6 @@ namespace fwdpp
             {
                 sort_mutations();
                 rebuild_site_table();
-                if (site_table.size() != mutation_table.size())
-                    {
-                        throw std::runtime_error(
-                            "error rebuilding site table");
-                    }
             }
 
             std::size_t
