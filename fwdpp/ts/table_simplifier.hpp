@@ -393,8 +393,7 @@ namespace fwdpp
             }
 
             void
-            record_site(const site_vector& sites, const double input_pos,
-                        mutation_record& mr)
+            record_site(const site_vector& sites, mutation_record& mr)
             {
                 double pos = sites[mr.site].position;
                 if (new_site_table.empty()
@@ -472,7 +471,7 @@ namespace fwdpp
                 preserved_variants.reserve(std::distance(itr, mt.end()));
                 for (auto i = mt.begin(); i != itr; ++i)
                     {
-                        record_site(sites, sites[i->site].position, *i);
+                        record_site(sites, *i);
                         preserved_variants.push_back(i->key);
                     }
 

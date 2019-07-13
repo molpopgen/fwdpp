@@ -355,5 +355,5 @@ main(int argc, char **argv)
     execute_expensive_leaf_test(o, tables, s);
     execute_matrix_test(o, pop, tables, s);
     execute_serialization_test(o, tables);
-    write_sfs(o, rng, tables, s, pop.mutations);
+    write_sfs(o, rng, tables, s);
 }

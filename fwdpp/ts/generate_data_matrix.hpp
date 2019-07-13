@@ -59,9 +59,10 @@ namespace fwdpp
                                         {
                                             return rv;
                                         }
-                                    auto tc = tree.leaf_counts[mut->node]
-                                              + tree.preserved_leaf_counts
-                                                    [mut->node];
+                                    std::size_t tc
+                                        = tree.leaf_counts[mut->node]
+                                          + tree.preserved_leaf_counts
+                                                [mut->node];
                                     if (!skip_fixed
                                         || (skip_fixed
                                             && tc < tree.sample_size()))

@@ -165,7 +165,6 @@ make_dfe(const fwdpp::uint_t N, const fwdpp::GSLrng_mt &r, const double mean,
 void
 matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-                    const std::vector<fwdpp::popgenmut> &mutations,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
     auto dm
@@ -302,14 +301,13 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
     if (o.matrix_test)
         {
             std::cerr << "Matrix test with respect to last generation...";
-            matrix_runtime_test(tables, samples, pop.mutations, pop.mcounts);
+            matrix_runtime_test(tables, samples, pop.mcounts);
             std::cerr << "passed\n";
             if (!tables.preserved_nodes.empty())
                 {
                     std::cout << "Matrix test with respect to preserved "
                                  "samples...";
                     matrix_runtime_test(tables, tables.preserved_nodes,
-                                        pop.mutations,
                                         pop.mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
                     auto sc = samples;
@@ -321,7 +319,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                                    mc.begin(), std::plus<fwdpp::uint_t>());
                     std::cout << "Matrix test with respect to last generation "
                                  "+ preserved nodes...";
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
+                    matrix_runtime_test(tables, sc, mc);
                     std::cout << "passed.\n";
                     std::cout << "Matrix test with respect to most recent "
                                  "ancient sampling time point...";
@@ -338,7 +336,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                         });
                     mc.clear();
                     fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
+                    matrix_runtime_test(tables, sc, mc);
                     std::cout << "passed\n";
                 }
         }
@@ -365,8 +363,7 @@ execute_serialization_test(const options &o,
 void
 write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
           const fwdpp::ts::table_collection &tables,
-          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-          const std::vector<fwdpp::popgenmut> &mutations)
+          const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
     if (!o.sfsfilename.empty())
         {

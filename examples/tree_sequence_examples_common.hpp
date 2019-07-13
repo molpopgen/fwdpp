@@ -69,7 +69,6 @@ void test_serialization(const fwdpp::ts::table_collection &tables,
 void
 write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
           const fwdpp::ts::table_collection &tables,
-          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-          const std::vector<fwdpp::popgenmut> &mutations);
+          const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
 #endif
