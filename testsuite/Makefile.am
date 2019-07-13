@@ -49,7 +49,8 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 										tree_sequences/test_root_traversal.cc \
 										tree_sequences/test_node_children_traversal.cc \
 										tree_sequences/independent_implementations.cc \
-										tree_sequences/test_generate_data_matrix.cc
+										tree_sequences/test_generate_data_matrix.cc \
+										tree_sequences/test_table_collection.cc
 
 AM_CXXFLAGS=-W -Wall
 
