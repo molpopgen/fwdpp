@@ -203,10 +203,12 @@ namespace fwdpp
                 sw(o, &tables.edge_offset);
                 std::size_t num_edges = tables.edge_table.size(),
                             num_nodes = tables.num_nodes(),
-                            num_mutations = tables.mutation_table.size();
+                            num_mutations = tables.mutation_table.size(),
+                            num_sites = tables.site_table.size();
                 sw(o, &num_edges);
                 sw(o, &num_nodes);
                 sw(o, &num_mutations);
+                sw(o, &num_sites);
                 if (!tables.edge_table.empty())
                     {
                         o.write(reinterpret_cast<const char*>(
@@ -225,6 +227,12 @@ namespace fwdpp
                                     tables.mutation_table.data()),
                                 tables.mutation_table.size()
                                     * sizeof(mutation_record));
+                    }
+                if (!tables.site_table.empty())
+                    {
+                        o.write(reinterpret_cast<const char*>(
+                                    tables.site_table.data()),
+                                tables.site_table.size() * sizeof(site));
                     }
                 std::size_t num_preserved_samples
                     = tables.preserved_nodes.size();
@@ -263,19 +271,15 @@ namespace fwdpp
                 std::uint32_t format;
                 fwdpp::io::scalar_reader sr;
                 sr(i, &format);
-                //if (format != TS_TABLES_VERSION)
-                //    {
-                //        throw std::runtime_error(
-                //            "invalid serialization version detected");
-                //    }
                 double L;
                 sr(i, &L);
                 table_collection tables(L);
                 sr(i, &tables.edge_offset);
-                std::size_t num_edges, num_nodes, num_mutations;
+                std::size_t num_edges, num_nodes, num_mutations, num_sites;
                 sr(i, &num_edges);
                 sr(i, &num_nodes);
                 sr(i, &num_mutations);
+                sr(i, &num_sites);
                 if (format == TS_TABLES_VERSION)
                     {
                         tables.edge_table.resize(num_edges);
@@ -290,6 +294,10 @@ namespace fwdpp
                         i.read(reinterpret_cast<char*>(
                                    tables.mutation_table.data()),
                                num_mutations * sizeof(mutation_record));
+                        tables.site_table.resize(num_sites);
+                        i.read(
+                            reinterpret_cast<char*>(tables.site_table.data()),
+                            num_mutations * sizeof(site));
                     }
                 else if (format == 1)
                     {
