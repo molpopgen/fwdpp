@@ -185,6 +185,17 @@ namespace fwdpp
                 }
             };
 
+            namespace backwards_compat
+            {
+                struct mutation_record_V2
+                /// This was the mutation_record format
+                /// prior to TS_TABLES_VERSION 3.
+                {
+                    std::int32_t node;
+                    std::size_t key;
+                };
+            } // namespace backwards_compat
+
             template <typename ostreamtype>
             void
             serialize_tables(ostreamtype& o, const table_collection& tables)
@@ -286,8 +297,11 @@ namespace fwdpp
                 sr(i, &num_edges);
                 sr(i, &num_nodes);
                 sr(i, &num_mutations);
-                sr(i, &num_sites);
                 if (format == TS_TABLES_VERSION)
+                    {
+                        sr(i, &num_sites);
+                    }
+                if (format == TS_TABLES_VERSION || format == 2)
                     {
                         tables.edge_table.resize(num_edges);
                         i.read(
@@ -297,21 +311,25 @@ namespace fwdpp
                         i.read(
                             reinterpret_cast<char*>(tables.node_table.data()),
                             num_nodes * sizeof(node));
+
                         tables.mutation_table.resize(num_mutations);
                         i.read(reinterpret_cast<char*>(
                                    tables.mutation_table.data()),
                                num_mutations * sizeof(mutation_record));
                         tables.site_table.resize(num_sites);
-                        i.read(
-                            reinterpret_cast<char*>(tables.site_table.data()),
-                            num_sites * sizeof(site));
+                        if (format == TS_TABLES_VERSION)
+                            {
+                                i.read(reinterpret_cast<char*>(
+                                           tables.site_table.data()),
+                                       num_sites * sizeof(site));
+                            }
                     }
                 else if (format == 1)
                     {
                         deserialize_edge<TS_TABLES_VERSION> edge_reader;
                         deserialize_node<TS_TABLES_VERSION> node_reader;
-                        deserialize_mutation_record<TS_TABLES_VERSION>
-                            mutation_record_reader;
+                        // Format versions 1 and 2 have the same mutation_record type
+                        deserialize_mutation_record<2> mutation_record_reader;
                         tables.edge_table.reserve(num_edges);
                         for (std::size_t j = 0; j < num_edges; ++j)
                             {
@@ -379,7 +397,6 @@ namespace fwdpp
                 // once in the site table.
                 tables.sort_mutations_rebuild_site_table();
             }
-
         } // namespace io
     }     // namespace ts
 } // namespace fwdpp
