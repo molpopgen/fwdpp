@@ -22,6 +22,7 @@ pkginclude_HEADERS= definitions.hpp \
 			marginal_tree_functions.hpp \
 			decapitate.hpp \
 			exceptions.hpp \
-			mutation_tools.hpp
+			mutation_tools.hpp \
+			table_types.hpp
 
 

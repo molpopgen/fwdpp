@@ -12,29 +12,13 @@
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/ts/exceptions.hpp>
-#include "node.hpp"
-#include "edge.hpp"
-#include "site.hpp"
-#include "mutation_record.hpp"
+#include "table_types.hpp"
 #include "indexed_edge.hpp" //TODO: create fewer header dependencies
 
 namespace fwdpp
 {
     namespace ts
     {
-        /// An "edge table"
-        ///  \version 0.7.0 Added to fwdpp
-        using edge_vector = std::vector<edge>;
-        /// A "node table"
-        ///  \version 0.7.0 Added to fwdpp
-        using node_vector = std::vector<node>;
-        /// A "mutation table"
-        ///  \version 0.7.0 Added to fwdpp
-        using mutation_key_vector = std::vector<mutation_record>;
-        /// \brief Site table
-        /// \version 0.8.0 Added to fwdpp
-        using site_vector = std::vector<site>;
-
         struct table_collection
         /*!
 		 * \brief A collection of tables for a single simulation.
