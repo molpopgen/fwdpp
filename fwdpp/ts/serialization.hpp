@@ -304,7 +304,7 @@ namespace fwdpp
                         tables.site_table.resize(num_sites);
                         i.read(
                             reinterpret_cast<char*>(tables.site_table.data()),
-                            num_mutations * sizeof(site));
+                            num_sites * sizeof(site));
                     }
                 else if (format == 1)
                     {
