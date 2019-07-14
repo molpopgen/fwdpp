@@ -25,23 +25,16 @@ namespace fwdpp
 
                 inline void
                 process_samples(const marginal_tree& marginal,
-                                const TS_NODE_INT node, TS_NODE_INT index)
+                                const mutation_record& mut, TS_NODE_INT index)
                 {
-                    auto right = marginal.right_sample[node];
+                    auto right = marginal.right_sample[mut.node];
                     // Set all genotypes to ancestral state
                     //std::fill(genotypes.begin(), genotypes.end(), 0);
                     int x = 0;
                     while (true)
                         {
                             ++x;
-                            if (genotypes[index] == 1)
-                                {
-                                    throw std::runtime_error("inconsist"
-                                                             "ent "
-                                                             "samples "
-                                                             "list");
-                                }
-                            genotypes[index] = 1;
+                            genotypes[index] = mut.derived_state;
                             if (index == right)
                                 {
                                     break;
@@ -104,26 +97,26 @@ namespace fwdpp
                                                         end(genotypes),
                                                         current_site
                                                             .ancestral_state);
+                                                    initialized_site = true;
                                                 }
                                             auto index
                                                 = tree.left_sample[mut->node];
                                             // Check if mutation leads to a sample
                                             if (index != TS_NULL_NODE)
                                                 {
-                                                    process_samples(tree,
-                                                                    mut->node,
+                                                    process_samples(tree, *mut,
                                                                     index);
                                                     filled = true;
                                                 }
                                             mcopy = mut;
                                         }
                                 }
-                            if (filled)
-                                {
-                                    update_data_matrix(mcopy->key,
-                                                       current_site.position,
-                                                       mcopy->neutral);
-                                }
+                        }
+                    if (filled)
+                        {
+                            update_data_matrix(mcopy->key,
+                                               current_site.position,
+                                               mcopy->neutral);
                         }
                     return mut;
                 }
