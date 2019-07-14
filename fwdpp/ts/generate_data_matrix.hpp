@@ -24,6 +24,7 @@ namespace fwdpp
         /// \version 0.7.0 Added to library
         /// \version 0.7.1 Change behavior to skip sites fixed in the sample
         /// \version 0.7.4 Add [start, stop) arguments. Add option to skip fixed variants.
+        /// \version 0.8.0 No longer requires mutation vector.
         {
             if (!(stop > start))
                 {
@@ -35,8 +36,9 @@ namespace fwdpp
             const auto site_table_end = end(tables.site_table);
             tree_visitor tv(tables, std::forward<SAMPLES>(samples),
                             update_samples_list(true));
-            std::vector<std::int8_t> genotypes(samples.size(), 0);
-            data_matrix rv(samples.size());
+            detail::data_matrix_filler processor(
+                tables.site_table.begin(), record_neutral, record_selected,
+                skip_fixed, samples.size());
             while (tv())
                 {
                     const auto& tree = tv.tree();
@@ -56,7 +58,7 @@ namespace fwdpp
                                 {
                                     if (!(pos < stop))
                                         {
-                                            return rv;
+                                            return processor.data();
                                         }
                                     //catch the mutation table up
                                     //to the site table
@@ -67,69 +69,8 @@ namespace fwdpp
                                         {
                                             ++mut;
                                         }
-                                    auto process_results = detail::process_site(
-                                        tree, *site_table_location,
-                                        tables.site_table.begin(), mut,
-                                        mut_end, record_neutral,
-                                        record_selected, skip_fixed,
-                                        genotypes);
-                                    if (process_results.first)
-                                        {
-                                            detail::update_data_matrix(
-                                                mut->key, pos, mut->neutral,
-                                                genotypes, rv);
-                                        }
-                                    mut = process_results.second;
-                                    //std::size_t tc
-                                    //    = tree.leaf_counts[mut->node]
-                                    //      + tree.preserved_leaf_counts
-                                    //            [mut->node];
-                                    //if (tc
-                                    //    && (!skip_fixed
-                                    //        || (skip_fixed
-                                    //            && tc < tree.sample_size())))
-                                    //    {
-                                    //        // Mutation leads to a polymorphism
-                                    //        bool is_neutral
-                                    //            = mut->neutral;
-                                    //        if ((is_neutral
-                                    //             && record_neutral)
-                                    //            || (!is_neutral
-                                    //                && record_selected))
-                                    //            {
-                                    //                if (!initialized_site)
-                                    //                    {
-                                    //                        std::fill(
-                                    //                            begin(
-                                    //                                genotypes),
-                                    //                            end(genotypes),
-                                    //                            site_table_location
-                                    //                                ->ancestral_state);
-                                    //                        initialized_site
-                                    //                            = true;
-                                    //                    }
-                                    //                auto index
-                                    //                    = tree.left_sample
-                                    //                          [mut->node];
-                                    //                // Check if mutation leads to a sample
-                                    //                if (index
-                                    //                    != TS_NULL_NODE)
-                                    //                    {
-                                    //                        detail::process_samples(
-                                    //                            tree,
-                                    //                            mut->node,
-                                    //                            index,
-                                    //                            genotypes);
-                                    //                        // Update our return value
-                                    //                        detail::update_data_matrix(
-                                    //                            mut->key,
-                                    //                            pos,
-                                    //                            mut->neutral,
-                                    //                            genotypes,
-                                    //                            rv);
-                                    //                    }
-                                    //            }
-                                    //    }
+                                    mut = processor(tree, *site_table_location,
+                                                    mut, mut_end);
                                 }
                         }
                     // Terminate early if we're lucky
@@ -138,7 +79,7 @@ namespace fwdpp
                             break;
                         }
                 }
-            return rv;
+            return processor.data();
         }
 
         template <typename SAMPLES>
