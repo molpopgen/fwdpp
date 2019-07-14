@@ -67,64 +67,69 @@ namespace fwdpp
                                         {
                                             ++mut;
                                         }
-                                    bool initialized_site = false;
-                                    for (; mut < mut_end
-                                           && tables.site_table[mut->site]
-                                                      .position
-                                                  == pos;
-                                         ++mut)
+                                    auto process_results = detail::process_site(
+                                        tree, *site_table_location,
+                                        tables.site_table.begin(), mut,
+                                        mut_end, record_neutral,
+                                        record_selected, skip_fixed,
+                                        genotypes);
+                                    if (process_results.first)
                                         {
-                                            std::size_t tc
-                                                = tree.leaf_counts[mut->node]
-                                                  + tree.preserved_leaf_counts
-                                                        [mut->node];
-                                            if (tc
-                                                && (!skip_fixed
-                                                    || (skip_fixed
-                                                        && tc < tree.sample_size())))
-                                                {
-                                                    // Mutation leads to a polymorphism
-                                                    bool is_neutral
-                                                        = mut->neutral;
-                                                    if ((is_neutral
-                                                         && record_neutral)
-                                                        || (!is_neutral
-                                                            && record_selected))
-                                                        {
-                                                            if (!initialized_site)
-                                                                {
-                                                                    std::fill(
-                                                                        begin(
-                                                                            genotypes),
-                                                                        end(genotypes),
-                                                                        site_table_location
-                                                                            ->ancestral_state);
-                                                                    initialized_site
-                                                                        = true;
-                                                                }
-                                                            auto index
-                                                                = tree.left_sample
-                                                                      [mut->node];
-                                                            // Check if mutation leads to a sample
-                                                            if (index
-                                                                != TS_NULL_NODE)
-                                                                {
-                                                                    detail::process_samples(
-                                                                        tree,
-                                                                        mut->node,
-                                                                        index,
-                                                                        genotypes);
-                                                                    // Update our return value
-                                                                    detail::update_data_matrix(
-                                                                        mut->key,
-                                                                        pos,
-                                                                        mut->neutral,
-                                                                        genotypes,
-                                                                        rv);
-                                                                }
-                                                        }
-                                                }
+                                            detail::update_data_matrix(
+                                                mut->key, pos, mut->neutral,
+                                                genotypes, rv);
                                         }
+                                    mut = process_results.second;
+                                    //std::size_t tc
+                                    //    = tree.leaf_counts[mut->node]
+                                    //      + tree.preserved_leaf_counts
+                                    //            [mut->node];
+                                    //if (tc
+                                    //    && (!skip_fixed
+                                    //        || (skip_fixed
+                                    //            && tc < tree.sample_size())))
+                                    //    {
+                                    //        // Mutation leads to a polymorphism
+                                    //        bool is_neutral
+                                    //            = mut->neutral;
+                                    //        if ((is_neutral
+                                    //             && record_neutral)
+                                    //            || (!is_neutral
+                                    //                && record_selected))
+                                    //            {
+                                    //                if (!initialized_site)
+                                    //                    {
+                                    //                        std::fill(
+                                    //                            begin(
+                                    //                                genotypes),
+                                    //                            end(genotypes),
+                                    //                            site_table_location
+                                    //                                ->ancestral_state);
+                                    //                        initialized_site
+                                    //                            = true;
+                                    //                    }
+                                    //                auto index
+                                    //                    = tree.left_sample
+                                    //                          [mut->node];
+                                    //                // Check if mutation leads to a sample
+                                    //                if (index
+                                    //                    != TS_NULL_NODE)
+                                    //                    {
+                                    //                        detail::process_samples(
+                                    //                            tree,
+                                    //                            mut->node,
+                                    //                            index,
+                                    //                            genotypes);
+                                    //                        // Update our return value
+                                    //                        detail::update_data_matrix(
+                                    //                            mut->key,
+                                    //                            pos,
+                                    //                            mut->neutral,
+                                    //                            genotypes,
+                                    //                            rv);
+                                    //                    }
+                                    //            }
+                                    //    }
                                 }
                         }
                     // Terminate early if we're lucky

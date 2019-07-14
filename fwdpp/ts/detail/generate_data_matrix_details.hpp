@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <fwdpp/data_matrix.hpp>
 #include "../marginal_tree.hpp"
+#include "../site.hpp"
+#include "../mutation_record.hpp"
 
 namespace fwdpp
 {
@@ -53,6 +55,56 @@ namespace fwdpp
                 sm.data.insert(sm.data.end(), genotypes.begin(),
                                genotypes.end());
                 k.push_back(key);
+            }
+
+            template <typename site_table_iterator, typename mtable_iterator>
+            std::pair<bool, mtable_iterator>
+            process_site(const marginal_tree& tree, const site& current_site,
+                         site_table_iterator site_table_begin,
+                         mtable_iterator mut, mtable_iterator mut_end,
+                         bool record_neutral, bool record_selected,
+                         bool skip_fixed, std::vector<std::int8_t>& genotypes)
+            {
+                bool initialized_site = false;
+                bool filled = false;
+                for (; mut < mut_end
+                       && (site_table_begin + mut->site)->position
+                              == current_site.position;
+                     ++mut)
+                    {
+                        std::size_t total_leaf_count
+                            = tree.preserved_leaf_counts[mut->node]
+                              + tree.leaf_counts[mut->node];
+                        if (total_leaf_count
+                            && (!skip_fixed
+                                || (skip_fixed
+                                    && total_leaf_count < tree.sample_size())))
+                            {
+                                if ((mut->neutral && record_neutral)
+                                    || (!mut->neutral && record_selected))
+                                    {
+                                        if (!initialized_site)
+                                            {
+                                                std::fill(
+                                                    begin(genotypes),
+                                                    end(genotypes),
+                                                    current_site
+                                                        .ancestral_state);
+                                            }
+                                        auto index
+                                            = tree.left_sample[mut->node];
+                                        // Check if mutation leads to a sample
+                                        if (index != TS_NULL_NODE)
+                                            {
+                                                process_samples(
+                                                    tree, mut->node, index,
+                                                    genotypes);
+                                                filled = true;
+                                            }
+                                    }
+                            }
+                    }
+                return std::make_pair(filled, mut);
             }
         } // namespace detail
     }     // namespace ts
