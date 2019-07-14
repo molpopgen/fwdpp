@@ -128,7 +128,9 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/test_sample_traversal.cc \
 	tree_sequences/test_root_traversal.cc \
 	tree_sequences/test_node_children_traversal.cc \
-	tree_sequences/independent_implementations.cc
+	tree_sequences/independent_implementations.cc \
+	tree_sequences/test_generate_data_matrix.cc \
+	tree_sequences/test_table_collection.cc
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_preorder_node_traversal.$(OBJEXT) \
@@ -139,7 +141,9 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_sample_traversal.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_root_traversal.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_node_children_traversal.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/independent_implementations.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/independent_implementations.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_data_matrix.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_table_collection.$(OBJEXT)
 tree_sequences_tree_sequence_tests_OBJECTS =  \
 	$(am_tree_sequences_tree_sequence_tests_OBJECTS)
 tree_sequences_tree_sequence_tests_LDADD = $(LDADD)
@@ -221,6 +225,7 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po \
 	tree_sequences/$(DEPDIR)/independent_implementations.Po \
 	tree_sequences/$(DEPDIR)/test_decapitate.Po \
+	tree_sequences/$(DEPDIR)/test_generate_data_matrix.Po \
 	tree_sequences/$(DEPDIR)/test_generate_offspring.Po \
 	tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po \
 	tree_sequences/$(DEPDIR)/test_node_children_traversal.Po \
@@ -228,6 +233,7 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_root_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_sample_traversal.Po \
+	tree_sequences/$(DEPDIR)/test_table_collection.Po \
 	tree_sequences/$(DEPDIR)/test_tree_visitor.Po \
 	tree_sequences/$(DEPDIR)/tree_sequence_tests.Po \
 	unit/$(DEPDIR)/extensions_callbacksTest.Po \
@@ -654,7 +660,9 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_sample_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_root_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_node_children_traversal.cc \
-@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/independent_implementations.cc
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/independent_implementations.cc \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_data_matrix.cc \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_table_collection.cc
 
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = -W -Wall
 all: all-am
@@ -759,6 +767,12 @@ tree_sequences/test_node_children_traversal.$(OBJEXT):  \
 tree_sequences/independent_implementations.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+tree_sequences/test_generate_data_matrix.$(OBJEXT):  \
+	tree_sequences/$(am__dirstamp) \
+	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+tree_sequences/test_table_collection.$(OBJEXT):  \
+	tree_sequences/$(am__dirstamp) \
+	tree_sequences/$(DEPDIR)/$(am__dirstamp)
 
 tree_sequences/tree_sequence_tests$(EXEEXT): $(tree_sequences_tree_sequence_tests_OBJECTS) $(tree_sequences_tree_sequence_tests_DEPENDENCIES) $(EXTRA_tree_sequences_tree_sequence_tests_DEPENDENCIES) tree_sequences/$(am__dirstamp)
 	@rm -f tree_sequences/tree_sequence_tests$(EXEEXT)
@@ -852,6 +866,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/independent_implementations.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_decapitate.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_generate_data_matrix.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_generate_offspring.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_node_children_traversal.Po@am__quote@ # am--include-marker
@@ -859,6 +874,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_root_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_sample_traversal.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_table_collection.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_tree_visitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/tree_sequence_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/extensions_callbacksTest.Po@am__quote@ # am--include-marker
@@ -1249,6 +1265,7 @@ distclean: distclean-am
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
 	-rm -f tree_sequences/$(DEPDIR)/independent_implementations.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_decapitate.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_generate_data_matrix.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_children_traversal.Po
@@ -1256,6 +1273,7 @@ distclean: distclean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_table_collection.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/tree_sequence_tests.Po
 	-rm -f unit/$(DEPDIR)/extensions_callbacksTest.Po
@@ -1334,6 +1352,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
 	-rm -f tree_sequences/$(DEPDIR)/independent_implementations.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_decapitate.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_generate_data_matrix.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_generate_offspring.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_marginal_tree_statistics.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_node_children_traversal.Po
@@ -1341,6 +1360,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_table_collection.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/tree_sequence_tests.Po
 	-rm -f unit/$(DEPDIR)/extensions_callbacksTest.Po

@@ -7,6 +7,7 @@
 #include <fwdpp/ts/generate_data_matrix.hpp>
 #include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/ts/mutate_tables.hpp>
+#include <fwdpp/ts/mutation_tools.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include "tree_sequence_examples_common.hpp"
 
@@ -22,26 +23,23 @@ apply_neutral_mutations_details(
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
 
     std::iota(s.begin(), s.end(), 0);
-    const auto neutral_variant_maker
-        = [&rng, &pop,
-           &mutation_recycling_bin](const double left, const double right,
-                                    const fwdpp::uint_t generation) {
-              return fwdpp::infsites_popgenmut(
-                  mutation_recycling_bin, pop.mutations, rng.get(),
-                  pop.mut_lookup, generation, 0.0,
-                  [left, right, &rng] {
-                      return gsl_ran_flat(rng.get(), left, right);
-                  },
-                  []() { return 0.0; }, []() { return 0.0; });
-          };
+    const auto neutral_variant_maker = [&rng, &pop, &mutation_recycling_bin](
+                                           const double left,
+                                           const double right,
+                                           const fwdpp::uint_t generation) {
+        auto key = fwdpp::infsites_popgenmut(
+            mutation_recycling_bin, pop.mutations, rng.get(), pop.mut_lookup,
+            generation, 0.0,
+            [left, right, &rng] {
+                return gsl_ran_flat(rng.get(), left, right);
+            },
+            []() { return 0.0; }, []() { return 0.0; });
+        return fwdpp::ts::new_variant_record(pop.mutations[key].pos, 0, key,
+                                             pop.mutations[key].neutral, 1);
+    };
     auto neutral_muts
         = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
                                    o.theta / static_cast<double>(4 * o.N));
-    std::sort(tables.mutation_table.begin(), tables.mutation_table.end(),
-              [&pop](const fwdpp::ts::mutation_record &a,
-                     const fwdpp::ts::mutation_record &b) {
-                  return pop.mutations[a.key].pos < pop.mutations[b.key].pos;
-              });
     return neutral_muts;
 }
 
@@ -57,10 +55,10 @@ apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
 
 options::options()
     : N{}, gcint(100), theta(), rho(), mean(0.), shape(1.), mu(),
-      scoeff(std::numeric_limits<double>::max()), dominance(1.), scaling(2.),
-      seed(42), ancient_sampling_interval(-1), ancient_sample_size(-1),
-      nsam(0), leaf_test(false), matrix_test(false), preserve_fixations(false),
-      filename(), sfsfilename()
+      scoeff(std::numeric_limits<double>::quiet_NaN()), dominance(1.),
+      scaling(2.), seed(42), ancient_sampling_interval(-1),
+      ancient_sample_size(-1), nsam(0), leaf_test(false), matrix_test(false),
+      preserve_fixations(false), filename(), sfsfilename()
 {
 }
 
@@ -167,11 +165,10 @@ make_dfe(const fwdpp::uint_t N, const fwdpp::GSLrng_mt &r, const double mean,
 void
 matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-                    const std::vector<fwdpp::popgenmut> &mutations,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
-    auto dm = fwdpp::ts::generate_data_matrix(tables, samples, mutations, true,
-                                              true, false);
+    auto dm
+        = fwdpp::ts::generate_data_matrix(tables, samples, true, true, false);
     auto rs = fwdpp::row_sums(dm);
     for (std::size_t i = 0; i < rs.first.size(); ++i)
         {
@@ -269,6 +266,10 @@ test_serialization(const fwdpp::ts::table_collection &tables,
         {
             throw std::runtime_error("mutation tables do not match");
         }
+    if (tables.site_table != tables2.site_table)
+        {
+            throw std::runtime_error("site tables do no match");
+        }
     if (tables != tables2)
         {
             throw std::runtime_error("tables failed equality check");
@@ -300,14 +301,13 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
     if (o.matrix_test)
         {
             std::cerr << "Matrix test with respect to last generation...";
-            matrix_runtime_test(tables, samples, pop.mutations, pop.mcounts);
+            matrix_runtime_test(tables, samples, pop.mcounts);
             std::cerr << "passed\n";
             if (!tables.preserved_nodes.empty())
                 {
                     std::cout << "Matrix test with respect to preserved "
                                  "samples...";
                     matrix_runtime_test(tables, tables.preserved_nodes,
-                                        pop.mutations,
                                         pop.mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
                     auto sc = samples;
@@ -319,7 +319,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                                    mc.begin(), std::plus<fwdpp::uint_t>());
                     std::cout << "Matrix test with respect to last generation "
                                  "+ preserved nodes...";
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
+                    matrix_runtime_test(tables, sc, mc);
                     std::cout << "passed.\n";
                     std::cout << "Matrix test with respect to most recent "
                                  "ancient sampling time point...";
@@ -336,7 +336,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                         });
                     mc.clear();
                     fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
-                    matrix_runtime_test(tables, sc, pop.mutations, mc);
+                    matrix_runtime_test(tables, sc, mc);
                     std::cout << "passed\n";
                 }
         }
@@ -363,8 +363,7 @@ execute_serialization_test(const options &o,
 void
 write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
           const fwdpp::ts::table_collection &tables,
-          const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
-          const std::vector<fwdpp::popgenmut> &mutations)
+          const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
     if (!o.sfsfilename.empty())
         {
@@ -380,8 +379,8 @@ write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(),
                            s.data(), s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
             std::iota(small_sample.begin(), small_sample.end(), 0);
-            auto dm = fwdpp::ts::generate_data_matrix(
-                tables, small_sample, mutations, true, false, true);
+            auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample,
+                                                      true, false, true);
             auto rs = fwdpp::row_sums(dm);
             std::vector<int> sfs(small_sample.size() - 1);
             for (auto i : rs.first)

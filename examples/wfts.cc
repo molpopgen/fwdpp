@@ -283,6 +283,25 @@ main(int argc, char **argv)
                     assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
                 }
         }
+    // This is an infinite-sites simulation, so we can do some
+    // simple tests on our site table:
+    if (tables.site_table.size() != tables.mutation_table.size())
+        {
+            throw std::runtime_error("mutation and site table sizes differ");
+        }
+    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+        {
+            throw std::runtime_error("site table is not sorted");
+        }
+    for (std::size_t i = 0; i < tables.site_table.size(); ++i)
+        {
+            if (tables.site_table[i].position
+                != pop.mutations[tables.mutation_table[i].key].pos)
+                {
+                    throw std::runtime_error("site table data are incorrect");
+                }
+        }
+
     // If we have done things correctly, then our
     // ancient sample metadata must match up with
     // what is in our node table.
@@ -302,6 +321,20 @@ main(int argc, char **argv)
 
     auto neutral_muts = apply_neutral_mutations(
         o, rng, tables, pop, genetics.mutation_recycling_bin);
+    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+        {
+            throw std::runtime_error(
+                "site table is not sorted after adding neutral mutations");
+        }
+    for (auto &mr : tables.mutation_table)
+        {
+            if (pop.mutations[mr.key].pos
+                != tables.site_table[mr.site].position)
+                {
+                    throw std::runtime_error("site table data incorrect after "
+                                             "adding neutral mutations");
+                }
+        }
 
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
@@ -322,5 +355,5 @@ main(int argc, char **argv)
     execute_expensive_leaf_test(o, tables, s);
     execute_matrix_test(o, pop, tables, s);
     execute_serialization_test(o, tables);
-    write_sfs(o, rng, tables, s, pop.mutations);
+    write_sfs(o, rng, tables, s);
 }

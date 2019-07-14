@@ -18,12 +18,23 @@ namespace fwdpp
             /// The index of the mutation in the
             /// population's mutation container
             std::size_t key;
+            /// Row in the site table.
+            std::size_t site;
+            /// Character state of the mutation
+            std::int8_t derived_state; // TODO: should this be a template type?
+            /// True if mutation affects fitness, otherwise false.
+            bool neutral;
         };
 
         inline bool
         operator==(const mutation_record& a, const mutation_record& b)
         {
-            return std::tie(a.node, a.key) == std::tie(b.node, b.key);
+            // Test site first b/c two mutations cannot be equal
+            // if they aren't at the same site.
+            return a.site == b.site
+                   && std::tie(a.node, a.key, a.derived_state, a.neutral)
+                          == std::tie(b.node, b.key, b.derived_state,
+                                      b.neutral);
         }
     } // namespace ts
 } // namespace fwdpp

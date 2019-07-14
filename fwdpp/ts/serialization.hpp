@@ -141,7 +141,8 @@ namespace fwdpp
                 }
             };
 
-            template <> struct serialize_mutation_record<TS_TABLES_VERSION>
+            template <> struct serialize_mutation_record<2>
+            /// \version 0.8.0 Changes from TS_TABLES_VERSION to 2
             {
                 template <typename ostreamtype>
                 inline void
@@ -163,7 +164,10 @@ namespace fwdpp
                 }
             };
 
-            template <> struct deserialize_mutation_record<TS_TABLES_VERSION>
+            template <> struct deserialize_mutation_record<2>
+            /// \version 0.8.0 Changed from TS_TABLES_VERSION to 2
+            /// \note The fields site, derived_state, and neutral
+            ///       are filled in with "junk" values.
             {
                 template <typename istreamtype>
                 inline mutation_record
@@ -174,9 +178,23 @@ namespace fwdpp
                     decltype(mutation_record::key) key;
                     sr(i, &node);
                     sr(i, &key);
-                    return mutation_record{ node, key };
+                    return mutation_record{
+                        node, key, std::numeric_limits<std::size_t>::max(),
+                        std::numeric_limits<std::int8_t>::max(), true
+                    };
                 }
             };
+
+            namespace backwards_compat
+            {
+                struct mutation_record_V2
+                /// This was the mutation_record format
+                /// prior to TS_TABLES_VERSION 3.
+                {
+                    std::int32_t node;
+                    std::size_t key;
+                };
+            } // namespace backwards_compat
 
             template <typename ostreamtype>
             void
@@ -203,10 +221,12 @@ namespace fwdpp
                 sw(o, &tables.edge_offset);
                 std::size_t num_edges = tables.edge_table.size(),
                             num_nodes = tables.num_nodes(),
-                            num_mutations = tables.mutation_table.size();
+                            num_mutations = tables.mutation_table.size(),
+                            num_sites = tables.site_table.size();
                 sw(o, &num_edges);
                 sw(o, &num_nodes);
                 sw(o, &num_mutations);
+                sw(o, &num_sites);
                 if (!tables.edge_table.empty())
                     {
                         o.write(reinterpret_cast<const char*>(
@@ -225,6 +245,12 @@ namespace fwdpp
                                     tables.mutation_table.data()),
                                 tables.mutation_table.size()
                                     * sizeof(mutation_record));
+                    }
+                if (!tables.site_table.empty())
+                    {
+                        o.write(reinterpret_cast<const char*>(
+                                    tables.site_table.data()),
+                                tables.site_table.size() * sizeof(site));
                     }
                 std::size_t num_preserved_samples
                     = tables.preserved_nodes.size();
@@ -263,20 +289,19 @@ namespace fwdpp
                 std::uint32_t format;
                 fwdpp::io::scalar_reader sr;
                 sr(i, &format);
-                //if (format != TS_TABLES_VERSION)
-                //    {
-                //        throw std::runtime_error(
-                //            "invalid serialization version detected");
-                //    }
                 double L;
                 sr(i, &L);
                 table_collection tables(L);
                 sr(i, &tables.edge_offset);
-                std::size_t num_edges, num_nodes, num_mutations;
+                std::size_t num_edges, num_nodes, num_mutations, num_sites;
                 sr(i, &num_edges);
                 sr(i, &num_nodes);
                 sr(i, &num_mutations);
                 if (format == TS_TABLES_VERSION)
+                    {
+                        sr(i, &num_sites);
+                    }
+                if (format == TS_TABLES_VERSION || format == 2)
                     {
                         tables.edge_table.resize(num_edges);
                         i.read(
@@ -286,17 +311,25 @@ namespace fwdpp
                         i.read(
                             reinterpret_cast<char*>(tables.node_table.data()),
                             num_nodes * sizeof(node));
+
                         tables.mutation_table.resize(num_mutations);
                         i.read(reinterpret_cast<char*>(
                                    tables.mutation_table.data()),
                                num_mutations * sizeof(mutation_record));
+                        tables.site_table.resize(num_sites);
+                        if (format == TS_TABLES_VERSION)
+                            {
+                                i.read(reinterpret_cast<char*>(
+                                           tables.site_table.data()),
+                                       num_sites * sizeof(site));
+                            }
                     }
                 else if (format == 1)
                     {
                         deserialize_edge<TS_TABLES_VERSION> edge_reader;
                         deserialize_node<TS_TABLES_VERSION> node_reader;
-                        deserialize_mutation_record<TS_TABLES_VERSION>
-                            mutation_record_reader;
+                        // Format versions 1 and 2 have the same mutation_record type
+                        deserialize_mutation_record<2> mutation_record_reader;
                         tables.edge_table.reserve(num_edges);
                         for (std::size_t j = 0; j < num_edges; ++j)
                             {
@@ -329,6 +362,40 @@ namespace fwdpp
                     }
                 tables.build_indexes();
                 return tables;
+            }
+
+            template <typename mcont_t>
+            inline void
+            fix_mutation_table_repopulate_site_table(table_collection& tables,
+                                                     const mcont_t& mutations)
+            /// \brief Helper function when reading back from old file formats
+            /// \version 0.8.0 Added to library
+            ///
+            /// When calling deserialize_tables to read in table_collection
+            /// objects generated with fwdpp versions < 0.8.0, the
+            /// mutation_record object differs from the current version
+            /// and no site_table is present.  This function fixes that.
+            {
+                tables.site_table.clear();
+                for (auto& mr : tables.mutation_table)
+                    {
+                        if (mr.key >= mutations.size())
+                            {
+                                throw std::runtime_error(
+                                    "mutation key out of range");
+                            }
+                        mr.neutral = mutations[mr.key].neutral;
+                        mr.derived_state = default_derived_state;
+                        mr.site = tables.emplace_back_site(
+                            mutations[mr.key].position,
+                            default_ancestral_state);
+                    }
+                // This is almost certainly not necessary,
+                // but we may as well be super-extra safe.
+                // Calling this will fix any issues due
+                // to recording the same position more than
+                // once in the site table.
+                tables.sort_mutations_rebuild_site_table();
             }
         } // namespace io
     }     // namespace ts

@@ -7,6 +7,7 @@
 #include "definitions.hpp"
 #include "mark_multiple_roots.hpp"
 #include "table_collection.hpp"
+#include "mutation_tools.hpp"
 
 namespace fwdpp
 {
@@ -35,9 +36,9 @@ namespace fwdpp
         /// The result of this function is to populate \a tables.mutation_table with neutral variants.
         ///
         /// The parameter \a make_mutation is a function that must conform to
-        /// std::function<std::size_t(double, double, fwdpp::uint_t)>.  The three arguments
+        /// std::function<new_variant_record(double, double, fwdpp::uint_t)>.  The three arguments
         /// are interpreted as "left", "right", and "time".  The function's return value
-        /// corresponds to the index of the new mutation in the simulation's mutation container.
+        /// allows us to properly update the site and mutation tables in \a tables.
         /// The new mutation must have a position on the half-open interval [left, right). The
         /// "time" parameger represents the generation when the mutation arose and will be
         /// uniformly assigned between the parental birth time and that of the child.
@@ -89,10 +90,14 @@ namespace fwdpp
                                 {
                                     unsigned g = static_cast<unsigned>(
                                         gsl_ran_flat(r.get(), 1, dt + 1));
-                                    auto k
+                                    new_variant_record r
                                         = make_mutation(j.first, j.second, g);
+                                    auto site = tables.emplace_back_site(
+                                        std::move(r.s));
                                     tables.mutation_table.emplace_back(
-                                        mutation_record{ i.first, k });
+                                        mutation_record{ i.first, r.key, site,
+                                                         r.derived_state,
+                                                         r.neutral });
                                 }
                         }
                 }
@@ -107,12 +112,17 @@ namespace fwdpp
                         {
                             unsigned g = static_cast<unsigned>(
                                 gsl_ran_flat(r.get(), pt + 1, ct + 1));
-                            auto k = make_mutation(e.left, e.right, g);
+                            new_variant_record r
+                                = make_mutation(e.left, e.right, g);
+                            auto site
+                                = tables.emplace_back_site(std::move(r.s));
                             tables.mutation_table.emplace_back(
-                                mutation_record{ e.child, k });
+                                mutation_record{ e.child, r.key, site,
+                                                 r.derived_state, r.neutral });
                         }
                     nmuts += nm;
                 }
+            tables.sort_mutations_rebuild_site_table();
             return nmuts;
         }
     } // namespace ts

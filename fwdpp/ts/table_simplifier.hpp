@@ -52,10 +52,10 @@ namespace fwdpp
             struct mutation_node_map_entry
             {
                 TS_NODE_INT node;
-                std::size_t key, location;
-                mutation_node_map_entry(TS_NODE_INT n, std::size_t k,
+                std::size_t site, location;
+                mutation_node_map_entry(TS_NODE_INT n, std::size_t s,
                                         std::size_t l)
-                    : node(n), key(k), location(l)
+                    : node(n), site(s), location(l)
                 {
                 }
             };
@@ -163,6 +163,7 @@ namespace fwdpp
             // their allocated memory persistent.
             edge_vector new_edge_table;
             node_vector new_node_table;
+            site_vector new_site_table;
             // segment_queue mimics a min queue of segments w.r.to
             // segment::left.
             std::vector<segment> segment_queue;
@@ -182,6 +183,7 @@ namespace fwdpp
             {
                 new_edge_table.clear();
                 new_node_table.clear();
+                new_site_table.clear();
                 E.clear();
                 // It is tempting to
                 // just clear out each
@@ -368,10 +370,9 @@ namespace fwdpp
                 return buffered_edges.size();
             }
 
-            template <typename mcont_t>
             void
             prep_mutation_simplification(
-                const mcont_t& mutations,
+                const site_vector& sites,
                 const mutation_key_vector& mutation_table)
             {
                 mutation_map.clear();
@@ -379,21 +380,32 @@ namespace fwdpp
                 for (std::size_t i = 0; i < mutation_table.size(); ++i)
                     {
                         mutation_map.emplace_back(mutation_table[i].node,
-                                                  mutation_table[i].key, i);
+                                                  mutation_table[i].site, i);
                     }
 
                 std::sort(mutation_map.begin(), mutation_map.end(),
-                          [&mutations](const mutation_node_map_entry& a,
-                                       const mutation_node_map_entry& b) {
-                              return std::tie(a.node, mutations[a.key].pos)
-                                     < std::tie(b.node, mutations[b.key].pos);
+                          [&sites](const mutation_node_map_entry& a,
+                                   const mutation_node_map_entry& b) {
+                              return std::tie(a.node, sites[a.site].position)
+                                     < std::tie(b.node,
+                                                sites[b.site].position);
                           });
             }
 
-            template <typename mcont_t>
+            void
+            record_site(const site_vector& sites, mutation_record& mr)
+            {
+                double pos = sites[mr.site].position;
+                if (new_site_table.empty()
+                    || new_site_table.back().position != pos)
+                    {
+                        new_site_table.push_back(sites[mr.site]);
+                    }
+                mr.site = new_site_table.size() - 1;
+            }
+
             std::vector<std::size_t>
-            simplify_mutations(const mcont_t& mutations,
-                               mutation_key_vector& mt) const
+            simplify_mutations(mutation_key_vector& mt, site_vector& sites)
             // Remove all mutations that do not map to nodes
             // in the simplified tree.  The key here is
             // that Ancestry contains the history of
@@ -428,7 +440,8 @@ namespace fwdpp
                                 while (seg < seg_e && map_itr < map_end
                                        && map_itr->node == n)
                                     {
-                                        auto pos = mutations[map_itr->key].pos;
+                                        auto pos
+                                            = sites[map_itr->site].position;
                                         if (seg->left <= pos
                                             && pos < seg->right)
                                             {
@@ -458,16 +471,18 @@ namespace fwdpp
                 preserved_variants.reserve(std::distance(itr, mt.end()));
                 for (auto i = mt.begin(); i != itr; ++i)
                     {
+                        record_site(sites, *i);
                         preserved_variants.push_back(i->key);
                     }
 
                 mt.erase(itr, mt.end());
+                sites.swap(new_site_table);
                 //TODO: replace assert with exception
                 assert(std::is_sorted(mt.begin(), mt.end(),
-                                      [&mutations](const mutation_record& a,
-                                                   const mutation_record& b) {
-                                          return mutations[a.key].pos
-                                                 < mutations[b.key].pos;
+                                      [&sites](const mutation_record& a,
+                                               const mutation_record& b) {
+                                          return sites[a.site].position
+                                                 < sites[b.site].position;
                                       }));
                 return preserved_variants;
             }
@@ -500,8 +515,9 @@ namespace fwdpp
 
           public:
             explicit table_simplifier(const double maxpos)
-                : new_edge_table{}, new_node_table{}, segment_queue{},
-                  Ancestry{}, E{}, L{ maxpos }, o{}, mutation_map{}
+                : new_edge_table{}, new_node_table{}, new_site_table{},
+                  segment_queue{}, Ancestry{}, E{}, L{ maxpos }, o{},
+                  mutation_map{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
                     {
@@ -510,17 +526,14 @@ namespace fwdpp
                     }
             }
 
-            template <typename mutation_container>
             std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
             simplify(table_collection& tables,
-                     const std::vector<TS_NODE_INT>& samples,
-                     const mutation_container& mutations)
+                     const std::vector<TS_NODE_INT>& samples)
             /// Simplify algorithm is approximately the same
             /// logic as used in msprime 0.6.0
             ///
             /// \param tables A table_collection
             /// \param samples A list of sample (node) ids.
-            /// \param mutations A container of mutations
             /// \version 0.7.1 Throw exception if a sample is recorded twice
             /// \version 0.7.3 Return value is now a pair containing the
             /// node ID map and a vector of keys to mutations preserved in
@@ -529,7 +542,8 @@ namespace fwdpp
                 Ancestry.resize(tables.node_table.size());
 
                 // Set some things up for later mutation simplification
-                prep_mutation_simplification(mutations, tables.mutation_table);
+                prep_mutation_simplification(tables.site_table,
+                                             tables.mutation_table);
 
                 // Relates input node ids to output node ids
                 std::vector<TS_NODE_INT> idmap(tables.node_table.size(),
@@ -587,8 +601,8 @@ namespace fwdpp
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_sorted());
                 tables.update_offset();
-                auto preserved_variants
-                    = simplify_mutations(mutations, tables.mutation_table);
+                auto preserved_variants = simplify_mutations(
+                    tables.mutation_table, tables.site_table);
 
                 cleanup();
                 std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>

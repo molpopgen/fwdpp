@@ -41,7 +41,7 @@ confirm_mutation_counts(poptype &pop,
                 }
         }
     decltype(pop.mcounts) mc;
-    fwdpp::fwdpp_internal::process_gametes(pop.gametes, pop.mutations, mc);
+    fwdpp::fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations, mc);
     for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
         {
             if (!pop.mutations[i].neutral)

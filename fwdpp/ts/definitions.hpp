@@ -13,6 +13,10 @@ namespace fwdpp
         using TS_NODE_INT = std::int32_t;
         /// Index value of a NULL node
         constexpr TS_NODE_INT TS_NULL_NODE = -1;
+        /// Convention for the ancestral state of a site
+        constexpr std::int8_t default_ancestral_state = 0;
+        /// Convention for the derived state of a site
+        constexpr std::int8_t default_derived_state = 1;
     } // namespace ts
 } // namespace fwdpp
 

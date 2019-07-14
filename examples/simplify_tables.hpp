@@ -20,10 +20,10 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
 {
-    tables.sort_tables(pop.mutations);
+    tables.sort_tables_for_simplification();
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
-    auto rv = simplifier.simplify(tables, samples, pop.mutations);
+    auto rv = simplifier.simplify(tables, samples);
     tables.build_indexes();
     for (auto &s : samples)
         {
@@ -42,7 +42,12 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                     return pop.mcounts[mr.key] == 2 * pop.diploids.size()
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });
+            auto d = std::distance(itr, end(tables.mutation_table));
             tables.mutation_table.erase(itr, tables.mutation_table.end());
+            if (d)
+                {
+                    tables.rebuild_site_table();
+                }
             confirm_mutation_counts(pop, tables);
             fwdpp::ts::remove_fixations_from_haploid_genomes(
                 pop.haploid_genomes, pop.mutations, pop.mcounts,
