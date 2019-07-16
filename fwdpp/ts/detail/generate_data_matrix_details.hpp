@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fwdpp/data_matrix.hpp>
 #include "../marginal_tree.hpp"
+#include "../marginal_tree_functions/samples.hpp"
 #include "../table_types.hpp"
 
 namespace fwdpp
@@ -17,31 +18,9 @@ namespace fwdpp
             class data_matrix_filler
             {
               private:
-                site_vector::const_iterator site_table_begin;
                 bool record_neutral, record_selected, skip_fixed;
                 std::vector<std::int8_t> genotypes;
-                bool filled;
                 data_matrix dm;
-
-                inline void
-                process_samples(const marginal_tree& marginal,
-                                const mutation_record& mut, TS_NODE_INT index)
-                {
-                    auto right = marginal.right_sample[mut.node];
-                    // Set all genotypes to ancestral state
-                    //std::fill(genotypes.begin(), genotypes.end(), 0);
-                    int x = 0;
-                    while (true)
-                        {
-                            ++x;
-                            genotypes[index] = mut.derived_state;
-                            if (index == right)
-                                {
-                                    break;
-                                }
-                            index = marginal.next_sample[index];
-                        }
-                }
 
                 inline void
                 update_data_matrix(const std::size_t key,
@@ -56,69 +35,59 @@ namespace fwdpp
                 }
 
               public:
-                data_matrix_filler(site_vector::const_iterator b, bool rn,
-                                   bool rs, bool sf, std::size_t sample_size)
-                    : site_table_begin(b), record_neutral(rn),
-                      record_selected(rs), skip_fixed(sf),
-                      genotypes(sample_size, -1), filled(false),
-                      dm(sample_size)
+                data_matrix_filler(std::size_t samplesize, bool neutral,
+                                   bool selected, bool nofixed)
+                    : record_neutral(neutral), record_selected(selected),
+                      skip_fixed(nofixed), genotypes(samplesize, -1),
+                      dm(samplesize)
                 {
                 }
 
-                inline mutation_key_vector::const_iterator
+                inline void
                 operator()(const marginal_tree& tree, const site& current_site,
                            mutation_key_vector::const_iterator mut,
                            mutation_key_vector::const_iterator mut_end)
                 {
-                    bool initialized_site = false;
-                    // mcopy prevents and off-by-one error in the return value
-                    auto mcopy = mut;
-                    for (; mut < mut_end
-                           && (site_table_begin + mut->site)->position
-                                  == current_site.position;
-                         ++mut)
+                    std::fill(genotypes.begin(), genotypes.end(),
+                              current_site.ancestral_state);
+                    int neutral = -1, selected = -1;
+                    int nsamples = 0;
+                    for (; mut < mut_end; ++mut)
                         {
-                            std::size_t total_leaf_count
-                                = tree.preserved_leaf_counts[mut->node]
-                                  + tree.leaf_counts[mut->node];
-                            if (total_leaf_count
-                                && (!skip_fixed
-                                    || (skip_fixed
-                                        && total_leaf_count
-                                               < tree.sample_size())))
+                            neutral += (mut->neutral == true);
+                            selected += (mut->neutral == false);
+                            std::size_t lc = tree.leaf_counts[mut->node];
+                            if ((mut->neutral && record_neutral)
+                                || (selected && record_selected))
                                 {
-                                    if ((mut->neutral && record_neutral)
-                                        || (!mut->neutral && record_selected))
+                                    if (lc > 0
+                                        && (!skip_fixed || (lc < dm.ncol)))
                                         {
-                                            if (!initialized_site)
-                                                {
-                                                    std::fill(
-                                                        begin(genotypes),
-                                                        end(genotypes),
-                                                        current_site
-                                                            .ancestral_state);
-                                                    initialized_site = true;
-                                                }
-                                            auto index
-                                                = tree.left_sample[mut->node];
-                                            // Check if mutation leads to a sample
-                                            if (index != TS_NULL_NODE)
-                                                {
-                                                    process_samples(tree, *mut,
-                                                                    index);
-                                                    filled = true;
-                                                }
-                                            mcopy = mut;
+                                            process_samples(
+                                                tree,
+                                                convert_sample_index_to_nodes(
+                                                    true),
+                                                mut->node,
+                                                [mut, &nsamples, this](
+                                                    fwdpp::ts::TS_NODE_INT u) {
+                                                    ++nsamples;
+                                                    genotypes[u]
+                                                        = mut->derived_state;
+                                                });
                                         }
                                 }
                         }
-                    if (filled)
+                    if (neutral != -1 && selected != -1)
                         {
-                            update_data_matrix(mcopy->key,
-                                               current_site.position,
-                                               mcopy->neutral);
+                            throw tables_error("inconsistent neutral flags in "
+                                               "mutation table");
                         }
-                    return mut;
+                    if (nsamples)
+                        {
+                            update_data_matrix((mut_end - 1)->key,
+                                               current_site.position,
+                                               (neutral != -1) ? 1 : 0);
+                        }
                 }
 
                 data_matrix
