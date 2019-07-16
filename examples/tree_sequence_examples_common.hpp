@@ -31,7 +31,7 @@ struct options
     double theta, rho, mean, shape, mu, scoeff, dominance, scaling;
     unsigned seed;
     int ancient_sampling_interval, ancient_sample_size, nsam;
-    bool leaf_test, matrix_test, preserve_fixations;
+    bool leaf_test, matrix_test, visit_sites_test, preserve_fixations;
     std::string filename, sfsfilename;
     options();
 };
@@ -52,7 +52,6 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const fwdpp::GSLrng_mt &r, const double mean,
                                  const double shape, const double scoeff);
 
-
 void execute_matrix_test(const options &, const single_locus_poptype &,
                          const fwdpp::ts::table_collection &,
                          const std::vector<fwdpp::ts::TS_NODE_INT> &);
@@ -67,8 +66,12 @@ void execute_serialization_test(const options &,
 void test_serialization(const fwdpp::ts::table_collection &tables,
                         const std::string &filename);
 void
-write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
-          const fwdpp::ts::table_collection &tables,
-          const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+visit_sites_test(const options &o, const single_locus_poptype &pop,
+                 const fwdpp::ts::table_collection &tables,
+                 const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+
+void write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
+               const fwdpp::ts::table_collection &tables,
+               const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
 #endif
