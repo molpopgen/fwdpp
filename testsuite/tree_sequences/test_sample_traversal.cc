@@ -34,6 +34,33 @@ BOOST_FIXTURE_TEST_CASE(test_sample_lists, simple_table_collection)
         }
 }
 
+BOOST_FIXTURE_TEST_CASE(test_process_samples_as_nodes, simple_table_collection)
+{
+    samples = { 1, 2 };
+    reset_visitor(true);
+    std::vector<fwdpp::ts::TS_NODE_INT> s;
+    fwdpp::ts::process_samples(
+        tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(true), 6,
+        [&s](fwdpp::ts::TS_NODE_INT u) { s.push_back(u); });
+    BOOST_REQUIRE(s == samples);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_process_samples_as_indexes,
+                        simple_table_collection)
+{
+    samples = { 1, 2 };
+    reset_visitor(true);
+    std::vector<fwdpp::ts::TS_NODE_INT> s;
+    fwdpp::ts::process_samples(
+        tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(false), 6,
+        [&s](fwdpp::ts::TS_NODE_INT u) { s.push_back(u); });
+    for (auto& i : samples)
+        {
+            i -= 1;
+        }
+    BOOST_REQUIRE(s == samples);
+}
+
 BOOST_FIXTURE_TEST_CASE(test_subset_of_nodes_as_samples,
                         simple_table_collection)
 {
