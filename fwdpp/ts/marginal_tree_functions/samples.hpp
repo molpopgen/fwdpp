@@ -113,28 +113,16 @@ namespace fwdpp
 
         template <typename F>
         inline void
-        process_samples_indexes(const marginal_tree &m, TS_NODE_INT u,
-                                const F &f)
-        /// \brief Apply a function to the indexes of each sample descending of node \a u
+        process_samples(const marginal_tree &m,
+                        convert_sample_index_to_nodes convert, TS_NODE_INT u,
+                        const F &f)
+        /// \brief Apply a function to the nodes descending from \a u
         /// \param m A fwdpp::ts::marginal_tree
+        /// \param convert whether to iterate over sample nodes or sample list indexes
         /// \param u Index a fwdpp::ts::node
-        /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
+        /// \param f A function equivalent to void (*foo)(TS_NODE_INT)
         {
-            samples_iterator si(m, u, convert_sample_index_to_nodes(false));
-            while (si(f))
-                {
-                }
-        }
-
-        template <typename F>
-        inline void
-        process_samples(const marginal_tree &m, TS_NODE_INT u, const F &f)
-        /// \brief Apply a function to samples of node \a u
-        /// \param m A fwdpp::ts::marginal_tree
-        /// \param u Index a fwdpp::ts::node
-        /// \param f A function equivalent to void (*process_samples)(TS_NODE_INT)
-        {
-            samples_iterator si(m, u, convert_sample_index_to_nodes(true));
+            samples_iterator si(m, u, convert);
             while (si(f))
                 {
                 }
@@ -146,7 +134,8 @@ namespace fwdpp
         /// The return value contains node ids (as opposed to sample indexes)
         {
             std::vector<TS_NODE_INT> rv;
-            process_samples(m, u, [&rv](TS_NODE_INT x) { rv.push_back(x); });
+            process_samples(m, convert_sample_index_to_nodes(true), u,
+                            [&rv](TS_NODE_INT x) { rv.push_back(x); });
             return rv;
         }
 
@@ -155,7 +144,7 @@ namespace fwdpp
         /// Return the number of samples descending from node \a u in marginal_tree \a m.
         {
             int nsamples = 0;
-            process_samples(m, u,
+            process_samples(m, convert_sample_index_to_nodes(false), u,
                             [&nsamples](TS_NODE_INT /*x*/) { ++nsamples; });
             return nsamples;
         }
