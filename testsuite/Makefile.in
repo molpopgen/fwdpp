@@ -131,7 +131,8 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/independent_implementations.cc \
 	tree_sequences/test_generate_data_matrix.cc \
 	tree_sequences/test_table_collection.cc \
-	tree_sequences/test_visit_sites.cc
+	tree_sequences/test_visit_sites.cc \
+	tree_sequences/test_site_visitor.cc
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_preorder_node_traversal.$(OBJEXT) \
@@ -145,7 +146,8 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/independent_implementations.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_data_matrix.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_table_collection.$(OBJEXT) \
-@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_visit_sites.$(OBJEXT)
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_visit_sites.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_site_visitor.$(OBJEXT)
 tree_sequences_tree_sequence_tests_OBJECTS =  \
 	$(am_tree_sequences_tree_sequence_tests_OBJECTS)
 tree_sequences_tree_sequence_tests_LDADD = $(LDADD)
@@ -235,6 +237,7 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_root_traversal.Po \
 	tree_sequences/$(DEPDIR)/test_sample_traversal.Po \
+	tree_sequences/$(DEPDIR)/test_site_visitor.Po \
 	tree_sequences/$(DEPDIR)/test_table_collection.Po \
 	tree_sequences/$(DEPDIR)/test_tree_visitor.Po \
 	tree_sequences/$(DEPDIR)/test_visit_sites.Po \
@@ -666,7 +669,8 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/independent_implementations.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_data_matrix.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_table_collection.cc \
-@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_visit_sites.cc
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_visit_sites.cc \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_site_visitor.cc
 
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = -W -Wall
 all: all-am
@@ -780,6 +784,9 @@ tree_sequences/test_table_collection.$(OBJEXT):  \
 tree_sequences/test_visit_sites.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+tree_sequences/test_site_visitor.$(OBJEXT):  \
+	tree_sequences/$(am__dirstamp) \
+	tree_sequences/$(DEPDIR)/$(am__dirstamp)
 
 tree_sequences/tree_sequence_tests$(EXEEXT): $(tree_sequences_tree_sequence_tests_OBJECTS) $(tree_sequences_tree_sequence_tests_DEPENDENCIES) $(EXTRA_tree_sequences_tree_sequence_tests_DEPENDENCIES) tree_sequences/$(am__dirstamp)
 	@rm -f tree_sequences/tree_sequence_tests$(EXEEXT)
@@ -881,6 +888,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_root_traversal.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_sample_traversal.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_site_visitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_table_collection.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_tree_visitor.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@tree_sequences/$(DEPDIR)/test_visit_sites.Po@am__quote@ # am--include-marker
@@ -1281,6 +1289,7 @@ distclean: distclean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_site_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_table_collection.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_visit_sites.Po
@@ -1369,6 +1378,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f tree_sequences/$(DEPDIR)/test_preorder_node_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_root_traversal.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_sample_traversal.Po
+	-rm -f tree_sequences/$(DEPDIR)/test_site_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_table_collection.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_tree_visitor.Po
 	-rm -f tree_sequences/$(DEPDIR)/test_visit_sites.Po
