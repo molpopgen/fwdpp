@@ -8,6 +8,8 @@
 #include <fwdpp/ts/serialization.hpp>
 #include <fwdpp/ts/mutate_tables.hpp>
 #include <fwdpp/ts/mutation_tools.hpp>
+#include <fwdpp/ts/marginal_tree_functions/samples.hpp>
+#include <fwdpp/ts/visit_sites.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include "tree_sequence_examples_common.hpp"
 
@@ -58,7 +60,8 @@ options::options()
       scoeff(std::numeric_limits<double>::quiet_NaN()), dominance(1.),
       scaling(2.), seed(42), ancient_sampling_interval(-1),
       ancient_sample_size(-1), nsam(0), leaf_test(false), matrix_test(false),
-      preserve_fixations(false), filename(), sfsfilename()
+      visit_sites_test(false), preserve_fixations(false), filename(),
+      sfsfilename()
 {
 }
 
@@ -108,7 +111,8 @@ generate_testing_options(options &o)
     // clang-format off
     testing.add_options()("leaf_test",po::bool_switch(&o.leaf_test),"Perform very expensive checking on sample list ranges vs. leaf counts")
         ("matrix_test",po::bool_switch(&o.matrix_test),"Perform run-time test on generating fwdpp::data_matrix objects and validating the row sums")
-		("serialization_test",po::value<std::string>(&o.filename),"Test round-trip to/from a file");
+		("serialization_test",po::value<std::string>(&o.filename),"Test round-trip to/from a file")
+		("visit_sites_tests",po::bool_switch(&o.visit_sites_test),"Test correctness of ts::visit_sites");
     // clang-format on
     return testing;
 }
@@ -342,6 +346,42 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
         }
 }
 
+void
+visit_sites_test(const options &o, const single_locus_poptype &pop,
+                 const fwdpp::ts::table_collection &tables,
+                 const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+{
+    if (o.visit_sites_test)
+        {
+            auto mc(pop.mcounts);
+            mc.clear();
+            auto s(samples);
+            s.insert(end(s), begin(tables.preserved_nodes),
+                     end(tables.preserved_nodes));
+            fwdpp::ts::count_mutations(tables, pop.mutations, samples, mc);
+            auto mc2(mc);
+            std::fill(begin(mc2), end(mc2), 0);
+            auto f
+                = [&mc2](
+                      const fwdpp::ts::marginal_tree &m,
+                      const fwdpp::ts::site & /*s*/,
+                      fwdpp::ts::mutation_key_vector::const_iterator b,
+                      const fwdpp::ts::mutation_key_vector::const_iterator e) {
+                      for (; b < e; ++b)
+                          {
+                              mc2[b->key] = fwdpp::ts::num_samples(m, b->node);
+                          }
+                  };
+            fwdpp::ts::visit_sites(tables, samples, f, 0.,
+                                   tables.genome_length());
+            if (mc != mc2)
+                {
+                    throw std::runtime_error("visit_sites_test failed to "
+                                             "correctly traverse all sites");
+                }
+            std::cout << "visit_sites_test passed\n";
+        }
+}
 void
 execute_matrix_test(const options &o, const single_locus_poptype &pop,
                     const fwdpp::ts::table_collection &tables,

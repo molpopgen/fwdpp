@@ -254,7 +254,7 @@ namespace fwdpp
                     }
                 init_samples();
                 left_root = samples_list[0];
-                for (auto s : samples_list)
+                for (auto s : samples)
                     {
                         leaf_counts[s] = 1;
                     }

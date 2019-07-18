@@ -7,7 +7,9 @@
 #include <stdexcept>
 #include <fwdpp/data_matrix.hpp>
 #include "table_collection.hpp"
-#include "tree_visitor.hpp"
+#include "site_visitor.hpp"
+#include "exceptions.hpp"
+#include "marginal_tree_functions/samples.hpp"
 #include "detail/generate_data_matrix_details.hpp"
 
 namespace fwdpp
@@ -24,62 +26,29 @@ namespace fwdpp
         /// \version 0.7.0 Added to library
         /// \version 0.7.1 Change behavior to skip sites fixed in the sample
         /// \version 0.7.4 Add [start, stop) arguments. Add option to skip fixed variants.
-        /// \version 0.8.0 No longer requires mutation vector.
+        /// \version 0.8.0 No longer requires mutation vector. Function body re-implemented.
         {
             if (!(stop > start))
                 {
                     throw std::invalid_argument("invalid position range");
                 }
-            auto mut = tables.mutation_table.cbegin();
-            const auto mut_end = tables.mutation_table.cend();
-            auto site_table_location = begin(tables.site_table);
-            const auto site_table_end = end(tables.site_table);
-            tree_visitor tv(tables, std::forward<SAMPLES>(samples),
-                            update_samples_list(true));
-            detail::data_matrix_filler processor(
-                tables.site_table.begin(), record_neutral, record_selected,
-                skip_fixed, samples.size());
-            while (tv())
+            std::size_t samplesize = samples.size();
+            std::vector<std::int8_t> genotypes(samplesize);
+            site_visitor sv(tables, samples);
+            data_matrix rv(samplesize);
+            decltype(sv()) itr;
+            while ((itr = sv()) != end(sv))
                 {
-                    const auto& tree = tv.tree();
-                    // Advance site table to start of tree:
-                    while (site_table_location < site_table_end
-                           && site_table_location->position < tree.left)
+                    const auto& tree = sv.current_tree();
+                    if (tree.left >= start && tree.left < stop
+                        && itr->position < stop)
                         {
-                            ++site_table_location;
-                        }
-                    // Process mutations on this tree
-                    for (; site_table_location < site_table_end
-                           && site_table_location->position < tree.right;
-                         ++site_table_location)
-                        {
-                            auto pos = site_table_location->position;
-                            if (pos >= start)
-                                {
-                                    if (!(pos < stop))
-                                        {
-                                            return processor.data();
-                                        }
-                                    //catch the mutation table up
-                                    //to the site table
-                                    while (mut < mut_end
-                                           && tables.site_table[mut->site]
-                                                      .position
-                                                  != pos)
-                                        {
-                                            ++mut;
-                                        }
-                                    mut = processor(tree, *site_table_location,
-                                                    mut, mut_end);
-                                }
-                        }
-                    // Terminate early if we're lucky
-                    if (!(mut < mut_end))
-                        {
-                            break;
+                            detail::process_site_range(
+                                sv, itr, record_neutral, record_selected,
+                                skip_fixed, genotypes, rv);
                         }
                 }
-            return processor.data();
+            return rv;
         }
 
         template <typename SAMPLES>
