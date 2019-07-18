@@ -215,7 +215,7 @@ namespace fwdpp
             {
                 if (samples_list.empty())
                     {
-                        throw empty_samples(
+                        throw samples_error(
                             "marginal_tree: empty sample list");
                     }
                 init_samples();
@@ -252,7 +252,7 @@ namespace fwdpp
             {
                 if (samples_list.empty())
                     {
-                        throw empty_samples(
+                        throw samples_error(
                             "marginal_tree: empty sample list");
                     }
                 init_samples();

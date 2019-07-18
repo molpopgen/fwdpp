@@ -251,7 +251,7 @@ namespace fwdpp
                     }
                 if (samples.empty() && preserved_nodes.empty())
                     {
-                        throw empty_samples(
+                        throw samples_error(
                             "one or both sample lists are empty");
                     }
             }
