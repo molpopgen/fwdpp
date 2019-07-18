@@ -66,7 +66,7 @@ namespace fwdpp
                                             process_samples(
                                                 tree,
                                                 convert_sample_index_to_nodes(
-                                                    true),
+                                                    false),
                                                 mut->node,
                                                 [mut, &nsamples, this](
                                                     fwdpp::ts::TS_NODE_INT u) {
