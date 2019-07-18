@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(test_construction)
     BOOST_REQUIRE_THROW(
         fwdpp::ts::tree_visitor tv(tables, empty_samples,
                                    fwdpp::ts::update_samples_list(0)),
-        fwdpp::ts::empty_samples);
+        fwdpp::ts::samples_error);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
