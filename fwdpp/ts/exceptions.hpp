@@ -47,6 +47,25 @@ namespace fwdpp
             }
         };
 
+        class samples_error : public std::exception
+        /// Thrown when there is a problem with samples lists
+        /// \version 0.8.0 Added to library
+        {
+          private:
+            std::string message_;
+
+          public:
+            explicit samples_error(std::string message)
+                : message_(std::move(message))
+            {
+            }
+            virtual const char*
+            what() const noexcept
+            {
+                return message_.c_str();
+            }
+        };
+
     } // namespace ts
 } // namespace fwdpp
 
