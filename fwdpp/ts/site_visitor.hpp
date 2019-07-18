@@ -40,12 +40,24 @@ namespace fwdpp
                 mutations_at_current_site = { mitr, m };
             }
 
+            template <typename SAMPLES>
+            tree_visitor
+            init_tree_visitor(const SAMPLES& samples)
+            {
+                tree_visitor tv(tables_, samples, update_samples_list(true));
+                auto t = tv();
+                if (!t)
+                    {
+                        throw tables_error("no tree in table collection");
+                    }
+                return tv;
+            }
+
           public:
             template <typename SAMPLES>
             site_visitor(const table_collection& tables,
                          const SAMPLES& samples)
-                : tables_(tables),
-                  tv(tables_, samples, update_samples_list(true)),
+                : tables_(tables), tv(init_tree_visitor(samples)),
                   current_site(begin(tables.site_table)),
                   current_mutation(begin(tables.mutation_table)),
                   mutations_at_current_site(std::end(tables_.mutation_table),
@@ -99,7 +111,7 @@ namespace fwdpp
 
             std::pair<mutation_key_vector::const_iterator,
                       mutation_key_vector::const_iterator>
-            get_mutations()
+            get_mutations() const
             {
                 return mutations_at_current_site;
             }
