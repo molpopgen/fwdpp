@@ -11,6 +11,24 @@ namespace fwdpp
         void
         visit_sites(const table_collection& tables, SAMPLES&& samples,
                     const F& f, const double from, const double to)
+        /// \brief Apply a function to all sites in range [from, to)
+        /// \param tables A ts::table_collection
+        /// \param samples A list of samples
+        /// \param f A function.  See below
+        /// \param from Start of range (inclusive)
+        /// \param to End of range (exclusive)
+        ///
+        /// The type of \a f must be equavalent to:
+        ///
+        /// \code{.cpp}
+        /// std::function<void(const ts::marginal_tree&, const ts::site&,
+        ///     mutation_key_vector::const_iterator, mutation_key_vector::const_iterator)>
+        /// \endcode
+        /// 
+        /// The last two iterators define the range of mutations in \tables correpsonding
+        /// to the ts::site object passed in.  The range is defined following standard 
+        /// C++ conventions for bidirectional iterators from a vector.
+        /// \version 0.8.0 Added to library
         {
             tree_visitor tv(tables, std::forward<SAMPLES>(samples),
                             update_samples_list(true));

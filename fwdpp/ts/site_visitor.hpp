@@ -10,6 +10,9 @@ namespace fwdpp
     namespace ts
     {
         class site_visitor
+        /// \brief Facilitae iteration over ts::site objects one at a time
+        /// For example use, see implementation of ts::generate_data_matrix.
+        /// \version 0.8.0 Added to fwdpp
         {
           private:
             const table_collection& tables_;
