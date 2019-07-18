@@ -158,7 +158,7 @@ namespace fwdpp
                         // See GitHub issue #158 for background
                         if (sample_index_map[s] != TS_NULL_NODE)
                             {
-                                throw std::invalid_argument(
+                                throw samples_error(
                                     "invalid sample list");
                             }
                         sample_index_map[s] = i;
@@ -257,10 +257,10 @@ namespace fwdpp
                     }
                 init_samples();
                 left_root = samples_list[0];
-                for (auto s : samples)
-                    {
-                        leaf_counts[s] = 1;
-                    }
+                for(std::size_t i=0;i<samples.size();++i)
+                {
+                    leaf_counts[samples_list[i]]=1;
+                }
                 for (auto s : preserved_nodes)
                     {
                         preserved_leaf_counts[s] = 1;
