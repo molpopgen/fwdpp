@@ -40,7 +40,8 @@ namespace fwdpp
             while ((itr = sv()) != end(sv))
                 {
                     const auto& tree = sv.current_tree();
-                    if (tree.left >= start && tree.right < stop)
+                    if (tree.left >= start && tree.left < stop
+                        && itr->position < stop)
                         {
                             detail::process_site_range(
                                 sv, itr, record_neutral, record_selected,
