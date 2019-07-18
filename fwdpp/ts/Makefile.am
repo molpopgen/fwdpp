@@ -24,6 +24,7 @@ pkginclude_HEADERS= definitions.hpp \
 			exceptions.hpp \
 			mutation_tools.hpp \
 			table_types.hpp \
-			visit_sites.hpp
+			visit_sites.hpp \
+			site_visitor.hpp
 
 
