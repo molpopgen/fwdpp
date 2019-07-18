@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <fwdpp/data_matrix.hpp>
 #include "table_collection.hpp"
-#include "visit_sites.hpp"
+#include "site_visitor.hpp"
 #include "exceptions.hpp"
 #include "marginal_tree_functions/samples.hpp"
 #include "detail/generate_data_matrix_details.hpp"
@@ -32,13 +32,22 @@ namespace fwdpp
                 {
                     throw std::invalid_argument("invalid position range");
                 }
-            std::vector<std::int8_t> genotypes(samples.size());
-            detail::data_matrix_filler visitor(samples.size(), record_neutral,
-                                               record_selected, skip_fixed);
-            visit_sites(tables, std::forward<SAMPLES>(samples),
-                        std::ref(visitor), start, stop);
-
-            return visitor.data();
+            std::size_t samplesize = samples.size();
+            std::vector<std::int8_t> genotypes(samplesize);
+            site_visitor sv(tables, samples);
+            data_matrix rv(samplesize);
+            decltype(sv()) itr;
+            while ((itr = sv()) != end(sv))
+                {
+                    const auto& tree = sv.current_tree();
+                    if (tree.left >= start && tree.right < stop)
+                        {
+                            detail::process_site_range(
+                                sv, itr, record_neutral, record_selected,
+                                skip_fixed, genotypes, rv);
+                        }
+                }
+            return rv;
         }
 
         template <typename SAMPLES>

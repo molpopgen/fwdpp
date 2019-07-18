@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <fwdpp/data_matrix.hpp>
 #include "../marginal_tree.hpp"
+#include "../site_visitor.hpp"
 #include "../marginal_tree_functions/samples.hpp"
 #include "../table_types.hpp"
 
@@ -15,86 +16,75 @@ namespace fwdpp
     {
         namespace detail
         {
-            class data_matrix_filler
+            void
+            process_site_range(const site_visitor& sv,
+                               const site_vector::const_iterator current_site,
+                               bool record_neutral, bool record_selected,
+                               bool skip_fixed,
+                               std::vector<std::int8_t>& genotypes,
+                               data_matrix& dm)
             {
-              private:
-                bool record_neutral, record_selected, skip_fixed;
-                std::vector<std::int8_t> genotypes;
-                data_matrix dm;
-                convert_sample_index_to_nodes convert;
+                int neutral = -1, selected = -1;
+                std::fill(begin(genotypes), end(genotypes),
+                          current_site->ancestral_state);
+                auto muts = sv.get_mutations();
+                int nsamples = 0;
+                const auto& tree = sv.current_tree();
+                convert_sample_index_to_nodes convert(false);
+                for (auto mut = muts.first; mut < muts.second; ++mut)
+                    {
+                        neutral += (mut->neutral == true);
+                        selected += (mut->neutral == false);
+                        std::size_t lc = tree.leaf_counts[mut->node];
 
-                inline void
-                update_data_matrix(const std::size_t key,
-                                   const double position, const bool neutral)
-                {
-                    auto& sm = (neutral) ? dm.neutral : dm.selected;
-                    auto& k = (neutral) ? dm.neutral_keys : dm.selected_keys;
-                    sm.positions.push_back(position);
-                    sm.data.insert(sm.data.end(), genotypes.begin(),
-                                   genotypes.end());
-                    k.push_back(key);
-                }
-
-              public:
-                data_matrix_filler(std::size_t samplesize, bool neutral,
-                                   bool selected, bool nofixed)
-                    : record_neutral(neutral), record_selected(selected),
-                      skip_fixed(nofixed), genotypes(samplesize, -1),
-                      dm(samplesize), convert(false)
-                {
-                }
-
-                inline void
-                operator()(const marginal_tree& tree, const site& current_site,
-                           mutation_key_vector::const_iterator mut,
-                           mutation_key_vector::const_iterator mut_end)
-                {
-                    std::fill(genotypes.begin(), genotypes.end(),
-                              current_site.ancestral_state);
-                    int neutral = -1, selected = -1;
-                    int nsamples = 0;
-                    for (; mut < mut_end; ++mut)
-                        {
-                            neutral += (mut->neutral == true);
-                            selected += (mut->neutral == false);
-                            std::size_t lc = tree.leaf_counts[mut->node];
-                            if ((mut->neutral && record_neutral)
-                                || (selected && record_selected))
-                                {
-                                    if (lc > 0
-                                        && (!skip_fixed || (lc < dm.ncol)))
-                                        {
-                                            const auto f =
-                                                [mut, &nsamples, this](
-                                                    fwdpp::ts::TS_NODE_INT u) {
-                                                    ++nsamples;
-                                                    genotypes[u]
-                                                        = mut->derived_state;
-                                                };
-                                            process_samples(tree, convert,
-                                                            mut->node, f);
-                                        }
-                                }
-                        }
-                    if (neutral != -1 && selected != -1)
-                        {
-                            throw tables_error("inconsistent neutral flags in "
-                                               "mutation table");
-                        }
-                    if (nsamples)
-                        {
-                            update_data_matrix((mut_end - 1)->key,
-                                               current_site.position,
-                                               (neutral != -1) ? 1 : 0);
-                        }
-                }
-
-                data_matrix
-                data()
-                {
-                    return data_matrix(std::move(dm));
-                }
-            };
+                        if ((mut->neutral && record_neutral)
+                            || (selected && record_selected))
+                            {
+                                if (lc > 0
+                                    && (!skip_fixed
+                                        || (lc < genotypes.size())))
+                                    {
+                                        const auto f
+                                            = [mut, &nsamples, &genotypes](
+                                                  fwdpp::ts::TS_NODE_INT u) {
+                                                  ++nsamples;
+                                                  genotypes[u]
+                                                      = mut->derived_state;
+                                              };
+                                        process_samples(tree, convert,
+                                                        mut->node, f);
+                                    }
+                            }
+                    }
+                if (neutral != -1 && selected != -1)
+                    {
+                        throw tables_error("inconsistent neutral flags in "
+                                           "mutation table");
+                    }
+                if (nsamples)
+                    {
+                        if (neutral != -1)
+                            {
+                                dm.neutral.positions.push_back(
+                                    current_site->position);
+                                dm.neutral_keys.push_back(
+                                    (muts.second - 1)->key);
+                                dm.neutral.data.insert(end(dm.neutral.data),
+                                                       begin(genotypes),
+                                                       end(genotypes));
+                            }
+                        else
+                            {
+                                dm.selected.positions.push_back(
+                                    current_site->position);
+                                dm.selected_keys.push_back(
+                                    (muts.second - 1)->key);
+                                dm.selected.data.insert(end(dm.selected.data),
+                                                        begin(genotypes),
+                                                        end(genotypes));
+                            }
+                    }
+            }
         } // namespace detail
     }     // namespace ts
 } // namespace fwdpp
