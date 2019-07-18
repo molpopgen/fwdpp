@@ -21,6 +21,7 @@ namespace fwdpp
                 bool record_neutral, record_selected, skip_fixed;
                 std::vector<std::int8_t> genotypes;
                 data_matrix dm;
+                convert_sample_index_to_nodes convert;
 
                 inline void
                 update_data_matrix(const std::size_t key,
@@ -39,7 +40,7 @@ namespace fwdpp
                                    bool selected, bool nofixed)
                     : record_neutral(neutral), record_selected(selected),
                       skip_fixed(nofixed), genotypes(samplesize, -1),
-                      dm(samplesize)
+                      dm(samplesize), convert(false)
                 {
                 }
 
@@ -63,17 +64,15 @@ namespace fwdpp
                                     if (lc > 0
                                         && (!skip_fixed || (lc < dm.ncol)))
                                         {
-                                            process_samples(
-                                                tree,
-                                                convert_sample_index_to_nodes(
-                                                    false),
-                                                mut->node,
+                                            const auto f =
                                                 [mut, &nsamples, this](
                                                     fwdpp::ts::TS_NODE_INT u) {
                                                     ++nsamples;
                                                     genotypes[u]
                                                         = mut->derived_state;
-                                                });
+                                                };
+                                            process_samples(tree, convert,
+                                                            mut->node, f);
                                         }
                                 }
                         }
