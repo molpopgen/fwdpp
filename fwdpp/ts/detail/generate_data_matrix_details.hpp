@@ -38,7 +38,7 @@ namespace fwdpp
                         std::size_t lc = tree.leaf_counts[mut->node];
 
                         if ((mut->neutral && record_neutral)
-                            || (selected && record_selected))
+                            || (!mut->neutral && record_selected))
                             {
                                 if (lc > 0
                                     && (!skip_fixed
