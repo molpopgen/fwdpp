@@ -39,10 +39,9 @@ namespace fwdpp
             decltype(sv()) itr;
             while ((itr = sv()) != end(sv))
                 {
-                    const auto& tree = sv.current_tree();
-                    if (tree.left >= start && tree.left < stop
-                        && itr->position < stop)
+                    if (itr->position >= start && itr->position < stop)
                         {
+                            const auto& tree = sv.current_tree();
                             detail::process_site_range(
                                 tree, itr, sv.get_mutations(), record_neutral,
                                 record_selected, skip_fixed, genotypes, rv);
