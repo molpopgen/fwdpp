@@ -44,8 +44,8 @@ namespace fwdpp
                         && itr->position < stop)
                         {
                             detail::process_site_range(
-                                sv, itr, record_neutral, record_selected,
-                                skip_fixed, genotypes, rv);
+                                tree, itr, sv.get_mutations(), record_neutral,
+                                record_selected, skip_fixed, genotypes, rv);
                         }
                 }
             return rv;

@@ -16,9 +16,11 @@ namespace fwdpp
     {
         namespace detail
         {
-            void
-            process_site_range(const site_visitor& sv,
-                               const site_vector::const_iterator current_site,
+            template<typename SITE_CONST_ITER, typename MUT_CONST_ITR>
+            inline void
+            process_site_range(const marginal_tree & tree,
+                               const SITE_CONST_ITER current_site,
+                               const std::pair<MUT_CONST_ITR,MUT_CONST_ITR> & muts,
                                bool record_neutral, bool record_selected,
                                bool skip_fixed,
                                std::vector<std::int8_t>& genotypes,
@@ -27,9 +29,7 @@ namespace fwdpp
                 int neutral = -1, selected = -1;
                 std::fill(begin(genotypes), end(genotypes),
                           current_site->ancestral_state);
-                auto muts = sv.get_mutations();
                 int nsamples = 0;
-                const auto& tree = sv.current_tree();
                 convert_sample_index_to_nodes convert(false);
                 for (auto mut = muts.first; mut < muts.second; ++mut)
                     {
