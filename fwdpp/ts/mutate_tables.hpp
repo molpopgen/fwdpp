@@ -92,7 +92,7 @@ namespace fwdpp
                                         gsl_ran_flat(r.get(), 1, dt + 1));
                                     new_variant_record r
                                         = make_mutation(j.first, j.second, g);
-                                    auto newsite = tables.push_back_site(
+                                    auto newsite = tables.emplace_back_site(
                                         r.s.position, r.s.ancestral_state);
                                     tables.mutation_table.emplace_back(
                                         mutation_record{
@@ -114,8 +114,8 @@ namespace fwdpp
                                 gsl_ran_flat(r.get(), pt + 1, ct + 1));
                             new_variant_record r
                                 = make_mutation(e.left, e.right, g);
-                            auto site
-                                = tables.emplace_back_site(std::move(r.s));
+                            auto site = tables.emplace_back_site(
+                                r.s.position, r.s.ancestral_state);
                             tables.mutation_table.emplace_back(
                                 mutation_record{ e.child, r.key, site,
                                                  r.derived_state, r.neutral });
