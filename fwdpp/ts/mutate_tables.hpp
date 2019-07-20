@@ -92,8 +92,7 @@ namespace fwdpp
                                         gsl_ran_flat(r.get(), 1, dt + 1));
                                     new_variant_record r
                                         = make_mutation(j.first, j.second, g);
-                                    auto site = tables.emplace_back_site(
-                                        std::move(r.s));
+                                    auto site = tables.push_back_site(r.s);
                                     tables.mutation_table.emplace_back(
                                         mutation_record{ i.first, r.key, site,
                                                          r.derived_state,
