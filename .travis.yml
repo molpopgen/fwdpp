@@ -1,6 +1,12 @@
 language: cpp
 matrix:
     include:
+    - os: linux
+      dist: trusty
+      env:
+        - MATRIX_EVAL="CC=gcc && CXX=g++"
+        - CXXSTANDARD="c++11"
+       
    # - os: linux
    #   dist: trusty
    #   env: 
@@ -80,12 +86,6 @@ matrix:
         - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
         - CXXSTANDARD="c++14"
 
-    - os: linux
-      dist: trusty
-      env:
-        - MATRIX_EVAL="CC=gcc && CXX=g++"
-        - CXXSTANDARD="c++11"
-       
     # works on Precise and Trusty
     # - os: linux
     #   dist: trusty
