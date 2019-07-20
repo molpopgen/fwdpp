@@ -126,7 +126,7 @@ namespace fwdpp
                 if (site_table.empty()
                     || site_table.back().position != s.position)
                     {
-                        emplace_back_site(s);
+                        site_table.push_back(s);
                     }
                 mr.site = site_table.size() - 1;
             }
