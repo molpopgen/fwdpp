@@ -92,11 +92,12 @@ namespace fwdpp
                                         gsl_ran_flat(r.get(), 1, dt + 1));
                                     new_variant_record r
                                         = make_mutation(j.first, j.second, g);
-                                    auto site = tables.push_back_site(r.s);
+                                    auto newsite = tables.push_back_site(site{
+                                        r.s.position, r.s.ancestral_state });
                                     tables.mutation_table.emplace_back(
-                                        mutation_record{ i.first, r.key, site,
-                                                         r.derived_state,
-                                                         r.neutral });
+                                        mutation_record{
+                                            i.first, r.key, newsite,
+                                            r.derived_state, r.neutral });
                                 }
                         }
                 }
