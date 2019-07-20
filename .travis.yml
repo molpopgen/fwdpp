@@ -55,6 +55,19 @@ matrix:
       env:
         - MATRIX_EVAL="CC=gcc-6 && CXX=g++-6"
         - CXXSTANDARD="c++14"
+
+    - os: linux
+      dist: trusty
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      env:
+        - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5"
+        - CXXSTANDARD="c++11"
+    
     # works on Precise and Trusty
     # - os: linux
     #   dist: trusty
