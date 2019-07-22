@@ -312,16 +312,38 @@ namespace fwdpp
                             reinterpret_cast<char*>(tables.node_table.data()),
                             num_nodes * sizeof(node));
 
-                        tables.mutation_table.resize(num_mutations);
-                        i.read(reinterpret_cast<char*>(
-                                   tables.mutation_table.data()),
-                               num_mutations * sizeof(mutation_record));
-                        tables.site_table.resize(num_sites);
                         if (format == TS_TABLES_VERSION)
                             {
+                                tables.mutation_table.resize(num_mutations);
+                                i.read(reinterpret_cast<char*>(
+                                           tables.mutation_table.data()),
+                                       num_mutations
+                                           * sizeof(mutation_record));
+                                tables.site_table.resize(num_sites);
                                 i.read(reinterpret_cast<char*>(
                                            tables.site_table.data()),
                                        num_sites * sizeof(site));
+                            }
+                        else
+                            {
+                                std::vector<
+                                    backwards_compat::mutation_record_V2>
+                                    temp(num_mutations);
+                                i.read(reinterpret_cast<char*>(temp.data()),
+                                       num_mutations
+                                           * sizeof(backwards_compat::
+                                                        mutation_record_V2));
+                                for (auto t : temp)
+                                    {
+                                        tables.mutation_table.emplace_back(
+                                            mutation_record{
+                                                t.node, t.key,
+                                                std::numeric_limits<
+                                                    std::size_t>::max(),
+                                                std::numeric_limits<
+                                                    std::int8_t>::min(),
+                                                true });
+                                    }
                             }
                     }
                 else if (format == 1)
@@ -387,9 +409,9 @@ namespace fwdpp
                         mr.neutral = mutations[mr.key].neutral;
                         mr.derived_state = default_derived_state;
                         mr.site = tables.emplace_back_site(
-                            mutations[mr.key].position,
-                            default_ancestral_state);
+                            mutations[mr.key].pos, default_ancestral_state);
                     }
+
                 // This is almost certainly not necessary,
                 // but we may as well be super-extra safe.
                 // Calling this will fix any issues due
