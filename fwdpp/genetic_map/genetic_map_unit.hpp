@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <gsl/gsl_rng.h>
-#include <fwdpp/util/absract_cloneable.hpp>
+#include <fwdpp/util/abstract_cloneable.hpp>
 
 namespace fwdpp
 {
