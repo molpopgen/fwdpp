@@ -54,7 +54,8 @@ namespace fwdpp
                                        : L;
                         if (b <= a)
                             {
-                                throw std::invalid_argument("right must be > left");
+                                throw std::invalid_argument(
+                                    "right must be > left");
                             }
                         if (j % 2 == 0.)
                             {
@@ -268,9 +269,19 @@ namespace fwdpp
                     [this](const edge& a, const edge& b) {
                         auto ga = this->node_table[a.parent].time;
                         auto gb = this->node_table[b.parent].time;
-                        return ga > gb
-                               && (std::tie(a.child, a.left)
-                                   < std::tie(b.child, b.left));
+                        if (ga == gb)
+                            {
+                                if (a.parent == b.parent)
+                                    {
+                                        if (a.child == b.child)
+                                            {
+                                                return a.left < b.left;
+                                            }
+                                        return a.child < b.child;
+                                    }
+                                return a.parent < b.parent;
+                            }
+                        return ga > gb;
                     });
             }
 
