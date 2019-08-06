@@ -350,7 +350,8 @@ namespace fwdpp
                     }
                 detail::split_breakpoints(breakpoints, parents, next_index, L,
                                           [this](fwdpp::ts::edge&& e) {
-                                              emplace_back_edge(std::move(e));
+                                              edge_table.push_back(
+                                                  std::move(e));
                                           });
                 return next_index;
             }
