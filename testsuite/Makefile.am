@@ -53,7 +53,8 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 										tree_sequences/test_table_collection.cc \
 										tree_sequences/test_visit_sites.cc \
 										tree_sequences/test_site_visitor.cc \
-										tree_sequences/test_marginal_tree.cc
+										tree_sequences/test_marginal_tree.cc \
+										tree_sequences/test_diploid_edge_buffer.cc
 
 AM_CXXFLAGS=-W -Wall
 

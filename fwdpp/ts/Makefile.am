@@ -25,6 +25,8 @@ pkginclude_HEADERS= definitions.hpp \
 			mutation_tools.hpp \
 			table_types.hpp \
 			visit_sites.hpp \
-			site_visitor.hpp
+			site_visitor.hpp \
+			edge_buffer.hpp \
+			diploid_edge_buffer.hpp
 
 
