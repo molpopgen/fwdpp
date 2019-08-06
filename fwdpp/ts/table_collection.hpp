@@ -14,6 +14,7 @@
 #include <fwdpp/ts/exceptions.hpp>
 #include "table_types.hpp"
 #include "indexed_edge.hpp" //TODO: create fewer header dependencies
+#include "detail/split_breakpoints.hpp"
 
 namespace fwdpp
 {
@@ -29,97 +30,6 @@ namespace fwdpp
           private:
             /// Length of the genomic region.
             double L;
-            void
-            split_breakpoints_add_edges(
-                const std::vector<double>& breakpoints,
-                const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const TS_NODE_INT next_index)
-            {
-                if (breakpoints.front() != 0.0)
-                    {
-                        this->push_back_edge(0., breakpoints.front(),
-                                             std::get<0>(parents), next_index);
-                    }
-                // TODO: replace with exception via a debug mode
-                assert(std::count(begin(breakpoints), end(breakpoints),
-                                  std::numeric_limits<double>::max())
-                       == 1);
-                assert(breakpoints.back()
-                       == std::numeric_limits<double>::max());
-                for (unsigned j = 1; j < breakpoints.size(); ++j)
-                    {
-                        double a = breakpoints[j - 1];
-                        double b = (j < breakpoints.size() - 1)
-                                       ? breakpoints[j]
-                                       : L;
-                        if (b <= a)
-                            {
-                                throw std::invalid_argument(
-                                    "right must be > left");
-                            }
-                        if (j % 2 == 0.)
-                            {
-                                this->push_back_edge(
-                                    a, b, std::get<0>(parents), next_index);
-                            }
-                        else
-                            {
-                                this->push_back_edge(
-                                    a, b, std::get<1>(parents), next_index);
-                            }
-                    }
-            }
-
-            void
-            split_breakpoints(
-                const std::vector<double>& breakpoints,
-                const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const TS_NODE_INT next_index)
-            {
-                if (breakpoints.empty())
-                    {
-                        this->push_back_edge(0., L, std::get<0>(parents),
-                                             next_index);
-                        return;
-                    }
-                auto itr = std::adjacent_find(std::begin(breakpoints),
-                                              std::end(breakpoints));
-                if (itr == std::end(breakpoints))
-                    {
-                        split_breakpoints_add_edges(breakpoints, parents,
-                                                    next_index);
-                    }
-                else
-                    {
-                        // Here, we need to reduce the input
-                        // breakpoints to only those seen
-                        // an odd number of times.
-                        // Even numbers of the same breakpoint
-                        // are "double x-overs" and thus
-                        // cannot affect the genealogy.
-                        std::vector<double> odd_breakpoints;
-                        auto start = breakpoints.begin();
-                        while (itr < breakpoints.end())
-                            {
-                                auto not_equal
-                                    = std::find_if(itr, breakpoints.end(),
-                                                   [itr](const double d) {
-                                                       return d != *itr;
-                                                   });
-                                int even = (std::distance(itr, not_equal) % 2
-                                            == 0.0);
-                                odd_breakpoints.insert(odd_breakpoints.end(),
-                                                       start, itr + 1 - even);
-                                start = not_equal;
-                                itr = std::adjacent_find(
-                                    start, std::end(breakpoints));
-                            }
-                        odd_breakpoints.insert(odd_breakpoints.end(), start,
-                                               breakpoints.end());
-                        split_breakpoints_add_edges(odd_breakpoints, parents,
-                                                    next_index);
-                    }
-            }
 
             void
             record_site_during_rebuild(const site& s, mutation_record& mr)
@@ -438,7 +348,10 @@ namespace fwdpp
                     {
                         throw std::invalid_argument("node index too large");
                     }
-                split_breakpoints(breakpoints, parents, next_index);
+                detail::split_breakpoints(breakpoints, parents, next_index, L,
+                                          [this](fwdpp::ts::edge&& e) {
+                                              emplace_back_edge(std::move(e));
+                                          });
                 return next_index;
             }
 

@@ -266,7 +266,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = advance_marginal_tree_policies.hpp \
-	generate_data_matrix_details.hpp
+	generate_data_matrix_details.hpp \
+	split_breakpoints.hpp
 
 all: all-am
 
