@@ -104,16 +104,16 @@ struct wfnorec
 {
     const double L;
     const fwdpp::ts::TS_NODE_INT N;
-    fwdpp::ts::table_collection tables;
-    fwdpp::ts::diploid_edge_buffer buffer;
-    // NOTE: have to have two rng 
-    // when comparing output from 
+    fwdpp::ts::table_collection tables, tables2;
+    fwdpp::ts::diploid_edge_buffer buffer, buffer2;
+    // NOTE: have to have two rng
+    // when comparing output from
     // stochastic functions.
     fwdpp::GSLrng_mt rng, rng2;
     unsigned parental_generation;
     wfnorec()
-        : L{ 1.0 }, N{ 1000 },
-          tables(2 * N, 0.0, 0, L), buffer{}, rng{ 42 }, rng2{ 42 },
+        : L{ 1.0 }, N{ 1000 }, tables(2 * N, 0.0, 0, L),
+          tables2(tables), buffer{}, buffer2{}, rng{ 42 }, rng2{ 42 },
           parental_generation{ 0 }
     {
     }
@@ -152,19 +152,17 @@ BOOST_FIXTURE_TEST_CASE(test_two_rounds, wfnorec)
 
 BOOST_FIXTURE_TEST_CASE(test_simplification, wfnorec)
 {
-    auto tables_copy(tables);
-    auto buffer_copy(buffer);
     auto p = diploid_wf(rng, N, parental_generation, 100, 0, tables, buffer,
                         true);
     buffer.prepare_tables_for_simplification(tables);
     BOOST_CHECK_EQUAL(tables.edges_are_sorted(), true);
     // NOTE: have to use the other rng here.
-    auto p2 = diploid_wf(rng2, N, parental_generation, 100, 0, tables_copy,
-                         buffer_copy, false);
-    tables_copy.sort_tables();
+    auto p2 = diploid_wf(rng2, N, parental_generation, 100, 0, tables2,
+                         buffer2, false);
+    tables2.sort_tables();
     BOOST_CHECK(p == p2);
-    BOOST_CHECK_EQUAL(tables_copy.edges_are_sorted(), true);
-    BOOST_REQUIRE(tables == tables_copy);
+    BOOST_CHECK_EQUAL(tables2.edges_are_sorted(), true);
+    BOOST_REQUIRE(tables == tables2);
 
     std::vector<fwdpp::ts::TS_NODE_INT> samples(2 * N);
     std::iota(begin(samples), end(samples), p.first);
@@ -172,9 +170,9 @@ BOOST_FIXTURE_TEST_CASE(test_simplification, wfnorec)
     fwdpp::ts::table_simplifier simplifier(L);
 
     auto output = simplifier.simplify(tables, samples);
-    auto output_copy = simplifier.simplify(tables_copy, samples);
+    auto output_copy = simplifier.simplify(tables2, samples);
     BOOST_CHECK(output == output_copy);
-    BOOST_CHECK(tables == tables_copy);
+    BOOST_CHECK(tables == tables2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
