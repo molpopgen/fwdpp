@@ -164,9 +164,7 @@ BOOST_FIXTURE_TEST_CASE(test_simplification, wfnorec)
     tables_copy.sort_tables();
     BOOST_CHECK(p == p2);
     BOOST_CHECK_EQUAL(tables_copy.edges_are_sorted(), true);
-    BOOST_CHECK(tables.node_table == tables_copy.node_table);
-    BOOST_CHECK_EQUAL(tables.edge_table.size(), tables_copy.edge_table.size());
-    BOOST_CHECK(tables.edge_table == tables_copy.edge_table);
+    BOOST_REQUIRE(tables == tables_copy);
 
     std::vector<fwdpp::ts::TS_NODE_INT> samples(2 * N);
     std::iota(begin(samples), end(samples), p.first);
