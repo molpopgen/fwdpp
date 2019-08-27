@@ -258,11 +258,9 @@ namespace fwdpp
 
             bool
             edges_are_sorted() const noexcept
-            /// Test the MINIMAL sorting requirement.
-            /// This minimal condition is important,
-            /// as ancient sample tracking will not
-            /// guarantee a sort order on the parental
-            /// node IDs.
+            /// Test that edges are in proper sort order for simiplification
+            /// \version 0.8.0 Change from testing minimal requirement to requirement
+            /// for simplification.
             {
                 return std::is_sorted(
                     edge_table.begin(), edge_table.end(),
@@ -282,6 +280,26 @@ namespace fwdpp
                                 return a.parent < b.parent;
                             }
                         return ga > gb;
+                    });
+            }
+
+            bool
+            edges_are_minimally_sorted() const noexcept
+            /// Test the MINIMAL sorting requirement.
+            /// This minimal condition is important,
+            /// as ancient sample tracking will not
+            /// guarantee a sort order on the parental
+            /// node IDs.
+            /// \version 0.8.0 Added to library
+            {
+                return std::is_sorted(
+                    edge_table.begin(), edge_table.end(),
+                    [this](const edge& a, const edge& b) {
+                        auto ga = this->node_table[a.parent].time;
+                        auto gb = this->node_table[b.parent].time;
+                        return ga > gb
+                               && (std::tie(a.child, a.left)
+                                   < std::tie(b.child, b.left));
                     });
             }
 

@@ -599,7 +599,7 @@ namespace fwdpp
                 std::move(new_node_table.begin(), new_node_table.end(),
                           tables.node_table.begin());
                 // TODO: allow for exception instead of assert
-                assert(tables.edges_are_sorted());
+                assert(tables.edges_are_minimally_sorted());
                 tables.update_offset();
                 auto preserved_variants = simplify_mutations(
                     tables.mutation_table, tables.site_table);
