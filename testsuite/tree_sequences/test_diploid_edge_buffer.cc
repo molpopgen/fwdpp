@@ -300,6 +300,7 @@ BOOST_FIXTURE_TEST_CASE(test_simplification, edge_buffer_fixture)
 
     auto output = simplifier.simplify(tables, samples);
     auto output_copy = simplifier.simplify(tables2, samples);
+    BOOST_CHECK_EQUAL(tables2.edges_are_minimally_sorted(), true);
     BOOST_CHECK(output == output_copy);
     BOOST_CHECK(tables == tables2);
 }
@@ -310,6 +311,27 @@ BOOST_FIXTURE_TEST_CASE(test_overlapping_generations,
     simple_overlapping_generations(rng, N, 100, 100, alive_parents, tables,
                                    buffer);
     BOOST_CHECK(tables.edges_are_sorted());
+}
+
+BOOST_FIXTURE_TEST_CASE(test_overlapping_generations_simplify,
+                        edge_buffer_fixture_for_overlapping)
+{
+    simple_overlapping_generations(rng, N, 100, 100, alive_parents, tables,
+                                   buffer);
+    BOOST_CHECK(tables.edges_are_sorted());
+    std::vector<fwdpp::ts::TS_NODE_INT> samples;
+    for (auto&& a : alive_parents)
+        {
+            samples.push_back(std::get<0>(a.nodes));
+            samples.push_back(std::get<1>(a.nodes));
+        }
+    fwdpp::ts::table_simplifier simplifier(tables.genome_length());
+    auto rv = simplifier.simplify(tables, samples);
+    for (auto s : samples)
+        {
+            BOOST_REQUIRE(rv.first[s] != fwdpp::ts::TS_NULL_NODE);
+        }
+    BOOST_REQUIRE(tables.edges_are_minimally_sorted());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
