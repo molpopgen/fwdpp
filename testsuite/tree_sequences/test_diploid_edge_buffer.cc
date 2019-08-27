@@ -138,6 +138,11 @@ simple_overlapping_generations(const fwdpp::GSLrng_mt& rng, unsigned K,
                 {
                     std::size_t parent
                         = gsl_ran_flat(rng.get(), 0, last_parent);
+                    if (alive_parents[parent].index
+                        == std::numeric_limits<std::size_t>::max())
+                        {
+                            throw std::runtime_error("dead parent!");
+                        }
                     auto pn0 = std::get<0>(alive_parents[parent].nodes);
                     auto pn1 = std::get<1>(alive_parents[parent].nodes);
                     if (gsl_rng_uniform(rng.get()) < 0.5)
@@ -150,6 +155,11 @@ simple_overlapping_generations(const fwdpp::GSLrng_mt& rng, unsigned K,
                             std::make_tuple(pn0, pn1), 0, step + 1, tables,
                             buffer);
                     parent = gsl_ran_flat(rng.get(), 0, last_parent);
+                    if (alive_parents[parent].index
+                        == std::numeric_limits<std::size_t>::max())
+                        {
+                            throw std::runtime_error("dead parent!");
+                        }
                     pn0 = std::get<0>(alive_parents[parent].nodes);
                     pn1 = std::get<1>(alive_parents[parent].nodes);
                     if (gsl_rng_uniform(rng.get()) < 0.5)
