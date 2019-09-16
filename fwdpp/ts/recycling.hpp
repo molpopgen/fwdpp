@@ -40,8 +40,9 @@ namespace fwdpp
         }
 
         inline flagged_mutation_queue
-        make_mut_queue(std::vector<std::size_t> &preserved_mutation_indexes,
-                       const std::size_t num_mutations)
+        make_mut_queue(
+            const std::vector<std::size_t> &preserved_mutation_indexes,
+            const std::size_t num_mutations)
         /// \brief Make a mutation recycling queue for simulations with tree sequences
         /// \param preserved_mutation_indexes Vector of preserved mutation indexes returned by simplification
         /// \param num_mutations The total number of mutations currently allocated in the population
@@ -58,24 +59,26 @@ namespace fwdpp
         /// The first two conditions are required for correct results.  The third condition is optional,
         /// but big speedups will be seen for that case.
         ///
-        /// This function generates a recycling queue by taking the set difference of
-        /// \a preserved_mutation_indexes and all possible mutation indexes, \f$[0,num\_mutations)\f$.
-        /// The algorithm is a fast Nlog(N) method, and it will outperform the other overload based
+        /// This function generates a recycling queue using a fast O(N) algorithm.
+        /// This, it will outperform the other overload based
         /// on tree traversal when the number of trees is very large, as is the case when large numbers
         /// of ancestral samples are registered during a simulation.
         ///
-        /// \note A side-effect is that \a preserved_mutation_indexes is sorted.
         {
-            std::sort(preserved_mutation_indexes.begin(),
-                      preserved_mutation_indexes.end());
             std::vector<std::size_t> mindexes(num_mutations);
-            std::deque<std::size_t> diff;
             std::iota(mindexes.begin(), mindexes.end(), 0);
-            std::set_difference(mindexes.begin(), mindexes.end(),
-                                preserved_mutation_indexes.begin(),
-                                preserved_mutation_indexes.end(),
-                                std::back_inserter(diff));
-            std::queue<std::size_t> rv(std::move(diff));
+            for (auto i : preserved_mutation_indexes)
+                {
+                    mindexes[i] = std::numeric_limits<std::size_t>::max();
+                }
+            std::queue<std::size_t> rv;
+            for (auto i : mindexes)
+                {
+                    if (i != std::numeric_limits<std::size_t>::max())
+                        {
+                            rv.push(i);
+                        }
+                }
             return flagged_mutation_queue(std::move(rv));
         }
 
