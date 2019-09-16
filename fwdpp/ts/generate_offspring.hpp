@@ -54,7 +54,7 @@ namespace fwdpp
 
             template <typename key_vector, typename mcont_t>
             inline wrapped_range<typename key_vector::iterator>
-            process_new_mutations(const key_vector& new_mutation_keys,
+            process_new_mutations(key_vector& new_mutation_keys,
                                   const mcont_t&, all_mutations)
             {
                 return make_wrapped_range(begin(new_mutation_keys),
