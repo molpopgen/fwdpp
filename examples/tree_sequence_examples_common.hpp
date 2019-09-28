@@ -6,7 +6,6 @@
 #include <functional>
 #include <boost/program_options.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
-#include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/table_collection.hpp>
 #include "tree_sequence_examples_types.hpp"
 
@@ -22,7 +21,7 @@ struct options
 };
 
 int
-apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+apply_neutral_mutations(const options &o, const GSLrng &rng,
                         fwdpp::ts::table_collection &tables,
                         ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin);
@@ -34,7 +33,7 @@ generate_testing_options(options &);
 void validate_primary_options(const options &);
 
 std::function<double()> make_dfe(const fwdpp::uint_t N,
-                                 const fwdpp::GSLrng_mt &r, const double mean,
+                                 const GSLrng &r, const double mean,
                                  const double shape, const double scoeff);
 
 void execute_matrix_test(const options &, const ts_examples_poptype &,
@@ -55,7 +54,7 @@ visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::table_collection &tables,
                  const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
-void write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
+void write_sfs(const options &o, const GSLrng &rng,
                const fwdpp::ts::table_collection &tables,
                const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 

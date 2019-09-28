@@ -37,7 +37,6 @@
 #include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
-using GSLrng = fwdpp::GSLrng_mt;
 
 int
 main(int argc, char **argv)
