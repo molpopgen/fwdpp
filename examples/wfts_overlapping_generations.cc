@@ -61,7 +61,7 @@ main(int argc, char** argv)
                 }
         }
     std::sort(begin(ages), end(ages));
-    std::cout << "Age distribution:\n";
+    std::cout << "Age distribution (generations since birth):\n";
     for (const auto a : ages)
         {
             std::cout << (ngenerations - a.first) << ' ' << a.second << '\n';
