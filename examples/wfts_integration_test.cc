@@ -1,6 +1,10 @@
 /*! \include wfts.cc
  * Wright-Fisher simulation with tree sequences.
  *
+ * NOTE: this program is not streamlined for maximal efficiency.
+ * Rather, it serves as a stochastic integration test.  Lots of the
+ * inner workings get stress-tested repeatedly during execution.
+ *
  * See the following paper for background and motivation:
  * Kelleher, Jerome, Kevin Thornton, Jaime Ashander, and Peter Ralph. 2018.
  * “Efficient Pedigree Recording for Fast Population Genetics Simulation.”

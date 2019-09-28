@@ -18,9 +18,9 @@ custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
 # examples based on tree sequences
 if BPO_PRESENT
 if BPO_PRESENT
-noinst_PROGRAMS+=wfts
-wfts_SOURCES=wfts.cc tree_sequence_examples_common.cc
-wfts_LDADD=-lboost_program_options
+noinst_PROGRAMS+=wfts_integration_test
+wfts_integration_test_SOURCES=wfts_integration_test.cc tree_sequence_examples_common.cc
+wfts_integration_test_LDADD=-lboost_program_options
 
 noinst_PROGRAMS+=spatialts
 spatialts_SOURCES=spatialts.cc
