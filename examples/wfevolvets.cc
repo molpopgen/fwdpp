@@ -106,7 +106,7 @@ simplify_tables_remap_metadata(fwdpp::ts::table_simplifier& simplifier,
         {
             // Validate output
             if (x.first[md.n1] == fwdpp::ts::TS_NULL_NODE
-                || x.first[md.n1] == fwdpp::ts::TS_NULL_NODE)
+                || x.first[md.n2] == fwdpp::ts::TS_NULL_NODE)
                 {
                     throw fwdpp::ts::tables_error("output node maps to null");
                 }
@@ -122,7 +122,10 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                        std::vector<diploid_metadata>& metadata,
                        fwdpp::ts::table_collection& tables)
 {
-    // TODO: validate input params
+    if (psurvival < 0. || psurvival >= 1.0 || !std::isfinite(psurvival))
+        {
+            throw std::invalid_argument("invalid survival probability");
+        }
     fwdpp::ts::table_simplifier simplifier(tables.genome_length());
 
     std::vector<std::size_t> dead_individual_indexes;
