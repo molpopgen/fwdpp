@@ -4,7 +4,7 @@
 #include <fwdpp/diploid_population.hpp>
 #include <fwdpp/popgenmut.hpp>
 
-using single_locus_poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
+using ts_examples_poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
 
 struct diploid_metadata
 {

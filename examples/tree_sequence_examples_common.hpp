@@ -24,7 +24,7 @@ struct options
 int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
-                        single_locus_poptype &pop,
+                        ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin);
 
 boost::program_options::options_description generate_main_options(options &o);
@@ -37,7 +37,7 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const fwdpp::GSLrng_mt &r, const double mean,
                                  const double shape, const double scoeff);
 
-void execute_matrix_test(const options &, const single_locus_poptype &,
+void execute_matrix_test(const options &, const ts_examples_poptype &,
                          const fwdpp::ts::table_collection &,
                          const std::vector<fwdpp::ts::TS_NODE_INT> &);
 
@@ -51,7 +51,7 @@ void execute_serialization_test(const options &,
 void test_serialization(const fwdpp::ts::table_collection &tables,
                         const std::string &filename);
 void
-visit_sites_test(const options &o, const single_locus_poptype &pop,
+visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::table_collection &tables,
                  const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 

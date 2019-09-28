@@ -48,7 +48,7 @@ apply_neutral_mutations_details(
 int
 apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
                         fwdpp::ts::table_collection &tables,
-                        single_locus_poptype &pop,
+                        ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     return apply_neutral_mutations_details(o, rng, tables, pop,
@@ -347,7 +347,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
 }
 
 void
-visit_sites_test(const options &o, const single_locus_poptype &pop,
+visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::table_collection &tables,
                  const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
@@ -383,7 +383,7 @@ visit_sites_test(const options &o, const single_locus_poptype &pop,
         }
 }
 void
-execute_matrix_test(const options &o, const single_locus_poptype &pop,
+execute_matrix_test(const options &o, const ts_examples_poptype &pop,
                     const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
