@@ -4,7 +4,8 @@ noinst_PROGRAMS=	diploid_ind \
 	K_linked_regions_generalized_rec \
 	juvenile_migration \
 	custom_mutation \
-	custom_diploid
+	custom_diploid \
+	wfts_overlapping_generations
 
 
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
@@ -14,8 +15,9 @@ K_linked_regions_generalized_rec_SOURCES=K_linked_regions_generalized_rec.cc com
 juvenile_migration_SOURCES=juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES=custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
+wfts_overlapping_generations_SOURCES=wfts_overlapping_generations.cc wfevolvets.cc wfevolvets.hpp
 
-# examples based on tree sequences
+# examples based on tree sequences that need boost program options
 if BPO_PRESENT
 if BPO_PRESENT
 noinst_PROGRAMS+=wfts_integration_test
