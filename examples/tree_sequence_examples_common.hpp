@@ -6,24 +6,9 @@
 #include <functional>
 #include <boost/program_options.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
-#include <fwdpp/diploid_population.hpp>
-#include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/table_collection.hpp>
-
-using single_locus_poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
-
-struct diploid_metadata
-{
-    std::size_t individual;
-    double time, fitness;
-    fwdpp::ts::TS_NODE_INT n1, n2;
-    diploid_metadata(std::size_t i, double t, double w,
-                     fwdpp::ts::TS_NODE_INT a, fwdpp::ts::TS_NODE_INT b)
-        : individual(i), time(t), fitness(w), n1(a), n2(b)
-    {
-    }
-};
+#include "tree_sequence_examples_types.hpp"
 
 struct options
 {
