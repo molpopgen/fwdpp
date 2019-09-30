@@ -6,7 +6,8 @@ noinst_PROGRAMS=	diploid_ind \
 	custom_mutation \
 	custom_diploid \
 	wfts_overlapping_generations \
-	wfts_overlapping_generations_dynamic_indexing
+	wfts_overlapping_generations_dynamic_indexing \
+	wfts_overlapping_generations_dynamic_indexing_with_mutation
 
 
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
@@ -18,6 +19,7 @@ custom_mutation_SOURCES=custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
 wfts_overlapping_generations_SOURCES=wfts_overlapping_generations.cc wfevolvets.cc wfevolvets.hpp
 wfts_overlapping_generations_dynamic_indexing_SOURCES=wfts_overlapping_generations_dynamic_indexing.cc wfevolvets.cc wfevolvets.hpp
+wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES=wfts_overlapping_generations_dynamic_indexing_with_mutation.cc wfevolvets.cc wfevolvets.hpp
 
 # examples based on tree sequences that need boost program options
 if BPO_PRESENT

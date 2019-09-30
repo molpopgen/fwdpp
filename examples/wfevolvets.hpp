@@ -11,12 +11,14 @@ void wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                             std::vector<diploid_metadata>& metadata,
                             fwdpp::ts::table_collection& tables);
 
-void wfevolvets_no_mutation_dynamic_indexing(
-    const GSLrng& rng, unsigned ngenerations, unsigned check_interval,
-    unsigned simplify, double psurvival,
-    const fwdpp::poisson_interval& recombination,
-    std::vector<diploid_metadata>& metadata,
-    fwdpp::ts::table_collection& tables);
+std::vector<unsigned>
+wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
+                            unsigned count_mutations_interval,
+                            unsigned check_interval, unsigned simplify,
+                            double psurvival, double mutrate,
+                            const fwdpp::poisson_interval& recombination,
+                            std::vector<diploid_metadata>& metadata,
+                            fwdpp::ts::table_collection& tables);
 
 #endif
 

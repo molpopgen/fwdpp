@@ -37,7 +37,7 @@ main(int argc, char** argv)
             metadata.emplace_back(i, 0, 1.0, 2 * i, 2 * i + 1);
         }
 
-    wfevolvets_no_mutation_dynamic_indexing(rng, ngenerations, check_interval, simplify,
-                                            psurvival, recombination, metadata,
-                                            tables);
+    wfevolvets_dynamic_indexing(rng, ngenerations, 0, check_interval, simplify,
+                                psurvival, 0.0, recombination, metadata,
+                                tables);
 }

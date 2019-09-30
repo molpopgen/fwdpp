@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <algorithm>
+#include <unordered_set>
 #include <gsl/gsl_randist.h>
 #include "tree_sequence_examples_types.hpp"
 #include <fwdpp/ts/table_collection.hpp>
@@ -95,6 +96,64 @@ births(const GSLrng& rng, const unsigned birth_time,
             md.time = birth_time;
             md.n1 = offspring_first_node;
             md.n2 = offspring_second_node;
+        }
+}
+
+double
+get_new_mutation_position(const GSLrng& rng, double genome_length,
+                          std::unordered_set<double>& mutation_positions)
+{
+    auto pos = gsl_ran_flat(rng.get(), 0, genome_length);
+    while (mutation_positions.find(pos) != end(mutation_positions))
+        {
+            pos = gsl_ran_flat(rng.get(), 0, genome_length);
+        }
+    mutation_positions.insert(pos);
+    return pos;
+}
+
+void
+mutate_offspring_nodes(const GSLrng& rng, double mutrate,
+                       std::size_t num_nodes_before_births,
+                       std::size_t num_nodes, double genome_length,
+                       fwdpp::ts::site_vector& site_table,
+                       fwdpp::ts::mutation_key_vector& mutation_table,
+                       std::unordered_set<double>& mutation_positions)
+{
+    for (std::size_t offspring_node = num_nodes_before_births;
+         offspring_node < num_nodes; ++offspring_node)
+        {
+            unsigned n = gsl_ran_poisson(rng.get(), mutrate);
+            for (std::size_t i = 0; i < n; ++i)
+                {
+                    auto pos = get_new_mutation_position(rng, genome_length,
+                                                         mutation_positions);
+                    site_table.emplace_back(fwdpp::ts::site{ pos, 0 });
+                    // NOTE: fwdpp's mutation table records contain indexes
+                    // to mutation metadata in population objects.  However,
+                    // as these sims don't use fwdpp's mutation types, such
+                    // metadata are moot.  Thus, we will record the mutation's
+                    // location in the mutation table instead.
+                    mutation_table.emplace_back(fwdpp::ts::mutation_record{
+                        static_cast<fwdpp::ts::TS_NODE_INT>(
+                            offspring_node),       // Node id
+                        mutation_table.size() + 1, // See NOTE above
+                        site_table.size() - 1,     // Site id
+                        1,                         // derived state
+                        true                       // is mutation neutral?
+                    });
+                }
+        }
+}
+
+void
+rebuld_mutation_position_lookup(const fwdpp::ts::site_vector& site_table,
+                                std::unordered_set<double>& mutation_positions)
+{
+    mutation_positions.clear();
+    for (auto&& s : site_table)
+        {
+            mutation_positions.insert(s.position);
         }
 }
 
@@ -245,6 +304,43 @@ traverse_edges_check_samples(
 }
 
 void
+traverse_trees_count_mutations(
+    const fwdpp::ts::table_collection& tables,
+    const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
+    std::vector<unsigned>& mutation_counts)
+{
+    std::fill(begin(mutation_counts), end(mutation_counts), 0);
+    mutation_counts.resize(tables.mutation_table.size(), 0);
+
+    fwdpp::ts::tree_visitor tv(tables, samples,
+                               fwdpp::ts::update_samples_list(false));
+    const auto first_mutation = begin(tables.mutation_table);
+    const auto last_mutation = end(tables.mutation_table);
+    auto current_mutation = begin(tables.mutation_table);
+
+    while (current_mutation < last_mutation && tv())
+        {
+            auto& m = tv.tree();
+            // Update mutation iterator to mutations on current tree
+            while (current_mutation < last_mutation
+                   && tables.site_table[current_mutation->site].position
+                          < m.left)
+                {
+                    ++current_mutation;
+                }
+            // Process all mutations on the current tree
+            while (current_mutation < last_mutation
+                   && tables.site_table[current_mutation->site].position
+                          < m.right)
+                {
+                    mutation_counts[current_mutation - first_mutation]
+                        = m.leaf_counts[current_mutation->node];
+                    ++current_mutation;
+                }
+        }
+}
+
+void
 wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                        unsigned simplify, double psurvival,
                        const fwdpp::poisson_interval& recombination,
@@ -284,13 +380,14 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
         }
 }
 
-void
-wfevolvets_no_mutation_dynamic_indexing(
-    const GSLrng& rng, unsigned ngenerations, unsigned check_interval,
-    unsigned simplify, double psurvival,
-    const fwdpp::poisson_interval& recombination,
-    std::vector<diploid_metadata>& metadata,
-    fwdpp::ts::table_collection& tables)
+std::vector<unsigned>
+wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
+                            unsigned count_mutations_interval,
+                            unsigned check_interval, unsigned simplify,
+                            double psurvival, double mutrate,
+                            const fwdpp::poisson_interval& recombination,
+                            std::vector<diploid_metadata>& metadata,
+                            fwdpp::ts::table_collection& tables)
 {
     if (psurvival < 0. || psurvival >= 1.0 || !std::isfinite(psurvival))
         {
@@ -303,27 +400,43 @@ wfevolvets_no_mutation_dynamic_indexing(
     std::vector<double> breakpoints; // reusable buffer for rec breakpoints
     std::vector<fwdpp::ts::indexed_edge> Ibuffer, Obuffer;
     std::vector<fwdpp::ts::TS_NODE_INT> samples_buffer;
+    std::unordered_set<double> mutation_positions;
+    std::vector<unsigned> mutation_counts;
     bool simplified = false;
     for (unsigned gen = 0; gen < ngenerations; ++gen)
         {
             deaths(rng, metadata, psurvival, dead_individual_indexes);
             auto num_edges = tables.edge_table.size();
             // NOTE that gen + 1 will be the birth time.
+            auto num_nodes_before_births = tables.node_table.size();
             births(rng, gen + 1, dead_individual_indexes, parental_metadata,
                    recombination, metadata, tables, breakpoints);
+            mutate_offspring_nodes(rng, mutrate, num_nodes_before_births,
+                                   tables.node_table.size(),
+                                   tables.genome_length(), tables.site_table,
+                                   tables.mutation_table, mutation_positions);
             dynamic_update_edge_table_indexes(num_edges, Ibuffer, Obuffer,
                                               tables);
             if ((gen + 1) % simplify == 0.0)
                 {
                     simplify_tables_remap_metadata(simplifier, tables,
                                                    metadata);
+                    rebuld_mutation_position_lookup(tables.site_table,
+                                                    mutation_positions);
                     tables.build_indexes();
                     simplified = true;
                 }
-            if ((gen + 1) % check_interval == 0.0)
+            if (check_interval && (gen + 1) % check_interval == 0.0)
                 {
                     traverse_edges_check_samples(tables, metadata,
                                                  samples_buffer);
+                }
+            if (count_mutations_interval
+                && (gen + 1) % count_mutations_interval == 0.0)
+                {
+                    auto samples = sample_nodes_from_metadata(metadata);
+                    traverse_trees_count_mutations(tables, samples,
+                                                   mutation_counts);
                 }
             // The current metadata become the parental metadata.
             // For efficiency, it is best if metadata are fast to copy.
@@ -332,6 +445,15 @@ wfevolvets_no_mutation_dynamic_indexing(
     if (!simplified)
         {
             simplify_tables_remap_metadata(simplifier, tables, metadata);
+            rebuld_mutation_position_lookup(tables.site_table,
+                                            mutation_positions);
             tables.build_indexes();
         }
+    if (count_mutations_interval)
+        {
+
+            auto samples = sample_nodes_from_metadata(metadata);
+            traverse_trees_count_mutations(tables, samples, mutation_counts);
+        }
+    return mutation_counts;
 }
