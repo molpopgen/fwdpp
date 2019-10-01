@@ -307,13 +307,14 @@ void
 traverse_trees_count_mutations(
     const fwdpp::ts::table_collection& tables,
     const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
-    std::vector<unsigned>& mutation_counts)
+    const bool track_samples, std::vector<unsigned>& mutation_counts,
+    std::vector<fwdpp::ts::TS_NODE_INT>& samples_buffer)
 {
     std::fill(begin(mutation_counts), end(mutation_counts), 0);
     mutation_counts.resize(tables.mutation_table.size(), 0);
 
     fwdpp::ts::tree_visitor tv(tables, samples,
-                               fwdpp::ts::update_samples_list(false));
+                               fwdpp::ts::update_samples_list(track_samples));
     const auto first_mutation = begin(tables.mutation_table);
     const auto last_mutation = end(tables.mutation_table);
     auto current_mutation = begin(tables.mutation_table);
@@ -335,6 +336,26 @@ traverse_trees_count_mutations(
                 {
                     mutation_counts[current_mutation - first_mutation]
                         = m.leaf_counts[current_mutation->node];
+                    if (track_samples)
+                        {
+                            // NOTE: with dynamic indexing, there are
+                            // going to be extinct mutations, so we
+                            // skip those that have no descendants in the sample
+                            if (m.leaf_counts[current_mutation->node])
+                                {
+                                    samples_buffer.clear();
+                                    fwdpp::ts::process_samples(
+                                        m,
+                                        fwdpp::ts::
+                                            convert_sample_index_to_nodes(
+                                                true),
+                                        current_mutation->node,
+                                        [&samples_buffer](
+                                            fwdpp::ts::TS_NODE_INT u) {
+                                            samples_buffer.push_back(u);
+                                        });
+                                }
+                        }
                     ++current_mutation;
                 }
         }
@@ -383,8 +404,9 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
 std::vector<unsigned>
 wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                             unsigned count_mutations_interval,
-                            unsigned check_interval, unsigned simplify,
-                            double psurvival, double mutrate,
+                            bool track_samples, unsigned check_interval,
+                            unsigned simplify, double psurvival,
+                            double mutrate,
                             const fwdpp::poisson_interval& recombination,
                             std::vector<diploid_metadata>& metadata,
                             fwdpp::ts::table_collection& tables)
@@ -435,8 +457,9 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                 && (gen + 1) % count_mutations_interval == 0.0)
                 {
                     auto samples = sample_nodes_from_metadata(metadata);
-                    traverse_trees_count_mutations(tables, samples,
-                                                   mutation_counts);
+                    traverse_trees_count_mutations(
+                        tables, samples, track_samples, mutation_counts,
+                        samples_buffer);
                 }
             // The current metadata become the parental metadata.
             // For efficiency, it is best if metadata are fast to copy.
@@ -453,7 +476,8 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
         {
 
             auto samples = sample_nodes_from_metadata(metadata);
-            traverse_trees_count_mutations(tables, samples, mutation_counts);
+            traverse_trees_count_mutations(tables, samples, track_samples,
+                                           mutation_counts, samples_buffer);
         }
     return mutation_counts;
 }
