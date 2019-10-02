@@ -166,11 +166,11 @@ simplify_tables_remap_metadata(double psurvival,
     // Fetch node data from metadata
     auto samples = sample_nodes_from_metadata(metadata);
     // Sort the tables
-    if(psurvival>0.0) // overlapping generations
-    {
-        // NOTE: this is a workaround for GitHub issue #238
-        tables.edge_offset=0;
-    }
+    if (psurvival > 0.0) // overlapping generations
+        {
+            // NOTE: this is a workaround for GitHub issue #238
+            tables.edge_offset = 0;
+        }
     tables.sort_tables_for_simplification();
     // Simplify
     auto x = simplifier.simplify(tables, samples);
@@ -368,6 +368,53 @@ traverse_trees_count_mutations(
 }
 
 void
+remove_fixed_variants(unsigned twoN, fwdpp::ts::site_vector& site_table,
+                      fwdpp::ts::mutation_key_vector& mutation_table,
+                      std::unordered_set<double>& mutation_positions,
+                      std::vector<unsigned>& mutation_counts)
+{
+    bool any_fixed = false;
+    for (std::size_t i = 0; i < mutation_counts.size(); ++i)
+        {
+            if (mutation_counts[i] == twoN)
+                {
+                    any_fixed = true;
+                    mutation_table[i].key
+                        = std::numeric_limits<std::size_t>::max();
+                    auto itr = mutation_positions.find(
+                        site_table[mutation_table[i].site].position);
+                    if (itr == end(mutation_positions))
+                        {
+                            throw std::runtime_error(
+                                "mutation data structures are in an "
+                                "inconsistent state");
+                        }
+                    site_table[mutation_table[i].site].position
+                        = -1.; //conver to impossible value for a tree-seq sim
+                }
+        }
+    if (any_fixed)
+        {
+            site_table.erase(std::remove_if(begin(site_table), end(site_table),
+                                            [](fwdpp::ts::site& s) {
+                                                return s.position == -1.;
+                                            }),
+                             end(site_table));
+            mutation_table.erase(
+                std::remove_if(
+                    begin(mutation_table), end(mutation_table),
+                    [](fwdpp::ts::mutation_record& mr) {
+                        return mr.key
+                               == std::numeric_limits<std::size_t>::max();
+                    }),
+                end(mutation_table));
+            mutation_counts.erase(std::remove(begin(mutation_counts),
+                                              end(mutation_counts), twoN),
+                                  end(mutation_counts));
+        }
+}
+
+void
 wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                        unsigned simplify, double psurvival,
                        const fwdpp::poisson_interval& recombination,
@@ -393,8 +440,8 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                    recombination, metadata, tables, breakpoints);
             if ((gen + 1) % simplify == 0.0)
                 {
-                    simplify_tables_remap_metadata(psurvival,simplifier, tables,
-                                                   metadata);
+                    simplify_tables_remap_metadata(psurvival, simplifier,
+                                                   tables, metadata);
                     simplified = true;
                 }
             // The current metadata become the parental metadata.
@@ -403,16 +450,17 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
         }
     if (!simplified)
         {
-            simplify_tables_remap_metadata(psurvival,simplifier, tables, metadata);
+            simplify_tables_remap_metadata(psurvival, simplifier, tables,
+                                           metadata);
         }
 }
 
 std::vector<unsigned>
 wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                             unsigned count_mutations_interval,
-                            bool track_samples, unsigned check_interval,
-                            unsigned simplify, double psurvival,
-                            double mutrate,
+                            bool remove_fixations, bool track_samples,
+                            unsigned check_interval, unsigned simplify,
+                            double psurvival, double mutrate,
                             const fwdpp::poisson_interval& recombination,
                             std::vector<diploid_metadata>& metadata,
                             fwdpp::ts::table_collection& tables)
@@ -451,8 +499,8 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                                               tables);
             if ((gen + 1) % simplify == 0.0)
                 {
-                    simplify_tables_remap_metadata(psurvival,simplifier, tables,
-                                                   metadata);
+                    simplify_tables_remap_metadata(psurvival, simplifier,
+                                                   tables, metadata);
                     rebuld_mutation_position_lookup(tables.site_table,
                                                     mutation_positions);
                     tables.build_indexes();
@@ -470,6 +518,13 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                     traverse_trees_count_mutations(
                         tables, samples, track_samples, mutation_counts,
                         samples_buffer);
+                    if (remove_fixations)
+                        {
+                            remove_fixed_variants(
+                                2 * metadata.size(), tables.site_table,
+                                tables.mutation_table, mutation_positions,
+                                mutation_counts);
+                        }
                 }
             // The current metadata become the parental metadata.
             // For efficiency, it is best if metadata are fast to copy.
@@ -477,7 +532,8 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
         }
     if (!simplified)
         {
-            simplify_tables_remap_metadata(psurvival,simplifier, tables, metadata);
+            simplify_tables_remap_metadata(psurvival, simplifier, tables,
+                                           metadata);
             rebuld_mutation_position_lookup(tables.site_table,
                                             mutation_positions);
             tables.build_indexes();
@@ -488,6 +544,13 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
             auto samples = sample_nodes_from_metadata(metadata);
             traverse_trees_count_mutations(tables, samples, track_samples,
                                            mutation_counts, samples_buffer);
+            if (remove_fixations)
+                {
+                    remove_fixed_variants(2 * metadata.size(),
+                                          tables.site_table,
+                                          tables.mutation_table,
+                                          mutation_positions, mutation_counts);
+                }
             // There can be no mutations in the table with count == 0
             for (std::size_t i = 0; i < tables.mutation_table.size(); ++i)
                 {

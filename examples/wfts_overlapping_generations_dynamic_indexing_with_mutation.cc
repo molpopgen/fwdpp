@@ -7,11 +7,12 @@ const double genome_length = 1.0;
 int
 main(int argc, char** argv)
 {
-    if (argc < 10)
+    if (argc < 11)
         {
             std::cerr << "usage: " << argv[0]
                       << " popsize ngenerations psurvival recrate mutrate "
-                         "count_mutations_interval track_samples simplify seed\n";
+                         "count_mutations_interval remove_fixations "
+                         "track_samples simplify seed\n";
             std::exit(1);
         }
     int argnext = 1;
@@ -21,6 +22,7 @@ main(int argc, char** argv)
     double recrate = std::atof(argv[argnext++]);
     double mutrate = std::atof(argv[argnext++]);
     unsigned count_mutations_interval = std::atoi(argv[argnext++]);
+    bool remove_fixations = std::atoi(argv[argnext++]);
     bool track_samples = std::atoi(argv[argnext++]);
     unsigned simplify = std::atoi(argv[argnext++]);
     unsigned seed = std::atoi(argv[argnext++]);
@@ -40,8 +42,9 @@ main(int argc, char** argv)
         }
 
     auto mcounts = wfevolvets_dynamic_indexing(
-        rng, ngenerations, count_mutations_interval, track_samples, 0, simplify, psurvival,
-        mutrate, recombination, metadata, tables);
+        rng, ngenerations, count_mutations_interval, remove_fixations,
+        track_samples, 0, simplify, psurvival, mutrate, recombination,
+        metadata, tables);
     if (!mcounts.empty())
         {
             auto itr = std::max_element(begin(mcounts), end(mcounts));

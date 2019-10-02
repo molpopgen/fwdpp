@@ -13,7 +13,8 @@ void wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
 
 std::vector<unsigned>
 wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
-                            unsigned count_mutations_interval, bool track_samples,
+                            unsigned count_mutations_interval, bool remove_fixations,
+                            bool track_samples,
                             unsigned check_interval, unsigned simplify,
                             double psurvival, double mutrate,
                             const fwdpp::poisson_interval& recombination,
