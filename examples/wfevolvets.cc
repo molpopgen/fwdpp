@@ -158,13 +158,19 @@ rebuld_mutation_position_lookup(const fwdpp::ts::site_vector& site_table,
 }
 
 void
-simplify_tables_remap_metadata(fwdpp::ts::table_simplifier& simplifier,
+simplify_tables_remap_metadata(double psurvival,
+                               fwdpp::ts::table_simplifier& simplifier,
                                fwdpp::ts::table_collection& tables,
                                std::vector<diploid_metadata>& metadata)
 {
     // Fetch node data from metadata
     auto samples = sample_nodes_from_metadata(metadata);
     // Sort the tables
+    if(psurvival>0.0) // overlapping generations
+    {
+        // NOTE: this is a workaround for GitHub issue #238
+        tables.edge_offset=0;
+    }
     tables.sort_tables_for_simplification();
     // Simplify
     auto x = simplifier.simplify(tables, samples);
@@ -387,7 +393,7 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
                    recombination, metadata, tables, breakpoints);
             if ((gen + 1) % simplify == 0.0)
                 {
-                    simplify_tables_remap_metadata(simplifier, tables,
+                    simplify_tables_remap_metadata(psurvival,simplifier, tables,
                                                    metadata);
                     simplified = true;
                 }
@@ -397,7 +403,7 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations,
         }
     if (!simplified)
         {
-            simplify_tables_remap_metadata(simplifier, tables, metadata);
+            simplify_tables_remap_metadata(psurvival,simplifier, tables, metadata);
         }
 }
 
@@ -445,7 +451,7 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
                                               tables);
             if ((gen + 1) % simplify == 0.0)
                 {
-                    simplify_tables_remap_metadata(simplifier, tables,
+                    simplify_tables_remap_metadata(psurvival,simplifier, tables,
                                                    metadata);
                     rebuld_mutation_position_lookup(tables.site_table,
                                                     mutation_positions);
@@ -471,7 +477,7 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
         }
     if (!simplified)
         {
-            simplify_tables_remap_metadata(simplifier, tables, metadata);
+            simplify_tables_remap_metadata(psurvival,simplifier, tables, metadata);
             rebuld_mutation_position_lookup(tables.site_table,
                                             mutation_positions);
             tables.build_indexes();
