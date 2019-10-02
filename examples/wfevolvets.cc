@@ -415,6 +415,10 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
         {
             throw std::invalid_argument("invalid survival probability");
         }
+    if (mutrate < 0. || !std::isfinite(mutrate))
+        {
+            throw std::invalid_argument("invalid mutation rate");
+        }
     fwdpp::ts::table_simplifier simplifier(tables.genome_length());
 
     std::vector<std::size_t> dead_individual_indexes;
