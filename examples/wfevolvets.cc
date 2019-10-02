@@ -478,6 +478,21 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
             auto samples = sample_nodes_from_metadata(metadata);
             traverse_trees_count_mutations(tables, samples, track_samples,
                                            mutation_counts, samples_buffer);
+            // There can be no mutations in the table with count == 0
+            for (std::size_t i = 0; i < tables.mutation_table.size(); ++i)
+                {
+                    if (mutation_counts[i] == 0)
+                        {
+                            throw std::runtime_error(
+                                "mutation count cannot be zero");
+                        }
+                    if (mutation_counts[i] > 2 * metadata.size())
+                        {
+                            throw std::runtime_error(
+                                "mutation count is greater than number of "
+                                "genomes");
+                        }
+                }
         }
     return mutation_counts;
 }
