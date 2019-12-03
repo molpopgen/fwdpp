@@ -1,6 +1,10 @@
 /*! \include wfts.cc
  * Wright-Fisher simulation with tree sequences.
  *
+ * NOTE: this program is not streamlined for maximal efficiency.
+ * Rather, it serves as a stochastic integration test.  Lots of the
+ * inner workings get stress-tested repeatedly during execution.
+ *
  * See the following paper for background and motivation:
  * Kelleher, Jerome, Kevin Thornton, Jaime Ashander, and Peter Ralph. 2018.
  * “Efficient Pedigree Recording for Fast Population Genetics Simulation.”
@@ -33,8 +37,6 @@
 #include "tree_sequence_examples_common.hpp"
 
 namespace po = boost::program_options;
-using poptype = single_locus_poptype;
-using GSLrng = fwdpp::GSLrng_mt;
 
 int
 main(int argc, char **argv)
@@ -60,7 +62,7 @@ main(int argc, char **argv)
 
     GSLrng rng(o.seed);
 
-    poptype pop(o.N);
+    ts_examples_poptype pop(o.N);
     fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
     fwdpp::ts::table_simplifier simplifier(1.0);
     unsigned generation = 1;
@@ -78,7 +80,7 @@ main(int argc, char **argv)
         = [&pop, &rng, &generation, generate_mutation_position,
            get_selection_coefficient,
            generate_h](fwdpp::flagged_mutation_queue &recbin,
-                       poptype::mcont_t &mutations) {
+                       ts_examples_poptype::mcont_t &mutations) {
               return fwdpp::infsites_popgenmut(
                   recbin, mutations, rng.get(), pop.mut_lookup, generation,
                   // 1.0 signifies 100% of mutations will be selected
@@ -88,7 +90,7 @@ main(int argc, char **argv)
 
     const auto mmodel = [&rng, &o,
                          &make_mutation](fwdpp::flagged_mutation_queue &recbin,
-                                         poptype::mcont_t &mutations) {
+                                         ts_examples_poptype::mcont_t &mutations) {
         std::vector<fwdpp::uint_t> rv;
         unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
         for (unsigned i = 0; i < nmuts; ++i)

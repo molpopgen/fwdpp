@@ -18,7 +18,7 @@ namespace po = boost::program_options;
 template <typename poptype>
 int
 apply_neutral_mutations_details(
-    const options &o, const fwdpp::GSLrng_mt &rng,
+    const options &o, const GSLrng &rng,
     fwdpp::ts::table_collection &tables, poptype &pop,
     fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
@@ -46,9 +46,9 @@ apply_neutral_mutations_details(
 }
 
 int
-apply_neutral_mutations(const options &o, const fwdpp::GSLrng_mt &rng,
+apply_neutral_mutations(const options &o, const GSLrng &rng,
                         fwdpp::ts::table_collection &tables,
-                        single_locus_poptype &pop,
+                        ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     return apply_neutral_mutations_details(o, rng, tables, pop,
@@ -154,7 +154,7 @@ validate_primary_options(const options &o)
 }
 
 std::function<double()>
-make_dfe(const fwdpp::uint_t N, const fwdpp::GSLrng_mt &r, const double mean,
+make_dfe(const fwdpp::uint_t N, const GSLrng &r, const double mean,
          const double shape, const double scoeff)
 {
     if (std::isfinite(scoeff))
@@ -347,7 +347,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
 }
 
 void
-visit_sites_test(const options &o, const single_locus_poptype &pop,
+visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::table_collection &tables,
                  const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
@@ -383,7 +383,7 @@ visit_sites_test(const options &o, const single_locus_poptype &pop,
         }
 }
 void
-execute_matrix_test(const options &o, const single_locus_poptype &pop,
+execute_matrix_test(const options &o, const ts_examples_poptype &pop,
                     const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
@@ -401,7 +401,7 @@ execute_serialization_test(const options &o,
 }
 
 void
-write_sfs(const options &o, const fwdpp::GSLrng_mt &rng,
+write_sfs(const options &o, const GSLrng &rng,
           const fwdpp::ts::table_collection &tables,
           const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
 {
