@@ -28,6 +28,7 @@ namespace fwdpp
             T value_;
 
           public:
+            using value_type = T;
             explicit named_type(const T& value) : value_(value) {}
             template <typename T_>
             explicit named_type(
