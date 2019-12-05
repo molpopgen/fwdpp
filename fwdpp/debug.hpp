@@ -30,6 +30,8 @@
  * code is compiled with -DNDEBUG, as they evaluate to empty functions.
  */
 
+#include <cstdint>
+
 namespace fwdpp
 {
     namespace debug
@@ -37,7 +39,7 @@ namespace fwdpp
         template <typename gcont_t>
         void
         validate_sum_haploid_genome_counts(const gcont_t &haploid_genomes,
-                                           const uint_t expected_sum)
+                                           const std::size_t expected_sum)
         /// Throw exception if sum of all haploid_genome counts != \a expected_sum
         {
             detail::validate_sum_haploid_genome_counts(haploid_genomes,

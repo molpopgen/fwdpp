@@ -175,7 +175,7 @@ namespace fwdpp
 
     template <typename gcont_t, typename mcont_t, typename queue_type,
               typename new_mutations_type, typename breakpoints_type>
-    uint_t
+    std::size_t
     mutate_recombine(
         const new_mutations_type &new_mutations,
         const breakpoints_type &breakpoints, const std::size_t g1,
