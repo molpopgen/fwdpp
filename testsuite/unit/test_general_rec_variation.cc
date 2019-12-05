@@ -13,7 +13,7 @@
 
 struct fixture
 {
-    const gsl_rng* r;
+    gsl_rng* r;
     const double not_a_num, inf;
     fwdpp::general_rec_variation recvar;
     fwdpp::poisson_interval pi;
@@ -32,6 +32,16 @@ struct fixture
           ci3{ 1e-3, 0.5, false }, g{ 0 }, diploid{ 0, 0 }, mutations{}
     {
         gsl_rng_set(r, 42);
+    }
+
+    fixture(const fixture&) = delete;
+    fixture& operator=(const fixture&) = delete;
+    ~fixture()
+    {
+        if (r != nullptr)
+            {
+                gsl_rng_free(r);
+            }
     }
 };
 
