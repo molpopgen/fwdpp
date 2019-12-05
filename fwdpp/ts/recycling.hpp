@@ -26,9 +26,9 @@ namespace fwdpp
         ///
         /// \version 0.7.0 Added to fwdpp
         ///
-        /// \returns std::queue<std::size_t>
+        /// \returns flagged_mutation_queue
         {
-            std::queue<std::size_t> mutation_recycling_bin;
+            flagged_mutation_queue::value_type mutation_recycling_bin;
             for (std::size_t i = 0; i < mcounts.size(); ++i)
                 {
                     if (mcounts[i] + counts_from_preserved_nodes[i] == 0)
@@ -47,7 +47,7 @@ namespace fwdpp
         /// \param preserved_mutation_indexes Vector of preserved mutation indexes returned by simplification
         /// \param num_mutations The total number of mutations currently allocated in the population
         ///
-        /// \returns std::queue<std::size_t>
+        /// \returns flagged_mutation_queue
         ///
         /// \version 0.7.3 Added to fwdpp
         ///
@@ -71,7 +71,7 @@ namespace fwdpp
                 {
                     mindexes[i] = std::numeric_limits<std::size_t>::max();
                 }
-            std::queue<std::size_t> rv;
+            flagged_mutation_queue::value_type rv;
             for (auto i : mindexes)
                 {
                     if (i != std::numeric_limits<std::size_t>::max())

@@ -34,14 +34,14 @@ namespace fwdpp
     empty_mutation_queue()
     /// \brief Generate an empty flagged_mutation_queue
     {
-        return flagged_mutation_queue(std::queue<std::size_t>());
+        return flagged_mutation_queue(flagged_mutation_queue::value_type());
     }
 
     inline flagged_haploid_genome_queue
     empty_haploid_genome_queue()
     //// \brief Generate an empty flagged_haploid_genome_queue
     {
-        return flagged_haploid_genome_queue(std::queue<std::size_t>());
+        return flagged_haploid_genome_queue(flagged_haploid_genome_queue::value_type());
     }
 
     template <typename mcount_vec>
@@ -51,7 +51,7 @@ namespace fwdpp
     /// \param mcounts Vector of mutation counts
     /// \note Simulations with tree sequences should use fwdpp::ts::make_mut_queue
     {
-        std::queue<std::size_t> rv;
+        flagged_mutation_queue::value_type rv;
         const auto msize = mcounts.size();
         for (typename mcount_vec::size_type i = 0; i < msize; ++i)
             {
@@ -67,7 +67,7 @@ namespace fwdpp
     /// \brief Make a FIFO queue for recycling extinct haploid_genomes
     /// \param haploid_genomes Vector of haploid_genomes
     {
-        std::queue<std::size_t> rv;
+        flagged_haploid_genome_queue::value_type rv;
         const auto gsize = haploid_genomes.size();
         for (typename gvec_t::size_type i = 0; i < gsize; ++i)
             {
