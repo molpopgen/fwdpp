@@ -61,7 +61,7 @@ namespace fwdpp
 }
 
 int
-main(int argc, char** argv)
+main(int /*argc**/, char** /*argv*/)
 {
     dip_with_deme dip(0, 34, 11);
     dip_with_deme dip2;
