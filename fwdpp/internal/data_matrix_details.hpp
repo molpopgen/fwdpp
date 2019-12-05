@@ -101,15 +101,16 @@ namespace fwdpp
                     const std::pair<std::size_t, uint_t> &mutation_record,
                     const matrix_type mtype)
         {
-            int onfirst
+            std::int8_t onfirst
                 = (std::find(first.begin(), first.end(), mutation_record.first)
                    != first.end());
-            int onsecond = (std::find(second.begin(), second.end(),
-                                      mutation_record.first)
-                            != second.end());
+            std::int8_t onsecond = (std::find(second.begin(), second.end(),
+                                              mutation_record.first)
+                                    != second.end());
             if (mtype == matrix_type::genotype)
                 {
-                    site.push_back(onfirst + onsecond);
+                    site.push_back(
+                        static_cast<std::int8_t>(onfirst + onsecond));
                 }
             else
                 {
