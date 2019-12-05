@@ -51,7 +51,7 @@ namespace fwdpp
             std::function<double(const gsl_rng *)> s, h;
             //! Default constructor useful in extension situations that don't
             //! understand std::function
-            shmodel() = default;
+            shmodel() : s{}, h{} {}
             //! More efficient constructor for c++11-aware situations
             shmodel(std::function<double(const gsl_rng *)> sfxn,
                     std::function<double(const gsl_rng *)> hfxn)
@@ -204,6 +204,6 @@ namespace fwdpp
                 return gsl_ran_gamma(r, shape, mean / shape);
             }
         };
-    }
-}
+    } // namespace extensions
+} // namespace fwdpp
 #endif
