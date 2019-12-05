@@ -11,7 +11,7 @@ main(int argc, char** argv)
         {
             std::cerr
                 << "usage: " << argv[0]
-                << "popsize ngenerations psurvival recrate simplify seed\n";
+                << " popsize ngenerations psurvival recrate simplify seed\n";
             std::exit(1);
         }
     int argnext = 1;
