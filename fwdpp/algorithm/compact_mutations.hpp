@@ -39,9 +39,9 @@ namespace fwdpp
                       return pop.mutations[i].pos < pop.mutations[j].pos;
                   });
         std::vector<fwdpp::uint_t> reindex(indexes.size());
-        std::size_t new_indexes_size
+        auto new_indexes_size
             = std::distance(std::begin(indexes), new_indexes_end);
-        for (std::size_t i = 0; i < new_indexes_size; ++i)
+        for (uint_t i = 0; i < new_indexes_size; ++i)
             {
                 reindex[indexes[i]] = i;
             }
@@ -76,7 +76,10 @@ namespace fwdpp
                                 if (x.first->second == i)
                                     {
                                         x.first->second
-                                            = reordered_muts.size() - 1;
+                                            = static_cast<decltype(
+                                                  x.first->second)>(
+                                                  reordered_muts.size())
+                                              - 1;
                                         break;
                                     }
                                 ++x.first;
