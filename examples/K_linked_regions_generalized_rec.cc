@@ -66,7 +66,6 @@ main(int argc, char **argv)
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
-    double wbar;
 
     fwdpp::general_rec_variation recvar;
     for (unsigned i = 0; i < K; ++i)

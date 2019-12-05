@@ -77,10 +77,9 @@ main(int argc, char **argv)
                     [s]() { return s; }, [h]() { return h; });
             };
 
-            double wbar = 1;
             for (generation = 0; generation < ngens; ++generation)
                 {
-                    wbar = fwdpp::sample_diploid(
+                    fwdpp::sample_diploid(
                         r.get(), pop.haploid_genomes, pop.diploids,
                         pop.mutations, pop.mcounts, N, mu_neutral + mu_del,
                         mmodel,

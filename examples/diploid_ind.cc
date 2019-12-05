@@ -78,7 +78,6 @@ main(int argc, char **argv)
             pop.mutations.reserve(
                 size_t(std::ceil(std::log(2 * N) * theta + 0.667 * theta)));
             unsigned generation = 0;
-            double wbar;
 
             const auto mmodel = [&pop, &r, &generation](
                                     fwdpp::flagged_mutation_queue &recbin,
@@ -91,7 +90,7 @@ main(int argc, char **argv)
             for (generation = 0; generation < ngens; ++generation)
                 {
                     // Iterate the population through 1 generation
-                    wbar = fwdpp::sample_diploid(
+                    fwdpp::sample_diploid(
                         r.get(),
                         pop.haploid_genomes, // non-const reference to haploid_genomes
                         pop.diploids,        // non-const reference to diploids

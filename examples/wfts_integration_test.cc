@@ -88,9 +88,9 @@ main(int argc, char **argv)
                   generate_h);
           };
 
-    const auto mmodel = [&rng, &o,
-                         &make_mutation](fwdpp::flagged_mutation_queue &recbin,
-                                         ts_examples_poptype::mcont_t &mutations) {
+    const auto mmodel = [&rng, &o, &make_mutation](
+                            fwdpp::flagged_mutation_queue &recbin,
+                            ts_examples_poptype::mcont_t &mutations) {
         std::vector<fwdpp::uint_t> rv;
         unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
         for (unsigned i = 0; i < nmuts; ++i)
@@ -233,8 +233,10 @@ main(int argc, char **argv)
                                 first_parental_index, i, 0);
                             assert(x.first >= first_parental_index);
                             assert(x.second >= first_parental_index);
-                            assert(x.first < tables.num_nodes());
-                            assert(x.second < tables.num_nodes());
+                            assert(static_cast<std::size_t>(x.first)
+                                   < tables.num_nodes());
+                            assert(static_cast<std::size_t>(x.second)
+                                   < tables.num_nodes());
                             assert(tables.node_table[x.first].time
                                    == generation);
                             assert(tables.node_table[x.second].time
@@ -357,6 +359,6 @@ main(int argc, char **argv)
     execute_expensive_leaf_test(o, tables, s);
     execute_matrix_test(o, pop, tables, s);
     execute_serialization_test(o, tables);
-	visit_sites_test(o, pop, tables, s);
+    visit_sites_test(o, pop, tables, s);
     write_sfs(o, rng, tables, s);
 }

@@ -365,8 +365,10 @@ main(int argc, char **argv)
                                 first_parental_index, i, 0);
                             assert(x.first >= first_parental_index);
                             assert(x.second >= first_parental_index);
-                            assert(x.first < tables.num_nodes());
-                            assert(x.second < tables.num_nodes());
+                            assert(static_cast<std::size_t>(x.first)
+                                   < tables.num_nodes());
+                            assert(static_cast<std::size_t>(x.second)
+                                   < tables.num_nodes());
                             assert(tables.node_table[x.first].time
                                    == generation);
                             assert(tables.node_table[x.second].time
@@ -434,9 +436,8 @@ main(int argc, char **argv)
             return fwdpp::ts::new_variant_record(
                 pop.mutations[key].pos, 0, key, pop.mutations[key].neutral, 1);
         };
-    auto neutral_muts
-        = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
-                                   theta / static_cast<double>(4 * N));
+    fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
+                             theta / static_cast<double>(4 * N));
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)

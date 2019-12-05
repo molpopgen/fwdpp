@@ -329,7 +329,6 @@ main(int argc, char **argv)
             [h]() { return h; });
     };
 
-    double wbar = 1;
     for (generation = 0; generation < ngens; ++generation)
         {
             fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,

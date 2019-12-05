@@ -133,7 +133,7 @@ using mtype = TwoDmutation;
 #include "common_ind.hpp"
 
 int
-main(int argc, char **argv)
+main(int /*argc*/, char** /* argv*/)
 {
     TwoDmutation::array_t s{ 0, 1 }, h{ 1, 1 };
 
