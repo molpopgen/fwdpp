@@ -89,6 +89,8 @@ struct parent_lookup_tables
     // lookup1 and lookup2 to diploids in the population
     // object.
     std::vector<std::size_t> parents1, parents2;
+
+    parent_lookup_tables() : lookup1{}, lookup2{}, parents1{}, parents2{} {}
 };
 
 template <typename fitness_fxn>
@@ -157,14 +159,14 @@ migrate_and_calc_fitness(const gsl_rng *r, diploid_population &pop,
             if (deme_labels[i] == 0)
                 {
                     rv.parents1.push_back(i);
-                    w1.push_back(
-                        wfxn(pop.diploids[i], pop.haploid_genomes, pop.mutations));
+                    w1.push_back(wfxn(pop.diploids[i], pop.haploid_genomes,
+                                      pop.mutations));
                 }
             else
                 {
                     rv.parents2.push_back(i);
-                    w2.push_back(
-                        wfxn(pop.diploids[i], pop.haploid_genomes, pop.mutations));
+                    w2.push_back(wfxn(pop.diploids[i], pop.haploid_genomes,
+                                      pop.mutations));
                 }
         }
 
@@ -184,7 +186,8 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
 {
     // Handle mutation/haploid_genome "recycling":
     auto mut_recycling_bin = fwdpp::make_mut_queue(pop.mcounts);
-    auto gam_recycling_bin = fwdpp::make_haploid_genome_queue(pop.haploid_genomes);
+    auto gam_recycling_bin
+        = fwdpp::make_haploid_genome_queue(pop.haploid_genomes);
 
     // Migration and build lookup tables:
     auto lookups = migrate_and_calc_fitness(r, pop, wfxn, N1, N2, m12, m21);
@@ -242,7 +245,7 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
                                     pop.neutral, pop.selected);
         }
     fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
-                                             2 * pop.diploids.size());
+                                                     2 * pop.diploids.size());
 #ifndef NDEBUG
     for (const auto &dip : pop.diploids)
         {
@@ -254,8 +257,8 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
 #endif
 
     // Update mutation counts
-    fwdpp::fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations,
-                                           pop.mcounts);
+    fwdpp::fwdpp_internal::process_haploid_genomes(pop.haploid_genomes,
+                                                   pop.mutations, pop.mcounts);
 
     assert(pop.mcounts.size() == pop.mutations.size());
 #ifndef NDEBUG
@@ -267,9 +270,9 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
     fwdpp::debug::validate_pop_data(pop);
 
     // Prune fixations from haploid_genomes
-    fwdpp::fwdpp_internal::haploid_genome_cleaner(pop.haploid_genomes, pop.mutations,
-                                          pop.mcounts, 2 * (N1 + N2),
-                                          std::true_type());
+    fwdpp::fwdpp_internal::haploid_genome_cleaner(
+        pop.haploid_genomes, pop.mutations, pop.mcounts, 2 * (N1 + N2),
+        std::true_type());
 }
 
 int
@@ -331,8 +334,8 @@ main(int argc, char **argv)
 
     for (generation = 0; generation < ngens; ++generation)
         {
-            fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
-                                                     2 * (N1 + N2));
+            fwdpp::debug::validate_sum_haploid_genome_counts(
+                pop.haploid_genomes, 2 * (N1 + N2));
 
             // Call our fancy new evolve function
             evolve_two_demes(r.get(), pop, N1, N2, m12, m21,
@@ -340,6 +343,7 @@ main(int argc, char **argv)
             fwdpp::update_mutations(pop.mutations, pop.fixations,
                                     pop.fixation_times, pop.mut_lookup,
                                     pop.mcounts, generation, 2 * N);
-            fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes, 2 * N);
+            fwdpp::debug::validate_sum_haploid_genome_counts(
+                pop.haploid_genomes, 2 * N);
         }
 }
