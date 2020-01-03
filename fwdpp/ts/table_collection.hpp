@@ -221,9 +221,22 @@ namespace fwdpp
                                     edge_table.begin() + edge_offset,
                                     edge_table.end());
                     }
+#ifndef NDEBUG
                 // TODO: allow for exceptions
                 // rather than assertions.
-                assert(edges_are_sorted());
+                if (edge_offset == 0)
+                    {
+                        assert(edges_are_sorted());
+                    }
+                else if (preserved_nodes.empty())
+                    {
+                        assert(edges_are_sorted());
+                    }
+                else
+                    {
+                        assert(edges_are_minimally_sorted());
+                    }
+#endif
             }
 
             void
