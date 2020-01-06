@@ -14,10 +14,11 @@ namespace fwdpp
         struct node
         /// A node in a tree sequence
         ///  \version 0.7.0 Added to fwdpp
+        ///  \version 0.8.0 Rename ::population to ::deme
         {
             /// Location of the node.
             /// Used for models of discrete population structure
-            std::int32_t population;
+            std::int32_t deme;
             /// Birth time of the node.
             double time;
         };
@@ -25,8 +26,7 @@ namespace fwdpp
         inline bool
         operator==(const node& a, const node& b)
         {
-            return std::tie(a.time, a.population)
-                   == std::tie(b.time, b.population);
+            return std::tie(a.time, a.deme) == std::tie(b.time, b.deme);
         }
     } // namespace ts
 } // namespace fwdpp
