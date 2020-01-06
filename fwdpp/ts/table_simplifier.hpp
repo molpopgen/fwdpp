@@ -314,7 +314,7 @@ namespace fwdpp
                                     {
                                         new_node_table.emplace_back(node{
                                             input_node_table[parent_input_id]
-                                                .population,
+                                                .deme,
                                             input_node_table[parent_input_id]
                                                 .time });
                                         output_id = new_node_table.size() - 1;
@@ -503,7 +503,7 @@ namespace fwdpp
                                     "invalid sample list");
                             }
                         new_node_table.emplace_back(
-                            node{ tables.node_table[s].population,
+                            node{ tables.node_table[s].deme,
                                   tables.node_table[s].time });
                         add_ancestry(s, 0, L,
                                      static_cast<TS_NODE_INT>(

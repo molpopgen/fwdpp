@@ -50,7 +50,7 @@ namespace fwdpp
                 operator()(ostreamtype& o, const node& n) const
                 {
                     fwdpp::io::scalar_writer sw;
-                    sw(o, &n.population);
+                    sw(o, &n.deme);
                     sw(o, &n.time);
                 }
             };
@@ -72,11 +72,11 @@ namespace fwdpp
                 operator()(istreamtype& o) const
                 {
                     fwdpp::io::scalar_reader sr;
-                    TS_NODE_INT population;
+                    TS_NODE_INT deme;
                     double time;
-                    sr(o, &population);
+                    sr(o, &deme);
                     sr(o, &time);
-                    return node{ population, time };
+                    return node{ deme, time };
                 }
             };
 
