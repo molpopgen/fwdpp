@@ -31,6 +31,7 @@ namespace fwdpp
          *  without notice.
          *
          *  \version 0.7.0 Added to fwdpp
+         *  \version 0.8.0 Added AncestryList, which greatly reduces memory overhead.
          */
         {
           private:
