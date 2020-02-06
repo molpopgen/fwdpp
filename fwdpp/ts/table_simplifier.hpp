@@ -232,7 +232,7 @@ namespace fwdpp
             // These are temp tables/buffer
             // for simplification.  We keep
             // their allocated memory persistent.
-            edge_vector new_edge_table;
+            edge_vector output_edge_buffer;
             node_vector new_node_table;
             site_vector new_site_table;
             // segment_queue mimics a min queue of segments w.r.to
@@ -252,7 +252,7 @@ namespace fwdpp
             // temp containers after simplify.
             // Retains container capacity.
             {
-                new_edge_table.clear();
+                output_edge_buffer.clear();
                 new_node_table.clear();
                 new_site_table.clear();
                 E.clear();
@@ -438,9 +438,9 @@ namespace fwdpp
                                  [](const edge& a, const edge& b) {
                                      return a.child < b.child;
                                  });
-                new_edge_table.insert(new_edge_table.end(),
-                                      buffered_edges.begin(),
-                                      buffered_edges.end());
+                output_edge_buffer.insert(output_edge_buffer.end(),
+                                          buffered_edges.begin(),
+                                          buffered_edges.end());
                 return buffered_edges.size();
             }
 
@@ -588,7 +588,7 @@ namespace fwdpp
 
           public:
             explicit table_simplifier(const double maxpos)
-                : new_edge_table{}, new_node_table{}, new_site_table{},
+                : output_edge_buffer{}, new_node_table{}, new_site_table{},
                   segment_queue{}, Ancestry{}, E{}, L{ maxpos }, o{},
                   mutation_map{}
             {
@@ -637,11 +637,28 @@ namespace fwdpp
                 // equivalent.
                 auto edge_ptr = tables.edge_table.cbegin();
                 const auto edge_end = tables.edge_table.cend();
+                auto new_edge_destination = begin(tables.edge_table);
                 while (edge_ptr < edge_end)
                     {
                         auto u = edge_ptr->parent;
                         edge_ptr = step_S3(edge_ptr, edge_end, u);
                         merge_ancestors(tables.node_table, u, idmap);
+                        if (output_edge_buffer.size() >= 1024
+                            && new_edge_destination + output_edge_buffer.size()
+                                   < edge_ptr)
+                            {
+                                new_edge_destination
+                                    = std::copy(begin(output_edge_buffer),
+                                                end(output_edge_buffer),
+                                                new_edge_destination);
+                                output_edge_buffer.clear();
+                            }
+                    }
+                if (!output_edge_buffer.empty())
+                    {
+                        new_edge_destination = std::copy(
+                            begin(output_edge_buffer), end(output_edge_buffer),
+                            new_edge_destination);
                     }
 
                 // When there are preserved nodes, we need to re map
@@ -665,9 +682,8 @@ namespace fwdpp
                 // we use resize-and-move here.  In theory, we can also do
                 // vector swaps, but that has a side-effect of keeping
                 // far too much RAM allocated compared to what we need.
-                tables.edge_table.resize(new_edge_table.size());
-                std::move(new_edge_table.begin(), new_edge_table.end(),
-                          tables.edge_table.begin());
+                tables.edge_table.resize(std::distance(
+                    begin(tables.edge_table), new_edge_destination));
                 tables.node_table.resize(new_node_table.size());
                 std::move(new_node_table.begin(), new_node_table.end(),
                           tables.node_table.begin());
