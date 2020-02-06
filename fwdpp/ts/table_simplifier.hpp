@@ -61,9 +61,9 @@ namespace fwdpp
 
               public:
                 std::vector<segment> segments;
-                std::vector<std::int32_t> first, next, last;
+                std::vector<std::int32_t> first, next;
 
-                AncestryList() : segments(), first(), next(), last() {}
+                AncestryList() : segments(), first(), next() {}
 
                 void
                 init(std::size_t n)
@@ -71,7 +71,21 @@ namespace fwdpp
                     segments.clear();
                     resize_and_fill(first, n);
                     resize_and_fill(next, n);
-                    resize_and_fill(last, n);
+                }
+
+                std::int32_t
+                get_chain_tail(std::size_t i) const
+                {
+                    if (i >= first.size())
+                        {
+                            throw std::runtime_error("index out of range");
+                        }
+                    auto f = first[i];
+                    while (f != -1 && next[f] != -1)
+                        {
+                            f = next[f];
+                        }
+                    return f;
                 }
 
                 void
@@ -85,14 +99,12 @@ namespace fwdpp
                     if (first[i] == -1)
                         {
                             first[i] = segments.size() - 1;
-                            last[i] = first[i];
                         }
                     else
                         {
                             next.push_back(-1);
-                            auto l = last[i];
-                            last[i] = segments.size() - 1;
-                            next[l] = last[i];
+                            auto l = get_chain_tail(i);
+                            next[l] = segments.size() - 1;
                         }
                 }
 
@@ -103,7 +115,7 @@ namespace fwdpp
                         {
                             throw std::runtime_error("index out of range");
                         }
-                    last[i] = first[i] = -1;
+                    first[i] = -1;
                 }
             };
 
@@ -323,7 +335,12 @@ namespace fwdpp
                     }
                 else
                     {
-                        auto last_idx = Ancestry.last[input_id];
+                        auto last_idx = Ancestry.get_chain_tail(input_id);
+                        if (last_idx == -1)
+                            {
+                                throw std::runtime_error(
+                                    "AncestryList data invalid");
+                            }
                         auto& last = Ancestry.segments[last_idx];
                         if (last.right == left && last.node == node)
                             {
@@ -484,10 +501,9 @@ namespace fwdpp
                     {
                         auto n = map_itr->node;
                         auto seg_idx = Ancestry.first[n];
-                        for (; map_itr < map_end
-                               && map_itr->node == n;)
+                        for (; map_itr < map_end && map_itr->node == n;)
                             {
-                                if(seg_idx == -1)
+                                if (seg_idx == -1)
                                     {
                                         ++map_itr;
                                         break;
@@ -495,11 +511,10 @@ namespace fwdpp
                                 while (seg_idx != -1 && map_itr < map_end
                                        && map_itr->node == n)
                                     {
-                                        auto & seg = Ancestry.segments[seg_idx];
+                                        auto& seg = Ancestry.segments[seg_idx];
                                         auto pos
                                             = sites[map_itr->site].position;
-                                        if (seg.left <= pos
-                                            && pos < seg.right)
+                                        if (seg.left <= pos && pos < seg.right)
                                             {
                                                 mt[map_itr->location].node
                                                     = seg.node;
@@ -507,7 +522,8 @@ namespace fwdpp
                                             }
                                         else if (pos >= seg.right)
                                             {
-                                                seg_idx = Ancestry.next[seg_idx];
+                                                seg_idx
+                                                    = Ancestry.next[seg_idx];
                                             }
                                         else
                                             {
