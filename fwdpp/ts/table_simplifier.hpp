@@ -49,6 +49,64 @@ namespace fwdpp
                 }
             };
 
+            class AncestryList
+            {
+              private:
+                void
+                resize_and_fill(std::vector<std::int32_t>& v, std::size_t n)
+                {
+                    v.resize(n);
+                    std::fill(begin(v), end(v), -1);
+                }
+
+              public:
+                std::vector<segment> segments;
+                std::vector<std::int32_t> first, next, last;
+
+                AncestryList() : segments(), first(), next(), last() {}
+
+                void
+                init(std::size_t n)
+                {
+                    segments.clear();
+                    resize_and_fill(first, n);
+                    resize_and_fill(next, n);
+                    resize_and_fill(last, n);
+                }
+
+                void
+                add_record(std::size_t i, double l, double r, TS_NODE_INT n)
+                {
+                    if (i >= first.size())
+                        {
+                            throw std::runtime_error("index out of range");
+                        }
+                    segments.emplace_back(l, r, n);
+                    if (first[i] == -1)
+                        {
+                            first[i] = segments.size() - 1;
+                            last[i] = first[i];
+                        }
+                    else
+                        {
+                            next.push_back(-1);
+                            auto l = last[i];
+                            last[i] = segments.size() - 1;
+                            next[l] = last[i];
+                        }
+                }
+
+                void
+                nullify_chain(std::size_t i)
+                {
+                    if (i >= first.size())
+                        {
+                            throw std::runtime_error("index out of range");
+                        }
+                    last[i] = first[i] = -1;
+                }
+            };
+
             struct mutation_node_map_entry
             {
                 TS_NODE_INT node;
@@ -167,7 +225,7 @@ namespace fwdpp
             // segment_queue mimics a min queue of segments w.r.to
             // segment::left.
             std::vector<segment> segment_queue;
-            std::vector<std::vector<segment>> Ancestry;
+            AncestryList Ancestry;
             /// Temp container used for compacting edges
             edge_vector E;
             // region length
@@ -185,12 +243,6 @@ namespace fwdpp
                 new_node_table.clear();
                 new_site_table.clear();
                 E.clear();
-                // It is tempting to
-                // just clear out each
-                // inner element. Bad idea.
-                // You use >= 10X more RAM
-                // in "big" simulations.
-                Ancestry.clear();
             }
 
             edge_vector::const_iterator
@@ -207,8 +259,10 @@ namespace fwdpp
                         // minimal
                         // overlap to our queue.
                         // This is Step S3.
-                        for (auto& seg : Ancestry[edge_ptr->child])
+                        auto idx = Ancestry.first[edge_ptr->child];
+                        while (idx != -1)
                             {
+                                auto& seg = Ancestry.segments[idx];
                                 if (seg.right > edge_ptr->left
                                     && edge_ptr->right > seg.left)
                                     {
@@ -218,6 +272,7 @@ namespace fwdpp
                                                      edge_ptr->right),
                                             seg.node);
                                     }
+                                idx = Ancestry.next[idx];
                             }
                     }
                 // Sort for processing via the overlapper
@@ -262,21 +317,22 @@ namespace fwdpp
             add_ancestry(TS_NODE_INT input_id, double left, double right,
                          TS_NODE_INT node)
             {
-                if (Ancestry[input_id].empty())
+                if (Ancestry.first[input_id] == -1)
                     {
-                        Ancestry[input_id].emplace_back(left, right, node);
+                        Ancestry.add_record(input_id, left, right, node);
                     }
                 else
                     {
-                        auto& last = Ancestry[input_id].back();
+                        auto last_idx = Ancestry.last[input_id];
+                        auto& last = Ancestry.segments[last_idx];
                         if (last.right == left && last.node == node)
                             {
                                 last.right = right;
                             }
                         else
                             {
-                                Ancestry[input_id].emplace_back(left, right,
-                                                                node);
+                                Ancestry.add_record(input_id, left, right,
+                                                    node);
                             }
                     }
             }
@@ -290,7 +346,7 @@ namespace fwdpp
                 bool is_sample = (output_id != TS_NULL_NODE);
                 if (is_sample == true)
                     {
-                        Ancestry[parent_input_id].clear();
+                        Ancestry.nullify_chain(parent_input_id);
                     }
                 double previous_right = 0.0;
                 o.init(segment_queue);
@@ -427,31 +483,31 @@ namespace fwdpp
                 while (map_itr < map_end)
                     {
                         auto n = map_itr->node;
-                        auto seg = Ancestry[n].cbegin();
-                        const auto seg_e = Ancestry[n].cend();
+                        auto seg_idx = Ancestry.first[n];
                         for (; map_itr < map_end
-                               && map_itr->node == n;) //++map_itr)
+                               && map_itr->node == n;)
                             {
-                                if (seg == seg_e)
+                                if(seg_idx == -1)
                                     {
                                         ++map_itr;
                                         break;
                                     }
-                                while (seg < seg_e && map_itr < map_end
+                                while (seg_idx != -1 && map_itr < map_end
                                        && map_itr->node == n)
                                     {
+                                        auto & seg = Ancestry.segments[seg_idx];
                                         auto pos
                                             = sites[map_itr->site].position;
-                                        if (seg->left <= pos
-                                            && pos < seg->right)
+                                        if (seg.left <= pos
+                                            && pos < seg.right)
                                             {
                                                 mt[map_itr->location].node
-                                                    = seg->node;
+                                                    = seg.node;
                                                 ++map_itr;
                                             }
-                                        else if (pos >= seg->right)
+                                        else if (pos >= seg.right)
                                             {
-                                                ++seg;
+                                                seg_idx = Ancestry.next[seg_idx];
                                             }
                                         else
                                             {
@@ -539,7 +595,7 @@ namespace fwdpp
             /// node ID map and a vector of keys to mutations preserved in
             /// mutation tables
             {
-                Ancestry.resize(tables.node_table.size());
+                Ancestry.init(tables.node_table.size());
 
                 // Set some things up for later mutation simplification
                 prep_mutation_simplification(tables.site_table,
