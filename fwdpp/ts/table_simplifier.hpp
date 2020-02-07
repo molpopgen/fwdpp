@@ -30,8 +30,9 @@ namespace fwdpp
          *  Many of the implementation details are private functions, which are subject to change
          *  without notice.
          *
-         *  \version 0.7.0 Added to fwdpp
-         *  \version 0.8.0 Added AncestryList, which greatly reduces memory overhead.
+         *  \version 0.7.0 Added to fwdpp.
+         *  \version 0.8.0 Added ancestry_list, which greatly reduces memory overhead.
+         *  \version 0.8.0 Remove need for temporary output edge table.
          */
         {
           private:
@@ -50,7 +51,7 @@ namespace fwdpp
                 }
             };
 
-            class AncestryList
+            class ancestry_list
             {
               private:
                 void
@@ -64,7 +65,7 @@ namespace fwdpp
                 std::vector<segment> segments;
                 std::vector<std::int32_t> first, next;
 
-                AncestryList() : segments(), first(), next() {}
+                ancestry_list() : segments(), first(), next() {}
 
                 void
                 init(std::size_t n)
@@ -238,7 +239,7 @@ namespace fwdpp
             // segment_queue mimics a min queue of segments w.r.to
             // segment::left.
             std::vector<segment> segment_queue;
-            AncestryList Ancestry;
+            ancestry_list ancestry;
             /// Temp container used for compacting edges
             edge_vector E;
             // region length
@@ -272,10 +273,10 @@ namespace fwdpp
                         // minimal
                         // overlap to our queue.
                         // This is Step S3.
-                        auto idx = Ancestry.first[edge_ptr->child];
+                        auto idx = ancestry.first[edge_ptr->child];
                         while (idx != -1)
                             {
-                                auto& seg = Ancestry.segments[idx];
+                                auto& seg = ancestry.segments[idx];
                                 if (seg.right > edge_ptr->left
                                     && edge_ptr->right > seg.left)
                                     {
@@ -285,7 +286,7 @@ namespace fwdpp
                                                      edge_ptr->right),
                                             seg.node);
                                     }
-                                idx = Ancestry.next[idx];
+                                idx = ancestry.next[idx];
                             }
                     }
                 // Sort for processing via the overlapper
@@ -330,26 +331,26 @@ namespace fwdpp
             add_ancestry(TS_NODE_INT input_id, double left, double right,
                          TS_NODE_INT node)
             {
-                if (Ancestry.first[input_id] == -1)
+                if (ancestry.first[input_id] == -1)
                     {
-                        Ancestry.add_record(input_id, left, right, node);
+                        ancestry.add_record(input_id, left, right, node);
                     }
                 else
                     {
-                        auto last_idx = Ancestry.get_chain_tail(input_id);
+                        auto last_idx = ancestry.get_chain_tail(input_id);
                         if (last_idx == -1)
                             {
                                 throw std::runtime_error(
-                                    "AncestryList data invalid");
+                                    "ancestry_list data invalid");
                             }
-                        auto& last = Ancestry.segments[last_idx];
+                        auto& last = ancestry.segments[last_idx];
                         if (last.right == left && last.node == node)
                             {
                                 last.right = right;
                             }
                         else
                             {
-                                Ancestry.add_record(input_id, left, right,
+                                ancestry.add_record(input_id, left, right,
                                                     node);
                             }
                     }
@@ -364,7 +365,7 @@ namespace fwdpp
                 bool is_sample = (output_id != TS_NULL_NODE);
                 if (is_sample == true)
                     {
-                        Ancestry.nullify_chain(parent_input_id);
+                        ancestry.nullify_chain(parent_input_id);
                     }
                 double previous_right = 0.0;
                 o.init(segment_queue);
@@ -482,7 +483,7 @@ namespace fwdpp
             simplify_mutations(mutation_key_vector& mt, site_vector& sites)
             // Remove all mutations that do not map to nodes
             // in the simplified tree.  The key here is
-            // that Ancestry contains the history of
+            // that ancestry contains the history of
             // each node, which we use for the remapping.
             {
                 // Set all output nodes to null for now.
@@ -501,7 +502,7 @@ namespace fwdpp
                 while (map_itr < map_end)
                     {
                         auto n = map_itr->node;
-                        auto seg_idx = Ancestry.first[n];
+                        auto seg_idx = ancestry.first[n];
                         for (; map_itr < map_end && map_itr->node == n;)
                             {
                                 if (seg_idx == -1)
@@ -512,7 +513,7 @@ namespace fwdpp
                                 while (seg_idx != -1 && map_itr < map_end
                                        && map_itr->node == n)
                                     {
-                                        auto& seg = Ancestry.segments[seg_idx];
+                                        auto& seg = ancestry.segments[seg_idx];
                                         auto pos
                                             = sites[map_itr->site].position;
                                         if (seg.left <= pos && pos < seg.right)
@@ -524,7 +525,7 @@ namespace fwdpp
                                         else if (pos >= seg.right)
                                             {
                                                 seg_idx
-                                                    = Ancestry.next[seg_idx];
+                                                    = ancestry.next[seg_idx];
                                             }
                                         else
                                             {
@@ -589,7 +590,7 @@ namespace fwdpp
           public:
             explicit table_simplifier(const double maxpos)
                 : output_edge_buffer{}, new_node_table{}, new_site_table{},
-                  segment_queue{}, Ancestry{}, E{}, L{ maxpos }, o{},
+                  segment_queue{}, ancestry{}, E{}, L{ maxpos }, o{},
                   mutation_map{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
@@ -612,7 +613,7 @@ namespace fwdpp
             /// node ID map and a vector of keys to mutations preserved in
             /// mutation tables
             {
-                Ancestry.init(tables.node_table.size());
+                ancestry.init(tables.node_table.size());
 
                 // Set some things up for later mutation simplification
                 prep_mutation_simplification(tables.site_table,
