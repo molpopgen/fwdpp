@@ -1,5 +1,7 @@
 pkgincludedir=$(prefix)/include/fwdpp/ts
 
+SUBDIRS=simplification
+
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \
 			edge.hpp \
