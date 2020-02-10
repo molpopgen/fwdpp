@@ -60,6 +60,10 @@ namespace fwdpp
                 if (first[i] == -1)
                     {
                         first[i] = segments.size() - 1;
+                        if (segments.size() >= next.size())
+                            {
+                                next.push_back(-1);
+                            }
                     }
                 else
                     {
