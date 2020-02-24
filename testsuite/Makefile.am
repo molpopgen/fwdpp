@@ -10,7 +10,7 @@ noinst_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit
 TESTS=$(noinst_PROGRAMS)
 
 #Unit test targets:
-unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/gamete_cleanerTest.cc unit/test_general_rec_variation.cc \
+unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/gamete_cleanerTest.cc \
 	unit/test_mutate_recombine.cc unit/test_sampling.cc \
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \

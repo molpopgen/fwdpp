@@ -72,6 +72,8 @@
 #include <unordered_set>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/popgenmut.hpp>
+#include <fwdpp/genetic_map/genetic_map.hpp>
+#include <fwdpp/genetic_map/poisson_interval.hpp>
 #define DIPLOID_POPULATION_SIM
 // the type of mutation
 using mtype = fwdpp::popgenmut;
@@ -309,8 +311,9 @@ main(int argc, char **argv)
     GSLrng r(seed);
 
     // recombination map is uniform[0,1)
-    const auto rec
-        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, littler));
+    const auto rec = fwdpp::recbinder(std::cref(gmap), r.get());
 
     const double pselected = mu_del / (mu_del + mu_neutral);
 
