@@ -88,7 +88,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
-	K_linked_regions_generalized_rec$(EXEEXT) \
 	juvenile_migration$(EXEEXT) custom_mutation$(EXEEXT) \
 	custom_diploid$(EXEEXT) wfts_overlapping_generations$(EXEEXT) \
 	wfts_overlapping_generations_dynamic_indexing$(EXEEXT) \
@@ -119,12 +118,6 @@ K_linked_regions_extensions_OBJECTS =  \
 	$(am_K_linked_regions_extensions_OBJECTS)
 K_linked_regions_extensions_LDADD = $(LDADD)
 K_linked_regions_extensions_DEPENDENCIES =
-am_K_linked_regions_generalized_rec_OBJECTS =  \
-	K_linked_regions_generalized_rec.$(OBJEXT)
-K_linked_regions_generalized_rec_OBJECTS =  \
-	$(am_K_linked_regions_generalized_rec_OBJECTS)
-K_linked_regions_generalized_rec_LDADD = $(LDADD)
-K_linked_regions_generalized_rec_DEPENDENCIES =
 am_custom_diploid_OBJECTS = custom_diploid.$(OBJEXT)
 custom_diploid_OBJECTS = $(am_custom_diploid_OBJECTS)
 custom_diploid_LDADD = $(LDADD)
@@ -195,7 +188,6 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
 am__depfiles_remade = ./$(DEPDIR)/K_linked_regions_extensions.Po \
-	./$(DEPDIR)/K_linked_regions_generalized_rec.Po \
 	./$(DEPDIR)/custom_diploid.Po ./$(DEPDIR)/custom_mutation.Po \
 	./$(DEPDIR)/diploid_fixed_sh_ind.Po ./$(DEPDIR)/diploid_ind.Po \
 	./$(DEPDIR)/juvenile_migration.Po \
@@ -232,7 +224,6 @@ am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
 am__v_CCLD_1 = 
 SOURCES = $(K_linked_regions_extensions_SOURCES) \
-	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(juvenile_migration_SOURCES) $(load_table_collection_SOURCES) \
@@ -241,7 +232,6 @@ SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(wfts_overlapping_generations_dynamic_indexing_SOURCES) \
 	$(wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
-	$(K_linked_regions_generalized_rec_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(juvenile_migration_SOURCES) $(load_table_collection_SOURCES) \
@@ -377,7 +367,6 @@ top_srcdir = @top_srcdir@
 diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES = K_linked_regions_extensions.cc common_ind.hpp
-K_linked_regions_generalized_rec_SOURCES = K_linked_regions_generalized_rec.cc common_ind.hpp
 juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
@@ -434,10 +423,6 @@ K_linked_regions_extensions$(EXEEXT): $(K_linked_regions_extensions_OBJECTS) $(K
 	@rm -f K_linked_regions_extensions$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_extensions_OBJECTS) $(K_linked_regions_extensions_LDADD) $(LIBS)
 
-K_linked_regions_generalized_rec$(EXEEXT): $(K_linked_regions_generalized_rec_OBJECTS) $(K_linked_regions_generalized_rec_DEPENDENCIES) $(EXTRA_K_linked_regions_generalized_rec_DEPENDENCIES) 
-	@rm -f K_linked_regions_generalized_rec$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(K_linked_regions_generalized_rec_OBJECTS) $(K_linked_regions_generalized_rec_LDADD) $(LIBS)
-
 custom_diploid$(EXEEXT): $(custom_diploid_OBJECTS) $(custom_diploid_DEPENDENCIES) $(EXTRA_custom_diploid_DEPENDENCIES) 
 	@rm -f custom_diploid$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(custom_diploid_OBJECTS) $(custom_diploid_LDADD) $(LIBS)
@@ -489,7 +474,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_extensions.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_generalized_rec.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_diploid.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_mutation.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@ # am--include-marker
@@ -651,7 +635,6 @@ clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 		-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
-	-rm -f ./$(DEPDIR)/K_linked_regions_generalized_rec.Po
 	-rm -f ./$(DEPDIR)/custom_diploid.Po
 	-rm -f ./$(DEPDIR)/custom_mutation.Po
 	-rm -f ./$(DEPDIR)/diploid_fixed_sh_ind.Po
@@ -711,7 +694,6 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-am
 		-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
-	-rm -f ./$(DEPDIR)/K_linked_regions_generalized_rec.Po
 	-rm -f ./$(DEPDIR)/custom_diploid.Po
 	-rm -f ./$(DEPDIR)/custom_mutation.Po
 	-rm -f ./$(DEPDIR)/diploid_fixed_sh_ind.Po

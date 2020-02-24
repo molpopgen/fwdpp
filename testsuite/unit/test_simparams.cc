@@ -11,7 +11,8 @@
 //TODO: implement fixtures
 #include <fwdpp/diploid_population.hpp>
 #include <fwdpp/recbinder.hpp>
-#include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/genetic_map/genetic_map.hpp>
+#include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/popgenmut.hpp>
 #include <fwdpp/GSLrng_t.hpp>
@@ -35,8 +36,10 @@ BOOST_AUTO_TEST_CASE(test_compilation)
                   []() { return 0.0; }, []() { return 0.0; });
           };
     const double littler = 10;
-    auto rec
-        = fwdpp::recbinder(fwdpp::poisson_xover(littler, 0., 1.), r.get());
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, littler));
+    const auto rec = fwdpp::recbinder(std::cref(gmap), r.get());
+
     auto gv = fwdpp::multiplicative_diploid(fwdpp::fitness(2.));
     auto params = fwdpp::make_genetic_parameters(
         std::move(gv), std::move(mmodel), std::move(rec));

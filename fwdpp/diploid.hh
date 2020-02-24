@@ -30,8 +30,6 @@
 #include <fwdpp/insertion_policies.hpp>
 #include <fwdpp/sampling_functions.hpp>
 #include <fwdpp/util.hpp>
-#include <fwdpp/general_rec_variation.hpp>
-#include <fwdpp/poisson_xover.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #endif
 
@@ -60,13 +58,4 @@
 
   See @ref md_md_sugar for a full description of the features that fwdpp's
   sugar layer provides.
- */
-
-/*! \namespace fwdpp::sugar
-  \brief Nested namespace for sugar layer.
-
-  This namespace provides the implementation details for @ref sugar.
-
-  See @ref md_md_sugar for a full description of the features that fwdpp's
-  sugar layer provides.
- */
+*/

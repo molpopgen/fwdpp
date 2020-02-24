@@ -9,7 +9,8 @@
 #include <exception>
 #include <cmath>
 #include <fwdpp/debug.hpp>
-#include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/genetic_map/genetic_map.hpp>
+#include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
@@ -40,13 +41,15 @@ simulate_diploid_population(diploid_population_object_t &pop,
                   0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
                   []() { return -0.01; }, []() { return 1.; });
           };
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005));
+    const auto rec = fwdpp::recbinder(std::cref(gmap), rng.get());
     for (; generation < simlen; ++generation)
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
                 pop.mcounts, pop.N, popsize, 0.005, mmodel,
-                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
-                                 rng.get()),
+				rec,
                 fwdpp::multiplicative_diploid(fwdpp::fitness(2.)), pop.neutral,
                 pop.selected);
             if (!std::isfinite(wbar))
@@ -82,13 +85,15 @@ simulate_diploid_population(diploid_population_object_t &pop,
                   0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
                   []() { return -0.01; }, []() { return 1.; });
           };
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005));
+    const auto rec = fwdpp::recbinder(std::cref(gmap), rng);
     for (; g < generation + simlen; ++g)
         {
             double wbar = fwdpp::sample_diploid(
                 rng.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
                 pop.mcounts, 1000, 0.005, mmodel,
-                fwdpp::recbinder(fwdpp::poisson_xover(0.005, 0., 1.),
-                                 rng.get()),
+				rec,
                 fwdpp::multiplicative_diploid(fwdpp::fitness(2.)), pop.neutral, pop.selected);
             if (!std::isfinite(wbar))
                 {

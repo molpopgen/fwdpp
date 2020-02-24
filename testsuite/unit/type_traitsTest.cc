@@ -11,7 +11,8 @@
 #include "../fixtures/fwdpp_fixtures.hpp"
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/mutate_recombine.hpp>
-#include <fwdpp/poisson_xover.hpp>
+#include <fwdpp/genetic_map/genetic_map.hpp>
+#include <fwdpp/genetic_map/poisson_interval.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/type_traits.hpp>
@@ -155,41 +156,11 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
         "foo");
 }
 
-BOOST_AUTO_TEST_CASE(is_empty_recmodel_test)
-{
-    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
-    auto v = fwdpp::traits::is_rec_model<decltype(rm), dipvector_t::value_type,
-                                         gcont_t::value_type, mcont_t>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    // Now, we test that the types can be dispatched
-    auto r1 = fwdpp::dispatch_recombination_policy(
-        rm, dipvector_t::value_type(), gcont_t::value_type(0),
-        gcont_t::value_type(0), mcont_t());
-    v = std::is_same<decltype(r1), std::vector<double>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-}
-
-BOOST_AUTO_TEST_CASE(is_haploid_genome_recmodel_test)
-{
-    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
-    auto mock_rec
-        = [&rm](const gcont_t::value_type &, const gcont_t::value_type &,
-                const mcont_t &) -> decltype(rm()) { return rm(); };
-
-    auto v = fwdpp::traits::is_rec_model<decltype(mock_rec),
-                                         dipvector_t::value_type,
-                                         gcont_t::value_type, mcont_t>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-    auto r2 = fwdpp::dispatch_recombination_policy(
-        mock_rec, dipvector_t::value_type(), gcont_t::value_type(0),
-        gcont_t::value_type(0), mcont_t());
-    v = std::is_same<decltype(r2), std::vector<double>>::value;
-    BOOST_REQUIRE_EQUAL(v, true);
-}
-
 BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
 {
-    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3));
+    const auto rm = fwdpp::recbinder(std::cref(gmap), r);
     auto mock_rec_diploid
         = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
                 const gcont_t::value_type &,
@@ -207,7 +178,9 @@ BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
 
 BOOST_AUTO_TEST_CASE(is_not_recmodel_test)
 {
-    const auto rm = fwdpp::recbinder(fwdpp::poisson_xover(1e-3, 0, 1), r);
+    fwdpp::genetic_map gmap;
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3));
+    const auto rm = fwdpp::recbinder(std::cref(gmap), r);
     // Test that this is not a valid rec policy
     auto mock_not_rec
         = [&rm](const int, int, const mcont_t &) -> decltype(rm()) {
