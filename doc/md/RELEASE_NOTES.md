@@ -3,6 +3,27 @@ For a list of planned features, etc., see the issues list on [GitHub](https://gi
 Issues that are tagged 'performance' or 'enhancement' reflect future plans for the library. I will probably not put
 milestones (target version numbers for these features to go live) because that is not realistic given how I work.
 
+## 0.8.0
+
+Big set of changes.  See the 0.8.0 milestone on GitHub for the gory details.
+
+* Move gsl_ran_discrete wrapper into main namespace [PR 200](https://github.com/molpopgen/fwdpp/pull/200)
+* Remove concept of a "multi-locus" population. [PR 201](https://github.com/molpopgen/fwdpp/pull/201)
+* Rename "gamete" "haploid_genome".  [PR 202](https://github.com/molpopgen/fwdpp/pull/202)
+* Back-port "genetic map" concepts from fwdpy11. [PR 204](https://github.com/molpopgen/fwdpp/pull/204)
+* Add preorder node traversal. [PR 205](https://github.com/molpopgen/fwdpp/pull/200)
+* Add "sample groups" to marginal trees, which is an experimental feature. [PR 207](https://github.com/molpopgen/fwdpp/pull/207) and [PR 209](https://github.com/molpopgen/fwdpp/pull/209)
+* Add fwdpp::ts::samples_iterator. [PR 208](https://github.com/molpopgen/fwdpp/pull/208)
+* Testing improvements. [PR 210](https://github.com/molpopgen/fwdpp/pull/210)
+* Add "site" and "mutation" tables. [PR 211](https://github.com/molpopgen/fwdpp/pull/211)
+* Add fwdpp::ts::site_visitor. [PR 216](https://github.com/molpopgen/fwdpp/pull/216)
+* Tree sequence example programs updated. [PR 236](https://github.com/molpopgen/fwdpp/pull/236)
+* Improvements to fwdpp::strong_types::named_type. [PR 239](https://github.com/molpopgen/fwdpp/pull/239)
+* Rename "population" field of fwdpp::ts::node to "deme". [PR 241](https://github.com/molpopgen/fwdpp/pull/241)
+* Big reduction in memory requirement during tree sequence simplification. [PR 242](https://github.com/molpopgen/fwdpp/pull/242)
+* Redundant type names removed. See [Issue 246](https://github.com/molpopgen/fwdpp/issues/246).
+* Several minor issues addressed in [PR 245](https://github.com/molpopgen/fwdpp/pull/245)
+
 ## 0.7.4
 
 This release has a lot of big changes.
