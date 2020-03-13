@@ -130,7 +130,7 @@ namespace fwdpp
                    iterator_t last2, const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const double starting_value = 1.) const noexcept
+                   const double starting_value) const noexcept
         /*!
           Range-based call operator.  Calculates genetic values over ranges of
           mutation keys first1/last1
@@ -225,7 +225,7 @@ namespace fwdpp
                    const haploid_genome_type &g2, const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const double starting_value = 1.) const noexcept
+                   const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid whose genotype
           across sites is given by haploid_genomes g1 and  g2.
@@ -259,7 +259,7 @@ namespace fwdpp
                    const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const double starting_value = 1.) const noexcept
+                   const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid type.
 
