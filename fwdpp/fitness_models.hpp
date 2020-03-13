@@ -505,6 +505,20 @@ namespace fwdpp
                 }
         }
 
+        template<typename make_return_value_fxn>
+        multiplicative_diploid(fitness f, make_return_value_fxn&& make_rv) 
+            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
+              gvalue_is_fitness{ assign_is_fitness_value(f) },
+              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
+
         multiplicative_diploid(fitness gvtype)
             : scaling{ gvtype.get() },
               gvalue_is_trait(assign_is_trait_value(gvtype)),
@@ -512,6 +526,19 @@ namespace fwdpp
               make_return_value{ assign_f(gvtype) }
         /// Construct an object to calculate fitness values.
         /// \param gvtype fwdpp::fitness, where the double repsresents the scaling of "aa" trait values.
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
+        template<typename make_return_value_fxn>
+        multiplicative_diploid(trait t, make_return_value_fxn&& make_rv) 
+            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
+              gvalue_is_fitness{ assign_is_fitness_value(t) },
+              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
         {
             if (!std::isfinite(scaling))
                 {
@@ -618,12 +645,38 @@ namespace fwdpp
                 }
         }
 
+        template<typename make_return_value_fxn>
+        additive_diploid(fitness f, make_return_value_fxn&& make_rv) 
+            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
+              gvalue_is_fitness{ assign_is_fitness_value(f) },
+              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
         additive_diploid(trait t)
             : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
               gvalue_is_fitness{ assign_is_fitness_value(t) },
               make_return_value{ assign_f(t) }
         /// Construct an object to calculate trait/phenotype values
         /// \param t fwdpp::trait, where the double represents the scaling of the "aa" genotype
+        {
+            if (!std::isfinite(scaling))
+                {
+                    throw std::invalid_argument(
+                        "scaling parameter must be finite");
+                }
+        }
+
+        template<typename make_return_value_fxn>
+        additive_diploid(trait t, make_return_value_fxn&& make_rv) 
+            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
+              gvalue_is_fitness{ assign_is_fitness_value(t) },
+              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
         {
             if (!std::isfinite(scaling))
                 {
