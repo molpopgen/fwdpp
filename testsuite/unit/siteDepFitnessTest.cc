@@ -63,6 +63,22 @@ BOOST_AUTO_TEST_CASE(simple_multiplicative_trait)
     BOOST_CHECK_CLOSE(w, -0.05, 1e-8);
 }
 
+BOOST_AUTO_TEST_CASE(simple_multiplicative_trait_custom_fxn)
+{
+    fwdpp::haploid_genome g1(1), g2(1);
+
+    // add mutation at position 0.1, s=0.1,n=1,dominance=0.5 (but we won't use
+    // the dominance...)
+    mutations.emplace_back(0.1, -0.1, 0.5);
+    g1.smutations.emplace_back(0);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 1);
+
+    gcont_t g{ g1, g2 };
+    double w = fwdpp::multiplicative_diploid(fwdpp::trait(1.),[](double d) { return d-1.; })(g[0], g[1],
+                                                               mutations);
+
+    BOOST_CHECK_CLOSE(w, -0.05, 1e-8);
+}
 /*
   g2 has it, g1 does not
 */
@@ -179,6 +195,27 @@ BOOST_AUTO_TEST_CASE(simple_additive_trait)
     gcont_t g{ g1, g2 };
 
     auto wfxn = fwdpp::additive_diploid(fwdpp::trait(1.));
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_trait, true);
+    BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_fitness, false);
+    auto w = wfxn(g[0], g[1], mutations);
+    BOOST_CHECK_EQUAL(w, -0.1);
+}
+
+BOOST_AUTO_TEST_CASE(simple_additive_trait_custom_fxn)
+{
+    fwdpp::haploid_genome g1(1), g2(1);
+
+    // add mutation at position 0.1, s=0.1,n=1,dominance=1.0
+    mutations.emplace_back(0.1, 0.1, 1);
+    // s=-0.2 here
+    mutations.emplace_back(0.2, -0.2, 1);
+    g1.smutations.emplace_back(0);
+    g1.smutations.emplace_back(1);
+    BOOST_CHECK_EQUAL(g1.smutations.size(), 2);
+
+    gcont_t g{ g1, g2 };
+
+    auto wfxn = fwdpp::additive_diploid(fwdpp::trait(1.),[](double d){return d;});
     BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_trait, true);
     BOOST_REQUIRE_EQUAL(wfxn.gvalue_is_fitness, false);
     auto w = wfxn(g[0], g[1], mutations);
