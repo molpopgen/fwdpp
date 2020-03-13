@@ -124,12 +124,14 @@ namespace fwdpp
         using result_type = double;
 
         template <typename iterator_t, typename mcont_t,
-                  typename updating_policy_hom, typename updating_policy_het>
+                  typename updating_policy_hom, typename updating_policy_het,
+                  typename make_return_value>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
                    iterator_t last2, const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
+                   const make_return_value & rv_function,
                    const double starting_value) const noexcept
         /*!
           Range-based call operator.  Calculates genetic values over ranges of
@@ -148,6 +150,8 @@ namespace fwdpp
           mutation.
           \param fpol_het Policy that updates genetic value for a heterozygous
           mutation.
+          \param make_return_value Policy generated the final return value.
+                 Must be equivalent to std::function<double(double)>
           \param starting_value The initial genetic value.
 
           \returns Fitness (double)
@@ -174,18 +178,18 @@ namespace fwdpp
                 "mcont_t::value_type");
             result_type w = starting_value;
             if (first1 == last1 && first2 == last2)
-                return w;
+                return rv_function(w);
             else if (first1 == last1)
                 {
                     for (; first2 != last2; ++first2)
                         fpol_het(w, mutations[*first2]);
-                    return w;
+                    return rv_function(w);
                 }
             else if (first2 == last2)
                 {
                     for (; first1 != last1; ++first1)
                         fpol_het(w, mutations[*first1]);
-                    return w;
+                    return rv_function(w);
                 }
             for (; first1 != last1; ++first1)
                 {
@@ -215,16 +219,32 @@ namespace fwdpp
                 {
                     fpol_het(w, mutations[*first2]);
                 }
-            return w;
+            return rv_function(w);
         }
+        
+        template <typename iterator_t, typename mcont_t,
+                  typename updating_policy_hom, typename updating_policy_het>
+        inline result_type
+        operator()(iterator_t first1, iterator_t last1, iterator_t first2,
+                   iterator_t last2, const mcont_t &mutations,
+                   const updating_policy_hom &fpol_hom,
+                   const updating_policy_het &fpol_het,
+                   const double starting_value) const noexcept
+        {
+            return this->operator()(first1, last1, first2, last2, mutations, fpol_hom, fpol_het,
+                    [](double d) { return d; }, starting_value);
+        }
+        
 
         template <typename haploid_genome_type, typename mcont_t,
-                  typename updating_policy_hom, typename updating_policy_het>
+                  typename updating_policy_hom, typename updating_policy_het,
+                  typename make_return_value>
         inline result_type
         operator()(const haploid_genome_type &g1,
                    const haploid_genome_type &g2, const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
+                   const make_return_value & rv_function,
                    const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid whose genotype
@@ -249,16 +269,31 @@ namespace fwdpp
             return this->operator()(
                 g1.smutations.cbegin(), g1.smutations.cend(),
                 g2.smutations.cbegin(), g2.smutations.cend(), mutations,
-                fpol_hom, fpol_het, starting_value);
+                fpol_hom, fpol_het, rv_function, starting_value);
         }
+        
+        template <typename haploid_genome_type, typename mcont_t,
+                  typename updating_policy_hom, typename updating_policy_het>
+        inline result_type
+        operator()(const haploid_genome_type &g1,
+                   const haploid_genome_type &g2, const mcont_t &mutations,
+                   const updating_policy_hom &fpol_hom,
+                   const updating_policy_het &fpol_het,
+                   const double starting_value) const noexcept
+        {
+            return this->operator()(g1,g2,mutations,fpol_hom, fpol_het,[](double d){return d;}, starting_value);
+        }
+        
 
         template <typename diploid, typename gcont_t, typename mcont_t,
-                  typename updating_policy_hom, typename updating_policy_het>
+                  typename updating_policy_hom, typename updating_policy_het,
+                  typename make_return_value>
         inline result_type
         operator()(const diploid &dip, const gcont_t &haploid_genomes,
                    const mcont_t &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
+                   const make_return_value & rv_function,
                    const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid type.
@@ -277,7 +312,20 @@ namespace fwdpp
         {
             return this->operator()(haploid_genomes[dip.first],
                                     haploid_genomes[dip.second], mutations,
-                                    fpol_hom, fpol_het, starting_value);
+                                    fpol_hom, fpol_het, rv_function, starting_value);
+        }
+
+        template <typename diploid, typename gcont_t, typename mcont_t,
+                  typename updating_policy_hom, typename updating_policy_het>
+        inline result_type
+        operator()(const diploid &dip, const gcont_t &haploid_genomes,
+                   const mcont_t &mutations,
+                   const updating_policy_hom &fpol_hom,
+                   const updating_policy_het &fpol_het,
+                   const double starting_value) const noexcept
+        {
+            return this->operator()(dip, haploid_genomes, mutations, fpol_hom,
+                    fpol_het, [](double d) { return d; }, starting_value);
         }
     };
 
@@ -479,7 +527,7 @@ namespace fwdpp
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value *= (1. + scaling * mut.s);
@@ -487,7 +535,8 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value *= (1. + mut.h * mut.s);
                 },
-                1.));
+                make_return_value,
+                1.);
         }
 
         template <typename haploid_genome_type, typename mcont_t>
@@ -501,7 +550,7 @@ namespace fwdpp
         ///  \return Multiplicative genetic value across sites.
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value *= (1. + scaling * mut.s);
@@ -509,7 +558,8 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value *= (1. + mut.h * mut.s);
                 },
-                1.));
+                make_return_value,
+                1.);
         }
 
         template <typename diploid, typename gcont_t, typename mcont_t>
@@ -589,7 +639,7 @@ namespace fwdpp
         /// Range-based overload
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
@@ -597,7 +647,8 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value += (mut.h * mut.s);
                 },
-                0.));
+                make_return_value,
+                0.);
         }
 
         template <typename haploid_genome_type, typename mcont_t>
@@ -612,7 +663,7 @@ namespace fwdpp
         ///  \note g1 and g2 must be part of the haploid_genome_base hierarchy
         {
             using __mtype = typename mcont_t::value_type;
-            return make_return_value(site_dependent_genetic_value()(
+            return site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
                     value += (scaling * mut.s);
@@ -620,7 +671,8 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value += (mut.h * mut.s);
                 },
-                0.));
+                make_return_value,
+                0.);
         }
 
         ///  \brief Overload for diploids.  This is what a programmer's
