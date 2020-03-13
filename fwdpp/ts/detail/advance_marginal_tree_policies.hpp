@@ -20,6 +20,10 @@ namespace fwdpp
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
                 auto plc = marginal.preserved_leaf_counts[child];
+                if (lc+plc == 0)
+                {
+                    return;
+                }
                 while (p != TS_NULL_NODE)
                     {
                         marginal.leaf_counts[p] -= lc;
@@ -38,6 +42,10 @@ namespace fwdpp
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
                 auto plc = marginal.preserved_leaf_counts[child];
+                if (lc+plc == 0)
+                {
+                    return;
+                }
                 while (p != TS_NULL_NODE)
                     {
                         marginal.leaf_counts[p] += lc;
