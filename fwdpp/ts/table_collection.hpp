@@ -158,7 +158,7 @@ namespace fwdpp
                   site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
-                if (maxpos < 0 || !std::isfinite(maxpos))
+                if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
                         throw std::invalid_argument(
                             "maxpos must be > 0 and finite");
@@ -172,7 +172,7 @@ namespace fwdpp
                   site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
                   preserved_nodes{}
             {
-                if (maxpos < 0 || !std::isfinite(maxpos))
+                if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
                         throw std::invalid_argument(
                             "maxpos must be > 0 and finite");
