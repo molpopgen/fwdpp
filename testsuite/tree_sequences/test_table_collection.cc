@@ -4,6 +4,12 @@
 
 BOOST_AUTO_TEST_SUITE(test_mutation_and_site_tables)
 
+BOOST_AUTO_TEST_CASE(test_invalid_length)
+{
+    BOOST_REQUIRE_THROW(fwdpp::ts::table_collection(0.), std::invalid_argument);
+    BOOST_REQUIRE_THROW(fwdpp::ts::table_collection(-1.), std::invalid_argument);
+}
+
 BOOST_AUTO_TEST_CASE(test_rebuild_one_mutation_per_site_inconsistent_data)
 {
     fwdpp::ts::table_collection tables(1.);
