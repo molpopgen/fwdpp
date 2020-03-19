@@ -58,6 +58,27 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 generation, std::false_type(), std::false_type());
             confirm_mutation_counts(pop, tables);
         }
+    else // Need to remove non-preserved variants from the hash table
+        {
+            // NOTE: simplification returns the preserved node indexes
+            // and does not know anything about the total number of mutations,
+            // so we use a linear time/linear memory method to removed
+            // extinct variants from the simulation.
+            std::vector<int> preserved(pop.mutations.size(), 0);
+            for (auto x : rv.second)
+                {
+                    preserved[x] = 1;
+                }
+            for (std::size_t p = 0; p < preserved.size(); ++p)
+                {
+                    if (!preserved[p])
+                        {
+                            fwdpp::ts::detail::process_mutation_index(pop.mutations,
+                                                                      pop.mut_lookup, p);
+                        }
+                }
+        }
+    
     return rv;
 }
 #endif
