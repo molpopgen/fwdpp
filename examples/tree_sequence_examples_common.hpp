@@ -6,7 +6,7 @@
 #include <functional>
 #include <boost/program_options.hpp>
 #include <fwdpp/simfunctions/recycling.hpp>
-#include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/std_table_collection.hpp>
 #include "tree_sequence_examples_types.hpp"
 
 struct options
@@ -22,7 +22,7 @@ struct options
 
 int
 apply_neutral_mutations(const options &o, const GSLrng &rng,
-                        fwdpp::ts::table_collection &tables,
+                        fwdpp::ts::std_table_collection &tables,
                         ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin);
 
@@ -37,25 +37,25 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
                                  const double shape, const double scoeff);
 
 void execute_matrix_test(const options &, const ts_examples_poptype &,
-                         const fwdpp::ts::table_collection &,
+                         const fwdpp::ts::std_table_collection &,
                          const std::vector<fwdpp::ts::TS_NODE_INT> &);
 
 void execute_expensive_leaf_test(
-    const options &o, const fwdpp::ts::table_collection &tables,
+    const options &o, const fwdpp::ts::std_table_collection &tables,
     const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
 void execute_serialization_test(const options &,
-                                const fwdpp::ts::table_collection &);
+                                const fwdpp::ts::std_table_collection &);
 
-void test_serialization(const fwdpp::ts::table_collection &tables,
+void test_serialization(const fwdpp::ts::std_table_collection &tables,
                         const std::string &filename);
 void
 visit_sites_test(const options &o, const ts_examples_poptype &pop,
-                 const fwdpp::ts::table_collection &tables,
+                 const fwdpp::ts::std_table_collection &tables,
                  const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
 void write_sfs(const options &o, const GSLrng &rng,
-               const fwdpp::ts::table_collection &tables,
+               const fwdpp::ts::std_table_collection &tables,
                const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
 
 #endif

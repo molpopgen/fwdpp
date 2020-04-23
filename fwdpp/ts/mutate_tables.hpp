@@ -6,18 +6,17 @@
 #include <vector>
 #include "definitions.hpp"
 #include "mark_multiple_roots.hpp"
-#include "table_collection.hpp"
 #include "mutation_tools.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        template <typename SAMPLES, typename rng, typename mfunction>
+        template <typename TableCollectionType, typename Samples, typename rng,
+                  typename mfunction>
         unsigned
         mutate_tables(const rng &r, const mfunction &make_mutation,
-                      table_collection &tables, SAMPLES &&samples,
-                      const double mu)
+                      TableCollectionType &tables, Samples &&samples, const double mu)
         /// \brief Apply a mutation scheme to add neutral mutations to a fwdpp::ts::table_collection.
         ///
         /// \param r fwdpp::GSLrng_t
@@ -28,12 +27,13 @@ namespace fwdpp
         ///
         /// \version 0.7.0 Added to library
         /// \version 0.7.2 Return immediately if mutation rate is not > 0
+        /// \version 0.9.0 Added typename TableCollectionType
         ///
         /// This function uses the edge_table to apply mutations to all parent/child connections.
         /// The mutations should be neutral, although that requirement is not enforced. (It simply
         /// makes little sense to apply selected mutations to the entire edge table post-hoc.)
         ///
-        /// The result of this function is to populate \a tables.mutation_table with neutral variants.
+        /// The result of this function is to populate \a tables.mutations with neutral variants.
         ///
         /// The parameter \a make_mutation is a function that must conform to
         /// std::function<new_variant_record(double, double, fwdpp::uint_t)>.  The three arguments
@@ -75,12 +75,11 @@ namespace fwdpp
                 {
                     return nmuts;
                 }
-            auto mr
-                = mark_multiple_roots(tables, std::forward<SAMPLES>(samples));
+            auto mr = mark_multiple_roots(tables, std::forward<Samples>(samples));
             const double L = tables.genome_length();
             for (auto &i : mr)
                 {
-                    auto dt = tables.node_table[i.first].time;
+                    auto dt = tables.nodes[i.first].time;
                     for (auto j : i.second)
                         {
                             double mean = dt * (j.second - j.first) * mu / L;
@@ -94,17 +93,16 @@ namespace fwdpp
                                         = make_mutation(j.first, j.second, g);
                                     auto newsite = tables.emplace_back_site(
                                         r.s.position, r.s.ancestral_state);
-                                    tables.mutation_table.emplace_back(
-                                        mutation_record{
-                                            i.first, r.key, newsite,
-                                            r.derived_state, r.neutral });
+                                    tables.emplace_back_mutation(i.first, r.key, newsite,
+                                                                 r.derived_state,
+                                                                 r.neutral);
                                 }
                         }
                 }
-            for (auto &e : tables.edge_table)
+            for (auto &e : tables.edges)
                 {
-                    auto ct = tables.node_table[e.child].time;
-                    auto pt = tables.node_table[e.parent].time;
+                    auto ct = tables.nodes[e.child].time;
+                    auto pt = tables.nodes[e.parent].time;
                     auto dt = ct - pt;
                     double mean = dt * (e.right - e.left) * mu / L;
                     auto nm = gsl_ran_poisson(r.get(), mean);
@@ -112,13 +110,11 @@ namespace fwdpp
                         {
                             unsigned g = static_cast<unsigned>(
                                 gsl_ran_flat(r.get(), pt + 1, ct + 1));
-                            new_variant_record r
-                                = make_mutation(e.left, e.right, g);
-                            auto site = tables.emplace_back_site(
-                                r.s.position, r.s.ancestral_state);
-                            tables.mutation_table.emplace_back(
-                                mutation_record{ e.child, r.key, site,
-                                                 r.derived_state, r.neutral });
+                            new_variant_record r = make_mutation(e.left, e.right, g);
+                            auto site = tables.emplace_back_site(r.s.position,
+                                                                 r.s.ancestral_state);
+                            tables.emplace_back_mutation(
+                                e.child, r.key, site, r.derived_state, r.neutral);
                         }
                     nmuts += nm;
                 }

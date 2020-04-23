@@ -12,18 +12,21 @@
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/ts/exceptions.hpp>
-#include "table_types.hpp"
+#include "definitions.hpp"
 #include "indexed_edge.hpp" //TODO: create fewer header dependencies
 
 namespace fwdpp
 {
     namespace ts
     {
+        template <typename NodeTableType, typename EdgeTableType, typename SiteTableType,
+                  typename MutationTableType>
         struct table_collection
         /*!
 		 * \brief A collection of tables for a single simulation.
          *
          * \version 0.7.0 Added to fwdpp
+         * \version 0.9.0 Made a template class
 		 */
         {
           private:
@@ -44,50 +47,43 @@ namespace fwdpp
                 assert(std::count(begin(breakpoints), end(breakpoints),
                                   std::numeric_limits<double>::max())
                        == 1);
-                assert(breakpoints.back()
-                       == std::numeric_limits<double>::max());
+                assert(breakpoints.back() == std::numeric_limits<double>::max());
                 for (unsigned j = 1; j < breakpoints.size(); ++j)
                     {
                         double a = breakpoints[j - 1];
-                        double b = (j < breakpoints.size() - 1)
-                                       ? breakpoints[j]
-                                       : L;
+                        double b = (j < breakpoints.size() - 1) ? breakpoints[j] : L;
                         if (b <= a)
                             {
-                                throw std::invalid_argument(
-                                    "right must be > left");
+                                throw std::invalid_argument("right must be > left");
                             }
                         if (j % 2 == 0.)
                             {
-                                this->push_back_edge(
-                                    a, b, std::get<0>(parents), next_index);
+                                this->push_back_edge(a, b, std::get<0>(parents),
+                                                     next_index);
                             }
                         else
                             {
-                                this->push_back_edge(
-                                    a, b, std::get<1>(parents), next_index);
+                                this->push_back_edge(a, b, std::get<1>(parents),
+                                                     next_index);
                             }
                     }
             }
 
             void
-            split_breakpoints(
-                const std::vector<double>& breakpoints,
-                const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                const TS_NODE_INT next_index)
+            split_breakpoints(const std::vector<double>& breakpoints,
+                              const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
+                              const TS_NODE_INT next_index)
             {
                 if (breakpoints.empty())
                     {
-                        this->push_back_edge(0., L, std::get<0>(parents),
-                                             next_index);
+                        this->push_back_edge(0., L, std::get<0>(parents), next_index);
                         return;
                     }
-                auto itr = std::adjacent_find(std::begin(breakpoints),
-                                              std::end(breakpoints));
+                auto itr
+                    = std::adjacent_find(std::begin(breakpoints), std::end(breakpoints));
                 if (itr == std::end(breakpoints))
                     {
-                        split_breakpoints_add_edges(breakpoints, parents,
-                                                    next_index);
+                        split_breakpoints_add_edges(breakpoints, parents, next_index);
                     }
                 else
                     {
@@ -101,18 +97,14 @@ namespace fwdpp
                         auto start = breakpoints.begin();
                         while (itr < breakpoints.end())
                             {
-                                auto not_equal
-                                    = std::find_if(itr, breakpoints.end(),
-                                                   [itr](const double d) {
-                                                       return d != *itr;
-                                                   });
-                                int even = (std::distance(itr, not_equal) % 2
-                                            == 0.0);
-                                odd_breakpoints.insert(odd_breakpoints.end(),
-                                                       start, itr + 1 - even);
+                                auto not_equal = std::find_if(
+                                    itr, breakpoints.end(),
+                                    [itr](const double d) { return d != *itr; });
+                                int even = (std::distance(itr, not_equal) % 2 == 0.0);
+                                odd_breakpoints.insert(odd_breakpoints.end(), start,
+                                                       itr + 1 - even);
                                 start = not_equal;
-                                itr = std::adjacent_find(
-                                    start, std::end(breakpoints));
+                                itr = std::adjacent_find(start, std::end(breakpoints));
                             }
                         odd_breakpoints.insert(odd_breakpoints.end(), start,
                                                breakpoints.end());
@@ -121,32 +113,41 @@ namespace fwdpp
                     }
             }
 
+            template <typename site_like, typename mutation_record_like>
             void
-            record_site_during_rebuild(const site& s, mutation_record& mr)
+            record_site_during_rebuild(const site_like& s, mutation_record_like& mr)
             {
-                if (site_table.empty()
-                    || site_table.back().position != s.position)
+                if (sites.empty() || sites.back().position != s.position)
                     {
-                        site_table.push_back(s);
+                        sites.push_back(s);
                     }
-                mr.site = site_table.size() - 1;
+                mr.site = sites.size() - 1;
             }
 
           public:
+            using node_table = NodeTableType;
+            using edge_table = EdgeTableType;
+            using site_table = SiteTableType;
+            using mutation_table = MutationTableType;
+            using edge_t = typename EdgeTableType::value_type;
+            using node_t = typename NodeTableType::value_type;
+            using site_t = typename SiteTableType::value_type;
+            using mutation_t = typename MutationTableType::value_type;
+
             /// Node table for this simulation
-            node_vector node_table;
+            node_table nodes;
             /// Edge table for this simulation
-            edge_vector edge_table;
+            edge_table edges;
             /// Mutation table for this simulation;
-            mutation_key_vector mutation_table;
+            mutation_table mutations;
             /// Site table
-            site_vector site_table;
+            site_table sites;
             /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
             indexed_edge_container input_left;
             /// The output edge vector. "O" in \cite Kelleher2016-cb, page 13
             indexed_edge_container output_right;
             /// This reflects the length of
-            /// tables.edge_table after last simplification.
+            /// tables.edges after last simplification.
             /// It can be used to make sure we only sort
             /// newly-added nodes.
             std::ptrdiff_t edge_offset;
@@ -154,32 +155,28 @@ namespace fwdpp
             std::vector<TS_NODE_INT> preserved_nodes;
 
             explicit table_collection(const double maxpos)
-                : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
-                  site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
-                  preserved_nodes{}
+                : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
+                  output_right{}, edge_offset{0}, preserved_nodes{}
             {
                 if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
-                        throw std::invalid_argument(
-                            "maxpos must be > 0 and finite");
+                        throw std::invalid_argument("maxpos must be > 0 and finite");
                     }
             }
 
             table_collection(const TS_NODE_INT num_initial_nodes,
                              const double initial_time, TS_NODE_INT pop,
                              const double maxpos)
-                : L{ maxpos }, node_table{}, edge_table{}, mutation_table{},
-                  site_table{}, input_left{}, output_right{}, edge_offset{ 0 },
-                  preserved_nodes{}
+                : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
+                  output_right{}, edge_offset{0}, preserved_nodes{}
             {
                 if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
-                        throw std::invalid_argument(
-                            "maxpos must be > 0 and finite");
+                        throw std::invalid_argument("maxpos must be > 0 and finite");
                     }
                 for (TS_NODE_INT i = 0; i < num_initial_nodes; ++i)
                     {
-                        node_table.push_back(node{ pop, initial_time });
+                        nodes.push_back(node_t{pop, initial_time});
                     }
             }
 
@@ -195,12 +192,12 @@ namespace fwdpp
             /// by definition, sorted b/c they are the output of simplification.
             /// Thus, we only sort the new edges and then perform a left rotate
             /// w.r.to edge_offset to put the nodes in the correct final order.
-            /// The rotation is exactly edge_table.size() swaps.
+            /// The rotation is exactly edges.size() swaps.
             {
-                std::sort(edge_table.begin() + edge_offset, edge_table.end(),
-                          [this](const edge& a, const edge& b) {
-                              auto ga = this->node_table[a.parent].time;
-                              auto gb = this->node_table[b.parent].time;
+                std::sort(edges.begin() + edge_offset, edges.end(),
+                          [this](const edge_t& a, const edge_t& b) {
+                              auto ga = this->nodes[a.parent].time;
+                              auto gb = this->nodes[b.parent].time;
                               if (ga == gb)
                                   {
                                       if (a.parent == b.parent)
@@ -217,9 +214,8 @@ namespace fwdpp
                           });
                 if (edge_offset > 0)
                     {
-                        std::rotate(edge_table.begin(),
-                                    edge_table.begin() + edge_offset,
-                                    edge_table.end());
+                        std::rotate(edges.begin(), edges.begin() + edge_offset,
+                                    edges.end());
                     }
 #ifndef NDEBUG
                 // TODO: allow for exceptions
@@ -243,11 +239,9 @@ namespace fwdpp
             sort_mutations()
             {
                 //mutations are sorted by increasing position
-                std::sort(mutation_table.begin(), mutation_table.end(),
-                          [this](const mutation_record& a,
-                                 const mutation_record& b) {
-                              return site_table[a.site].position
-                                     < site_table[b.site].position;
+                std::sort(mutations.begin(), mutations.end(),
+                          [this](const mutation_t& a, const mutation_t& b) {
+                              return sites[a.site].position < sites[b.site].position;
                           });
             }
 
@@ -275,25 +269,24 @@ namespace fwdpp
             /// \version 0.8.0 Change from testing minimal requirement to requirement
             /// for simplification.
             {
-                return std::is_sorted(
-                    edge_table.begin(), edge_table.end(),
-                    [this](const edge& a, const edge& b) {
-                        auto ga = this->node_table[a.parent].time;
-                        auto gb = this->node_table[b.parent].time;
-                        if (ga == gb)
-                            {
-                                if (a.parent == b.parent)
-                                    {
-                                        if (a.child == b.child)
-                                            {
-                                                return a.left < b.left;
-                                            }
-                                        return a.child < b.child;
-                                    }
-                                return a.parent < b.parent;
-                            }
-                        return ga > gb;
-                    });
+                return std::is_sorted(edges.begin(), edges.end(),
+                                      [this](const edge_t& a, const edge_t& b) {
+                                          auto ga = this->nodes[a.parent].time;
+                                          auto gb = this->nodes[b.parent].time;
+                                          if (ga == gb)
+                                              {
+                                                  if (a.parent == b.parent)
+                                                      {
+                                                          if (a.child == b.child)
+                                                              {
+                                                                  return a.left < b.left;
+                                                              }
+                                                          return a.child < b.child;
+                                                      }
+                                                  return a.parent < b.parent;
+                                              }
+                                          return ga > gb;
+                                      });
             }
 
             bool
@@ -305,26 +298,25 @@ namespace fwdpp
             /// node IDs.
             /// \version 0.8.0 Added to library
             {
-                return std::is_sorted(
-                    edge_table.begin(), edge_table.end(),
-                    [this](const edge& a, const edge& b) {
-                        auto ga = this->node_table[a.parent].time;
-                        auto gb = this->node_table[b.parent].time;
-                        return ga > gb
-                               && (std::tie(a.child, a.left)
-                                   < std::tie(b.child, b.left));
-                    });
+                return std::is_sorted(edges.begin(), edges.end(),
+                                      [this](const edge_t& a, const edge_t& b) {
+                                          auto ga = this->nodes[a.parent].time;
+                                          auto gb = this->nodes[b.parent].time;
+                                          return ga > gb
+                                                 && (std::tie(a.child, a.left)
+                                                     < std::tie(b.child, b.left));
+                                      });
             }
 
             void
             clear() noexcept
             /// Clears internal vectors.
             {
-                node_table.clear();
-                edge_table.clear();
-                mutation_table.clear();
+                nodes.clear();
+                edges.clear();
+                mutations.clear();
                 preserved_nodes.clear();
-                site_table.clear();
+                sites.clear();
             }
 
             void
@@ -334,18 +326,16 @@ namespace fwdpp
             {
                 for (auto i : node_ids)
                     {
-                        if (static_cast<std::size_t>(i) >= node_table.size())
+                        if (static_cast<std::size_t>(i) >= nodes.size())
                             {
                                 throw std::invalid_argument(
                                     "node id larger than node table size");
                             }
-                        if (std::find(preserved_nodes.begin(),
-                                      preserved_nodes.end(), i)
+                        if (std::find(preserved_nodes.begin(), preserved_nodes.end(), i)
                             != preserved_nodes.end())
                             {
-                                throw std::invalid_argument(
-                                    "node already recorded as a "
-                                    "preserved_node");
+                                throw std::invalid_argument("node already recorded as a "
+                                                            "preserved_node");
                             }
                         preserved_nodes.push_back(i);
                     }
@@ -354,66 +344,63 @@ namespace fwdpp
             std::size_t
             push_back_node(double time, std::int32_t pop)
             {
-                node_table.push_back(node{ pop, time });
-                return node_table.size() - 1;
+                nodes.push_back(node_t{pop, time});
+                return nodes.size() - 1;
             }
 
             template <typename... args>
             std::size_t
             emplace_back_node(args&&... Args)
             {
-                node_table.emplace_back(node{ std::forward<args>(Args)... });
-                return node_table.size() - 1;
+                nodes.emplace_back(node_t{std::forward<args>(Args)...});
+                return nodes.size() - 1;
             }
 
             std::size_t
-            push_back_edge(double l, double r, TS_NODE_INT parent,
-                           TS_NODE_INT child)
+            push_back_edge(double l, double r, TS_NODE_INT parent, TS_NODE_INT child)
             {
-                edge_table.push_back(edge{ l, r, parent, child });
-                return edge_table.size();
+                edges.push_back(edge_t{l, r, parent, child});
+                return edges.size();
             }
 
             template <typename... args>
             std::size_t
             emplace_back_edge(args&&... Args)
             {
-                edge_table.emplace_back(edge{ std::forward<args>(Args)... });
-                return edge_table.size();
+                edges.emplace_back(edge_t{std::forward<args>(Args)...});
+                return edges.size();
             }
 
             template <typename... args>
             std::size_t
             push_back_site(args&&... Args)
             {
-                site_table.push_back(site{ std::forward<args>(Args)... });
-                return site_table.size() - 1;
+                sites.push_back(site_t{std::forward<args>(Args)...});
+                return sites.size() - 1;
             }
 
             template <typename... args>
             std::size_t
             emplace_back_site(args&&... Args)
             {
-                site_table.emplace_back(site{ std::forward<args>(Args)... });
-                return site_table.size() - 1;
+                sites.emplace_back(site_t{std::forward<args>(Args)...});
+                return sites.size() - 1;
             }
 
             template <typename... args>
             std::size_t
             push_back_mutation(args&&... Args)
             {
-                mutation_table.push_back(
-                    mutation_record{ std::forward<args>(Args)... });
-                return mutation_table.size() - 1;
+                mutations.push_back(mutation_t{std::forward<args>(Args)...});
+                return mutations.size() - 1;
             }
 
             template <typename... args>
             std::size_t
             emplace_back_mutation(args&&... Args)
             {
-                mutation_table.emplace_back(
-                    mutation_record{ std::forward<args>(Args)... });
-                return mutation_table.size() - 1;
+                mutations.emplace_back(mutation_t{std::forward<args>(Args)...});
+                return mutations.size() - 1;
             }
 
             void
@@ -421,18 +408,16 @@ namespace fwdpp
             /// Generates the index vectors referred to
             /// as I and O in Kelleher et al. (2016)
             {
-                input_left.reserve(edge_table.size());
-                output_right.reserve(edge_table.size());
+                input_left.reserve(edges.size());
+                output_right.reserve(edges.size());
                 input_left.clear();
                 output_right.clear();
-                for (auto& e : edge_table)
+                for (auto& e : edges)
                     {
                         assert(e.left < e.right);
-                        input_left.emplace_back(e.left,
-                                                -node_table[e.parent].time,
-                                                e.parent, e.child);
-                        output_right.emplace_back(e.right,
-                                                  node_table[e.parent].time,
+                        input_left.emplace_back(e.left, -nodes[e.parent].time, e.parent,
+                                                e.child);
+                        output_right.emplace_back(e.right, nodes[e.parent].time,
                                                   e.parent, e.child);
                     }
                 std::sort(input_left.begin(), input_left.end());
@@ -444,6 +429,7 @@ namespace fwdpp
                 const std::vector<double>& breakpoints,
                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                 const std::int32_t population, const double time)
+            /// FIXME: having this here violates ORP
             {
                 // TODO: carefully document how to index node times.
                 auto next_index = emplace_back_node(population, time);
@@ -459,18 +445,15 @@ namespace fwdpp
             rebuild_site_table()
             /// Complete rebuild of the site table.
             {
-                auto site_table_copy(site_table);
-                site_table.clear();
-                for (auto& mr : mutation_table)
+                auto site_table_copy(sites);
+                sites.clear();
+                for (auto& mr : mutations)
                     {
                         auto os = mr.site;
-                        record_site_during_rebuild(site_table_copy[mr.site],
-                                                   mr);
-                        if (site_table_copy[os].position
-                            != site_table[mr.site].position)
+                        record_site_during_rebuild(site_table_copy[mr.site], mr);
+                        if (site_table_copy[os].position != sites[mr.site].position)
                             {
-                                throw tables_error(
-                                    "error rebuilding site table");
+                                throw tables_error("error rebuilding site table");
                             }
                     }
             }
@@ -489,55 +472,54 @@ namespace fwdpp
             std::size_t
             num_nodes() const
             {
-                return node_table.size();
+                return nodes.size();
             }
 
             void
             update_offset()
             {
-                edge_offset = edge_table.size();
+                edge_offset = edges.size();
             }
+
             double
             genome_length() const
             {
                 return L;
             }
+
+            inline bool
+            operator==(const table_collection& b) const
+            {
+                return genome_length() == b.genome_length() && sites == b.sites
+                       && edges == b.edges && nodes == b.nodes
+                       && mutations == b.mutations
+                       && preserved_nodes == b.preserved_nodes;
+            }
+
+            inline bool
+            operator!=(const table_collection& b) const
+            {
+                return !(*this == b);
+            }
         };
 
-        inline bool
-        operator==(const table_collection& a, const table_collection& b)
-        {
-            return a.genome_length() == b.genome_length()
-                   && a.site_table == b.site_table
-                   && a.edge_table == b.edge_table
-                   && a.node_table == b.node_table
-                   && a.mutation_table == b.mutation_table
-                   && a.preserved_nodes == b.preserved_nodes;
-        }
-
-        inline bool
-        operator!=(const table_collection& a, const table_collection& b)
-        {
-            return !(a == b);
-        }
-
-        template <typename mcont_t>
+        template <typename TableCollectionType, typename mcont_t>
         void
         record_mutations_infinite_sites(
             const TS_NODE_INT u, const mcont_t& mutations,
             const std::vector<std::uint32_t>& new_mutation_keys,
-            table_collection& tables)
+            TableCollectionType& tables)
         /// \version Added in 0.8.0
+        /// FIXME: move this to a tree seq recording header
         {
             std::int8_t ancestral_state = 0, derived_state = 1;
             for (auto& k : new_mutation_keys)
                 {
-                    auto site = tables.emplace_back_site(mutations[k].pos,
-                                                         ancestral_state);
+                    auto site
+                        = tables.emplace_back_site(mutations[k].pos, ancestral_state);
                     if (site >= std::numeric_limits<TS_NODE_INT>::max())
                         {
-                            throw std::invalid_argument(
-                                "site index out of range");
+                            throw std::invalid_argument("site index out of range");
                         }
                     tables.push_back_mutation(u, k, site, derived_state,
                                               mutations[k].neutral);

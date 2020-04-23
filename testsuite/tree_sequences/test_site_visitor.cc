@@ -6,11 +6,10 @@
 
 BOOST_AUTO_TEST_SUITE(test_site_visitor)
 
-BOOST_FIXTURE_TEST_CASE(test_simple_iteration,
-                        simple_table_collection_infinite_sites)
+BOOST_FIXTURE_TEST_CASE(test_simple_iteration, simple_table_collection_infinite_sites)
 {
     std::size_t num_sites = 0;
-    fwdpp::ts::site_visitor sv(tables, samples);
+    fwdpp::ts::site_visitor<fwdpp::ts::std_table_collection> sv(tables, samples);
     decltype(sv()) i;
     while ((i = sv()) != end(sv))
         {
@@ -18,7 +17,7 @@ BOOST_FIXTURE_TEST_CASE(test_simple_iteration,
             auto mr = sv.get_mutations();
             BOOST_REQUIRE_EQUAL(std::distance(mr.first, mr.second), 1);
         }
-    BOOST_REQUIRE_EQUAL(num_sites, tables.site_table.size());
+    BOOST_REQUIRE_EQUAL(num_sites, tables.sites.size());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

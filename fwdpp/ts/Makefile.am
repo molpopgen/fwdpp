@@ -7,6 +7,7 @@ pkginclude_HEADERS= definitions.hpp \
 			edge.hpp \
 			site.hpp \
 			table_collection.hpp \
+			std_table_collection.hpp \
 			table_simplifier.hpp \
 			get_parent_ids.hpp \
 			generate_data_matrix.hpp \
@@ -25,7 +26,6 @@ pkginclude_HEADERS= definitions.hpp \
 			decapitate.hpp \
 			exceptions.hpp \
 			mutation_tools.hpp \
-			table_types.hpp \
 			visit_sites.hpp \
 			site_visitor.hpp
 

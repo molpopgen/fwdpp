@@ -17,7 +17,7 @@ BOOST_FIXTURE_TEST_CASE(infinite_sites, simple_table_collection_infinite_sites)
     BOOST_REQUIRE_EQUAL(dm.ncol, samples.size());
     auto rs = fwdpp::row_sums(dm);
     BOOST_REQUIRE(rs.second.empty());
-    BOOST_REQUIRE_EQUAL(rs.first.size(), tables.node_table.size() - 1);
+    BOOST_REQUIRE_EQUAL(rs.first.size(), tables.nodes.size() - 1);
     auto roots = fwdpp::ts::get_roots(tv.tree());
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
     std::vector<int> expected_sfs(samples.size(),

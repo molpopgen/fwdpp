@@ -20,15 +20,15 @@ class simple_table_collection_infinite_sites : public simple_table_collection
     void
     add_x_mutations_per_branch(int x, int exclude_root)
     {
-        tables.site_table.clear();
-        tables.mutation_table.clear();
+        tables.sites.clear();
+        tables.mutations.clear();
         // 0.6 is arbitrary.  It just means we won't hit genome_length.
         double spacing_between_variants
             = 0.6 * tables.genome_length()
               / static_cast<double>(
-                  x + (tables.node_table.size() - exclude_root));
+                  x + (tables.nodes.size() - exclude_root));
         double next_variant_position = std::nexttoward(0., INFINITY);
-        for (std::size_t i = 0; i < tables.node_table.size() - exclude_root;
+        for (std::size_t i = 0; i < tables.nodes.size() - exclude_root;
              ++i)
             {
                 for (int j = 0; j < x; ++j)

@@ -27,7 +27,7 @@ main(int argc, char** argv)
     GSLrng rng(seed);
     // Initialize a table_collection with 2N nodes at time zero,
     // in pop zero, and with our genome length
-    fwdpp::ts::table_collection tables(2 * N, 0, 0, genome_length);
+    fwdpp::ts::std_table_collection tables(2 * N, 0, 0, genome_length);
 
     // Set up individual metadata
     std::vector<diploid_metadata> metadata;

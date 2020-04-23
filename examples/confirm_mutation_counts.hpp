@@ -6,16 +6,16 @@
 #include <vector>
 #include <cstdint>
 #include <fwdpp/internal/sample_diploid_helpers.hpp>
-#include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/std_table_collection.hpp>
 
 #ifndef NDEBUG
 template <typename poptype>
 void
 confirm_mutation_counts(poptype &pop,
-                        const fwdpp::ts::table_collection &tables)
+                        const fwdpp::ts::std_table_collection &tables)
 {
     std::vector<std::size_t> keys;
-    for (auto &mr : tables.mutation_table)
+    for (auto &mr : tables.mutations)
         {
             keys.push_back(mr.key);
         }
@@ -26,7 +26,7 @@ confirm_mutation_counts(poptype &pop,
             throw std::runtime_error("redundant mutation keys");
         }
 
-    for (auto &mr : tables.mutation_table)
+    for (auto &mr : tables.mutations)
         {
             if (mr.node == fwdpp::ts::TS_NULL_NODE)
                 {
@@ -34,7 +34,7 @@ confirm_mutation_counts(poptype &pop,
                         "mutation node maps to null node");
                 }
 
-            if (tables.node_table[mr.node].time < pop.mutations[mr.key].g)
+            if (tables.nodes[mr.node].time < pop.mutations[mr.key].g)
                 {
                     throw std::runtime_error(
                         "mutation mapped to node pre-dating its origin");
@@ -53,7 +53,7 @@ confirm_mutation_counts(poptype &pop,
 #else
 template <typename poptype>
 void
-confirm_mutation_counts(poptype &, const fwdpp::ts::table_collection &)
+confirm_mutation_counts(poptype &, const fwdpp::ts::std_table_collection &)
 {
 }
 #endif
