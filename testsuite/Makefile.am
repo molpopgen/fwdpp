@@ -11,7 +11,7 @@ TESTS=$(noinst_PROGRAMS)
 
 #Unit test targets:
 unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/gameteTest.cc unit/utilTest.cc unit/type_traitsTest.cc unit/siteDepFitnessTest.cc unit/serializationTest.cc unit/gamete_cleanerTest.cc \
-	unit/test_mutate_recombine.cc unit/test_sampling.cc \
+	unit/test_mutate_recombine.cc \
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \
 	unit/test_recombination.cc \
@@ -25,7 +25,6 @@ unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
 	unit/sugar_GSLrngTest.cc \
 	unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc \
-	unit/sugar_construct_pops.cc \
 	unit/sugar_popgenmut.cc \
 	fixtures/sugar_fixtures.cc
 
