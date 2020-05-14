@@ -10,12 +10,12 @@
 #include <fwdpp/ts/recycling.hpp>
 #include "confirm_mutation_counts.hpp"
 
-template <typename poptype>
+template <typename Simplifier, typename poptype>
 std::pair<std::vector<fwdpp::ts::TS_NODE_INT>, std::vector<std::size_t>>
 simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
-                fwdpp::ts::table_collection &tables,
-                fwdpp::ts::table_simplifier &simplifier,
+                fwdpp::ts::std_table_collection &tables,
+                Simplifier &simplifier,
                 const fwdpp::ts::TS_NODE_INT first_sample_node,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
@@ -36,14 +36,14 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                                        pop.mcounts,
                                        mcounts_from_preserved_nodes);
             auto itr = std::remove_if(
-                tables.mutation_table.begin(), tables.mutation_table.end(),
+                tables.mutations.begin(), tables.mutations.end(),
                 [&pop, &mcounts_from_preserved_nodes](
                     const fwdpp::ts::mutation_record &mr) {
                     return pop.mcounts[mr.key] == 2 * pop.diploids.size()
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });
-            auto d = std::distance(itr, end(tables.mutation_table));
-            tables.mutation_table.erase(itr, tables.mutation_table.end());
+            auto d = std::distance(itr, end(tables.mutations));
+            tables.mutations.erase(itr, tables.mutations.end());
             if (d)
                 {
                     tables.rebuild_site_table();

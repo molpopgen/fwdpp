@@ -26,7 +26,7 @@ main(int argc, char** argv)
     GSLrng rng(seed);
     // Initialize a table_collection with 2N nodes at time zero,
     // in pop zero, and with our genome length
-    fwdpp::ts::table_collection tables(2 * N, 0, 0, genome_length);
+    fwdpp::ts::std_table_collection tables(2 * N, 0, 0, genome_length);
 
     // Set up individual metadata
     std::vector<diploid_metadata> metadata;
@@ -38,8 +38,8 @@ main(int argc, char** argv)
 
     wfevolvets_no_mutation(rng, ngenerations, simplify, psurvival,
                            recombination, metadata, tables);
-    std::cout << tables.edge_table.size() << " edges\n"
-              << tables.node_table.size() << " nodes\n"
+    std::cout << tables.edges.size() << " edges\n"
+              << tables.nodes.size() << " nodes\n"
               << "Edge table is sorted: "
               << tables.edges_are_minimally_sorted() << '\n';
 

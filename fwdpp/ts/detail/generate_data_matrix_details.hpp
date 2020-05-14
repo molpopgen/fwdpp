@@ -8,7 +8,6 @@
 #include "../marginal_tree.hpp"
 #include "../site_visitor.hpp"
 #include "../marginal_tree_functions/samples.hpp"
-#include "../table_types.hpp"
 
 namespace fwdpp
 {

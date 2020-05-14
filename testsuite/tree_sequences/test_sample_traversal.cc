@@ -15,7 +15,7 @@ BOOST_FIXTURE_TEST_CASE(num_samples_simple_table_collection,
     // is the number of nodes in the tree.  More generally,
     // we need to do a node traveral, but that hasn't been tested yet
     // (see below).
-    for (std::size_t i = 0; i < tables.node_table.size(); ++i)
+    for (std::size_t i = 0; i < tables.nodes.size(); ++i)
         {
             BOOST_REQUIRE_EQUAL(fwdpp::ts::num_samples(tv.tree(), i),
                                 naive_num_samples(tv.tree(), i));
@@ -24,7 +24,7 @@ BOOST_FIXTURE_TEST_CASE(num_samples_simple_table_collection,
 
 BOOST_FIXTURE_TEST_CASE(test_sample_lists, simple_table_collection)
 {
-    for (std::size_t i = 0; i < tables.node_table.size(); ++i)
+    for (std::size_t i = 0; i < tables.nodes.size(); ++i)
         {
             auto x = fwdpp::ts::get_samples(tv.tree(), i);
             auto y = naive_get_samples(tv.tree(), i);

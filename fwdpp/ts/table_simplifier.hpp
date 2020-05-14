@@ -1,18 +1,14 @@
 #ifndef FWDPP_TS_TABLE_SIMPLIFIER_HPP
 #define FWDPP_TS_TABLE_SIMPLIFIER_HPP
 
-#include <iostream>
 #include <cmath>
-#include <map>
+#include <cstdint>
 #include <vector>
 #include <algorithm>
 #include <numeric>
 #include <cstddef>
+#include <tuple>
 #include <stdexcept>
-#include <unordered_map>
-#include "node.hpp"
-#include "edge.hpp"
-#include "table_collection.hpp"
 #include "simplification/segment.hpp"
 #include "simplification/ancestry_list.hpp"
 
@@ -20,7 +16,7 @@ namespace fwdpp
 {
     namespace ts
     {
-        class table_simplifier
+        template <typename TableCollectionType> class table_simplifier
         /*! \brief Implements the simplification algorithm of \cite Kelleher2018-fu
          *
          *  Keeping a persistent simplifier around during a simplification avoids many 
@@ -35,16 +31,15 @@ namespace fwdpp
          *  \version 0.7.0 Added to fwdpp.
          *  \version 0.8.0 Added ancestry_list, which greatly reduces memory overhead.
          *  \version 0.8.0 Remove need for temporary output edge table.
+         *  \version 0.9.0 Added typename TableCollectionType
          */
         {
           private:
-
             struct mutation_node_map_entry
             {
                 TS_NODE_INT node;
                 std::size_t site, location;
-                mutation_node_map_entry(TS_NODE_INT n, std::size_t s,
-                                        std::size_t l)
+                mutation_node_map_entry(TS_NODE_INT n, std::size_t s, std::size_t l)
                     : node(n), site(s), location(l)
                 {
                 }
@@ -67,8 +62,7 @@ namespace fwdpp
                 {
                     double tright = std::numeric_limits<double>::max();
                     auto b = overlapping.begin();
-                    for (auto i = overlapping.begin(); i < overlapping_end;
-                         ++i)
+                    for (auto i = overlapping.begin(); i < overlapping_end; ++i)
                         {
                             if (i->right > left)
                                 {
@@ -86,9 +80,8 @@ namespace fwdpp
                 std::vector<segment>::iterator overlapping_end;
                 double left, right;
                 segment_overlapper()
-                    : sbeg(), send(), overlapping{},
-                      overlapping_end(overlapping.end()), left(0),
-                      right(std::numeric_limits<double>::max())
+                    : sbeg(), send(), overlapping{}, overlapping_end(overlapping.end()),
+                      left(0), right(std::numeric_limits<double>::max())
                 {
                 }
 
@@ -120,9 +113,7 @@ namespace fwdpp
                                 {
                                     tright = std::min(tright, sbeg->right);
                                     overlapping_end
-                                        = overlapping.insert(overlapping_end,
-                                                             *sbeg)
-                                          + 1;
+                                        = overlapping.insert(overlapping_end, *sbeg) + 1;
                                     ++sbeg;
                                 }
                             right = std::min(sbeg->left, tright);
@@ -151,15 +142,15 @@ namespace fwdpp
             // These are temp tables/buffer
             // for simplification.  We keep
             // their allocated memory persistent.
-            edge_vector output_edge_buffer;
-            node_vector new_node_table;
-            site_vector new_site_table;
+            typename TableCollectionType::edge_table output_edge_buffer;
+            typename TableCollectionType::node_table new_node_table;
+            typename TableCollectionType::site_table new_site_table;
             // segment_queue mimics a min queue of segments w.r.to
             // segment::left.
             std::vector<segment> segment_queue;
             ancestry_list ancestry;
             /// Temp container used for compacting edges
-            edge_vector E;
+            typename TableCollectionType::edge_table E;
             // region length
             const double L;
             segment_overlapper o;
@@ -177,13 +168,14 @@ namespace fwdpp
                 E.clear();
             }
 
-            edge_vector::const_iterator
-            step_S3(edge_vector::const_iterator edge_ptr,
-                    const edge_vector::const_iterator edge_end, TS_NODE_INT u)
+            typename TableCollectionType::edge_table::const_iterator
+            step_S3(
+                typename TableCollectionType::edge_table::const_iterator edge_ptr,
+                const typename TableCollectionType::edge_table::const_iterator edge_end,
+                TS_NODE_INT u)
             {
                 segment_queue.clear();
-                for (; edge_ptr < edge_end && edge_ptr->parent == u;
-                     ++edge_ptr)
+                for (; edge_ptr < edge_end && edge_ptr->parent == u; ++edge_ptr)
                     {
                         // For each edge corresponding to this parent,
                         // we look at all segments from the child.
@@ -200,36 +192,35 @@ namespace fwdpp
                                     {
                                         segment_queue.emplace_back(
                                             std::max(seg.left, edge_ptr->left),
-                                            std::min(seg.right,
-                                                     edge_ptr->right),
+                                            std::min(seg.right, edge_ptr->right),
                                             seg.node);
                                     }
                                 idx = ancestry.next[idx];
                             }
                     }
                 // Sort for processing via the overlapper
-                std::sort(segment_queue.begin(), segment_queue.end(),
-                          [](const segment& a, const segment& b) {
-                              return a.left < b.left;
-                          });
+                std::sort(
+                    segment_queue.begin(), segment_queue.end(),
+                    [](const segment& a, const segment& b) { return a.left < b.left; });
                 // Add sentinel
-                segment_queue.emplace_back(
-                    segment{ L, L + 1.0, TS_NULL_NODE });
+                segment_queue.emplace_back(segment{L, L + 1.0, TS_NULL_NODE});
                 return edge_ptr;
             }
 
             void
-            buffer_edge(std::vector<edge>& buffered_edges, const double left,
-                        const double right, const TS_NODE_INT parent,
+            buffer_edge(typename TableCollectionType::edge_table& buffered_edges,
+                        const double left, const double right, const TS_NODE_INT parent,
                         const TS_NODE_INT child)
             {
                 auto itr = std::find_if(
                     buffered_edges.rbegin(), buffered_edges.rend(),
-                    [child](const edge& e) { return e.child == child; });
+                    [child](const typename TableCollectionType::edge_t& e) {
+                        return e.child == child;
+                    });
                 if (itr == buffered_edges.rend())
                     {
-                        buffered_edges.emplace_back(
-                            edge{ left, right, parent, child });
+                        buffered_edges.emplace_back(typename TableCollectionType::edge_t{
+                            left, right, parent, child});
                     }
                 else
                     {
@@ -240,7 +231,8 @@ namespace fwdpp
                         else
                             {
                                 buffered_edges.emplace_back(
-                                    edge{ left, right, parent, child });
+                                    typename TableCollectionType::edge_t{left, right,
+                                                                         parent, child});
                             }
                     }
             }
@@ -258,8 +250,7 @@ namespace fwdpp
                         auto last_idx = ancestry.get_chain_tail(input_id);
                         if (last_idx == -1)
                             {
-                                throw std::runtime_error(
-                                    "ancestry_list data invalid");
+                                throw std::runtime_error("ancestry_list data invalid");
                             }
                         auto& last = ancestry.segments[last_idx];
                         if (last.right == left && last.node == node)
@@ -268,16 +259,15 @@ namespace fwdpp
                             }
                         else
                             {
-                                ancestry.add_record(input_id, left, right,
-                                                    node);
+                                ancestry.add_record(input_id, left, right, node);
                             }
                     }
             }
 
             void
-            merge_ancestors(const node_vector& input_node_table,
-                            const TS_NODE_INT parent_input_id,
-                            std::vector<TS_NODE_INT>& idmap)
+            merge_ancestors(
+                const typename TableCollectionType::node_table& input_node_table,
+                const TS_NODE_INT parent_input_id, std::vector<TS_NODE_INT>& idmap)
             {
                 auto output_id = idmap[parent_input_id];
                 bool is_sample = (output_id != TS_NULL_NODE);
@@ -296,8 +286,8 @@ namespace fwdpp
                                 ancestry_node = o.overlapping[0].node;
                                 if (is_sample)
                                     {
-                                        buffer_edge(E, o.left, o.right,
-                                                    output_id, ancestry_node);
+                                        buffer_edge(E, o.left, o.right, output_id,
+                                                    ancestry_node);
                                         ancestry_node = output_id;
                                     }
                             }
@@ -305,11 +295,10 @@ namespace fwdpp
                             {
                                 if (output_id == TS_NULL_NODE)
                                     {
-                                        new_node_table.emplace_back(node{
-                                            input_node_table[parent_input_id]
-                                                .deme,
-                                            input_node_table[parent_input_id]
-                                                .time });
+                                        new_node_table.emplace_back(
+                                            typename TableCollectionType::node_t{
+                                                input_node_table[parent_input_id].deme,
+                                                input_node_table[parent_input_id].time});
                                         output_id = new_node_table.size() - 1;
                                         // update sample map
                                         idmap[parent_input_id] = output_id;
@@ -318,31 +307,28 @@ namespace fwdpp
                                 for (auto x = o.overlapping.begin();
                                      x < o.overlapping_end; ++x)
                                     {
-                                        buffer_edge(E, o.left, o.right,
-                                                    output_id, x->node);
+                                        buffer_edge(E, o.left, o.right, output_id,
+                                                    x->node);
                                     }
                             }
                         if (is_sample && o.left != previous_right)
                             {
-                                add_ancestry(parent_input_id, previous_right,
-                                             o.left, output_id);
+                                add_ancestry(parent_input_id, previous_right, o.left,
+                                             output_id);
                             }
-                        add_ancestry(parent_input_id, o.left, o.right,
-                                     ancestry_node);
+                        add_ancestry(parent_input_id, o.left, o.right, ancestry_node);
                         previous_right = o.right;
                     }
                 if (is_sample && previous_right != L)
                     {
-                        add_ancestry(parent_input_id, previous_right, L,
-                                     output_id);
+                        add_ancestry(parent_input_id, previous_right, L, output_id);
                     }
                 if (output_id != TS_NULL_NODE)
                     {
                         auto n = output_buffered_edges(E);
                         if (!n && !is_sample)
                             {
-                                new_node_table.erase(new_node_table.begin()
-                                                         + output_id,
+                                new_node_table.erase(new_node_table.begin() + output_id,
                                                      new_node_table.end());
                                 idmap[parent_input_id] = TS_NULL_NODE;
                             }
@@ -350,47 +336,47 @@ namespace fwdpp
             }
 
             std::size_t
-            output_buffered_edges(std::vector<edge>& buffered_edges)
+            output_buffered_edges(
+                typename TableCollectionType::edge_table& buffered_edges)
             /// Take our buffered edges and add them to the output edge table
             {
                 std::stable_sort(buffered_edges.begin(), buffered_edges.end(),
-                                 [](const edge& a, const edge& b) {
+                                 [](const typename TableCollectionType::edge_t& a,
+                                    const typename TableCollectionType::edge_t& b) {
                                      return a.child < b.child;
                                  });
                 output_edge_buffer.insert(output_edge_buffer.end(),
-                                          buffered_edges.begin(),
-                                          buffered_edges.end());
+                                          buffered_edges.begin(), buffered_edges.end());
                 return buffered_edges.size();
             }
 
             void
             prep_mutation_simplification(
-                const site_vector& sites,
-                const mutation_key_vector& mutation_table)
+                const typename TableCollectionType::site_table& sites,
+                const typename TableCollectionType::mutation_table& mutations)
             {
                 mutation_map.clear();
-                mutation_map.reserve(mutation_table.size());
-                for (std::size_t i = 0; i < mutation_table.size(); ++i)
+                mutation_map.reserve(mutations.size());
+                for (std::size_t i = 0; i < mutations.size(); ++i)
                     {
-                        mutation_map.emplace_back(mutation_table[i].node,
-                                                  mutation_table[i].site, i);
+                        mutation_map.emplace_back(mutations[i].node, mutations[i].site,
+                                                  i);
                     }
 
                 std::sort(mutation_map.begin(), mutation_map.end(),
                           [&sites](const mutation_node_map_entry& a,
                                    const mutation_node_map_entry& b) {
                               return std::tie(a.node, sites[a.site].position)
-                                     < std::tie(b.node,
-                                                sites[b.site].position);
+                                     < std::tie(b.node, sites[b.site].position);
                           });
             }
 
             void
-            record_site(const site_vector& sites, mutation_record& mr)
+            record_site(const typename TableCollectionType::site_table& sites,
+                        typename TableCollectionType::mutation_t& mr)
             {
                 double pos = sites[mr.site].position;
-                if (new_site_table.empty()
-                    || new_site_table.back().position != pos)
+                if (new_site_table.empty() || new_site_table.back().position != pos)
                     {
                         new_site_table.push_back(sites[mr.site]);
                     }
@@ -398,7 +384,8 @@ namespace fwdpp
             }
 
             std::vector<std::size_t>
-            simplify_mutations(mutation_key_vector& mt, site_vector& sites)
+            simplify_mutations(typename TableCollectionType::mutation_table& mt,
+                               typename TableCollectionType::site_table& sites)
             // Remove all mutations that do not map to nodes
             // in the simplified tree.  The key here is
             // that ancestry contains the history of
@@ -432,18 +419,15 @@ namespace fwdpp
                                        && map_itr->node == n)
                                     {
                                         auto& seg = ancestry.segments[seg_idx];
-                                        auto pos
-                                            = sites[map_itr->site].position;
+                                        auto pos = sites[map_itr->site].position;
                                         if (seg.left <= pos && pos < seg.right)
                                             {
-                                                mt[map_itr->location].node
-                                                    = seg.node;
+                                                mt[map_itr->location].node = seg.node;
                                                 ++map_itr;
                                             }
                                         else if (pos >= seg.right)
                                             {
-                                                seg_idx
-                                                    = ancestry.next[seg_idx];
+                                                seg_idx = ancestry.next[seg_idx];
                                             }
                                         else
                                             {
@@ -456,10 +440,11 @@ namespace fwdpp
                 // Any mutations with null node values do not have
                 // ancestry and may be removed.
                 std::vector<std::size_t> preserved_variants;
-                auto itr = std::remove_if(mt.begin(), mt.end(),
-                                          [](const mutation_record& mr) {
-                                              return mr.node == TS_NULL_NODE;
-                                          });
+                auto itr = std::remove_if(
+                    mt.begin(), mt.end(),
+                    [](const typename TableCollectionType::mutation_t& mr) {
+                        return mr.node == TS_NULL_NODE;
+                    });
                 preserved_variants.reserve(std::distance(itr, mt.end()));
                 for (auto i = mt.begin(); i != itr; ++i)
                     {
@@ -470,18 +455,18 @@ namespace fwdpp
                 mt.erase(itr, mt.end());
                 sites.swap(new_site_table);
                 //TODO: replace assert with exception
-                assert(std::is_sorted(mt.begin(), mt.end(),
-                                      [&sites](const mutation_record& a,
-                                               const mutation_record& b) {
-                                          return sites[a.site].position
-                                                 < sites[b.site].position;
-                                      }));
+                assert(std::is_sorted(
+                    mt.begin(), mt.end(),
+                    [&sites](const typename TableCollectionType::mutation_t& a,
+                             const typename TableCollectionType::mutation_t& b) {
+                        return sites[a.site].position < sites[b.site].position;
+                    }));
                 return preserved_variants;
             }
 
             void
             record_sample_nodes(const std::vector<TS_NODE_INT>& samples,
-                                const table_collection& tables,
+                                const TableCollectionType& tables,
                                 std::vector<TS_NODE_INT>& idmap)
             /// \version 0.7.1 Throw exception if a sample is recorded twice
             {
@@ -491,35 +476,30 @@ namespace fwdpp
                         // for background
                         if (idmap[s] != TS_NULL_NODE)
                             {
-                                throw std::invalid_argument(
-                                    "invalid sample list");
+                                throw std::invalid_argument("invalid sample list");
                             }
-                        new_node_table.emplace_back(
-                            node{ tables.node_table[s].deme,
-                                  tables.node_table[s].time });
-                        add_ancestry(s, 0, L,
-                                     static_cast<TS_NODE_INT>(
-                                         new_node_table.size() - 1));
-                        idmap[s] = static_cast<TS_NODE_INT>(
-                            new_node_table.size() - 1);
+                        new_node_table.emplace_back(typename TableCollectionType::node_t{
+                            tables.nodes[s].deme, tables.nodes[s].time});
+                        add_ancestry(
+                            s, 0, L,
+                            static_cast<TS_NODE_INT>(new_node_table.size() - 1));
+                        idmap[s] = static_cast<TS_NODE_INT>(new_node_table.size() - 1);
                     }
             }
 
           public:
             explicit table_simplifier(const double maxpos)
                 : output_edge_buffer{}, new_node_table{}, new_site_table{},
-                  segment_queue{}, ancestry{}, E{}, L{ maxpos }, o{},
-                  mutation_map{}
+                  segment_queue{}, ancestry{}, E{}, L{maxpos}, o{}, mutation_map{}
             {
                 if (maxpos < 0 || !std::isfinite(maxpos))
                     {
-                        throw std::invalid_argument(
-                            "maxpos must be > 0 and finite");
+                        throw std::invalid_argument("maxpos must be > 0 and finite");
                     }
             }
 
             std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
-            simplify(table_collection& tables,
+            simplify(TableCollectionType& tables,
                      const std::vector<TS_NODE_INT>& samples)
             /// Simplify algorithm is approximately the same
             /// logic as used in msprime 0.6.0
@@ -531,15 +511,13 @@ namespace fwdpp
             /// node ID map and a vector of keys to mutations preserved in
             /// mutation tables
             {
-                ancestry.init(tables.node_table.size());
+                ancestry.init(tables.nodes.size());
 
                 // Set some things up for later mutation simplification
-                prep_mutation_simplification(tables.site_table,
-                                             tables.mutation_table);
+                prep_mutation_simplification(tables.sites, tables.mutations);
 
                 // Relates input node ids to output node ids
-                std::vector<TS_NODE_INT> idmap(tables.node_table.size(),
-                                               TS_NULL_NODE);
+                std::vector<TS_NODE_INT> idmap(tables.nodes.size(), TS_NULL_NODE);
 
                 // We take our samples and add them to both the output
                 // node list and initialize their ancestry with
@@ -554,30 +532,29 @@ namespace fwdpp
                 // This outer loop differs from how we describe it in the
                 // paper, but the strict sorting of edges means that this
                 // equivalent.
-                auto edge_ptr = tables.edge_table.cbegin();
-                const auto edge_end = tables.edge_table.cend();
-                auto new_edge_destination = begin(tables.edge_table);
+                auto edge_ptr = tables.edges.cbegin();
+                const auto edge_end = tables.edges.cend();
+                auto new_edge_destination = begin(tables.edges);
                 while (edge_ptr < edge_end)
                     {
                         auto u = edge_ptr->parent;
                         edge_ptr = step_S3(edge_ptr, edge_end, u);
-                        merge_ancestors(tables.node_table, u, idmap);
+                        merge_ancestors(tables.nodes, u, idmap);
                         if (output_edge_buffer.size() >= 1024
                             && new_edge_destination + output_edge_buffer.size()
                                    < edge_ptr)
                             {
-                                new_edge_destination
-                                    = std::copy(begin(output_edge_buffer),
-                                                end(output_edge_buffer),
-                                                new_edge_destination);
+                                new_edge_destination = std::copy(
+                                    begin(output_edge_buffer), end(output_edge_buffer),
+                                    new_edge_destination);
                                 output_edge_buffer.clear();
                             }
                     }
                 if (!output_edge_buffer.empty())
                     {
-                        new_edge_destination = std::copy(
-                            begin(output_edge_buffer), end(output_edge_buffer),
-                            new_edge_destination);
+                        new_edge_destination
+                            = std::copy(begin(output_edge_buffer),
+                                        end(output_edge_buffer), new_edge_destination);
                     }
 
                 // When there are preserved nodes, we need to re map
@@ -592,29 +569,28 @@ namespace fwdpp
                         p = idmap[p];
                     }
 
-                assert(
-                    static_cast<std::size_t>(std::count_if(
-                        idmap.begin(), idmap.end(),
-                        [](const TS_NODE_INT i) { return i != TS_NULL_NODE; }))
-                    == new_node_table.size());
+                assert(static_cast<std::size_t>(std::count_if(
+                           idmap.begin(), idmap.end(),
+                           [](const TS_NODE_INT i) { return i != TS_NULL_NODE; }))
+                       == new_node_table.size());
                 // Update the tables.  To keep memory use as sane as possible,
                 // we use resize-and-move here.  In theory, we can also do
                 // vector swaps, but that has a side-effect of keeping
                 // far too much RAM allocated compared to what we need.
-                tables.edge_table.resize(std::distance(
-                    begin(tables.edge_table), new_edge_destination));
-                tables.node_table.resize(new_node_table.size());
+                tables.edges.resize(
+                    std::distance(begin(tables.edges), new_edge_destination));
+                tables.nodes.resize(new_node_table.size());
                 std::move(new_node_table.begin(), new_node_table.end(),
-                          tables.node_table.begin());
+                          tables.nodes.begin());
                 // TODO: allow for exception instead of assert
                 assert(tables.edges_are_minimally_sorted());
-                tables.update_offset();
-                auto preserved_variants = simplify_mutations(
-                    tables.mutation_table, tables.site_table);
+                tables.update_offset(); // NOTE: this will be moot by removing edge sorting.
+                auto preserved_variants
+                    = simplify_mutations(tables.mutations, tables.sites);
 
                 cleanup();
-                std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>>
-                    rv(std::move(idmap), std::move(preserved_variants));
+                std::pair<std::vector<TS_NODE_INT>, std::vector<std::size_t>> rv(
+                    std::move(idmap), std::move(preserved_variants));
                 return rv;
             }
         };

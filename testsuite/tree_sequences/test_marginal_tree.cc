@@ -12,7 +12,7 @@ BOOST_FIXTURE_TEST_CASE(test_construction_with_sample_groups,
         {
             groups.emplace_back(i, 0);
         }
-    fwdpp::ts::marginal_tree m(tables.node_table.size(), groups, true);
+    fwdpp::ts::marginal_tree m(tables.nodes.size(), groups, true);
     BOOST_CHECK_EQUAL(m.sample_size(), groups.size());
     decltype(samples) scopy(m.samples_list_begin(), m.samples_list_end());
     BOOST_REQUIRE(samples == scopy);
@@ -28,7 +28,7 @@ BOOST_FIXTURE_TEST_CASE(
             groups.emplace_back(i, 0);
         }
     tables.preserved_nodes.push_back(samples.size());
-    fwdpp::ts::marginal_tree m(tables.node_table.size(), groups,
+    fwdpp::ts::marginal_tree m(tables.nodes.size(), groups,
                                tables.preserved_nodes, true);
     BOOST_CHECK_EQUAL(m.sample_size(),
                       groups.size() + tables.preserved_nodes.size());
@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(test_sample_preserved_node_overlap,
 {
     BOOST_REQUIRE_THROW(
         {
-            fwdpp::ts::marginal_tree m(tables.node_table.size(), samples,
+            fwdpp::ts::marginal_tree m(tables.nodes.size(), samples,
                                        samples, true);
         },
         fwdpp::ts::samples_error);

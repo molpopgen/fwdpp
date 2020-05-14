@@ -5,18 +5,16 @@
 #include <type_traits>
 #include <vector>
 #include "definitions.hpp"
-#include "table_collection.hpp"
 #include "tree_visitor.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        template <typename SAMPLES, typename mcont_t>
+        template <typename TableCollectionType, typename SAMPLES, typename mcont_t>
         void
-        count_mutations(const table_collection& tables,
-                        const mcont_t& mutations, SAMPLES&& samples,
-                        std::vector<fwdpp::uint_t>& mcounts)
+        count_mutations(const TableCollectionType& tables, const mcont_t& mutations,
+                        SAMPLES&& samples, std::vector<std::uint32_t>& mcounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
             // to march through each marginal tree and its leaf
@@ -25,10 +23,10 @@ namespace fwdpp
             std::fill(mcounts.begin(), mcounts.end(), 0);
             mcounts.resize(mutations.size(), 0);
 
-            auto mtable_itr = tables.mutation_table.begin();
-            auto mtable_end = tables.mutation_table.end();
+            auto mtable_itr = tables.mutations.begin();
+            auto mtable_end = tables.mutations.end();
             tree_visitor mti(tables, std::forward<SAMPLES>(samples),
-                             update_samples_list(false));
+                                                  update_samples_list(false));
             while (mti())
                 {
                     auto& tree = mti.tree();
@@ -40,10 +38,8 @@ namespace fwdpp
                     while (mtable_itr < mtable_end
                            && mutations[mtable_itr->key].pos < tree.right)
                         {
-                            assert(mutations[mtable_itr->key].pos
-                                   >= tree.left);
-                            assert(mutations[mtable_itr->key].pos
-                                   < tree.right);
+                            assert(mutations[mtable_itr->key].pos >= tree.left);
+                            assert(mutations[mtable_itr->key].pos < tree.right);
                             mcounts[mtable_itr->key]
                                 = tree.leaf_counts[mtable_itr->node];
                             ++mtable_itr;
@@ -51,12 +47,11 @@ namespace fwdpp
                 }
         }
 
-        template <typename SAMPLES, typename mcont_t>
+        template <typename TableCollectionType, typename SAMPLES, typename mcont_t>
         void
-        count_mutations(const table_collection& tables,
-                        const mcont_t& mutations, SAMPLES&& samples,
-                        std::vector<fwdpp::uint_t>& mcounts,
-                        std::vector<fwdpp::uint_t>& acounts)
+        count_mutations(const TableCollectionType& tables, const mcont_t& mutations,
+                        SAMPLES&& samples, std::vector<std::uint32_t>& mcounts,
+                        std::vector<std::uint32_t>& acounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
             // to march through each marginal tree and its leaf
@@ -67,11 +62,11 @@ namespace fwdpp
             std::fill(acounts.begin(), acounts.end(), 0);
             acounts.resize(mutations.size(), 0);
 
-            auto mtable_itr = tables.mutation_table.begin();
-            auto mtable_end = tables.mutation_table.end();
+            auto mtable_itr = tables.mutations.begin();
+            auto mtable_end = tables.mutations.end();
             tree_visitor mti(tables, std::forward<SAMPLES>(samples),
-                             tables.preserved_nodes,
-                             update_samples_list(false));
+                                                  tables.preserved_nodes,
+                                                  update_samples_list(false));
             while (mti())
                 {
                     auto& tree = mti.tree();
@@ -83,10 +78,8 @@ namespace fwdpp
                     while (mtable_itr < mtable_end
                            && mutations[mtable_itr->key].pos < tree.right)
                         {
-                            assert(mutations[mtable_itr->key].pos
-                                   >= tree.left);
-                            assert(mutations[mtable_itr->key].pos
-                                   < tree.right);
+                            assert(mutations[mtable_itr->key].pos >= tree.left);
+                            assert(mutations[mtable_itr->key].pos < tree.right);
                             mcounts[mtable_itr->key]
                                 = tree.leaf_counts[mtable_itr->node];
                             acounts[mtable_itr->key]

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "exceptions.hpp"
 #include "marginal_tree.hpp"
-#include "table_collection.hpp"
+#include "indexed_edge.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
 #include <fwdpp/named_type.hpp>
 
@@ -39,8 +39,7 @@ namespace fwdpp
             bool advancing_sample_list;
 
             void
-            update_roots_outgoing(TS_NODE_INT p, TS_NODE_INT c,
-                                  marginal_tree& marginal)
+            update_roots_outgoing(TS_NODE_INT p, TS_NODE_INT c, marginal_tree& marginal)
             // This is the algorithm used by tskit.
             // The method is applied to nodes p and c
             // AFTER the output index has been applied
@@ -71,14 +70,13 @@ namespace fwdpp
                                 // If this node is a sample, then
                                 // it must descend from a root,
                                 // which is why we OR this in the loop below.
-                                above_sample = (marginal.sample_index_map[x]
-                                                != TS_NULL_NODE);
+                                above_sample
+                                    = (marginal.sample_index_map[x] != TS_NULL_NODE);
                                 auto lc = marginal.left_child[x];
                                 while (lc != TS_NULL_NODE && above_sample == 0)
                                     {
                                         above_sample
-                                            = above_sample
-                                              || marginal.above_sample[lc];
+                                            = above_sample || marginal.above_sample[lc];
                                         lc = marginal.right_sib[lc];
                                     }
                                 marginal.above_sample[x] = above_sample;
@@ -109,8 +107,7 @@ namespace fwdpp
                         if (marginal.left_root != TS_NULL_NODE)
                             {
                                 //Put c into a pre-existing root list
-                                auto lroot
-                                    = marginal.left_sib[marginal.left_root];
+                                auto lroot = marginal.left_sib[marginal.left_root];
                                 if (lroot != TS_NULL_NODE)
                                     {
                                         marginal.right_sib[lroot] = c;
@@ -124,9 +121,8 @@ namespace fwdpp
             }
 
             void
-            update_roots_incoming(TS_NODE_INT p, TS_NODE_INT c,
-                                  TS_NODE_INT lsib, TS_NODE_INT rsib,
-                                  marginal_tree& marginal)
+            update_roots_incoming(TS_NODE_INT p, TS_NODE_INT c, TS_NODE_INT lsib,
+                                  TS_NODE_INT rsib, marginal_tree& marginal)
             // This is the algorithm used by tskit.  It is applied
             // AFTER the incoming node list has updated marginal.
             // Thus, p is parent to c.
@@ -199,21 +195,41 @@ namespace fwdpp
             }
 
           public:
-            template <typename SAMPLES>
-            tree_visitor(const table_collection& tables, SAMPLES&& samples,
+            template <typename TableCollectionType, typename SAMPLES>
+            tree_visitor(const TableCollectionType& tables, SAMPLES&& samples,
                          update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
-                  k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0),
-                  maxpos(tables.genome_length()),
+                  k(tables.output_right.cbegin()), kM(tables.output_right.cend()),
+                  x(0.0), maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), std::forward<SAMPLES>(samples),
                            update.get()),
                   advancing_sample_list(update.get())
             /// \todo Document
             {
-                if ((j == jM || k == kM) && !tables.edge_table.empty())
+                if ((j == jM || k == kM) && !tables.edges.empty())
                     {
                         throw std::invalid_argument("tables are not indexed");
+                    }
+            }
+
+            template <typename TableCollectionType>
+            tree_visitor(const TableCollectionType& tables,
+                         const std::vector<TS_NODE_INT>& samples,
+                         const std::vector<TS_NODE_INT>& preserved_nodes,
+                         update_samples_list update)
+                : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
+                  k(tables.output_right.cbegin()), kM(tables.output_right.cend()),
+                  x(0.0), maxpos(tables.genome_length()),
+                  marginal(tables.num_nodes(), samples, preserved_nodes, update.get()),
+                  advancing_sample_list(update.get())
+            {
+                if ((j == jM || k == kM) && !tables.edges.empty())
+                    {
+                        throw std::invalid_argument("tables are not indexed");
+                    }
+                if (samples.empty() && preserved_nodes.empty())
+                    {
+                        throw samples_error("one or both sample lists are empty");
                     }
             }
 
@@ -231,29 +247,6 @@ namespace fwdpp
 			 */
             {
                 return marginal;
-            }
-
-            tree_visitor(const table_collection& tables,
-                         const std::vector<TS_NODE_INT>& samples,
-                         const std::vector<TS_NODE_INT>& preserved_nodes,
-                         update_samples_list update)
-                : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
-                  k(tables.output_right.cbegin()),
-                  kM(tables.output_right.cend()), x(0.0),
-                  maxpos(tables.genome_length()),
-                  marginal(tables.num_nodes(), samples, preserved_nodes,
-                           update.get()),
-                  advancing_sample_list(update.get())
-            {
-                if ((j == jM || k == kM) && !tables.edge_table.empty())
-                    {
-                        throw std::invalid_argument("tables are not indexed");
-                    }
-                if (samples.empty() && preserved_nodes.empty())
-                    {
-                        throw samples_error(
-                            "one or both sample lists are empty");
-                    }
             }
 
             inline bool
@@ -286,12 +279,11 @@ namespace fwdpp
                                 marginal.parents[c] = TS_NULL_NODE;
                                 marginal.left_sib[c] = TS_NULL_NODE;
                                 marginal.right_sib[c] = TS_NULL_NODE;
-                                detail::outgoing_leaf_counts(
-                                    marginal, k->parent, k->child);
+                                detail::outgoing_leaf_counts(marginal, k->parent,
+                                                             k->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(marginal,
-                                                                    k->parent);
+                                        detail::update_samples_list(marginal, k->parent);
                                     }
                                 update_roots_outgoing(p, c, marginal);
                                 ++k;
@@ -319,15 +311,13 @@ namespace fwdpp
                                 // the parent's location in the node table.
                                 marginal.parents[c] = j->parent;
                                 marginal.right_child[p] = c;
-                                detail::incoming_leaf_counts(
-                                    marginal, j->parent, j->child);
+                                detail::incoming_leaf_counts(marginal, j->parent,
+                                                             j->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(marginal,
-                                                                    j->parent);
+                                        detail::update_samples_list(marginal, j->parent);
                                     }
-                                update_roots_incoming(p, c, lsib, rsib,
-                                                      marginal);
+                                update_roots_incoming(p, c, lsib, rsib, marginal);
 
                                 ++j;
                             }
@@ -342,8 +332,7 @@ namespace fwdpp
                                        != TS_NULL_NODE)
                                     {
                                         marginal.left_root
-                                            = marginal.left_sib
-                                                  [marginal.left_root];
+                                            = marginal.left_sib[marginal.left_root];
                                     }
                             }
 #ifndef NDEBUG
@@ -354,14 +343,12 @@ namespace fwdpp
                                 throw std::runtime_error(
                                     "FWDPP DEBUG: left_root is null");
                             }
-                        std::vector<int> is_root(
-                            marginal.sample_index_map.size(), 0);
+                        std::vector<int> is_root(marginal.sample_index_map.size(), 0);
                         std::vector<int> processed(is_root.size(), 0);
-                        for (std::size_t s = 0;
-                             s < marginal.sample_index_map.size(); ++s)
+                        for (std::size_t s = 0; s < marginal.sample_index_map.size();
+                             ++s)
                             {
-                                if (marginal.sample_index_map[s]
-                                    != TS_NULL_NODE)
+                                if (marginal.sample_index_map[s] != TS_NULL_NODE)
                                     {
                                         TS_NODE_INT u = s;
                                         auto root = u;
@@ -390,18 +377,16 @@ namespace fwdpp
                             }
                         if (nroots_brute != marginal.num_roots())
                             {
-                                throw std::runtime_error(
-                                    "FWDPP DEBUG: num_roots "
-                                    "disagreement");
+                                throw std::runtime_error("FWDPP DEBUG: num_roots "
+                                                         "disagreement");
                             }
                         while (lr != TS_NULL_NODE)
                             {
                                 if (is_root[lr] != 1)
                                     {
-                                        throw std::runtime_error(
-                                            "FWDPP DEBUG: root "
-                                            "contents "
-                                            "disagreement");
+                                        throw std::runtime_error("FWDPP DEBUG: root "
+                                                                 "contents "
+                                                                 "disagreement");
                                     }
                                 lr = marginal.right_sib[lr];
                             }

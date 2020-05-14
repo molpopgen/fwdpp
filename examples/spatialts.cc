@@ -55,7 +55,9 @@ struct location
           individual(std::numeric_limits<std::size_t>::max())
     {
     }
-    location(double x_, double y_, double i_) : x(x_), y(y_), individual(i_) {}
+    location(double x_, double y_, double i_) : x(x_), y(y_), individual(i_)
+    {
+    }
 };
 
 struct diploid_metadata
@@ -130,8 +132,7 @@ main(int argc, char **argv)
         }
     if (gcint < 1)
         {
-            throw std::invalid_argument(
-                "Simplification (gc) interval must be > 0");
+            throw std::invalid_argument("Simplification (gc) interval must be > 0");
         }
     if (mu < 0)
         {
@@ -166,8 +167,8 @@ main(int argc, char **argv)
             double y = gsl_rng_uniform(rng.get());
             parental_points.emplace_back(x, y, i);
         }
-    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier simplifier(1.0);
+    fwdpp::ts::std_table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
+    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(1.0);
     unsigned generation = 1;
     double recrate = rho / static_cast<double>(4 * N);
     // recombination map is uniform[0,1)
@@ -176,27 +177,23 @@ main(int argc, char **argv)
     const auto recmap = fwdpp::recbinder(std::cref(gmap), rng.get());
 
     const fwdpp::extensions::gamma dfe(mean, shape);
-    const auto get_selection_coefficient = [&rng, dfe, N]() {
-        return dfe(rng.get()) / static_cast<double>(2 * N);
-    };
+    const auto get_selection_coefficient
+        = [&rng, dfe, N]() { return dfe(rng.get()) / static_cast<double>(2 * N); };
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = []() { return 1.0; };
-    const auto make_mutation
-        = [&pop, &rng, &generation, generate_mutation_position,
-           get_selection_coefficient,
-           generate_h](fwdpp::flagged_mutation_queue &recbin,
-                       poptype::mcont_t &mutations) {
-              return fwdpp::infsites_popgenmut(
-                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
-                  // 1.0 signifies 100% of mutations will be selected
-                  1.0, generate_mutation_position, get_selection_coefficient,
-                  generate_h);
-          };
+    const auto make_mutation = [&pop, &rng, &generation, generate_mutation_position,
+                                get_selection_coefficient,
+                                generate_h](fwdpp::flagged_mutation_queue &recbin,
+                                            poptype::mcont_t &mutations) {
+        return fwdpp::infsites_popgenmut(
+            recbin, mutations, rng.get(), pop.mut_lookup, generation,
+            // 1.0 signifies 100% of mutations will be selected
+            1.0, generate_mutation_position, get_selection_coefficient, generate_h);
+    };
 
-    const auto mmodel = [&rng, mu,
-                         &make_mutation](fwdpp::flagged_mutation_queue &recbin,
-                                         poptype::mcont_t &mutations) {
+    const auto mmodel = [&rng, mu, &make_mutation](fwdpp::flagged_mutation_queue &recbin,
+                                                   poptype::mcont_t &mutations) {
         std::vector<fwdpp::uint_t> rv;
         unsigned nmuts = gsl_ran_poisson(rng.get(), mu);
         for (unsigned i = 0; i < nmuts; ++i)
@@ -225,37 +222,36 @@ main(int argc, char **argv)
     std::vector<diploid_metadata> ancient_sample_metadata;
     // Set offspring location = parental midpoint
     // TODO: add dispersal radius
-    const auto update_offspring
-        = [&offspring_points, &parental_points](std::size_t o, std::size_t p1,
-                                                std::size_t p2) {
-              auto &opoint = offspring_points[o];
-              opoint.individual = o;
-              opoint.x = (parental_points[p1].x + parental_points[p2].x) / 2.0;
-              opoint.y = (parental_points[p1].y + parental_points[p2].y) / 2.0;
-              // Don't fall of the map...
-              if (opoint.x < 0.0)
-                  {
-                      opoint.x = 0.0;
-                  }
-              if (opoint.x > 1.0)
-                  {
-                      opoint.x = 1.0;
-                  }
-              if (opoint.y < 0.0)
-                  {
-                      opoint.y = 0.0;
-                  }
-              if (opoint.y > 1.0)
-                  {
-                      opoint.y = 1.0;
-                  }
-          };
+    const auto update_offspring = [&offspring_points, &parental_points](
+                                      std::size_t o, std::size_t p1, std::size_t p2) {
+        auto &opoint = offspring_points[o];
+        opoint.individual = o;
+        opoint.x = (parental_points[p1].x + parental_points[p2].x) / 2.0;
+        opoint.y = (parental_points[p1].y + parental_points[p2].y) / 2.0;
+        // Don't fall of the map...
+        if (opoint.x < 0.0)
+            {
+                opoint.x = 0.0;
+            }
+        if (opoint.x > 1.0)
+            {
+                opoint.x = 1.0;
+            }
+        if (opoint.y < 0.0)
+            {
+                opoint.y = 0.0;
+            }
+        if (opoint.y > 1.0)
+            {
+                opoint.y = 1.0;
+            }
+    };
     std::vector<std::size_t> possible_mates;
     std::vector<double> possible_mate_fitness;
     std::vector<double> cumw;
     auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(2.0));
-    auto genetics = fwdpp::make_genetic_parameters(
-        std::move(ff), std::move(mmodel), std::move(recmap));
+    auto genetics = fwdpp::make_genetic_parameters(std::move(ff), std::move(mmodel),
+                                                   std::move(recmap));
     for (; generation <= 10 * N; ++generation)
         {
             //Clear out offspring coordinates
@@ -286,8 +282,7 @@ main(int argc, char **argv)
                         if (euclid <= mating_radius)
                             {
                                 possible_mates.push_back(v.individual);
-                                possible_mate_fitness.push_back(
-                                    fitnesses[v.individual]);
+                                possible_mate_fitness.push_back(fitnesses[v.individual]);
                             }
                     }
                 if (possible_mates.size() == 1)
@@ -310,18 +305,16 @@ main(int argc, char **argv)
                     }
                 return possible_mates[i];
             };
-            evolve_generation(rng, pop, genetics, N, pick1, pick2,
-                              update_offspring, generation, tables,
-                              first_parental_index, next_index);
+            evolve_generation(rng, pop, genetics, N, pick1, pick2, update_offspring,
+                              generation, tables, first_parental_index, next_index);
 
             if (generation % gcint == 0.0)
                 {
                     auto rv = simplify_tables(
-                        pop, generation, pop.mcounts_from_preserved_nodes,
-                        tables, simplifier, tables.num_nodes() - 2 * N, 2 * N);
-                    genetics.mutation_recycling_bin
-                        = fwdpp::ts::make_mut_queue(
-                            pop.mcounts, pop.mcounts_from_preserved_nodes);
+                        pop, generation, pop.mcounts_from_preserved_nodes, tables,
+                        simplifier, tables.num_nodes() - 2 * N, 2 * N);
+                    genetics.mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                        pop.mcounts, pop.mcounts_from_preserved_nodes);
                     simplified = true;
                     next_index = tables.num_nodes();
                     first_parental_index = 0;
@@ -352,35 +345,28 @@ main(int argc, char **argv)
                     // For recording the metadata, let's normalize the
                     // fitnesses so that we record what matters in the sim,
                     // which is relative fitness.
-                    auto wbar = std::accumulate(fitnesses.begin(),
-                                                fitnesses.end(), 0.)
+                    auto wbar = std::accumulate(fitnesses.begin(), fitnesses.end(), 0.)
                                 / static_cast<double>(N);
-                    std::transform(fitnesses.begin(), fitnesses.end(),
-                                   fitnesses.begin(),
+                    std::transform(fitnesses.begin(), fitnesses.end(), fitnesses.begin(),
                                    [wbar](double w) { return w / wbar; });
-                    gsl_ran_choose(
-                        rng.get(), individuals.data(), individuals.size(),
-                        individual_labels.data(), individual_labels.size(),
-                        sizeof(std::size_t));
+                    gsl_ran_choose(rng.get(), individuals.data(), individuals.size(),
+                                   individual_labels.data(), individual_labels.size(),
+                                   sizeof(std::size_t));
                     for (auto i : individuals)
                         {
-                            auto x = fwdpp::ts::get_parent_ids(
-                                first_parental_index, i, 0);
+                            auto x
+                                = fwdpp::ts::get_parent_ids(first_parental_index, i, 0);
                             assert(x.first >= first_parental_index);
                             assert(x.second >= first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
-                            assert(tables.node_table[x.first].time
-                                   == generation);
-                            assert(tables.node_table[x.second].time
-                                   == generation);
+                            assert(tables.nodes[x.first].time == generation);
+                            assert(tables.nodes[x.second].time == generation);
                             assert(std::find(tables.preserved_nodes.begin(),
-                                             tables.preserved_nodes.end(),
-                                             x.first)
+                                             tables.preserved_nodes.end(), x.first)
                                    == tables.preserved_nodes.end());
                             assert(std::find(tables.preserved_nodes.begin(),
-                                             tables.preserved_nodes.end(),
-                                             x.second)
+                                             tables.preserved_nodes.end(), x.second)
                                    == tables.preserved_nodes.end());
                             tables.preserved_nodes.push_back(x.first);
                             tables.preserved_nodes.push_back(x.second);
@@ -394,9 +380,9 @@ main(int argc, char **argv)
         }
     if (!simplified)
         {
-            auto rv = simplify_tables(
-                pop, generation, pop.mcounts_from_preserved_nodes, tables,
-                simplifier, tables.num_nodes() - 2 * N, 2 * N);
+            auto rv
+                = simplify_tables(pop, generation, pop.mcounts_from_preserved_nodes,
+                                  tables, simplifier, tables.num_nodes() - 2 * N, 2 * N);
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
             // Thus, we need to remap our metadata upon simplification
@@ -413,44 +399,38 @@ main(int argc, char **argv)
     // what is in our node table.
     for (auto &mr : ancient_sample_metadata)
         {
-            if (tables.node_table[mr.n1].time != mr.time
-                || tables.node_table[mr.n2].time != mr.time)
+            if (tables.nodes[mr.n1].time != mr.time
+                || tables.nodes[mr.n2].time != mr.time)
                 {
-                    throw std::runtime_error(
-                        "invalid ancient sample metadata");
+                    throw std::runtime_error("invalid ancient sample metadata");
                 }
         }
     assert(tables.input_left.size() == tables.edge_table.size());
     assert(tables.output_right.size() == tables.edge_table.size());
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * N);
     std::iota(s.begin(), s.end(), 0);
-    const auto neutral_variant_maker =
-        [&rng, &pop, &genetics](const double left, const double right,
-                                const fwdpp::uint_t generation) {
-            auto key = fwdpp::infsites_popgenmut(
-                genetics.mutation_recycling_bin, pop.mutations, rng.get(),
-                pop.mut_lookup, generation, 0.0,
-                [left, right, &rng] {
-                    return gsl_ran_flat(rng.get(), left, right);
-                },
-                []() { return 0.0; }, []() { return 0.0; });
-            return fwdpp::ts::new_variant_record(
-                pop.mutations[key].pos, 0, key, pop.mutations[key].neutral, 1);
-        };
-    auto neutral_muts
-        = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
-                                   theta / static_cast<double>(4 * N));
+    const auto neutral_variant_maker
+        = [&rng, &pop, &genetics](const double left, const double right,
+                                  const fwdpp::uint_t generation) {
+              auto key = fwdpp::infsites_popgenmut(
+                  genetics.mutation_recycling_bin, pop.mutations, rng.get(),
+                  pop.mut_lookup, generation, 0.0,
+                  [left, right, &rng] { return gsl_ran_flat(rng.get(), left, right); },
+                  []() { return 0.0; }, []() { return 0.0; });
+              return fwdpp::ts::new_variant_record(pop.mutations[key].pos, 0, key,
+                                                   pop.mutations[key].neutral, 1);
+          };
+    auto neutral_muts = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
+                                                 theta / static_cast<double>(4 * N));
     fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i]
-                        && !pop.mcounts_from_preserved_nodes[i])
+                    if (!pop.mcounts[i] && !pop.mcounts_from_preserved_nodes[i])
                         {
-                            throw std::runtime_error(
-                                "invalid final mutation count");
+                            throw std::runtime_error("invalid final mutation count");
                         }
                 }
         }

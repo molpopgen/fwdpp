@@ -63,8 +63,8 @@ main(int argc, char **argv)
     GSLrng rng(o.seed);
 
     ts_examples_poptype pop(o.N);
-    fwdpp::ts::table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier simplifier(1.0);
+    fwdpp::ts::std_table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
+    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(1.0);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
     fwdpp::genetic_map gm;
@@ -208,13 +208,13 @@ main(int argc, char **argv)
                     //            = fwdpp::fwdpp_internal::make_mut_queue(
                     //                pop.mcounts);
                     //        auto itr = std::remove_if(
-                    //            tables.mutation_table.begin(),
-                    //            tables.mutation_table.end(),
+                    //            tables.mutations.begin(),
+                    //            tables.mutations.end(),
                     //            [&pop](const fwdpp::ts::mutation_record &mr) {
                     //                return pop.mcounts[mr.key] == 0;
                     //            });
-                    //        tables.mutation_table.erase(
-                    //            itr, tables.mutation_table.end());
+                    //        tables.mutations.erase(
+                    //            itr, tables.mutations.end());
                     //    }
                 }
             if (o.ancient_sampling_interval > 0
@@ -235,9 +235,9 @@ main(int argc, char **argv)
                             assert(x.second >= first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
-                            assert(tables.node_table[x.first].time
+                            assert(tables.nodes[x.first].time
                                    == generation);
-                            assert(tables.node_table[x.second].time
+                            assert(tables.nodes[x.second].time
                                    == generation);
                             assert(std::find(tables.preserved_nodes.begin(),
                                              tables.preserved_nodes.end(),
@@ -287,18 +287,18 @@ main(int argc, char **argv)
         }
     // This is an infinite-sites simulation, so we can do some
     // simple tests on our site table:
-    if (tables.site_table.size() != tables.mutation_table.size())
+    if (tables.sites.size() != tables.mutations.size())
         {
             throw std::runtime_error("mutation and site table sizes differ");
         }
-    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+    if (!std::is_sorted(begin(tables.sites), end(tables.sites)))
         {
             throw std::runtime_error("site table is not sorted");
         }
-    for (std::size_t i = 0; i < tables.site_table.size(); ++i)
+    for (std::size_t i = 0; i < tables.sites.size(); ++i)
         {
-            if (tables.site_table[i].position
-                != pop.mutations[tables.mutation_table[i].key].pos)
+            if (tables.sites[i].position
+                != pop.mutations[tables.mutations[i].key].pos)
                 {
                     throw std::runtime_error("site table data are incorrect");
                 }
@@ -309,8 +309,8 @@ main(int argc, char **argv)
     // what is in our node table.
     for (auto &mr : ancient_sample_metadata)
         {
-            if (tables.node_table[mr.n1].time != mr.time
-                || tables.node_table[mr.n2].time != mr.time)
+            if (tables.nodes[mr.n1].time != mr.time
+                || tables.nodes[mr.n2].time != mr.time)
                 {
                     throw std::runtime_error(
                         "invalid ancient sample metadata");
@@ -323,15 +323,15 @@ main(int argc, char **argv)
 
     auto neutral_muts = apply_neutral_mutations(
         o, rng, tables, pop, genetics.mutation_recycling_bin);
-    if (!std::is_sorted(begin(tables.site_table), end(tables.site_table)))
+    if (!std::is_sorted(begin(tables.sites), end(tables.sites)))
         {
             throw std::runtime_error(
                 "site table is not sorted after adding neutral mutations");
         }
-    for (auto &mr : tables.mutation_table)
+    for (auto &mr : tables.mutations)
         {
             if (pop.mutations[mr.key].pos
-                != tables.site_table[mr.site].position)
+                != tables.sites[mr.site].position)
                 {
                     throw std::runtime_error("site table data incorrect after "
                                              "adding neutral mutations");

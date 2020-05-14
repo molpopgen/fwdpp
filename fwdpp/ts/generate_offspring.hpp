@@ -1,7 +1,6 @@
 #ifndef FWDPP_TS_GENERATE_OFFSPRING_HPP
 #define FWDPP_TS_GENERATE_OFFSPRING_HPP
 
-#include <stdexcept>
 #include <tuple>
 #include <vector>
 #include <utility>
