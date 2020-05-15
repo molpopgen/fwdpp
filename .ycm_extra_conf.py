@@ -1,9 +1,23 @@
 import os
+import sysconfig
+
 import ycm_core
 
+flags = [
+    "-x",
+    "c++",
+    f"-I{os.path.dirname(os.path.abspath(__file__))}",
+    "-I/usr/local/include",
+    "-Wall",
+    "-Werr",
+    "-Wconversion",
+    "-Weffc++",
+    "-std=c++14",
+]
 
-def FlagsForFile( filename ):
-  dirname = os.path.dirname(filename)
-  flags = {'flags': ['--std=c++11', '-MMD', '-Wall', '-I', '.','-I','..','-I'+dirname,'/fwdpp'], 
-      'do_cache': True}
-  return flags
+
+def Settings(**kwargs):
+    if kwargs["language"] == "cfamily":
+        return {"flags": flags}
+    if kwargs["language"] == "python":
+        pass

@@ -168,7 +168,7 @@ main(int argc, char **argv)
             parental_points.emplace_back(x, y, i);
         }
     fwdpp::ts::std_table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(1.0);
+    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier;
     unsigned generation = 1;
     double recrate = rho / static_cast<double>(4 * N);
     // recombination map is uniform[0,1)

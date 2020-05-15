@@ -64,7 +64,7 @@ main(int argc, char **argv)
 
     ts_examples_poptype pop(o.N);
     fwdpp::ts::std_table_collection tables(2 * pop.diploids.size(), 0, 0, 1.0);
-    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(1.0);
+    auto simplifier = fwdpp::ts::make_table_simplifier(tables);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
     fwdpp::genetic_map gm;
