@@ -315,6 +315,7 @@ pkginclude_HEADERS = definitions.hpp \
 			table_collection.hpp \
 			std_table_collection.hpp \
 			table_simplifier.hpp \
+			simplify_tables.hpp \
 			get_parent_ids.hpp \
 			generate_data_matrix.hpp \
 			indexed_edge.hpp \

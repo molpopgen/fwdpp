@@ -404,8 +404,7 @@ wfevolvets_no_mutation(const GSLrng& rng, unsigned ngenerations, unsigned simpli
         {
             throw std::invalid_argument("invalid survival probability");
         }
-    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(
-        tables.genome_length());
+    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier;
 
     std::vector<std::size_t> dead_individual_indexes;
     std::vector<diploid_metadata> parental_metadata(metadata);
@@ -451,8 +450,7 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
         {
             throw std::invalid_argument("invalid mutation rate");
         }
-    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier(
-        tables.genome_length());
+    fwdpp::ts::table_simplifier<fwdpp::ts::std_table_collection> simplifier;
 
     std::vector<std::size_t> dead_individual_indexes;
     std::vector<diploid_metadata> parental_metadata(metadata);

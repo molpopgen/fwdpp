@@ -297,6 +297,31 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
             std::cerr << "Matrix test with respect to last generation...";
             matrix_runtime_test(tables, samples, pop.mcounts);
             std::cerr << "passed\n";
+			// NOTE: the following check is useful, but disabled by default.
+            //decltype(pop.mcounts) mcounts_from_genomes(pop.mutations.size(), 0);
+            //for (auto &d : pop.diploids)
+            //    {
+            //        for (auto k : pop.haploid_genomes[d.first].smutations)
+            //            {
+            //                mcounts_from_genomes[k]++;
+            //            }
+            //        for (auto k : pop.haploid_genomes[d.second].smutations)
+            //            {
+            //                mcounts_from_genomes[k]++;
+            //            }
+            //    }
+            //for (std::size_t i = 0; i < pop.mutations.size(); ++i)
+            //    {
+            //        if (pop.mutations[i].neutral == false)
+            //            {
+            //                if (pop.mcounts[i] != mcounts_from_genomes[i])
+            //                    {
+            //                        throw std::runtime_error(
+            //                            "Matrix test: tree sequence mutation count "
+            //                            "ddoesn't match data in genomes");
+            //                    }
+            //            }
+            //    }
             if (!tables.preserved_nodes.empty())
                 {
                     std::cout << "Matrix test with respect to preserved "
