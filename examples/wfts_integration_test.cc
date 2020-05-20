@@ -316,8 +316,8 @@ main(int argc, char **argv)
                         "invalid ancient sample metadata");
                 }
         }
-    assert(tables.input_left.size() == tables.edge_table.size());
-    assert(tables.output_right.size() == tables.edge_table.size());
+    assert(tables.input_left.size() == tables.edges.size());
+    assert(tables.output_right.size() == tables.edges.size());
     std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
 
