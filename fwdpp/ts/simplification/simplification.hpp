@@ -9,6 +9,8 @@
 #include <stdexcept>
 #include <type_traits>
 #include <fwdpp/ts/definitions.hpp>
+#include <fwdpp/ts/nested_forward_lists.hpp>
+#include <fwdpp/ts/recording/edge_buffer.hpp>
 
 namespace fwdpp
 {
@@ -190,81 +192,7 @@ namespace fwdpp
                 }
             };
 
-            class ancestry_list
-            {
-              private:
-                void
-                resize_and_fill(std::vector<std::int32_t>& v, std::size_t n)
-                {
-                    v.resize(n);
-                    std::fill(begin(v), end(v), -1);
-                }
-
-              public:
-                std::vector<segment> segments;
-                std::vector<std::int32_t> head, next;
-
-                ancestry_list() : segments(), head(), next()
-                {
-                }
-
-                void
-                init(std::size_t n)
-                {
-                    segments.clear();
-                    resize_and_fill(head, n);
-                    resize_and_fill(next, n);
-                }
-
-                std::int32_t
-                get_list_tail(std::size_t i) const
-                {
-                    if (i >= head.size())
-                        {
-                            throw std::runtime_error("index out of range");
-                        }
-                    auto f = head[i];
-                    while (f != -1 && next[f] != -1)
-                        {
-                            f = next[f];
-                        }
-                    return f;
-                }
-
-                void
-                add_record(std::size_t i, double l, double r, TS_NODE_INT n)
-                {
-                    if (i >= head.size())
-                        {
-                            throw std::runtime_error("index out of range");
-                        }
-                    segments.emplace_back(l, r, n);
-                    if (head[i] == -1)
-                        {
-                            head[i] = segments.size() - 1;
-                            if (segments.size() >= next.size())
-                                {
-                                    next.push_back(-1);
-                                }
-                        }
-                    else
-                        {
-                            next.push_back(-1);
-                            auto l = get_list_tail(i);
-                            next[l] = segments.size() - 1;
-                        }
-                }
-
-                void
-                nullify_list(std::size_t i)
-                {
-                    if (i >= head.size())
-                        {
-                            throw std::runtime_error("index out of range");
-                        }
-                    head[i] = -1;
-                }
-            };
+            using ancestry_list = nested_forward_lists<segment, std::int64_t, -1>;
 
             template <typename TableCollectionType> struct simplifier_internal_state
             /// Holds data needed during tree sequence simplification
@@ -360,25 +288,25 @@ namespace fwdpp
             add_ancestry(TS_NODE_INT input_id, double left, double right,
                          TS_NODE_INT node, ancestry_list& ancestry)
             {
-                if (ancestry.head[input_id] == -1)
+                if (ancestry.head(input_id) == ancestry_list::null)
                     {
-                        ancestry.add_record(input_id, left, right, node);
+                        ancestry.extend(input_id, left, right, node);
                     }
                 else
                     {
-                        auto last_idx = ancestry.get_list_tail(input_id);
-                        if (last_idx == -1)
+                        auto last_idx = ancestry.tail(input_id);
+                        if (last_idx == ancestry_list::null)
                             {
                                 throw std::runtime_error("ancestry_list data invalid");
                             }
-                        auto& last = ancestry.segments[last_idx];
+                        auto& last = ancestry.fetch(last_idx);
                         if (last.right == left && last.node == node)
                             {
                                 last.right = right;
                             }
                         else
                             {
-                                ancestry.add_record(input_id, left, right, node);
+                                ancestry.extend(input_id, left, right, node);
                             }
                     }
             }
@@ -423,7 +351,8 @@ namespace fwdpp
                                             typename TableCollectionType::node_t{
                                                 input_node_table[parent_input_id].deme,
                                                 input_node_table[parent_input_id].time});
-                                        output_id = state.new_node_table.size() - 1;
+                                        output_id = static_cast<decltype(output_id)>(
+                                            state.new_node_table.size() - 1);
                                         // update sample map
                                         idmap[parent_input_id] = output_id;
                                     }
@@ -477,10 +406,10 @@ namespace fwdpp
                         // we look at all segments from the child.
                         // If the two segments overlap, we add the
                         // minimal overlap to our queue.
-                        auto idx = state.ancestry.head[edge_ptr->child];
-                        while (idx != -1)
+                        auto idx = state.ancestry.head(edge_ptr->child);
+                        while (idx != ancestry_list::null)
                             {
-                                auto& seg = state.ancestry.segments[idx];
+                                auto& seg = state.ancestry.fetch(idx);
                                 if (seg.right > edge_ptr->left
                                     && edge_ptr->right > seg.left)
                                     {
@@ -489,7 +418,7 @@ namespace fwdpp
                                             std::min(seg.right, edge_ptr->right),
                                             seg.node);
                                     }
-                                idx = state.ancestry.next[idx];
+                                idx = state.ancestry.next(idx);
                             }
                     }
                 state.overlapper.finalize_queue(maxlen);
@@ -590,18 +519,18 @@ namespace fwdpp
                 while (map_itr < map_end)
                     {
                         auto n = map_itr->node;
-                        auto seg_idx = state.ancestry.head[n];
+                        auto seg_idx = state.ancestry.head(n);
                         for (; map_itr < map_end && map_itr->node == n;)
                             {
-                                if (seg_idx == -1)
+                                if (seg_idx == ancestry_list::null)
                                     {
                                         ++map_itr;
                                         break;
                                     }
-                                while (seg_idx != -1 && map_itr < map_end
-                                       && map_itr->node == n)
+                                while (seg_idx != ancestry_list::null
+                                       && map_itr < map_end && map_itr->node == n)
                                     {
-                                        auto& seg = state.ancestry.segments[seg_idx];
+                                        auto& seg = state.ancestry.fetch(seg_idx);
                                         auto pos
                                             = input_tables.sites[map_itr->site].position;
                                         if (seg.left <= pos && pos < seg.right)
@@ -613,7 +542,7 @@ namespace fwdpp
                                             }
                                         else if (pos >= seg.right)
                                             {
-                                                seg_idx = state.ancestry.next[seg_idx];
+                                                seg_idx = state.ancestry.next(seg_idx);
                                             }
                                         else
                                             {
@@ -692,8 +621,44 @@ namespace fwdpp
                     }
                 return new_edge_destination;
             }
-        }
 
+            inline void
+            queue_children(TS_NODE_INT child, double left, double right,
+                           ancestry_list& ancestry, segment_overlapper& overlapper)
+            {
+                auto idx = ancestry.head(child);
+                while (idx != ancestry_list::null)
+                    {
+                        auto& seg = ancestry.fetch(idx);
+                        if (seg.right > left && right > seg.left)
+                            {
+                                overlapper.enqueue(std::max(seg.left, left),
+                                                   std::min(seg.right, right), seg.node);
+                            }
+                        idx = ancestry.next(idx);
+                    }
+            }
+
+            template <typename IntegerType>
+            inline void
+            process_births_from_buffer(IntegerType n, edge_buffer& buffer,
+                                       ancestry_list& ancestry,
+                                       segment_overlapper& overlapper)
+            {
+                static_assert(std::is_integral<IntegerType>::value,
+                              "IntegerType must be is_integral");
+                while (n != edge_buffer::null)
+                    {
+                        const auto& birth = buffer.fetch(n);
+                        // Go through the ancestry of all children
+                        // and add them to the queue
+                        queue_children(birth.child, birth.left, birth.right, ancestry,
+                                       overlapper);
+                        n = buffer.next(n);
+                    }
+            }
+
+        }
     }
 }
 

@@ -1,8 +1,8 @@
-	fwdpp - A C++ template library for forward-time population genetic simulations
+  fwdpp - A C++ template library for forward-time population genetic simulations
 
 
 
-  Copyright (C) 2013 Kevin Thornton
+  Copyright (C) 2013-2020 Kevin Thornton
 
   fwdpp is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -156,12 +156,18 @@ The [fwdpp](http://molpopgen.github.io/fwdpp) main page contains several tutoria
 The source code documentation is in the doc subdirectory that comes with the library.  There are two major pieces of documentation.  First is the detailed documentation of all library functions.  This is generated via [doxygen](http://www.doxygen.org), and the output is a folder called html.  To view the documentation, point a browser to html/index.html.
 
 ## Example documentation
+
 The examples can be read in html form via the online reference manual linked to above.  You can find the two simplest examples online at the fwdpp [wiki](https://github.com/molpopgen/fwdpp/wiki) on github.
 
 # Projects using fwdpp:
 
-* [fwdpp_perf](https://github.com/molpopgen/fwdpp_perf) is a collection of programs showing how to run independent simulations in a multi-core/many-core environment.  Example programs use either C++11 threads or MPI to run simulations.  I also use this package for performance testing/benchmarking/profiling/etc.
 * [fwdpy11](https://github.com/molpopgen/fwdpy11) brings fwdpp-powered simulations to the Python programming language.
+
+# Licensing
+
+* fwdpp is distributed under the terms of the GNU General Public License, version 3 or later, a.k.a. GPL3+.
+* The `tskit` submodule is distributed under the terms of the MIT license.  The repository for that
+  project is [here](https://github.com/tskit-dev/tskit).
 
 
 # Dependencies
@@ -202,10 +208,6 @@ In order to compile the unit tests, you also need:
 
 For OS X users, all of the above dependencies are available via [homebrew](http://brew.sh) or [conda](http://conda.pydata.org/docs/)/[bioconda](https://bioconda.github.io).
 
-## Performance
-
-Performance testing has been moved to the [fwdpp_perf](http://github.com/molpopgen/fwdpp_perf) project.
-
 ## Obtaining the source code
 
 ### Obtaining the master branch
@@ -216,6 +218,7 @@ You have a few options:
 
 
 ### Obtaining a specific release
+
 Again, a few options:
 
 1. Click on "Releases" at https://github.com/molpopgen/fwdpp, then download the one you want
@@ -255,11 +258,14 @@ else
 fi
 ~~~
 
-## The case of a standard system with all dependencies installed in standard locations
+## Building the example programs and unit tests
+
+### The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
 ~~~
 cd fwdpp
+git submodule update --init --recursive
 ~~~
 If you downloaded a release:
 
@@ -286,11 +292,11 @@ Currently, the example programs will not get installed via "make install".   If 
 
 ## To compile examples and unit tests
 
-__Note:__ if you only wish to compile the example programgs, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
+__Note:__ if you only wish to compile the example programs, issue the 'make check' command from the example subdirectory.  This will allow users without boost on their system to compile the examples but not attempt to compile the unit tests (which will fail to compile on systems without boost).
 
 You will need [libsequence](http://github.com/molpopgen/libsequence) installed on your system in order to compile the example programs.
 
-## If dependent libraries are in non-stanard locations.
+## If dependent libraries are in non-standard locations.
 
 For example, if libsequence is in /opt:
 

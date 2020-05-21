@@ -92,8 +92,8 @@ noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	custom_diploid$(EXEEXT) wfts_overlapping_generations$(EXEEXT) \
 	wfts_overlapping_generations_dynamic_indexing$(EXEEXT) \
 	wfts_overlapping_generations_dynamic_indexing_with_mutation$(EXEEXT) \
-	load_table_collection$(EXEEXT) $(am__EXEEXT_1)
-
+	load_table_collection$(EXEEXT) edge_buffering$(EXEEXT) \
+	$(am__EXEEXT_1)
 # examples based on tree sequences that need boost program options
 @BPO_PRESENT_TRUE@am__append_1 = wfts_integration_test spatialts
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_2 = -DHAVE_LIBSEQUENCE
@@ -134,6 +134,18 @@ am_diploid_ind_OBJECTS = diploid_ind.$(OBJEXT)
 diploid_ind_OBJECTS = $(am_diploid_ind_OBJECTS)
 diploid_ind_LDADD = $(LDADD)
 diploid_ind_DEPENDENCIES =
+am__dirstamp = $(am__leading_dot)dirstamp
+am__objects_1 = ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.$(OBJEXT) \
+	../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.$(OBJEXT)
+am_edge_buffering_OBJECTS = edge_buffering.$(OBJEXT) $(am__objects_1)
+edge_buffering_OBJECTS = $(am_edge_buffering_OBJECTS)
+edge_buffering_DEPENDENCIES =
 am_juvenile_migration_OBJECTS = juvenile_migration.$(OBJEXT)
 juvenile_migration_OBJECTS = $(am_juvenile_migration_OBJECTS)
 juvenile_migration_LDADD = $(LDADD)
@@ -187,9 +199,18 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/K_linked_regions_extensions.Po \
+am__depfiles_remade = ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po \
+	./$(DEPDIR)/K_linked_regions_extensions.Po \
 	./$(DEPDIR)/custom_diploid.Po ./$(DEPDIR)/custom_mutation.Po \
 	./$(DEPDIR)/diploid_fixed_sh_ind.Po ./$(DEPDIR)/diploid_ind.Po \
+	./$(DEPDIR)/edge_buffering.Po \
 	./$(DEPDIR)/juvenile_migration.Po \
 	./$(DEPDIR)/load_table_collection.Po ./$(DEPDIR)/spatialts.Po \
 	./$(DEPDIR)/tree_sequence_examples_common.Po \
@@ -198,6 +219,22 @@ am__depfiles_remade = ./$(DEPDIR)/K_linked_regions_extensions.Po \
 	./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing.Po \
 	./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing_with_mutation.Po
 am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -211,31 +248,20 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_@AM_V@)
-am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_@AM_V@)
-am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
 SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(juvenile_migration_SOURCES) $(load_table_collection_SOURCES) \
-	$(spatialts_SOURCES) $(wfts_integration_test_SOURCES) \
+	$(edge_buffering_SOURCES) $(juvenile_migration_SOURCES) \
+	$(load_table_collection_SOURCES) $(spatialts_SOURCES) \
+	$(wfts_integration_test_SOURCES) \
 	$(wfts_overlapping_generations_SOURCES) \
 	$(wfts_overlapping_generations_dynamic_indexing_SOURCES) \
 	$(wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
-	$(juvenile_migration_SOURCES) $(load_table_collection_SOURCES) \
-	$(am__spatialts_SOURCES_DIST) \
+	$(edge_buffering_SOURCES) $(juvenile_migration_SOURCES) \
+	$(load_table_collection_SOURCES) $(am__spatialts_SOURCES_DIST) \
 	$(am__wfts_integration_test_SOURCES_DIST) \
 	$(wfts_overlapping_generations_SOURCES) \
 	$(wfts_overlapping_generations_dynamic_indexing_SOURCES) \
@@ -374,18 +400,34 @@ wfts_overlapping_generations_SOURCES = wfts_overlapping_generations.cc wfevolvet
 wfts_overlapping_generations_dynamic_indexing_SOURCES = wfts_overlapping_generations_dynamic_indexing.cc wfevolvets.cc wfevolvets.hpp
 wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES = wfts_overlapping_generations_dynamic_indexing_with_mutation.cc wfevolvets.cc wfevolvets.hpp
 load_table_collection_SOURCES = load_table_collection.cc
+tskit_SOURCES = ../subprojects/nongpl/tskit/c/tskit/convert.c \
+			  ../subprojects/nongpl/tskit/c/tskit/core.c \
+			  ../subprojects/nongpl/tskit/c/tskit/genotypes.c \
+			  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c \
+			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
+			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
+			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
+			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+
+edge_buffering_SOURCES = edge_buffering.cc \
+					   $(tskit_SOURCES)
+
+edge_buffering_CFLAGS = -std=c99
 @BPO_PRESENT_TRUE@wfts_integration_test_SOURCES = wfts_integration_test.cc tree_sequence_examples_common.cc
 @BPO_PRESENT_TRUE@wfts_integration_test_LDADD = -lboost_program_options
 @BPO_PRESENT_TRUE@spatialts_SOURCES = spatialts.cc
 @BPO_PRESENT_TRUE@spatialts_LDADD = -lboost_program_options
-AM_CPPFLAGS = -Wall -W -I. $(am__append_3)
+edge_buffering_LDADD = -lboost_program_options
+AM_CPPFLAGS = -Wall -W -I. -I../subprojects/nongpl/tskit/c \
+	-I../subprojects/nongpl/tskit/c/subprojects/kastore \
+	$(am__append_3)
 AM_CXXFLAGS = $(am__append_2)
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@AM_LIBS = -lsequence
 LDADD = 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cc .o .obj
+.SUFFIXES: .c .cc .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -438,6 +480,45 @@ diploid_fixed_sh_ind$(EXEEXT): $(diploid_fixed_sh_ind_OBJECTS) $(diploid_fixed_s
 diploid_ind$(EXEEXT): $(diploid_ind_OBJECTS) $(diploid_ind_DEPENDENCIES) $(EXTRA_diploid_ind_DEPENDENCIES) 
 	@rm -f diploid_ind$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(diploid_ind_OBJECTS) $(diploid_ind_LDADD) $(LIBS)
+../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/tskit
+	@: > ../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)
+	@: > ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/subprojects/kastore
+	@: > ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)
+	@: > ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.$(OBJEXT): ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
+
+edge_buffering$(EXEEXT): $(edge_buffering_OBJECTS) $(edge_buffering_DEPENDENCIES) $(EXTRA_edge_buffering_DEPENDENCIES) 
+	@rm -f edge_buffering$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(edge_buffering_OBJECTS) $(edge_buffering_LDADD) $(LIBS)
 
 juvenile_migration$(EXEEXT): $(juvenile_migration_OBJECTS) $(juvenile_migration_DEPENDENCIES) $(EXTRA_juvenile_migration_DEPENDENCIES) 
 	@rm -f juvenile_migration$(EXEEXT)
@@ -469,15 +550,26 @@ wfts_overlapping_generations_dynamic_indexing_with_mutation$(EXEEXT): $(wfts_ove
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/*.$(OBJEXT)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/*.$(OBJEXT)
 
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/K_linked_regions_extensions.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_diploid.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/custom_mutation.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_fixed_sh_ind.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diploid_ind.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edge_buffering.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/load_table_collection.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spatialts.Po@am__quote@ # am--include-marker
@@ -493,6 +585,134 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.o: ../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.o `test -f '../subprojects/nongpl/tskit/c/tskit/convert.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/convert.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.o `test -f '../subprojects/nongpl/tskit/c/tskit/convert.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/convert.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.obj: ../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/convert.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/convert.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/convert.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-convert.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/convert.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/convert.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/convert.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.o: ../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.o `test -f '../subprojects/nongpl/tskit/c/tskit/core.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/core.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.o `test -f '../subprojects/nongpl/tskit/c/tskit/core.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/core.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.obj: ../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/core.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/core.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/core.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/core.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-core.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/core.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/core.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/core.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.o: ../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.o `test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/genotypes.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.o `test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/genotypes.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.obj: ../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/genotypes.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/genotypes.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-genotypes.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/genotypes.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.o: ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.o `test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.o `test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.obj: ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-haplotype_matching.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.o: ../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.o `test -f '../subprojects/nongpl/tskit/c/tskit/stats.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/stats.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.o `test -f '../subprojects/nongpl/tskit/c/tskit/stats.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/stats.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.obj: ../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/stats.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/stats.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/stats.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/stats.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-stats.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/stats.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/stats.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/stats.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.o: ../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.o `test -f '../subprojects/nongpl/tskit/c/tskit/tables.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/tables.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.o `test -f '../subprojects/nongpl/tskit/c/tskit/tables.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/tables.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.obj: ../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/tables.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/tables.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/tables.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/tables.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-tables.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/tables.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/tables.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/tables.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.o: ../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.o `test -f '../subprojects/nongpl/tskit/c/tskit/trees.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/trees.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.o `test -f '../subprojects/nongpl/tskit/c/tskit/trees.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/trees.c
+
+../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.obj: ../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/trees.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/trees.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/trees.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/trees.c' object='../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/edge_buffering-trees.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/trees.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/trees.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/trees.c'; fi`
+
+../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.o: ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.o -MD -MP -MF ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Tpo -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.o `test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Tpo ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' object='../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.o `test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+
+../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.obj: ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Tpo -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.obj `if test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Tpo ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' object='../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(edge_buffering_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/edge_buffering-kastore.obj `if test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; fi`
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -625,6 +845,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -634,11 +858,20 @@ clean: clean-am
 clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-		-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
+		-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po
+	-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
 	-rm -f ./$(DEPDIR)/custom_diploid.Po
 	-rm -f ./$(DEPDIR)/custom_mutation.Po
 	-rm -f ./$(DEPDIR)/diploid_fixed_sh_ind.Po
 	-rm -f ./$(DEPDIR)/diploid_ind.Po
+	-rm -f ./$(DEPDIR)/edge_buffering.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/load_table_collection.Po
 	-rm -f ./$(DEPDIR)/spatialts.Po
@@ -693,11 +926,20 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
+		-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/edge_buffering-kastore.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-convert.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-core.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-genotypes.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-haplotype_matching.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-stats.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-tables.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/edge_buffering-trees.Po
+	-rm -f ./$(DEPDIR)/K_linked_regions_extensions.Po
 	-rm -f ./$(DEPDIR)/custom_diploid.Po
 	-rm -f ./$(DEPDIR)/custom_mutation.Po
 	-rm -f ./$(DEPDIR)/diploid_fixed_sh_ind.Po
 	-rm -f ./$(DEPDIR)/diploid_ind.Po
+	-rm -f ./$(DEPDIR)/edge_buffering.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/load_table_collection.Po
 	-rm -f ./$(DEPDIR)/spatialts.Po

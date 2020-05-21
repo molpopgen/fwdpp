@@ -1,6 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp/ts
 
-SUBDIRS=simplification
+SUBDIRS=simplification recording
 
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \
@@ -28,6 +28,8 @@ pkginclude_HEADERS= definitions.hpp \
 			exceptions.hpp \
 			mutation_tools.hpp \
 			visit_sites.hpp \
-			site_visitor.hpp
+			site_visitor.hpp \
+			recording.hpp \
+			nested_forward_lists.hpp
 
 

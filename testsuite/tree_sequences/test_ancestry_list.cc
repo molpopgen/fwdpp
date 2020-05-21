@@ -4,16 +4,16 @@
 
 namespace
 {
-    int
+    std::int64_t
     get_list_length(const fwdpp::ts::simplification::ancestry_list& al, std::size_t i)
     {
         int len = 0;
-        auto f = al.head[i];
+        auto f = al.head(i);
 
         while (f != -1)
             {
                 ++len;
-                f = al.next[f];
+                f = al.next(f);
             }
         return len;
     }
@@ -26,10 +26,10 @@ BOOST_AUTO_TEST_CASE(test_construct_and_fill)
 // tree sequences and are just for testing
 {
     fwdpp::ts::simplification::ancestry_list al;
-    al.init(4);
-    al.add_record(0, 0, 1, 3);
-    al.add_record(1, 0, 0.5, 3);
-    al.add_record(0, 0, 0.5, 4);
+    al.reset(4);
+    al.extend(0, 0., 1., 3);
+    al.extend(1, 0., 0.5, 3);
+    al.extend(0, 0., 0.5, 4);
 
     BOOST_REQUIRE_EQUAL(get_list_length(al, 0), 2);
     BOOST_REQUIRE_EQUAL(get_list_length(al, 1), 1);
@@ -38,17 +38,17 @@ BOOST_AUTO_TEST_CASE(test_construct_and_fill)
 BOOST_AUTO_TEST_CASE(test_fill_nullify_once_fill)
 {
     fwdpp::ts::simplification::ancestry_list al;
-    al.init(4);
-    al.add_record(0, 0, 1, 3);
-    al.add_record(1, 0, 0.5, 3);
-    al.add_record(0, 0, 0.5, 4);
+    al.reset(4);
+    al.extend(0, 0., 1., 3);
+    al.extend(1, 0., 0.5, 3);
+    al.extend(0, 0., 0.5, 4);
     BOOST_REQUIRE_EQUAL(get_list_length(al, 0), 2);
-    BOOST_REQUIRE_EQUAL(al.get_list_tail(0), 2);
+    BOOST_REQUIRE_EQUAL(al.tail(0), 2);
     al.nullify_list(0);
     BOOST_REQUIRE_EQUAL(get_list_length(al, 0), 0);
-    BOOST_REQUIRE_EQUAL(al.get_list_tail(0), -1);
+    BOOST_REQUIRE_EQUAL(al.tail(0), -1);
 
-    al.add_record(0, 0, 1, 2);
+    al.extend(0, 0., 1., 2);
     BOOST_REQUIRE_EQUAL(get_list_length(al, 0), 1);
 }
 
