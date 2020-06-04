@@ -475,6 +475,12 @@ namespace fwdpp
                 return nodes.size();
             }
 
+            std::size_t
+            num_edges() const
+            {
+                return edges.size();
+            }
+
             void
             update_offset()
             {

@@ -1,0 +1,3 @@
+[submodule "subprojects/nongpl/tskit"]
+	path = subprojects/nongpl/tskit
+	url = https://github.com/tskit-dev/tskit

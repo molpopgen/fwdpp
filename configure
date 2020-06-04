@@ -4483,7 +4483,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-ac_config_files="$ac_config_files Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/poptypes/Makefile fwdpp/gsl/Makefile fwdpp/extensions/Makefile fwdpp/meta/Makefile fwdpp/simfunctions/Makefile fwdpp/ts/Makefile fwdpp/ts/detail/Makefile fwdpp/ts/marginal_tree_functions/Makefile fwdpp/ts/simplification/Makefile fwdpp/util/Makefile fwdpp/genetic_map/Makefile examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen"
+ac_config_files="$ac_config_files Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile fwdpp/internal/Makefile fwdpp/tags/Makefile fwdpp/sugar/Makefile fwdpp/poptypes/Makefile fwdpp/gsl/Makefile fwdpp/extensions/Makefile fwdpp/meta/Makefile fwdpp/simfunctions/Makefile fwdpp/ts/Makefile fwdpp/ts/detail/Makefile fwdpp/ts/marginal_tree_functions/Makefile fwdpp/ts/simplification/Makefile fwdpp/ts/recording/Makefile fwdpp/util/Makefile fwdpp/genetic_map/Makefile examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen"
 
 
 # Check whether --enable-debug was given.
@@ -6058,6 +6058,7 @@ do
     "fwdpp/ts/detail/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/ts/detail/Makefile" ;;
     "fwdpp/ts/marginal_tree_functions/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/ts/marginal_tree_functions/Makefile" ;;
     "fwdpp/ts/simplification/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/ts/simplification/Makefile" ;;
+    "fwdpp/ts/recording/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/ts/recording/Makefile" ;;
     "fwdpp/util/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/util/Makefile" ;;
     "fwdpp/genetic_map/Makefile") CONFIG_FILES="$CONFIG_FILES fwdpp/genetic_map/Makefile" ;;
     "examples/Makefile") CONFIG_FILES="$CONFIG_FILES examples/Makefile" ;;
