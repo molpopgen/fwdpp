@@ -370,8 +370,7 @@ namespace fwdpp
         ///\return dpol( hpol(g1,mutations), hpol(g2,mutations) )
         ///
         {
-            static_assert(typename traits::is_haploid_genome<
-                              haploid_genome_type>::type(),
+            static_assert(traits::is_haploid_genome_v<haploid_genome_type>,
                           "haploid_genome_type must be a haploid_genome type");
             static_assert(
                 traits::is_mutation<typename mcont_t::value_type>::value,
