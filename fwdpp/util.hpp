@@ -39,7 +39,7 @@ namespace fwdpp
                      std::vector<uint_t> &mcounts, const unsigned twoN)
     {
         static_assert(
-            typename traits::is_mutation<typename mcont_t::value_type>::type(),
+            traits::is_mutation_v<typename mcont_t::value_type>,
             "mutation_type must be derived from fwdpp::mutation_base");
 #ifndef NDEBUG
         if (mcounts.size() != mutations.size())
@@ -86,7 +86,7 @@ namespace fwdpp
 
     {
         static_assert(
-            typename traits::is_mutation<typename mcont_t::value_type>::type(),
+            traits::is_mutation_v<typename mcont_t::value_type>,
             "mutation_type must be derived from fwdpp::mutation_base");
         for (std::size_t i = 0; i < mcounts.size(); ++i)
             {
@@ -125,7 +125,7 @@ namespace fwdpp
                      const unsigned &twoN)
     {
         static_assert(
-            typename traits::is_mutation<typename mcont_t::value_type>::type(),
+            traits::is_mutation_v<typename mcont_t::value_type>,
             "mutation_type must be derived from fwdpp::mutation_base");
 #ifndef NDEBUG
         if (mcounts.size() != mutations.size())
@@ -197,7 +197,7 @@ namespace fwdpp
                        const unsigned &generation, const unsigned &twoN)
     {
         static_assert(
-            typename traits::is_mutation<typename mcont_t::value_type>::type(),
+            traits::is_mutation_v<typename mcont_t::value_type>,
             "mutation_type must be derived from "
             "fwdpp::mutation_base");
 #ifndef NDEBUG

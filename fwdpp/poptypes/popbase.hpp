@@ -21,11 +21,10 @@ namespace fwdpp
           \version 0.9.0 Remove construction from containers of low-level types
          */
         {
-            static_assert(typename fwdpp::traits::is_haploid_genome<
-                              typename gcont::value_type>::type(),
+            static_assert(fwdpp::traits::is_haploid_genome_v<typename gcont::value_type>,
                           "gcont::value_type must be a haploid_genome type");
             static_assert(
-                typename fwdpp::traits::is_mutation<typename mcont::value_type>::type(),
+                fwdpp::traits::is_mutation_v<typename mcont::value_type>,
                 "mcont::value_type must be a mutation type");
 
           public:
