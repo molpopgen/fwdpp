@@ -26,7 +26,7 @@ AC_PROG_CXX
 
 AM_MAINTAINER_MODE([disable])
 
-AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
 
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile
