@@ -26,7 +26,7 @@ AC_PROG_CXX
 
 AM_MAINTAINER_MODE([disable])
 
-AC_ARG_ENABLE([checkcpp17], AS_HELP_STRING([--enable-cpp17], [Compile using -std=c++17]))
+AC_ARG_ENABLE([cpp17], AS_HELP_STRING([--enable-cpp17], [Compile using -std=c++17]))
 if test "x$enable_cpp17" = x
 then
 AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
