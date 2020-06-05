@@ -41,31 +41,10 @@ BOOST_AUTO_TEST_CASE(diploid_population_sugar_test4)
     BOOST_CHECK_EQUAL(pop == pop2, false);
 }
 
-// Test ability to serialize at different popsizes
 
-BOOST_AUTO_TEST_CASE(diploid_population_serialize_smallN)
+BOOST_AUTO_TEST_CASE(diploid_population_serialize)
 {
     simulate_diploid_population(pop, 1000, 1000);
-    std::stringstream buffer;
-    fwdpp::io::serialize_population(buffer, pop);
-    diploid_population_popgenmut_fixture::poptype pop2(0);
-    fwdpp::io::deserialize_population(buffer, pop2);
-    BOOST_CHECK_EQUAL(pop == pop2, true);
-}
-
-BOOST_AUTO_TEST_CASE(diploid_population_serialize_mediumN)
-{
-    simulate_diploid_population(pop, 5000, 5000);
-    std::stringstream buffer;
-    fwdpp::io::serialize_population(buffer, pop);
-    diploid_population_popgenmut_fixture::poptype pop2(0);
-    fwdpp::io::deserialize_population(buffer, pop2);
-    BOOST_CHECK_EQUAL(pop == pop2, true);
-}
-
-BOOST_AUTO_TEST_CASE(diploid_population_serialize_largeN)
-{
-    simulate_diploid_population(pop, 10000, 10000);
     std::stringstream buffer;
     fwdpp::io::serialize_population(buffer, pop);
     diploid_population_popgenmut_fixture::poptype pop2(0);
