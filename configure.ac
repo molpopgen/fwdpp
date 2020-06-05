@@ -26,7 +26,13 @@ AC_PROG_CXX
 
 AM_MAINTAINER_MODE([disable])
 
+AC_ARG_ENABLE([checkcpp17], AS_HELP_STRING([--enable-cpp17], [Compile using -std=c++17]))
+if test "x$enable_cpp17" = x
+then
 AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
+else
+AX_CXX_COMPILE_STDCXX([17],[noext],[mandatory])
+fi
 
 AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile
