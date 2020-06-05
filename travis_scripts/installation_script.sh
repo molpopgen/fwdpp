@@ -4,12 +4,9 @@
 
 echo "Variables = "$USECONDA $TRAVIS_OS_NAME
 
-if [ "$USECONDA" == "1" ];
+if [ "$USECONDA" == "1" ]; # Only for macOS
 then
-    if [ "$TRAVIS_OS_NAME" == "linux" ];
-    then 
-        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-    elif [ "$TRAVIS_OS_NAME" == "osx" ];
+    if [ "$TRAVIS_OS_NAME" == "osx" ];
         then
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh
     fi
@@ -17,11 +14,12 @@ then
     export PATH="$HOME/miniconda/bin:$PATH"
     hash -r
     conda config --set always_yes yes --set changeps1 no
-    conda update -q conda
+    conda create -q -n test-environment
+    conda activate test-environment
     # Useful for debugging any issues with conda
     conda info -a
-    conda install gxx_linux-64 zlib gsl
-    conda install -c conda-forge boost-cpp==1.70.0
+    conda install clangxx_osx-64 zlib gsl
+    conda install -c conda-forge boost-cpp==1.73.0
     ls -lhrt $HOME/miniconda/lib | grep boost_program
     # conda install -c bioconda libsequence
 else
