@@ -602,26 +602,6 @@ namespace fwdpp
                 tables.update_offset();
             }
 
-            template <typename Iterator, typename ConstIterator,
-                      typename SimplifierState>
-            inline Iterator
-            transfer_simplified_edges(Iterator new_edge_destination,
-                                      ConstIterator input_edge_table_location,
-                                      std::size_t minsize, SimplifierState& state)
-            {
-                if (state.new_edge_table.size() >= minsize
-                    && new_edge_destination + state.new_edge_table.size()
-                           < input_edge_table_location)
-                    {
-                        auto rv
-                            = std::copy(begin(state.new_edge_table),
-                                        end(state.new_edge_table), new_edge_destination);
-                        state.new_edge_table.clear();
-                        return rv;
-                    }
-                return new_edge_destination;
-            }
-
             inline void
             queue_children(TS_NODE_INT child, double left, double right,
                            ancestry_list& ancestry, segment_overlapper& overlapper)

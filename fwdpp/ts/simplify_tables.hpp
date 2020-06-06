@@ -62,11 +62,21 @@ namespace fwdpp
                         input_tables.genome_length(), edge_ptr, edge_end, u, state);
                     simplification::merge_ancestors(input_tables.genome_length(),
                                                     input_tables.nodes, u, state, idmap);
-                    new_edge_destination = simplification::transfer_simplified_edges(
-                        new_edge_destination, edge_ptr, 1024ul, state);
+                    if (state.new_edge_table.size() >= 1024
+                        && new_edge_destination + state.new_edge_table.size() < edge_ptr)
+                        {
+                            new_edge_destination = std::copy(begin(state.new_edge_table),
+                                                             end(state.new_edge_table),
+                                                             new_edge_destination);
+                            state.new_edge_table.clear();
+                        }
                 }
-            new_edge_destination = simplification::transfer_simplified_edges(
-                new_edge_destination, edge_ptr, 0ul, state);
+            if (state.new_edge_table.empty() == false)
+                {
+                    new_edge_destination
+                        = std::copy(begin(state.new_edge_table),
+                                    end(state.new_edge_table), new_edge_destination);
+                }
 
             // When there are preserved nodes, we need to re map
             // their input ids to output ids
