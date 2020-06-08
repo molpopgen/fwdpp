@@ -95,7 +95,7 @@ POST_UNINSTALL = :
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/tree_sequence_tests$(EXEEXT)
 subdir = testsuite
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx_11.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_cxx_compile_stdxx.m4 \
 	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -551,7 +551,8 @@ FWDPP_MINOR_VERSION = @FWDPP_MINOR_VERSION@
 FWDPP_REVISION_VERSION = @FWDPP_REVISION_VERSION@
 FWDPP_VERSION_STRING = @FWDPP_VERSION_STRING@
 GREP = @GREP@
-HAVE_CXX11 = @HAVE_CXX11@
+HAVE_CXX14 = @HAVE_CXX14@
+HAVE_CXX17 = @HAVE_CXX17@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@

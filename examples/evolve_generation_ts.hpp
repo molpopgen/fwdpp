@@ -15,6 +15,7 @@
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/generate_offspring.hpp>
+#include <fwdpp/ts/recording/mutations.hpp>
 
 template <typename poptype, typename rng_t, typename genetic_param_holder>
 std::pair<fwdpp::ts::mut_rec_intermediates, fwdpp::ts::mut_rec_intermediates>
