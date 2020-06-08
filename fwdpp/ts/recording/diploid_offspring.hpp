@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <fwdpp/ts/definitions.hpp>
+#include "edge_buffer.hpp"
 
 namespace fwdpp
 {
@@ -116,6 +117,30 @@ namespace fwdpp
                 tables.genome_length());
             return next_index;
         }
+
+        template <typename TableCollectionType>
+        inline std::size_t
+        register_diploid_offspring(const std::vector<double>& breakpoints,
+                                   const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
+                                   const std::int32_t population, const double time,
+                                   TableCollectionType& tables,
+								   edge_buffer & buffer)
+        {
+            // TODO: carefully document how to index node times.
+            auto next_index = tables.emplace_back_node(population, time);
+            if (next_index >= std::numeric_limits<TS_NODE_INT>::max())
+                {
+                    throw std::invalid_argument("node index too large");
+                }
+            split_breakpoints(
+                breakpoints, parents, next_index,
+                [&buffer](double l, double r, TS_NODE_INT p, TS_NODE_INT c) {
+                    buffer.extend(p, l, r, c);
+                },
+                tables.genome_length());
+            return next_index;
+        }
+
     }
 }
 
