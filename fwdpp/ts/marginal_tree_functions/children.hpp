@@ -54,7 +54,13 @@ namespace fwdpp
 			///
             /// Returns fwdpp::ts::TS_NULL_NODE when no more children remain.
             {
+                static_assert(TS_NULL_NODE < 0,
+                        "TS_NULL_NODE < 0 is false, so something needs to change here");
                 auto c = current_child;
+                if (c < 0)
+                    {
+                        return c;
+                    }
                 if (sib_begin + current_child >= sib_end)
                     {
                         throw std::runtime_error("child iteration error");

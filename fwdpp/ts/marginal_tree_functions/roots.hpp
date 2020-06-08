@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_MARGINAL_TREE_FUNCTIONS_ROOTS_ITERATOR_HPP
 #define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_ROOTS_ITERATOR_HPP
 
+#include <type_traits>
 #include <stdexcept>
 #include "../marginal_tree.hpp"
 
@@ -39,7 +40,13 @@ namespace fwdpp
             /// \return The next root notde
             /// TS_NULL_NODE signals end of iteration
             {
+                static_assert(TS_NULL_NODE < 0,
+                        "TS_NULL_NODE < 0 is false, so something needs to change here");
                 auto croot = current_root;
+                if (croot < 0)
+                    {
+                        return croot;
+                    }
                 if (rsib_beg + croot >= rsib_end)
                     {
                         throw std::runtime_error("root iteration error");
