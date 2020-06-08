@@ -14,17 +14,16 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename TableCollectionType>
+        template <typename NewEdgeFunction>
         inline void
         split_breakpoints_add_edges(const std::vector<double>& breakpoints,
                                     const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                                     const TS_NODE_INT next_index,
-                                    TableCollectionType& tables)
+                                    const NewEdgeFunction f, double L)
         {
             if (breakpoints.front() != 0.0)
                 {
-                    tables.push_back_edge(0., breakpoints.front(), std::get<0>(parents),
-                                          next_index);
+                    f(0., breakpoints.front(), std::get<0>(parents), next_index);
                 }
             // TODO: replace with exception via a debug mode
             assert(std::count(begin(breakpoints), end(breakpoints),
@@ -34,42 +33,39 @@ namespace fwdpp
             for (unsigned j = 1; j < breakpoints.size(); ++j)
                 {
                     double a = breakpoints[j - 1];
-                    double b = (j < breakpoints.size() - 1) ? breakpoints[j]
-                                                            : tables.genome_length();
+                    double b = (j < breakpoints.size() - 1) ? breakpoints[j] : L;
                     if (b <= a)
                         {
                             throw std::invalid_argument("right must be > left");
                         }
                     if (j % 2 == 0.)
                         {
-                            tables.push_back_edge(a, b, std::get<0>(parents),
-                                                  next_index);
+                            f(a, b, std::get<0>(parents), next_index);
                         }
                     else
                         {
-                            tables.push_back_edge(a, b, std::get<1>(parents),
-                                                  next_index);
+                            f(a, b, std::get<1>(parents), next_index);
                         }
                 }
         }
 
-        template <typename TableCollectionType>
+        template <typename NewEdgeFunction>
         inline void
         split_breakpoints(const std::vector<double>& breakpoints,
                           const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                          const TS_NODE_INT next_index, TableCollectionType& tables)
+                          const TS_NODE_INT next_index, const NewEdgeFunction f,
+                          double L)
         {
             if (breakpoints.empty())
                 {
-                    tables.push_back_edge(0., tables.genome_length(),
-                                          std::get<0>(parents), next_index);
+                    f(0, L, std::get<0>(parents), next_index);
                     return;
                 }
             auto itr
                 = std::adjacent_find(std::begin(breakpoints), std::end(breakpoints));
             if (itr == std::end(breakpoints))
                 {
-                    split_breakpoints_add_edges(breakpoints, parents, next_index, tables);
+                    split_breakpoints_add_edges(breakpoints, parents, next_index, f, L);
                 }
             else
                 {
@@ -94,7 +90,8 @@ namespace fwdpp
                         }
                     odd_breakpoints.insert(odd_breakpoints.end(), start,
                                            breakpoints.end());
-                    split_breakpoints_add_edges(odd_breakpoints, parents, next_index, tables);
+                    split_breakpoints_add_edges(odd_breakpoints, parents, next_index, f,
+                                                L);
                 }
         }
 
@@ -111,7 +108,12 @@ namespace fwdpp
                 {
                     throw std::invalid_argument("node index too large");
                 }
-            split_breakpoints(breakpoints, parents, next_index, tables);
+            split_breakpoints(
+                breakpoints, parents, next_index,
+                [&tables](double l, double r, TS_NODE_INT p, TS_NODE_INT c) {
+                    tables.push_back_edge(l, r, p, c);
+                },
+                tables.genome_length());
             return next_index;
         }
     }
