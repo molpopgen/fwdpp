@@ -30,7 +30,11 @@ namespace fwdpp
             assert(std::count(begin(breakpoints), end(breakpoints),
                               std::numeric_limits<double>::max())
                    == 1);
-            assert(breakpoints.back() == std::numeric_limits<double>::max());
+            if (breakpoints.back() != std::numeric_limits<double>::max())
+                {
+                    throw std::invalid_argument(
+                        "breakpoints.back != std::numeric_limits<double>::max()");
+                }
             for (unsigned j = 1; j < breakpoints.size(); ++j)
                 {
                     double a = breakpoints[j - 1];
@@ -99,9 +103,9 @@ namespace fwdpp
         template <typename TableCollectionType>
         inline std::size_t
         record_diploid_offspring(const std::vector<double>& breakpoints,
-                                   const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                                   const std::int32_t population, const double time,
-                                   TableCollectionType& tables)
+                                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
+                                 const std::int32_t population, const double time,
+                                 TableCollectionType& tables)
         {
             // TODO: carefully document how to index node times.
             auto next_index = tables.emplace_back_node(population, time);
@@ -121,10 +125,9 @@ namespace fwdpp
         template <typename TableCollectionType>
         inline std::size_t
         record_diploid_offspring(const std::vector<double>& breakpoints,
-                                   const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
-                                   const std::int32_t population, const double time,
-                                   TableCollectionType& tables,
-								   edge_buffer & buffer)
+                                 const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
+                                 const std::int32_t population, const double time,
+                                 TableCollectionType& tables, edge_buffer& buffer)
         {
             // TODO: carefully document how to index node times.
             auto next_index = tables.emplace_back_node(population, time);
