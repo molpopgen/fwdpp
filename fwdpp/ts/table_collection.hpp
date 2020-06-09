@@ -261,19 +261,19 @@ namespace fwdpp
                     }
             }
 
-            std::size_t
+            TS_NODE_INT
             push_back_node(double time, std::int32_t pop)
             {
                 nodes.push_back(node_t{pop, time});
-                return nodes.size() - 1;
+                return static_cast<TS_NODE_INT>(nodes.size() - 1);
             }
 
             template <typename... args>
-            std::size_t
+            TS_NODE_INT
             emplace_back_node(args&&... Args)
             {
                 nodes.emplace_back(node_t{std::forward<args>(Args)...});
-                return nodes.size() - 1;
+                return static_cast<TS_NODE_INT>(nodes.size() - 1);
             }
 
             std::size_t
