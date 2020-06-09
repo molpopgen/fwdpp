@@ -302,6 +302,7 @@ namespace fwdpp
             std::move(begin(state.new_node_table), end(state.new_node_table),
                       begin(input_tables.nodes));
             input_tables.update_offset();
+            buffer.reset(input_tables.num_nodes());
         }
     }
 }

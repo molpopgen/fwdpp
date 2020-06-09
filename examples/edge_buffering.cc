@@ -270,13 +270,18 @@ flush_buffer_n_simplify(
             stitch_together_edges(alive_at_last_simplification, max_time, new_edges,
                                   edge_liftover, tables);
             fwdpp::ts::simplify_tables(samples, state, tables, node_map, temp);
+            // stitch_together_edges doesn't know about what happens during
+            // simplify, so we need to manually reset the buffer's head/tail
+            // sizes
+            new_edges.reset(tables.num_nodes());
         }
     else
         {
+            // Simplifying right from the buffer automatically
+            // resets new_edges
             fwdpp::ts::simplify_tables(samples, alive_at_last_simplification, state,
                                        tables, new_edges, node_map, temp);
         }
-    new_edges.reset(tables.num_nodes());
 }
 
 using table_collection_ptr
