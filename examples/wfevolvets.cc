@@ -10,6 +10,7 @@
 #include <fwdpp/ts/exceptions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
 #include <fwdpp/ts/marginal_tree_functions.hpp>
+#include <fwdpp/ts/recording/diploid_offspring.hpp>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 
 std::vector<fwdpp::ts::TS_NODE_INT>
@@ -79,12 +80,12 @@ births(const GSLrng& rng, const unsigned birth_time,
         {
             auto parental_nodes = pick_parent(rng, parental_metadata);
             generate_recombination_breakpoints(rng, recombination, breakpoints);
-            auto offspring_first_node = tables.register_diploid_offspring(
-                breakpoints, parental_nodes, 0, birth_time);
+            auto offspring_first_node = fwdpp::ts::record_diploid_offspring(
+                breakpoints, parental_nodes, 0, birth_time, tables);
             parental_nodes = pick_parent(rng, parental_metadata);
             generate_recombination_breakpoints(rng, recombination, breakpoints);
-            auto offspring_second_node = tables.register_diploid_offspring(
-                breakpoints, parental_nodes, 0, birth_time);
+            auto offspring_second_node = fwdpp::ts::record_diploid_offspring(
+                breakpoints, parental_nodes, 0, birth_time, tables);
 
             // Take a reference to the metadata for the individual
             // we are replacing.  This reference streamlines the

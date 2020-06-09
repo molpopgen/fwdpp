@@ -8,6 +8,7 @@
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/std_table_collection.hpp>
 #include <fwdpp/ts/recording.hpp>
+#include <fwdpp/ts/recording/diploid_offspring.hpp>
 #include <fwdpp/ts/simplify_tables.hpp>
 
 #include <tskit.h>
@@ -89,7 +90,8 @@ generate_main_options(command_line_options& o)
         "buffer", po::bool_switch(&o.buffer_new_edges),
         "If true, use edge buffering algorithm. If not, sort and simplify. Default = "
         "false");
-    options.add_options()("simplify_from_buffer", po::bool_switch(&o.simplify_from_buffer),
+    options.add_options()("simplify_from_buffer",
+                          po::bool_switch(&o.simplify_from_buffer),
                           "If true, and if using the edge buffering algorithm "
                           "(--buffer), then simplify from the buffer");
     options.add_options()("seed",
@@ -149,73 +151,11 @@ recombination_breakpoints(const fwdpp::GSLrng_mt& rng, double littler, double ma
             breakpoints.push_back(gsl_ran_flat(rng.get(), 0., maxlen));
         }
     std::sort(begin(breakpoints), end(breakpoints));
-
-    // Remove all values that do not exist an odd number of times
-    auto itr = std::adjacent_find(begin(breakpoints), end(breakpoints));
-    if (itr != end(breakpoints))
+    if (!breakpoints.empty())
         {
-            std::vector<double> temp;
-            auto start = begin(breakpoints);
-            while (itr < end(breakpoints))
-                {
-                    auto not_equal
-                        = std::find_if(itr, breakpoints.end(),
-                                       [itr](const double d) { return d != *itr; });
-                    int even = (std::distance(itr, not_equal) % 2 == 0.0);
-                    temp.insert(temp.end(), start, itr + 1 - even);
-                    start = not_equal;
-                    itr = std::adjacent_find(start, std::end(breakpoints));
-                }
-            temp.insert(end(temp), start, breakpoints.end());
-            breakpoints.swap(temp);
+            breakpoints.emplace_back(std::numeric_limits<double>::max());
         }
-}
-
-void
-recombine_and_record_edges(const fwdpp::GSLrng_mt& rng, double littler,
-                           std::vector<double>& breakpoints,
-                           fwdpp::ts::TS_NODE_INT parental_node0,
-                           fwdpp::ts::TS_NODE_INT parental_node1,
-                           fwdpp::ts::TS_NODE_INT child,
-                           fwdpp::ts::std_table_collection& tables)
-// NOTE: this is an improvement on what I do in fwdpp?
-{
-    recombination_breakpoints(rng, littler, tables.genome_length(), breakpoints);
-    double left = 0.;
-    std::size_t breakpoint = 1;
-    auto pnode0 = parental_node0;
-    auto pnode1 = parental_node1;
-    for (; breakpoint < breakpoints.size(); ++breakpoint)
-        {
-            auto rv
-                = tables.emplace_back_edge(left, breakpoints[breakpoint], pnode0, child);
-            std::swap(pnode0, pnode1);
-            left = breakpoints[breakpoint];
-        }
-    auto rv = tables.emplace_back_edge(left, tables.genome_length(), pnode0, child);
-}
-
-void
-recombine_and_buffer_edges(const fwdpp::GSLrng_mt& rng, double littler,
-                           std::vector<double>& breakpoints,
-                           fwdpp::ts::TS_NODE_INT parental_node0,
-                           fwdpp::ts::TS_NODE_INT parental_node1,
-                           fwdpp::ts::TS_NODE_INT child, double maxlen,
-                           fwdpp::ts::edge_buffer& new_edges)
-{
-    recombination_breakpoints(rng, littler, maxlen, breakpoints);
-    double left = 0.;
-    std::size_t breakpoint = 1;
-    auto pnode0 = parental_node0;
-    auto pnode1 = parental_node1;
-
-    for (; breakpoint < breakpoints.size(); ++breakpoint)
-        {
-            new_edges.extend(pnode0, left, breakpoints[breakpoint], child);
-            std::swap(pnode0, pnode1);
-            left = breakpoints[breakpoint];
-        }
-    new_edges.extend(pnode0, left, maxlen, child);
+    return;
 }
 
 void
@@ -224,10 +164,9 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 bool buffer_new_edges, fwdpp::ts::edge_buffer& new_edges,
                 std::vector<parent>& parents, fwdpp::ts::std_table_collection& tables)
 {
+    std::size_t new_node_0, new_node_1;
     for (auto& b : births)
         {
-            auto new_node_0 = tables.emplace_back_node(0, birth_time);
-            auto new_node_1 = tables.emplace_back_node(0, birth_time);
             auto p0n0 = b.p0node0;
             auto p0n1 = b.p0node1;
             if (gsl_rng_uniform(rng.get()) < 0.5)
@@ -242,31 +181,39 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 }
             if (buffer_new_edges == false)
                 {
-                    recombine_and_record_edges(rng, littler, breakpoints, p0n0, p0n1,
-                                               new_node_0, tables);
-                    recombine_and_record_edges(rng, littler, breakpoints, p1n0, p1n1,
-                                               new_node_1, tables);
+                    recombination_breakpoints(rng, littler, tables.genome_length(),
+                                              breakpoints);
+                    new_node_0 = fwdpp::ts::record_diploid_offspring(
+                        breakpoints, std::tie(p0n0, p0n1), 0, birth_time, tables);
+                    recombination_breakpoints(rng, littler, tables.genome_length(),
+                                              breakpoints);
+                    new_node_1 = fwdpp::ts::record_diploid_offspring(
+                        breakpoints, std::tie(p1n0, p1n1), 0, birth_time, tables);
                 }
             else
                 {
+                    recombination_breakpoints(rng, littler, tables.genome_length(),
+                                              breakpoints);
+                    new_node_0 = fwdpp::ts::record_diploid_offspring(
+                        breakpoints, std::tie(p0n0, p0n1), 0, birth_time, tables,
+                        new_edges);
                     double ptime = tables.nodes[p0n0].time;
                     double ctime = tables.nodes[new_node_0].time;
                     if (ctime <= ptime)
                         {
                             throw std::runtime_error("bad parent/child time");
                         }
-                    recombine_and_buffer_edges(rng, littler, breakpoints, p0n0, p0n1,
-                                               new_node_0, tables.genome_length(),
-                                               new_edges);
+                    recombination_breakpoints(rng, littler, tables.genome_length(),
+                                              breakpoints);
+                    new_node_1 = fwdpp::ts::record_diploid_offspring(
+                        breakpoints, std::tie(p1n0, p1n1), 0, birth_time, tables,
+                        new_edges);
                     ptime = tables.nodes[p1n0].time;
                     ctime = tables.nodes[new_node_1].time;
                     if (ctime <= ptime)
                         {
                             throw std::runtime_error("bad parent/child time");
                         }
-                    recombine_and_buffer_edges(rng, littler, breakpoints, p1n0, p1n1,
-                                               new_node_1, tables.genome_length(),
-                                               new_edges);
                 }
             parents[b.index] = parent(b.index, new_node_0, new_node_1);
         }
@@ -447,8 +394,8 @@ simulate(const command_line_options& options)
                     else
                         {
                             flush_buffer_n_simplify(
-                                    options.simplify_from_buffer,
-                                samples, alive_at_last_simplification, node_map, buffer,
+                                options.simplify_from_buffer, samples,
+                                alive_at_last_simplification, node_map, buffer,
                                 simplifier_state, edge_liftover, tables);
                         }
                     simplified = true;
@@ -489,9 +436,10 @@ simulate(const command_line_options& options)
                 }
             else
                 {
-                    flush_buffer_n_simplify(options.simplify_from_buffer,samples, alive_at_last_simplification,
-                                            node_map, buffer, simplifier_state,
-                                            edge_liftover, tables);
+                    flush_buffer_n_simplify(options.simplify_from_buffer, samples,
+                                            alive_at_last_simplification, node_map,
+                                            buffer, simplifier_state, edge_liftover,
+                                            tables);
                 }
         }
     dump_table_collection_to_tskit(tables, options.treefile, options.nsteps, options.N);
