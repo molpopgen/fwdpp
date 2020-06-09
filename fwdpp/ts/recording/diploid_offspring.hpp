@@ -101,7 +101,7 @@ namespace fwdpp
         }
 
         template <typename TableCollectionType>
-        inline std::size_t
+        inline TS_NODE_INT
         record_diploid_offspring(const std::vector<double>& breakpoints,
                                  const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                                  const std::int32_t population, const double time,
@@ -123,7 +123,7 @@ namespace fwdpp
         }
 
         template <typename TableCollectionType>
-        inline std::size_t
+        inline TS_NODE_INT
         record_diploid_offspring(const std::vector<double>& breakpoints,
                                  const std::tuple<TS_NODE_INT, TS_NODE_INT>& parents,
                                  const std::int32_t population, const double time,
