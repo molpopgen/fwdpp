@@ -80,11 +80,11 @@ births(const GSLrng& rng, const unsigned birth_time,
         {
             auto parental_nodes = pick_parent(rng, parental_metadata);
             generate_recombination_breakpoints(rng, recombination, breakpoints);
-            auto offspring_first_node = fwdpp::ts::register_diploid_offspring(
+            auto offspring_first_node = fwdpp::ts::record_diploid_offspring(
                 breakpoints, parental_nodes, 0, birth_time, tables);
             parental_nodes = pick_parent(rng, parental_metadata);
             generate_recombination_breakpoints(rng, recombination, breakpoints);
-            auto offspring_second_node = fwdpp::ts::register_diploid_offspring(
+            auto offspring_second_node = fwdpp::ts::record_diploid_offspring(
                 breakpoints, parental_nodes, 0, birth_time, tables);
 
             // Take a reference to the metadata for the individual

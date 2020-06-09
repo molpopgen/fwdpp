@@ -183,18 +183,18 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 {
                     recombination_breakpoints(rng, littler, tables.genome_length(),
                                               breakpoints);
-                    new_node_0 = fwdpp::ts::register_diploid_offspring(
+                    new_node_0 = fwdpp::ts::record_diploid_offspring(
                         breakpoints, std::tie(p0n0, p0n1), 0, birth_time, tables);
                     recombination_breakpoints(rng, littler, tables.genome_length(),
                                               breakpoints);
-                    new_node_1 = fwdpp::ts::register_diploid_offspring(
+                    new_node_1 = fwdpp::ts::record_diploid_offspring(
                         breakpoints, std::tie(p1n0, p1n1), 0, birth_time, tables);
                 }
             else
                 {
                     recombination_breakpoints(rng, littler, tables.genome_length(),
                                               breakpoints);
-                    new_node_0 = fwdpp::ts::register_diploid_offspring(
+                    new_node_0 = fwdpp::ts::record_diploid_offspring(
                         breakpoints, std::tie(p0n0, p0n1), 0, birth_time, tables,
                         new_edges);
                     double ptime = tables.nodes[p0n0].time;
@@ -205,7 +205,7 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                         }
                     recombination_breakpoints(rng, littler, tables.genome_length(),
                                               breakpoints);
-                    new_node_1 = fwdpp::ts::register_diploid_offspring(
+                    new_node_1 = fwdpp::ts::record_diploid_offspring(
                         breakpoints, std::tie(p1n0, p1n1), 0, birth_time, tables,
                         new_edges);
                     ptime = tables.nodes[p1n0].time;
