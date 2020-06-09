@@ -84,7 +84,7 @@ namespace fwdpp
             {
 #ifndef NDEBUG
                 const auto comp = [&m](const size_t i, const size_t j) {
-                    return m[i].pos <= m[j].pos;
+                    return m[i].pos < m[j].pos;
                 };
 
                 if (!std::is_sorted(g.mutations.begin(), g.mutations.end(),
