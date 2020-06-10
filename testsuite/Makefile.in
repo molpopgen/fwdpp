@@ -119,6 +119,14 @@ integration_sugar_integration_tests_OBJECTS =  \
 integration_sugar_integration_tests_LDADD = $(LDADD)
 am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/tree_sequence_tests.cc \
+	../subprojects/nongpl/tskit/c/tskit/convert.c \
+	../subprojects/nongpl/tskit/c/tskit/core.c \
+	../subprojects/nongpl/tskit/c/tskit/genotypes.c \
+	../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c \
+	../subprojects/nongpl/tskit/c/tskit/stats.c \
+	../subprojects/nongpl/tskit/c/tskit/tables.c \
+	../subprojects/nongpl/tskit/c/tskit/trees.c \
+	../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c \
 	tree_sequences/test_generate_offspring.cc \
 	tree_sequences/test_preorder_node_traversal.cc \
 	tree_sequences/test_tree_visitor.cc \
@@ -136,7 +144,16 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	tree_sequences/test_marginal_tree.cc \
 	tree_sequences/test_ancestry_list.cc \
 	tree_sequences/test_diploid_recording.cc
+@BUNIT_TEST_PRESENT_TRUE@am__objects_1 = ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.$(OBJEXT)
 @BUNIT_TEST_PRESENT_TRUE@am_tree_sequences_tree_sequence_tests_OBJECTS = tree_sequences/tree_sequence_tests.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	$(am__objects_1) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_generate_offspring.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_preorder_node_traversal.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	tree_sequences/test_tree_visitor.$(OBJEXT) \
@@ -225,7 +242,15 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
+am__depfiles_remade = ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po \
+	fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	integration/$(DEPDIR)/sugar_integration_tests.Po \
 	integration/$(DEPDIR)/sugar_singlepopTest.Po \
 	integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po \
@@ -269,6 +294,22 @@ am__depfiles_remade = fixtures/$(DEPDIR)/sugar_fixtures.Po \
 	unit/$(DEPDIR)/test_wrapped_range.Po \
 	unit/$(DEPDIR)/type_traitsTest.Po unit/$(DEPDIR)/utilTest.Po
 am__mv = mv -f
+AM_V_lt = $(am__v_lt_@AM_V@)
+am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
+am__v_lt_0 = --silent
+am__v_lt_1 = 
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -658,7 +699,17 @@ top_srcdir = @top_srcdir@
 
 # integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc \
 # 	fixtures/sugar_fixtures.cc
+@BUNIT_TEST_PRESENT_TRUE@tskit_SOURCES = ../subprojects/nongpl/tskit/c/tskit/convert.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/core.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/genotypes.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+
 @BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc \
+@BUNIT_TEST_PRESENT_TRUE@										${tskit_SOURCES} \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_offspring.cc \
 @BUNIT_TEST_PRESENT_TRUE@									    tree_sequences/test_preorder_node_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_tree_visitor.cc \
@@ -677,11 +728,13 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_ancestry_list.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_diploid_recording.cc
 
+@BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_CFLAGS = -std=c99
+@BUNIT_TEST_PRESENT_TRUE@AM_CPPFLAGS = -I../subprojects/nongpl/tskit/c -I../subprojects/nongpl/tskit/c/subprojects/kastore
 @BUNIT_TEST_PRESENT_TRUE@AM_CXXFLAGS = -W -Wall
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cc .log .o .obj .test .test$(EXEEXT) .trs
+.SUFFIXES: .c .cc .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -750,6 +803,41 @@ tree_sequences/$(DEPDIR)/$(am__dirstamp):
 tree_sequences/tree_sequence_tests.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/tskit
+	@: > ../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)
+	@: > ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.$(OBJEXT):  \
+	../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/subprojects/kastore
+	@: > ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp):
+	@$(MKDIR_P) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)
+	@: > ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
+../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.$(OBJEXT): ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp) \
+	../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
 tree_sequences/test_generate_offspring.$(OBJEXT):  \
 	tree_sequences/$(am__dirstamp) \
 	tree_sequences/$(DEPDIR)/$(am__dirstamp)
@@ -874,6 +962,8 @@ unit/sugar_unit_tests$(EXEEXT): $(unit_sugar_unit_tests_OBJECTS) $(unit_sugar_un
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/*.$(OBJEXT)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/*.$(OBJEXT)
 	-rm -f fixtures/*.$(OBJEXT)
 	-rm -f integration/*.$(OBJEXT)
 	-rm -f tree_sequences/*.$(OBJEXT)
@@ -882,6 +972,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@fixtures/$(DEPDIR)/sugar_fixtures.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_integration_tests.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@integration/$(DEPDIR)/sugar_singlepopTest.Po@am__quote@ # am--include-marker
@@ -932,6 +1030,134 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.o: ../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.o `test -f '../subprojects/nongpl/tskit/c/tskit/convert.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/convert.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.o `test -f '../subprojects/nongpl/tskit/c/tskit/convert.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/convert.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.obj: ../subprojects/nongpl/tskit/c/tskit/convert.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/convert.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/convert.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/convert.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/convert.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-convert.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/convert.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/convert.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/convert.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.o: ../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.o `test -f '../subprojects/nongpl/tskit/c/tskit/core.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/core.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.o `test -f '../subprojects/nongpl/tskit/c/tskit/core.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/core.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.obj: ../subprojects/nongpl/tskit/c/tskit/core.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/core.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/core.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/core.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/core.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-core.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/core.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/core.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/core.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.o: ../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.o `test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/genotypes.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.o `test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/genotypes.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.obj: ../subprojects/nongpl/tskit/c/tskit/genotypes.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/genotypes.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/genotypes.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-genotypes.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/genotypes.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/genotypes.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.o: ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.o `test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.o `test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.obj: ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-haplotype_matching.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.o: ../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.o `test -f '../subprojects/nongpl/tskit/c/tskit/stats.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/stats.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.o `test -f '../subprojects/nongpl/tskit/c/tskit/stats.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/stats.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.obj: ../subprojects/nongpl/tskit/c/tskit/stats.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/stats.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/stats.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/stats.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/stats.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-stats.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/stats.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/stats.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/stats.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.o: ../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.o `test -f '../subprojects/nongpl/tskit/c/tskit/tables.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/tables.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.o `test -f '../subprojects/nongpl/tskit/c/tskit/tables.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/tables.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.obj: ../subprojects/nongpl/tskit/c/tskit/tables.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/tables.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/tables.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/tables.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/tables.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-tables.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/tables.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/tables.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/tables.c'; fi`
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.o: ../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.o -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.o `test -f '../subprojects/nongpl/tskit/c/tskit/trees.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/trees.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.o `test -f '../subprojects/nongpl/tskit/c/tskit/trees.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/tskit/trees.c
+
+../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.obj: ../subprojects/nongpl/tskit/c/tskit/trees.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Tpo -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/trees.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/trees.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/trees.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Tpo ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/tskit/trees.c' object='../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/tskit/tree_sequences_tree_sequence_tests-trees.obj `if test -f '../subprojects/nongpl/tskit/c/tskit/trees.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/tskit/trees.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/tskit/trees.c'; fi`
+
+../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.o: ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.o -MD -MP -MF ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Tpo -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.o `test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Tpo ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' object='../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.o `test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' || echo '$(srcdir)/'`../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+
+../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.obj: ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@am__fastdepCC_TRUE@	$(AM_V_CC)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -MT ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.obj -MD -MP -MF ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Tpo -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.obj `if test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; fi`
+@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Tpo ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c' object='../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(tree_sequences_tree_sequence_tests_CFLAGS) $(CFLAGS) -c -o ../subprojects/nongpl/tskit/c/subprojects/kastore/tree_sequences_tree_sequence_tests-kastore.obj `if test -f '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; then $(CYGPATH_W) '../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; else $(CYGPATH_W) '$(srcdir)/../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c'; fi`
 
 .cc.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -1266,6 +1492,10 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/$(am__dirstamp)
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(am__dirstamp)
 	-rm -f fixtures/$(DEPDIR)/$(am__dirstamp)
 	-rm -f fixtures/$(am__dirstamp)
 	-rm -f integration/$(DEPDIR)/$(am__dirstamp)
@@ -1283,7 +1513,15 @@ clean: clean-am
 clean-am: clean-generic clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
-		-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
+		-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po
+	-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/sugar_singlepopTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
@@ -1372,7 +1610,15 @@ install-ps-am:
 installcheck-am:
 
 maintainer-clean: maintainer-clean-am
-		-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
+		-rm -f ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR)/tree_sequences_tree_sequence_tests-kastore.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-convert.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-core.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-genotypes.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-haplotype_matching.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-stats.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-tables.Po
+	-rm -f ../subprojects/nongpl/tskit/c/tskit/$(DEPDIR)/tree_sequences_tree_sequence_tests-trees.Po
+	-rm -f fixtures/$(DEPDIR)/sugar_fixtures.Po
 	-rm -f integration/$(DEPDIR)/sugar_integration_tests.Po
 	-rm -f integration/$(DEPDIR)/sugar_singlepopTest.Po
 	-rm -f integration/$(DEPDIR)/sugar_singlepop_custom_diploidTest.Po
