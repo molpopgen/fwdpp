@@ -177,7 +177,9 @@ namespace fwdpp
                     {
                         for (std::size_t i = 0; i < new_edge_table.size(); ++i, ++qpos)
                             {
-                                fraud(buffer, Q[qpos], new_edge_table[i].parent,
+                                fraud(buffer, Q[qpos],
+                                      static_cast<edge_buffer::index_type>(
+                                          new_edge_table[i].parent),
                                       birth_data{new_edge_table[i].left,
                                                  new_edge_table[i].right,
                                                  new_edge_table[i].child});
@@ -187,7 +189,7 @@ namespace fwdpp
                 return qpos;
             };
 
-            std::size_t qpos = 0, qpos_last = 0;
+            std::size_t qpos = 0;
             auto buffer_rend = buffer.rbegin();
             for (; buffer_rend < buffer.rend(); ++buffer_rend)
                 {
@@ -350,8 +352,9 @@ namespace fwdpp
             for (std::size_t i = 0; i < qpos; ++i)
                 {
                     auto& v = buffer.fetch(Q[i]);
-                    input_tables.emplace_back_edge(v.left, v.right, buffer.next(Q[i]),
-                                                   v.child);
+                    input_tables.emplace_back_edge(
+                        v.left, v.right,
+                        static_cast<TS_NODE_INT>(buffer.next(Q[i])), v.child);
                 }
             std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
                         end(input_tables.edges));
