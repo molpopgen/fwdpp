@@ -618,16 +618,18 @@ namespace fwdpp
                     }
             }
 
-            template <typename IntegerType>
+            template <typename IntegerType, typename QueueType>
             inline void
             process_births_from_buffer(IntegerType n, edge_buffer& buffer,
                                        ancestry_list& ancestry,
-                                       segment_overlapper& overlapper)
+                                       segment_overlapper& overlapper,
+                                       QueueType & Q)
             {
                 static_assert(std::is_integral<IntegerType>::value,
                               "IntegerType must be is_integral");
                 while (n != edge_buffer::null)
                     {
+                        Q.push_back(n);
                         const auto& birth = buffer.fetch(n);
                         // Go through the ancestry of all children
                         // and add them to the queue

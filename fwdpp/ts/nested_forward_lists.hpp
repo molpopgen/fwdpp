@@ -10,6 +10,21 @@ namespace fwdpp
 {
     namespace ts
     {
+        struct nested_forward_lists_editor
+        {
+            template <typename T, typename V>
+            inline void
+            operator()(T& nfl, std::size_t i, typename T::index_type idx, V&& v) const
+            {
+                if (i >= nfl.data.size())
+                    {
+                        throw std::out_of_range("index out of range");
+                    }
+                nfl.data[i] = std::forward<V>(v);
+                nfl.data[i].next = idx;
+            }
+        };
+
         template <typename T, typename Index, Index NullValue> class nested_forward_lists
         /// Container of multiple owning forward lists with corresponding head/tail index vector
         /// describing where individual lists start/stop.
@@ -76,10 +91,14 @@ namespace fwdpp
 
           public:
             static constexpr Index null = NullValue;
+            using index_type = Index;
+            using value_type = list_entry;
 
             using const_iterator = typename std::vector<Index>::const_iterator;
             using const_reverse_iterator =
                 typename std::vector<Index>::const_reverse_iterator;
+
+            friend struct nested_forward_lists_editor;
 
             nested_forward_lists() : data{}, _head{}, _tail{}
             {

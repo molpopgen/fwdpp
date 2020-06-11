@@ -164,6 +164,30 @@ namespace fwdpp
                 {
                     max_time = std::max(max_time, input_tables.nodes[a].time);
                 }
+            std::vector<std::size_t> Q;
+            //nested_forward_lists_editor fraud;
+            const auto transfer_new_edges = [fraud = nested_forward_lists_editor()](
+                                                std::size_t qpos,
+                                                const std::vector<std::size_t>& Q,
+                                                auto& new_edge_table, auto& buffer) {
+                //std::cout << new_edge_table.size() << ' ' << qpos << ' ' << Q.size()
+                //          << ' ' << (Q.size() - qpos) << '\n';
+                if (new_edge_table.size() >= 1024
+                    && new_edge_table.size() < Q.size() - qpos)
+                    {
+                        for (std::size_t i = 0; i < new_edge_table.size(); ++i, ++qpos)
+                            {
+                                fraud(buffer, Q[qpos], new_edge_table[i].parent,
+                                      birth_data{new_edge_table[i].left,
+                                                 new_edge_table[i].right,
+                                                 new_edge_table[i].child});
+                            }
+                        new_edge_table.clear();
+                    }
+                return qpos;
+            };
+
+            std::size_t qpos = 0, qpos_last = 0;
             auto buffer_rend = buffer.rbegin();
             for (; buffer_rend < buffer.rend(); ++buffer_rend)
                 {
@@ -176,13 +200,15 @@ namespace fwdpp
                             state.overlapper.clear_queue();
                             auto n = *buffer_rend;
                             simplification::process_births_from_buffer(
-                                n, buffer, state.ancestry, state.overlapper);
+                                n, buffer, state.ancestry, state.overlapper, Q);
                             state.overlapper.finalize_queue(
                                 input_tables.genome_length());
 
                             simplification::merge_ancestors(
                                 input_tables.genome_length(), input_tables.nodes,
                                 static_cast<table_index_t>(parent), state, idmap);
+                            qpos = transfer_new_edges(qpos, Q, state.new_edge_table,
+                                                      buffer);
                         }
                     else if (*buffer_rend != edge_buffer::null && ptime <= max_time)
                         {
@@ -210,6 +236,8 @@ namespace fwdpp
                             simplification::merge_ancestors(input_tables.genome_length(),
                                                             input_tables.nodes, u, state,
                                                             idmap);
+                            qpos = transfer_new_edges(qpos, Q, state.new_edge_table,
+                                                      buffer);
                         }
                     if (ex.start != std::numeric_limits<std::size_t>::max())
                         {
@@ -230,16 +258,20 @@ namespace fwdpp
                                     simplification::merge_ancestors(
                                         input_tables.genome_length(), input_tables.nodes,
                                         u, state, idmap);
+                                    qpos = transfer_new_edges(
+                                        qpos, Q, state.new_edge_table, buffer);
                                 }
                             if (edge_ptr != input_tables.edges.cbegin() + offset)
                                 {
                                     throw std::runtime_error(
-                                        "unexpected location in input edge table");
+                                        "unexpected location in input edge "
+                                        "table");
                                 }
                             if (edge_ptr->parent != ex.parent)
                                 {
                                     throw std::runtime_error(
-                                        "unexpected parent value in input edge table");
+                                        "unexpected parent value in input edge "
+                                        "table");
                                 }
                         }
                     // now handle ex.parent
@@ -253,7 +285,8 @@ namespace fwdpp
                                     if (edge_ptr->parent != ex.parent)
                                         {
                                             throw std::runtime_error(
-                                                "processing unexpected parent node");
+                                                "processing unexpected parent "
+                                                "node");
                                         }
                                     simplification::queue_children(
                                         edge_ptr->child, edge_ptr->left, edge_ptr->right,
@@ -262,17 +295,19 @@ namespace fwdpp
                             if (edge_ptr < edge_end && edge_ptr->parent == ex.parent)
                                 {
                                     throw std::runtime_error(
-                                        "error traversing pre-existing edges for "
+                                        "error traversing pre-existing edges "
+                                        "for "
                                         "parent");
                                 }
                         }
                     auto n = buffer.head(ex.parent);
                     simplification::process_births_from_buffer(n, buffer, state.ancestry,
-                                                               state.overlapper);
+                                                               state.overlapper, Q);
                     state.overlapper.finalize_queue(input_tables.genome_length());
                     simplification::merge_ancestors(input_tables.genome_length(),
                                                     input_tables.nodes, ex.parent, state,
                                                     idmap);
+                    qpos = transfer_new_edges(qpos, Q, state.new_edge_table, buffer);
                 }
 
             // Handle the remaning edges
@@ -283,7 +318,10 @@ namespace fwdpp
                         input_tables.genome_length(), edge_ptr, edge_end, u, state);
                     simplification::merge_ancestors(input_tables.genome_length(),
                                                     input_tables.nodes, u, state, idmap);
+                    qpos = transfer_new_edges(qpos, Q, state.new_edge_table, buffer);
                 }
+            //std::cout << "DONE " << state.new_edge_table.size() << ' ' << qpos << ' '
+            //          << Q.size() << '\n';
             for (auto& p : input_tables.preserved_nodes)
                 {
                     if (idmap[p] == NULL_INDEX)
@@ -301,9 +339,29 @@ namespace fwdpp
                    == state.new_node_table.size());
 
             simplification::simplify_mutations(state, input_tables, preserved_variants);
-            input_tables.edges.resize(state.new_edge_table.size());
-            std::move(begin(state.new_edge_table), end(state.new_edge_table),
-                      begin(input_tables.edges));
+
+            //if (state.new_edge_table.empty() == false)
+            //    {
+            input_tables.edges.clear();
+            //input_tables.edges.resize(state.new_edge_table.size() + qpos);
+            input_tables.edges.assign(begin(state.new_edge_table),
+                                      end(state.new_edge_table));
+            std::ptrdiff_t offset = input_tables.num_edges();
+            for (std::size_t i = 0; i < qpos; ++i)
+                {
+                    auto& v = buffer.fetch(Q[i]);
+                    input_tables.emplace_back_edge(v.left, v.right, buffer.next(Q[i]),
+                                                   v.child);
+                }
+            std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
+                        end(input_tables.edges));
+            //   }
+            //}
+            //std::cout << input_tables.edges.size() << ' ' << input_tables.edges.capacity() << ' ' << state.new_edge_table.capacity() << '\n';
+
+            //input_tables.edges.resize(state.new_edge_table.size());
+            //std::move(begin(state.new_edge_table), end(state.new_edge_table),
+            //          begin(input_tables.edges));
             input_tables.nodes.resize(state.new_node_table.size());
             std::move(begin(state.new_node_table), end(state.new_node_table),
                       begin(input_tables.nodes));
