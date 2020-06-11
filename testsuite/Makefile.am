@@ -36,8 +36,17 @@ integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.
 
 # integration_extensions_integration_tests_SOURCES=integration/extensions_integration_tests.cc integration/extensions_regionsIntegrationTest.cc \
 # 	fixtures/sugar_fixtures.cc
+tskit_SOURCES=../subprojects/nongpl/tskit/c/tskit/convert.c \
+			  ../subprojects/nongpl/tskit/c/tskit/core.c \
+			  ../subprojects/nongpl/tskit/c/tskit/genotypes.c \
+			  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.c \
+			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
+			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
+			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
+			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
 
 tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc \
+										${tskit_SOURCES} \
 										tree_sequences/test_generate_offspring.cc \
 									    tree_sequences/test_preorder_node_traversal.cc \
 										tree_sequences/test_tree_visitor.cc \
@@ -54,8 +63,14 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 										tree_sequences/test_site_visitor.cc \
 										tree_sequences/test_marginal_tree.cc \
 										tree_sequences/test_ancestry_list.cc \
-										tree_sequences/test_diploid_recording.cc
+										tree_sequences/test_diploid_recording.cc \
+										tree_sequences/wfevolve_table_collection_fxns.cc \
+										tree_sequences/test_edge_buffering_std_table_collection.cc \
+										tree_sequences/tskit_utils.cc
 
+tree_sequences_tree_sequence_tests_CFLAGS=-std=c99
+
+AM_CPPFLAGS=-I../subprojects/nongpl/tskit/c -I../subprojects/nongpl/tskit/c/subprojects/kastore
 AM_CXXFLAGS=-W -Wall
 
 #AM_LIBS=-lboost_unit_test_framework
