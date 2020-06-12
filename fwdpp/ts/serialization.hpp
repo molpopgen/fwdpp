@@ -12,6 +12,7 @@
 #include "site.hpp"
 #include "mutation_record.hpp"
 #include "serialization_version.hpp"
+#include "table_collection_functions.hpp"
 
 /*! \namespace fwdpp::ts::io
  *  \brief Binary seriazliation of fwdpp::ts::table_collection
@@ -413,7 +414,7 @@ namespace fwdpp
                 // Calling this will fix any issues due
                 // to recording the same position more than
                 // once in the site table.
-                tables.sort_mutations_rebuild_site_table();
+                sort_mutation_table_and_rebuild_site_table(tables);
             }
         } // namespace io
     }     // namespace ts
