@@ -165,11 +165,9 @@ namespace fwdpp
                     max_time = std::max(max_time, input_tables.nodes[a].time);
                 }
             std::vector<std::size_t> Q;
-            //nested_forward_lists_editor fraud;
-            const auto transfer_new_edges = [fraud = nested_forward_lists_editor()](
-                                                std::size_t qpos,
-                                                const std::vector<std::size_t>& Q,
-                                                auto& new_edge_table, auto& buffer) {
+            const auto transfer_new_edges = [](std::size_t qpos,
+                                               const std::vector<std::size_t>& Q,
+                                               auto& new_edge_table, auto& buffer) {
                 //std::cout << new_edge_table.size() << ' ' << qpos << ' ' << Q.size()
                 //          << ' ' << (Q.size() - qpos) << '\n';
                 if (new_edge_table.size() >= 1024
@@ -177,12 +175,12 @@ namespace fwdpp
                     {
                         for (std::size_t i = 0; i < new_edge_table.size(); ++i, ++qpos)
                             {
-                                fraud(buffer, Q[qpos],
-                                      static_cast<edge_buffer::index_type>(
-                                          new_edge_table[i].parent),
-                                      birth_data{new_edge_table[i].left,
-                                                 new_edge_table[i].right,
-                                                 new_edge_table[i].child});
+                                buffer.set_data(Q[qpos],
+                                                static_cast<edge_buffer::index_type>(
+                                                    new_edge_table[i].parent),
+                                                birth_data{new_edge_table[i].left,
+                                                           new_edge_table[i].right,
+                                                           new_edge_table[i].child});
                             }
                         new_edge_table.clear();
                     }
@@ -354,11 +352,11 @@ namespace fwdpp
             //                          end(state.new_edge_table));
             for (std::size_t i = 0; i < qpos; ++i) //, ++j)
                 {
-                    auto& v = buffer.fetch(Q[i]);
+                    auto& v = buffer.get_data(Q[i]);
                     //input_tables.emplace_back_edge(
                     input_tables.edges[i]
-                        = {v.left, v.right, static_cast<TS_NODE_INT>(buffer.next(Q[i])),
-                           v.child};
+                        = {v.value.left, v.value.right, static_cast<TS_NODE_INT>(v.next),
+                           v.value.child};
                 }
             //std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
             //            end(input_tables.edges));
