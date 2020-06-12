@@ -25,6 +25,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
     auto rv = simplifier.simplify(tables, samples);
+    tables.edge_offset = tables.num_edges();
     tables.build_indexes();
     for (auto &s : samples)
         {

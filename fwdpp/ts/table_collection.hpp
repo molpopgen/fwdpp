@@ -218,12 +218,6 @@ namespace fwdpp
                 return edges.size();
             }
 
-            void
-            update_offset()
-            {
-                edge_offset = edges.size();
-            }
-
             double
             genome_length() const
             {

@@ -599,8 +599,6 @@ namespace fwdpp
                           begin(tables.nodes));
                 // TODO: allow for exception instead of assert
                 assert(edge_table_minimally_sorted(tables));
-                // NOTE: this will be moot by removing edge sorting.
-                tables.update_offset();
             }
 
             inline void
