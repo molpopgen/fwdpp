@@ -55,12 +55,17 @@ namespace fwdpp
         inline void
         sort_edge_table(std::ptrdiff_t offset, TableCollectionType& tables)
         {
-            if(offset < 0 || offset >= static_cast<std::ptrdiff_t>(tables.edges.size()))
-            {
-                throw std::out_of_range("invalid edge table offset");
-            }
+            if (offset < 0 || offset >= static_cast<std::ptrdiff_t>(tables.edges.size()))
+                {
+                    throw std::out_of_range("invalid edge table offset");
+                }
             auto cmp = get_edge_sort_cmp(tables);
             std::sort(tables.edges.begin() + offset, tables.edges.end(), cmp);
+            if (offset > 0)
+                {
+                    std::rotate(begin(tables.edges), begin(tables.edges) + offset,
+                                end(tables.edges));
+                }
         }
 
         template <typename TableCollectionType>
@@ -159,8 +164,8 @@ namespace fwdpp
         }
 
         template <typename TableCollectionType>
-        inline void sort_tables(std::ptrdiff_t edge_table_offset,
-                                TableCollectionType& tables)
+        inline void
+        sort_tables(std::ptrdiff_t edge_table_offset, TableCollectionType& tables)
         /// Sort all tables.  The site table is rebuilt.
         {
             sort_edge_table(edge_table_offset, tables);
