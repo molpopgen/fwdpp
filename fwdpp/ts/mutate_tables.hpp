@@ -7,6 +7,7 @@
 #include "definitions.hpp"
 #include "mark_multiple_roots.hpp"
 #include "mutation_tools.hpp"
+#include "table_collection_functions.hpp"
 
 namespace fwdpp
 {
@@ -118,7 +119,7 @@ namespace fwdpp
                         }
                     nmuts += nm;
                 }
-            tables.sort_mutations_rebuild_site_table();
+            sort_mutation_table_and_rebuild_site_table(tables);
             return nmuts;
         }
     } // namespace ts

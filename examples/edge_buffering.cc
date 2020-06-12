@@ -7,6 +7,7 @@
 #include <gsl/gsl_randist.h>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/recording.hpp>
 #include <fwdpp/ts/recording/diploid_offspring.hpp>
 #include <fwdpp/ts/simplify_tables.hpp>
@@ -225,25 +226,8 @@ sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
                 SimplificationState& state, fwdpp::ts::std_table_collection& tables,
                 std::vector<fwdpp::ts::TS_NODE_INT>& node_map)
 {
-    using edge_t = fwdpp::ts::std_table_collection::edge_t;
-    std::sort(begin(tables.edges), end(tables.edges),
-              [&tables](const edge_t& a, const edge_t& b) {
-                  auto ga = tables.nodes[a.parent].time;
-                  auto gb = tables.nodes[b.parent].time;
-                  if (ga == gb)
-                      {
-                          if (a.parent == b.parent)
-                              {
-                                  if (a.child == b.child)
-                                      {
-                                          return a.left < b.left;
-                                      }
-                                  return a.child < b.child;
-                              }
-                          return a.parent < b.parent;
-                      }
-                  return ga > gb;
-              });
+    auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
+    std::sort(begin(tables.edges), end(tables.edges), cmp);
     std::vector<std::size_t> temp{};
     fwdpp::ts::simplify_tables(samples, state, tables, node_map, temp);
 }

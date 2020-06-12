@@ -33,17 +33,6 @@ namespace fwdpp
             /// Length of the genomic region.
             double L;
 
-            template <typename site_like, typename mutation_record_like>
-            void
-            record_site_during_rebuild(const site_like& s, mutation_record_like& mr)
-            {
-                if (sites.empty() || sites.back().position != s.position)
-                    {
-                        sites.push_back(s);
-                    }
-                mr.site = sites.size() - 1;
-            }
-
           public:
             using node_table = NodeTableType;
             using edge_table = EdgeTableType;
@@ -100,133 +89,6 @@ namespace fwdpp
                     }
             }
 
-            void
-            sort_edges() noexcept
-            /// Sort the edge table.  On PARENT birth times.
-            /// The sorting differs from msprime here. The difference
-            /// is that we  assume that birth times are recorded forward in
-            /// time rather than backwards.
-            ///
-            /// In between simplifications, edges are appended to the table
-            /// starting at edge_offset.  edges prior to that point are,
-            /// by definition, sorted b/c they are the output of simplification.
-            /// Thus, we only sort the new edges and then perform a left rotate
-            /// w.r.to edge_offset to put the nodes in the correct final order.
-            /// The rotation is exactly edges.size() swaps.
-            {
-                std::sort(edges.begin() + edge_offset, edges.end(),
-                          [this](const edge_t& a, const edge_t& b) {
-                              auto ga = this->nodes[a.parent].time;
-                              auto gb = this->nodes[b.parent].time;
-                              if (ga == gb)
-                                  {
-                                      if (a.parent == b.parent)
-                                          {
-                                              if (a.child == b.child)
-                                                  {
-                                                      return a.left < b.left;
-                                                  }
-                                              return a.child < b.child;
-                                          }
-                                      return a.parent < b.parent;
-                                  }
-                              return ga > gb;
-                          });
-                if (edge_offset > 0)
-                    {
-                        std::rotate(edges.begin(), edges.begin() + edge_offset,
-                                    edges.end());
-                    }
-#ifndef NDEBUG
-                // TODO: allow for exceptions
-                // rather than assertions.
-                if (edge_offset == 0)
-                    {
-                        assert(edges_are_sorted());
-                    }
-                else if (preserved_nodes.empty())
-                    {
-                        assert(edges_are_sorted());
-                    }
-                else
-                    {
-                        assert(edges_are_minimally_sorted());
-                    }
-#endif
-            }
-
-            void
-            sort_mutations()
-            {
-                //mutations are sorted by increasing position
-                std::sort(mutations.begin(), mutations.end(),
-                          [this](const mutation_t& a, const mutation_t& b) {
-                              return sites[a.site].position < sites[b.site].position;
-                          });
-            }
-
-            void
-            sort_tables_for_simplification()
-            /// Sorts the tables for simplification, which means only
-            /// sorting edge and mutation tables, as the site table
-            /// will be rebuilt during simplification.
-            {
-                sort_edges();
-                sort_mutations();
-            }
-
-            void
-            sort_tables()
-            /// Sort all tables.  The site table is rebuilt.
-            {
-                sort_edges();
-                sort_mutations_rebuild_site_table();
-            }
-
-            bool
-            edges_are_sorted() const noexcept
-            /// Test that edges are in proper sort order for simiplification
-            /// \version 0.8.0 Change from testing minimal requirement to requirement
-            /// for simplification.
-            {
-                return std::is_sorted(edges.begin(), edges.end(),
-                                      [this](const edge_t& a, const edge_t& b) {
-                                          auto ga = this->nodes[a.parent].time;
-                                          auto gb = this->nodes[b.parent].time;
-                                          if (ga == gb)
-                                              {
-                                                  if (a.parent == b.parent)
-                                                      {
-                                                          if (a.child == b.child)
-                                                              {
-                                                                  return a.left < b.left;
-                                                              }
-                                                          return a.child < b.child;
-                                                      }
-                                                  return a.parent < b.parent;
-                                              }
-                                          return ga > gb;
-                                      });
-            }
-
-            bool
-            edges_are_minimally_sorted() const noexcept
-            /// Test the MINIMAL sorting requirement.
-            /// This minimal condition is important,
-            /// as ancient sample tracking will not
-            /// guarantee a sort order on the parental
-            /// node IDs.
-            /// \version 0.8.0 Added to library
-            {
-                return std::is_sorted(edges.begin(), edges.end(),
-                                      [this](const edge_t& a, const edge_t& b) {
-                                          auto ga = this->nodes[a.parent].time;
-                                          auto gb = this->nodes[b.parent].time;
-                                          return ga > gb
-                                                 && (std::tie(a.child, a.left)
-                                                     < std::tie(b.child, b.left));
-                                      });
-            }
 
             void
             clear() noexcept
@@ -344,34 +206,6 @@ namespace fwdpp
                 std::sort(output_right.begin(), output_right.end());
             }
 
-            void
-            rebuild_site_table()
-            /// Complete rebuild of the site table.
-            {
-                auto site_table_copy(sites);
-                sites.clear();
-                for (auto& mr : mutations)
-                    {
-                        auto os = mr.site;
-                        record_site_during_rebuild(site_table_copy[mr.site], mr);
-                        if (site_table_copy[os].position != sites[mr.site].position)
-                            {
-                                throw tables_error("error rebuilding site table");
-                            }
-                    }
-            }
-
-            void
-            sort_mutations_rebuild_site_table()
-            /// O(n*log(n)) time plus O(n) additional memory.
-            /// This is called by sort_tables, but also should
-            /// be called after adding mutations by some manual
-            /// means to a table collection.
-            {
-                sort_mutations();
-                rebuild_site_table();
-            }
-
             std::size_t
             num_nodes() const
             {
@@ -382,12 +216,6 @@ namespace fwdpp
             num_edges() const
             {
                 return edges.size();
-            }
-
-            void
-            update_offset()
-            {
-                edge_offset = edges.size();
             }
 
             double

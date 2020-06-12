@@ -1,7 +1,8 @@
 #ifndef FWDPP_TESTSUITE_SIMPLE_TABLE_COLLECTION_POLYTOMY_HPP
 #define FWDPP_TESTSUITE_SIMPLE_TABLE_COLLECTION_POLYTOMY_HPP
 
-#include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
 
 class simple_table_collection_polytomy
@@ -35,7 +36,7 @@ class simple_table_collection_polytomy
         t.push_back_edge(0, 1, 5, 0);
         t.push_back_edge(0, 1, 5, 1);
         t.push_back_edge(0, 1, 5, 2);
-        t.sort_edges();
+        fwdpp::ts::sort_edge_table(t);
         t.build_indexes(); //NOTE: critical!
         return t;
     }

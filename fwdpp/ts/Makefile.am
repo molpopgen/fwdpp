@@ -7,6 +7,7 @@ pkginclude_HEADERS= definitions.hpp \
 			edge.hpp \
 			site.hpp \
 			table_collection.hpp \
+			table_collection_functions.hpp \
 			std_table_collection.hpp \
 			table_simplifier.hpp \
 			simplify_tables.hpp \

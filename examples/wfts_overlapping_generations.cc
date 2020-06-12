@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "wfevolvets.hpp"
+#include <fwdpp/ts/table_collection_functions.hpp>
 
 const double genome_length = 1.0;
 
@@ -41,7 +42,7 @@ main(int argc, char** argv)
     std::cout << tables.edges.size() << " edges\n"
               << tables.nodes.size() << " nodes\n"
               << "Edge table is sorted: "
-              << tables.edges_are_minimally_sorted() << '\n';
+              << fwdpp::ts::edge_table_minimally_sorted(tables) << '\n';
 
     // Get the age distribution, somewhat inefficiently
     std::vector<std::pair<double, unsigned>> ages;
