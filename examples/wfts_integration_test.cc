@@ -338,8 +338,6 @@ main(int argc, char **argv)
         }
     std::cout << neutral_muts << '\n';
 
-    std::vector<int> map_to_edge;
-    map_mutation_to_edge(tables, 2 * o.N, map_to_edge);
     execute_expensive_leaf_test(o, tables, s);
     execute_matrix_test(o, pop, tables, s);
     execute_serialization_test(o, tables);
