@@ -254,6 +254,24 @@ namespace fwdpp
                 validate_index(i, data.size());
                 return data[i];
             }
+
+            std::size_t
+            size() const
+            {
+                return data.size();
+            }
+
+            inline const std::vector<list_entry>&
+            buffer_ref() const
+            {
+                return data;
+            }
+
+            void
+            reserve(std::size_t size)
+            {
+                data.reserve(size);
+            }
         };
 
         template <typename T, typename Index, Index NullValue>
