@@ -2,6 +2,7 @@
 #define FWDPP_TESTSUITE_SIMPLE_TABLE_COLLECTION_HPP
 
 #include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
 
 class simple_table_collection
@@ -32,7 +33,7 @@ class simple_table_collection
         t.push_back_edge(0, 1, 5, 3);
         t.push_back_edge(0, 1, 4, 1);
         t.push_back_edge(0, 1, 4, 0);
-        t.sort_edges();
+        fwdpp::ts::sort_edge_table(t);
         t.build_indexes(); //NOTE: critical!
         return t;
     }

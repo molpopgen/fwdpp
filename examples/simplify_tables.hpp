@@ -3,7 +3,8 @@
 
 #include <cstdint>
 #include <vector>
-#include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/count_mutations.hpp>
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
@@ -20,7 +21,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
 {
-    tables.sort_tables_for_simplification();
+    fwdpp::ts::sort_tables_for_simplification(tables.edge_offset, tables);
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
     auto rv = simplifier.simplify(tables, samples);
@@ -46,7 +47,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
             tables.mutations.erase(itr, tables.mutations.end());
             if (d)
                 {
-                    tables.rebuild_site_table();
+                    fwdpp::ts::rebuild_site_table(tables);
                 }
             confirm_mutation_counts(pop, tables);
             fwdpp::ts::remove_fixations_from_haploid_genomes(

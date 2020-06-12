@@ -6,6 +6,7 @@
 #include <gsl/gsl_randist.h>
 #include "tree_sequence_examples_types.hpp"
 #include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/table_simplifier.hpp>
 #include <fwdpp/ts/exceptions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
@@ -167,7 +168,7 @@ simplify_tables_remap_metadata(
             // NOTE: this is a workaround for GitHub issue #238
             tables.edge_offset = 0;
         }
-    tables.sort_tables_for_simplification();
+    fwdpp::ts::sort_tables(tables.edge_offset, tables);
     // Simplify
     auto x = simplifier.simplify(tables, samples);
 

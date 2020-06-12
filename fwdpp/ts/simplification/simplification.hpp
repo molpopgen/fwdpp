@@ -11,6 +11,7 @@
 #include <fwdpp/ts/definitions.hpp>
 #include <fwdpp/ts/nested_forward_lists.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 
 namespace fwdpp
 {
@@ -597,7 +598,7 @@ namespace fwdpp
                 std::move(begin(state.new_node_table), end(state.new_node_table),
                           begin(tables.nodes));
                 // TODO: allow for exception instead of assert
-                assert(tables.edges_are_minimally_sorted());
+                assert(edge_table_minimally_sorted(tables));
                 // NOTE: this will be moot by removing edge sorting.
                 tables.update_offset();
             }
