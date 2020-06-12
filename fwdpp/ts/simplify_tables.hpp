@@ -344,20 +344,24 @@ namespace fwdpp
 
             //if (state.new_edge_table.empty() == false)
             //    {
-            input_tables.edges.clear();
-            //input_tables.edges.resize(state.new_edge_table.size() + qpos);
-            input_tables.edges.assign(begin(state.new_edge_table),
-                                      end(state.new_edge_table));
-            std::ptrdiff_t offset = input_tables.num_edges();
-            for (std::size_t i = 0; i < qpos; ++i)
+            //input_tables.edges.clear();
+            input_tables.edges.resize(state.new_edge_table.size() + qpos);
+            //std::ptrdiff_t offset = state.new_edge_table.size();
+            //std::size_t j = state.new_edge_table.size();
+            std::move(begin(state.new_edge_table), end(state.new_edge_table),
+                      begin(input_tables.edges) + qpos);
+            //input_tables.edges.assign(begin(state.new_edge_table),
+            //                          end(state.new_edge_table));
+            for (std::size_t i = 0; i < qpos; ++i) //, ++j)
                 {
                     auto& v = buffer.fetch(Q[i]);
-                    input_tables.emplace_back_edge(
-                        v.left, v.right,
-                        static_cast<TS_NODE_INT>(buffer.next(Q[i])), v.child);
+                    //input_tables.emplace_back_edge(
+                    input_tables.edges[i]
+                        = {v.left, v.right, static_cast<TS_NODE_INT>(buffer.next(Q[i])),
+                           v.child};
                 }
-            std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
-                        end(input_tables.edges));
+            //std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
+            //            end(input_tables.edges));
             //   }
             //}
             //std::cout << input_tables.edges.size() << ' ' << input_tables.edges.capacity() << ' ' << state.new_edge_table.capacity() << '\n';
