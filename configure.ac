@@ -44,7 +44,11 @@ AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile fwdpp/io/Makefile fwd
                  fwdpp/ts/recording/Makefile
 				 fwdpp/util/Makefile
 				 fwdpp/genetic_map/Makefile
-				 examples/Makefile testsuite/Makefile src/Makefile doc/fwdpp.doxygen]) 
+				 examples/Makefile testsuite/Makefile
+				 src/Makefile
+				 doc/fwdpp.doxygen
+				 .circleci/config.yml
+				 ]) 
 
 AC_ARG_ENABLE([debug],AS_HELP_STRING([--enable-debug],[Compile examples with run-time assert macro enabled.]))
 AM_CONDITIONAL([DEBUG],test x$enable_debug = xyes)

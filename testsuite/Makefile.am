@@ -15,10 +15,14 @@ unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/g
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \
 	unit/test_recombination.cc \
-	fixtures/sugar_fixtures.cc
+	fixtures/sugar_fixtures.cc \
+	fixtures/fwdpp_fixtures.hpp \
+	fixtures/sugar_fixtures.hpp \
+	util/custom_dip.hpp
 
 unit_genetic_map_tests_SOURCES=unit/genetic_map_tests.cc \
-	unit/test_genetic_map.cc
+	unit/test_genetic_map.cc \
+	fixtures/rng_fixture.hpp
 
 unit_extensions_unit_tests_SOURCES=unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
@@ -26,11 +30,14 @@ unit_sugar_unit_tests_SOURCES=unit/sugar_unit_tests.cc \
 	unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc \
 	unit/sugar_popgenmut.cc \
-	fixtures/sugar_fixtures.cc
+	fixtures/sugar_fixtures.cc \
+	fixtures/sugar_fixtures.hpp \
+	util/custom_dip.hpp
 
 #Integration test targets:
 integration_sugar_integration_tests_SOURCES=integration/sugar_integration_tests.cc integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc \
-	fixtures/sugar_fixtures.cc
+	fixtures/sugar_fixtures.cc \
+	util/quick_evolve_sugar.hpp
 
 # TODO: the next two test suites need to be brought back.
 
@@ -43,10 +50,29 @@ tskit_SOURCES=../subprojects/nongpl/tskit/c/tskit/convert.c \
 			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
 			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
 			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
-			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c \
+			  ../subprojects/nongpl/tskit/c/tskit.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/convert.h \
+		  	  ../subprojects/nongpl/tskit/c/tskit/core.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/genotypes.h \
+		  	  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/stats.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/tables.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+	  		  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.h
+
 
 tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc \
 										${tskit_SOURCES} \
+										tree_sequences/empty_table_collection.hpp \
+										tree_sequences/independent_implementations.hpp \
+										tree_sequences/preorder_adl.hpp \
+										tree_sequences/simple_table_collection.hpp \
+										tree_sequences/simple_table_collection_infinite_sites.hpp \
+										tree_sequences/simple_table_collection_polytomy.hpp \
+										tree_sequences/tskit_utils.hpp \
+										tree_sequences/wfevolve_table_collection.hpp \
 										tree_sequences/test_generate_offspring.cc \
 									    tree_sequences/test_preorder_node_traversal.cc \
 										tree_sequences/test_tree_visitor.cc \

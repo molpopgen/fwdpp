@@ -97,7 +97,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = doc/fwdpp.doxygen
+CONFIG_CLEAN_FILES = doc/fwdpp.doxygen .circleci/config.yml
 CONFIG_CLEAN_VPATH_FILES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
@@ -157,6 +157,7 @@ CTAGS = ctags
 CSCOPE = cscope
 DIST_SUBDIRS = $(SUBDIRS)
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/config.h.in \
+	$(top_srcdir)/.circleci/config.yml.in \
 	$(top_srcdir)/doc/fwdpp.doxygen.in AUTHORS COPYING ChangeLog \
 	INSTALL NEWS TODO compile config.guess config.sub depcomp \
 	install-sh missing texinfo.tex
@@ -358,6 +359,8 @@ $(srcdir)/config.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 doc/fwdpp.doxygen: $(top_builddir)/config.status $(top_srcdir)/doc/fwdpp.doxygen.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+.circleci/config.yml: $(top_builddir)/config.status $(top_srcdir)/.circleci/config.yml.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 # This directory's subdirectories are mostly independent; you can cd
