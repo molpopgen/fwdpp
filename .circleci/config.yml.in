@@ -42,8 +42,8 @@ jobs:
           name: Build from make dist and run tests
           command: |
               make dist
-              tar xzf fwdpp-0.8.1.tar.gz
-              cd fwdpp-0.8.1
+              tar xzf fwdpp-@PACKAGE_VERSION@.tar.gz
+              cd fwdpp-@PACKAGE_VERSION@
               ./configure
               make -j 2
               make check
