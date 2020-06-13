@@ -127,6 +127,15 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	../subprojects/nongpl/tskit/c/tskit/tables.c \
 	../subprojects/nongpl/tskit/c/tskit/trees.c \
 	../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c \
+	../subprojects/nongpl/tskit/c/tskit.h \
+	../subprojects/nongpl/tskit/c/tskit/convert.h \
+	../subprojects/nongpl/tskit/c/tskit/core.h \
+	../subprojects/nongpl/tskit/c/tskit/genotypes.h \
+	../subprojects/nongpl/tskit/c/tskit/haplotype_matching.h \
+	../subprojects/nongpl/tskit/c/tskit/stats.h \
+	../subprojects/nongpl/tskit/c/tskit/tables.h \
+	../subprojects/nongpl/tskit/c/tskit/trees.h \
+	../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.h \
 	tree_sequences/test_generate_offspring.cc \
 	tree_sequences/test_preorder_node_traversal.cc \
 	tree_sequences/test_tree_visitor.cc \
@@ -715,7 +724,17 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
 @BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
 @BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
-@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c \
+@BUNIT_TEST_PRESENT_TRUE@			  ../subprojects/nongpl/tskit/c/tskit.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/convert.h \
+@BUNIT_TEST_PRESENT_TRUE@		  	  ../subprojects/nongpl/tskit/c/tskit/core.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/genotypes.h \
+@BUNIT_TEST_PRESENT_TRUE@		  	  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/stats.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/tables.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+@BUNIT_TEST_PRESENT_TRUE@	  		  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.h
 
 @BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@										${tskit_SOURCES} \

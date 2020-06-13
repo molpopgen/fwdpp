@@ -43,7 +43,17 @@ tskit_SOURCES=../subprojects/nongpl/tskit/c/tskit/convert.c \
 			  ../subprojects/nongpl/tskit/c/tskit/stats.c \
 			  ../subprojects/nongpl/tskit/c/tskit/tables.c \
 			  ../subprojects/nongpl/tskit/c/tskit/trees.c \
-			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c
+			  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.c \
+			  ../subprojects/nongpl/tskit/c/tskit.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/convert.h \
+		  	  ../subprojects/nongpl/tskit/c/tskit/core.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/genotypes.h \
+		  	  ../subprojects/nongpl/tskit/c/tskit/haplotype_matching.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/stats.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/tables.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+	  		  ../subprojects/nongpl/tskit/c/tskit/trees.h \
+	  		  ../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.h
 
 tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc \
 										${tskit_SOURCES} \
