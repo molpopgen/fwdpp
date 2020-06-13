@@ -108,7 +108,8 @@ PROGRAMS = $(noinst_PROGRAMS)
 am__integration_sugar_integration_tests_SOURCES_DIST =  \
 	integration/sugar_integration_tests.cc \
 	integration/sugar_singlepop_custom_diploidTest.cc \
-	integration/sugar_singlepopTest.cc fixtures/sugar_fixtures.cc
+	integration/sugar_singlepopTest.cc fixtures/sugar_fixtures.cc \
+	util/quick_evolve_sugar.hpp
 am__dirstamp = $(am__leading_dot)dirstamp
 @BUNIT_TEST_PRESENT_TRUE@am_integration_sugar_integration_tests_OBJECTS = integration/sugar_integration_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	integration/sugar_singlepop_custom_diploidTest.$(OBJEXT) \
@@ -136,6 +137,14 @@ am__tree_sequences_tree_sequence_tests_SOURCES_DIST =  \
 	../subprojects/nongpl/tskit/c/tskit/tables.h \
 	../subprojects/nongpl/tskit/c/tskit/trees.h \
 	../subprojects/nongpl/tskit/c/subprojects/kastore/kastore.h \
+	tree_sequences/empty_table_collection.hpp \
+	tree_sequences/independent_implementations.hpp \
+	tree_sequences/preorder_adl.hpp \
+	tree_sequences/simple_table_collection.hpp \
+	tree_sequences/simple_table_collection_infinite_sites.hpp \
+	tree_sequences/simple_table_collection_polytomy.hpp \
+	tree_sequences/tskit_utils.hpp \
+	tree_sequences/wfevolve_table_collection.hpp \
 	tree_sequences/test_generate_offspring.cc \
 	tree_sequences/test_preorder_node_traversal.cc \
 	tree_sequences/test_tree_visitor.cc \
@@ -205,7 +214,8 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/serializationTest.cc unit/gamete_cleanerTest.cc \
 	unit/test_mutate_recombine.cc unit/test_simparams.cc \
 	unit/test_wrapped_range.cc unit/test_recombination.cc \
-	fixtures/sugar_fixtures.cc
+	fixtures/sugar_fixtures.cc fixtures/fwdpp_fixtures.hpp \
+	fixtures/sugar_fixtures.hpp util/custom_dip.hpp
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -223,7 +233,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
 am__unit_genetic_map_tests_SOURCES_DIST = unit/genetic_map_tests.cc \
-	unit/test_genetic_map.cc
+	unit/test_genetic_map.cc fixtures/rng_fixture.hpp
 @BUNIT_TEST_PRESENT_TRUE@am_unit_genetic_map_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/genetic_map_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.$(OBJEXT)
@@ -232,7 +242,8 @@ unit_genetic_map_tests_LDADD = $(LDADD)
 am__unit_sugar_unit_tests_SOURCES_DIST = unit/sugar_unit_tests.cc \
 	unit/sugar_GSLrngTest.cc unit/sugar_add_mutationTest.cc \
 	unit/sugar_change_neutralTest.cc unit/sugar_popgenmut.cc \
-	fixtures/sugar_fixtures.cc
+	fixtures/sugar_fixtures.cc fixtures/sugar_fixtures.hpp \
+	util/custom_dip.hpp
 @BUNIT_TEST_PRESENT_TRUE@am_unit_sugar_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_GSLrngTest.$(OBJEXT) \
@@ -694,10 +705,14 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.cc \
-@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/fwdpp_fixtures.hpp \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.hpp \
+@BUNIT_TEST_PRESENT_TRUE@	util/custom_dip.hpp
 
 @BUNIT_TEST_PRESENT_TRUE@unit_genetic_map_tests_SOURCES = unit/genetic_map_tests.cc \
-@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.cc
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_genetic_map.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/rng_fixture.hpp
 
 @BUNIT_TEST_PRESENT_TRUE@unit_extensions_unit_tests_SOURCES = unit/extensions_unit_test.cc unit/extensions_regionsTest.cc unit/extensions_callbacksTest.cc
 @BUNIT_TEST_PRESENT_TRUE@unit_sugar_unit_tests_SOURCES = unit/sugar_unit_tests.cc \
@@ -705,12 +720,15 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_add_mutationTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_change_neutralTest.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/sugar_popgenmut.cc \
-@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc \
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.hpp \
+@BUNIT_TEST_PRESENT_TRUE@	util/custom_dip.hpp
 
 
 #Integration test targets:
 @BUNIT_TEST_PRESENT_TRUE@integration_sugar_integration_tests_SOURCES = integration/sugar_integration_tests.cc integration/sugar_singlepop_custom_diploidTest.cc  integration/sugar_singlepopTest.cc \
-@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc
+@BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc \
+@BUNIT_TEST_PRESENT_TRUE@	util/quick_evolve_sugar.hpp
 
 
 # TODO: the next two test suites need to be brought back.
@@ -738,6 +756,14 @@ top_srcdir = @top_srcdir@
 
 @BUNIT_TEST_PRESENT_TRUE@tree_sequences_tree_sequence_tests_SOURCES = tree_sequences/tree_sequence_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@										${tskit_SOURCES} \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/empty_table_collection.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/independent_implementations.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/preorder_adl.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/simple_table_collection.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/simple_table_collection_infinite_sites.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/simple_table_collection_polytomy.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/tskit_utils.hpp \
+@BUNIT_TEST_PRESENT_TRUE@										tree_sequences/wfevolve_table_collection.hpp \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_generate_offspring.cc \
 @BUNIT_TEST_PRESENT_TRUE@									    tree_sequences/test_preorder_node_traversal.cc \
 @BUNIT_TEST_PRESENT_TRUE@										tree_sequences/test_tree_visitor.cc \

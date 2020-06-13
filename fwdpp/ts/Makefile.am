@@ -1,6 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp/ts
 
-SUBDIRS=simplification recording
+SUBDIRS=simplification recording detail recording marginal_tree_functions
 
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \
@@ -12,6 +12,7 @@ pkginclude_HEADERS= definitions.hpp \
 			table_simplifier.hpp \
 			simplify_tables.hpp \
 			get_parent_ids.hpp \
+			generate_offspring.hpp \
 			generate_data_matrix.hpp \
 			indexed_edge.hpp \
 			marginal_tree.hpp \
