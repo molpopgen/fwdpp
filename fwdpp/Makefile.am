@@ -20,7 +20,6 @@ pkginclude_HEADERS=debug.hpp \
 	diploid_population.hpp \
 	popgenmut.hpp \
 	simparams.hpp \
-	wrapped_range.hpp \
 	GSLrng_t.hpp \
 	gsl_discrete.hpp
 

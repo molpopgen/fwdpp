@@ -7,7 +7,7 @@
 #include <tuple>
 #include <gsl/gsl_randist.h>
 
-#include <fwdpp/wrapped_range.hpp>
+#include <fwdpp/util/wrapped_range.hpp>
 #include <fwdpp/util.hpp>
 #include <fwdpp/internal/haploid_genome_cleaner.hpp>
 #include <fwdpp/mutate_recombine.hpp>
