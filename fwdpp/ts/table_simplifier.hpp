@@ -62,7 +62,8 @@ namespace fwdpp
             {
                 std::vector<TS_NODE_INT> idmap;
                 std::vector<std::size_t> preserved_variants;
-                simplify_tables(samples, _state, tables, idmap, preserved_variants);
+                simplify_tables(samples, simplification_flags{}, _state, tables, idmap,
+                                preserved_variants);
 
                 return std::make_pair(std::move(idmap), std::move(preserved_variants));
             }

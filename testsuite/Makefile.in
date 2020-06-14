@@ -214,8 +214,9 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 	unit/serializationTest.cc unit/gamete_cleanerTest.cc \
 	unit/test_mutate_recombine.cc unit/test_simparams.cc \
 	unit/test_wrapped_range.cc unit/test_recombination.cc \
-	fixtures/sugar_fixtures.cc fixtures/fwdpp_fixtures.hpp \
-	fixtures/sugar_fixtures.hpp util/custom_dip.hpp
+	unit/test_enum_bitflags.cc fixtures/sugar_fixtures.cc \
+	fixtures/fwdpp_fixtures.hpp fixtures/sugar_fixtures.hpp \
+	util/custom_dip.hpp
 @BUNIT_TEST_PRESENT_TRUE@am_unit_fwdpp_unit_tests_OBJECTS =  \
 @BUNIT_TEST_PRESENT_TRUE@	unit/fwdpp_unit_tests.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/mutateTest.$(OBJEXT) \
@@ -229,6 +230,7 @@ am__unit_fwdpp_unit_tests_SOURCES_DIST = unit/fwdpp_unit_tests.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.$(OBJEXT) \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_enum_bitflags.$(OBJEXT) \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.$(OBJEXT)
 unit_fwdpp_unit_tests_OBJECTS = $(am_unit_fwdpp_unit_tests_OBJECTS)
 unit_fwdpp_unit_tests_LDADD = $(LDADD)
@@ -316,6 +318,7 @@ am__depfiles_remade = ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR
 	unit/$(DEPDIR)/sugar_change_neutralTest.Po \
 	unit/$(DEPDIR)/sugar_popgenmut.Po \
 	unit/$(DEPDIR)/sugar_unit_tests.Po \
+	unit/$(DEPDIR)/test_enum_bitflags.Po \
 	unit/$(DEPDIR)/test_genetic_map.Po \
 	unit/$(DEPDIR)/test_mutate_recombine.Po \
 	unit/$(DEPDIR)/test_recombination.Po \
@@ -705,6 +708,7 @@ top_srcdir = @top_srcdir@
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_simparams.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_wrapped_range.cc \
 @BUNIT_TEST_PRESENT_TRUE@	unit/test_recombination.cc \
+@BUNIT_TEST_PRESENT_TRUE@	unit/test_enum_bitflags.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.cc \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/fwdpp_fixtures.hpp \
 @BUNIT_TEST_PRESENT_TRUE@	fixtures/sugar_fixtures.hpp \
@@ -998,6 +1002,8 @@ unit/test_wrapped_range.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
 unit/test_recombination.$(OBJEXT): unit/$(am__dirstamp) \
 	unit/$(DEPDIR)/$(am__dirstamp)
+unit/test_enum_bitflags.$(OBJEXT): unit/$(am__dirstamp) \
+	unit/$(DEPDIR)/$(am__dirstamp)
 
 unit/fwdpp_unit_tests$(EXEEXT): $(unit_fwdpp_unit_tests_OBJECTS) $(unit_fwdpp_unit_tests_DEPENDENCIES) $(EXTRA_unit_fwdpp_unit_tests_DEPENDENCIES) unit/$(am__dirstamp)
 	@rm -f unit/fwdpp_unit_tests$(EXEEXT)
@@ -1085,6 +1091,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_change_neutralTest.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_popgenmut.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/sugar_unit_tests.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_enum_bitflags.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_genetic_map.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_mutate_recombine.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@unit/$(DEPDIR)/test_recombination.Po@am__quote@ # am--include-marker
@@ -1629,6 +1636,7 @@ distclean: distclean-am
 	-rm -f unit/$(DEPDIR)/sugar_change_neutralTest.Po
 	-rm -f unit/$(DEPDIR)/sugar_popgenmut.Po
 	-rm -f unit/$(DEPDIR)/sugar_unit_tests.Po
+	-rm -f unit/$(DEPDIR)/test_enum_bitflags.Po
 	-rm -f unit/$(DEPDIR)/test_genetic_map.Po
 	-rm -f unit/$(DEPDIR)/test_mutate_recombine.Po
 	-rm -f unit/$(DEPDIR)/test_recombination.Po
@@ -1729,6 +1737,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f unit/$(DEPDIR)/sugar_change_neutralTest.Po
 	-rm -f unit/$(DEPDIR)/sugar_popgenmut.Po
 	-rm -f unit/$(DEPDIR)/sugar_unit_tests.Po
+	-rm -f unit/$(DEPDIR)/test_enum_bitflags.Po
 	-rm -f unit/$(DEPDIR)/test_genetic_map.Po
 	-rm -f unit/$(DEPDIR)/test_mutate_recombine.Po
 	-rm -f unit/$(DEPDIR)/test_recombination.Po

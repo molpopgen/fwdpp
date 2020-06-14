@@ -9,11 +9,13 @@
 #include "definitions.hpp"
 #include "recording/edge_buffer.hpp"
 #include "simplification/simplification.hpp"
+#include <fwdpp/ts/simplification_flags.hpp>
 
 namespace fwdpp
 {
     namespace ts
     {
+
         template <typename TableCollectionType>
         inline simplification::simplifier_internal_state<TableCollectionType>
         make_simplifier_state(const TableCollectionType& tables)
@@ -25,7 +27,7 @@ namespace fwdpp
                   typename PreservedVariantIndexes>
         inline void
         simplify_tables(
-            const NodeVector& samples,
+            const NodeVector& samples, const simplification_flags /*flags*/,
             simplification::simplifier_internal_state<TableCollectionType>& state,
             TableCollectionType& input_tables, NodeVector& idmap,
             PreservedVariantIndexes& preserved_variants)
@@ -107,19 +109,22 @@ namespace fwdpp
                   typename PreservedVariantIndexes>
         inline void
         simplify_tables(const NodeVector& samples, TableCollectionType& input_tables,
-                        NodeVector& idmap, PreservedVariantIndexes& preserved_variants)
+                        simplification_flags flags, NodeVector& idmap,
+                        PreservedVariantIndexes& preserved_variants)
         {
             auto state = simplification::make_simplifier_internal_state(input_tables);
-            simplify_tables(samples, state, input_tables, idmap, preserved_variants);
+            simplify_tables(samples, flags, state, input_tables, idmap,
+                            preserved_variants);
         }
 
         template <typename TableCollectionType, typename NodeVector>
         inline void
-        simplify_tables(const NodeVector& samples, TableCollectionType& input_tables)
+        simplify_tables(const NodeVector& samples, const simplification_flags flags,
+                        TableCollectionType& input_tables)
         {
             NodeVector idmap;
             std::vector<std::size_t> preserved_variants;
-            simplify_tables(samples, input_tables, idmap, preserved_variants);
+            simplify_tables(samples, flags, input_tables, idmap, preserved_variants);
         }
 
         template <typename TableCollectionType, typename NodeVector,
@@ -127,6 +132,7 @@ namespace fwdpp
         inline void
         simplify_tables(
             const NodeVector& samples, const NodeVector& alive_at_last_simplification,
+            simplification_flags /*flags*/,
             simplification::simplifier_internal_state<TableCollectionType>& state,
             TableCollectionType& input_tables, edge_buffer& buffer, NodeVector& idmap,
             PreservedVariantIndexes& preserved_variants)

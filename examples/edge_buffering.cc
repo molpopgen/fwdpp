@@ -229,7 +229,8 @@ sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
     auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
     std::sort(begin(tables.edges), end(tables.edges), cmp);
     std::vector<std::size_t> temp{};
-    fwdpp::ts::simplify_tables(samples, state, tables, node_map, temp);
+    fwdpp::ts::simplify_tables(samples, fwdpp::ts::simplification_flags{}, state, tables,
+                               node_map, temp);
 }
 
 template <typename SimplificationState>
@@ -253,7 +254,8 @@ flush_buffer_n_simplify(
         {
             stitch_together_edges(alive_at_last_simplification, max_time, new_edges,
                                   edge_liftover, tables);
-            fwdpp::ts::simplify_tables(samples, state, tables, node_map, temp);
+            fwdpp::ts::simplify_tables(samples, fwdpp::ts::simplification_flags{}, state,
+                                       tables, node_map, temp);
             // stitch_together_edges doesn't know about what happens during
             // simplify, so we need to manually reset the buffer's head/tail
             // sizes
@@ -263,8 +265,9 @@ flush_buffer_n_simplify(
         {
             // Simplifying right from the buffer automatically
             // resets new_edges
-            fwdpp::ts::simplify_tables(samples, alive_at_last_simplification, state,
-                                       tables, new_edges, node_map, temp);
+            fwdpp::ts::simplify_tables(samples, alive_at_last_simplification,
+                                       fwdpp::ts::simplification_flags{}, state, tables,
+                                       new_edges, node_map, temp);
         }
 }
 
