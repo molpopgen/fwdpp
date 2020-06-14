@@ -318,6 +318,7 @@ pkginclude_HEADERS = definitions.hpp \
 			std_table_collection.hpp \
 			table_simplifier.hpp \
 			simplify_tables.hpp \
+			simplification_flags.hpp \
 			get_parent_ids.hpp \
 			generate_offspring.hpp \
 			generate_data_matrix.hpp \
