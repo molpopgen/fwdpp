@@ -2,7 +2,7 @@
 #define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_SAMPLES_HPP__
 
 #include <stdexcept>
-#include <fwdpp/named_type.hpp>
+#include <fwdpp/util/named_type.hpp>
 #include "../marginal_tree.hpp"
 
 namespace fwdpp

@@ -4,7 +4,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/type_traits.hpp>
-#include <fwdpp/named_type.hpp>
+#include <fwdpp/util/named_type.hpp>
 #include <cmath>
 #include <stdexcept>
 #include <type_traits>

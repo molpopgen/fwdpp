@@ -17,7 +17,6 @@ pkginclude_HEADERS=debug.hpp \
 	mutate_recombine.hpp \
 	data_matrix.hpp \
 	recbinder.hpp \
-	named_type.hpp \
 	diploid_population.hpp \
 	popgenmut.hpp \
 	simparams.hpp \

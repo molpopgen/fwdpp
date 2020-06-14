@@ -7,7 +7,7 @@
 #include "marginal_tree.hpp"
 #include "indexed_edge.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
-#include <fwdpp/named_type.hpp>
+#include <fwdpp/util/named_type.hpp>
 
 namespace fwdpp
 {
