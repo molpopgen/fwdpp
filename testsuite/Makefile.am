@@ -15,6 +15,7 @@ unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/g
 	unit/test_simparams.cc \
 	unit/test_wrapped_range.cc \
 	unit/test_recombination.cc \
+	unit/test_enum_bitflags.cc \
 	fixtures/sugar_fixtures.cc \
 	fixtures/fwdpp_fixtures.hpp \
 	fixtures/sugar_fixtures.hpp \
