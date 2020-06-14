@@ -7,7 +7,7 @@
 #include <type_traits>
 #include <gsl/gsl_rng.h>
 #include <fwdpp/debug.hpp>
-#include <fwdpp/wrapped_range.hpp>
+#include <fwdpp/util/wrapped_range.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/mutate_recombine.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>

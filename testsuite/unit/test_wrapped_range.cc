@@ -5,7 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <numeric>
-#include <fwdpp/wrapped_range.hpp>
+#include <fwdpp/util/wrapped_range.hpp>
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(test_wrapped_range)

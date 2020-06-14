@@ -267,7 +267,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 pkginclude_HEADERS = abstract_cloneable.hpp \
-				   enum_bitflags.hpp
+				   enum_bitflags.hpp \
+				   named_type.hpp \
+				   wrapped_range.hpp
 
 all: all-am
 

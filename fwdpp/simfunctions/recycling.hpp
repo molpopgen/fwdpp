@@ -4,7 +4,7 @@
 #include <queue>
 #include <stdexcept>
 #include <type_traits>
-#include <fwdpp/named_type.hpp>
+#include <fwdpp/util/named_type.hpp>
 
 namespace fwdpp
 {
