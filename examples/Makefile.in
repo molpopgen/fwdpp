@@ -89,13 +89,10 @@ POST_UNINSTALL = :
 noinst_PROGRAMS = diploid_ind$(EXEEXT) diploid_fixed_sh_ind$(EXEEXT) \
 	K_linked_regions_extensions$(EXEEXT) \
 	juvenile_migration$(EXEEXT) custom_mutation$(EXEEXT) \
-	custom_diploid$(EXEEXT) wfts_overlapping_generations$(EXEEXT) \
-	wfts_overlapping_generations_dynamic_indexing$(EXEEXT) \
-	wfts_overlapping_generations_dynamic_indexing_with_mutation$(EXEEXT) \
-	load_table_collection$(EXEEXT) edge_buffering$(EXEEXT) \
-	$(am__EXEEXT_1)
+	custom_diploid$(EXEEXT) load_table_collection$(EXEEXT) \
+	edge_buffering$(EXEEXT) $(am__EXEEXT_1)
 # examples based on tree sequences that need boost program options
-@BPO_PRESENT_TRUE@am__append_1 = wfts_integration_test spatialts
+@BPO_PRESENT_TRUE@am__append_1 = wfts_integration_test
 @HAVE_LIBSEQ_RUNTIME_TRUE@@HAVE_SIMDATA_HPP_TRUE@am__append_2 = -DHAVE_LIBSEQUENCE
 @DEBUG_FALSE@am__append_3 = -DNDEBUG
 subdir = examples
@@ -109,8 +106,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-@BPO_PRESENT_TRUE@am__EXEEXT_1 = wfts_integration_test$(EXEEXT) \
-@BPO_PRESENT_TRUE@	spatialts$(EXEEXT)
+@BPO_PRESENT_TRUE@am__EXEEXT_1 = wfts_integration_test$(EXEEXT)
 PROGRAMS = $(noinst_PROGRAMS)
 am_K_linked_regions_extensions_OBJECTS =  \
 	K_linked_regions_extensions.$(OBJEXT)
@@ -154,10 +150,6 @@ am_load_table_collection_OBJECTS = load_table_collection.$(OBJEXT)
 load_table_collection_OBJECTS = $(am_load_table_collection_OBJECTS)
 load_table_collection_LDADD = $(LDADD)
 load_table_collection_DEPENDENCIES =
-am__spatialts_SOURCES_DIST = spatialts.cc
-@BPO_PRESENT_TRUE@am_spatialts_OBJECTS = spatialts.$(OBJEXT)
-spatialts_OBJECTS = $(am_spatialts_OBJECTS)
-spatialts_DEPENDENCIES =
 am__wfts_integration_test_SOURCES_DIST = wfts_integration_test.cc \
 	tree_sequence_examples_common.cc
 @BPO_PRESENT_TRUE@am_wfts_integration_test_OBJECTS =  \
@@ -165,25 +157,6 @@ am__wfts_integration_test_SOURCES_DIST = wfts_integration_test.cc \
 @BPO_PRESENT_TRUE@	tree_sequence_examples_common.$(OBJEXT)
 wfts_integration_test_OBJECTS = $(am_wfts_integration_test_OBJECTS)
 wfts_integration_test_DEPENDENCIES =
-am_wfts_overlapping_generations_OBJECTS =  \
-	wfts_overlapping_generations.$(OBJEXT) wfevolvets.$(OBJEXT)
-wfts_overlapping_generations_OBJECTS =  \
-	$(am_wfts_overlapping_generations_OBJECTS)
-wfts_overlapping_generations_LDADD = $(LDADD)
-wfts_overlapping_generations_DEPENDENCIES =
-am_wfts_overlapping_generations_dynamic_indexing_OBJECTS =  \
-	wfts_overlapping_generations_dynamic_indexing.$(OBJEXT) \
-	wfevolvets.$(OBJEXT)
-wfts_overlapping_generations_dynamic_indexing_OBJECTS =  \
-	$(am_wfts_overlapping_generations_dynamic_indexing_OBJECTS)
-wfts_overlapping_generations_dynamic_indexing_LDADD = $(LDADD)
-wfts_overlapping_generations_dynamic_indexing_DEPENDENCIES =
-am_wfts_overlapping_generations_dynamic_indexing_with_mutation_OBJECTS = wfts_overlapping_generations_dynamic_indexing_with_mutation.$(OBJEXT) \
-	wfevolvets.$(OBJEXT)
-wfts_overlapping_generations_dynamic_indexing_with_mutation_OBJECTS = $(am_wfts_overlapping_generations_dynamic_indexing_with_mutation_OBJECTS)
-wfts_overlapping_generations_dynamic_indexing_with_mutation_LDADD =  \
-	$(LDADD)
-wfts_overlapping_generations_dynamic_indexing_with_mutation_DEPENDENCIES =
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -212,12 +185,9 @@ am__depfiles_remade = ../subprojects/nongpl/tskit/c/subprojects/kastore/$(DEPDIR
 	./$(DEPDIR)/diploid_fixed_sh_ind.Po ./$(DEPDIR)/diploid_ind.Po \
 	./$(DEPDIR)/edge_buffering.Po \
 	./$(DEPDIR)/juvenile_migration.Po \
-	./$(DEPDIR)/load_table_collection.Po ./$(DEPDIR)/spatialts.Po \
+	./$(DEPDIR)/load_table_collection.Po \
 	./$(DEPDIR)/tree_sequence_examples_common.Po \
-	./$(DEPDIR)/wfevolvets.Po ./$(DEPDIR)/wfts_integration_test.Po \
-	./$(DEPDIR)/wfts_overlapping_generations.Po \
-	./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing.Po \
-	./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing_with_mutation.Po
+	./$(DEPDIR)/wfts_integration_test.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -252,20 +222,14 @@ SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(edge_buffering_SOURCES) $(juvenile_migration_SOURCES) \
-	$(load_table_collection_SOURCES) $(spatialts_SOURCES) \
-	$(wfts_integration_test_SOURCES) \
-	$(wfts_overlapping_generations_SOURCES) \
-	$(wfts_overlapping_generations_dynamic_indexing_SOURCES) \
-	$(wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES)
+	$(load_table_collection_SOURCES) \
+	$(wfts_integration_test_SOURCES)
 DIST_SOURCES = $(K_linked_regions_extensions_SOURCES) \
 	$(custom_diploid_SOURCES) $(custom_mutation_SOURCES) \
 	$(diploid_fixed_sh_ind_SOURCES) $(diploid_ind_SOURCES) \
 	$(edge_buffering_SOURCES) $(juvenile_migration_SOURCES) \
-	$(load_table_collection_SOURCES) $(am__spatialts_SOURCES_DIST) \
-	$(am__wfts_integration_test_SOURCES_DIST) \
-	$(wfts_overlapping_generations_SOURCES) \
-	$(wfts_overlapping_generations_dynamic_indexing_SOURCES) \
-	$(wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES)
+	$(load_table_collection_SOURCES) \
+	$(am__wfts_integration_test_SOURCES_DIST)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -391,15 +355,17 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+
+#	wfts_overlapping_generations_dynamic_indexing 
+#	wfts_overlapping_generations_dynamic_indexing_with_mutation
 diploid_ind_SOURCES = diploid_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_SOURCES = diploid_fixed_sh_ind.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES = K_linked_regions_extensions.cc common_ind.hpp
 juvenile_migration_SOURCES = juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES = custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES = custom_diploid.cc common_ind.hpp
-wfts_overlapping_generations_SOURCES = wfts_overlapping_generations.cc wfevolvets.cc wfevolvets.hpp
-wfts_overlapping_generations_dynamic_indexing_SOURCES = wfts_overlapping_generations_dynamic_indexing.cc wfevolvets.cc wfevolvets.hpp
-wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES = wfts_overlapping_generations_dynamic_indexing_with_mutation.cc wfevolvets.cc wfevolvets.hpp
+# wfts_overlapping_generations_dynamic_indexing_SOURCES=wfts_overlapping_generations_dynamic_indexing.cc wfevolvets.cc wfevolvets.hpp
+# wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES=wfts_overlapping_generations_dynamic_indexing_with_mutation.cc wfevolvets.cc wfevolvets.hpp
 load_table_collection_SOURCES = load_table_collection.cc
 tskit_SOURCES = ../subprojects/nongpl/tskit/c/tskit/convert.c \
 			  ../subprojects/nongpl/tskit/c/tskit/core.c \
@@ -426,8 +392,6 @@ edge_buffering_SOURCES = edge_buffering.cc \
 edge_buffering_CFLAGS = -std=c99
 @BPO_PRESENT_TRUE@wfts_integration_test_SOURCES = wfts_integration_test.cc tree_sequence_examples_common.cc
 @BPO_PRESENT_TRUE@wfts_integration_test_LDADD = -lboost_program_options
-@BPO_PRESENT_TRUE@spatialts_SOURCES = spatialts.cc
-@BPO_PRESENT_TRUE@spatialts_LDADD = -lboost_program_options
 edge_buffering_LDADD = -lboost_program_options
 AM_CPPFLAGS = -Wall -W -I. -I../subprojects/nongpl/tskit/c \
 	-I../subprojects/nongpl/tskit/c/subprojects/kastore \
@@ -539,25 +503,9 @@ load_table_collection$(EXEEXT): $(load_table_collection_OBJECTS) $(load_table_co
 	@rm -f load_table_collection$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(load_table_collection_OBJECTS) $(load_table_collection_LDADD) $(LIBS)
 
-spatialts$(EXEEXT): $(spatialts_OBJECTS) $(spatialts_DEPENDENCIES) $(EXTRA_spatialts_DEPENDENCIES) 
-	@rm -f spatialts$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(spatialts_OBJECTS) $(spatialts_LDADD) $(LIBS)
-
 wfts_integration_test$(EXEEXT): $(wfts_integration_test_OBJECTS) $(wfts_integration_test_DEPENDENCIES) $(EXTRA_wfts_integration_test_DEPENDENCIES) 
 	@rm -f wfts_integration_test$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(wfts_integration_test_OBJECTS) $(wfts_integration_test_LDADD) $(LIBS)
-
-wfts_overlapping_generations$(EXEEXT): $(wfts_overlapping_generations_OBJECTS) $(wfts_overlapping_generations_DEPENDENCIES) $(EXTRA_wfts_overlapping_generations_DEPENDENCIES) 
-	@rm -f wfts_overlapping_generations$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(wfts_overlapping_generations_OBJECTS) $(wfts_overlapping_generations_LDADD) $(LIBS)
-
-wfts_overlapping_generations_dynamic_indexing$(EXEEXT): $(wfts_overlapping_generations_dynamic_indexing_OBJECTS) $(wfts_overlapping_generations_dynamic_indexing_DEPENDENCIES) $(EXTRA_wfts_overlapping_generations_dynamic_indexing_DEPENDENCIES) 
-	@rm -f wfts_overlapping_generations_dynamic_indexing$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(wfts_overlapping_generations_dynamic_indexing_OBJECTS) $(wfts_overlapping_generations_dynamic_indexing_LDADD) $(LIBS)
-
-wfts_overlapping_generations_dynamic_indexing_with_mutation$(EXEEXT): $(wfts_overlapping_generations_dynamic_indexing_with_mutation_OBJECTS) $(wfts_overlapping_generations_dynamic_indexing_with_mutation_DEPENDENCIES) $(EXTRA_wfts_overlapping_generations_dynamic_indexing_with_mutation_DEPENDENCIES) 
-	@rm -f wfts_overlapping_generations_dynamic_indexing_with_mutation$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(wfts_overlapping_generations_dynamic_indexing_with_mutation_OBJECTS) $(wfts_overlapping_generations_dynamic_indexing_with_mutation_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -583,13 +531,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edge_buffering.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/juvenile_migration.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/load_table_collection.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/spatialts.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree_sequence_examples_common.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfevolvets.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts_integration_test.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts_overlapping_generations.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing_with_mutation.Po@am__quote@ # am--include-marker
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
@@ -885,13 +828,8 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/edge_buffering.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/load_table_collection.Po
-	-rm -f ./$(DEPDIR)/spatialts.Po
 	-rm -f ./$(DEPDIR)/tree_sequence_examples_common.Po
-	-rm -f ./$(DEPDIR)/wfevolvets.Po
 	-rm -f ./$(DEPDIR)/wfts_integration_test.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing_with_mutation.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-tags
@@ -953,13 +891,8 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/edge_buffering.Po
 	-rm -f ./$(DEPDIR)/juvenile_migration.Po
 	-rm -f ./$(DEPDIR)/load_table_collection.Po
-	-rm -f ./$(DEPDIR)/spatialts.Po
 	-rm -f ./$(DEPDIR)/tree_sequence_examples_common.Po
-	-rm -f ./$(DEPDIR)/wfevolvets.Po
 	-rm -f ./$(DEPDIR)/wfts_integration_test.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing.Po
-	-rm -f ./$(DEPDIR)/wfts_overlapping_generations_dynamic_indexing_with_mutation.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
