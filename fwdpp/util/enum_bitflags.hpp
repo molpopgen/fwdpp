@@ -16,14 +16,14 @@ namespace fwdpp
                           "underlying type must be integral");
             static_assert(std::is_unsigned<T>::value,
                           "underlying type must be unsigned");
-            return static_cast<E>(static_cast<T>(a) | static_cast<T>(b));
+            return static_cast<T>(a) | static_cast<T>(b);
         }
 
         template <typename E>
         auto&
         operator|=(E& a, E b)
         {
-            a = a | b;
+            a = static_cast<E>(a | b);
             return a;
         }
 
@@ -36,14 +36,14 @@ namespace fwdpp
                           "underlying type must be integral");
             static_assert(std::is_unsigned<T>::value,
                           "underlying type must be unsigned");
-            return static_cast<E>(static_cast<T>(a) & static_cast<T>(b));
+            return static_cast<T>(a) & static_cast<T>(b);
         }
 
         template <typename E>
         auto&
         operator&=(E& a, E b)
         {
-            a = a & b;
+            a = static_cast<E>(a & b);
             return a;
         }
 
@@ -56,14 +56,14 @@ namespace fwdpp
                           "underlying type must be integral");
             static_assert(std::is_unsigned<T>::value,
                           "underlying type must be unsigned");
-            return static_cast<E>(static_cast<T>(a) ^ static_cast<T>(b));
+            return static_cast<T>(a) ^ static_cast<T>(b);
         }
 
         template <typename E>
         auto&
         operator^=(E& a, E b)
         {
-            a = a ^ b;
+            a = static_cast<E>(a ^ b);
             return a;
         }
 
@@ -76,7 +76,7 @@ namespace fwdpp
                           "underlying type must be integral");
             static_assert(std::is_unsigned<T>::value,
                           "underlying type must be unsigned");
-            return static_cast<E>(~static_cast<T>(a));
+            return ~static_cast<T>(a);
         }
     }
 }

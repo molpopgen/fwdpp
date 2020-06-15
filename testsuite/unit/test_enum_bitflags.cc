@@ -20,10 +20,8 @@ BOOST_AUTO_TEST_CASE(test_bitwise_OR)
 {
     using fwdpp::enum_bitflags::operator|;
     E e{E::a};
-    e = e | E::b;
-    unsigned x = 1 << 0;
-    x |= 1 << 1;
-    BOOST_REQUIRE_EQUAL(static_cast<std::underlying_type_t<E>>(e), x);
+    BOOST_REQUIRE_EQUAL(!!(e | E::a), true);
+    BOOST_REQUIRE_EQUAL(!!(e | E::b), true);
 }
 
 BOOST_AUTO_TEST_CASE(test_bitwise_OR_EQ)
@@ -40,10 +38,9 @@ BOOST_AUTO_TEST_CASE(test_bitwise_XOR)
 {
     using fwdpp::enum_bitflags::operator^;
     E e{E::a};
-    e = e ^ E::b;
     unsigned x = 1 << 0;
     x ^= 1 << 1;
-    BOOST_REQUIRE_EQUAL(static_cast<std::underlying_type_t<E>>(e), x);
+    BOOST_REQUIRE_EQUAL(e^E::b, x);
 }
 
 BOOST_AUTO_TEST_CASE(test_bitwise_XOR_EQ)
@@ -60,10 +57,8 @@ BOOST_AUTO_TEST_CASE(test_bitwise_AND)
 {
     using fwdpp::enum_bitflags::operator&;
     E e{E::a};
-    e = e & E::b;
-    unsigned x = 1 << 0;
-    x &= 1 << 1;
-    BOOST_REQUIRE_EQUAL(static_cast<std::underlying_type_t<E>>(e), x);
+    BOOST_REQUIRE_EQUAL(!!(e & E::a), true);
+    BOOST_REQUIRE_EQUAL(!!(e & E::b), false);
 }
 
 BOOST_AUTO_TEST_CASE(test_bitwise_AND_EQ)
@@ -80,10 +75,7 @@ BOOST_AUTO_TEST_CASE(test_bitwise_NEGATE)
 {
     using fwdpp::enum_bitflags::operator~;
     E e{E::b};
-    e = ~e;
-    unsigned x = 1 << 1;
-    x = ~x;
-    BOOST_REQUIRE_EQUAL(static_cast<std::underlying_type_t<E>>(e), x);
+    BOOST_REQUIRE_EQUAL(~e, ~2u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
