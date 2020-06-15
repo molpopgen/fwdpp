@@ -52,5 +52,3 @@ jobs:
           name: Run example programs
           command: |
               ./examples/wfts_integration_test --N 500 --theta 100 --rho 100 --seed 101 --mu 1e-3 --mean -1  --gc 100  --ansam 10 --sampling_interval 666 --matrix_test
-              ./examples/wfts_overlapping_generations 1000 1000 0.999 0.0 100 666
-              ./examples/wfts_overlapping_generations 1000 1000 0.999 0.25 100 42
