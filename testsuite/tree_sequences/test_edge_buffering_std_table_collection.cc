@@ -4,74 +4,77 @@
 #include "wfevolve_table_collection.hpp"
 #include "tskit_utils.hpp"
 
-struct ll_wf_fixture
+namespace
 {
-    unsigned N;
-    unsigned nsteps;
-    fwdpp::ts::std_table_collection tables_buffering, tables_sorting;
-    wf_simulation_results results_buffering, results_sorting;
-    std::vector<int> samples_buffering, samples_sorting;
-
-    std::vector<int>
-    fill_samples(const fwdpp::ts::std_table_collection& tables,
-                 const wf_simulation_results& results)
+    struct ll_wf_fixture
     {
-        std::vector<int> rv(tables.num_nodes(), 0);
-        const auto update = [](auto& v, auto n) {
-            if (n < 0)
-                {
-                    throw std::runtime_error("node < 0");
-                }
-            if (n >= static_cast<decltype(n)>(v.size()))
-                {
-                    throw std::runtime_error("node out of bounds");
-                }
-            v[n] = 1;
-        };
+        unsigned N;
+        unsigned nsteps;
+        fwdpp::ts::std_table_collection tables_buffering, tables_sorting;
+        wf_simulation_results results_buffering, results_sorting;
+        std::vector<int> samples_buffering, samples_sorting;
 
-        for (auto& p : results.alive_individuals)
-            {
-                for (auto n : p.nodes)
+        std::vector<int>
+        fill_samples(const fwdpp::ts::std_table_collection& tables,
+                     const wf_simulation_results& results)
+        {
+            std::vector<int> rv(tables.num_nodes(), 0);
+            const auto update = [](auto& v, auto n) {
+                if (n < 0)
                     {
-                        update(rv, n);
+                        throw std::runtime_error("node < 0");
                     }
-            }
-        for (auto n : results.preserved_nodes)
-            {
-                update(rv, n);
-            }
-        return rv;
-    }
+                if (n >= static_cast<decltype(n)>(v.size()))
+                    {
+                        throw std::runtime_error("node out of bounds");
+                    }
+                v[n] = 1;
+            };
 
-    explicit ll_wf_fixture(wf_simulation_params p)
-        : N{p.N}, nsteps{p.nsteps}, tables_buffering{1.}, tables_sorting{1.},
-          results_buffering{wfevolve_table_collection(
-              p.seed, p.N, p.nsteps, p.psurvival, p.rho, p.simplification_interval, true,
-              true, false, empty_policies{}, tables_buffering)},
-          results_sorting{wfevolve_table_collection(
-              p.seed, p.N, p.nsteps, p.psurvival, p.rho, p.simplification_interval,
-              false, false, false, empty_policies{}, tables_sorting)},
-          samples_buffering{fill_samples(tables_buffering, results_buffering)},
-          samples_sorting{fill_samples(tables_sorting, results_sorting)}
-    {
-    }
-};
+            for (auto& p : results.alive_individuals)
+                {
+                    for (auto n : p.nodes)
+                        {
+                            update(rv, n);
+                        }
+                }
+            for (auto n : results.preserved_nodes)
+                {
+                    update(rv, n);
+                }
+            return rv;
+        }
 
-struct wf_fixture_no_rec_non_overlapping
-{
-    ll_wf_fixture ll;
-    wf_fixture_no_rec_non_overlapping() : ll({42, 100, 1000, 0., 0., 100})
-    {
-    }
-};
+        explicit ll_wf_fixture(wf_simulation_params p)
+            : N{p.N}, nsteps{p.nsteps}, tables_buffering{1.}, tables_sorting{1.},
+              results_buffering{wfevolve_table_collection(
+                  p.seed, p.N, p.nsteps, p.psurvival, p.rho, p.simplification_interval,
+                  true, true, false, empty_policies{}, tables_buffering)},
+              results_sorting{wfevolve_table_collection(
+                  p.seed, p.N, p.nsteps, p.psurvival, p.rho, p.simplification_interval,
+                  false, false, false, empty_policies{}, tables_sorting)},
+              samples_buffering{fill_samples(tables_buffering, results_buffering)},
+              samples_sorting{fill_samples(tables_sorting, results_sorting)}
+        {
+        }
+    };
 
-struct wf_fixture_with_rec_non_overlapping
-{
-    ll_wf_fixture ll;
-    wf_fixture_with_rec_non_overlapping() : ll({4298764, 100, 3000, 0., 5., 100})
+    struct wf_fixture_no_rec_non_overlapping
     {
-    }
-};
+        ll_wf_fixture ll;
+        wf_fixture_no_rec_non_overlapping() : ll({42, 100, 1000, 0., 0., 100})
+        {
+        }
+    };
+
+    struct wf_fixture_with_rec_non_overlapping
+    {
+        ll_wf_fixture ll;
+        wf_fixture_with_rec_non_overlapping() : ll({4298764, 100, 3000, 0., 5., 100})
+        {
+        }
+    };
+}
 
 BOOST_FIXTURE_TEST_SUITE(no_recombination_non_overlapping,
                          wf_fixture_no_rec_non_overlapping)
