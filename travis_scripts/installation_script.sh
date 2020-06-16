@@ -19,7 +19,7 @@ then
     # Useful for debugging any issues with conda
     conda info -a
     conda install clangxx_osx-64 zlib gsl
-    conda install -c conda-forge boost-cpp==1.73.0
+    conda install -c conda-forge boost-cpp==1.73.0 autoconf automake
     ls -lhrt $HOME/miniconda/lib | grep boost_program
     # conda install -c bioconda libsequence
 else
