@@ -1,4 +1,4 @@
-  fwdpp - A C++ template library for forward-time population genetic simulations
+  [[fwdpp]] - A C++ template library for forward-time population genetic simulations
 
 
 
@@ -41,7 +41,7 @@ There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) f
 
 # Build status
 
-* Status of master branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=master)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/master.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/master)
+* Status of main branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=main)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/main.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/main)
 * Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/dev.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/dev)
 
 # Introduction
@@ -58,7 +58,7 @@ The first two are excellent books for people already familiar with C++ syntax bu
 
 ## A note about which version to use
 
-This code is distributed via my GitHub [account](http://www.github.com/molpopgen).  The "master" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that, while the version number in the configure script on master/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in master/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at master.  Also note that master may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
+This code is distributed via my GitHub [account](http://www.github.com/molpopgen).  The "main" and "dev" branches should be viewed as experimental.  The [releases](https://github.com/molpopgen/fwdpp/releases), however, correspond to tested versions of the library fit for public consumption.  This means that, while the version number in the configure script on main/dev may match that of a recent release, _that does not mean that the features/stability/bugs present in main/dev are identical to those of the release._  If you want to use fwdpp for research, use the latest [release](https://github.com/molpopgen/fwdpp/releases).  If you want to play around with the latest and (occasionally not-so) greatest, look at the dev branch.  If you want to look at the latest I believe to be stable, look at main.  Also note that main may be ahead of dev, etc., depending on what I've committed from my development server to the repo stored at github.
 
 ### Revision history
 
@@ -210,7 +210,7 @@ For OS X users, all of the above dependencies are available via [homebrew](http:
 
 ## Obtaining the source code
 
-### Obtaining the master branch
+### Obtaining the main branch
 You have a few options:
 
 1. Clone the repo (best option): git clone https://github.com/molpopgen/fwdpp.git
