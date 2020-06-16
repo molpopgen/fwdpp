@@ -15,8 +15,8 @@ namespace fwdpp
         /// \headerfile fwdpp/ts/marginal_tree_functions/roots.hpp
         {
           private:
-            TS_NODE_INT current_root;
-            std::vector<TS_NODE_INT>::const_iterator rsib_beg, rsib_end;
+            table_index_t current_root;
+            std::vector<table_index_t>::const_iterator rsib_beg, rsib_end;
 
           public:
             explicit root_iterator(const marginal_tree& m)
@@ -24,7 +24,7 @@ namespace fwdpp
                   rsib_end(end(m.right_sib))
             /// \param m A fwdpp::ts::marginal_tree
             {
-                if (current_root == TS_NULL_NODE)
+                if (current_root == NULL_INDEX)
                     {
                         throw std::invalid_argument("root list is empty");
                     }
@@ -35,13 +35,13 @@ namespace fwdpp
                     }
             }
 
-            inline TS_NODE_INT
+            inline table_index_t
             operator()()
             /// \return The next root notde
-            /// TS_NULL_NODE signals end of iteration
+            /// NULL_INDEX signals end of iteration
             {
-                static_assert(TS_NULL_NODE < 0,
-                        "TS_NULL_NODE < 0 is false, so something needs to change here");
+                static_assert(NULL_INDEX < 0,
+                        "NULL_INDEX < 0 is false, so something needs to change here");
                 auto croot = current_root;
                 if (croot < 0)
                     {
@@ -62,7 +62,7 @@ namespace fwdpp
             /// \return true if there are more roots to iterate over, false otherwise.
             {
                 auto croot = this->operator()();
-                bool rv = (croot != TS_NULL_NODE);
+                bool rv = (croot != NULL_INDEX);
                 if (rv)
                     {
                         f(croot);
@@ -76,7 +76,7 @@ namespace fwdpp
         process_roots(const marginal_tree& m, const F& f)
         /// \brief Apply a function to all roots
         /// \param m A Fwdpp::ts::marginal_tree
-        /// \param f A function equivalent to void(*process_root)(TS_NODE_INT)
+        /// \param f A function equivalent to void(*process_root)(table_index_t)
         {
             root_iterator ri(m);
             while (ri(f))
@@ -84,13 +84,13 @@ namespace fwdpp
                 }
         }
 
-        inline std::vector<TS_NODE_INT>
+        inline std::vector<table_index_t>
         get_roots(const marginal_tree& m)
         /// \brief Get a vector of all roots
         /// \param m A Fwdpp::ts::marginal_tree
         {
-            std::vector<TS_NODE_INT> rv;
-            process_roots(m, [&rv](const TS_NODE_INT r) { rv.push_back(r); });
+            std::vector<table_index_t> rv;
+            process_roots(m, [&rv](const table_index_t r) { rv.push_back(r); });
             return rv;
         }
 
@@ -100,7 +100,7 @@ namespace fwdpp
         /// \param m A Fwdpp::ts::marginal_tree
         {
             int nroots = 0;
-            process_roots(m, [&nroots](const TS_NODE_INT /*r*/) { ++nroots; });
+            process_roots(m, [&nroots](const table_index_t /*r*/) { ++nroots; });
             return nroots;
         }
 

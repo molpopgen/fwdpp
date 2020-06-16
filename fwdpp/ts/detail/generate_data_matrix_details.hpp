@@ -45,7 +45,7 @@ namespace fwdpp
                                     {
                                         const auto f
                                             = [mut, &nsamples, &genotypes](
-                                                  fwdpp::ts::TS_NODE_INT u) {
+                                                  fwdpp::ts::table_index_t u) {
                                                   ++nsamples;
                                                   genotypes[u]
                                                       = mut->derived_state;

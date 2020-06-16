@@ -20,8 +20,8 @@ namespace fwdpp
                 = default;
             node_traversal_order& operator=(node_traversal_order&&) = default;
 
-            virtual TS_NODE_INT operator()(const marginal_tree&) = 0;
-            virtual void initialize(TS_NODE_INT /*root*/) = 0;
+            virtual table_index_t operator()(const marginal_tree&) = 0;
+            virtual void initialize(table_index_t /*root*/) = 0;
         };
     } // namespace ts
 } // namespace fwdpp

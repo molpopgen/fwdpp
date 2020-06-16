@@ -79,7 +79,7 @@ namespace fwdpp
                 operator()(istreamtype& o) const
                 {
                     fwdpp::io::scalar_reader sr;
-                    TS_NODE_INT deme;
+                    table_index_t deme;
                     double time;
                     sr(o, &deme);
                     sr(o, &time);
@@ -129,7 +129,7 @@ namespace fwdpp
                 {
                     fwdpp::io::scalar_reader sr;
                     double left, right;
-                    TS_NODE_INT parent, child;
+                    table_index_t parent, child;
                     sr(i, &left);
                     sr(i, &right);
                     sr(i, &parent);
@@ -181,7 +181,7 @@ namespace fwdpp
                 operator()(istreamtype& i) const
                 {
                     fwdpp::io::scalar_reader sr;
-                    TS_NODE_INT node;
+                    table_index_t node;
                     decltype(mutation_record::key) key;
                     sr(i, &node);
                     sr(i, &key);

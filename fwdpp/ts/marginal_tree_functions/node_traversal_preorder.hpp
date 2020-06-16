@@ -17,19 +17,19 @@ namespace fwdpp
         {
           private:
             using node_stack
-                = std::stack<TS_NODE_INT, std::vector<TS_NODE_INT>>;
+                = std::stack<table_index_t, std::vector<table_index_t>>;
             node_stack nstack;
-            TS_NODE_INT current_node;
+            table_index_t current_node;
 
           public:
-            explicit node_traversal_preorder(TS_NODE_INT u)
+            explicit node_traversal_preorder(table_index_t u)
                 : node_traversal_order(), nstack{ { u } }, current_node{
-                      TS_NULL_NODE
+                      NULL_INDEX
                   }
             {
             }
 
-            TS_NODE_INT
+            table_index_t
             operator()(const marginal_tree& m) final
             {
                 if (!nstack.empty())
@@ -40,15 +40,15 @@ namespace fwdpp
                             {
                                 process_children(
                                     m, current_node, false,
-                                    [this](TS_NODE_INT x) { nstack.push(x); });
+                                    [this](table_index_t x) { nstack.push(x); });
                             }
                         return current_node;
                     }
-                return TS_NULL_NODE;
+                return NULL_INDEX;
             }
 
             void
-            initialize(TS_NODE_INT root) final
+            initialize(table_index_t root) final
             {
                 nstack.push(root);
             }
@@ -60,7 +60,7 @@ namespace fwdpp
         };
 
         inline std::unique_ptr<node_traversal_order>
-        node_traversal_dispatch(TS_NODE_INT root, nodes_preorder)
+        node_traversal_dispatch(table_index_t root, nodes_preorder)
         /// Handles dependency injection of node_traversal_preorder into node_iterator
         {
             return std::unique_ptr<node_traversal_order>(

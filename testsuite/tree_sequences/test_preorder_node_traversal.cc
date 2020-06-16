@@ -19,15 +19,15 @@ BOOST_AUTO_TEST_CASE(test_construction)
 BOOST_AUTO_TEST_CASE(test_complete_traversal)
 {
     fwdpp::ts::node_iterator ni(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> nodes;
+    std::vector<fwdpp::ts::table_index_t> nodes;
     auto n = ni();
-    while (n != fwdpp::ts::TS_NULL_NODE)
+    while (n != fwdpp::ts::NULL_INDEX)
         {
             nodes.push_back(n);
             n = ni();
         }
     BOOST_REQUIRE_EQUAL(
-        nodes == std::vector<fwdpp::ts::TS_NODE_INT>({ 6, 4, 0, 1, 5, 2, 3 }),
+        nodes == std::vector<fwdpp::ts::table_index_t>({ 6, 4, 0, 1, 5, 2, 3 }),
         true);
     auto nodes_from_fxn
         = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_complete_traversal)
 BOOST_AUTO_TEST_CASE(test_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 5, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{ 5, 2, 3 };
+    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 5, 2, 3 };
     BOOST_REQUIRE_EQUAL(n.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(test_subtree_traversal_after_decapitation)
     fwdpp::ts::decapitate(tables, 1., false);
     reset_visitor(false);
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes = { 4, 0, 1, 2, 3 };
+    std::vector<fwdpp::ts::table_index_t> expected_nodes = { 4, 0, 1, 2, 3 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(nodes.size() == expected_nodes.size(), true);
 }
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_complete_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
     BOOST_REQUIRE_EQUAL(n.size(), tables.num_nodes());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{
+    std::vector<fwdpp::ts::table_index_t> expected_nodes{
         7, 5, 0, 1, 2, 6, 3, 4
     };
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
@@ -76,14 +76,14 @@ BOOST_AUTO_TEST_CASE(test_complete_traversal)
 BOOST_AUTO_TEST_CASE(test_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 5, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{ 5, 0, 1, 2 };
+    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 5, 0, 1, 2 };
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
 BOOST_AUTO_TEST_CASE(test_other_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 6, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes{ 6, 3, 4 };
+    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 6, 3, 4 };
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(test_subtree_traversal_after_decaptitation)
     fwdpp::ts::decapitate(tables, 0., false);
     reset_visitor(false);
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::TS_NODE_INT> expected_nodes
+    std::vector<fwdpp::ts::table_index_t> expected_nodes
         = { 5, 0, 1, 2, 6, 3, 4 };
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(nodes.size() == expected_nodes.size(), true);

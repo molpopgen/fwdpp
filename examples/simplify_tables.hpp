@@ -12,12 +12,12 @@
 #include "confirm_mutation_counts.hpp"
 
 template <typename Simplifier, typename poptype>
-std::pair<std::vector<fwdpp::ts::TS_NODE_INT>, std::vector<std::size_t>>
+std::pair<std::vector<fwdpp::ts::table_index_t>, std::vector<std::size_t>>
 simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
                 fwdpp::ts::std_table_collection &tables,
                 Simplifier &simplifier,
-                const fwdpp::ts::TS_NODE_INT first_sample_node,
+                const fwdpp::ts::table_index_t first_sample_node,
                 const std::size_t num_samples,
                 const bool preserve_fixations = false)
 {

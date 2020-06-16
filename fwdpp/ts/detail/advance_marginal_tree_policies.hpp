@@ -24,7 +24,7 @@ namespace fwdpp
                 {
                     return;
                 }
-                while (p != TS_NULL_NODE)
+                while (p != NULL_INDEX)
                     {
                         marginal.leaf_counts[p] -= lc;
                         marginal.preserved_leaf_counts[p] -= plc;
@@ -46,7 +46,7 @@ namespace fwdpp
                 {
                     return;
                 }
-                while (p != TS_NULL_NODE)
+                while (p != NULL_INDEX)
                     {
                         marginal.leaf_counts[p] += lc;
                         marginal.preserved_leaf_counts[p] += plc;
@@ -66,25 +66,25 @@ namespace fwdpp
                 auto& right = marginal.right_sample;
                 auto& left = marginal.left_sample;
                 auto& next = marginal.next_sample;
-                for (auto n = node; n != TS_NULL_NODE; n = parents[n])
+                for (auto n = node; n != NULL_INDEX; n = parents[n])
                     {
                         auto sample_index = sample_map[n];
-                        if (sample_index != TS_NULL_NODE)
+                        if (sample_index != NULL_INDEX)
                             {
                                 right[n] = left[n];
                             }
                         else
                             {
-                                left[n] = TS_NULL_NODE;
-                                right[n] = TS_NULL_NODE;
+                                left[n] = NULL_INDEX;
+                                right[n] = NULL_INDEX;
                             }
-                        for (auto v = left_child[n]; v != TS_NULL_NODE;
+                        for (auto v = left_child[n]; v != NULL_INDEX;
                              v = right_sib[v])
                             {
-                                if (left[v] != TS_NULL_NODE)
+                                if (left[v] != NULL_INDEX)
                                     {
-                                        assert(right[v] != TS_NULL_NODE);
-                                        if (left[n] == TS_NULL_NODE)
+                                        assert(right[v] != NULL_INDEX);
+                                        if (left[n] == NULL_INDEX)
                                             {
                                                 left[n] = left[v];
                                                 right[n] = right[v];

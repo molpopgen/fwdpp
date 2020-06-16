@@ -38,10 +38,10 @@ BOOST_FIXTURE_TEST_CASE(test_process_samples_as_nodes, simple_table_collection)
 {
     samples = { 1, 2 };
     reset_visitor(true);
-    std::vector<fwdpp::ts::TS_NODE_INT> s;
+    std::vector<fwdpp::ts::table_index_t> s;
     fwdpp::ts::process_samples(
         tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(true), 6,
-        [&s](fwdpp::ts::TS_NODE_INT u) { s.push_back(u); });
+        [&s](fwdpp::ts::table_index_t u) { s.push_back(u); });
     BOOST_REQUIRE(s == samples);
 }
 
@@ -50,10 +50,10 @@ BOOST_FIXTURE_TEST_CASE(test_process_samples_as_indexes,
 {
     samples = { 1, 2 };
     reset_visitor(true);
-    std::vector<fwdpp::ts::TS_NODE_INT> s;
+    std::vector<fwdpp::ts::table_index_t> s;
     fwdpp::ts::process_samples(
         tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(false), 6,
-        [&s](fwdpp::ts::TS_NODE_INT u) { s.push_back(u); });
+        [&s](fwdpp::ts::table_index_t u) { s.push_back(u); });
     for (auto& i : samples)
         {
             i -= 1;

@@ -21,7 +21,7 @@ apply_neutral_mutations_details(const options &o, const GSLrng &rng,
                                 fwdpp::ts::std_table_collection &tables, poptype &pop,
                                 fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
-    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
+    std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
 
     std::iota(s.begin(), s.end(), 0);
     const auto neutral_variant_maker = [&rng, &pop, &mutation_recycling_bin](
@@ -158,7 +158,7 @@ make_dfe(const fwdpp::uint_t N, const GSLrng &r, const double mean, const double
 
 void
 matrix_runtime_test(const fwdpp::ts::std_table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples,
+                    const std::vector<fwdpp::ts::table_index_t> &samples,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
     auto dm = fwdpp::ts::generate_data_matrix(tables, samples, true, true, false);
@@ -181,7 +181,7 @@ matrix_runtime_test(const fwdpp::ts::std_table_collection &tables,
 
 void
 expensive_leaf_test(const fwdpp::ts::std_table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &sample_list)
+                    const std::vector<fwdpp::ts::table_index_t> &sample_list)
 {
     fwdpp::ts::tree_visitor mti(tables, sample_list,
                                 fwdpp::ts::update_samples_list(true));
@@ -273,7 +273,7 @@ test_serialization(const fwdpp::ts::std_table_collection &tables,
 void
 execute_expensive_leaf_test(const options &o,
                             const fwdpp::ts::std_table_collection &tables,
-                            const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+                            const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (o.leaf_test)
         {
@@ -290,7 +290,7 @@ template <typename poptype>
 void
 execute_matrix_test_detail(const options &o, const poptype &pop,
                            const fwdpp::ts::std_table_collection &tables,
-                           const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+                           const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (o.matrix_test)
         {
@@ -346,7 +346,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                     std::copy_if(
                         tables.preserved_nodes.begin(), tables.preserved_nodes.end(),
                         std::back_inserter(sc),
-                        [&tables](const fwdpp::ts::TS_NODE_INT n) {
+                        [&tables](const fwdpp::ts::table_index_t n) {
                             return tables.nodes[n].time
                                    == tables.nodes[tables.preserved_nodes.back()].time;
                         });
@@ -361,7 +361,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
 void
 visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::std_table_collection &tables,
-                 const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+                 const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (o.visit_sites_test)
         {
@@ -393,7 +393,7 @@ visit_sites_test(const options &o, const ts_examples_poptype &pop,
 void
 execute_matrix_test(const options &o, const ts_examples_poptype &pop,
                     const fwdpp::ts::std_table_collection &tables,
-                    const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+                    const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     execute_matrix_test_detail(o, pop, tables, samples);
 }
@@ -411,7 +411,7 @@ execute_serialization_test(const options &o,
 void
 write_sfs(const options &o, const GSLrng &rng,
           const fwdpp::ts::std_table_collection &tables,
-          const std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+          const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (!o.sfsfilename.empty())
         {
@@ -422,10 +422,10 @@ write_sfs(const options &o, const GSLrng &rng,
                         "> 2");
                 }
             // Simplify w.r.to 100 samples
-            std::vector<fwdpp::ts::TS_NODE_INT> small_sample(o.nsam);
+            std::vector<fwdpp::ts::table_index_t> small_sample(o.nsam);
             auto s(samples);
             gsl_ran_choose(rng.get(), small_sample.data(), small_sample.size(), s.data(),
-                           s.size(), sizeof(fwdpp::ts::TS_NODE_INT));
+                           s.size(), sizeof(fwdpp::ts::table_index_t));
             std::iota(small_sample.begin(), small_sample.end(), 0);
             auto dm = fwdpp::ts::generate_data_matrix(tables, small_sample, true, false,
                                                       true);

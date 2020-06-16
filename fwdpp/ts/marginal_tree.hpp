@@ -22,10 +22,10 @@ namespace fwdpp
         /// sample nodes as beloning to different "groups".
         {
             /// fwdpp::ts::node id
-            TS_NODE_INT node_id;
+            table_index_t node_id;
             /// group label
             std::int32_t group;
-            sample_group_map(TS_NODE_INT n, std::int32_t g)
+            sample_group_map(table_index_t n, std::int32_t g)
                 : node_id(n), group(g)
             /// \param n A node id
             /// \param g A gropup label
@@ -53,11 +53,11 @@ namespace fwdpp
           private:
             std::size_t num_nodes;
             std::vector<std::int32_t> sample_groups;
-            std::vector<TS_NODE_INT> samples_list;
+            std::vector<table_index_t> samples_list;
             bool advancing_sample_list_;
 
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<TS_NODE_INT>& samples)
+            fill_sample_groups(const std::vector<table_index_t>& samples)
             {
                 std::vector<std::int32_t> rv(
                     num_nodes, std::numeric_limits<std::int32_t>::min());
@@ -81,8 +81,8 @@ namespace fwdpp
             }
 
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<TS_NODE_INT>& samples_a,
-                               const std::vector<TS_NODE_INT>& samples_b)
+            fill_sample_groups(const std::vector<table_index_t>& samples_a,
+                               const std::vector<table_index_t>& samples_b)
             {
                 std::vector<std::int32_t> rv(
                     num_nodes, std::numeric_limits<std::int32_t>::min());
@@ -99,7 +99,7 @@ namespace fwdpp
 
             std::vector<std::int32_t>
             fill_sample_groups(const std::vector<sample_group_map>& samples_a,
-                               const std::vector<TS_NODE_INT>& samples_b)
+                               const std::vector<table_index_t>& samples_b)
             {
                 std::vector<std::int32_t> rv(
                     num_nodes, std::numeric_limits<std::int32_t>::min());
@@ -114,16 +114,16 @@ namespace fwdpp
                 return rv;
             }
 
-            std::vector<TS_NODE_INT>
-            init_samples_list(const std::vector<TS_NODE_INT>& s)
+            std::vector<table_index_t>
+            init_samples_list(const std::vector<table_index_t>& s)
             {
                 return s;
             }
 
-            std::vector<TS_NODE_INT>
+            std::vector<table_index_t>
             init_samples_list(const std::vector<sample_group_map>& s)
             {
-                std::vector<TS_NODE_INT> rv;
+                std::vector<table_index_t> rv;
                 for (auto& i : s)
                     {
                         rv.push_back(i.node_id);
@@ -131,18 +131,18 @@ namespace fwdpp
                 return rv;
             }
 
-            std::vector<TS_NODE_INT>
-            init_samples_list(const std::vector<TS_NODE_INT>& a,
-                              const std::vector<TS_NODE_INT>& b)
+            std::vector<table_index_t>
+            init_samples_list(const std::vector<table_index_t>& a,
+                              const std::vector<table_index_t>& b)
             {
                 auto rv = a;
                 rv.insert(end(rv), begin(b), end(b));
                 return rv;
             }
 
-            std::vector<TS_NODE_INT>
+            std::vector<table_index_t>
             init_samples_list(const std::vector<sample_group_map>& a,
-                              const std::vector<TS_NODE_INT>& b)
+                              const std::vector<table_index_t>& b)
             {
                 auto rv = init_samples_list(a);
                 rv.insert(end(rv), begin(b), end(b));
@@ -156,7 +156,7 @@ namespace fwdpp
                     {
                         auto s = samples_list[i];
                         // See GitHub issue #158 for background
-                        if (sample_index_map[s] != TS_NULL_NODE)
+                        if (sample_index_map[s] != NULL_INDEX)
                             {
                                 throw samples_error(
                                     "invalid sample list");
@@ -177,39 +177,39 @@ namespace fwdpp
             }
 
           public:
-            std::vector<TS_NODE_INT> parents, leaf_counts,
+            std::vector<table_index_t> parents, leaf_counts,
                 preserved_leaf_counts, left_sib, right_sib, left_child,
                 right_child, left_sample, right_sample, next_sample,
                 sample_index_map;
             std::vector<std::int8_t> above_sample;
             double left, right;
-            TS_NODE_INT left_root;
+            table_index_t left_root;
 
             template <typename SAMPLES>
-            marginal_tree(TS_NODE_INT nnodes, const SAMPLES& samples,
+            marginal_tree(table_index_t nnodes, const SAMPLES& samples,
                           bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples)),
                   samples_list(init_samples_list(samples)),
                   advancing_sample_list_(advancing_sample_list),
-                  parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
+                  parents(nnodes, NULL_INDEX), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
-                  left_sib(nnodes, TS_NULL_NODE),
-                  right_sib(nnodes, TS_NULL_NODE),
-                  left_child(nnodes, TS_NULL_NODE),
-                  right_child(nnodes, TS_NULL_NODE),
-                  left_sample(nnodes, TS_NULL_NODE),
-                  right_sample(nnodes, TS_NULL_NODE),
-                  next_sample(nnodes, TS_NULL_NODE),
-                  sample_index_map(nnodes, TS_NULL_NODE),
+                  left_sib(nnodes, NULL_INDEX),
+                  right_sib(nnodes, NULL_INDEX),
+                  left_child(nnodes, NULL_INDEX),
+                  right_child(nnodes, NULL_INDEX),
+                  left_sample(nnodes, NULL_INDEX),
+                  right_sample(nnodes, NULL_INDEX),
+                  next_sample(nnodes, NULL_INDEX),
+                  sample_index_map(nnodes, NULL_INDEX),
                   above_sample(nnodes, 0),
                   left{ std::numeric_limits<double>::quiet_NaN() },
                   right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(TS_NULL_NODE)
+                  left_root(NULL_INDEX)
             /// \param nnodes Number of nodes in table_collection
             /// \param samples The sample list
             ///
-            /// \a samples may be either std::vector<TS_NODE_INT> or
+            /// \a samples may be either std::vector<table_index_t> or
             /// std::vector<fwdpp::ts::sample_group_map>.  For the former, all
             /// sample nodes will be assigned group 0.
             {
@@ -227,27 +227,27 @@ namespace fwdpp
             }
 
             template <typename SAMPLES>
-            marginal_tree(TS_NODE_INT nnodes, const SAMPLES& samples,
-                          const std::vector<TS_NODE_INT> preserved_nodes,
+            marginal_tree(table_index_t nnodes, const SAMPLES& samples,
+                          const std::vector<table_index_t> preserved_nodes,
                           bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples, preserved_nodes)),
                   samples_list(init_samples_list(samples, preserved_nodes)),
                   advancing_sample_list_(advancing_sample_list),
-                  parents(nnodes, TS_NULL_NODE), leaf_counts(nnodes, 0),
+                  parents(nnodes, NULL_INDEX), leaf_counts(nnodes, 0),
                   preserved_leaf_counts(nnodes, 0),
-                  left_sib(nnodes, TS_NULL_NODE),
-                  right_sib(nnodes, TS_NULL_NODE),
-                  left_child(nnodes, TS_NULL_NODE),
-                  right_child(nnodes, TS_NULL_NODE),
-                  left_sample(nnodes, TS_NULL_NODE),
-                  right_sample(nnodes, TS_NULL_NODE),
-                  next_sample(nnodes, TS_NULL_NODE),
-                  sample_index_map(nnodes, TS_NULL_NODE),
+                  left_sib(nnodes, NULL_INDEX),
+                  right_sib(nnodes, NULL_INDEX),
+                  left_child(nnodes, NULL_INDEX),
+                  right_child(nnodes, NULL_INDEX),
+                  left_sample(nnodes, NULL_INDEX),
+                  right_sample(nnodes, NULL_INDEX),
+                  next_sample(nnodes, NULL_INDEX),
+                  sample_index_map(nnodes, NULL_INDEX),
                   above_sample(nnodes, 0),
                   left{ std::numeric_limits<double>::quiet_NaN() },
                   right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(TS_NULL_NODE)
+                  left_root(NULL_INDEX)
             /// Constructor
             {
                 if (samples_list.empty())
@@ -267,22 +267,22 @@ namespace fwdpp
                     }
             }
 
-            marginal_tree(TS_NODE_INT nnodes)
+            marginal_tree(table_index_t nnodes)
                 : num_nodes(nnodes), sample_groups{}, samples_list{},
-                  advancing_sample_list_(false), parents(nnodes, TS_NULL_NODE),
+                  advancing_sample_list_(false), parents(nnodes, NULL_INDEX),
                   leaf_counts{}, preserved_leaf_counts{},
-                  left_sib(nnodes, TS_NULL_NODE),
-                  right_sib(nnodes, TS_NULL_NODE),
-                  left_child(nnodes, TS_NULL_NODE),
-                  right_child(nnodes, TS_NULL_NODE),
-                  left_sample(nnodes, TS_NULL_NODE),
-                  right_sample(nnodes, TS_NULL_NODE),
-                  next_sample(nnodes, TS_NULL_NODE),
-                  sample_index_map(nnodes, TS_NULL_NODE),
+                  left_sib(nnodes, NULL_INDEX),
+                  right_sib(nnodes, NULL_INDEX),
+                  left_child(nnodes, NULL_INDEX),
+                  right_child(nnodes, NULL_INDEX),
+                  left_sample(nnodes, NULL_INDEX),
+                  right_sample(nnodes, NULL_INDEX),
+                  next_sample(nnodes, NULL_INDEX),
+                  sample_index_map(nnodes, NULL_INDEX),
                   above_sample(nnodes, 0),
                   left{ std::numeric_limits<double>::quiet_NaN() },
                   right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(TS_NULL_NODE)
+                  left_root(NULL_INDEX)
             /// Constructor
             /// \todo Document
             {
@@ -292,13 +292,13 @@ namespace fwdpp
             num_roots() const
             /// Return number of roots
             {
-                if (left_root == TS_NULL_NODE)
+                if (left_root == NULL_INDEX)
                     {
                         throw std::runtime_error("left_root is NULL");
                     }
                 int nroots = 0;
                 auto lr = left_root;
-                while (lr != TS_NULL_NODE)
+                while (lr != NULL_INDEX)
                     {
                         ++nroots;
                         lr = right_sib[lr];
@@ -313,14 +313,14 @@ namespace fwdpp
                 return samples_list.size();
             }
 
-            inline std::vector<TS_NODE_INT>::const_iterator
+            inline std::vector<table_index_t>::const_iterator
             samples_list_begin() const
             /// Beginning of samples list
             {
                 return begin(samples_list);
             }
 
-            inline std::vector<TS_NODE_INT>::const_iterator
+            inline std::vector<table_index_t>::const_iterator
             samples_list_end() const
             /// End itertor for samples list
             {
@@ -328,7 +328,7 @@ namespace fwdpp
             }
 
             inline std::int32_t
-            sample_group(TS_NODE_INT u) const
+            sample_group(table_index_t u) const
             /// Return the sample group for node \u
             {
                 if (static_cast<std::size_t>(u) >= num_nodes)
@@ -351,8 +351,8 @@ namespace fwdpp
                 return num_nodes;
             }
 
-            inline TS_NODE_INT
-            sample_index_to_node(TS_NODE_INT u) const
+            inline table_index_t
+            sample_table_index_to_node(table_index_t u) const
             /// If u is a sample index, return the associated
             /// node id.
             {

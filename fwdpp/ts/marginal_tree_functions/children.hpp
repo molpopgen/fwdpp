@@ -13,13 +13,13 @@ namespace fwdpp
         {
           private:
             bool left_to_right;
-            TS_NODE_INT current_child;
-            std::vector<TS_NODE_INT>::const_iterator sib_begin, sib_end;
+            table_index_t current_child;
+            std::vector<table_index_t>::const_iterator sib_begin, sib_end;
 
-            inline TS_NODE_INT
-            init_current_child(const marginal_tree& m, TS_NODE_INT n)
+            inline table_index_t
+            init_current_child(const marginal_tree& m, table_index_t n)
             {
-                if (n == TS_NULL_NODE)
+                if (n == NULL_INDEX)
                     {
                         throw std::invalid_argument("node is NULL");
                     }
@@ -35,7 +35,7 @@ namespace fwdpp
             }
 
           public:
-            child_iterator(const marginal_tree& m, TS_NODE_INT n,
+            child_iterator(const marginal_tree& m, table_index_t n,
                            bool left_to_right_traversal)
                 : left_to_right(left_to_right_traversal),
                   current_child(init_current_child(m, n)),
@@ -48,14 +48,14 @@ namespace fwdpp
             {
             }
 
-            inline TS_NODE_INT
+            inline table_index_t
             operator()()
             /// Advance to the next child.
 			///
-            /// Returns fwdpp::ts::TS_NULL_NODE when no more children remain.
+            /// Returns fwdpp::ts::NULL_INDEX when no more children remain.
             {
-                static_assert(TS_NULL_NODE < 0,
-                        "TS_NULL_NODE < 0 is false, so something needs to change here");
+                static_assert(NULL_INDEX < 0,
+                        "NULL_INDEX < 0 is false, so something needs to change here");
                 auto c = current_child;
                 if (c < 0)
                     {
@@ -73,12 +73,12 @@ namespace fwdpp
             inline bool
             operator()(const F& f)
             /// Apply a function to each child
-            /// \param f A function equivalent to void (*process_child)(TS_NODE_INT)
+            /// \param f A function equivalent to void (*process_child)(table_index_t)
 			/// 
             /// Returns false to signify end of iteration.
             {
                 auto c = this->operator()();
-                bool rv = (c != TS_NULL_NODE);
+                bool rv = (c != NULL_INDEX);
                 if (rv)
                     {
                         f(c);
@@ -89,13 +89,13 @@ namespace fwdpp
 
         template <typename F>
         inline void
-        process_children(const marginal_tree& m, TS_NODE_INT n,
+        process_children(const marginal_tree& m, table_index_t n,
                          bool left_to_right_traversal, const F& f)
 		/// \brief Apply a function to children of node \a n
 		/// \param m A fwdpp::ts::marginal_tree
 		/// \param n Index a fwdpp::ts::node
 		/// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
-		/// \param f A function equivalent to void (*process_child)(TS_NODE_INT)
+		/// \param f A function equivalent to void (*process_child)(table_index_t)
         {
             child_iterator ci(m, n, left_to_right_traversal);
             while (ci(f))
@@ -103,23 +103,23 @@ namespace fwdpp
                 }
         }
 
-        inline std::vector<TS_NODE_INT>
-        get_children(const marginal_tree& m, TS_NODE_INT n,
+        inline std::vector<table_index_t>
+        get_children(const marginal_tree& m, table_index_t n,
                      bool left_to_right_traversal)
 		/// \brief Get all children of a node
 		/// \param m A fwdpp::ts::marginal_tree
 		/// \param n Index a fwdpp::ts::node
 		/// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
-		/// \return std::vector<fwdpp::ts::TS_NODE_INT>
+		/// \return std::vector<fwdpp::ts::table_index_t>
         {
-            std::vector<TS_NODE_INT> rv;
+            std::vector<table_index_t> rv;
             process_children(m, n, left_to_right_traversal,
-                             [&rv](const TS_NODE_INT c) { rv.push_back(c); });
+                             [&rv](const table_index_t c) { rv.push_back(c); });
             return rv;
         }
 
         inline int
-        num_children(const marginal_tree& m, TS_NODE_INT n)
+        num_children(const marginal_tree& m, table_index_t n)
 		/// \brief Return number of children of a node
 		/// \param m A fwdpp::ts::marginal_tree
 		/// \param n Index a fwdpp::ts::node
@@ -127,7 +127,7 @@ namespace fwdpp
         {
             int nc = 0;
             process_children(m, n, true,
-                             [&nc](const TS_NODE_INT /*c*/) { ++nc; });
+                             [&nc](const table_index_t /*c*/) { ++nc; });
             return nc;
         }
     } // namespace ts

@@ -105,7 +105,7 @@ main(int argc, char **argv)
     };
 
     // Evolve pop for 20N generations
-    fwdpp::ts::TS_NODE_INT first_parental_index = 0,
+    fwdpp::ts::table_index_t first_parental_index = 0,
                            next_index = 2 * pop.diploids.size();
     bool simplified = false;
     std::vector<std::size_t> individual_labels(o.N);
@@ -318,7 +318,7 @@ main(int argc, char **argv)
         }
     assert(tables.input_left.size() == tables.edges.size());
     assert(tables.output_right.size() == tables.edges.size());
-    std::vector<fwdpp::ts::TS_NODE_INT> s(2 * o.N);
+    std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
 
     auto neutral_muts = apply_neutral_mutations(

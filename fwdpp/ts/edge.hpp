@@ -21,7 +21,7 @@ namespace fwdpp
         ///  \version 0.7.0 Added to fwdpp
         {
             double left, right;
-            TS_NODE_INT parent, child;
+            table_index_t parent, child;
         };
         inline bool
         operator==(const edge& a, const edge& b)

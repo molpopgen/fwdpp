@@ -21,8 +21,8 @@ namespace fwdpp
                 }
             double ttime = 0.;
             process_nodes(
-                m, nodes_preorder(), [&ttime, &m, &nodes](TS_NODE_INT u) {
-                    if (m.parents[u] != TS_NULL_NODE)
+                m, nodes_preorder(), [&ttime, &m, &nodes](table_index_t u) {
+                    if (m.parents[u] != NULL_INDEX)
                         {
                             ttime
                                 += (nodes[u].time - nodes[m.parents[u]].time);

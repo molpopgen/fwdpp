@@ -23,7 +23,7 @@ namespace fwdpp
         {
           private:
             const marginal_tree &t;
-            TS_NODE_INT current_sample, right_sample;
+            table_index_t current_sample, right_sample;
             bool convert_to_nodes;
 
             inline const marginal_tree &
@@ -37,8 +37,8 @@ namespace fwdpp
                 return m;
             }
 
-            inline TS_NODE_INT
-            init_left_sample(TS_NODE_INT u)
+            inline table_index_t
+            init_left_sample(table_index_t u)
             {
                 if (static_cast<std::size_t>(u) >= t.size())
                     {
@@ -47,8 +47,8 @@ namespace fwdpp
                 return t.left_sample[u];
             }
 
-            inline TS_NODE_INT
-            init_right_sample(TS_NODE_INT u)
+            inline table_index_t
+            init_right_sample(table_index_t u)
             {
                 if (static_cast<std::size_t>(u) >= t.size())
                     {
@@ -58,7 +58,7 @@ namespace fwdpp
             }
 
           public:
-            samples_iterator(const marginal_tree &m, TS_NODE_INT u,
+            samples_iterator(const marginal_tree &m, table_index_t u,
                              convert_sample_index_to_nodes convert)
                 : t(init_marginal(m)), current_sample{ init_left_sample(u) },
                   right_sample(init_right_sample(u)),
@@ -68,13 +68,13 @@ namespace fwdpp
             {
             }
 
-            inline TS_NODE_INT
+            inline table_index_t
             operator()()
             /// Advance to the next sample
             ///
-            /// Returns fwdpp::ts::TS_NULL_NODE when no more samples remain.
+            /// Returns fwdpp::ts::NULL_INDEX when no more samples remain.
             {
-                if (current_sample == TS_NULL_NODE)
+                if (current_sample == NULL_INDEX)
                     {
                         //end of iteration
                         return current_sample;
@@ -84,25 +84,25 @@ namespace fwdpp
                     {
                         // We are at the end of the samples list for this node,
                         // so we ensure that iteration will end
-                        current_sample = TS_NULL_NODE;
+                        current_sample = NULL_INDEX;
                     }
                 else
                     {
                         current_sample = t.next_sample[current_sample];
                     }
-                return (convert_to_nodes) ? t.sample_index_to_node(c) : c;
+                return (convert_to_nodes) ? t.sample_table_index_to_node(c) : c;
             }
 
             template <typename F>
             inline bool
             operator()(const F &f)
             /// Apply a function to each sample
-            /// \param f A function equivalent to void (*process_sample)(TS_NODE_INT)
+            /// \param f A function equivalent to void (*process_sample)(table_index_t)
             ///
             /// Returns false to signify end of iteration.
             {
                 auto s = this->operator()();
-                bool rv = (s != TS_NULL_NODE);
+                bool rv = (s != NULL_INDEX);
                 if (rv)
                     {
                         f(s);
@@ -114,13 +114,13 @@ namespace fwdpp
         template <typename F>
         inline void
         process_samples(const marginal_tree &m,
-                        convert_sample_index_to_nodes convert, TS_NODE_INT u,
+                        convert_sample_index_to_nodes convert, table_index_t u,
                         const F &f)
         /// \brief Apply a function to the nodes descending from \a u
         /// \param m A fwdpp::ts::marginal_tree
         /// \param convert whether to iterate over sample nodes or sample list indexes
         /// \param u Index a fwdpp::ts::node
-        /// \param f A function equivalent to void (*foo)(TS_NODE_INT)
+        /// \param f A function equivalent to void (*foo)(table_index_t)
         {
             samples_iterator si(m, u, convert);
             while (si(f))
@@ -128,24 +128,24 @@ namespace fwdpp
                 }
         }
 
-        inline std::vector<TS_NODE_INT>
-        get_samples(const marginal_tree &m, TS_NODE_INT u)
+        inline std::vector<table_index_t>
+        get_samples(const marginal_tree &m, table_index_t u)
         /// Return a vector of samples descending from node \a u in marginal_tree \a m.
         /// The return value contains node ids (as opposed to sample indexes)
         {
-            std::vector<TS_NODE_INT> rv;
+            std::vector<table_index_t> rv;
             process_samples(m, convert_sample_index_to_nodes(true), u,
-                            [&rv](TS_NODE_INT x) { rv.push_back(x); });
+                            [&rv](table_index_t x) { rv.push_back(x); });
             return rv;
         }
 
         inline int
-        num_samples(const marginal_tree &m, TS_NODE_INT u)
+        num_samples(const marginal_tree &m, table_index_t u)
         /// Return the number of samples descending from node \a u in marginal_tree \a m.
         {
             int nsamples = 0;
             process_samples(m, convert_sample_index_to_nodes(false), u,
-                            [&nsamples](TS_NODE_INT /*x*/) { ++nsamples; });
+                            [&nsamples](table_index_t /*x*/) { ++nsamples; });
             return nsamples;
         }
     } // namespace ts
