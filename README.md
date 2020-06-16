@@ -263,20 +263,21 @@ fi
 ### The case of a standard system with all dependencies installed in standard locations
 
 If you cloned the git repo:
+
 ~~~
 cd fwdpp
 git submodule update --init --recursive
+autoreconf --install
+./configure
+make
+make install
 ~~~
+
 If you downloaded a release:
 
 ~~~
 tar xzf fwdpp-version.tar.gz
 cd fwdpp-version
-~~~
-
-Then:
-
-~~~
 ./configure
 make
 make install

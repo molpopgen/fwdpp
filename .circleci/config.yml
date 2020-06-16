@@ -30,6 +30,7 @@ jobs:
       - run:
           name: Compile package
           command: |
+              autoreconf --install
               ./configure
               make -j 2
 
