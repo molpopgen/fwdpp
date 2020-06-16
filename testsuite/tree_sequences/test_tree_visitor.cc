@@ -52,7 +52,7 @@ namespace
 
     bool
     validate_sample_group_counts(const std::vector<fwdpp::ts::sample_group_map>& samples,
-                           int group, int observed_number)
+                                 int group, int observed_number)
     {
         int expected_number = 0;
         for (auto& s : samples)
@@ -64,23 +64,24 @@ namespace
             }
         return expected_number == observed_number;
     }
+
+    struct wf_fixture_no_rec_non_overlapping
+    {
+        ll_wf_fixture ll;
+        wf_fixture_no_rec_non_overlapping() : ll({42, 100, 1000, 0., 0., 100})
+        {
+        }
+    };
+
+    struct wf_fixture_with_rec_non_overlapping
+    {
+        ll_wf_fixture ll;
+        wf_fixture_with_rec_non_overlapping() : ll({42, 100, 1000, 0., 100., 100})
+        {
+        }
+    };
+
 }
-
-struct wf_fixture_no_rec_non_overlapping
-{
-    ll_wf_fixture ll;
-    wf_fixture_no_rec_non_overlapping() : ll({42, 100, 1000, 0., 0., 100})
-    {
-    }
-};
-
-struct wf_fixture_with_rec_non_overlapping
-{
-    ll_wf_fixture ll;
-    wf_fixture_with_rec_non_overlapping() : ll({42, 100, 1000, 0., 100., 100})
-    {
-    }
-};
 
 BOOST_FIXTURE_TEST_SUITE(test_tree_visitor_with_simple_table_collection,
                          simple_table_collection)
