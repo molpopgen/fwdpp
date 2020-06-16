@@ -8,9 +8,9 @@ namespace fwdpp
 {
     namespace ts
     {
-        inline std::pair<TS_NODE_INT, TS_NODE_INT>
-        get_parent_ids(const TS_NODE_INT first_parental_index,
-                       const TS_NODE_INT parent, const int did_swap)
+        inline std::pair<table_index_t, table_index_t>
+        get_parent_ids(const table_index_t first_parental_index,
+                       const table_index_t parent, const int did_swap)
         /*! 
          * Convert the index of a parent into the two node IDs.
          *
@@ -23,9 +23,9 @@ namespace fwdpp
          */
         {
             return std::make_pair(
-                first_parental_index + 2 * static_cast<TS_NODE_INT>(parent)
+                first_parental_index + 2 * static_cast<table_index_t>(parent)
                     + did_swap,
-                first_parental_index + 2 * static_cast<TS_NODE_INT>(parent)
+                first_parental_index + 2 * static_cast<table_index_t>(parent)
                     + !did_swap);
         }
     } // namespace ts

@@ -40,7 +40,7 @@ class simple_table_collection
 
   public:
     fwdpp::ts::std_table_collection tables;
-    std::vector<fwdpp::ts::TS_NODE_INT> samples;
+    std::vector<fwdpp::ts::table_index_t> samples;
     // NOTE: tv is auto advanced to the first tree
     // by the constructor
     fwdpp::ts::tree_visitor tv;
@@ -62,7 +62,7 @@ class simple_table_collection
 
     void
     reset_visitor_and_samples(
-        const std::vector<fwdpp::ts::TS_NODE_INT>& new_samples_list,
+        const std::vector<fwdpp::ts::table_index_t>& new_samples_list,
         bool update_samples_list)
     {
         samples = new_samples_list;

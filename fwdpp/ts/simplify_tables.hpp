@@ -39,7 +39,7 @@ namespace fwdpp
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
             idmap.resize(input_tables.nodes.size());
-            std::fill(begin(idmap), end(idmap), TS_NULL_NODE);
+            std::fill(begin(idmap), end(idmap), NULL_INDEX);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
@@ -86,7 +86,7 @@ namespace fwdpp
             // or expect the caller to do it?
             for (auto& p : input_tables.preserved_nodes)
                 {
-                    if (idmap[p] == TS_NULL_NODE)
+                    if (idmap[p] == NULL_INDEX)
                         {
                             throw std::runtime_error(
                                 "preserved node output id maps to null");
@@ -97,7 +97,7 @@ namespace fwdpp
             // FIXME: figure out what to do with this?
             assert(static_cast<std::size_t>(std::count_if(
                        begin(idmap), end(idmap),
-                       [](const TS_NODE_INT i) { return i != TS_NULL_NODE; }))
+                       [](const table_index_t i) { return i != NULL_INDEX; }))
                    == state.new_node_table.size());
 
             simplification::simplify_mutations(state, input_tables, preserved_variants);
@@ -144,7 +144,7 @@ namespace fwdpp
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
             idmap.resize(input_tables.nodes.size());
-            std::fill(begin(idmap), end(idmap), TS_NULL_NODE);
+            std::fill(begin(idmap), end(idmap), NULL_INDEX);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
@@ -182,7 +182,7 @@ namespace fwdpp
 
                             simplification::merge_ancestors(
                                 input_tables.genome_length(), input_tables.nodes,
-                                static_cast<TS_NODE_INT>(parent), state, idmap);
+                                static_cast<table_index_t>(parent), state, idmap);
                         }
                     else if (*buffer_rend != edge_buffer::null && ptime <= max_time)
                         {
@@ -286,7 +286,7 @@ namespace fwdpp
                 }
             for (auto& p : input_tables.preserved_nodes)
                 {
-                    if (idmap[p] == TS_NULL_NODE)
+                    if (idmap[p] == NULL_INDEX)
                         {
                             throw std::runtime_error(
                                 "preserved node output id maps to null");
@@ -297,7 +297,7 @@ namespace fwdpp
             // FIXME: figure out what to do with this?
             assert(static_cast<std::size_t>(std::count_if(
                        begin(idmap), end(idmap),
-                       [](const TS_NODE_INT i) { return i != TS_NULL_NODE; }))
+                       [](const table_index_t i) { return i != NULL_INDEX; }))
                    == state.new_node_table.size());
 
             simplification::simplify_mutations(state, input_tables, preserved_variants);

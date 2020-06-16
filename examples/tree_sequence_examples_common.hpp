@@ -38,11 +38,11 @@ std::function<double()> make_dfe(const fwdpp::uint_t N,
 
 void execute_matrix_test(const options &, const ts_examples_poptype &,
                          const fwdpp::ts::std_table_collection &,
-                         const std::vector<fwdpp::ts::TS_NODE_INT> &);
+                         const std::vector<fwdpp::ts::table_index_t> &);
 
 void execute_expensive_leaf_test(
     const options &o, const fwdpp::ts::std_table_collection &tables,
-    const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+    const std::vector<fwdpp::ts::table_index_t> &samples);
 
 void execute_serialization_test(const options &,
                                 const fwdpp::ts::std_table_collection &);
@@ -52,10 +52,10 @@ void test_serialization(const fwdpp::ts::std_table_collection &tables,
 void
 visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::std_table_collection &tables,
-                 const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+                 const std::vector<fwdpp::ts::table_index_t> &samples);
 
 void write_sfs(const options &o, const GSLrng &rng,
                const fwdpp::ts::std_table_collection &tables,
-               const std::vector<fwdpp::ts::TS_NODE_INT> &samples);
+               const std::vector<fwdpp::ts::table_index_t> &samples);
 
 #endif

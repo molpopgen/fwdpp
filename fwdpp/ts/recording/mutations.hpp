@@ -13,7 +13,7 @@ namespace fwdpp
         template <typename TableCollectionType, typename mcont_t>
         void
         record_mutations_infinite_sites(
-            const TS_NODE_INT u, const mcont_t& mutations,
+            const table_index_t u, const mcont_t& mutations,
             const std::vector<std::uint32_t>& new_mutation_keys,
             TableCollectionType& tables)
         /// \version Added in 0.8.0
@@ -24,7 +24,7 @@ namespace fwdpp
                 {
                     auto site
                         = tables.emplace_back_site(mutations[k].pos, ancestral_state);
-                    if (site >= std::numeric_limits<TS_NODE_INT>::max())
+                    if (site >= std::numeric_limits<table_index_t>::max())
                         {
                             throw std::invalid_argument("site index out of range");
                         }

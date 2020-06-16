@@ -17,8 +17,8 @@
 struct parent
 {
     std::size_t index;
-    fwdpp::ts::TS_NODE_INT nodes[2];
-    parent(std::size_t i, fwdpp::ts::TS_NODE_INT n0, fwdpp::ts::TS_NODE_INT n1)
+    fwdpp::ts::table_index_t nodes[2];
+    parent(std::size_t i, fwdpp::ts::table_index_t n0, fwdpp::ts::table_index_t n1)
         : index(i), nodes{n0, n1}
     {
     }
@@ -27,7 +27,7 @@ struct parent
 struct birth
 {
     std::size_t index;
-    fwdpp::ts::TS_NODE_INT p0node0, p0node1, p1node0, p1node1;
+    fwdpp::ts::table_index_t p0node0, p0node1, p1node0, p1node1;
     birth(std::size_t i, const parent& p0, const parent& p1)
         : index(i), p0node0(p0.nodes[0]), p0node1(p0.nodes[1]), p1node0(p1.nodes[0]),
           p1node1(p1.nodes[1])
@@ -53,7 +53,7 @@ struct wf_simulation_results
 // The return value of the simulation
 {
     std::vector<parent> alive_individuals;
-    std::vector<fwdpp::ts::TS_NODE_INT> preserved_nodes;
+    std::vector<fwdpp::ts::table_index_t> preserved_nodes;
 
     template <typename A, typename P>
     wf_simulation_results(A&& a, P&& p)
@@ -132,9 +132,9 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
 
 template <typename TableCollectionType, typename SimplificationState>
 void
-sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
+sort_n_simplify(const std::vector<fwdpp::ts::table_index_t>& samples,
                 SimplificationState& state, TableCollectionType& tables,
-                std::vector<fwdpp::ts::TS_NODE_INT>& node_map)
+                std::vector<fwdpp::ts::table_index_t>& node_map)
 {
     auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
     std::sort(begin(tables.edges), end(tables.edges), cmp);
@@ -146,9 +146,9 @@ sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
 template <typename TableCollectionType, typename SimplificationState>
 void
 flush_buffer_n_simplify(
-    bool simplify_from_buffer, const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
-    const std::vector<fwdpp::ts::TS_NODE_INT>& alive_at_last_simplification,
-    std::vector<fwdpp::ts::TS_NODE_INT>& node_map, fwdpp::ts::edge_buffer& new_edges,
+    bool simplify_from_buffer, const std::vector<fwdpp::ts::table_index_t>& samples,
+    const std::vector<fwdpp::ts::table_index_t>& alive_at_last_simplification,
+    std::vector<fwdpp::ts::table_index_t>& node_map, fwdpp::ts::edge_buffer& new_edges,
     SimplificationState& state, typename TableCollectionType::edge_table& edge_liftover,
     TableCollectionType& tables)
 {
@@ -205,11 +205,11 @@ wfevolve_table_collection(unsigned seed, unsigned N, unsigned nsteps, double psu
         }
 
     // The next bits are all for buffering
-    std::vector<fwdpp::ts::TS_NODE_INT> alive_at_last_simplification(tables.num_nodes());
+    std::vector<fwdpp::ts::table_index_t> alive_at_last_simplification(tables.num_nodes());
     std::iota(begin(alive_at_last_simplification), end(alive_at_last_simplification), 0);
 
     std::vector<birth> births;
-    std::vector<fwdpp::ts::TS_NODE_INT> samples, node_map;
+    std::vector<fwdpp::ts::table_index_t> samples, node_map;
     bool simplified = false;
     double littler = rho / (4. * static_cast<double>(N));
 
@@ -296,7 +296,7 @@ wfevolve_table_collection(unsigned seed, unsigned N, unsigned nsteps, double psu
         }
 
     return wf_simulation_results{std::move(parents),
-                                 std::vector<fwdpp::ts::TS_NODE_INT>{}};
+                                 std::vector<fwdpp::ts::table_index_t>{}};
 }
 
 #endif

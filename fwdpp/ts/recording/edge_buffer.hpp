@@ -20,10 +20,10 @@ namespace fwdpp
         struct birth_data
         {
             double left, right;
-            TS_NODE_INT child;
+            table_index_t child;
             //std::int64_t next;
 
-            birth_data(double l, double r, TS_NODE_INT c)
+            birth_data(double l, double r, table_index_t c)
                 : left{l}, right{r}, child{c}//, next{EDGE_BUFFER_NULL}
             {
             }
@@ -36,9 +36,9 @@ namespace fwdpp
 
         struct parent_location
         {
-            TS_NODE_INT parent;
+            table_index_t parent;
             std::size_t start, stop;
-            parent_location(TS_NODE_INT p, std::size_t start_, std::size_t stop_)
+            parent_location(table_index_t p, std::size_t start_, std::size_t stop_)
                 : parent{p}, start{start_}, stop{stop_}
             {
             }
@@ -48,12 +48,12 @@ namespace fwdpp
         inline std::vector<parent_location>
         find_pre_existing_edges(
             const TableCollectionType& tables,
-            const std::vector<TS_NODE_INT>& alive_at_last_simplification,
+            const std::vector<table_index_t>& alive_at_last_simplification,
             const fwdpp::ts::edge_buffer& new_edges)
         // FIXME: the indexing step need go no farther than the time of the most
         // recent node in alive_at_last_simplification.
         {
-            std::vector<TS_NODE_INT> alive_with_new_edges;
+            std::vector<table_index_t> alive_with_new_edges;
             for (auto a : alive_at_last_simplification)
                 {
                     if (new_edges.head(a) != edge_buffer::null)
@@ -186,11 +186,11 @@ namespace fwdpp
                     {
                         throw std::runtime_error("negative parent value");
                     }
-                    if(parent >= std::numeric_limits<TS_NODE_INT>::max())
+                    if(parent >= std::numeric_limits<table_index_t>::max())
                     {
                         throw std::overflow_error("parent value overflows");
                     }
-                    auto cast_parent = static_cast<TS_NODE_INT>(parent);
+                    auto cast_parent = static_cast<table_index_t>(parent);
                     auto ptime = tables.nodes[parent].time;
                     if (*b != edge_buffer::null && ptime > max_time)
                         {
@@ -216,7 +216,7 @@ namespace fwdpp
         template <typename TableCollectionType>
         void
         stitch_together_edges(
-            const std::vector<TS_NODE_INT>& alive_at_last_simplification,
+            const std::vector<table_index_t>& alive_at_last_simplification,
             double max_time, edge_buffer& new_edges,
             typename TableCollectionType::edge_table& edge_liftover,
             TableCollectionType& tables)

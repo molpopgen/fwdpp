@@ -4,13 +4,13 @@
 #include <fwdpp/ts/marginal_tree_functions/children.hpp>
 
 void
-get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
-        std::vector<fwdpp::ts::TS_NODE_INT> &samples)
+get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::table_index_t u,
+        std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (fwdpp::ts::num_children(m, u) > 0)
         {
             fwdpp::ts::process_children(
-                m, u, true, [&m, &samples](fwdpp::ts::TS_NODE_INT x) {
+                m, u, true, [&m, &samples](fwdpp::ts::table_index_t x) {
                     get_tip(m, x, samples);
                 });
             return;
@@ -18,14 +18,14 @@ get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u,
     samples.push_back(u);
 }
 
-std::vector<fwdpp::ts::TS_NODE_INT>
-naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+std::vector<fwdpp::ts::table_index_t>
+naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::table_index_t u)
 {
     if (!m.advancing_sample_list())
         {
             throw std::invalid_argument("sample lists are not being updated");
         }
-    std::vector<fwdpp::ts::TS_NODE_INT> temp,
+    std::vector<fwdpp::ts::table_index_t> temp,
         samples_list(m.samples_list_begin(), m.samples_list_end()),
         intersection;
     std::sort(begin(samples_list), end(samples_list));
@@ -37,7 +37,7 @@ naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
 }
 
 std::size_t
-naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::TS_NODE_INT u)
+naive_num_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::table_index_t u)
 {
     auto s = naive_get_samples(m, u);
     return s.size();
@@ -55,10 +55,10 @@ naive_branch_length(const fwdpp::ts::marginal_tree &m,
     for (auto s = m.samples_list_begin(); s != m.samples_list_end(); ++s)
         {
             auto u = *s;
-            while (u != fwdpp::ts::TS_NULL_NODE)
+            while (u != fwdpp::ts::NULL_INDEX)
                 {
                     auto p = m.parents[u];
-                    if (!processed[u] && p != fwdpp::ts::TS_NULL_NODE)
+                    if (!processed[u] && p != fwdpp::ts::NULL_INDEX)
                         {
                             ttime += (nodes[u].time - nodes[p].time);
                         }

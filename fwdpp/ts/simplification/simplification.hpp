@@ -22,8 +22,8 @@ namespace fwdpp
             struct segment
             {
                 double left, right;
-                TS_NODE_INT node;
-                segment(double l, double r, TS_NODE_INT n) : left{l}, right{r}, node{n}
+                table_index_t node;
+                segment(double l, double r, table_index_t n) : left{l}, right{r}, node{n}
                 {
                     if (right <= left)
                         {
@@ -34,9 +34,9 @@ namespace fwdpp
 
             struct mutation_node_map_entry
             {
-                TS_NODE_INT node;
+                table_index_t node;
                 std::size_t site, location;
-                mutation_node_map_entry(TS_NODE_INT n, std::size_t s, std::size_t l)
+                mutation_node_map_entry(table_index_t n, std::size_t s, std::size_t l)
                     : node(n), site(s), location(l)
                 {
                 }
@@ -165,7 +165,7 @@ namespace fwdpp
                                   return a.left < b.left;
                               });
                     // Add sentinel
-                    segment_queue.emplace_back(maxlen, maxlen + 1.0, TS_NULL_NODE);
+                    segment_queue.emplace_back(maxlen, maxlen + 1.0, NULL_INDEX);
                 }
 
                 std::int64_t
@@ -240,7 +240,7 @@ namespace fwdpp
             template <typename SimplifierState>
             inline void
             buffer_edge(SimplifierState& state, const double left, const double right,
-                        const TS_NODE_INT parent, const TS_NODE_INT child)
+                        const table_index_t parent, const table_index_t child)
             {
                 auto itr = std::find_if(
                     state.temp_edge_buffer.rbegin(), state.temp_edge_buffer.rend(),
@@ -286,8 +286,8 @@ namespace fwdpp
             }
 
             inline void
-            add_ancestry(TS_NODE_INT input_id, double left, double right,
-                         TS_NODE_INT node, ancestry_list& ancestry)
+            add_ancestry(table_index_t input_id, double left, double right,
+                         table_index_t node, ancestry_list& ancestry)
             {
                 if (ancestry.head(input_id) == ancestry_list::null)
                     {
@@ -317,19 +317,19 @@ namespace fwdpp
             merge_ancestors(
                 double maxlen,
                 const typename TableCollectionType::node_table& input_node_table,
-                const TS_NODE_INT parent_input_id,
+                const table_index_t parent_input_id,
                 simplifier_internal_state<TableCollectionType>& state,
-                std::vector<TS_NODE_INT>& idmap)
+                std::vector<table_index_t>& idmap)
             {
                 auto output_id = idmap[parent_input_id];
-                bool is_sample = (output_id != TS_NULL_NODE);
+                bool is_sample = (output_id != NULL_INDEX);
                 if (is_sample == true)
                     {
                         state.ancestry.nullify_list(parent_input_id);
                     }
                 double previous_right = 0.0;
                 state.overlapper.init();
-                TS_NODE_INT ancestry_node = TS_NULL_NODE;
+                table_index_t ancestry_node = NULL_INDEX;
                 state.temp_edge_buffer.clear();
                 while (state.overlapper() == true)
                     {
@@ -346,7 +346,7 @@ namespace fwdpp
                             }
                         else
                             {
-                                if (output_id == TS_NULL_NODE)
+                                if (output_id == NULL_INDEX)
                                     {
                                         state.new_node_table.emplace_back(
                                             typename TableCollectionType::node_t{
@@ -381,7 +381,7 @@ namespace fwdpp
                         add_ancestry(parent_input_id, previous_right, maxlen, output_id,
                                      state.ancestry);
                     }
-                if (output_id != TS_NULL_NODE)
+                if (output_id != NULL_INDEX)
                     {
                         auto n = output_buffered_edges(state);
                         if (!n && !is_sample)
@@ -389,7 +389,7 @@ namespace fwdpp
                                 state.new_node_table.erase(begin(state.new_node_table)
                                                                + output_id,
                                                            end(state.new_node_table));
-                                idmap[parent_input_id] = TS_NULL_NODE;
+                                idmap[parent_input_id] = NULL_INDEX;
                             }
                     }
             }
@@ -397,7 +397,7 @@ namespace fwdpp
             template <typename Iterator, typename SimplifierState>
             inline Iterator
             find_parent_child_segment_overlap(double maxlen, Iterator edge_ptr,
-                                              const Iterator edge_end, TS_NODE_INT u,
+                                              const Iterator edge_end, table_index_t u,
                                               SimplifierState& state)
             {
                 state.overlapper.clear_queue();
@@ -428,17 +428,17 @@ namespace fwdpp
 
             template <typename TableCollectionType>
             inline void
-            record_sample_nodes(const std::vector<TS_NODE_INT>& samples,
+            record_sample_nodes(const std::vector<table_index_t>& samples,
                                 const TableCollectionType& tables,
                                 simplifier_internal_state<TableCollectionType>& state,
-                                std::vector<TS_NODE_INT>& idmap)
+                                std::vector<table_index_t>& idmap)
             /// \version 0.7.1 Throw exception if a sample is recorded twice
             {
                 for (const auto& s : samples)
                     {
                         // See GitHub issue 158
                         // for background
-                        if (idmap[s] != TS_NULL_NODE)
+                        if (idmap[s] != NULL_INDEX)
                             {
                                 throw std::invalid_argument("invalid sample list");
                             }
@@ -447,10 +447,10 @@ namespace fwdpp
                                                                  tables.nodes[s].time});
                         add_ancestry(
                             s, 0, tables.genome_length(),
-                            static_cast<TS_NODE_INT>(state.new_node_table.size() - 1),
+                            static_cast<table_index_t>(state.new_node_table.size() - 1),
                             state.ancestry);
                         idmap[s]
-                            = static_cast<TS_NODE_INT>(state.new_node_table.size() - 1);
+                            = static_cast<table_index_t>(state.new_node_table.size() - 1);
                     }
             }
 
@@ -507,7 +507,7 @@ namespace fwdpp
                 // Set all output nodes to null for now.
                 for (auto& mr : input_tables.mutations)
                     {
-                        mr.node = TS_NULL_NODE;
+                        mr.node = NULL_INDEX;
                     }
 
                 // Map the input node id of a mutation to
@@ -558,7 +558,7 @@ namespace fwdpp
                 auto itr = std::remove_if(
                     begin(input_tables.mutations), end(input_tables.mutations),
                     [](const typename TableCollectionType::mutation_t& mr) {
-                        return mr.node == TS_NULL_NODE;
+                        return mr.node == NULL_INDEX;
                     });
                 preserved_variants.clear();
                 preserved_variants.reserve(
@@ -602,7 +602,7 @@ namespace fwdpp
             }
 
             inline void
-            queue_children(TS_NODE_INT child, double left, double right,
+            queue_children(table_index_t child, double left, double right,
                            ancestry_list& ancestry, segment_overlapper& overlapper)
             {
                 auto idx = ancestry.head(child);

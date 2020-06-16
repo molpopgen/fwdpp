@@ -20,11 +20,11 @@ namespace fwdpp
         {
           private:
             const marginal_tree &t;
-            std::vector<TS_NODE_INT> subtree_roots;
-            TS_NODE_INT current_root;
+            std::vector<table_index_t> subtree_roots;
+            table_index_t current_root;
             std::unique_ptr<node_traversal_order> order;
 
-            std::vector<TS_NODE_INT>
+            std::vector<table_index_t>
             init_subtree_roots()
             {
                 auto r = get_roots(t);
@@ -32,8 +32,8 @@ namespace fwdpp
                 return r;
             }
 
-            std::vector<TS_NODE_INT>
-            init_subtree_roots(TS_NODE_INT u)
+            std::vector<table_index_t>
+            init_subtree_roots(table_index_t u)
             {
                 if (static_cast<std::size_t>(u) >= t.left_child.size())
                     {
@@ -42,12 +42,12 @@ namespace fwdpp
                 return { u };
             }
 
-            TS_NODE_INT
+            table_index_t
             init_current_root()
             {
                 if (subtree_roots.empty())
                     {
-                        return TS_NULL_NODE;
+                        return NULL_INDEX;
                     }
                 auto rv = subtree_roots.back();
                 subtree_roots.pop_back();
@@ -71,7 +71,7 @@ namespace fwdpp
             }
 
             template <typename ORDER>
-            node_iterator(const marginal_tree &m, TS_NODE_INT u,
+            node_iterator(const marginal_tree &m, table_index_t u,
                           ORDER order_policy)
                 : t(m), subtree_roots(init_subtree_roots(u)),
                   current_root(init_current_root()),
@@ -87,18 +87,18 @@ namespace fwdpp
             {
             }
 
-            inline TS_NODE_INT
+            inline table_index_t
             operator()()
             /// Return the next node in the tree.
-            /// A value ot TS_NULL_NODE signals end of iteration.
+            /// A value ot NULL_INDEX signals end of iteration.
             {
-                if (current_root != TS_NULL_NODE)
+                if (current_root != NULL_INDEX)
                     {
                         auto rv = order->operator()(t);
-                        if (rv == TS_NULL_NODE)
+                        if (rv == NULL_INDEX)
                             {
                                 current_root = init_current_root();
-                                if (current_root != TS_NULL_NODE)
+                                if (current_root != NULL_INDEX)
                                     {
                                         order->initialize(current_root);
                                         rv = order->operator()(t);
@@ -110,18 +110,18 @@ namespace fwdpp
                             }
                         return rv;
                     }
-                return TS_NULL_NODE;
+                return NULL_INDEX;
             }
 
             template <typename F>
-            inline TS_NODE_INT
+            inline table_index_t
             operator()(const F &f)
             /// Apply a function to each node.
-            /// \param f A function behaving as void(*process_node)(TS_NODE_INT)
+            /// \param f A function behaving as void(*process_node)(table_index_t)
             /// Returns false to signal end of iteration.
             {
                 auto v = this->operator()();
-                bool rv = (v != TS_NULL_NODE);
+                bool rv = (v != NULL_INDEX);
                 if (rv)
                     {
                         f(v);
@@ -136,7 +136,7 @@ namespace fwdpp
         /// Apply a function to all nodes in the tree \a m.
         /// \param m A marginal_tree
         /// \param order A dispatch tag specifying the node traversal roder
-        /// \param f A function behaving as void(*process_node)(TS_NODE_INT)
+        /// \param f A function behaving as void(*process_node)(table_index_t)
         {
             node_iterator ni(m, order);
             while (ni(f))
@@ -146,13 +146,13 @@ namespace fwdpp
 
         template <typename ORDER, typename F>
         inline void
-        process_nodes(const marginal_tree &m, TS_NODE_INT u, ORDER order,
+        process_nodes(const marginal_tree &m, table_index_t u, ORDER order,
                       const F &f)
         /// Apply a function to all nodes in the subtree whose root is \a u
         /// \param m A marginal_tree
         /// \param u A node id in \a m
         /// \param order A dispatch tag specifying the node traversal roder
-        /// \param f A function behaving as void(*process_node)(TS_NODE_INT)
+        /// \param f A function behaving as void(*process_node)(table_index_t)
         {
             node_iterator ni(m, u, order);
             while (ni(f))
@@ -167,34 +167,34 @@ namespace fwdpp
         {
             int nnodes = 0;
             process_nodes(m, nodes_preorder(),
-                          [&nnodes](const TS_NODE_INT /*n*/) { ++nnodes; });
+                          [&nnodes](const table_index_t /*n*/) { ++nnodes; });
             return nnodes;
         }
 
         template <typename ORDER>
-        inline std::vector<TS_NODE_INT>
+        inline std::vector<table_index_t>
         get_nodes(const marginal_tree &m, ORDER order)
         /// Get a vector of all nodes in the tree \a m
         /// \param m A marginal_tree
         /// \param order A dispatch tag specifying the node traversal roder
         {
-            std::vector<TS_NODE_INT> nodes;
-            process_nodes(m, order, [&nodes](const TS_NODE_INT n) {
+            std::vector<table_index_t> nodes;
+            process_nodes(m, order, [&nodes](const table_index_t n) {
                 nodes.push_back(n);
             });
             return nodes;
         }
 
         template <typename ORDER>
-        inline std::vector<TS_NODE_INT>
-        get_nodes(const marginal_tree &m, TS_NODE_INT u, ORDER order)
+        inline std::vector<table_index_t>
+        get_nodes(const marginal_tree &m, table_index_t u, ORDER order)
         /// Get a vector of all nodes in the subtree of \a m whose root is \a u
         /// \param m A marginal_tree
         /// \param u A node in \a m
         /// \param order A dispatch tag specifying the node traversal roder
         {
-            std::vector<TS_NODE_INT> nodes;
-            process_nodes(m, u, order, [&nodes](const TS_NODE_INT n) {
+            std::vector<table_index_t> nodes;
+            process_nodes(m, u, order, [&nodes](const table_index_t n) {
                 nodes.push_back(n);
             });
             return nodes;

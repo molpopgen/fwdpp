@@ -61,7 +61,7 @@ namespace fwdpp
             /// newly-added nodes.
             std::ptrdiff_t edge_offset;
             /// A vector of dead/ancient sample nodes
-            std::vector<TS_NODE_INT> preserved_nodes;
+            std::vector<table_index_t> preserved_nodes;
 
             explicit table_collection(const double maxpos)
                 : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
@@ -73,8 +73,8 @@ namespace fwdpp
                     }
             }
 
-            table_collection(const TS_NODE_INT num_initial_nodes,
-                             const double initial_time, TS_NODE_INT pop,
+            table_collection(const table_index_t num_initial_nodes,
+                             const double initial_time, table_index_t pop,
                              const double maxpos)
                 : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
                   output_right{}, edge_offset{0}, preserved_nodes{}
@@ -83,7 +83,7 @@ namespace fwdpp
                     {
                         throw std::invalid_argument("maxpos must be > 0 and finite");
                     }
-                for (TS_NODE_INT i = 0; i < num_initial_nodes; ++i)
+                for (table_index_t i = 0; i < num_initial_nodes; ++i)
                     {
                         nodes.push_back(node_t{pop, initial_time});
                     }
@@ -102,7 +102,7 @@ namespace fwdpp
             }
 
             void
-            record_preserved_nodes(const std::vector<TS_NODE_INT>& node_ids)
+            record_preserved_nodes(const std::vector<table_index_t>& node_ids)
             /// Take a list of nodes to record as "ancient samples".
             /// Throws an exception if the nodes are already recorded as such.
             {
@@ -123,23 +123,23 @@ namespace fwdpp
                     }
             }
 
-            TS_NODE_INT
+            table_index_t
             push_back_node(double time, std::int32_t pop)
             {
                 nodes.push_back(node_t{pop, time});
-                return static_cast<TS_NODE_INT>(nodes.size() - 1);
+                return static_cast<table_index_t>(nodes.size() - 1);
             }
 
             template <typename... args>
-            TS_NODE_INT
+            table_index_t
             emplace_back_node(args&&... Args)
             {
                 nodes.emplace_back(node_t{std::forward<args>(Args)...});
-                return static_cast<TS_NODE_INT>(nodes.size() - 1);
+                return static_cast<table_index_t>(nodes.size() - 1);
             }
 
             std::size_t
-            push_back_edge(double l, double r, TS_NODE_INT parent, TS_NODE_INT child)
+            push_back_edge(double l, double r, table_index_t parent, table_index_t child)
             {
                 edges.push_back(edge_t{l, r, parent, child});
                 return edges.size();

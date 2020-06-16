@@ -14,10 +14,10 @@
 #include <fwdpp/ts/recording/diploid_offspring.hpp>
 #include <fwdpp/genetic_map/poisson_interval.hpp>
 
-std::vector<fwdpp::ts::TS_NODE_INT>
+std::vector<fwdpp::ts::table_index_t>
 sample_nodes_from_metadata(const std::vector<diploid_metadata>& metadata)
 {
-    std::vector<fwdpp::ts::TS_NODE_INT> samples;
+    std::vector<fwdpp::ts::table_index_t> samples;
     samples.reserve(2 * metadata.size());
     for (const auto& md : metadata)
         {
@@ -41,7 +41,7 @@ deaths(const GSLrng& rng, const std::vector<diploid_metadata>& metadata,
         }
 }
 
-std::tuple<fwdpp::ts::TS_NODE_INT, fwdpp::ts::TS_NODE_INT>
+std::tuple<fwdpp::ts::table_index_t, fwdpp::ts::table_index_t>
 pick_parent(const GSLrng& rng, const std::vector<diploid_metadata>& parental_metadata)
 {
     std::size_t p = gsl_ran_flat(rng.get(), 0, parental_metadata.size());
@@ -133,7 +133,7 @@ mutate_offspring_nodes(const GSLrng& rng, double mutrate,
                     // metadata are moot.  Thus, we will record the mutation's
                     // location in the mutation table instead.
                     mutation_table.emplace_back(fwdpp::ts::mutation_record{
-                        static_cast<fwdpp::ts::TS_NODE_INT>(offspring_node), // Node id
+                        static_cast<fwdpp::ts::table_index_t>(offspring_node), // Node id
                         mutation_table.size() + 1, // See NOTE above
                         site_table.size() - 1,     // Site id
                         1,                         // derived state
@@ -252,7 +252,7 @@ dynamic_update_edge_table_indexes(std::size_t num_edges,
 void
 traverse_edges_check_samples(const fwdpp::ts::std_table_collection& tables,
                              const std::vector<diploid_metadata>& metadata,
-                             std::vector<fwdpp::ts::TS_NODE_INT>& samples_buffer)
+                             std::vector<fwdpp::ts::table_index_t>& samples_buffer)
 {
     auto samples = sample_nodes_from_metadata(metadata);
     fwdpp::ts::tree_visitor tv(tables, samples, fwdpp::ts::update_samples_list(true));
@@ -263,7 +263,7 @@ traverse_edges_check_samples(const fwdpp::ts::std_table_collection& tables,
             is_sample[s] = 1;
         }
     const auto f
-        = [&samples_buffer](fwdpp::ts::TS_NODE_INT u) { samples_buffer.push_back(u); };
+        = [&samples_buffer](fwdpp::ts::table_index_t u) { samples_buffer.push_back(u); };
     while (tv())
         {
             const auto& m = tv.tree();
@@ -301,10 +301,10 @@ traverse_edges_check_samples(const fwdpp::ts::std_table_collection& tables,
 
 void
 traverse_trees_count_mutations(const fwdpp::ts::std_table_collection& tables,
-                               const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
+                               const std::vector<fwdpp::ts::table_index_t>& samples,
                                const bool track_samples,
                                std::vector<unsigned>& mutation_counts,
-                               std::vector<fwdpp::ts::TS_NODE_INT>& samples_buffer)
+                               std::vector<fwdpp::ts::table_index_t>& samples_buffer)
 {
     std::fill(begin(mutation_counts), end(mutation_counts), 0);
     mutation_counts.resize(tables.mutations.size(), 0);
@@ -342,7 +342,7 @@ traverse_trees_count_mutations(const fwdpp::ts::std_table_collection& tables,
                                         m,
                                         fwdpp::ts::convert_sample_index_to_nodes(true),
                                         current_mutation->node,
-                                        [&samples_buffer](fwdpp::ts::TS_NODE_INT u) {
+                                        [&samples_buffer](fwdpp::ts::table_index_t u) {
                                             samples_buffer.push_back(u);
                                         });
                                 }
@@ -458,7 +458,7 @@ wfevolvets_dynamic_indexing(const GSLrng& rng, unsigned ngenerations,
     std::vector<diploid_metadata> parental_metadata(metadata);
     std::vector<double> breakpoints; // reusable buffer for rec breakpoints
     std::vector<fwdpp::ts::indexed_edge> Ibuffer, Obuffer;
-    std::vector<fwdpp::ts::TS_NODE_INT> samples_buffer;
+    std::vector<fwdpp::ts::table_index_t> samples_buffer;
     std::unordered_set<double> mutation_positions;
     std::vector<unsigned> mutation_counts;
     bool simplified = false;

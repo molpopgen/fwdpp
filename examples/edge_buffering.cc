@@ -107,8 +107,8 @@ generate_main_options(command_line_options& o)
 struct parent
 {
     std::size_t index;
-    fwdpp::ts::TS_NODE_INT node0, node1;
-    parent(std::size_t i, fwdpp::ts::TS_NODE_INT n0, fwdpp::ts::TS_NODE_INT n1)
+    fwdpp::ts::table_index_t node0, node1;
+    parent(std::size_t i, fwdpp::ts::table_index_t n0, fwdpp::ts::table_index_t n1)
         : index(i), node0(n0), node1(n1)
     {
     }
@@ -117,7 +117,7 @@ struct parent
 struct birth
 {
     std::size_t index;
-    fwdpp::ts::TS_NODE_INT p0node0, p0node1, p1node0, p1node1;
+    fwdpp::ts::table_index_t p0node0, p0node1, p1node0, p1node1;
     birth(std::size_t i, const parent& p0, const parent& p1)
         : index(i), p0node0(p0.node0), p0node1(p0.node1), p1node0(p1.node0),
           p1node1(p1.node1)
@@ -222,9 +222,9 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
 
 template <typename SimplificationState>
 void
-sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
+sort_n_simplify(const std::vector<fwdpp::ts::table_index_t>& samples,
                 SimplificationState& state, fwdpp::ts::std_table_collection& tables,
-                std::vector<fwdpp::ts::TS_NODE_INT>& node_map)
+                std::vector<fwdpp::ts::table_index_t>& node_map)
 {
     auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
     std::sort(begin(tables.edges), end(tables.edges), cmp);
@@ -236,9 +236,9 @@ sort_n_simplify(const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
 template <typename SimplificationState>
 void
 flush_buffer_n_simplify(
-    bool simplify_from_buffer, const std::vector<fwdpp::ts::TS_NODE_INT>& samples,
-    const std::vector<fwdpp::ts::TS_NODE_INT>& alive_at_last_simplification,
-    std::vector<fwdpp::ts::TS_NODE_INT>& node_map, fwdpp::ts::edge_buffer& new_edges,
+    bool simplify_from_buffer, const std::vector<fwdpp::ts::table_index_t>& samples,
+    const std::vector<fwdpp::ts::table_index_t>& alive_at_last_simplification,
+    std::vector<fwdpp::ts::table_index_t>& node_map, fwdpp::ts::edge_buffer& new_edges,
     SimplificationState& state,
     fwdpp::ts::std_table_collection::edge_table& edge_liftover,
     fwdpp::ts::std_table_collection& tables)
@@ -355,11 +355,11 @@ simulate(const command_line_options& options)
         }
 
     // The next bits are all for buffering
-    std::vector<fwdpp::ts::TS_NODE_INT> alive_at_last_simplification(tables.num_nodes());
+    std::vector<fwdpp::ts::table_index_t> alive_at_last_simplification(tables.num_nodes());
     std::iota(begin(alive_at_last_simplification), end(alive_at_last_simplification), 0);
 
     std::vector<birth> births;
-    std::vector<fwdpp::ts::TS_NODE_INT> samples, node_map;
+    std::vector<fwdpp::ts::table_index_t> samples, node_map;
     bool simplified = false;
     double last_time_simplified = 0; //options.nsteps;
     double littler = options.rho / (4. * static_cast<double>(options.N));
