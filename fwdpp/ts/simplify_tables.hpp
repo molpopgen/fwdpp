@@ -355,7 +355,7 @@ namespace fwdpp
                     auto& v = buffer.get_data(Q[i]);
                     //input_tables.emplace_back_edge(
                     input_tables.edges[i]
-                        = {v.value.left, v.value.right, static_cast<TS_NODE_INT>(v.next),
+                        = {v.value.left, v.value.right, static_cast<table_index_t>(v.next),
                            v.value.child};
                 }
             //std::rotate(begin(input_tables.edges), begin(input_tables.edges) + offset,
