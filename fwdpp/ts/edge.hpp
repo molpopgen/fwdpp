@@ -12,17 +12,24 @@ namespace fwdpp
     namespace ts
     {
         struct edge
-        /// \brief An edge in a tree sequence
-        ///
-        /// Edges define a transmission event
-        /// of the genomic interval [left,right)
-        /// from parent to child.
-        ///
-        ///  \version 0.7.0 Added to fwdpp
+        /*! An edge in a tree sequence
+         * @version 0.7.0 Added to fwdpp
+         *
+         * Edges define a transmission event
+         * of the genomic interval [left,right)
+         * from parent to child.
+         */ 
         {
-            double left, right;
-            table_index_t parent, child;
+            /// Left (inclusive) edge of genomic segment
+            double left;
+            /// Right (exclusive) edge of genomic segment
+            double right;
+            /// Parent ID
+            table_index_t parent;
+            /// Child ID
+            table_index_t child;
         };
+
         inline bool
         operator==(const edge& a, const edge& b)
         {
