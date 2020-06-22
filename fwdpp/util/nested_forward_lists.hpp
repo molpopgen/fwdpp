@@ -2,12 +2,31 @@
 #define FWDPP_TS_NESTED_FORWARD_LISTS_HPP
 
 #include <vector>
+#include <limits>
+#include <cstdint>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 
 namespace fwdpp
 {
+    class nested_forward_lists_overflow : public std::exception
+    {
+      private:
+        std::string message_;
+
+      public:
+        explicit nested_forward_lists_overflow(std::string message)
+            : message_(std::move(message))
+        {
+        }
+        virtual const char*
+        what() const noexcept
+        {
+            return message_.c_str();
+        }
+    };
+
     template <typename T, typename Index, Index NullValue> class nested_forward_lists
     /// Container of multiple owning forward lists with corresponding head/tail index vector
     /// describing where individual lists start/stop.
@@ -101,6 +120,11 @@ namespace fwdpp
         extend(Index at, Args&&... args)
         {
             throw_if_null(at);
+            if (data.size() >= std::numeric_limits<Index>::max() - 1)
+                {
+                    throw nested_forward_lists_overflow(
+                        "buffer has overflowed Index maximum");
+                }
             auto idx = static_cast<std::size_t>(at);
             if (idx >= _head.size())
                 {
