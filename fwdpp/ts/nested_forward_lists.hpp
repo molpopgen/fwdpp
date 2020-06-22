@@ -32,18 +32,8 @@ namespace fwdpp
                 data.emplace_back(std::forward<Args>(args)...);
                 _head[idx] = static_cast<Index>(data.size() - 1);
                 _tail[idx] = _head[idx];
+                _next.emplace_back(null);
             }
-
-            struct list_entry
-            // NOTE: may need an SFINAE guard on the constructor eventually?
-            {
-                T value;
-                Index next;
-                template <typename... Args>
-                list_entry(Args&&... t) : value{std::forward<Args>(t)...}, next{null}
-                {
-                }
-            };
 
             void
             throw_if_null(Index i) const
@@ -71,8 +61,8 @@ namespace fwdpp
                 c.swap(temp);
             }
 
-            std::vector<list_entry> data;
-            std::vector<Index> _head, _tail;
+            std::vector<T> data;
+            std::vector<Index> _head, _tail, _next;
 
           public:
             static constexpr Index null = NullValue;
@@ -81,7 +71,7 @@ namespace fwdpp
             using const_reverse_iterator =
                 typename std::vector<Index>::const_reverse_iterator;
 
-            nested_forward_lists() : data{}, _head{}, _tail{}
+            nested_forward_lists() : data{}, _head{}, _tail{}, _next{}
             {
             }
 
@@ -106,7 +96,7 @@ namespace fwdpp
             {
                 throw_if_null(at);
                 validate_index(at, data.size());
-                return data[static_cast<std::size_t>(at)].next;
+                return _next[static_cast<std::size_t>(at)];
             }
 
             template <typename... Args>
@@ -132,8 +122,8 @@ namespace fwdpp
                     }
                 data.emplace_back(std::forward<Args>(args)...);
                 _tail[idx] = static_cast<Index>(data.size() - 1);
-                data[static_cast<std::size_t>(t)].next
-                    = static_cast<Index>(data.size() - 1);
+                _next[static_cast<std::size_t>(t)] = static_cast<Index>(data.size() - 1);
+                _next.emplace_back(null);
             }
 
             template <typename Container>
@@ -151,7 +141,7 @@ namespace fwdpp
             {
                 throw_if_null(at);
                 validate_index(at, data.size());
-                return data[static_cast<std::size_t>(at)].value;
+                return data[static_cast<std::size_t>(at)];
             }
 
             const T&
@@ -159,7 +149,7 @@ namespace fwdpp
             {
                 throw_if_null(at);
                 validate_index(at, data.size());
-                return data[static_cast<std::size_t>(at)].value;
+                return data[static_cast<std::size_t>(at)];
             }
 
             void
@@ -176,7 +166,7 @@ namespace fwdpp
             void
             reset(std::size_t newsize)
             {
-                data.clear();
+                clear();
                 _head.resize(newsize);
                 _tail.resize(newsize);
                 std::fill(std::begin(_head), std::end(_head), null);
@@ -189,6 +179,7 @@ namespace fwdpp
                 data.clear();
                 _head.clear();
                 _tail.clear();
+                _next.clear();
             }
 
             void
@@ -197,6 +188,7 @@ namespace fwdpp
                 swap_with_empty(data);
                 swap_with_empty(_head);
                 swap_with_empty(_tail);
+                swap_with_empty(_next);
             }
 
             const_iterator
