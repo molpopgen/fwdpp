@@ -90,9 +90,9 @@ BOOST_AUTO_TEST_CASE(test_unindexed_tables)
 {
     tables.input_left.clear();
     tables.output_right.clear();
-    BOOST_REQUIRE_THROW(
-        fwdpp::ts::tree_visitor tv(tables, samples, fwdpp::ts::update_samples_list(0)),
-        std::invalid_argument);
+    BOOST_REQUIRE_THROW(fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection> tv(
+                            tables, samples, fwdpp::ts::update_samples_list(0)),
+                        std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -102,8 +102,8 @@ BOOST_FIXTURE_TEST_SUITE(test_tree_visitor_with_empty_table_collection,
 
 BOOST_AUTO_TEST_CASE(test_construction)
 {
-    BOOST_REQUIRE_THROW(fwdpp::ts::tree_visitor tv(tables, empty_samples,
-                                                   fwdpp::ts::update_samples_list(0)),
+    BOOST_REQUIRE_THROW(fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection> tv(
+                            tables, empty_samples, fwdpp::ts::update_samples_list(0)),
                         fwdpp::ts::samples_error);
 }
 
@@ -119,7 +119,8 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels, simple_table_collection_polytomy)
             groups.emplace_back(i, 0);
         }
     groups[2].group = 1;
-    tv = fwdpp::ts::tree_visitor(tables, groups, fwdpp::ts::update_samples_list(1));
+    tv = fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection>(
+        tables, groups, fwdpp::ts::update_samples_list(1));
     tv();
     auto c = tv.tree().left_sample[5];
     BOOST_REQUIRE(c == 0);
@@ -135,8 +136,8 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels, simple_table_collection_polytomy)
 BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation,
                         wf_fixture_no_rec_non_overlapping)
 {
-    auto tv = fwdpp::ts::tree_visitor(ll.tables, ll.samples,
-                                      fwdpp::ts::update_samples_list(1));
+    auto tv = fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection>(
+        ll.tables, ll.samples, fwdpp::ts::update_samples_list(1));
     std::vector<int> nodes(ll.tables.num_nodes());
     std::iota(begin(nodes), end(nodes), 0);
     while (tv())
@@ -177,8 +178,8 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation,
 BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation_with_recombination,
                         wf_fixture_with_rec_non_overlapping)
 {
-    auto tv = fwdpp::ts::tree_visitor(ll.tables, ll.samples,
-                                      fwdpp::ts::update_samples_list(1));
+    auto tv = fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection>(
+        ll.tables, ll.samples, fwdpp::ts::update_samples_list(1));
     std::vector<int> nodes(ll.tables.num_nodes());
     std::iota(begin(nodes), end(nodes), 0);
     while (tv())

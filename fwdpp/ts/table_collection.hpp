@@ -7,13 +7,13 @@
 #include <cmath>
 #include <tuple>
 #include <algorithm>
+#include <numeric>
 #include <cassert>
 #include <cstddef>
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/ts/exceptions.hpp>
 #include "definitions.hpp"
-#include "indexed_edge.hpp" //TODO: create fewer header dependencies
 
 namespace fwdpp
 {
@@ -52,9 +52,9 @@ namespace fwdpp
             /// Site table
             site_table sites;
             /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
-            indexed_edge_container input_left;
+            std::vector<table_index_t> input_left;
             /// The output edge vector. "O" in \cite Kelleher2016-cb, page 13
-            indexed_edge_container output_right;
+            std::vector<table_index_t> output_right;
             /// This reflects the length of
             /// tables.edges after last simplification.
             /// It can be used to make sure we only sort
@@ -88,7 +88,6 @@ namespace fwdpp
                         nodes.push_back(node_t{pop, initial_time});
                     }
             }
-
 
             void
             clear() noexcept
@@ -190,20 +189,29 @@ namespace fwdpp
             /// Generates the index vectors referred to
             /// as I and O in Kelleher et al. (2016)
             {
-                input_left.reserve(edges.size());
-                output_right.reserve(edges.size());
                 input_left.clear();
                 output_right.clear();
-                for (auto& e : edges)
-                    {
-                        assert(e.left < e.right);
-                        input_left.emplace_back(e.left, -nodes[e.parent].time, e.parent,
-                                                e.child);
-                        output_right.emplace_back(e.right, nodes[e.parent].time,
-                                                  e.parent, e.child);
-                    }
-                std::sort(input_left.begin(), input_left.end());
-                std::sort(output_right.begin(), output_right.end());
+                input_left.resize(edges.size());
+                output_right.resize(edges.size());
+                std::iota(begin(input_left), end(input_left), 0);
+                std::iota(begin(output_right), end(output_right), 0);
+                std::sort(begin(input_left), end(input_left), [this](auto i, auto j) {
+                    if (edges[i].left == edges[j].left)
+                        {
+                            return nodes[edges[i].parent].time
+                                   > nodes[edges[j].parent].time;
+                        }
+                    return edges[i].left < edges[j].left;
+                });
+                std::sort(begin(output_right), end(output_right),
+                          [this](auto i, auto j) {
+                              if (edges[i].right == edges[j].right)
+                                  {
+                                      return nodes[edges[i].parent].time
+                                             < nodes[edges[j].parent].time;
+                                  }
+                              return edges[i].right < edges[j].right;
+                          });
             }
 
             std::size_t

@@ -25,7 +25,7 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutations.begin();
             auto mtable_end = tables.mutations.end();
-            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
+            tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
                                                   update_samples_list(false));
             while (mti())
                 {
@@ -64,9 +64,8 @@ namespace fwdpp
 
             auto mtable_itr = tables.mutations.begin();
             auto mtable_end = tables.mutations.end();
-            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
-                                                  tables.preserved_nodes,
-                                                  update_samples_list(false));
+            tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
+                             tables.preserved_nodes, update_samples_list(false));
             while (mti())
                 {
                     auto& tree = mti.tree();

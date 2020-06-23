@@ -183,8 +183,8 @@ void
 expensive_leaf_test(const fwdpp::ts::std_table_collection &tables,
                     const std::vector<fwdpp::ts::table_index_t> &sample_list)
 {
-    fwdpp::ts::tree_visitor mti(tables, sample_list,
-                                fwdpp::ts::update_samples_list(true));
+    fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection> mti(
+        tables, sample_list, fwdpp::ts::update_samples_list(true));
     while (mti())
         {
             auto &tree = mti.tree();
@@ -297,7 +297,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
             std::cerr << "Matrix test with respect to last generation...";
             matrix_runtime_test(tables, samples, pop.mcounts);
             std::cerr << "passed\n";
-			// NOTE: the following check is useful, but disabled by default.
+            // NOTE: the following check is useful, but disabled by default.
             //decltype(pop.mcounts) mcounts_from_genomes(pop.mutations.size(), 0);
             //for (auto &d : pop.diploids)
             //    {

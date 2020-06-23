@@ -31,8 +31,8 @@ namespace fwdpp
         /// C++ conventions for bidirectional iterators from a vector.
         /// \version 0.8.0 Added to library
         {
-            tree_visitor tv(tables, std::forward<SAMPLES>(samples),
-                            update_samples_list(true));
+            tree_visitor<TableCollectionType> tv(tables, std::forward<SAMPLES>(samples),
+                                                 update_samples_list(true));
             auto current_site = begin(tables.sites);
             auto current_mutation = begin(tables.mutations);
             using site = typename TableCollectionType::site_table::value_type;
