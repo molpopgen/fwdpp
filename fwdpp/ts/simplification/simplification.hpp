@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <fwdpp/ts/definitions.hpp>
-#include <fwdpp/ts/nested_forward_lists.hpp>
+#include <fwdpp/util/nested_forward_lists.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 
@@ -193,7 +193,7 @@ namespace fwdpp
                 }
             };
 
-            using ancestry_list = nested_forward_lists<segment, std::int64_t, -1>;
+            using ancestry_list = nested_forward_lists<segment, std::int32_t, -1>;
 
             template <typename TableCollectionType> struct simplifier_internal_state
             /// Holds data needed during tree sequence simplification

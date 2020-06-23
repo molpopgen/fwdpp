@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <vector>
 #include "../definitions.hpp"
-#include "../nested_forward_lists.hpp"
+#include <fwdpp/util/nested_forward_lists.hpp>
 
 namespace fwdpp
 {
@@ -29,7 +29,7 @@ namespace fwdpp
             }
         };
 
-        using edge_buffer = nested_forward_lists<birth_data, std::int64_t, -1>;
+        using edge_buffer = nested_forward_lists<birth_data, std::int32_t, -1>;
 
         // Below are functions for liftover of an edge buffer
         // to a table collection
