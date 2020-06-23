@@ -5,7 +5,6 @@
 #include <algorithm>
 #include "exceptions.hpp"
 #include "marginal_tree.hpp"
-#include "indexed_edge.hpp"
 #include "detail/advance_marginal_tree_policies.hpp"
 #include <fwdpp/util/named_type.hpp>
 
@@ -21,7 +20,7 @@ namespace fwdpp
         using update_samples_list
             = strong_types::named_type<bool, update_samples_list_t>;
 
-        class tree_visitor
+        template <typename TableCollectionType> class tree_visitor
         /// \brief Class that iterates over marginal trees.
         ///
         /// \note This class declares private data
@@ -33,13 +32,16 @@ namespace fwdpp
         /// \version 0.7.4 Updates tree roots during traversal.
         {
           private:
-            indexed_edge_container::const_iterator j, jM, k, kM;
+            std::vector<table_index_t>::const_iterator j, jM, k, kM;
+            typename TableCollectionType::edge_table::const_iterator beg_edges,
+                end_edges;
             double x, maxpos;
             marginal_tree marginal;
             bool advancing_sample_list;
 
             void
-            update_roots_outgoing(table_index_t p, table_index_t c, marginal_tree& marginal)
+            update_roots_outgoing(table_index_t p, table_index_t c,
+                                  marginal_tree& marginal)
             // This is the algorithm used by tskit.
             // The method is applied to nodes p and c
             // AFTER the output index has been applied
@@ -195,12 +197,13 @@ namespace fwdpp
             }
 
           public:
-            template <typename TableCollectionType, typename SAMPLES>
+            template <typename SAMPLES>
             tree_visitor(const TableCollectionType& tables, SAMPLES&& samples,
                          update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()), kM(tables.output_right.cend()),
-                  x(0.0), maxpos(tables.genome_length()),
+                  beg_edges(begin(tables.edges)), end_edges(end(tables.edges)), x(0.0),
+                  maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), std::forward<SAMPLES>(samples),
                            update.get()),
                   advancing_sample_list(update.get())
@@ -212,14 +215,14 @@ namespace fwdpp
                     }
             }
 
-            template <typename TableCollectionType>
             tree_visitor(const TableCollectionType& tables,
                          const std::vector<table_index_t>& samples,
                          const std::vector<table_index_t>& preserved_nodes,
                          update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()), kM(tables.output_right.cend()),
-                  x(0.0), maxpos(tables.genome_length()),
+                  beg_edges(begin(tables.edges)), end_edges(end(tables.edges)), x(0.0),
+                  maxpos(tables.genome_length()),
                   marginal(tables.num_nodes(), samples, preserved_nodes, update.get()),
                   advancing_sample_list(update.get())
             {
@@ -254,10 +257,10 @@ namespace fwdpp
             {
                 if (j < jM || x < maxpos)
                     {
-                        while (k < kM && k->pos == x) // T4
+                        while (k < kM && (beg_edges + *k)->right == x) // T4
                             {
-                                const auto p = k->parent;
-                                const auto c = k->child;
+                                const auto p = (beg_edges + *k)->parent;
+                                const auto c = (beg_edges + *k)->child;
                                 const auto lsib = marginal.left_sib[c];
                                 const auto rsib = marginal.right_sib[c];
                                 if (lsib == NULL_INDEX)
@@ -279,19 +282,21 @@ namespace fwdpp
                                 marginal.parents[c] = NULL_INDEX;
                                 marginal.left_sib[c] = NULL_INDEX;
                                 marginal.right_sib[c] = NULL_INDEX;
-                                detail::outgoing_leaf_counts(marginal, k->parent,
-                                                             k->child);
+                                detail::outgoing_leaf_counts(marginal,
+                                                             (beg_edges + *k)->parent,
+                                                             (beg_edges + *k)->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(marginal, k->parent);
+                                        detail::update_samples_list(
+                                            marginal, (beg_edges + *k)->parent);
                                     }
                                 update_roots_outgoing(p, c, marginal);
                                 ++k;
                             }
-                        while (j < jM && j->pos == x) // Step T2
+                        while (j < jM && (beg_edges + *j)->left == x) // Step T2
                             {
-                                const auto p = j->parent;
-                                const auto c = j->child;
+                                const auto p = (beg_edges + *j)->parent;
+                                const auto c = (beg_edges + *j)->child;
                                 const auto rchild = marginal.right_child[p];
                                 const auto lsib = marginal.left_sib[c];
                                 const auto rsib = marginal.right_sib[c];
@@ -309,13 +314,15 @@ namespace fwdpp
                                     }
                                 // The entry for the child refers to
                                 // the parent's location in the node table.
-                                marginal.parents[c] = j->parent;
+                                marginal.parents[c] = (beg_edges + *j)->parent;
                                 marginal.right_child[p] = c;
-                                detail::incoming_leaf_counts(marginal, j->parent,
-                                                             j->child);
+                                detail::incoming_leaf_counts(marginal,
+                                                             (beg_edges + *j)->parent,
+                                                             (beg_edges + *j)->child);
                                 if (advancing_sample_list)
                                     {
-                                        detail::update_samples_list(marginal, j->parent);
+                                        detail::update_samples_list(
+                                            marginal, (beg_edges + *j)->parent);
                                     }
                                 update_roots_incoming(p, c, lsib, rsib, marginal);
 
@@ -394,11 +401,11 @@ namespace fwdpp
                         double right = maxpos;
                         if (j < jM)
                             {
-                                right = std::min(right, j->pos);
+                                right = std::min(right, (beg_edges + *j)->left);
                             }
                         if (k < kM)
                             {
-                                right = std::min(right, k->pos);
+                                right = std::min(right, (beg_edges + *k)->right);
                             }
                         marginal.left = x;
                         marginal.right = right;

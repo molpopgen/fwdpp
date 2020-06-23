@@ -26,8 +26,8 @@ namespace fwdpp
         /// See fwdpp::ts::mutate_tables for discussion.
         {
             std::map<table_index_t, std::vector<std::pair<double, double>>> rv;
-            tree_visitor mti(tables, std::forward<SAMPLES>(samples),
-                             update_samples_list(false));
+            tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
+                                                  update_samples_list(false));
             while (mti())
                 {
                     auto &tree = mti.tree();

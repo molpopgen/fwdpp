@@ -17,7 +17,7 @@ namespace fwdpp
         {
           private:
             const TableCollectionType& tables_;
-            tree_visitor tv;
+            tree_visitor<TableCollectionType> tv;
             typename TableCollectionType::site_table::const_iterator current_site;
             typename TableCollectionType::mutation_table::const_iterator
                 current_mutation;
@@ -46,10 +46,10 @@ namespace fwdpp
             }
 
             template <typename SAMPLES>
-            tree_visitor
+            tree_visitor<TableCollectionType>
             init_tree_visitor(const SAMPLES& samples)
             {
-                tree_visitor tv(tables_, samples, update_samples_list(true));
+                tree_visitor<TableCollectionType> tv(tables_, samples, update_samples_list(true));
                 auto t = tv();
                 if (!t)
                     {

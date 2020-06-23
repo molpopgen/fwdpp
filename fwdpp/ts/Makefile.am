@@ -15,7 +15,6 @@ pkginclude_HEADERS= definitions.hpp \
 			get_parent_ids.hpp \
 			generate_offspring.hpp \
 			generate_data_matrix.hpp \
-			indexed_edge.hpp \
 			marginal_tree.hpp \
 			tree_visitor.hpp \
 			mark_multiple_roots.hpp \
