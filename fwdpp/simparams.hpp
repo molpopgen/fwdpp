@@ -48,8 +48,9 @@ namespace fwdpp
     /// objects of this type are made by calling fwdpp::make_genetic_parameters.
     ///
     /// \version 0.7.4 Added to library
+    /// \version 0.9.0 gvalue no longer const
     {
-        const genetic_value gvalue;
+        genetic_value gvalue;
         const mutation_function generate_mutations;
         const recombination_function generate_breakpoints;
         const interlocus_recombination_function interlocus_recombination;
