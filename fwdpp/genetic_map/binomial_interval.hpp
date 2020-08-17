@@ -11,8 +11,14 @@ namespace fwdpp
     struct binomial_interval : public genetic_map_unit
     {
         const double beg, end, prob;
-        binomial_interval(double b, double e, double p)
-            : genetic_map_unit(), beg(b), end(e), prob(p)
+        detail::genetic_map_unit_cast_function cast;
+        const bool discrete_;
+
+        [[deprecated("this constructor is deprecated as of 0.9.0")]] binomial_interval(
+            double b, double e, double p)
+            : genetic_map_unit(), beg(b), end(e), prob(p),
+              cast(detail::generate_genetic_map_unit_cast_function(false)),
+              discrete_(false)
         {
             if (!std::isfinite(beg))
                 {
@@ -28,8 +34,34 @@ namespace fwdpp
                 }
             if (end <= beg)
                 {
-                    throw std::invalid_argument(
-                        "end must be greater than beg");
+                    throw std::invalid_argument("end must be greater than beg");
+                }
+            if (prob < 0)
+                {
+                    throw std::invalid_argument("prob must be non-negative");
+                }
+        }
+
+        binomial_interval(double b, double e, double p, bool discrete)
+            : genetic_map_unit(), beg(b), end(e), prob(p),
+              cast(detail::generate_genetic_map_unit_cast_function(discrete)),
+              discrete_(discrete)
+        {
+            if (!std::isfinite(beg))
+                {
+                    throw std::invalid_argument("beg must be finite");
+                }
+            if (!std::isfinite(end))
+                {
+                    throw std::invalid_argument("end must be finite");
+                }
+            if (!std::isfinite(prob))
+                {
+                    throw std::invalid_argument("prob must be finite");
+                }
+            if (end <= beg)
+                {
+                    throw std::invalid_argument("end must be greater than beg");
                 }
             if (prob < 0)
                 {
@@ -38,20 +70,24 @@ namespace fwdpp
         }
 
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             if (gsl_rng_uniform(r) <= prob)
                 {
-                    breakpoints.push_back(gsl_ran_flat(r, beg, end));
+                    breakpoints.push_back(cast(gsl_ran_flat(r, beg, end)));
                 }
         }
 
         std::unique_ptr<genetic_map_unit>
         clone() const final
         {
-            return std::unique_ptr<genetic_map_unit>(
-                new binomial_interval(beg, end, prob));
+            return std::make_unique<binomial_interval>(beg, end, prob, discrete_);
+        }
+
+        virtual bool
+        discrete() const final
+        {
+            return discrete_;
         }
     };
 } // namespace fwdpp

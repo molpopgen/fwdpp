@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(test_compilation)
           };
     const double littler = 10;
     fwdpp::genetic_map gmap;
-    gmap.add_callback(fwdpp::poisson_interval(0, 1, littler));
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, littler, false));
     const auto rec = fwdpp::recbinder(std::cref(gmap), r.get());
 
     auto gv = fwdpp::multiplicative_diploid(fwdpp::fitness(2.));

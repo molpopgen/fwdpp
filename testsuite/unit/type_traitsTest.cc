@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(is_not_fitness_model)
 BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
 {
     fwdpp::genetic_map gmap;
-    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3));
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3, false));
     const auto rm = fwdpp::recbinder(std::cref(gmap), r);
     auto mock_rec_diploid
         = [&rm](const dipvector_t::value_type &, const gcont_t::value_type &,
@@ -174,12 +174,13 @@ BOOST_AUTO_TEST_CASE(is_diploid_recmodel_test)
         mock_rec_diploid, dipvector_t::value_type(), gcont_t::value_type(0),
         gcont_t::value_type(0), mcont_t());
     v = std::is_same<decltype(r2), std::vector<double>>::value;
+    BOOST_REQUIRE_EQUAL(v, true);
 }
 
 BOOST_AUTO_TEST_CASE(is_not_recmodel_test)
 {
     fwdpp::genetic_map gmap;
-    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3));
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 1e-3, false));
     const auto rm = fwdpp::recbinder(std::cref(gmap), r);
     // Test that this is not a valid rec policy
     auto mock_not_rec

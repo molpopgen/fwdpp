@@ -12,8 +12,14 @@ namespace fwdpp
     {
         const double beg, end;
         const int nxovers;
-        fixed_number_crossovers(double b, double e, int n)
-            : beg(b), end(e), nxovers(n)
+        detail::genetic_map_unit_cast_function cast;
+        const bool discrete_;
+
+        [[deprecated("this constructor is deprecated as of "
+                     "0.9.0")]] fixed_number_crossovers(double b, double e, int n)
+            : beg(b), end(e), nxovers(n),
+              cast(detail::generate_genetic_map_unit_cast_function(false)),
+              discrete_(false)
         {
             if (!std::isfinite(b))
                 {
@@ -25,8 +31,7 @@ namespace fwdpp
                 }
             if (e <= b)
                 {
-                    throw std::invalid_argument(
-                        "end must be greater than beg");
+                    throw std::invalid_argument("end must be greater than beg");
                 }
             if (nxovers < 0)
                 {
@@ -35,21 +40,49 @@ namespace fwdpp
                 }
         }
 
+        fixed_number_crossovers(double b, double e, int n, bool discrete)
+            : beg(b), end(e), nxovers(n),
+              cast(detail::generate_genetic_map_unit_cast_function(discrete)),
+              discrete_(discrete)
+        {
+            if (!std::isfinite(b))
+                {
+                    throw std::invalid_argument("beg must be finite");
+                }
+            if (!std::isfinite(e))
+                {
+                    throw std::invalid_argument("end must be finite");
+                }
+            if (e <= b)
+                {
+                    throw std::invalid_argument("end must be greater than beg");
+                }
+            if (nxovers < 0)
+                {
+                    throw std::invalid_argument(
+                        "number of crossovers must be non-negative");
+                }
+        }
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             for (int i = 0; i < nxovers; ++i)
                 {
-                    breakpoints.push_back(gsl_ran_flat(r, beg, end));
+                    breakpoints.push_back(cast(gsl_ran_flat(r, beg, end)));
                 }
         }
 
         std::unique_ptr<genetic_map_unit>
         clone() const final
         {
-            return std::unique_ptr<genetic_map_unit>(
-                new fixed_number_crossovers(beg, end, nxovers));
+            return std::make_unique<fixed_number_crossovers>(beg, end, nxovers,
+                                                             discrete_);
+        }
+
+        virtual bool
+        discrete() const final
+        {
+            return discrete_;
         }
     };
 } // namespace fwdpp

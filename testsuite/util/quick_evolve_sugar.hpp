@@ -42,7 +42,7 @@ simulate_diploid_population(diploid_population_object_t &pop,
                   []() { return -0.01; }, []() { return 1.; });
           };
     fwdpp::genetic_map gmap;
-    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005));
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005, false));
     const auto rec = fwdpp::recbinder(std::cref(gmap), rng.get());
     for (; generation < simlen; ++generation)
         {
@@ -86,7 +86,7 @@ simulate_diploid_population(diploid_population_object_t &pop,
                   []() { return -0.01; }, []() { return 1.; });
           };
     fwdpp::genetic_map gmap;
-    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005));
+    gmap.add_callback(fwdpp::poisson_interval(0, 1, 0.005, false));
     const auto rec = fwdpp::recbinder(std::cref(gmap), rng);
     for (; g < generation + simlen; ++g)
         {
