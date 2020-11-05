@@ -3,15 +3,18 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <type_traits>
 #include <gsl/gsl_randist.h>
 #include "genetic_map_unit.hpp"
 
 namespace fwdpp
 {
-    struct poisson_point : public genetic_map_unit
+    template <typename T> struct poisson_point_t : public genetic_map_unit
     {
-        const double position, mean;
-        poisson_point(const double pos, const double m)
+        static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
+        const T position;
+        double mean;
+        poisson_point_t(const T pos, const double m)
             : genetic_map_unit(), position(pos), mean(m)
         {
             if (!std::isfinite(pos))
@@ -29,13 +32,12 @@ namespace fwdpp
         }
 
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             unsigned n = gsl_ran_poisson(r, mean);
             if (n % 2 != 0.0)
                 {
-                    breakpoints.push_back(position);
+                    breakpoints.push_back(static_cast<double>(position));
                 }
         }
 
@@ -43,9 +45,11 @@ namespace fwdpp
         clone() const final
         {
             return std::unique_ptr<genetic_map_unit>(
-                new poisson_point(position, mean));
+                new poisson_point_t(position, mean));
         }
     };
+
+    using poisson_point = poisson_point_t<double>;
 } // namespace fwdpp
 
 #endif

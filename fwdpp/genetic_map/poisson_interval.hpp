@@ -3,16 +3,19 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <type_traits>
 #include <gsl/gsl_randist.h>
 #include "genetic_map_unit.hpp"
 
 namespace fwdpp
 {
-    struct poisson_interval : public genetic_map_unit
+    template <typename T> struct poisson_interval_t : public genetic_map_unit
     {
+        static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
         const double beg, end, mean;
-        poisson_interval(double b, double e, double m)
-            : genetic_map_unit(), beg(b), end(e), mean(m)
+        poisson_interval_t(T b, T e, double m)
+            : genetic_map_unit(), beg(static_cast<double>(b)),
+              end(static_cast<double>(e)), mean(m)
         {
             if (!std::isfinite(beg))
                 {
@@ -28,8 +31,7 @@ namespace fwdpp
                 }
             if (end <= beg)
                 {
-                    throw std::invalid_argument(
-                        "end must be greater than beg");
+                    throw std::invalid_argument("end must be greater than beg");
                 }
             if (mean < 0)
                 {
@@ -38,13 +40,13 @@ namespace fwdpp
         }
 
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             unsigned n = gsl_ran_poisson(r, mean);
             for (unsigned i = 0; i < n; ++i)
                 {
-                    breakpoints.push_back(gsl_ran_flat(r, beg, end));
+                    auto breakpoint = static_cast<T>(gsl_ran_flat(r, beg, end));
+                    breakpoints.push_back(static_cast<double>(breakpoint));
                 }
         }
 
@@ -52,9 +54,11 @@ namespace fwdpp
         clone() const final
         {
             return std::unique_ptr<genetic_map_unit>(
-                new poisson_interval(beg, end, mean));
+                new poisson_interval_t(static_cast<T>(beg), static_cast<T>(end), mean));
         }
     };
+
+    using poisson_interval = poisson_interval_t<double>;
 } // namespace fwdpp
 
 #endif

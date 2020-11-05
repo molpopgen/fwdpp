@@ -3,16 +3,19 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <type_traits>
 #include <gsl/gsl_randist.h>
 #include "genetic_map_unit.hpp"
 
 namespace fwdpp
 {
-    struct binomial_interval : public genetic_map_unit
+    template <typename T> struct binomial_interval_t : public genetic_map_unit
     {
-        const double beg, end, prob;
-        binomial_interval(double b, double e, double p)
-            : genetic_map_unit(), beg(b), end(e), prob(p)
+        static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
+        double beg, end, prob;
+        binomial_interval_t(T b, T e, double p)
+            : genetic_map_unit(), beg(static_cast<double>(b)),
+              end(static_cast<double>(e)), prob(p)
         {
             if (!std::isfinite(beg))
                 {
@@ -28,8 +31,7 @@ namespace fwdpp
                 }
             if (end <= beg)
                 {
-                    throw std::invalid_argument(
-                        "end must be greater than beg");
+                    throw std::invalid_argument("end must be greater than beg");
                 }
             if (prob < 0)
                 {
@@ -38,12 +40,12 @@ namespace fwdpp
         }
 
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             if (gsl_rng_uniform(r) <= prob)
                 {
-                    breakpoints.push_back(gsl_ran_flat(r, beg, end));
+                    auto breakpoint = static_cast<T>(gsl_ran_flat(r, beg, end));
+                    breakpoints.push_back(static_cast<double>(breakpoint));
                 }
         }
 
@@ -51,9 +53,11 @@ namespace fwdpp
         clone() const final
         {
             return std::unique_ptr<genetic_map_unit>(
-                new binomial_interval(beg, end, prob));
+                new binomial_interval_t(static_cast<T>(beg), static_cast<T>(end), prob));
         }
     };
+
+    using binomial_interval = binomial_interval_t<double>;
 } // namespace fwdpp
 
 #endif
