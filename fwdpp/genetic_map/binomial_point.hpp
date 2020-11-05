@@ -3,16 +3,18 @@
 
 #include <cmath>
 #include <stdexcept>
+#include <type_traits>
 #include <gsl/gsl_randist.h>
 #include "genetic_map_unit.hpp"
 
 namespace fwdpp
 {
-    struct binomial_point : public genetic_map_unit
+    template <typename T> struct binomial_point_t : public genetic_map_unit
     {
-        double position, prob;
-        binomial_point(const double pos, const double pr)
-            : position(pos), prob(pr)
+        static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
+        T position;
+        double prob;
+        binomial_point_t(const T pos, const double pr) : position(pos), prob(pr)
         {
             if (!std::isfinite(pos))
                 {
@@ -24,18 +26,16 @@ namespace fwdpp
                 }
             if (pr < 0 || pr > 1.)
                 {
-                    throw std::invalid_argument(
-                        "probability must be 0 <= x <= 1");
+                    throw std::invalid_argument("probability must be 0 <= x <= 1");
                 }
         }
 
         void
-        operator()(const gsl_rng* r,
-                   std::vector<double>& breakpoints) const final
+        operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
         {
             if (gsl_rng_uniform(r) <= prob)
                 {
-                    breakpoints.push_back(position);
+                    breakpoints.push_back(static_cast<double>(position));
                 }
         }
 
@@ -43,9 +43,11 @@ namespace fwdpp
         clone() const final
         {
             return std::unique_ptr<genetic_map_unit>(
-                new binomial_point(position, prob));
+                new binomial_point_t(position, prob));
         }
     };
+
+    using binomial_point = binomial_point_t<double>;
 } // namespace fwdpp
 
 #endif
