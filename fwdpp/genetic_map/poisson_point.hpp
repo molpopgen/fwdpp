@@ -9,12 +9,15 @@
 
 namespace fwdpp
 {
+    /// @struct poisson_point_t poisson_point.hpp fwdpp/genetic_map/poisson_point.hpp
+    /// @brief Generate a breakpoint at a position if a Poisson deviate is odd.
+    /// @ingroup genetic_map_types
     template <typename T> struct poisson_point_t : public genetic_map_unit
-    /// \brief Generate a breakpoint at a position if a Poisson deviate is odd.
-    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
+        /// Breakpoint position
         const T position;
+        /// Mean number of crossovers at @a position
         double mean;
         poisson_point_t(const T pos, const double m)
             : genetic_map_unit(), position(pos), mean(m)
@@ -47,15 +50,17 @@ namespace fwdpp
 
         std::unique_ptr<genetic_map_unit>
         clone() const final
+        /// Clone object
+        /// @return ``std::unique_ptr`` to genetic_map_unit.
         {
             return std::unique_ptr<genetic_map_unit>(
                 new poisson_point_t(position, mean));
         }
     };
 
-    /// \class poisson_point
+    /// \typedef poisson_point
     /// \brief A poisson_point_t using a double to represent breakpoints.
-    /// \ingroup genetic_map_unit_types
+    /// \ingroup genetic_map_types
     using poisson_point = poisson_point_t<double>;
 } // namespace fwdpp
 

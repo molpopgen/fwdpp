@@ -1,6 +1,8 @@
 #ifndef FWDPP_BINOMIAL_INTERVAL_HPP__
 #define FWDPP_BINOMIAL_INTERVAL_HPP__
 
+/** @file */
+
 #include <cmath>
 #include <stdexcept>
 #include <type_traits>
@@ -9,19 +11,26 @@
 
 namespace fwdpp
 {
+    /// @struct binomial_interval_t binomial_interval.hpp fwdpp/genetic_map/binomial_interval.hpp
+    /// @brief Generate a breakpoint in an interval with a given probability
+    /// @ingroup genetic_map_types
     template <typename T> struct binomial_interval_t : public genetic_map_unit
-    /// \brief Generate a breakpoint in an interval with a given probability
-    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
-        double beg, end, prob;
+
+        /// Beginning of interval (inclusive)
+        double beg;
+        /// End of interval (exclusive)
+        double end;
+        /// Probability of a breakpoint
+        double prob;
         binomial_interval_t(T b, T e, double p)
             : genetic_map_unit(), beg(static_cast<double>(b)),
               end(static_cast<double>(e)), prob(p)
-        /// \param b Beginning of interval
-        /// \param e End of interval
-        /// \param p Probability of a breakpoint
-        /// \note The interval is half-open on [b, e).
+        /// @param b Beginning of interval
+        /// @param e End of interval
+        /// @param p Probability of a breakpoint
+        /// @note The interval is half-open on [b, e).
         {
             if (!std::isfinite(beg))
                 {
@@ -47,6 +56,9 @@ namespace fwdpp
 
         void
         operator()(const gsl_rng* r, std::vector<double>& breakpoints) const final
+        /// Generate breakpints
+        /// @param r Random number generator
+        /// @param breakpoints container to fill with breakpoints
         {
             if (gsl_rng_uniform(r) <= prob)
                 {
@@ -57,15 +69,17 @@ namespace fwdpp
 
         std::unique_ptr<genetic_map_unit>
         clone() const final
+        /// Clone object
+        /// @return ``std::unique_ptr`` to genetic_map_unit.
         {
             return std::unique_ptr<genetic_map_unit>(
                 new binomial_interval_t(static_cast<T>(beg), static_cast<T>(end), prob));
         }
     };
 
-    /// \class binomial_interval
-    /// \brief A fwdpp::binomial_interval_t using double to represent breakpoints
-    /// \ingroup genetic_map_unit_types
+    /// @typedef binomial_interval
+    /// @brief A fwdpp::binomial_interval_t using double to represent breakpoints
+    /// @ingroup genetic_map_types
     using binomial_interval = binomial_interval_t<double>;
 } // namespace fwdpp
 
