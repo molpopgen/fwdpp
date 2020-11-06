@@ -10,11 +10,15 @@
 namespace fwdpp
 {
     template <typename T> struct binomial_point_t : public genetic_map_unit
+    /// \brief Generate a breakpoint at a specific position with a given probability
+    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
         T position;
         double prob;
         binomial_point_t(const T pos, const double pr) : position(pos), prob(pr)
+        /// \param pos The breakpoint position
+        /// \param pr The probability of a breakpoint
         {
             if (!std::isfinite(pos))
                 {
@@ -47,6 +51,9 @@ namespace fwdpp
         }
     };
 
+    /// \class binomial_point
+    /// \brief A fwdpp::binomial_point_t using double to represent breakpoints
+    /// \ingroup genetic_map_unit_types
     using binomial_point = binomial_point_t<double>;
 } // namespace fwdpp
 
