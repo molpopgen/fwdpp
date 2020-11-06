@@ -10,12 +10,18 @@
 namespace fwdpp
 {
     template <typename T> struct binomial_interval_t : public genetic_map_unit
+    /// \brief Generate a breakpoint in an interval with a given probability
+    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
         double beg, end, prob;
         binomial_interval_t(T b, T e, double p)
             : genetic_map_unit(), beg(static_cast<double>(b)),
               end(static_cast<double>(e)), prob(p)
+        /// \param b Beginning of interval
+        /// \param e End of interval
+        /// \param p Probability of a breakpoint
+        /// \note The interval is half-open on [b, e).
         {
             if (!std::isfinite(beg))
                 {
@@ -57,6 +63,9 @@ namespace fwdpp
         }
     };
 
+    /// \class binomial_interval
+    /// \brief A fwdpp::binomial_interval_t using double to represent breakpoints
+    /// \ingroup genetic_map_unit_types
     using binomial_interval = binomial_interval_t<double>;
 } // namespace fwdpp
 

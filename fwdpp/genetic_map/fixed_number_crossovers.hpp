@@ -10,12 +10,18 @@
 namespace fwdpp
 {
     template <typename T> struct fixed_number_crossovers_t : public genetic_map_unit
+    /// \brief Generate a specific number of breakpoints in an interval
+    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
         const double beg, end;
         const int nxovers;
         fixed_number_crossovers_t(T b, T e, int n)
             : beg(static_cast<double>(b)), end(static_cast<double>(e)), nxovers(n)
+        /// \param b Beginning of interval
+        /// \param e End of interval
+        /// \param n Number of braekpoints to generate
+        /// \note The interval is half-open on [b, e).
         {
             if (!std::isfinite(b))
                 {
@@ -54,6 +60,9 @@ namespace fwdpp
         }
     };
 
+    /// \class fixed_number_crossovers
+    /// \brief A fwdpp::fixed_number_crossovers_t using double to represent breakpoints
+    /// \ingroup genetic_map_unit_types
     using fixed_number_crossovers = fixed_number_crossovers_t<double>;
 } // namespace fwdpp
 

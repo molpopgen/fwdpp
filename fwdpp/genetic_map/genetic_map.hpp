@@ -11,6 +11,8 @@
 namespace fwdpp
 {
     class genetic_map
+    /// \brief A genetic map is a container of fwdpp::genetic_map_unit objects.
+    /// \ingroup genetic_map_unit_types
     {
       private:
         std::vector<std::unique_ptr<genetic_map_unit>> callbacks;
@@ -20,7 +22,9 @@ namespace fwdpp
             : callbacks(std::move(c))
         {
         }
-        genetic_map() : callbacks{} {}
+        genetic_map() : callbacks{}
+        {
+        }
 
         void
         add_callback(const genetic_map_unit& gu)
@@ -30,6 +34,8 @@ namespace fwdpp
 
         std::vector<double>
         operator()(const gsl_rng* r) const
+        /// \note Future revisions may change the return type to void
+        /// and allow for a reusable vector.
         {
             std::vector<double> breakpoints;
             for (auto& c : callbacks)

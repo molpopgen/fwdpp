@@ -10,12 +10,18 @@
 namespace fwdpp
 {
     template <typename T> struct poisson_interval_t : public genetic_map_unit
+    /// \brief Generate a Poisson number of breakpoints in an interval
+    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
         const double beg, end, mean;
         poisson_interval_t(T b, T e, double m)
             : genetic_map_unit(), beg(static_cast<double>(b)),
               end(static_cast<double>(e)), mean(m)
+        /// \param b Beginning of interval
+        /// \param e End of interval
+        /// \param m Mean number of breakpoints
+        /// \note The interval is half-open on [b, e).
         {
             if (!std::isfinite(beg))
                 {
@@ -58,6 +64,9 @@ namespace fwdpp
         }
     };
 
+    /// \class poisson_interval
+    /// \brief A fwdpp::poisson_interval_t using double to represent breakpoints
+    /// \ingroup genetic_map_unit_types
     using poisson_interval = poisson_interval_t<double>;
 } // namespace fwdpp
 
