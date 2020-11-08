@@ -1,4 +1,4 @@
-  [[fwdpp]] - A C++ template library for forward-time population genetic simulations
+# fwdpp - A C++ template library for forward-time population genetic simulations
 
 
 
@@ -41,8 +41,8 @@ There is a [Google Group](https://groups.google.com/forum/#!forum/fwdpp-users) f
 
 # Build status
 
-* Status of main branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=main)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/main.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/main)
-* Status of dev branch: [![Build Status](https://travis-ci.org/molpopgen/fwdpp.svg?branch=dev)](https://travis-ci.org/molpopgen/fwdpp) [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/dev.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/dev)
+* Status of main branch: [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/main.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/main)
+* Status of dev branch:  [![CircleCI](https://circleci.com/gh/molpopgen/fwdpp/tree/dev.svg?style=svg)](https://circleci.com/gh/molpopgen/fwdpp/tree/dev)
 
 # Introduction
 
