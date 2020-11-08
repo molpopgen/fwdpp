@@ -28,9 +28,16 @@ namespace fwdpp
         }
 
         genetic_map() : callbacks{}
-        /// 
+        ///
         /// Construct an empty genetic_map
         {
+        }
+
+        void
+        add_callback(std::unique_ptr<genetic_map_unit>&& gu)
+        /// Add a new callback by moving the input
+        {
+            callbacks.emplace_back(std::move(gu));
         }
 
         void
