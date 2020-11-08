@@ -10,6 +10,7 @@ namespace fwdpp
         template <typename T> struct abstract_cloneable
         /// Generate cloneable abstract base classes via CRTP
         {
+			/// Return a clone (new copy) of object
             virtual std::unique_ptr<T> clone() const = 0;
             abstract_cloneable() = default;
             virtual ~abstract_cloneable() = default;

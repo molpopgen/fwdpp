@@ -9,19 +9,25 @@
 
 namespace fwdpp
 {
+    /// @struct poisson_interval_t poisson_interval.hpp fwdpp/genetic_map/poisson_interval.hpp
+    /// @brief Generate a Poisson number of breakpoints in an interval
+    /// @ingroup genetic_map_types
     template <typename T> struct poisson_interval_t : public genetic_map_unit
-    /// \brief Generate a Poisson number of breakpoints in an interval
-    /// \ingroup genetic_map_unit_types
     {
         static_assert(std::is_arithmetic<T>::value, "Template type must be numeric");
-        const double beg, end, mean;
+        /// Beginning of interval (inclusive)
+        const double beg;
+        /// End of interval (exclusive)
+        const double end;
+        /// Mean number of breakpoints
+        const double mean;
         poisson_interval_t(T b, T e, double m)
             : genetic_map_unit(), beg(static_cast<double>(b)),
               end(static_cast<double>(e)), mean(m)
-        /// \param b Beginning of interval
-        /// \param e End of interval
-        /// \param m Mean number of breakpoints
-        /// \note The interval is half-open on [b, e).
+        /// @param b Beginning of interval
+        /// @param e End of interval
+        /// @param m Mean number of breakpoints
+        /// @note The interval is half-open on [b, e).
         {
             if (!std::isfinite(beg))
                 {
@@ -58,15 +64,17 @@ namespace fwdpp
 
         std::unique_ptr<genetic_map_unit>
         clone() const final
+        /// Clone object
+        /// @return ``std::unique_ptr`` to genetic_map_unit.
         {
             return std::unique_ptr<genetic_map_unit>(
                 new poisson_interval_t(static_cast<T>(beg), static_cast<T>(end), mean));
         }
     };
 
-    /// \class poisson_interval
-    /// \brief A fwdpp::poisson_interval_t using double to represent breakpoints
-    /// \ingroup genetic_map_unit_types
+    /// @typedef poisson_interval
+    /// @brief A fwdpp::poisson_interval_t using double to represent breakpoints
+    /// @ingroup genetic_map_types
     using poisson_interval = poisson_interval_t<double>;
 } // namespace fwdpp
 

@@ -5,7 +5,9 @@ noinst_PROGRAMS=	diploid_ind \
 	custom_mutation \
 	custom_diploid \
 	load_table_collection \
-	edge_buffering
+	edge_buffering \
+	genetic_map_example \
+	rng_example
 
 #	wfts_overlapping_generations_dynamic_indexing 
 #	wfts_overlapping_generations_dynamic_indexing_with_mutation
@@ -16,6 +18,12 @@ K_linked_regions_extensions_SOURCES=K_linked_regions_extensions.cc common_ind.hp
 juvenile_migration_SOURCES=juvenile_migration.cc common_ind.hpp
 custom_mutation_SOURCES=custom_mutation.cc common_ind.hpp
 custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
+
+# These examples are used to test for API regressions and to include
+# in the manual.
+genetic_map_example_SOURCES=genetic_map_example.cc
+rng_example_SOURCES=rng_example.cc
+
 # wfts_overlapping_generations_dynamic_indexing_SOURCES=wfts_overlapping_generations_dynamic_indexing.cc wfevolvets.cc wfevolvets.hpp
 # wfts_overlapping_generations_dynamic_indexing_with_mutation_SOURCES=wfts_overlapping_generations_dynamic_indexing_with_mutation.cc wfevolvets.cc wfevolvets.hpp
 load_table_collection_SOURCES=load_table_collection.cc

@@ -67,8 +67,10 @@ namespace fwdpp
 
         ~GSLrng_t() = default;
         GSLrng_t(const GSLrng_t &rng) = delete;
+		/// Move constructor
         GSLrng_t(GSLrng_t &&) = default;
         GSLrng_t &operator=(GSLrng_t &) = delete;
+		/// Move assignment
         GSLrng_t &operator=(GSLrng_t &&) = default;
 
         //! Return underlying pointer
@@ -122,6 +124,7 @@ namespace fwdpp
         // }
     };
 
+	/// \typedef GSLrng_mt
 	/// Typedef for mersenne twister
 	/// \version 0.7.4 Added to fwdpp
 	using GSLrng_mt = GSLrng_t<GSL_RNG_MT19937>;
