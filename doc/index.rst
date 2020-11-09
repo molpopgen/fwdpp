@@ -10,7 +10,18 @@ Welcome to fwdpp's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   rst/introduction
+   rst/distribution
+   rst/building
+
+.. toctree::
+   :caption: Fundamental types
+
    rst/rng
+
+.. toctree::
+   :caption: Mutation and recombination
+
    rst/geneticmaps
 
 
