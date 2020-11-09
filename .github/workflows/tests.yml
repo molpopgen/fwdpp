@@ -1,0 +1,71 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+jobs:
+  test:
+    name: Build and test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:  [ ubuntu-latest ]
+        cppflavor: [14, 17]
+        compiler: [gcc, clang10]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ secrets.ACTIONS }}
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get install autoconf
+          sudo apt-get install libgsl-dev
+          sudo apt-get install libboost-program-options-dev libboost-test-dev
+          
+
+      - name: Set GCC as compiler
+        if: matrix.compiler == 'gcc'
+        run: |
+          echo "CC=gcc" >> $GITHUB_ENV
+          echo "CXX=g++" >> $GITHUB_ENV
+
+      - name: Install clang-10
+        if: matrix.compiler == 'clang10'
+        run: |
+          sudo apt-get install clang-10 clang++-10
+          echo "CC=clang-10" >> $GITHUB_ENV
+          echo "CXX=clang++-10" >> $GITHUB_ENV
+
+      - name: Generate build scripts
+        run: |
+          autoreconf --install
+
+      - name: Configure C++14 build
+        if: matrix.cppflavor == 14
+        run: |
+          CC=$CC CXX=$CXX ./configure
+
+      - name: Configure C++17 build
+        if: matrix.cppflavor == 17
+        run: |
+          CC=$CC CXX=$CXX ./configure --enable-cpp17=true
+
+      - name: Build 
+        run: |
+          make -j 2
+
+      - name: Run tests
+        run: |
+          make check
