@@ -14,7 +14,7 @@
  *
  * This model is therefore two regions separated by 50 centiMorgans.
  *
- * methods 1 and 2 are the more efficient of the two, requiring fewer temporary objects.
+ * methods 1 and 2 are the more efficient of the three, requiring fewer temporary objects.
  * method 3 is useful for situations where objects must be accessed directly.  For example,
  * when constructing Python interfaces via pybind11, one cannot access a unique_ptr.
  * It is unlikely that any method would be a measurable performance bottleneck.
