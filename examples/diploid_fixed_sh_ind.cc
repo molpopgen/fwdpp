@@ -7,8 +7,6 @@
 
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
-#ifdef HAVE_LIBSEQUENCE
-#endif
 #include <numeric>
 #include <functional>
 #include <cassert>
@@ -123,7 +121,5 @@ main(int argc, char **argv)
                 }
             auto dm = fwdpp::sample_individuals(pop, random_dips, true, false,
                                                 true);
-#ifdef HAVE_LIBSEQUENCE
-#endif
         }
 }
