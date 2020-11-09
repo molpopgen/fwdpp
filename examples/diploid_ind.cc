@@ -12,9 +12,6 @@
 #include <unordered_map>
 #include <type_traits>
 #include <vector>
-#ifdef HAVE_LIBSEQUENCE
-
-#endif
 #include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #include <fwdpp/popgenmut.hpp>
@@ -174,11 +171,6 @@ main(int argc, char **argv)
                 }
             auto dm = fwdpp::sample_individuals(pop, random_dips, true, false,
                                                 true);
-// Write the sample date a to libsequence's Sequence::SimData and
-// print to screen
-#ifdef HAVE_LIBSEQUENCE
-
-#endif
         }
     return 0;
 }
