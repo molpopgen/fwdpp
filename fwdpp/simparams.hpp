@@ -27,9 +27,8 @@ namespace fwdpp
         }
     };
 
-    template <typename genetic_value, typename mutation_function,
-              typename recombination_function,
-              typename parent_haploid_genome_swapping_function>
+    template <typename GeneticValueType, typename MutationFunctionType,
+              typename RecombinationFunctionType, typename SwappingFunctionType>
     struct genetic_parameters
     /// \brief Hold types for genetic operations
     ///
@@ -49,10 +48,14 @@ namespace fwdpp
     /// \version 0.7.4 Added to library
     /// \version 0.9.0 gvalue no longer const
     {
+        using genetic_value = GeneticValueType;
+        using mutation_function = MutationFunctionType;
+        using recombination_function = RecombinationFunctionType;
+        using swapping_function = SwappingFunctionType;
         genetic_value gvalue;
         const mutation_function generate_mutations;
         const recombination_function generate_breakpoints;
-        const parent_haploid_genome_swapping_function haploid_genome_swapper;
+        const swapping_function haploid_genome_swapper;
         flagged_mutation_queue mutation_recycling_bin;
         flagged_haploid_genome_queue haploid_genome_recycling_bin;
         std::vector<uint_t> neutral;
@@ -74,45 +77,47 @@ namespace fwdpp
         }
     };
 
-    template <typename genetic_value, typename mutation_function,
-              typename recombination_function, typename swapper>
+    template <typename GeneticValueType, typename MutationFunctionType,
+              typename RecombinationFunctionType, typename SwappingFunctionType>
     inline genetic_parameters<
-        typename std::remove_reference<genetic_value>::type,
-        typename std::remove_reference<mutation_function>::type,
-        typename std::remove_reference<recombination_function>::type,
-        typename std::remove_reference<swapper>::type>
-    make_genetic_parameters(
-        genetic_value&& gvalue_param, mutation_function&& generate_mutations_param,
-        recombination_function&& generate_breakpoints_param, swapper&& swapper_param)
+        typename std::remove_reference<GeneticValueType>::type,
+        typename std::remove_reference<MutationFunctionType>::type,
+        typename std::remove_reference<RecombinationFunctionType>::type,
+        typename std::remove_reference<SwappingFunctionType>::type>
+    make_genetic_parameters(GeneticValueType&& gvalue_param,
+                            MutationFunctionType&& generate_mutations_param,
+                            RecombinationFunctionType&& generate_breakpoints_param,
+                            SwappingFunctionType&& swapper_param)
     /// Create a fwdpp::genetic_parameters using a "custom swapper
     /// instead of fwdpp::mendel.
     {
         return genetic_parameters<
-            typename std::remove_reference<genetic_value>::type,
-            typename std::remove_reference<mutation_function>::type,
-            typename std::remove_reference<recombination_function>::type,
-            typename std::remove_reference<swapper>::type>(
-            std::forward<genetic_value>(gvalue_param),
-            std::forward<mutation_function>(generate_mutations_param),
-            std::forward<recombination_function>(generate_breakpoints_param),
-            std::forward<swapper>(swapper_param));
+            typename std::remove_reference<GeneticValueType>::type,
+            typename std::remove_reference<MutationFunctionType>::type,
+            typename std::remove_reference<RecombinationFunctionType>::type,
+            typename std::remove_reference<SwappingFunctionType>::type>(
+            std::forward<GeneticValueType>(gvalue_param),
+            std::forward<MutationFunctionType>(generate_mutations_param),
+            std::forward<RecombinationFunctionType>(generate_breakpoints_param),
+            std::forward<SwappingFunctionType>(swapper_param));
     }
 
-    template <typename genetic_value, typename mutation_function,
-              typename recombination_function>
+    template <typename GeneticValueType, typename MutationFunctionType,
+              typename RecombinationFunctionType>
     inline genetic_parameters<
-        typename std::remove_reference<genetic_value>::type,
-        typename std::remove_reference<mutation_function>::type,
-        typename std::remove_reference<recombination_function>::type, mendel>
-    make_genetic_parameters(genetic_value&& gvalue_param,
-                            mutation_function&& generate_mutations_param,
-                            recombination_function&& generate_breakpoints_param)
+        typename std::remove_reference<GeneticValueType>::type,
+        typename std::remove_reference<MutationFunctionType>::type,
+        typename std::remove_reference<RecombinationFunctionType>::type, mendel>
+    make_genetic_parameters(GeneticValueType&& gvalue_param,
+                            MutationFunctionType&& generate_mutations_param,
+                            RecombinationFunctionType&& generate_breakpoints_param)
     /// Create a fwdpp::genetic_parameters using fwdpp::mendel
     {
         return make_genetic_parameters(
-            std::forward<genetic_value>(gvalue_param),
-            std::forward<mutation_function>(generate_mutations_param),
-            std::forward<recombination_function>(generate_breakpoints_param), mendel());
+            std::forward<GeneticValueType>(gvalue_param),
+            std::forward<MutationFunctionType>(generate_mutations_param),
+            std::forward<RecombinationFunctionType>(generate_breakpoints_param),
+            mendel());
     }
 } // namespace fwdpp
 
