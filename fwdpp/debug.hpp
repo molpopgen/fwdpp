@@ -34,19 +34,18 @@ namespace fwdpp
 {
     namespace debug
     {
-        template <typename gcont_t>
+        template <typename GenomeContainerType>
         void
-        validate_sum_haploid_genome_counts(const gcont_t &haploid_genomes,
+        validate_sum_haploid_genome_counts(const GenomeContainerType &haploid_genomes,
                                            const uint_t expected_sum)
         /// Throw exception if sum of all haploid_genome counts != \a expected_sum
         {
-            detail::validate_sum_haploid_genome_counts(haploid_genomes,
-                                                       expected_sum);
+            detail::validate_sum_haploid_genome_counts(haploid_genomes, expected_sum);
         }
 
-        template <typename mcont_t, typename iterator>
+        template <typename MutationContainerType, typename iterator>
         void
-        validate_mutation_key_ranges(const mcont_t &mutations,
+        validate_mutation_key_ranges(const MutationContainerType &mutations,
                                      const iterator beg, const iterator end)
         /*! Throw an exception if any mutation keys are >= mutations.size()
          */
@@ -54,18 +53,18 @@ namespace fwdpp
             detail::validate_mutation_key_ranges(mutations, beg, end);
         }
 
-        template <typename haploid_genome_t>
+        template <typename HaploidGenomeType>
         void
-        haploid_genome_is_extant(const haploid_genome_t &haploid_genome)
+        haploid_genome_is_extant(const HaploidGenomeType &haploid_genome)
         /// Throw exception of haploid_genome.n == 0
         {
             detail::haploid_genome_is_extant(haploid_genome);
         }
 
-        template <typename haploid_genome_t, typename mcont_t>
+        template <typename HaploidGenomeType, typename MutationContainerType>
         void
-        haploid_genome_is_sorted(const haploid_genome_t &g,
-                                 const mcont_t &mutations)
+        haploid_genome_is_sorted(const HaploidGenomeType &g,
+                                 const MutationContainerType &mutations)
         /*!
           \brief Check that neutral mutation keys are sorted according to mutation
           position
@@ -74,10 +73,10 @@ namespace fwdpp
             detail::haploid_genome_is_sorted(g, mutations);
         }
 
-        template <typename haploid_genome_t, typename mcont_t>
+        template <typename HaploidGenomeType, typename MutationContainerType>
         void
-        haploid_genome_data_valid(const haploid_genome_t &g,
-                                  const mcont_t &mutations,
+        haploid_genome_data_valid(const HaploidGenomeType &g,
+                                  const MutationContainerType &mutations,
                                   const std::vector<uint_t> &mutcounts)
         /// Throw exception if haploid_genome data are unsorted or if mutation
         /// key storage is invalid.
@@ -86,9 +85,9 @@ namespace fwdpp
             detail::haploid_genome_data_valid(g, mutations, mutcounts);
         }
 
-        template <typename poptype>
+        template <typename PopulationType>
         void
-        validate_pop_data(const poptype &pop)
+        validate_pop_data(const PopulationType &pop)
         /// Throw exception if any in a series of checks on
         /// the internal state of \a pop fail.
         /// \note This is an expensive function!
@@ -96,23 +95,23 @@ namespace fwdpp
             detail::validate_pop_data(pop);
         }
 
-        template <typename mutation_type>
+        template <typename MutationType>
         void
-        check_mutation_neutrality(const mutation_type &mutation,
+        check_mutation_neutrality(const MutationType &mutation,
                                   const bool expected_neutrality)
         /// Throw exception if mutation.neutral != \a expected_neutrality
         {
             detail::check_mutation_neutrality(mutation, expected_neutrality);
         }
 
-        template <typename poptype>
+        template <typename PopulationType>
         /// Throw exception if haploid_genomes contain keys to extinct haploid_genomes
         /// \version 0.7.4 Added to fwdpp
         void
-        all_haploid_genomes_extant(const poptype &pop)
+        all_haploid_genomes_extant(const PopulationType &pop)
         {
             detail::all_haploid_genomes_extant(pop,
-                                               typename poptype::popmodel_t());
+                                               typename PopulationType::popmodel_t());
         }
     } // namespace debug
 } // namespace fwdpp

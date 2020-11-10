@@ -24,8 +24,7 @@ namespace fwdpp
     /// Set haploid_genome counts in all diploids to zero
     /// \version 0.7.4 Added to fwdpp
     {
-        fwdpp_internal::zero_out_haploid_genomes(
-            pop, typename poptype::popmodel_t());
+        fwdpp_internal::zero_out_haploid_genomes(pop, typename poptype::popmodel_t());
     }
 
     /*!
@@ -33,14 +32,13 @@ namespace fwdpp
 
       \note: lookup must be compatible with lookup->erase(lookup->find(double))
     */
-    template <typename mcont_t, typename mutation_lookup_table>
+    template <typename MutationContainerType, typename mutation_lookup_table>
     void
-    update_mutations(mcont_t &mutations, mutation_lookup_table &lookup,
+    update_mutations(MutationContainerType &mutations, mutation_lookup_table &lookup,
                      std::vector<uint_t> &mcounts, const unsigned twoN)
     {
-        static_assert(
-            traits::is_mutation_v<typename mcont_t::value_type>,
-            "mutation_type must be derived from fwdpp::mutation_base");
+        static_assert(traits::is_mutation_v<typename MutationContainerType::value_type>,
+                      "mutation_type must be derived from fwdpp::mutation_base");
 #ifndef NDEBUG
         if (mcounts.size() != mutations.size())
             {
@@ -79,15 +77,14 @@ namespace fwdpp
 
       \note: lookup must be compatible with lookup->erase(lookup->find(double))
     */
-    template <typename mcont_t, typename mutation_lookup_table>
+    template <typename MutationContainerType, typename mutation_lookup_table>
     void
-    update_mutations(const mcont_t &mutations, mutation_lookup_table &lookup,
-                     std::vector<uint_t> &mcounts)
+    update_mutations(const MutationContainerType &mutations,
+                     mutation_lookup_table &lookup, std::vector<uint_t> &mcounts)
 
     {
-        static_assert(
-            traits::is_mutation_v<typename mcont_t::value_type>,
-            "mutation_type must be derived from fwdpp::mutation_base");
+        static_assert(traits::is_mutation_v<typename MutationContainerType::value_type>,
+                      "mutation_type must be derived from fwdpp::mutation_base");
         for (std::size_t i = 0; i < mcounts.size(); ++i)
             {
                 if (!mcounts[i])
@@ -114,19 +111,16 @@ namespace fwdpp
 
       \note: lookup must be compatible with lookup->erase(lookup->find(double))
     */
-    template <typename mcont_t, typename fixation_container_t,
-              typename fixation_time_container_t,
-              typename mutation_lookup_table>
+    template <typename MutationContainerType, typename fixation_container_t,
+              typename fixation_time_container_t, typename mutation_lookup_table>
     void
-    update_mutations(mcont_t &mutations, fixation_container_t &fixations,
+    update_mutations(MutationContainerType &mutations, fixation_container_t &fixations,
                      fixation_time_container_t &fixation_times,
-                     mutation_lookup_table &lookup,
-                     std::vector<uint_t> &mcounts, const unsigned &generation,
-                     const unsigned &twoN)
+                     mutation_lookup_table &lookup, std::vector<uint_t> &mcounts,
+                     const unsigned &generation, const unsigned &twoN)
     {
-        static_assert(
-            traits::is_mutation_v<typename mcont_t::value_type>,
-            "mutation_type must be derived from fwdpp::mutation_base");
+        static_assert(traits::is_mutation_v<typename MutationContainerType::value_type>,
+                      "mutation_type must be derived from fwdpp::mutation_base");
 #ifndef NDEBUG
         if (mcounts.size() != mutations.size())
             {
@@ -186,20 +180,17 @@ namespace fwdpp
 
       \note: lookup must be compatible with lookup->erase(lookup->find(double))
     */
-    template <typename mcont_t, typename fixation_container_t,
-              typename fixation_time_container_t,
-              typename mutation_lookup_table>
+    template <typename MutationContainerType, typename fixation_container_t,
+              typename fixation_time_container_t, typename mutation_lookup_table>
     void
-    update_mutations_n(mcont_t &mutations, fixation_container_t &fixations,
+    update_mutations_n(MutationContainerType &mutations, fixation_container_t &fixations,
                        fixation_time_container_t &fixation_times,
-                       mutation_lookup_table &lookup,
-                       std::vector<uint_t> &mcounts,
+                       mutation_lookup_table &lookup, std::vector<uint_t> &mcounts,
                        const unsigned &generation, const unsigned &twoN)
     {
-        static_assert(
-            traits::is_mutation_v<typename mcont_t::value_type>,
-            "mutation_type must be derived from "
-            "fwdpp::mutation_base");
+        static_assert(traits::is_mutation_v<typename MutationContainerType::value_type>,
+                      "mutation_type must be derived from "
+                      "fwdpp::mutation_base");
 #ifndef NDEBUG
         if (mcounts.size() != mutations.size())
             {
@@ -236,8 +227,8 @@ namespace fwdpp
                 else if (mcounts[i] == twoN) // Fixation is not neutral
                     {
                         // Guard against repeatedly recording fixation data
-                        if (std::find(std::begin(fixations),
-                                      std::end(fixations), mutations[i])
+                        if (std::find(std::begin(fixations), std::end(fixations),
+                                      mutations[i])
                             == std::end(fixations))
                             {
                                 fixations.push_back(mutations[i]);

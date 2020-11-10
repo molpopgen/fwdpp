@@ -245,9 +245,8 @@ namespace fwdpp
                     }
                 if (!tables.mutations.empty())
                     {
-                        o.write(
-                            reinterpret_cast<const char*>(tables.mutations.data()),
-                            tables.mutations.size() * sizeof(mutation_record));
+                        o.write(reinterpret_cast<const char*>(tables.mutations.data()),
+                                tables.mutations.size() * sizeof(mutation_record));
                     }
                 if (!tables.sites.empty())
                     {
@@ -315,12 +314,11 @@ namespace fwdpp
                             if (format == TS_TABLES_VERSION)
                                 {
                                     tables.mutations.resize(num_mutations);
-                                    i.read(reinterpret_cast<char*>(
-                                               tables.mutations.data()),
-                                           num_mutations * sizeof(mutation_record));
+                                    i.read(
+                                        reinterpret_cast<char*>(tables.mutations.data()),
+                                        num_mutations * sizeof(mutation_record));
                                     tables.sites.resize(num_sites);
-                                    i.read(reinterpret_cast<char*>(
-                                               tables.sites.data()),
+                                    i.read(reinterpret_cast<char*>(tables.sites.data()),
                                            num_sites * sizeof(site));
                                 }
                             else
@@ -384,10 +382,10 @@ namespace fwdpp
                 }
             };
 
-            template <typename TableCollectionType, typename mcont_t>
+            template <typename TableCollectionType, typename MutationContainerType>
             inline void
-            fix_mutation_table_repopulate_site_table(TableCollectionType& tables,
-                                                     const mcont_t& mutations)
+            fix_mutation_table_repopulate_site_table(
+                TableCollectionType& tables, const MutationContainerType& mutations)
             /// \brief Helper function when reading back from old file formats
             /// \version 0.8.0 Added to library
             ///

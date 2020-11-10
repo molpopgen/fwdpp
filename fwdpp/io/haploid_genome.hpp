@@ -22,9 +22,8 @@ namespace fwdpp
             inline void
             operator()(streamtype&, const T&) const
             {
-                static_assert(
-                    meta::always_false<T>::value,
-                    "serialize_haploid_genome not implemented for type");
+                static_assert(meta::always_false<T>::value,
+                              "serialize_haploid_genome not implemented for type");
             }
         };
 
@@ -40,27 +39,26 @@ namespace fwdpp
             inline T
             operator()(streamtype&) const
             {
-                static_assert(
-                    meta::always_false<T>::value,
-                    "deserialize_haploid_genome not implemented for type");
+                static_assert(meta::always_false<T>::value,
+                              "deserialize_haploid_genome not implemented for type");
             }
         };
 
-        template <typename gcont_t, typename ostreamtype>
+        template <typename GenomeContainerType, typename ostreamtype>
         void
         write_haploid_genomes(ostreamtype& buffer,
-                              const gcont_t& haploid_genomes)
+                              const GenomeContainerType& haploid_genomes)
         /// \brief Serialize a container of haploid_genomes.
         ///
         /// Works via specialization of serialize_haploid_genome.
         {
-            static_assert(
-                traits::is_haploid_genome<typename gcont_t::value_type>::value,
-                "gcont_t must be a container of haploid_genomes");
+            static_assert(traits::is_haploid_genome<
+                              typename GenomeContainerType::value_type>::value,
+                          "GenomeContainerType must be a container of haploid_genomes");
             std::size_t nhaploid_genomes = haploid_genomes.size();
             scalar_writer writer;
             writer(buffer, &nhaploid_genomes);
-            serialize_haploid_genome<typename gcont_t::value_type>
+            serialize_haploid_genome<typename GenomeContainerType::value_type>
                 haploid_genome_writer;
             for (const auto& g : haploid_genomes)
                 {
@@ -68,25 +66,24 @@ namespace fwdpp
                 }
         }
 
-        template <typename gcont_t, typename istreamtype>
+        template <typename GenomeContainerType, typename istreamtype>
         void
-        read_haploid_genomes(istreamtype& buffer, gcont_t& haploid_genomes)
+        read_haploid_genomes(istreamtype& buffer, GenomeContainerType& haploid_genomes)
         /// \brief Deserialize a container of haploid_genomes.
         ///
         /// Works via specialization of deserialize_haploid_genome.
         {
-            static_assert(
-                traits::is_haploid_genome<typename gcont_t::value_type>::value,
-                "gcont_t must be a container of haploid_genomes");
+            static_assert(traits::is_haploid_genome<
+                              typename GenomeContainerType::value_type>::value,
+                          "GenomeContainerType must be a container of haploid_genomes");
             std::size_t nhaploid_genomes;
             scalar_reader reader;
             reader(buffer, &nhaploid_genomes);
-            deserialize_haploid_genome<typename gcont_t::value_type>
+            deserialize_haploid_genome<typename GenomeContainerType::value_type>
                 haploid_genome_reader;
             for (std::size_t i = 0; i < nhaploid_genomes; ++i)
                 {
-                    haploid_genomes.emplace_back(
-                        haploid_genome_reader(buffer));
+                    haploid_genomes.emplace_back(haploid_genome_reader(buffer));
                 }
         }
     } // namespace io

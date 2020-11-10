@@ -49,8 +49,7 @@ main(int argc, char **argv)
     const double mu_del = theta_del / double(4 * N);
     const double littler = rho / double(4 * N);
 
-    std::copy(argv, argv + argc,
-              std::ostream_iterator<char *>(std::cerr, " "));
+    std::copy(argv, argv + argc, std::ostream_iterator<char *>(std::cerr, " "));
     std::cerr << '\n';
 
     GSLrng r(seed);
@@ -70,20 +69,19 @@ main(int argc, char **argv)
             unsigned generation = 0;
             const auto mmodel = [&pop, &r, &generation, s, h, pselected](
                                     fwdpp::flagged_mutation_queue &recbin,
-                                    diploid_population::mcont_t &mutations) {
+                                    diploid_population::mutation_container &mutations) {
                 return fwdpp::infsites_popgenmut(
-                    recbin, mutations, r.get(), pop.mut_lookup, generation,
-                    pselected, [&r]() { return gsl_rng_uniform(r.get()); },
-                    [s]() { return s; }, [h]() { return h; });
+                    recbin, mutations, r.get(), pop.mut_lookup, generation, pselected,
+                    [&r]() { return gsl_rng_uniform(r.get()); }, [s]() { return s; },
+                    [h]() { return h; });
             };
 
             double wbar = 1;
             for (generation = 0; generation < ngens; ++generation)
                 {
                     wbar = fwdpp::sample_diploid(
-                        r.get(), pop.haploid_genomes, pop.diploids,
-                        pop.mutations, pop.mcounts, N, mu_neutral + mu_del,
-                        mmodel,
+                        r.get(), pop.haploid_genomes, pop.diploids, pop.mutations,
+                        pop.mcounts, N, mu_neutral + mu_del, mmodel,
                         // The function to generation recombination positions:
                         rec, fwdpp::multiplicative_diploid(fwdpp::fitness(1.)),
                         pop.neutral, pop.selected);
@@ -94,15 +92,15 @@ main(int argc, char **argv)
                         {
                             fwdpp::compact_mutations(pop);
                         }
-                    fwdpp::debug::validate_sum_haploid_genome_counts(
-                        pop.haploid_genomes, 2 * N);
+                    fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
+                                                                     2 * N);
                 }
             for (std::size_t i = 0; i < pop.mcounts.size(); ++i)
                 {
                     if (pop.mcounts[i])
                         {
-                            std::cout << pop.mutations[i].s << ' '
-                                      << pop.mcounts[i] << '\n';
+                            std::cout << pop.mutations[i].s << ' ' << pop.mcounts[i]
+                                      << '\n';
                         }
                 }
             // Take a sample of size samplesize1.  Two data blocks are
@@ -110,16 +108,13 @@ main(int argc, char **argv)
             std::vector<std::size_t> random_dips;
             for (unsigned i = 0; i < samplesize1; ++i)
                 {
-                    auto x = static_cast<std::size_t>(
-                        gsl_ran_flat(r.get(), 0, N));
+                    auto x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
                     while (std::find(random_dips.begin(), random_dips.end(), x)
                            != random_dips.end())
                         {
-                            x = static_cast<std::size_t>(
-                                gsl_ran_flat(r.get(), 0, N));
+                            x = static_cast<std::size_t>(gsl_ran_flat(r.get(), 0, N));
                         }
                 }
-            auto dm = fwdpp::sample_individuals(pop, random_dips, true, false,
-                                                true);
+            auto dm = fwdpp::sample_individuals(pop, random_dips, true, false, true);
         }
 }

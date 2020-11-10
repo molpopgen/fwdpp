@@ -51,7 +51,9 @@ namespace fwdpp
         //! Positions of variable sites
         std::vector<double> positions;
         //! Construct an empty object
-        state_matrix() : data(), positions() {}
+        state_matrix() : data(), positions()
+        {
+        }
         //! Perfect-forwarding constructor
         template <typename T, typename P>
         state_matrix(T &&t, P &&p)
@@ -92,9 +94,7 @@ namespace fwdpp
              * Changed from rows are sites to rows are individuals. Removed
              * default value of zero from constructor.
              */
-            : neutral{}, selected{}, neutral_keys{}, selected_keys{}, ncol{
-                  ncol_
-              }
+            : neutral{}, selected{}, neutral_keys{}, selected_keys{}, ncol{ncol_}
         {
         }
     };
@@ -109,8 +109,7 @@ namespace fwdpp
     template <typename poptype>
     std::pair<std::vector<std::pair<std::size_t, uint_t>>,
               std::vector<std::pair<std::size_t, uint_t>>>
-    mutation_keys(const poptype &pop,
-                  const std::vector<std::size_t> &individuals,
+    mutation_keys(const poptype &pop, const std::vector<std::size_t> &individuals,
                   const bool include_neutral, const bool include_selected)
     /*!
      * For a sample defined by a set of diploids, obtain the keys corresponding
@@ -145,13 +144,13 @@ namespace fwdpp
      */
     {
         return data_matrix_details::mutation_keys(
-            pop.diploids, individuals, pop.haploid_genomes, pop.mcounts,
-            include_neutral, include_selected, typename poptype::popmodel_t());
+            pop.diploids, individuals, pop.haploid_genomes, pop.mcounts, include_neutral,
+            include_selected, typename poptype::popmodel_t());
     }
 
-    template <typename mcont_t>
+    template <typename MutationContainerType>
     inline void
-    sort_keys(const mcont_t &mutations,
+    sort_keys(const MutationContainerType &mutations,
               std::vector<std::pair<std::size_t, uint_t>> &keys)
     /*! \brief Sort keys by position
      *
@@ -164,11 +163,10 @@ namespace fwdpp
      * \ingroup samplingPops
      */
     {
-        const auto comp
-            = [&mutations](const std::pair<std::size_t, uint_t> &a,
-                           const std::pair<std::size_t, uint_t> &b) {
-                  return mutations[a.first].pos < mutations[b.first].pos;
-              };
+        const auto comp = [&mutations](const std::pair<std::size_t, uint_t> &a,
+                                       const std::pair<std::size_t, uint_t> &b) {
+            return mutations[a.first].pos < mutations[b.first].pos;
+        };
         std::sort(keys.begin(), keys.end(), comp);
     }
 
@@ -190,10 +188,9 @@ namespace fwdpp
 
     template <typename poptype>
     data_matrix
-    genotype_matrix(
-        const poptype &pop, const std::vector<std::size_t> &individuals,
-        const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
+    genotype_matrix(const poptype &pop, const std::vector<std::size_t> &individuals,
+                    const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
     /*!
      * Calculate a fwdpp::data_matrix representing genotypes encoded as
      * 0,1, or 2 copies of the derived mutation.
@@ -216,10 +213,9 @@ namespace fwdpp
 
     template <typename poptype>
     data_matrix
-    haplotype_matrix(
-        const poptype &pop, const std::vector<std::size_t> &individuals,
-        const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-        const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
+    haplotype_matrix(const poptype &pop, const std::vector<std::size_t> &individuals,
+                     const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
+                     const std::vector<std::pair<std::size_t, uint_t>> &selected_keys)
     /*!
      * Calculate a fwdpp::data_matrix representing haplotypes encoded as
      * 0 or 1 copies of the derived mutation.

@@ -42,8 +42,7 @@ namespace fwdpp
         */
         popgenmut(const double &__pos, const double &__s, const double &__h,
                   const unsigned &__g, const std::uint16_t x = 0) noexcept
-            : mutation_base(__pos, (__s == 0.) ? true : false, x), g(__g),
-              s(__s), h(__h)
+            : mutation_base(__pos, (__s == 0.) ? true : false, x), g(__g), s(__s), h(__h)
         {
         }
 
@@ -55,8 +54,7 @@ namespace fwdpp
         /// \version
         /// Added in fwdpp 0.5.7
         [[deprecated]] popgenmut(constructor_tuple t) noexcept
-            : mutation_base(std::get<0>(t),
-                            (std::get<1>(t) == 0.) ? true : false,
+            : mutation_base(std::get<0>(t), (std::get<1>(t) == 0.) ? true : false,
                             std::get<4>(t)),
               g(std::get<3>(t)), s(std::get<1>(t)), h(std::get<2>(t))
         {
@@ -65,20 +63,19 @@ namespace fwdpp
         bool
         operator==(const popgenmut &rhs) const
         {
-            return std::tie(this->g, this->s, this->h)
-                       == std::tie(rhs.g, rhs.s, rhs.h)
+            return std::tie(this->g, this->s, this->h) == std::tie(rhs.g, rhs.s, rhs.h)
                    && is_equal(rhs);
         }
     };
 
-    template < typename mcont_t, typename lookup_table_t,
+    template <typename MutationContainerType, typename lookup_table_t,
               typename position_function, typename effect_size_function,
               typename dominance_function>
     std::size_t
-    infsites_popgenmut(flagged_mutation_queue &recycling_bin, mcont_t &mutations,
-                       const gsl_rng *r, lookup_table_t &lookup,
-                       const uint_t &generation, const double pselected,
-                       const position_function &posmaker,
+    infsites_popgenmut(flagged_mutation_queue &recycling_bin,
+                       MutationContainerType &mutations, const gsl_rng *r,
+                       lookup_table_t &lookup, const uint_t &generation,
+                       const double pselected, const position_function &posmaker,
                        const effect_size_function &esize_maker,
                        const dominance_function &hmaker,
                        const decltype(popgenmut::xtra) x = 0)
@@ -111,9 +108,9 @@ namespace fwdpp
                 pos = posmaker();
             }
         bool selected = (gsl_rng_uniform(r) < pselected);
-        auto idx = recycle_mutation_helper(
-            recycling_bin, mutations, pos, (selected) ? esize_maker() : 0.,
-            (selected) ? hmaker() : 0., generation, x);
+        auto idx = recycle_mutation_helper(recycling_bin, mutations, pos,
+                                           (selected) ? esize_maker() : 0.,
+                                           (selected) ? hmaker() : 0., generation, x);
         lookup.emplace(pos, idx);
         return idx;
     }
@@ -124,7 +121,9 @@ namespace fwdpp
         /// Specialization for fwdpp::popgenmut
         {
             io::scalar_writer writer;
-            serialize_mutation<popgenmut>() : writer{} {}
+            serialize_mutation<popgenmut>() : writer{}
+            {
+            }
             template <typename streamtype>
             inline void
             operator()(streamtype &buffer, const popgenmut &m) const
@@ -141,7 +140,9 @@ namespace fwdpp
         /// Specialization for fwdpp::popgenmut
         {
             io::scalar_reader reader;
-            deserialize_mutation<popgenmut>() : reader{} {}
+            deserialize_mutation<popgenmut>() : reader{}
+            {
+            }
             template <typename streamtype>
             inline popgenmut
             operator()(streamtype &buffer) const

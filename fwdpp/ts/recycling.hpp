@@ -84,9 +84,9 @@ namespace fwdpp
 
         namespace detail
         {
-            template <typename mcont_t, typename lookup_table>
+            template <typename MutationContainerType, typename lookup_table>
             void
-            process_mutation_index(mcont_t &mutations, lookup_table &lookup,
+            process_mutation_index(MutationContainerType &mutations, lookup_table &lookup,
                                    const std::size_t i)
             /// Implementation detail for flag_mutations_for_recycling
             {
@@ -103,12 +103,12 @@ namespace fwdpp
                     }
             }
 
-            template <typename mcont_t, typename mutation_count_container,
+            template <typename MutationContainerType, typename mutation_count_container,
                       typename lookup_table>
             inline void
-            process_fixations(mcont_t &mutations,
+            process_fixations(MutationContainerType &mutations,
                               mutation_count_container &mcounts,
-                              mcont_t & /*fixations*/,
+                              MutationContainerType & /*fixations*/,
                               std::vector<uint_t> & /*fixation_times*/,
                               lookup_table &mut_lookup,
                               const uint_t /*generation*/, const std::size_t i,
@@ -120,12 +120,12 @@ namespace fwdpp
                 mcounts[i] = 0;
             }
 
-            template <typename mcont_t, typename mutation_count_container,
+            template <typename MutationContainerType, typename mutation_count_container,
                       typename lookup_table>
             inline void
-            process_fixations(mcont_t &mutations,
+            process_fixations(MutationContainerType &mutations,
                               mutation_count_container &mcounts,
-                              mcont_t &fixations,
+                              MutationContainerType &fixations,
                               std::vector<uint_t> &fixation_times,
                               lookup_table &mut_lookup,
                               const uint_t generation, const std::size_t i,
@@ -155,12 +155,12 @@ namespace fwdpp
                 }
             };
 
-            template <typename mcont_t, typename mutation_count_container,
+            template <typename MutationContainerType, typename mutation_count_container,
                       typename lookup_table>
             inline void
-            process_fixations(mcont_t &mutations,
+            process_fixations(MutationContainerType &mutations,
                               mutation_count_container &mcounts,
-                              mcont_t & /*fixations*/,
+                              MutationContainerType & /*fixations*/,
                               std::vector<uint_t> & /*fixation_times*/,
                               lookup_table &mut_lookup,
                               const uint_t /*generation*/, const std::size_t i,
@@ -175,12 +175,12 @@ namespace fwdpp
                     }
             }
 
-            template <typename mcont_t, typename mutation_count_container,
+            template <typename MutationContainerType, typename mutation_count_container,
                       typename lookup_table>
             inline void
-            process_fixations(mcont_t &mutations,
+            process_fixations(MutationContainerType &mutations,
                               mutation_count_container &mcounts,
-                              mcont_t &fixations,
+                              MutationContainerType &fixations,
                               std::vector<uint_t> &fixation_times,
                               lookup_table &mut_lookup,
                               const uint_t generation, const std::size_t i,
@@ -196,7 +196,7 @@ namespace fwdpp
                         auto loc = std::lower_bound(
                             fixations.begin(), fixations.end(),
                             mutations[i].pos,
-                            [](const typename mcont_t::value_type &m,
+                            [](const typename MutationContainerType::value_type &m,
                                const double val) { return m.pos < val; });
                         auto d = std::distance(fixations.begin(), loc);
                         fixations.insert(loc, mutations[i]);

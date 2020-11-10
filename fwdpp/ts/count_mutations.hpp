@@ -11,10 +11,12 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename TableCollectionType, typename SAMPLES, typename mcont_t>
+        template <typename TableCollectionType, typename SAMPLES,
+                  typename MutationContainerType>
         void
-        count_mutations(const TableCollectionType& tables, const mcont_t& mutations,
-                        SAMPLES&& samples, std::vector<std::uint32_t>& mcounts)
+        count_mutations(const TableCollectionType& tables,
+                        const MutationContainerType& mutations, SAMPLES&& samples,
+                        std::vector<std::uint32_t>& mcounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
             // to march through each marginal tree and its leaf
@@ -47,10 +49,12 @@ namespace fwdpp
                 }
         }
 
-        template <typename TableCollectionType, typename SAMPLES, typename mcont_t>
+        template <typename TableCollectionType, typename SAMPLES,
+                  typename MutationContainerType>
         void
-        count_mutations(const TableCollectionType& tables, const mcont_t& mutations,
-                        SAMPLES&& samples, std::vector<std::uint32_t>& mcounts,
+        count_mutations(const TableCollectionType& tables,
+                        const MutationContainerType& mutations, SAMPLES&& samples,
+                        std::vector<std::uint32_t>& mcounts,
                         std::vector<std::uint32_t>& acounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
@@ -65,7 +69,8 @@ namespace fwdpp
             auto mtable_itr = tables.mutations.begin();
             auto mtable_end = tables.mutations.end();
             tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
-                             tables.preserved_nodes, update_samples_list(false));
+                                                  tables.preserved_nodes,
+                                                  update_samples_list(false));
             while (mti())
                 {
                     auto& tree = mti.tree();

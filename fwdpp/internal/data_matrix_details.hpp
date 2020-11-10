@@ -1,9 +1,13 @@
 #ifndef FWDPP_DATA_MATRIX_DETAILS_HPP
 #define FWDPP_DATA_MATRIX_DETAILS_HPP
 
+#include <cstdint>
 #include <stdexcept>
 #include <iterator>
 #include <numeric>
+#include <vector>
+#include <unordered_map>
+#include <fwdpp/fundamental_types/typedefs.hpp>
 #include <fwdpp/debug.hpp>
 
 /*
@@ -43,15 +47,14 @@ namespace fwdpp
                 }
         }
 
-        template <typename dipvector_t, typename gcont_t>
+        template <typename dipvector_t, typename GenomeContainerType>
         std::pair<std::vector<std::pair<std::size_t, uint_t>>,
                   std::vector<std::pair<std::size_t, uint_t>>>
         mutation_keys(const dipvector_t &diploids,
                       const std::vector<std::size_t> &individuals,
-                      const gcont_t &haploid_genomes,
-                      const std::vector<uint_t> &mcounts,
-                      const bool include_neutral, const bool include_selected,
-                      poptypes::DIPLOID_TAG)
+                      const GenomeContainerType &haploid_genomes,
+                      const std::vector<uint_t> &mcounts, const bool include_neutral,
+                      const bool include_selected, poptypes::DIPLOID_TAG)
         {
             std::unordered_map<std::size_t, uint_t> n, s;
             for (auto &&ind : individuals)
@@ -59,32 +62,27 @@ namespace fwdpp
                     auto &dip = diploids[ind];
                     if (include_neutral)
                         {
+                            update_mutation_keys(n, haploid_genomes[dip.first].mutations,
+                                                 mcounts);
                             update_mutation_keys(
-                                n, haploid_genomes[dip.first].mutations,
-                                mcounts);
-                            update_mutation_keys(
-                                n, haploid_genomes[dip.second].mutations,
-                                mcounts);
+                                n, haploid_genomes[dip.second].mutations, mcounts);
                         }
                     if (include_selected)
                         {
                             update_mutation_keys(
-                                s, haploid_genomes[dip.first].smutations,
-                                mcounts);
+                                s, haploid_genomes[dip.first].smutations, mcounts);
                             update_mutation_keys(
-                                s, haploid_genomes[dip.second].smutations,
-                                mcounts);
+                                s, haploid_genomes[dip.second].smutations, mcounts);
                         }
                 }
-            return std::make_pair(std::vector<std::pair<std::size_t, uint_t>>(
-                                      n.begin(), n.end()),
-                                  std::vector<std::pair<std::size_t, uint_t>>(
-                                      s.begin(), s.end()));
+            return std::make_pair(
+                std::vector<std::pair<std::size_t, uint_t>>(n.begin(), n.end()),
+                std::vector<std::pair<std::size_t, uint_t>>(s.begin(), s.end()));
         }
 
-        template <typename mcont_t, typename key_container>
+        template <typename MutationContainerType, typename key_container>
         inline void
-        update_pos(const mcont_t &mutations, const key_container &keys,
+        update_pos(const MutationContainerType &mutations, const key_container &keys,
                    state_matrix &sm)
         {
             for (auto &key : keys)
@@ -96,17 +94,15 @@ namespace fwdpp
         template <typename mutation_key_container>
         void
         update_site(const mutation_key_container &first,
-                    const mutation_key_container &second,
-                    std::vector<std::int8_t> &site,
+                    const mutation_key_container &second, std::vector<std::int8_t> &site,
                     const std::pair<std::size_t, uint_t> &mutation_record,
                     const matrix_type mtype)
         {
-            int onfirst
-                = (std::find(first.begin(), first.end(), mutation_record.first)
-                   != first.end());
-            int onsecond = (std::find(second.begin(), second.end(),
-                                      mutation_record.first)
-                            != second.end());
+            int onfirst = (std::find(first.begin(), first.end(), mutation_record.first)
+                           != first.end());
+            int onsecond
+                = (std::find(second.begin(), second.end(), mutation_record.first)
+                   != second.end());
             if (mtype == matrix_type::genotype)
                 {
                     site.push_back(onfirst + onsecond);
@@ -120,22 +116,19 @@ namespace fwdpp
 
         template <typename poptype>
         void
-        fill_matrix(
-            const poptype &pop, data_matrix &m,
-            const std::vector<std::size_t> &individuals,
-            const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-            const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            poptypes::DIPLOID_TAG, matrix_type mtype)
+        fill_matrix(const poptype &pop, data_matrix &m,
+                    const std::vector<std::size_t> &individuals,
+                    const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
+                    poptypes::DIPLOID_TAG, matrix_type mtype)
         {
             for (auto &&mkey : neutral_keys)
                 {
                     for (auto &ind : individuals)
                         {
                             update_site(
-                                pop.haploid_genomes[pop.diploids[ind].first]
-                                    .mutations,
-                                pop.haploid_genomes[pop.diploids[ind].second]
-                                    .mutations,
+                                pop.haploid_genomes[pop.diploids[ind].first].mutations,
+                                pop.haploid_genomes[pop.diploids[ind].second].mutations,
                                 m.neutral.data, mkey, mtype);
                         }
                     m.neutral_keys.push_back(mkey.first);
@@ -145,10 +138,8 @@ namespace fwdpp
                     for (auto &ind : individuals)
                         {
                             update_site(
-                                pop.haploid_genomes[pop.diploids[ind].first]
-                                    .smutations,
-                                pop.haploid_genomes[pop.diploids[ind].second]
-                                    .smutations,
+                                pop.haploid_genomes[pop.diploids[ind].first].smutations,
+                                pop.haploid_genomes[pop.diploids[ind].second].smutations,
                                 m.selected.data, mkey, mtype);
                         }
                     m.selected_keys.push_back(mkey.first);
@@ -160,15 +151,13 @@ namespace fwdpp
 
         template <typename poptype>
         data_matrix
-        fill_matrix(
-            const poptype &pop, const std::vector<std::size_t> &individuals,
-            const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
-            const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
-            const matrix_type mtype)
+        fill_matrix(const poptype &pop, const std::vector<std::size_t> &individuals,
+                    const std::vector<std::pair<std::size_t, uint_t>> &neutral_keys,
+                    const std::vector<std::pair<std::size_t, uint_t>> &selected_keys,
+                    const matrix_type mtype)
         {
-            data_matrix rv((mtype == matrix_type::genotype)
-                               ? individuals.size()
-                               : 2 * individuals.size());
+            data_matrix rv((mtype == matrix_type::genotype) ? individuals.size()
+                                                            : 2 * individuals.size());
             // dispatch details out depending on population type
             fill_matrix(pop, rv, individuals, neutral_keys, selected_keys,
                         typename poptype::popmodel_t(), mtype);
@@ -184,23 +173,19 @@ namespace fwdpp
             if (!data.empty())
                 {
                     auto v = gsl_matrix_char_const_view_array(
-                        reinterpret_cast<const char *>(data.data()), nrow,
-                        ncol);
+                        reinterpret_cast<const char *>(data.data()), nrow, ncol);
                     const std::size_t X
                         = (is_row_sums) ? v.matrix.size1 : v.matrix.size2;
                     for (std::size_t rc = 0; rc < X; ++rc)
                         {
                             gsl_vector_char_const_view view
                                 = (is_row_sums)
-                                      ? gsl_matrix_char_const_row(&v.matrix,
-                                                                  rc)
-                                      : gsl_matrix_char_const_column(&v.matrix,
-                                                                     rc);
+                                      ? gsl_matrix_char_const_row(&v.matrix, rc)
+                                      : gsl_matrix_char_const_column(&v.matrix, rc);
                             unsigned sum = 0;
                             for (std::size_t i = 0; i < view.vector.size; ++i)
                                 {
-                                    sum += gsl_vector_char_get(&view.vector,
-                                                               i);
+                                    sum += gsl_vector_char_get(&view.vector, i);
                                 }
                             rv.push_back(sum);
                         }

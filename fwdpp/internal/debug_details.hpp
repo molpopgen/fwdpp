@@ -25,10 +25,10 @@ namespace fwdpp
     {
         namespace detail
         {
-            template <typename gcont_t>
+            template <typename GenomeContainerType>
             void
-            validate_sum_haploid_genome_counts(const gcont_t &haploid_genomes,
-                                       const uint_t expected_sum)
+            validate_sum_haploid_genome_counts(
+                const GenomeContainerType &haploid_genomes, const uint_t expected_sum)
             {
 #ifndef NDEBUG
                 uint_t s = 0;
@@ -44,11 +44,10 @@ namespace fwdpp
 #endif
             }
 
-            template <typename mcont_t, typename iterator>
+            template <typename MutationContainerType, typename Iterator>
             void
-            validate_mutation_key_ranges(const mcont_t &mutations,
-                                         const iterator beg,
-                                         const iterator end)
+            validate_mutation_key_ranges(const MutationContainerType &mutations,
+                                         const Iterator beg, const Iterator end)
             {
 #ifndef NDEBUG
                 if (std::any_of(beg, end, [&mutations](const std::size_t m) {
@@ -74,9 +73,10 @@ namespace fwdpp
 #endif
             }
 
-            template <typename haploid_genome_t, typename mcont_t>
+            template <typename haploid_genome_t, typename MutationContainerType>
             void
-            haploid_genome_is_sorted(const haploid_genome_t &g, const mcont_t &m)
+            haploid_genome_is_sorted(const haploid_genome_t &g,
+                                     const MutationContainerType &m)
             /*!
              * \brief Check that neutral mutation keys are sorted according to mutation
              * position
@@ -87,14 +87,12 @@ namespace fwdpp
                     return m[i].pos < m[j].pos;
                 };
 
-                if (!std::is_sorted(g.mutations.begin(), g.mutations.end(),
-                                    comp))
+                if (!std::is_sorted(g.mutations.begin(), g.mutations.end(), comp))
                     {
                         throw std::runtime_error(
                             "FWDPP DEBUG: neutral mutation keys not sorted");
                     }
-                if (!std::is_sorted(g.smutations.begin(), g.smutations.end(),
-                                    comp))
+                if (!std::is_sorted(g.smutations.begin(), g.smutations.end(), comp))
                     {
                         throw std::runtime_error(
                             "FWDPP DEBUG: selected mutation keys not sorted");
@@ -102,12 +100,12 @@ namespace fwdpp
 #endif
             }
 
-            template <typename key_container, typename mcont_t>
+            template <typename key_container, typename MutationContainerType>
             void
             haploid_genome_data_valid(const key_container &keys,
-                              const mcont_t &mutations,
-                              const std::vector<uint_t> &mutcounts,
-                              const bool expected_neutrality)
+                                      const MutationContainerType &mutations,
+                                      const std::vector<uint_t> &mutcounts,
+                                      const bool expected_neutrality)
             {
 #ifndef NDEBUG
                 for (auto &k : keys)
@@ -128,10 +126,11 @@ namespace fwdpp
 #endif
             }
 
-            template <typename haploid_genome_t, typename mcont_t>
+            template <typename haploid_genome_t, typename MutationContainerType>
             void
-            haploid_genome_data_valid(const haploid_genome_t &g, const mcont_t &mutations,
-                              const std::vector<uint_t> &mutcounts)
+            haploid_genome_data_valid(const haploid_genome_t &g,
+                                      const MutationContainerType &mutations,
+                                      const std::vector<uint_t> &mutcounts)
             /*
       \brief Check that "neutral" and "non-neutral" mutations are where we
       expect them to be.
@@ -140,17 +139,18 @@ namespace fwdpp
 #ifndef NDEBUG
                 detail::haploid_genome_is_sorted(g, mutations);
                 detail::haploid_genome_data_valid(g.mutations, mutations, mutcounts,
-                                          true);
+                                                  true);
                 detail::haploid_genome_data_valid(g.smutations, mutations, mutcounts,
-                                          false);
+                                                  false);
 #endif
             }
 
-            template <typename diploid, typename gcont_t, typename mcont_t>
+            template <typename DiploidType, typename GenomeContainerType,
+                      typename MutationContainerType>
             void
-            validate_pop_data_common(const diploid &dip,
-                                     const gcont_t &haploid_genomes,
-                                     const mcont_t &mutations,
+            validate_pop_data_common(const DiploidType &dip,
+                                     const GenomeContainerType &haploid_genomes,
+                                     const MutationContainerType &mutations,
                                      const std::vector<uint_t> &mutcounts)
             {
 #ifndef NDEBUG
@@ -161,8 +161,10 @@ namespace fwdpp
                     }
                 haploid_genome_is_sorted(haploid_genomes[dip.first], mutations);
                 haploid_genome_is_sorted(haploid_genomes[dip.second], mutations);
-                haploid_genome_data_valid(haploid_genomes[dip.first], mutations, mutcounts);
-                haploid_genome_data_valid(haploid_genomes[dip.second], mutations, mutcounts);
+                haploid_genome_data_valid(haploid_genomes[dip.first], mutations,
+                                          mutcounts);
+                haploid_genome_data_valid(haploid_genomes[dip.second], mutations,
+                                          mutcounts);
 #endif
             }
 
@@ -206,7 +208,7 @@ namespace fwdpp
             template <typename poptype>
             void
             all_haploid_genomes_extant(const poptype &pop,
-                               const fwdpp::poptypes::DIPLOID_TAG)
+                                       const fwdpp::poptypes::DIPLOID_TAG)
             {
 #ifndef NEBUG
                 for (auto &dip : pop.diploids)

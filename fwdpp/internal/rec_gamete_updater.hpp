@@ -8,27 +8,26 @@ namespace fwdpp
 {
     namespace fwdpp_internal
     {
-        template <typename itr_type, typename mcont_t>
+        template <typename itr_type, typename MutationContainerType>
         inline itr_type
         rec_update_itr(itr_type __first, itr_type __last,
-                       const mcont_t &mutations, const double val)
+                       const MutationContainerType &mutations, const double val)
         {
             if (__first == __last)
                 return __first;
             return std::lower_bound(
                 __first, __last, val,
-                [&mutations](const typename itr_type::value_type __mut,
-                             const double v) {
+                [&mutations](const typename itr_type::value_type __mut, const double v) {
                     return mutations[__mut].pos < v;
                 });
         }
 
-        template <typename itr_type, typename mcont_t,
+        template <typename itr_type, typename MutationContainerType,
                   typename mutation_index_cont_t>
         itr_type
         rec_gam_updater(itr_type __first, itr_type __last,
-                        const mcont_t &mutations, mutation_index_cont_t &muts,
-                        const double val)
+                        const MutationContainerType &mutations,
+                        mutation_index_cont_t &muts, const double val)
         {
             // O(log_2) comparisons of double plus at most __last - __first
             // copies

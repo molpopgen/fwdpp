@@ -11,7 +11,7 @@ namespace fwdpp
 {
     namespace poptypes
     {
-        template <typename mutation_type, typename mcont, typename gcont,
+        template <typename MutationType, typename mcont, typename gcont,
                   typename mvector, typename ftvector, typename lookup_table_type>
         class popbase
         /*!
@@ -23,9 +23,8 @@ namespace fwdpp
         {
             static_assert(fwdpp::traits::is_haploid_genome_v<typename gcont::value_type>,
                           "gcont::value_type must be a haploid_genome type");
-            static_assert(
-                fwdpp::traits::is_mutation_v<typename mcont::value_type>,
-                "mcont::value_type must be a mutation type");
+            static_assert(fwdpp::traits::is_mutation_v<typename mcont::value_type>,
+                          "mcont::value_type must be a mutation type");
 
           public:
             virtual ~popbase() = default;
@@ -34,23 +33,32 @@ namespace fwdpp
             popbase &operator=(popbase &&) = default;
             popbase &operator=(const popbase &) = default;
             //! Mutation type
-            using mutation_t = mutation_type;
+            using mutation_type = MutationType;
+            //! Mutation type
+            using mutation_t [[deprecated("use mutaton type")]] = MutationType;
             //! Gamete type
-            using haploid_genome_t = typename gcont::value_type;
+            using haploid_genome_type = typename gcont::value_type;
+            //! Gamete type
+            using haploid_genome_t [[deprecated("use haploid_genome_type")]] =
+                typename gcont::value_type;
+            /// Container type for mutation objects
+            using mutation_container = mcont;
             //! Mutation vec type
-            using mcont_t = mcont;
+            using mcont_t [[deprecated("use mutation_container")]] = mcont;
             //! Mutation count vector type
             using mcount_t = std::vector<uint_t>;
+            /// Container type for haploid_genome_base objects
+            using genome_container = gcont;
             //! Gamete vec type
-            using gcont_t = gcont;
+            using gcont_t [[deprecated("use genome_container")]] = gcont;
             //! Lookup table type for recording mutation positions, etc.
             using lookup_table_t = lookup_table_type;
             //! container type for fixations
-            using mvector_t = mvector;
+            using mvector_t [[deprecated("use mutation_container")]] = mvector;
             //! container type for fixation times
             using ftvector_t = ftvector;
 
-            mcont_t mutations;
+            mutation_container mutations;
             /*!
               Used to keep track of mutation frequencies.
 
@@ -75,7 +83,7 @@ namespace fwdpp
             /// \version 0.7.3 Added to library
             mcount_t mcounts_from_preserved_nodes;
             //! Container of haploid_genomes
-            gcont haploid_genomes;
+            genome_container haploid_genomes;
 
             /*!
               Containers that can be used as intermediates during
@@ -106,7 +114,7 @@ namespace fwdpp
             */
             lookup_table_type mut_lookup;
             //! Vector of mutation_t to track fixations
-            mvector fixations;
+            mutation_container fixations;
             /*! \brief vector<uint_t> records times when mutation_ts
               were added to mut_lookup
             */
