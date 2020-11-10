@@ -17,6 +17,11 @@ Welcome to fwdpp's documentation!
 .. toctree::
    :caption: Fundamental types
 
+   rst/fundamentaltypes
+   rst/mutations
+   rst/haploidgenome
+   rst/diploids
+   rst/typedefs
    rst/rng
 
 .. toctree::

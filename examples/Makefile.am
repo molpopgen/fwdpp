@@ -2,24 +2,24 @@ noinst_PROGRAMS=	diploid_ind \
 	diploid_fixed_sh_ind \
 	K_linked_regions_extensions \
 	juvenile_migration \
-	custom_mutation \
-	custom_diploid \
+	custom_diploid_example \
 	load_table_collection \
 	edge_buffering \
 	genetic_map_example \
-	rng_example
+	rng_example \
+	diploid_example
 
 diploid_ind_SOURCES=diploid_ind.cc common_ind.hpp
 diploid_fixed_sh_ind_SOURCES=diploid_fixed_sh_ind.cc common_ind.hpp
 K_linked_regions_extensions_SOURCES=K_linked_regions_extensions.cc common_ind.hpp
 juvenile_migration_SOURCES=juvenile_migration.cc common_ind.hpp
-custom_mutation_SOURCES=custom_mutation.cc common_ind.hpp
-custom_diploid_SOURCES=custom_diploid.cc common_ind.hpp
 
 # These examples are used to test for API regressions and to include
 # in the manual.
 genetic_map_example_SOURCES=genetic_map_example.cc
 rng_example_SOURCES=rng_example.cc
+diploid_example_SOURCES=diploid_example.cc
+custom_diploid_example_SOURCES=custom_diploid_example.cc
 
 load_table_collection_SOURCES=load_table_collection.cc
 tskit_SOURCES=../subprojects/nongpl/tskit/c/tskit/convert.c \

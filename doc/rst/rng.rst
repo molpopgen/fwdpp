@@ -1,3 +1,5 @@
+.. _rng:
+
 Random number generators
 +++++++++++++++++++++++++++++++++++++
 

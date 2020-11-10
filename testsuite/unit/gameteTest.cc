@@ -6,9 +6,10 @@
 
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/forward_types.hpp>
+#include "../../examples/custom_mutation_example.hpp"
 #include <config.h>
 
-using mut = fwdpp::mutation;
+using mut = mutation;
 using gtype = fwdpp::haploid_genome;
 
 BOOST_AUTO_TEST_SUITE(test_haploid_genome_base)
@@ -52,8 +53,8 @@ BOOST_AUTO_TEST_CASE(move_assign)
 
 BOOST_AUTO_TEST_CASE(assign_from_tuple)
 {
-    gtype::mutation_container n{0,1,2},s{3,4,5};
-    auto t = std::make_tuple(1u,n,s);
+    gtype::mutation_container n{0, 1, 2}, s{3, 4, 5};
+    auto t = std::make_tuple(1u, n, s);
     gtype g(t);
 }
 
