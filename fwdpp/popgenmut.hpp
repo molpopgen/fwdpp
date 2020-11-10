@@ -54,7 +54,7 @@ namespace fwdpp
         ///
         /// \version
         /// Added in fwdpp 0.5.7
-        popgenmut(constructor_tuple t) noexcept
+        [[deprecated]] popgenmut(constructor_tuple t) noexcept
             : mutation_base(std::get<0>(t),
                             (std::get<1>(t) == 0.) ? true : false,
                             std::get<4>(t)),

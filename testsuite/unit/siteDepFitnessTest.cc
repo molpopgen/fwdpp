@@ -11,7 +11,9 @@
 #include <testsuite/util/custom_dip.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <memory>
-using mut = fwdpp::mutation;
+#include "../../examples/custom_mutation_example.hpp"
+
+using mut = mutation;
 
 BOOST_FIXTURE_TEST_SUITE(test_site_dependent_fitness,
                          standard_empty_single_deme_fixture)

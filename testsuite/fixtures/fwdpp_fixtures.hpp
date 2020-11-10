@@ -13,6 +13,7 @@
 #include <fwdpp/fwd_functional.hpp>
 #include <fwdpp/forward_types.hpp>
 #include <gsl/gsl_rng.h>
+#include "../../examples/custom_mutation_example.hpp"
 
 /*
  * These fixtures are for the low-level fwdpp
@@ -22,7 +23,7 @@
  * (headers in fwdpp/sugar),
  * which handles a lot of this stuff for you.
  */
-using mtype = fwdpp::mutation;
+using mtype = mutation;
 using mcont_t = std::vector<mtype>;
 using gcont_t = std::vector<fwdpp::haploid_genome>;
 using dipvector_t = std::vector<std::pair<std::size_t, std::size_t>>;

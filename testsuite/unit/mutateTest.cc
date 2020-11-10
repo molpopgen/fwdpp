@@ -5,11 +5,11 @@
 */
 
 #include <config.h>
-#include <fwdpp/forward_types.hpp>
 #include <boost/test/unit_test.hpp>
+#include "../../examples/custom_mutation_example.hpp"
 
 // trivial ways to play with the fwdpp::mutation type
-using mut = fwdpp::mutation;
+using mut = mutation;
 using gtype = fwdpp::haploid_genome;
 
 BOOST_AUTO_TEST_CASE(make_mutation_1)
