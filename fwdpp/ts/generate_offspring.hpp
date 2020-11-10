@@ -134,11 +134,6 @@ namespace fwdpp
                 genetic_param_holder& genetics,
                 typename poptype::diploid_t& offspring)
             {
-                static_assert(
-                    std::is_same<typename std::remove_const<decltype(
-                                     genetics.interlocus_recombination)>::type,
-                                 std::nullptr_t>::value,
-                    "invalid genetics policies detected");
                 auto p1g1 = pop.diploids[parents.first].first;
                 auto p1g2 = pop.diploids[parents.first].second;
                 auto p2g1 = pop.diploids[parents.second].first;

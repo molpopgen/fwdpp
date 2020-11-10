@@ -48,10 +48,6 @@ BOOST_AUTO_TEST_CASE(test_compilation)
             decltype(params.generate_breakpoints), typename poptype::diploid_t,
             typename poptype::haploid_genome_t, typename poptype::mcont_t>::value,
         "invalid recombination model");
-    static_assert(std::is_same<typename std::remove_const<decltype(
-                                   params.interlocus_recombination)>::type,
-                               std::nullptr_t>::value,
-                  "interlocus recombination type must be std::nullptr_t");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
