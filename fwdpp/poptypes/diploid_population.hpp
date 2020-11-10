@@ -35,7 +35,9 @@ namespace fwdpp
             uint_t N;
 
             using dipvector_t = dipvector;
-            using diploid_t = typename dipvector::value_type;
+            using diploid_type = typename dipvector::value_type;
+            using diploid_t [[deprecated("use diploid_type")]] =
+                typename dipvector::value_type;
             //! Typedef for base class
             using popbase_t = popbase<mutation_type, mcont, gcont, mvector, ftvector,
                                       lookup_table_type>;
@@ -43,8 +45,9 @@ namespace fwdpp
             using popmodel_t = poptypes::DIPLOID_TAG;
             //! Fitness function signature compatible with this type
             using fitness_t
-                = fwdpp::traits::fitness_fxn_t<dipvector_t, typename popbase_t::gcont_t,
-                                               typename popbase_t::mcont_t>;
+                = fwdpp::traits::fitness_fxn_t<dipvector_t,
+                                               typename popbase_t::genome_container,
+                                               typename popbase_t::mutation_container>;
 
             //! Container of diploids
             dipvector_t diploids;

@@ -65,37 +65,37 @@ namespace fwdpp
             }
         };
 
-        template <typename mcont_t, typename ostreamtype>
+        template <typename MutationContainerType, typename ostreamtype>
         void
-        write_mutations(ostreamtype &buffer, const mcont_t &mutations)
+        write_mutations(ostreamtype &buffer, const MutationContainerType &mutations)
         /// \brief Serialize a container of mutations.
         ///
         /// Works via specialization of serialize_mutation.
         {
             static_assert(
-                traits::is_mutation_v<typename mcont_t::value_type>,
-                "mcont_t must be a container of mutations");
+                traits::is_mutation_v<typename MutationContainerType::value_type>,
+                "MutationContainerType must be a container of mutations");
             std::size_t MUTNO = mutations.size();
             fwdpp::io::scalar_writer()(buffer, &MUTNO);
             // write the mutation data to the buffer
-            fwdpp::io::serialize_mutation<typename mcont_t::value_type> mw;
+            fwdpp::io::serialize_mutation<typename MutationContainerType::value_type> mw;
             for (const auto &m : mutations)
                 mw(buffer, m);
         }
 
-        template <typename mcont_t, typename istreamtype>
+        template <typename MutationContainerType, typename istreamtype>
         void
-        read_mutations(istreamtype &in, mcont_t &mutations)
+        read_mutations(istreamtype &in, MutationContainerType &mutations)
         /// \brief Deserialize a container of mutations.
         ///
         /// Works via specialization of deserialize_mutation.
         {
             static_assert(
-                traits::is_mutation_v<typename mcont_t::value_type>,
-                "mcont_t must be a container of mutations");
+                traits::is_mutation_v<typename MutationContainerType::value_type>,
+                "MutationContainerType must be a container of mutations");
             std::size_t NMUTS;
             fwdpp::io::scalar_reader()(in, &NMUTS);
-            fwdpp::io::deserialize_mutation<typename mcont_t::value_type> mr;
+            fwdpp::io::deserialize_mutation<typename MutationContainerType::value_type> mr;
             for (uint_t i = 0; i < NMUTS; ++i)
                 {
                     mutations.emplace_back(mr(in));

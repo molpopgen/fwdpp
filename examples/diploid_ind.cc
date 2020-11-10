@@ -82,7 +82,7 @@ main(int argc, char **argv)
 
             const auto mmodel = [&pop, &r, &generation](
                                     fwdpp::flagged_mutation_queue &recbin,
-                                    diploid_population::mcont_t &mutations) {
+                                    diploid_population::mutation_container &mutations) {
                 return fwdpp::infsites_popgenmut(
                     recbin, mutations, r.get(), pop.mut_lookup, generation,
                     0.0, [&r]() { return gsl_rng_uniform(r.get()); },

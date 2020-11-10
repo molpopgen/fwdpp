@@ -21,8 +21,7 @@ namespace fwdpp
     /// \brief FIFO queue for mutation recycling
     /// \version 0.7.4 added to fwdpp
     using flagged_mutation_queue
-        = strong_types::named_type<std::queue<std::size_t>,
-                                   tags::mutation_recycling>;
+        = strong_types::named_type<std::queue<std::size_t>, tags::mutation_recycling>;
 
     /// \brief FIFO queue for haploid_genome recycling
     /// \version 0.7.4 added to fwdpp
@@ -77,13 +76,13 @@ namespace fwdpp
         return flagged_haploid_genome_queue(std::move(rv));
     }
 
-    template <typename gcont_t>
+    template <typename GenomeContainerType>
     inline std::size_t
     recycle_haploid_genome(
-        gcont_t &haploid_genomes,
+        GenomeContainerType &haploid_genomes,
         flagged_haploid_genome_queue &haploid_genome_recycling_bin,
-        typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected)
+        typename GenomeContainerType::value_type::mutation_container &neutral,
+        typename GenomeContainerType::value_type::mutation_container &selected)
     /// \brief Return location of a new haploid_genome, recycling available memory if possible
     /// \param haploid_genomes vector of haploid_genomes
     /// \param haploid_genome_recycling_bin A flagged_haploid_genome_queue
@@ -109,8 +108,7 @@ namespace fwdpp
                 haploid_genomes[idx].smutations.swap(selected);
                 return idx;
             }
-        haploid_genomes.emplace_back(0u, std::move(neutral),
-                                     std::move(selected));
+        haploid_genomes.emplace_back(0u, std::move(neutral), std::move(selected));
         return (haploid_genomes.size() - 1);
     }
 
@@ -125,12 +123,12 @@ namespace fwdpp
           extinct mutations.
           \param mutations A list of mutation objects
           \param args Parameter pack to be passed to constructor of an
-          mcont_t::value_type
+          MutationContainerType::value_type
          */
-    template <typename mcont_t, class... Args>
+    template <typename MutationContainerType, class... Args>
     inline std::size_t
     recycle_mutation_helper(flagged_mutation_queue &mutation_recycling_bin,
-                            mcont_t &mutations, Args &&... args)
+                            MutationContainerType &mutations, Args &&... args)
     /// \brief Helper function for implementing mutation generation functions.
     /// \param mutation_recycling_bin A flagged_mutation_queue
     /// \param mutations Container of mutations
@@ -142,8 +140,8 @@ namespace fwdpp
             {
                 auto rv = ref.front();
                 ref.pop();
-                mutations[rv] =
-                    typename mcont_t::value_type(std::forward<Args>(args)...);
+                mutations[rv] = typename MutationContainerType::value_type(
+                    std::forward<Args>(args)...);
                 return rv;
             }
         mutations.emplace_back(std::forward<Args>(args)...);

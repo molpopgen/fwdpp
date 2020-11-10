@@ -21,50 +21,53 @@
 
 namespace fwdpp
 {
-    template <typename recombination_policy, typename diploid_t,
-              typename haploid_genome_t, typename mcont_t>
+    template <typename recombination_policy, typename DiploidType,
+              typename haploid_genome_t, typename MutationContainerType>
     inline typename std::result_of<recombination_policy()>::type
-    dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  diploid_t &&, haploid_genome_t &&,
-                                  haploid_genome_t &&, mcont_t &&)
+    dispatch_recombination_policy(const recombination_policy &rec_pol, DiploidType &&,
+                                  haploid_genome_t &&, haploid_genome_t &&,
+                                  MutationContainerType &&)
     {
         return rec_pol();
     }
 
-    template <typename recombination_policy, typename diploid_t,
-              typename haploid_genome_t, typename mcont_t>
+    template <typename recombination_policy, typename DiploidType,
+              typename haploid_genome_t, typename MutationContainerType>
     inline typename std::result_of<recombination_policy(
-        haploid_genome_t &&, haploid_genome_t &&, mcont_t &&)>::type
-    dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  diploid_t &&, haploid_genome_t &&g1,
-                                  haploid_genome_t &&g2, mcont_t &&mutations)
+        haploid_genome_t &&, haploid_genome_t &&, MutationContainerType &&)>::type
+    dispatch_recombination_policy(const recombination_policy &rec_pol, DiploidType &&,
+                                  haploid_genome_t &&g1, haploid_genome_t &&g2,
+                                  MutationContainerType &&mutations)
     {
         return rec_pol(std::forward<haploid_genome_t>(g1),
                        std::forward<haploid_genome_t>(g2),
-                       std::forward<mcont_t>(mutations));
+                       std::forward<MutationContainerType>(mutations));
     }
 
-    template <typename recombination_policy, typename diploid_t,
-              typename haploid_genome_t, typename mcont_t>
-    inline typename std::result_of<
-        recombination_policy(diploid_t &&, haploid_genome_t &&,
-                             haploid_genome_t &&, mcont_t &&)>::type
-    dispatch_recombination_policy(const recombination_policy &rec_pol,
-                                  diploid_t &&diploid, haploid_genome_t &&g1,
-                                  haploid_genome_t &&g2, mcont_t &&mutations)
+    template <typename recombination_policy, typename DiploidType,
+              typename haploid_genome_t, typename MutationContainerType>
+    inline
+        typename std::result_of<recombination_policy(DiploidType &&, haploid_genome_t &&,
+                                                     haploid_genome_t &&,
+                                                     MutationContainerType &&)>::type
+        dispatch_recombination_policy(const recombination_policy &rec_pol,
+                                      DiploidType &&diploid, haploid_genome_t &&g1,
+                                      haploid_genome_t &&g2,
+                                      MutationContainerType &&mutations)
     {
-        return rec_pol(std::forward<diploid_t>(diploid),
+        return rec_pol(std::forward<DiploidType>(diploid),
                        std::forward<haploid_genome_t>(g1),
                        std::forward<haploid_genome_t>(g2),
-                       std::forward<mcont_t>(mutations));
+                       std::forward<MutationContainerType>(mutations));
     }
 
-    template <typename recombination_policy, typename diploid_t,
-              typename gcont_t, typename mcont_t>
+    template <typename recombination_policy, typename DiploidType,
+              typename GenomeContainerType, typename MutationContainerType>
     std::vector<double>
-    generate_breakpoints(const diploid_t &diploid, const std::size_t g1,
-                         const std::size_t g2, const gcont_t &haploid_genomes,
-                         const mcont_t &mutations,
+    generate_breakpoints(const DiploidType &diploid, const std::size_t g1,
+                         const std::size_t g2,
+                         const GenomeContainerType &haploid_genomes,
+                         const MutationContainerType &mutations,
                          const recombination_policy &rec_pol)
     /// Generate vector of recombination breakpoints
     ///
@@ -92,18 +95,17 @@ namespace fwdpp
         //        return {};
         //    }
         return dispatch_recombination_policy(
-            std::cref(rec_pol), std::cref(diploid),
-            std::cref(haploid_genomes[g1]), std::cref(haploid_genomes[g2]),
-            std::cref(mutations));
+            std::cref(rec_pol), std::cref(diploid), std::cref(haploid_genomes[g1]),
+            std::cref(haploid_genomes[g2]), std::cref(mutations));
     }
 
-    template <typename mutation_model, typename diploid_t, typename gcont_t,
-              typename mcont_t>
+    template <typename mutation_model, typename DiploidType, typename GenomeContainerType,
+              typename MutationContainerType>
     std::vector<uint_t>
-    generate_new_mutations(flagged_mutation_queue &recycling_bin,
-                           const gsl_rng *r, const double &mu,
-                           const diploid_t &dip, gcont_t &haploid_genomes,
-                           mcont_t &mutations, const std::size_t g,
+    generate_new_mutations(flagged_mutation_queue &recycling_bin, const gsl_rng *r,
+                           const double &mu, const DiploidType &dip,
+                           GenomeContainerType &haploid_genomes,
+                           MutationContainerType &mutations, const std::size_t g,
                            const mutation_model &mmodel)
     ///
     /// Return a vector of keys to new mutations.  The keys
@@ -127,24 +129,23 @@ namespace fwdpp
         for (unsigned i = 0; i < nm; ++i)
             {
                 rv.emplace_back(fwdpp_internal::mmodel_dispatcher(
-                    mmodel, dip, haploid_genomes[g], mutations,
-                    recycling_bin));
+                    mmodel, dip, haploid_genomes[g], mutations, recycling_bin));
             }
-        std::sort(rv.begin(), rv.end(),
-                  [&mutations](const uint_t a, const uint_t b) {
-                      return mutations[a].pos < mutations[b].pos;
-                  });
+        std::sort(rv.begin(), rv.end(), [&mutations](const uint_t a, const uint_t b) {
+            return mutations[a].pos < mutations[b].pos;
+        });
         return rv;
     }
 
     namespace fwdpp_internal
     {
-        template <typename container, typename integer_type, typename mcont_t>
+        template <typename container, typename integer_type,
+                  typename MutationContainerType>
         typename container::iterator
         insert_new_mutation(const typename container::iterator beg,
                             const typename container::iterator end,
                             const integer_type mut_key,
-                            const mcont_t &mutations, container &c)
+                            const MutationContainerType &mutations, container &c)
         // Inserts mutation key into c such that sort order is maintained
         {
             auto t = std::upper_bound(
@@ -157,10 +158,10 @@ namespace fwdpp
             return t;
         }
 
-        template <typename gcont_t, typename container>
+        template <typename GenomeContainerType, typename container>
         void
         prep_temporary_containers(const std::size_t g1, const std::size_t g2,
-                                  const gcont_t &haploid_genomes,
+                                  const GenomeContainerType &haploid_genomes,
                                   container &neutral, container &selected)
         // Clear temporary containers and reserve memory
         {
@@ -173,16 +174,16 @@ namespace fwdpp
         }
     } // namespace fwdpp_internal
 
-    template <typename gcont_t, typename mcont_t, typename queue_type,
-              typename new_mutations_type, typename breakpoints_type>
+    template <typename GenomeContainerType, typename MutationContainerType,
+              typename queue_type, typename new_mutations_type,
+              typename breakpoints_type>
     uint_t
     mutate_recombine(
-        const new_mutations_type &new_mutations,
-        const breakpoints_type &breakpoints, const std::size_t g1,
-        const std::size_t g2, gcont_t &haploid_genomes, mcont_t &mutations,
-        queue_type &haploid_genome_recycling_bin,
-        typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected)
+        const new_mutations_type &new_mutations, const breakpoints_type &breakpoints,
+        const std::size_t g1, const std::size_t g2, GenomeContainerType &haploid_genomes,
+        MutationContainerType &mutations, queue_type &haploid_genome_recycling_bin,
+        typename GenomeContainerType::value_type::mutation_container &neutral,
+        typename GenomeContainerType::value_type::mutation_container &selected)
     ///
     /// Update apply new mutations and recombination events to
     /// an offspring's haploid_genome.
@@ -218,17 +219,15 @@ namespace fwdpp
             {
                 return g1;
             }
-        else if (begin(breakpoints)
-                 == end(breakpoints)) // only mutations to deal with
+        else if (begin(breakpoints) == end(breakpoints)) // only mutations to deal with
             {
-                fwdpp_internal::prep_temporary_containers(
-                    g1, g2, haploid_genomes, neutral, selected);
+                fwdpp_internal::prep_temporary_containers(g1, g2, haploid_genomes,
+                                                          neutral, selected);
                 auto nb = haploid_genomes[g1].mutations.begin(),
                      sb = haploid_genomes[g1].smutations.begin();
                 const auto ne = haploid_genomes[g1].mutations.end(),
                            se = haploid_genomes[g1].smutations.end();
-                for (auto m = begin(new_mutations); m < end(new_mutations);
-                     ++m)
+                for (auto m = begin(new_mutations); m < end(new_mutations); ++m)
                     {
                         if (mutations[*m].neutral)
                             {
@@ -257,8 +256,7 @@ namespace fwdpp
                                 ++new_selected;
                             }
                     }
-                if (neutral.size()
-                    != haploid_genomes[g1].mutations.size() + new_neutral)
+                if (neutral.size() != haploid_genomes[g1].mutations.size() + new_neutral)
                     {
                         throw std::runtime_error("FWDPP DEBUG: failure to add "
                                                  "all new neutral mutations");
@@ -270,9 +268,8 @@ namespace fwdpp
                                                  "all new selected mutations");
                     }
 #endif
-                return recycle_haploid_genome(haploid_genomes,
-                                              haploid_genome_recycling_bin,
-                                              neutral, selected);
+                return recycle_haploid_genome(
+                    haploid_genomes, haploid_genome_recycling_bin, neutral, selected);
             }
         if (breakpoints.size() == 1)
             {
@@ -281,8 +278,8 @@ namespace fwdpp
             }
         // If we get here, there are mutations and
         // recombinations to handle
-        fwdpp_internal::prep_temporary_containers(g1, g2, haploid_genomes,
-                                                  neutral, selected);
+        fwdpp_internal::prep_temporary_containers(g1, g2, haploid_genomes, neutral,
+                                                  selected);
 
         auto itr = haploid_genomes[g1].mutations.cbegin();
         auto jtr = haploid_genomes[g2].mutations.cbegin();
@@ -300,14 +297,14 @@ namespace fwdpp
                     && mutations[*next_mutation].pos < *i)
                     {
                         const auto mut = &mutations[*next_mutation];
-                        itr = fwdpp_internal::rec_gam_updater(
-                            itr, itr_e, mutations, neutral, mut->pos);
+                        itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations,
+                                                              neutral, mut->pos);
                         itr_s = fwdpp_internal::rec_gam_updater(
                             itr_s, itr_s_e, mutations, selected, mut->pos);
-                        jtr = fwdpp_internal::rec_update_itr(
-                            jtr, jtr_e, mutations, mut->pos);
-                        jtr_s = fwdpp_internal::rec_update_itr(
-                            jtr_s, jtr_s_e, mutations, mut->pos);
+                        jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e, mutations,
+                                                             mut->pos);
+                        jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e, mutations,
+                                                               mut->pos);
                         if (mut->neutral)
                             {
                                 neutral.push_back(*next_mutation);
@@ -320,14 +317,13 @@ namespace fwdpp
                     }
                 else
                     {
-                        itr = fwdpp_internal::rec_gam_updater(
-                            itr, itr_e, mutations, neutral, *i);
-                        itr_s = fwdpp_internal::rec_gam_updater(
-                            itr_s, itr_s_e, mutations, selected, *i);
-                        jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e,
-                                                             mutations, *i);
-                        jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
-                                                               mutations, *i);
+                        itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations,
+                                                              neutral, *i);
+                        itr_s = fwdpp_internal::rec_gam_updater(itr_s, itr_s_e,
+                                                                mutations, selected, *i);
+                        jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e, mutations, *i);
+                        jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e, mutations,
+                                                               *i);
                         std::swap(itr, jtr);
                         std::swap(itr_s, jtr_s);
                         std::swap(itr_e, jtr_e);
@@ -342,22 +338,23 @@ namespace fwdpp
                                          "mutation/recombination");
             }
 #endif
-        return recycle_haploid_genome(
-            haploid_genomes, haploid_genome_recycling_bin, neutral, selected);
+        return recycle_haploid_genome(haploid_genomes, haploid_genome_recycling_bin,
+                                      neutral, selected);
     }
 
-    template <typename diploid_t, typename gcont_t, typename mcont_t,
-              typename recmodel, typename mutmodel>
+    template <typename DiploidType, typename GenomeContainerType,
+              typename MutationContainerType, typename recmodel, typename mutmodel>
     std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
     mutate_recombine_update(
-        const gsl_rng *r, gcont_t &haploid_genomes, mcont_t &mutations,
+        const gsl_rng *r, GenomeContainerType &haploid_genomes,
+        MutationContainerType &mutations,
         std::tuple<std::size_t, std::size_t, std::size_t, std::size_t>
             parental_haploid_genomes,
         const recmodel &rec_pol, const mutmodel &mmodel, const double mu,
         flagged_haploid_genome_queue &haploid_genome_recycling_bin,
-        flagged_mutation_queue &mutation_recycling_bin, diploid_t &dip,
-        typename gcont_t::value_type::mutation_container &neutral,
-        typename gcont_t::value_type::mutation_container &selected)
+        flagged_mutation_queue &mutation_recycling_bin, DiploidType &dip,
+        typename GenomeContainerType::value_type::mutation_container &neutral,
+        typename GenomeContainerType::value_type::mutation_container &selected)
     ///
     /// "Convenience" function for generating offspring haploid_genomes.
     ///
@@ -403,16 +400,16 @@ namespace fwdpp
         // the integers representing the locations of the new mutations
         // in "mutations".
 
-        auto breakpoints = generate_breakpoints(
-            dip, p1g1, p1g2, haploid_genomes, mutations, rec_pol);
-        auto breakpoints2 = generate_breakpoints(
-            dip, p2g1, p2g2, haploid_genomes, mutations, rec_pol);
+        auto breakpoints
+            = generate_breakpoints(dip, p1g1, p1g2, haploid_genomes, mutations, rec_pol);
+        auto breakpoints2
+            = generate_breakpoints(dip, p2g1, p2g2, haploid_genomes, mutations, rec_pol);
         auto new_mutations
-            = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
-                                     haploid_genomes, mutations, p1g1, mmodel);
+            = generate_new_mutations(mutation_recycling_bin, r, mu, dip, haploid_genomes,
+                                     mutations, p1g1, mmodel);
         auto new_mutations2
-            = generate_new_mutations(mutation_recycling_bin, r, mu, dip,
-                                     haploid_genomes, mutations, p2g1, mmodel);
+            = generate_new_mutations(mutation_recycling_bin, r, mu, dip, haploid_genomes,
+                                     mutations, p2g1, mmodel);
 
         // Pass the breakpoints and new mutation keys on to
         // fwdpp::mutate_recombine (defined in
@@ -423,15 +420,14 @@ namespace fwdpp
         // either reycled from an extinct haploid_genome or it is the location
         // of a
         // new haploid_genome emplace_back'd onto the end.
-        dip.first = mutate_recombine(
-            new_mutations, breakpoints, p1g1, p1g2, haploid_genomes, mutations,
-            haploid_genome_recycling_bin, neutral, selected);
+        dip.first = mutate_recombine(new_mutations, breakpoints, p1g1, p1g2,
+                                     haploid_genomes, mutations,
+                                     haploid_genome_recycling_bin, neutral, selected);
         debug::haploid_genome_is_sorted(haploid_genomes[dip.first], mutations);
-        dip.second = mutate_recombine(
-            new_mutations2, breakpoints2, p2g1, p2g2, haploid_genomes,
-            mutations, haploid_genome_recycling_bin, neutral, selected);
-        debug::haploid_genome_is_sorted(haploid_genomes[dip.second],
-                                        mutations);
+        dip.second = mutate_recombine(new_mutations2, breakpoints2, p2g1, p2g2,
+                                      haploid_genomes, mutations,
+                                      haploid_genome_recycling_bin, neutral, selected);
+        debug::haploid_genome_is_sorted(haploid_genomes[dip.second], mutations);
         haploid_genomes[dip.first].n++;
         haploid_genomes[dip.second].n++;
 
@@ -440,8 +436,7 @@ namespace fwdpp
 
         auto nrec = (!breakpoints.empty()) ? breakpoints.size() - 1 : 0;
         auto nrec2 = (!breakpoints2.empty()) ? breakpoints2.size() - 1 : 0;
-        return std::make_tuple(nrec, nrec2, new_mutations.size(),
-                               new_mutations2.size());
+        return std::make_tuple(nrec, nrec2, new_mutations.size(), new_mutations2.size());
     }
 } // namespace fwdpp
 

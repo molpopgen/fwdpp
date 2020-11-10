@@ -54,13 +54,16 @@ namespace fwdpp
         // First, we have a set of helper functions:
 
         //! Wrapper around std::find_if to find next haploid_genome where n > 0
-        template <typename gcont_t_iterator>
-        inline gcont_t_iterator
-        next_extant_haploid_genome(gcont_t_iterator beg, gcont_t_iterator end) noexcept
+        template <typename GenomeContainerType_iterator>
+        inline GenomeContainerType_iterator
+        next_extant_haploid_genome(GenomeContainerType_iterator beg,
+                                   GenomeContainerType_iterator end) noexcept
         {
             return std::find_if(
-                beg, end, [](const typename gcont_t_iterator::value_type
-                                 &g) noexcept { return g.n; });
+                beg, end,
+                [](const typename GenomeContainerType_iterator::value_type &g) noexcept {
+                    return g.n;
+                });
         }
 
         struct find_fixation
@@ -71,25 +74,24 @@ namespace fwdpp
             operator()(const mut_index_cont &mc, const mcounts_t &mcounts,
                        const uint_t twoN) const noexcept
             {
-                return std::find_if(
-                    mc.cbegin(), mc.cend(),
-                    [&mcounts, &twoN ](const std::size_t &i) noexcept {
-                        return mcounts[i] == twoN;
-                    });
+                return std::find_if(mc.cbegin(), mc.cend(),
+                                    [&mcounts, &twoN](const std::size_t &i) noexcept {
+                                        return mcounts[i] == twoN;
+                                    });
             }
 
-            template <typename mut_index_cont, typename mcont_t,
+            template <typename mut_index_cont, typename MutationContainerType,
                       typename mcounts_t, typename mutation_removal_policy>
             inline typename mut_index_cont::const_iterator
-            operator()(const mut_index_cont &mc, const mcont_t &mutations,
+            operator()(const mut_index_cont &mc, const MutationContainerType &mutations,
                        const mcounts_t &mcounts, const uint_t twoN,
                        mutation_removal_policy &&mp) const noexcept
             {
-                return std::find_if(mc.cbegin(), mc.cend(), [
-                    &mutations, &mcounts, &twoN, &mp
-                ](const std::size_t &i) noexcept {
-                    return mcounts[i] == twoN && mp(mutations[i]);
-                });
+                return std::find_if(
+                    mc.cbegin(), mc.cend(),
+                    [&mutations, &mcounts, &twoN, &mp](const std::size_t &i) noexcept {
+                        return mcounts[i] == twoN && mp(mutations[i]);
+                    });
             }
         };
 
@@ -98,10 +100,9 @@ namespace fwdpp
         {
             template <typename mut_index_cont, typename mcounts_t>
             inline void
-            operator()(
-                mut_index_cont &mc, const mcounts_t &mcounts,
-                const typename mut_index_cont::value_type &first_fixation,
-                const uint_t twoN) const noexcept
+            operator()(mut_index_cont &mc, const mcounts_t &mcounts,
+                       const typename mut_index_cont::value_type &first_fixation,
+                       const uint_t twoN) const noexcept
             //! Overload for no custom policy
             {
                 /*
@@ -114,24 +115,22 @@ namespace fwdpp
                   expression, which experiences cache-misses because mcounts is
                   NOT sorted according to mutation position.
                 */
-                mc.erase(
-                    std::remove_if(
-                        std::find(mc.begin(), mc.end(), first_fixation),
-                        mc.end(),
-                        [&mcounts, &twoN ](
-                            const typename mut_index_cont::value_type
-                                &i) noexcept { return mcounts[i] == twoN; }),
-                    mc.end());
+                mc.erase(std::remove_if(
+                             std::find(mc.begin(), mc.end(), first_fixation), mc.end(),
+                             [&mcounts, &twoN](
+                                 const typename mut_index_cont::value_type &i) noexcept {
+                                 return mcounts[i] == twoN;
+                             }),
+                         mc.end());
             }
 
-            template <typename mut_index_cont, typename mcont_t,
+            template <typename mut_index_cont, typename MutationContainerType,
                       typename mcounts_t, typename mutation_removal_policy>
             inline void
-            operator()(
-                mut_index_cont &mc, const mcont_t &mutations,
-                const mcounts_t &mcounts,
-                const typename mut_index_cont::value_type &first_fixation,
-                const uint_t twoN, mutation_removal_policy &&mp) const noexcept
+            operator()(mut_index_cont &mc, const MutationContainerType &mutations,
+                       const mcounts_t &mcounts,
+                       const typename mut_index_cont::value_type &first_fixation,
+                       const uint_t twoN, mutation_removal_policy &&mp) const noexcept
             //! Overload for custom policy.
             {
                 /*
@@ -145,11 +144,9 @@ namespace fwdpp
                   NOT sorted according to mutation position.
                 */
                 mc.erase(std::remove_if(
-                             std::find(mc.begin(), mc.end(), first_fixation),
-                             mc.end(),
-                             [&mcounts, &mutations, &twoN,
-                              &mp ](const typename mut_index_cont::value_type
-                                        &i) noexcept {
+                             std::find(mc.begin(), mc.end(), first_fixation), mc.end(),
+                             [&mcounts, &mutations, &twoN, &mp](
+                                 const typename mut_index_cont::value_type &i) noexcept {
                                  return mcounts[i] == twoN && mp(mutations[i]);
                              }),
                          mc.end());
@@ -164,19 +161,19 @@ namespace fwdpp
                 /*
                   \note Added in 0.5.0 to address Issue #41
                 */
-                mc.erase(
-                    std::remove_if(
-                        mc.begin(), mc.end(),
-                        [&mcounts, &twoN ](
-                            const typename mut_index_cont::value_type
-                                &i) noexcept { return mcounts[i] == twoN; }),
-                    mc.end());
+                mc.erase(std::remove_if(
+                             mc.begin(), mc.end(),
+                             [&mcounts, &twoN](
+                                 const typename mut_index_cont::value_type &i) noexcept {
+                                 return mcounts[i] == twoN;
+                             }),
+                         mc.end());
             }
 
-            template <typename mut_index_cont, typename mcont_t,
+            template <typename mut_index_cont, typename MutationContainerType,
                       typename mcounts_t, typename mutation_removal_policy>
             inline void
-            operator()(mut_index_cont &mc, const mcont_t &mutations,
+            operator()(mut_index_cont &mc, const MutationContainerType &mutations,
                        const mcounts_t &mcounts, const uint_t twoN,
                        mutation_removal_policy &&mp) const noexcept
             //! Overload for custom policy.
@@ -186,9 +183,8 @@ namespace fwdpp
                 */
                 mc.erase(std::remove_if(
                              mc.begin(), mc.end(),
-                             [&mcounts, &mutations, &twoN,
-                              &mp ](const typename mut_index_cont::value_type
-                                        &i) noexcept {
+                             [&mcounts, &mutations, &twoN, &mp](
+                                 const typename mut_index_cont::value_type &i) noexcept {
                                  return mcounts[i] == twoN && mp(mutations[i]);
                              }),
                          mc.end());
@@ -201,30 +197,30 @@ namespace fwdpp
           fwdpp::remove_nothing >::type is true.
           Called by fwdpp::sample_diploid
         */
-        template <typename gcont_t, typename mcont_t,
+        template <typename GenomeContainerType, typename MutationContainerType,
                   typename mutation_removal_policy>
-        inline typename std::
-            enable_if<std::is_same<mutation_removal_policy,
-                                   fwdpp::remove_nothing>::value>::type
-            haploid_genome_cleaner(gcont_t &, const mcont_t &,
-                           const std::vector<uint_t> &, const uint_t,
-                           const mutation_removal_policy &)
+        inline typename std::enable_if<
+            std::is_same<mutation_removal_policy, fwdpp::remove_nothing>::value>::type
+        haploid_genome_cleaner(GenomeContainerType &, const MutationContainerType &,
+                               const std::vector<uint_t> &, const uint_t,
+                               const mutation_removal_policy &)
         {
             return;
         }
 
-        template <typename gcont_t, typename fixation_finder,
+        template <typename GenomeContainerType, typename fixation_finder,
                   typename idiom_wrapper>
         inline void
-        haploid_genome_cleaner_details(gcont_t &haploid_genomes, const fixation_finder &ff,
-                               const idiom_wrapper &iw) noexcept
+        haploid_genome_cleaner_details(GenomeContainerType &haploid_genomes,
+                                       const fixation_finder &ff,
+                                       const idiom_wrapper &iw) noexcept
         /*!
           The two overloads of haploid_genome_cleaner dispatch the above policies into
           this function.
         */
         {
-            auto extant_haploid_genome
-                = next_extant_haploid_genome(haploid_genomes.begin(), haploid_genomes.end());
+            auto extant_haploid_genome = next_extant_haploid_genome(
+                haploid_genomes.begin(), haploid_genomes.end());
             const auto fixation_n = ff(extant_haploid_genome->mutations);
             bool neutral_fixations_exist
                 = (fixation_n != extant_haploid_genome->mutations.cend());
@@ -259,9 +255,9 @@ namespace fwdpp
                 }
         }
 
-        template <typename gcont_t, typename fixation_finder>
+        template <typename GenomeContainerType, typename fixation_finder>
         std::pair<bool, bool>
-        fixation_finder_search_all(const gcont_t &haploid_genomes,
+        fixation_finder_search_all(const GenomeContainerType &haploid_genomes,
                                    const fixation_finder &ff) noexcept
         /*!
           Determines whether a fixation exists in ANY haploid_genome.
@@ -292,12 +288,12 @@ namespace fwdpp
             return std::make_pair(neutral, selected);
         }
 
-        template <typename gcont_t, typename fixation_finder,
+        template <typename GenomeContainerType, typename fixation_finder,
                   typename idiom_wrapper>
         inline void
-        haploid_genome_cleaner_details(gcont_t &haploid_genomes, const fixation_finder &ff,
-                               const idiom_wrapper &iw,
-                               std::true_type) noexcept
+        haploid_genome_cleaner_details(GenomeContainerType &haploid_genomes,
+                                       const fixation_finder &ff,
+                                       const idiom_wrapper &iw, std::true_type) noexcept
         /*!
           The two overloads of haploid_genome_cleaner dispatch the above policies into
           this function.
@@ -315,8 +311,8 @@ namespace fwdpp
             if (!neutral_fixations_exist && !selected_fixations_exist)
                 return;
 
-            auto extant_haploid_genome
-                = next_extant_haploid_genome(haploid_genomes.begin(), haploid_genomes.end());
+            auto extant_haploid_genome = next_extant_haploid_genome(
+                haploid_genomes.begin(), haploid_genomes.end());
             const auto gend = haploid_genomes.end();
             while (extant_haploid_genome < gend)
                 {
@@ -345,24 +341,24 @@ namespace fwdpp
           fwdpp::true_type >::type is true.
           Called by fwdpp::sample_diploid
         */
-        template <typename gcont_t, typename mcont_t,
+        template <typename GenomeContainerType, typename MutationContainerType,
                   typename mutation_removal_policy>
-        inline
-            typename std::enable_if<std::is_same<mutation_removal_policy,
-                                                 std::true_type>::value>::type
-            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &,
-                           const std::vector<uint_t> &mcounts,
-                           const uint_t twoN, const mutation_removal_policy &)
+        inline typename std::enable_if<
+            std::is_same<mutation_removal_policy, std::true_type>::value>::type
+        haploid_genome_cleaner(GenomeContainerType &haploid_genomes,
+                               const MutationContainerType &,
+                               const std::vector<uint_t> &mcounts, const uint_t twoN,
+                               const mutation_removal_policy &)
         {
             haploid_genome_cleaner_details(
                 haploid_genomes,
                 [&mcounts,
-                 twoN](const typename gcont_t::value_type::mutation_container
+                 twoN](const typename GenomeContainerType::value_type::mutation_container
                            &mc) { return find_fixation()(mc, mcounts, twoN); },
                 [&mcounts,
-                 twoN](typename gcont_t::value_type::mutation_container &mc,
-                       const typename gcont_t::value_type::mutation_container::
-                           value_type v) {
+                 twoN](typename GenomeContainerType::value_type::mutation_container &mc,
+                       const typename GenomeContainerType::value_type::
+                           mutation_container::value_type v) {
                     return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mcounts, v, twoN);
                 });
@@ -374,28 +370,27 @@ namespace fwdpp
           mutation type as an argument.
           Called by fwdpp::sample_diploid
         */
-        template <typename gcont_t, typename mcont_t,
+        template <typename GenomeContainerType, typename MutationContainerType,
                   typename mutation_removal_policy>
-        inline typename std::
-            enable_if<!std::is_same<mutation_removal_policy,
-                                    std::true_type>::value
-                      && !std::is_same<mutation_removal_policy,
-                                       fwdpp::remove_nothing>::value>::type
-            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &mutations,
-                           const std::vector<uint_t> &mcounts,
-                           const uint_t twoN,
-                           const mutation_removal_policy &mp)
+        inline typename std::enable_if<
+            !std::is_same<mutation_removal_policy, std::true_type>::value
+            && !std::is_same<mutation_removal_policy,
+                             fwdpp::remove_nothing>::value>::type
+        haploid_genome_cleaner(GenomeContainerType &haploid_genomes,
+                               const MutationContainerType &mutations,
+                               const std::vector<uint_t> &mcounts, const uint_t twoN,
+                               const mutation_removal_policy &mp)
         {
             haploid_genome_cleaner_details(
                 haploid_genomes,
                 [&mutations, &mcounts, &mp,
-                 twoN](const typename gcont_t::value_type::mutation_container
+                 twoN](const typename GenomeContainerType::value_type::mutation_container
                            &mc) {
                     return find_fixation()(mc, mutations, mcounts, twoN, mp);
                 },
                 [&mutations, &mcounts, &mp,
-                 twoN](typename gcont_t::value_type::mutation_container &mc,
-                       typename gcont_t::value_type::mutation_container::
+                 twoN](typename GenomeContainerType::value_type::mutation_container &mc,
+                       typename GenomeContainerType::value_type::mutation_container::
                            value_type v) {
                     return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mutations, mcounts, v, twoN, mp);
@@ -411,23 +406,22 @@ namespace fwdpp
           \note Added in 0.5.0 to deal with issue #41 involving multi-locus
           sims
         */
-        template <typename gcont_t, typename mcont_t,
+        template <typename GenomeContainerType, typename MutationContainerType,
                   typename mutation_removal_policy>
-        inline
-            typename std::enable_if<std::is_same<mutation_removal_policy,
-                                                 std::true_type>::value>::type
-            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &,
-                           const std::vector<uint_t> &mcounts,
-                           const uint_t twoN, const mutation_removal_policy &,
-                           std::true_type)
+        inline typename std::enable_if<
+            std::is_same<mutation_removal_policy, std::true_type>::value>::type
+        haploid_genome_cleaner(GenomeContainerType &haploid_genomes,
+                               const MutationContainerType &,
+                               const std::vector<uint_t> &mcounts, const uint_t twoN,
+                               const mutation_removal_policy &, std::true_type)
         {
             haploid_genome_cleaner_details(
                 haploid_genomes,
                 [&mcounts,
-                 twoN](const typename gcont_t::value_type::mutation_container
+                 twoN](const typename GenomeContainerType::value_type::mutation_container
                            &mc) { return find_fixation()(mc, mcounts, twoN); },
-                [&mcounts,
-                 twoN](typename gcont_t::value_type::mutation_container &mc) {
+                [&mcounts, twoN](
+                    typename GenomeContainerType::value_type::mutation_container &mc) {
                     return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mcounts, twoN);
                 },
@@ -443,27 +437,26 @@ namespace fwdpp
           \note Added in 0.5.0 to deal with issue #41 involving multi-locus
           sims
         */
-        template <typename gcont_t, typename mcont_t,
+        template <typename GenomeContainerType, typename MutationContainerType,
                   typename mutation_removal_policy>
-        inline typename std::
-            enable_if<!std::is_same<mutation_removal_policy,
-                                    std::true_type>::value
-                      && !std::is_same<mutation_removal_policy,
-                                       fwdpp::remove_nothing>::value>::type
-            haploid_genome_cleaner(gcont_t &haploid_genomes, const mcont_t &mutations,
-                           const std::vector<uint_t> &mcounts,
-                           const uint_t twoN,
-                           const mutation_removal_policy &mp, std::true_type)
+        inline typename std::enable_if<
+            !std::is_same<mutation_removal_policy, std::true_type>::value
+            && !std::is_same<mutation_removal_policy,
+                             fwdpp::remove_nothing>::value>::type
+        haploid_genome_cleaner(GenomeContainerType &haploid_genomes,
+                               const MutationContainerType &mutations,
+                               const std::vector<uint_t> &mcounts, const uint_t twoN,
+                               const mutation_removal_policy &mp, std::true_type)
         {
             haploid_genome_cleaner_details(
                 haploid_genomes,
                 [&mutations, &mcounts, &mp,
-                 twoN](const typename gcont_t::value_type::mutation_container
+                 twoN](const typename GenomeContainerType::value_type::mutation_container
                            &mc) {
                     return find_fixation()(mc, mutations, mcounts, twoN, mp);
                 },
-                [&mutations, &mcounts, &mp,
-                 twoN](typename gcont_t::value_type::mutation_container &mc) {
+                [&mutations, &mcounts, &mp, twoN](
+                    typename GenomeContainerType::value_type::mutation_container &mc) {
                     return haploid_genome_cleaner_erase_remove_idiom_wrapper()(
                         mc, mutations, mcounts, twoN, mp);
                 },

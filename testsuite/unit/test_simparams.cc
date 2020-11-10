@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(test_compilation)
     unsigned generation = 0;
     auto mmodel
         = [&pop, &r, &generation](fwdpp::flagged_mutation_queue &recbin,
-                                  poptype::mcont_t &mutations) {
+                                  poptype::mutation_container &mutations) {
               return fwdpp::infsites_popgenmut(
                   recbin, mutations, r.get(), pop.mut_lookup, generation, 0.0,
                   [&r]() { return gsl_rng_uniform(r.get()); },
@@ -45,8 +45,8 @@ BOOST_AUTO_TEST_CASE(test_compilation)
         std::move(gv), std::move(mmodel), std::move(rec));
     static_assert(
         fwdpp::traits::is_rec_model<
-            decltype(params.generate_breakpoints), typename poptype::diploid_t,
-            typename poptype::haploid_genome_t, typename poptype::mcont_t>::value,
+            decltype(params.generate_breakpoints), typename poptype::diploid_type,
+            typename poptype::haploid_genome_type, typename poptype::mutation_container>::value,
         "invalid recombination model");
 }
 

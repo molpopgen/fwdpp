@@ -22,10 +22,10 @@ namespace fwdpp
 
     namespace sugar
     {
-        template <typename mcont_t, typename mcounts_t>
+        template <typename MutationContainerType, typename mcounts_t>
         std::size_t
-        get_mut_index(mcont_t &mutations, mcounts_t &mcounts,
-                      typename mcont_t::value_type &new_mutation)
+        get_mut_index(MutationContainerType &mutations, mcounts_t &mcounts,
+                      typename MutationContainerType::value_type &new_mutation)
         /*!
           \brief Helper function for implementing fwdpp::add_mutation
 
@@ -50,8 +50,8 @@ namespace fwdpp
         */
         {
             // If the mutation already exists, let's not create it...
-            auto mitr = std::find(std::begin(mutations), std::end(mutations),
-                                  new_mutation);
+            auto mitr
+                = std::find(std::begin(mutations), std::end(mutations), new_mutation);
             if (mitr != mutations.end())
                 return std::size_t(std::distance(std::begin(mutations), mitr));
 
@@ -66,18 +66,16 @@ namespace fwdpp
               mutation.
             */
             // find an extinct mutation, if one exists
-            auto extinct_mut
-                = std::find(std::begin(mcounts), std::end(mcounts), 0);
+            auto extinct_mut = std::find(std::begin(mcounts), std::end(mcounts), 0);
             std::size_t mindex = mcounts.size();  // this will be the correct
                                                   // value if we use the else
                                                   // block below
             if (extinct_mut != std::end(mcounts)) // then we can recycle
                 {
-                    auto dist
-                        = std::distance(std::begin(mcounts), extinct_mut);
-                    mutations[dist] = std::move(
-                        new_mutation);          // move new mutation into place
-                    mindex = std::size_t(dist); // update our value
+                    auto dist = std::distance(std::begin(mcounts), extinct_mut);
+                    mutations[dist]
+                        = std::move(new_mutation); // move new mutation into place
+                    mindex = std::size_t(dist);    // update our value
                 }
             else
                 {
@@ -90,17 +88,15 @@ namespace fwdpp
 
         template <typename poptype, typename map_t>
         void
-        add_mutation_details(poptype &p,
-                             const std::vector<std::size_t> &mindexes,
+        add_mutation_details(poptype &p, const std::vector<std::size_t> &mindexes,
                              const map_t &gams)
         {
             auto gam_recycling_bin = make_haploid_genome_queue(p.haploid_genomes);
             // Function object for calls to upper bound
             auto inserter
-                = [&p](const double &__value, const std::size_t __mut) noexcept
-            {
-                return __value < p.mutations[__mut].pos;
-            };
+                = [&p](const double &__value, const std::size_t __mut) noexcept {
+                      return __value < p.mutations[__mut].pos;
+                  };
 
             for (const auto &gi : gams)
                 {
@@ -114,8 +110,7 @@ namespace fwdpp
                                 {
                                     debug::validate_mutation_key_ranges(
                                         p.mutations, n.begin(), n.end());
-                                    n.insert(std::upper_bound(n.begin(),
-                                                              n.end(), pos,
+                                    n.insert(std::upper_bound(n.begin(), n.end(), pos,
                                                               inserter),
                                              mindex);
                                 }
@@ -123,19 +118,17 @@ namespace fwdpp
                                 {
                                     debug::validate_mutation_key_ranges(
                                         p.mutations, s.begin(), s.end());
-                                    s.insert(std::upper_bound(s.begin(),
-                                                              s.end(), pos,
+                                    s.insert(std::upper_bound(s.begin(), s.end(), pos,
                                                               inserter),
                                              mindex);
                                 }
                             // update mutation count
                             p.mcounts[mindex] +=
-                                typename poptype::mcount_t::value_type(
-                                    gi.second.size());
+                                typename poptype::mcount_t::value_type(gi.second.size());
                         }
                     // get new haploid_genome
-                    auto new_haploid_genome_key
-                        = recycle_haploid_genome(p.haploid_genomes, gam_recycling_bin, n, s);
+                    auto new_haploid_genome_key = recycle_haploid_genome(
+                        p.haploid_genomes, gam_recycling_bin, n, s);
                     // update haploid_genome count
                     p.haploid_genomes[gi.first].n
                         -= decltype(p.haploid_genomes[gi.first].n)(gi.second.size());
@@ -151,14 +144,14 @@ namespace fwdpp
                 }
         }
 
-        template <typename poptype, typename = std::enable_if<std::is_same<
-                                        typename poptype::popmodel_t,
-                                        fwdpp::poptypes::DIPLOID_TAG>::value>>
-        std::unordered_map<
-            std::size_t,
-            std::vector<typename poptype::diploid_t::first_type *>>
+        template <typename poptype,
+                  typename
+                  = std::enable_if<std::is_same<typename poptype::popmodel_t,
+                                                fwdpp::poptypes::DIPLOID_TAG>::value>>
+        std::unordered_map<std::size_t,
+                           std::vector<typename poptype::diploid_type::first_type *>>
         collect_haploid_genomes(poptype &p, const std::vector<std::size_t> &indlist,
-                        const std::vector<short> &clist)
+                                const std::vector<short> &clist)
         /*!
           \brief Helper function for add_mutation and add_mutations.
 
@@ -167,9 +160,8 @@ namespace fwdpp
           new haploid_genomes created.
         */
         {
-            std::unordered_map<
-                std::size_t,
-                std::vector<typename poptype::diploid_t::first_type *>>
+            std::unordered_map<std::size_t,
+                               std::vector<typename poptype::diploid_type::first_type *>>
                 gams;
             for (std::size_t i = 0; i < indlist.size(); ++i)
                 {
@@ -240,19 +232,17 @@ namespace fwdpp
         for (const auto &c : clist)
             {
                 if (c < 0 || c > 2)
-                    throw std::out_of_range(
-                        "clist contains elements < 0 and/or > 2");
+                    throw std::out_of_range("clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument(
-                "indlist and clist must be same length");
+            throw std::invalid_argument("indlist and clist must be same length");
 
         // create a new mutation
-        typename poptype::mcont_t::value_type new_mutant(
+        typename poptype::mutation_container::value_type new_mutant(
             std::forward<Args>(args)...);
         auto mindex = sugar::get_mut_index(p.mutations, p.mcounts, new_mutant);
         auto gams = sugar::collect_haploid_genomes(p, indlist, clist);
-        sugar::add_mutation_details(p, { mindex }, gams);
+        sugar::add_mutation_details(p, {mindex}, gams);
         return mindex;
     }
 
@@ -313,16 +303,14 @@ namespace fwdpp
                         "clist contains elements < 0 and/or > 2");
             }
         if (indlist.size() != clist.size())
-            throw std::invalid_argument(
-                "indlist and clist must be same length");
+            throw std::invalid_argument("indlist and clist must be same length");
         for (auto mi : mutation_indexes)
             {
                 if (mi >= p.mutations.size())
                     throw std::out_of_range("mutation key out of range");
             }
         if (p.mcounts.size() != p.mutations.size())
-            throw std::invalid_argument(
-                "p.mcounts.size() != p.mutations.size()");
+            throw std::invalid_argument("p.mcounts.size() != p.mutations.size()");
         auto gams = sugar::collect_haploid_genomes(p, indlist, clist);
         sugar::add_mutation_details(p, mutation_indexes, gams);
     }

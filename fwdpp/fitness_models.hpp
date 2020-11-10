@@ -81,18 +81,17 @@ namespace fwdpp
           \brief Method for standard diploid simulations of a single locus.
         */
         using result_type = double;
-        template <typename haploid_genome_type, typename mcont_t>
+        template <typename HaploidGenomeType, typename MutationContainerType>
         inline result_type
-        operator()(const haploid_genome_type &, const haploid_genome_type &,
-                   const mcont_t &) const noexcept
+        operator()(const HaploidGenomeType &, const HaploidGenomeType &,
+                   const MutationContainerType &) const noexcept
         {
+            static_assert(traits::is_haploid_genome<HaploidGenomeType>::value,
+                          "HaploidGenomeType::value_type must be a haploid_genome "
+                          "type");
             static_assert(
-                traits::is_haploid_genome<haploid_genome_type>::value,
-                "haploid_genome_type::value_type must be a haploid_genome "
-                "type");
-            static_assert(
-                traits::is_mutation<typename mcont_t::value_type>::value,
-                "mcont_t::value_type must be a mutation type");
+                traits::is_mutation<typename MutationContainerType::value_type>::value,
+                "MutationContainerType::value_type must be a mutation type");
             return 1.;
         }
         //! \brief Naive implementation for non-standard cases
@@ -111,7 +110,7 @@ namespace fwdpp
     ///  \note The updating policies must take a non-const reference to a
     ///  double
     ///  as the first argument and
-    ///  an mcont_t::value_type as the second.  Further, they must not return
+    ///  an MutationContainerType::value_type as the second.  Further, they must not return
     ///  anything. Any remaining arguments needed should be passed via a
     ///  mechanism
     ///  such as std::bind and a function object, or via a lambda expression.
@@ -123,15 +122,15 @@ namespace fwdpp
         //! The return value type
         using result_type = double;
 
-        template <typename iterator_t, typename mcont_t,
+        template <typename iterator_t, typename MutationContainerType,
                   typename updating_policy_hom, typename updating_policy_het,
                   typename make_return_value>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations,
+                   iterator_t last2, const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const make_return_value & rv_function,
+                   const make_return_value &rv_function,
                    const double starting_value) const noexcept
         /*!
           Range-based call operator.  Calculates genetic values over ranges of
@@ -158,24 +157,24 @@ namespace fwdpp
         */
         {
             static_assert(
-                traits::is_mutation<typename mcont_t::value_type>::value,
-                "mcont_t::value_type must be a mutation type");
+                traits::is_mutation<typename MutationContainerType::value_type>::value,
+                "MutationContainerType::value_type must be a mutation type");
             static_assert(
                 std::is_convertible<
                     updating_policy_hom,
-                    std::function<void(double &, const typename mcont_t::
+                    std::function<void(double &, const typename MutationContainerType::
                                                      value_type &)>>::value,
                 "decltype(fpol_hom) must be convertible to "
                 "std::function<void(double &,const typename "
-                "mcont_t::value_type");
+                "MutationContainerType::value_type");
             static_assert(
                 std::is_convertible<
                     updating_policy_het,
-                    std::function<void(double &, const typename mcont_t::
+                    std::function<void(double &, const typename MutationContainerType::
                                                      value_type &)>>::value,
                 "decltype(fpol_het) must be convertible to "
                 "std::function<void(double &,const typename "
-                "mcont_t::value_type");
+                "MutationContainerType::value_type");
             result_type w = starting_value;
             if (first1 == last1 && first2 == last2)
                 return rv_function(w);
@@ -202,8 +201,7 @@ namespace fwdpp
                         }
                     if (first2 < last2
                         && (*first1 == *first2
-                            || mutations[*first1].pos
-                                   == mutations[*first2].pos))
+                            || mutations[*first1].pos == mutations[*first2].pos))
                         // mutation with index first1 is homozygous
                         {
                             fpol_hom(w, mutations[*first1]);
@@ -221,30 +219,30 @@ namespace fwdpp
                 }
             return rv_function(w);
         }
-        
-        template <typename iterator_t, typename mcont_t,
+
+        template <typename iterator_t, typename MutationContainerType,
                   typename updating_policy_hom, typename updating_policy_het>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations,
+                   iterator_t last2, const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
                    const double starting_value) const noexcept
         {
-            return this->operator()(first1, last1, first2, last2, mutations, fpol_hom, fpol_het,
-                    [](double d) { return d; }, starting_value);
+            return this->operator()(
+                first1, last1, first2, last2, mutations, fpol_hom, fpol_het,
+                [](double d) { return d; }, starting_value);
         }
-        
 
-        template <typename haploid_genome_type, typename mcont_t,
+        template <typename HaploidGenomeType, typename MutationContainerType,
                   typename updating_policy_hom, typename updating_policy_het,
                   typename make_return_value>
         inline result_type
-        operator()(const haploid_genome_type &g1,
-                   const haploid_genome_type &g2, const mcont_t &mutations,
+        operator()(const HaploidGenomeType &g1, const HaploidGenomeType &g2,
+                   const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const make_return_value & rv_function,
+                   const make_return_value &rv_function,
                    const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid whose genotype
@@ -262,38 +260,38 @@ namespace fwdpp
           \returns Fitness (double)
         */
         {
-            static_assert(
-                traits::is_haploid_genome<haploid_genome_type>::value,
-                "haploid_genome_type::value_type must be a haploid_genome "
-                "type");
-            return this->operator()(
-                g1.smutations.cbegin(), g1.smutations.cend(),
-                g2.smutations.cbegin(), g2.smutations.cend(), mutations,
-                fpol_hom, fpol_het, rv_function, starting_value);
+            static_assert(traits::is_haploid_genome<HaploidGenomeType>::value,
+                          "HaploidGenomeType::value_type must be a haploid_genome "
+                          "type");
+            return this->operator()(g1.smutations.cbegin(), g1.smutations.cend(),
+                                    g2.smutations.cbegin(), g2.smutations.cend(),
+                                    mutations, fpol_hom, fpol_het, rv_function,
+                                    starting_value);
         }
-        
-        template <typename haploid_genome_type, typename mcont_t,
+
+        template <typename HaploidGenomeType, typename MutationContainerType,
                   typename updating_policy_hom, typename updating_policy_het>
         inline result_type
-        operator()(const haploid_genome_type &g1,
-                   const haploid_genome_type &g2, const mcont_t &mutations,
+        operator()(const HaploidGenomeType &g1, const HaploidGenomeType &g2,
+                   const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
                    const double starting_value) const noexcept
         {
-            return this->operator()(g1,g2,mutations,fpol_hom, fpol_het,[](double d){return d;}, starting_value);
+            return this->operator()(
+                g1, g2, mutations, fpol_hom, fpol_het, [](double d) { return d; },
+                starting_value);
         }
-        
 
-        template <typename diploid, typename gcont_t, typename mcont_t,
-                  typename updating_policy_hom, typename updating_policy_het,
-                  typename make_return_value>
+        template <typename DiploidType, typename GenomeContainerType,
+                  typename MutationContainerType, typename updating_policy_hom,
+                  typename updating_policy_het, typename make_return_value>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &haploid_genomes,
-                   const mcont_t &mutations,
+        operator()(const DiploidType &dip, const GenomeContainerType &haploid_genomes,
+                   const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
-                   const make_return_value & rv_function,
+                   const make_return_value &rv_function,
                    const double starting_value) const noexcept
         /*!
           Calculates genetic value for a diploid type.
@@ -311,21 +309,23 @@ namespace fwdpp
         */
         {
             return this->operator()(haploid_genomes[dip.first],
-                                    haploid_genomes[dip.second], mutations,
-                                    fpol_hom, fpol_het, rv_function, starting_value);
+                                    haploid_genomes[dip.second], mutations, fpol_hom,
+                                    fpol_het, rv_function, starting_value);
         }
 
-        template <typename diploid, typename gcont_t, typename mcont_t,
-                  typename updating_policy_hom, typename updating_policy_het>
+        template <typename DiploidType, typename GenomeContainerType,
+                  typename MutationContainerType, typename updating_policy_hom,
+                  typename updating_policy_het>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &haploid_genomes,
-                   const mcont_t &mutations,
+        operator()(const DiploidType &dip, const GenomeContainerType &haploid_genomes,
+                   const MutationContainerType &mutations,
                    const updating_policy_hom &fpol_hom,
                    const updating_policy_het &fpol_het,
                    const double starting_value) const noexcept
         {
-            return this->operator()(dip, haploid_genomes, mutations, fpol_hom,
-                    fpol_het, [](double d) { return d; }, starting_value);
+            return this->operator()(
+                dip, haploid_genomes, mutations, fpol_hom, fpol_het,
+                [](double d) { return d; }, starting_value);
         }
     };
 
@@ -342,13 +342,12 @@ namespace fwdpp
     struct haplotype_dependent_trait_value
     {
         using result_type = double;
-        template <typename haploid_genome_type, typename mcont_t,
-                  typename haplotype_policy, typename diploid_policy>
+        template <typename HaploidGenomeType, typename MutationContainerType,
+                  typename haplotype_policy, typename DiploidTypePolicy>
         inline result_type
-        operator()(const haploid_genome_type &g1,
-                   const haploid_genome_type &g2, const mcont_t &mutations,
-                   const haplotype_policy &hpol,
-                   const diploid_policy &dpol) const noexcept
+        operator()(const HaploidGenomeType &g1, const HaploidGenomeType &g2,
+                   const MutationContainerType &mutations, const haplotype_policy &hpol,
+                   const DiploidTypePolicy &dpol) const noexcept
         ///
         ///\param g1 A haploid_genome
         ///\param g2 A haploid_genome
@@ -370,19 +369,21 @@ namespace fwdpp
         ///\return dpol( hpol(g1,mutations), hpol(g2,mutations) )
         ///
         {
-            static_assert(traits::is_haploid_genome_v<haploid_genome_type>,
-                          "haploid_genome_type must be a haploid_genome type");
+            static_assert(traits::is_haploid_genome_v<HaploidGenomeType>,
+                          "HaploidGenomeType must be a haploid_genome type");
             static_assert(
-                traits::is_mutation<typename mcont_t::value_type>::value,
-                "mcont_t::value_type must be a mutation type");
+                traits::is_mutation<typename MutationContainerType::value_type>::value,
+                "MutationContainerType::value_type must be a mutation type");
             return dpol(hpol(g1, mutations), hpol(g2, mutations));
         }
-        template <typename diploid_t, typename gcont_t, typename mcont_t,
-                  typename haplotype_policy, typename diploid_policy>
+        template <typename DiploidType, typename GenomeContainerType,
+                  typename MutationContainerType, typename haplotype_policy,
+                  typename DiploidTypePolicy>
         inline result_type
-        operator()(const diploid_t &diploid, const gcont_t &haploid_genomes,
-                   const mcont_t &mutations, const haplotype_policy &hpol,
-                   const diploid_policy &dpol) const noexcept
+        operator()(const DiploidType &diploid,
+                   const GenomeContainerType &haploid_genomes,
+                   const MutationContainerType &mutations, const haplotype_policy &hpol,
+                   const DiploidTypePolicy &dpol) const noexcept
         ///\param diploid a diploid
         ///\param haploid_genomes Container of haploid_genomes
         ///\param mutations Container of mutations
@@ -402,11 +403,11 @@ namespace fwdpp
         /// double representing the genetic value of a diploid genotype g1/g2
         ///\return dpol( hpol(g1,mutations), hpol(g2,mutations) )
         {
-            static_assert(traits::is_diploid<diploid_t>::value,
+            static_assert(traits::is_diploid<DiploidType>::value,
                           "diploid_t must represent a diploid");
             return this->operator()(haploid_genomes[diploid.first],
-                                    haploid_genomes[diploid.second], mutations,
-                                    hpol, dpol);
+                                    haploid_genomes[diploid.second], mutations, hpol,
+                                    dpol);
         }
     };
 
@@ -490,69 +491,63 @@ namespace fwdpp
         using result_type = site_dependent_genetic_value::result_type;
         const std::function<double(double)> make_return_value;
         multiplicative_diploid(trait t)
-            : scaling{ t.get() }, gvalue_is_trait(assign_is_trait_value(t)),
+            : scaling{t.get()}, gvalue_is_trait(assign_is_trait_value(t)),
               gvalue_is_fitness(assign_is_fitness_value(t)), make_return_value{
-                  assign_f(t)
-              }
+                                                                 assign_f(t)}
         /// Construct an object to calculate trait/phenotype values.
         /// \param t fwdpp::trait, where the double repsresents the scaling of "aa" trait values.
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template<typename make_return_value_fxn>
-        multiplicative_diploid(fitness f, make_return_value_fxn&& make_rv) 
-            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
-              gvalue_is_fitness{ assign_is_fitness_value(f) },
-              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        template <typename make_return_value_fxn>
+        multiplicative_diploid(fitness f, make_return_value_fxn &&make_rv)
+            : scaling{f.get()}, gvalue_is_trait{assign_is_trait_value(f)},
+              gvalue_is_fitness{assign_is_fitness_value(f)},
+              make_return_value{std::forward<make_return_value_fxn>(make_rv)}
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-
         multiplicative_diploid(fitness gvtype)
-            : scaling{ gvtype.get() },
-              gvalue_is_trait(assign_is_trait_value(gvtype)),
-              gvalue_is_fitness(assign_is_fitness_value(gvtype)),
-              make_return_value{ assign_f(gvtype) }
+            : scaling{gvtype.get()}, gvalue_is_trait(assign_is_trait_value(gvtype)),
+              gvalue_is_fitness(assign_is_fitness_value(gvtype)), make_return_value{
+                                                                      assign_f(gvtype)}
         /// Construct an object to calculate fitness values.
         /// \param gvtype fwdpp::fitness, where the double repsresents the scaling of "aa" trait values.
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template<typename make_return_value_fxn>
-        multiplicative_diploid(trait t, make_return_value_fxn&& make_rv) 
-            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
-              gvalue_is_fitness{ assign_is_fitness_value(t) },
-              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        template <typename make_return_value_fxn>
+        multiplicative_diploid(trait t, make_return_value_fxn &&make_rv)
+            : scaling{t.get()}, gvalue_is_trait{assign_is_trait_value(t)},
+              gvalue_is_fitness{assign_is_fitness_value(t)},
+              make_return_value{std::forward<make_return_value_fxn>(make_rv)}
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template <typename iterator_t, typename mcont_t>
+        template <typename iterator_t, typename MutationContainerType>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations) const noexcept
+                   iterator_t last2, const MutationContainerType &mutations) const
+            noexcept
         /// Range-based overload
         {
-            using __mtype = typename mcont_t::value_type;
+            using __mtype = typename MutationContainerType::value_type;
             return site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
@@ -561,21 +556,19 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value *= (1. + mut.h * mut.s);
                 },
-                make_return_value,
-                1.);
+                make_return_value, 1.);
         }
 
-        template <typename haploid_genome_type, typename mcont_t>
+        template <typename HaploidGenomeType, typename MutationContainerType>
         inline double
-        operator()(const haploid_genome_type &g1,
-                   const haploid_genome_type &g2,
-                   const mcont_t &mutations) const noexcept
+        operator()(const HaploidGenomeType &g1, const HaploidGenomeType &g2,
+                   const MutationContainerType &mutations) const noexcept
         ///  \param g1 A haploid_genome
         ///  \param g2 A haploid_genome
         ///  \param mutations Container of mutations
         ///  \return Multiplicative genetic value across sites.
         {
-            using __mtype = typename mcont_t::value_type;
+            using __mtype = typename MutationContainerType::value_type;
             return site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
@@ -584,14 +577,14 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value *= (1. + mut.h * mut.s);
                 },
-                make_return_value,
-                1.);
+                make_return_value, 1.);
         }
 
-        template <typename diploid, typename gcont_t, typename mcont_t>
+        template <typename DiploidType, typename GenomeContainerType,
+                  typename MutationContainerType>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &haploid_genomes,
-                   const mcont_t &mutations) const noexcept
+        operator()(const DiploidType &dip, const GenomeContainerType &haploid_genomes,
+                   const MutationContainerType &mutations) const noexcept
         ///  \brief Overload for diploids.  This is what a programmer's
         ///  functions will call.
         {
@@ -631,66 +624,63 @@ namespace fwdpp
         using result_type = site_dependent_genetic_value::result_type;
 
         additive_diploid(fitness f)
-            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
-              gvalue_is_fitness{ assign_is_fitness_value(f) },
-              make_return_value{ assign_f(f) }
+            : scaling{f.get()}, gvalue_is_trait{assign_is_trait_value(f)},
+              gvalue_is_fitness{assign_is_fitness_value(f)}, make_return_value{
+                                                                 assign_f(f)}
         /// Construct an object to calculate fitness values
         /// \param f fwdpp::fitness, where the double represents the scaling of the "aa" genotype
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template<typename make_return_value_fxn>
-        additive_diploid(fitness f, make_return_value_fxn&& make_rv) 
-            : scaling{ f.get() }, gvalue_is_trait{ assign_is_trait_value(f) },
-              gvalue_is_fitness{ assign_is_fitness_value(f) },
-              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        template <typename make_return_value_fxn>
+        additive_diploid(fitness f, make_return_value_fxn &&make_rv)
+            : scaling{f.get()}, gvalue_is_trait{assign_is_trait_value(f)},
+              gvalue_is_fitness{assign_is_fitness_value(f)},
+              make_return_value{std::forward<make_return_value_fxn>(make_rv)}
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
         additive_diploid(trait t)
-            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
-              gvalue_is_fitness{ assign_is_fitness_value(t) },
-              make_return_value{ assign_f(t) }
+            : scaling{t.get()}, gvalue_is_trait{assign_is_trait_value(t)},
+              gvalue_is_fitness{assign_is_fitness_value(t)}, make_return_value{
+                                                                 assign_f(t)}
         /// Construct an object to calculate trait/phenotype values
         /// \param t fwdpp::trait, where the double represents the scaling of the "aa" genotype
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template<typename make_return_value_fxn>
-        additive_diploid(trait t, make_return_value_fxn&& make_rv) 
-            : scaling{ t.get() }, gvalue_is_trait{ assign_is_trait_value(t) },
-              gvalue_is_fitness{ assign_is_fitness_value(t) },
-              make_return_value{ std::forward<make_return_value_fxn>(make_rv) }
+        template <typename make_return_value_fxn>
+        additive_diploid(trait t, make_return_value_fxn &&make_rv)
+            : scaling{t.get()}, gvalue_is_trait{assign_is_trait_value(t)},
+              gvalue_is_fitness{assign_is_fitness_value(t)},
+              make_return_value{std::forward<make_return_value_fxn>(make_rv)}
         {
             if (!std::isfinite(scaling))
                 {
-                    throw std::invalid_argument(
-                        "scaling parameter must be finite");
+                    throw std::invalid_argument("scaling parameter must be finite");
                 }
         }
 
-        template <typename iterator_t, typename mcont_t>
+        template <typename iterator_t, typename MutationContainerType>
         inline result_type
         operator()(iterator_t first1, iterator_t last1, iterator_t first2,
-                   iterator_t last2, const mcont_t &mutations) const noexcept
+                   iterator_t last2, const MutationContainerType &mutations) const
+            noexcept
         /// Range-based overload
         {
-            using __mtype = typename mcont_t::value_type;
+            using __mtype = typename MutationContainerType::value_type;
             return site_dependent_genetic_value()(
                 first1, last1, first2, last2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
@@ -699,22 +689,20 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value += (mut.h * mut.s);
                 },
-                make_return_value,
-                0.);
+                make_return_value, 0.);
         }
 
-        template <typename haploid_genome_type, typename mcont_t>
+        template <typename HaploidGenomeType, typename MutationContainerType>
         inline result_type
-        operator()(const haploid_genome_type &g1,
-                   const haploid_genome_type &g2,
-                   const mcont_t &mutations) const noexcept
+        operator()(const HaploidGenomeType &g1, const HaploidGenomeType &g2,
+                   const MutationContainerType &mutations) const noexcept
         ///  \param g1 A haploid_genome
         ///  \param g2 A haploid_genome
         ///  \param mutations A container of mutations
         ///  \return Additive genetic value across sites.
         ///  \note g1 and g2 must be part of the haploid_genome_base hierarchy
         {
-            using __mtype = typename mcont_t::value_type;
+            using __mtype = typename MutationContainerType::value_type;
             return site_dependent_genetic_value()(
                 g1, g2, mutations,
                 [this](double &value, const __mtype &mut) noexcept {
@@ -723,16 +711,16 @@ namespace fwdpp
                 [](double &value, const __mtype &mut) noexcept {
                     value += (mut.h * mut.s);
                 },
-                make_return_value,
-                0.);
+                make_return_value, 0.);
         }
 
         ///  \brief Overload for diploids.  This is what a programmer's
         ///  functions will call.
-        template <typename diploid, typename gcont_t, typename mcont_t>
+        template <typename DiploidType, typename GenomeContainerType,
+                  typename MutationContainerType>
         inline result_type
-        operator()(const diploid &dip, const gcont_t &haploid_genomes,
-                   const mcont_t &mutations) const noexcept
+        operator()(const DiploidType &dip, const GenomeContainerType &haploid_genomes,
+                   const MutationContainerType &mutations) const noexcept
         {
             return this->operator()(haploid_genomes[dip.first],
                                     haploid_genomes[dip.second], mutations);

@@ -2,15 +2,16 @@
 #define FWDPP_INTERNAL_SAMPLE_DIPLOID_HELPERS
 
 #include <vector>
+#include <fwdpp/fundamental_types/typedefs.hpp>
 
 namespace fwdpp
 {
     namespace fwdpp_internal
     {
-        template <typename gcont_t, typename mcont_t>
+        template <typename GenomeContainerType, typename MutationContainerType>
         inline void
-        process_haploid_genomes(const gcont_t &haploid_genomes,
-                                const mcont_t &mutations,
+        process_haploid_genomes(const GenomeContainerType &haploid_genomes,
+                                const MutationContainerType &mutations,
                                 std::vector<uint_t> &mcounts)
         /*!
           For every non-extinct haploid_genome, increment the count of its mutations

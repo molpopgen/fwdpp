@@ -80,7 +80,7 @@ main(int argc, char **argv)
         = [&pop, &rng, &generation, generate_mutation_position,
            get_selection_coefficient,
            generate_h](fwdpp::flagged_mutation_queue &recbin,
-                       ts_examples_poptype::mcont_t &mutations) {
+                       ts_examples_poptype::mutation_container &mutations) {
               return fwdpp::infsites_popgenmut(
                   recbin, mutations, rng.get(), pop.mut_lookup, generation,
                   // 1.0 signifies 100% of mutations will be selected
@@ -90,7 +90,7 @@ main(int argc, char **argv)
 
     const auto mmodel = [&rng, &o,
                          &make_mutation](fwdpp::flagged_mutation_queue &recbin,
-                                         ts_examples_poptype::mcont_t &mutations) {
+                                         ts_examples_poptype::mutation_container &mutations) {
         std::vector<fwdpp::uint_t> rv;
         unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
         for (unsigned i = 0; i < nmuts; ++i)

@@ -14,9 +14,9 @@ namespace fwdpp
 {
     namespace sugar
     {
-        template <typename mcont_t, typename mut_key_cont_t>
+        template <typename MutationContainerType, typename mut_key_cont_t>
         void
-        change_neutral_details(const mcont_t &mutations, const double pos,
+        change_neutral_details(const MutationContainerType &mutations, const double pos,
                                const std::size_t mindex, mut_key_cont_t &a,
                                mut_key_cont_t &b)
         /*!
@@ -38,14 +38,13 @@ namespace fwdpp
             a.erase(i);
 
             // Add mutation key into b
-            b.insert(
-                std::upper_bound(
-                    std::begin(b), std::end(b), pos,
-                    [&mutations](const double &p,
-                                 const typename mut_key_cont_t::value_type &vt)
+            b.insert(std::upper_bound(
+                         std::begin(b), std::end(b), pos,
+                         [&mutations](const double &p,
+                                      const typename mut_key_cont_t::value_type &vt)
 
-                    { return p < mutations[vt].pos; }),
-                mindex);
+                         { return p < mutations[vt].pos; }),
+                     mindex);
         }
     } // namespace sugar
 
@@ -90,18 +89,15 @@ namespace fwdpp
                     {
                         if (is_neutral)
                             {
-                                sugar::change_neutral_details(
-                                    p.mutations, pos, mindex, g.mutations,
-                                    g.smutations);
+                                sugar::change_neutral_details(p.mutations, pos, mindex,
+                                                              g.mutations, g.smutations);
                             }
                         else
                             {
-                                sugar::change_neutral_details(
-                                    p.mutations, pos, mindex, g.smutations,
-                                    g.mutations);
+                                sugar::change_neutral_details(p.mutations, pos, mindex,
+                                                              g.smutations, g.mutations);
                             }
-                        debug::haploid_genome_data_valid(g, p.mutations,
-                                                         p.mcounts);
+                        debug::haploid_genome_data_valid(g, p.mutations, p.mcounts);
                     }
             }
     }

@@ -10,14 +10,15 @@ namespace fwdpp
     namespace fwdpp_internal
     {
 
-        template <typename double_vec_type, typename gcont_t, typename mcont_t>
+        template <typename double_vec_type, typename GenomeContainerType,
+                  typename MutationContainerType>
         void
         recombine_haploid_genomes(
-            const double_vec_type &pos, const std::size_t ibeg,
-            const std::size_t jbeg, const gcont_t &haploid_genomes,
-            const mcont_t &mutations,
-            typename gcont_t::value_type::mutation_container &neutral,
-            typename gcont_t::value_type::mutation_container &selected)
+            const double_vec_type &pos, const std::size_t ibeg, const std::size_t jbeg,
+            const GenomeContainerType &haploid_genomes,
+            const MutationContainerType &mutations,
+            typename GenomeContainerType::value_type::mutation_container &neutral,
+            typename GenomeContainerType::value_type::mutation_container &selected)
         {
             assert(std::is_sorted(pos.cbegin(), pos.cend()));
 
@@ -32,20 +33,18 @@ namespace fwdpp
 
             for (auto &&p : pos)
                 {
-                    itr = fwdpp_internal::rec_gam_updater(
-                        itr, itr_e, mutations, neutral, p);
-                    itr_s = fwdpp_internal::rec_gam_updater(
-                        itr_s, itr_s_e, mutations, selected, p);
-                    jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e, mutations,
-                                                         p);
-                    jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e,
-                                                           mutations, p);
+                    itr = fwdpp_internal::rec_gam_updater(itr, itr_e, mutations, neutral,
+                                                          p);
+                    itr_s = fwdpp_internal::rec_gam_updater(itr_s, itr_s_e, mutations,
+                                                            selected, p);
+                    jtr = fwdpp_internal::rec_update_itr(jtr, jtr_e, mutations, p);
+                    jtr_s = fwdpp_internal::rec_update_itr(jtr_s, jtr_s_e, mutations, p);
                     std::swap(itr, jtr);
                     std::swap(itr_s, jtr_s);
                     std::swap(itr_e, jtr_e);
                     std::swap(itr_s_e, jtr_s_e);
                 }
-			debug::haploid_genome_is_sorted(haploid_genomes[ibeg], mutations);
+            debug::haploid_genome_is_sorted(haploid_genomes[ibeg], mutations);
         }
     }
 }

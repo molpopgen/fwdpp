@@ -20,33 +20,31 @@ namespace fwdpp
              * how traits::internal::is_diploid is implemented
              */
 
-            template <typename T, typename = void>
-            struct is_diploid : std::false_type
+            template <typename T, typename = void> struct is_diploid : std::false_type
             /* Fallback type.  Evaluates to std::false_type */
             {
             };
 
             template <typename T>
             struct is_diploid<
-                T, typename traits::internal::void_t<
-                       typename T::first_type, typename T::second_type>::type>
+                T, typename traits::internal::void_t<typename T::first_type,
+                                                     typename T::second_type>::type>
                 /* If T does not have member type name first_type and
                  * second_type, this will fail to compile, and the fallback
                  * template type will be used.
-                                 *
-                                 * If successful, this type evaluates to
+                 *
+                 * If successful, this type evaluates to
                  * std::true_type
-                                 * if and only if first_type and second_type
+                 * if and only if first_type and second_type
                  * are the same
-                                 * integer types, thus passing the minimal API
+                 * integer types, thus passing the minimal API
                  * requirement
-                                 * for a diploid.
+                 * for a diploid.
                  */
                 : std::integral_constant<
-                      bool,
-                      std::is_integral<typename T::first_type>::value
-                          && std::is_same<typename T::first_type,
-                                          typename T::second_type>::value>
+                      bool, std::is_integral<typename T::first_type>::value
+                                && std::is_same<typename T::first_type,
+                                                typename T::second_type>::value>
             {
             };
 
@@ -56,197 +54,210 @@ namespace fwdpp
             };
 
             template <typename T>
-            struct is_custom_diploid<
-                T, typename void_t<typename T::first_type,
-                                   typename T::second_type>::type>
+            struct is_custom_diploid<T, typename void_t<typename T::first_type,
+                                                        typename T::second_type>::type>
                 : std::integral_constant<
-                      bool,
-                      is_diploid<T>::value
-                          && !std::is_same<std::pair<typename T::first_type,
-                                                     typename T::second_type>,
-                                           T>::value>
+                      bool, is_diploid<T>::value
+                                && !std::is_same<std::pair<typename T::first_type,
+                                                           typename T::second_type>,
+                                                 T>::value>
             {
             };
 
-            template <typename dipvector_t, typename gcont_t, typename mcont_t,
-                      typename = void, typename = void, typename = void,
-                      typename = void>
+            template <typename DiploidContainerType, typename GenomeContainerType,
+                      typename MutationContainerType, typename = void, typename = void,
+                      typename = void, typename = void>
             struct fitness_fxn
             {
                 using type = void;
             };
 
-            template <typename dipvector_t, typename gcont_t, typename mcont_t>
+            template <typename DiploidContainerType, typename GenomeContainerType,
+                      typename MutationContainerType>
             struct fitness_fxn<
-                dipvector_t, gcont_t, mcont_t,
-                typename void_t<typename dipvector_t::value_type,
-                                typename gcont_t::value_type,
-                                typename mcont_t::value_type>::type,
+                DiploidContainerType, GenomeContainerType, MutationContainerType,
+                typename void_t<typename DiploidContainerType::value_type,
+                                typename GenomeContainerType::value_type,
+                                typename MutationContainerType::value_type>::type,
                 typename std::enable_if<
-                    is_diploid<typename dipvector_t::value_type>::value>::type,
+                    is_diploid<typename DiploidContainerType::value_type>::value>::type,
                 typename std::enable_if<is_haploid_genome<
-                    typename gcont_t::value_type>::value>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type>
+                    typename GenomeContainerType::value_type>::value>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type>
 
             {
                 using type = std::function<double(
-                    const typename dipvector_t::value_type &, const gcont_t &,
-                    const mcont_t &)>;
+                    const typename DiploidContainerType::value_type &,
+                    const GenomeContainerType &, const MutationContainerType &)>;
             };
 
-            template <typename ff, typename dipvector_t, typename gcont_t,
-                      typename mcont_t,
-                      typename ffxn_t = typename fitness_fxn<
-                          dipvector_t, gcont_t, mcont_t>::type>
+            template <typename FitnessFunctionType, typename DiploidContainerType,
+                      typename GenomeContainerType, typename MutationContainerType,
+                      typename ffxn_t =
+                          typename fitness_fxn<DiploidContainerType, GenomeContainerType,
+                                               MutationContainerType>::type>
             struct is_fitness_fxn
                 : std::integral_constant<
-                      bool, !std::is_void<ffxn_t>::value
-                                && std::is_convertible<ff, ffxn_t>::value>
+                      bool,
+                      !std::is_void<ffxn_t>::value
+                          && std::is_convertible<FitnessFunctionType, ffxn_t>::value>
             {
             };
 
-            template <typename mmodel_t, typename mcont_t, typename gcont_t,
-                      typename = void, typename = void, typename = void>
+            template <typename MutationModel, typename MutationContainerType,
+                      typename GenomeContainerType, typename = void, typename = void,
+                      typename = void>
             struct is_mutation_model : std::false_type
             {
             };
 
-            template <typename mmodel_t, typename mcont_t, typename gcont_t>
+            template <typename MutationModel, typename MutationContainerType,
+                      typename GenomeContainerType>
             struct is_mutation_model<
-                mmodel_t, mcont_t, gcont_t,
-                typename void_t<typename std::result_of<mmodel_t(
-                    flagged_mutation_queue &, mcont_t &)>::type>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type,
+                MutationModel, MutationContainerType, GenomeContainerType,
+                typename void_t<typename std::result_of<MutationModel(
+                    flagged_mutation_queue &, MutationContainerType &)>::type>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type,
                 typename std::enable_if<is_haploid_genome<
-                    typename gcont_t::value_type>::value>::type>
+                    typename GenomeContainerType::value_type>::value>::type>
                 : std::true_type
             {
             };
 
-            template <typename mmodel_t, typename mcont_t, typename gcont_t>
+            template <typename MutationModel, typename MutationContainerType,
+                      typename GenomeContainerType>
             struct is_mutation_model<
-                mmodel_t, mcont_t, gcont_t,
-                typename void_t<typename std::result_of<mmodel_t(
-                    flagged_mutation_queue &, typename gcont_t::value_type &,
-                    mcont_t &)>::type>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type,
+                MutationModel, MutationContainerType, GenomeContainerType,
+                typename void_t<typename std::result_of<MutationModel(
+                    flagged_mutation_queue &, typename GenomeContainerType::value_type &,
+                    MutationContainerType &)>::type>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type,
                 typename std::enable_if<is_haploid_genome<
-                    typename gcont_t::value_type>::value>::type>
+                    typename GenomeContainerType::value_type>::value>::type>
                 : std::true_type
             {
             };
 
-            template <typename recmodel_t, typename diploid_t,
-                      typename haploid_genome_t, typename mcont_t,
-                      typename = void, typename = void, typename = void,
-                      typename = void>
+            template <typename RecombinationModelType, typename DiploidType,
+                      typename HaploidGenomeType, typename MutationContainerType,
+                      typename = void, typename = void, typename = void, typename = void>
             struct is_rec_model : std::false_type
             {
             };
 
-            template <typename recmodel_t, typename diploid_t,
-                      typename haploid_genome_t, typename mcont_t>
+            template <typename RecombinationModelType, typename DiploidType,
+                      typename HaploidGenomeType, typename MutationContainerType>
             struct is_rec_model<
-                recmodel_t, diploid_t, haploid_genome_t, mcont_t,
+                RecombinationModelType, DiploidType, HaploidGenomeType,
+                MutationContainerType,
                 typename void_t<
-                    typename std::result_of<recmodel_t()>::type>::type,
-                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                    typename std::result_of<RecombinationModelType()>::type>::type,
+                typename std::enable_if<is_diploid<DiploidType>::value>::type,
                 typename std::enable_if<
-                    is_haploid_genome<haploid_genome_t>::value>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type>
+                    is_haploid_genome<HaploidGenomeType>::value>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type>
                 : std::true_type
             {
             };
 
-            template <typename recmodel_t, typename diploid_t,
-                      typename haploid_genome_t, typename mcont_t>
+            template <typename RecombinationModelType, typename DiploidType,
+                      typename HaploidGenomeType, typename MutationContainerType>
             struct is_rec_model<
-                recmodel_t, diploid_t, haploid_genome_t, mcont_t,
-                typename void_t<typename std::result_of<recmodel_t(
-                    const haploid_genome_t &, const haploid_genome_t &,
-                    const mcont_t &)>::type>::type,
-                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                RecombinationModelType, DiploidType, HaploidGenomeType,
+                MutationContainerType,
+                typename void_t<typename std::result_of<RecombinationModelType(
+                    const HaploidGenomeType &, const HaploidGenomeType &,
+                    const MutationContainerType &)>::type>::type,
+                typename std::enable_if<is_diploid<DiploidType>::value>::type,
                 typename std::enable_if<
-                    is_haploid_genome<haploid_genome_t>::value>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type>
+                    is_haploid_genome<HaploidGenomeType>::value>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type>
                 : std::true_type
             {
             };
 
-            template <typename recmodel_t, typename diploid_t,
-                      typename haploid_genome_t, typename mcont_t>
+            template <typename RecombinationModelType, typename DiploidType,
+                      typename HaploidGenomeType, typename MutationContainerType>
             struct is_rec_model<
-                recmodel_t, diploid_t, haploid_genome_t, mcont_t,
-                typename void_t<typename std::result_of<recmodel_t(
-                    const diploid_t &, const haploid_genome_t &,
-                    const haploid_genome_t &, const mcont_t &)>::type>::type,
-                typename std::enable_if<is_diploid<diploid_t>::value>::type,
+                RecombinationModelType, DiploidType, HaploidGenomeType,
+                MutationContainerType,
+                typename void_t<typename std::result_of<RecombinationModelType(
+                    const DiploidType &, const HaploidGenomeType &,
+                    const HaploidGenomeType &, const MutationContainerType &)>::type>::
+                    type,
+                typename std::enable_if<is_diploid<DiploidType>::value>::type,
                 typename std::enable_if<
-                    is_haploid_genome<haploid_genome_t>::value>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type>
+                    is_haploid_genome<HaploidGenomeType>::value>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type>
                 : std::true_type
             {
             };
 
-            template <typename mcont_t, typename = void> struct mutation_model
+            template <typename MutationContainerType, typename = void>
+            struct mutation_model
             {
                 using type = void;
             };
 
-            template <typename mcont_t>
+            template <typename MutationContainerType>
             struct mutation_model<
-                mcont_t, typename std::enable_if<is_mutation<
-                             typename mcont_t::value_type>::value>::type>
+                MutationContainerType,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type>
             {
-                using type = std::function<std::size_t(
-                    flagged_mutation_queue &, mcont_t &)>;
+                using type = std::function<std::size_t(flagged_mutation_queue &,
+                                                       MutationContainerType &)>;
             };
 
-            template <typename mcont_t, typename gcont_t, typename = void,
-                      typename = void>
+            template <typename MutationContainerType, typename GenomeContainerType,
+                      typename = void, typename = void>
             struct mutation_model_haploid_genome
             {
                 using type = void;
             };
 
-            template <typename mcont_t, typename gcont_t>
+            template <typename MutationContainerType, typename GenomeContainerType>
             struct mutation_model_haploid_genome<
-                mcont_t, gcont_t,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type,
+                MutationContainerType, GenomeContainerType,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type,
                 typename std::enable_if<is_haploid_genome<
-                    typename gcont_t::value_type>::value>::type>
+                    typename GenomeContainerType::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
                     flagged_mutation_queue &,
-                    const typename gcont_t::value_type &, mcont_t &)>;
+                    const typename GenomeContainerType::value_type &,
+                    MutationContainerType &)>;
             };
 
-            template <typename diploid_t, typename mcont_t, typename gcont_t,
-                      typename = void, typename = void, typename = void>
+            template <typename DiploidType, typename MutationContainerType,
+                      typename GenomeContainerType, typename = void, typename = void,
+                      typename = void>
             struct mutation_model_diploid
             {
                 using type = void;
             };
 
-            template <typename diploid_t, typename mcont_t, typename gcont_t>
+            template <typename DiploidType, typename MutationContainerType,
+                      typename GenomeContainerType>
             struct mutation_model_diploid<
-                diploid_t, mcont_t, gcont_t,
-                typename std::enable_if<is_diploid<diploid_t>::value>::type,
-                typename std::enable_if<
-                    is_mutation<typename mcont_t::value_type>::value>::type,
+                DiploidType, MutationContainerType, GenomeContainerType,
+                typename std::enable_if<is_diploid<DiploidType>::value>::type,
+                typename std::enable_if<is_mutation<
+                    typename MutationContainerType::value_type>::value>::type,
                 typename std::enable_if<is_haploid_genome<
-                    typename gcont_t::value_type>::value>::type>
+                    typename GenomeContainerType::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    flagged_mutation_queue &, const diploid_t &,
-                    const typename gcont_t::value_type &, mcont_t &)>;
+                    flagged_mutation_queue &, const DiploidType &,
+                    const typename GenomeContainerType::value_type &,
+                    MutationContainerType &)>;
             };
         } // namespace internal
     }     // namespace traits

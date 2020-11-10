@@ -15,11 +15,11 @@ namespace fwdpp
       \example K_linked_regions_extensions.cc
       \example K_linked_regions_generalized_rec.cc
     */
-    template <typename mtype,
-              typename diploid_t = std::pair<std::size_t, std::size_t>>
+    template <typename MutationType,
+              typename DiploidType = std::pair<std::size_t, std::size_t>>
     using diploid_population = poptypes::diploid_population<
-        mtype, std::vector<mtype>, std::vector<haploid_genome>,
-        std::vector<diploid_t>, std::vector<mtype>, std::vector<uint_t>,
+        MutationType, std::vector<MutationType>, std::vector<haploid_genome>,
+        std::vector<DiploidType>, std::vector<MutationType>, std::vector<uint_t>,
         // fwdpp 0.6.1 changed this from an unordered_set,
         // in order to address a rare bug. See GitHub
         // issue 130 for details.

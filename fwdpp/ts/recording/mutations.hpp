@@ -10,10 +10,10 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename TableCollectionType, typename mcont_t>
+        template <typename TableCollectionType, typename MutationContainerType>
         void
         record_mutations_infinite_sites(
-            const table_index_t u, const mcont_t& mutations,
+            const table_index_t u, const MutationContainerType& mutations,
             const std::vector<std::uint32_t>& new_mutation_keys,
             TableCollectionType& tables)
         /// \version Added in 0.8.0
