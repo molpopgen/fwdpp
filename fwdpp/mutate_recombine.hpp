@@ -18,6 +18,7 @@
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/internal/mutation_internal.hpp>
 #include <fwdpp/internal/rec_gamete_updater.hpp>
+#include <fwdpp/internal/recombination_common.hpp>
 
 namespace fwdpp
 {
