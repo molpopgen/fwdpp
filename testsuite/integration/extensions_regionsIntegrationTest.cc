@@ -13,7 +13,7 @@
 
 using namespace fwdpp;
 
-BOOST_FIXTURE_TEST_SUITE(test_regions, diploid_population_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_regions, diploid_population_mutation_fixture)
 
 // Check that extensions::discrete_mut_model::operator() can be bound
 // with placeholders, that the resulting type is a valid

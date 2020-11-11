@@ -13,7 +13,7 @@
 
 using namespace fwdpp;
 
-BOOST_FIXTURE_TEST_SUITE(test_extensions, diploid_population_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_extensions, diploid_population_mutation_fixture)
 
 // The next two test cases use a simple dependency injection to test concepts.
 // The function types defined have the correct signature (args + return value),
@@ -22,7 +22,7 @@ BOOST_FIXTURE_TEST_SUITE(test_extensions, diploid_population_popgenmut_fixture)
 
 BOOST_AUTO_TEST_CASE(bind_mutation_model)
 {
-    using poptype = diploid_population_popgenmut_fixture::poptype;
+    using poptype = diploid_population_mutation_fixture::poptype;
     using mmodel_type = fwdpp::traits::mutation_model<poptype::mutation_container>;
     rng_t rng{ 42 };
     const auto mmodel = [](fwdpp::flagged_mutation_queue &,
@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
 
 BOOST_AUTO_TEST_CASE(bind_haploid_genome_dependent_mutation_model)
 {
-    using poptype = diploid_population_popgenmut_fixture::poptype;
+    using poptype = diploid_population_mutation_fixture::poptype;
     using mmodel_type = fwdpp::traits::mutation_model_haploid_genome<poptype::mutation_container,
                                                              poptype::genome_container>;
     rng_t rng{ 42 };

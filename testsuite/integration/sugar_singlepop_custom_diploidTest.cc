@@ -8,10 +8,10 @@
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 #include <testsuite/util/quick_evolve_sugar.hpp>
 
-using mutation_t = fwdpp::popgenmut;
+using mutation_t = fwdpp::mutation;
 
 BOOST_FIXTURE_TEST_SUITE(test_diploid_population_custom,
-                         diploid_population_popgenmut_custom_fixture)
+                         diploid_population_mutation_custom_fixture)
 
 BOOST_AUTO_TEST_CASE(diploid_population_sugar_custom_test1)
 {

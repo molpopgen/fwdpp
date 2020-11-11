@@ -27,7 +27,7 @@ apply_neutral_mutations_details(const options &o, const GSLrng &rng,
     const auto neutral_variant_maker = [&rng, &pop, &mutation_recycling_bin](
                                            const double left, const double right,
                                            const fwdpp::uint_t generation) {
-        auto key = fwdpp::infsites_popgenmut(
+        auto key = fwdpp::infsites_mutation(
             mutation_recycling_bin, pop.mutations, rng.get(), pop.mut_lookup, generation,
             0.0, [left, right, &rng] { return gsl_ran_flat(rng.get(), left, right); },
             []() { return 0.0; }, []() { return 0.0; });

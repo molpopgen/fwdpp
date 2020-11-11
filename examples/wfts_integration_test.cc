@@ -81,7 +81,7 @@ main(int argc, char **argv)
            get_selection_coefficient,
            generate_h](fwdpp::flagged_mutation_queue &recbin,
                        ts_examples_poptype::mutation_container &mutations) {
-              return fwdpp::infsites_popgenmut(
+              return fwdpp::infsites_mutation(
                   recbin, mutations, rng.get(), pop.mut_lookup, generation,
                   // 1.0 signifies 100% of mutations will be selected
                   1.0, generate_mutation_position, get_selection_coefficient,
