@@ -38,6 +38,7 @@ AC_LANG(C++)
 AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile
                  fwdpp/fundamental_types/Makefile fwdpp/io/Makefile
                  fwdpp/algorithm/Makefile fwdpp/io/detail/Makefile
+                 fwdpp/types/Makefile
                  fwdpp/internal/Makefile fwdpp/tags/Makefile
                  fwdpp/sugar/Makefile fwdpp/poptypes/Makefile
                  fwdpp/gsl/Makefile fwdpp/extensions/Makefile
