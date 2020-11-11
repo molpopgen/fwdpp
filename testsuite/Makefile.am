@@ -106,5 +106,8 @@ AM_CXXFLAGS=-W -Wall --coverage
 
 #LIBS+=$(AM_LIBS)
 
+coverage-local: check coverage.sh
+	sh coverage.sh
+
 endif
 
