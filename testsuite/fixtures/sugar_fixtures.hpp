@@ -1,9 +1,9 @@
 #ifndef FWDPP_TESTSUITE_SUGAR_FIXTURES_HPP
 #define FWDPP_TESTSUITE_SUGAR_FIXTURES_HPP
 
-#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/types/mutation.hpp>
 #include <fwdpp/diploid_population.hpp>
-#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/types/mutation.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/extensions/regions.hpp>
@@ -12,28 +12,28 @@
 #include <functional>
 #include <numeric>
 
-struct diploid_population_popgenmut_fixture
+struct diploid_population_mutation_fixture
 {
-    using poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
+    using poptype = fwdpp::diploid_population<fwdpp::mutation>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     poptype pop;
     rng_t rng;
     unsigned generation;
-    diploid_population_popgenmut_fixture(const unsigned seed = 0)
+    diploid_population_mutation_fixture(const unsigned seed = 0)
         : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
 };
 
-struct diploid_population_popgenmut_custom_fixture
+struct diploid_population_mutation_custom_fixture
 {
     using poptype
-        = fwdpp::diploid_population<fwdpp::popgenmut, custom_diploid_testing_t>;
+        = fwdpp::diploid_population<fwdpp::mutation, custom_diploid_testing_t>;
     using rng_t = fwdpp::GSLrng_t<fwdpp::GSL_RNG_TAUS2>;
     poptype pop;
     rng_t rng;
     unsigned generation;
-    diploid_population_popgenmut_custom_fixture(const unsigned seed = 0)
+    diploid_population_mutation_custom_fixture(const unsigned seed = 0)
         : pop(poptype(1000)), rng(rng_t(seed)), generation(0)
     {
     }
@@ -41,7 +41,7 @@ struct diploid_population_popgenmut_custom_fixture
 
 struct diploid_population_objects
 {
-    using poptype = diploid_population_popgenmut_fixture::poptype;
+    using poptype = diploid_population_mutation_fixture::poptype;
 
     poptype::dipvector_t diploids;
     poptype::mutation_container mutations;

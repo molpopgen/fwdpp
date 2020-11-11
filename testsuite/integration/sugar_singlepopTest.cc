@@ -10,7 +10,7 @@
 #include "../fixtures/sugar_fixtures.hpp"
 #include "../util/quick_evolve_sugar.hpp"
 
-BOOST_FIXTURE_TEST_SUITE(test_diploid_population, diploid_population_popgenmut_fixture)
+BOOST_FIXTURE_TEST_SUITE(test_diploid_population, diploid_population_mutation_fixture)
 
 BOOST_AUTO_TEST_CASE(diploid_population_sugar_test1)
 {
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(diploid_population_serialize)
     simulate_diploid_population(pop, 1000, 1000);
     std::stringstream buffer;
     fwdpp::io::serialize_population(buffer, pop);
-    diploid_population_popgenmut_fixture::poptype pop2(0);
+    diploid_population_mutation_fixture::poptype pop2(0);
     fwdpp::io::deserialize_population(buffer, pop2);
     BOOST_CHECK_EQUAL(pop == pop2, true);
 }

@@ -15,7 +15,7 @@
 #include <fwdpp/fitness_models.hpp>
 #include <fwdpp/sample_diploid.hpp>
 #include <fwdpp/util.hpp>
-#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/types/mutation.hpp>
 #include <fwdpp/GSLrng_t.hpp>
 #include <testsuite/fixtures/sugar_fixtures.hpp>
 
@@ -36,7 +36,7 @@ simulate_diploid_population(diploid_population_object_t &pop,
         = [&pop, &rng, &generation](
               fwdpp::flagged_mutation_queue &recbin,
               typename diploid_population_object_t::mcont_t &mutations) {
-              return fwdpp::infsites_popgenmut(
+              return fwdpp::infsites_mutation(
                   recbin, mutations, rng.get(), pop.mut_lookup, generation,
                   0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
                   []() { return -0.01; }, []() { return 1.; });
@@ -80,7 +80,7 @@ simulate_diploid_population(diploid_population_object_t &pop,
         = [&pop, &rng, &generation](
               fwdpp::flagged_mutation_queue &recbin,
               typename diploid_population_object_t::mcont_t &mutations) {
-              return fwdpp::infsites_popgenmut(
+              return fwdpp::infsites_mutation(
                   recbin, mutations, rng.get(), pop.mut_lookup, generation,
                   0.5, [&rng]() { return gsl_rng_uniform(rng.get()); },
                   []() { return -0.01; }, []() { return 1.; });

@@ -4,9 +4,9 @@
 #include <fwdpp/ts/definitions.hpp>
 #include <fwdpp/diploid_population.hpp>
 #include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/types/mutation.hpp>
 
-using ts_examples_poptype = fwdpp::diploid_population<fwdpp::popgenmut>;
+using ts_examples_poptype = fwdpp::diploid_population<fwdpp::mutation>;
 using GSLrng = fwdpp::GSLrng_mt;
 
 struct diploid_metadata

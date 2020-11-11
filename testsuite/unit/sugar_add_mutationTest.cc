@@ -17,7 +17,7 @@
 */
 
 BOOST_FIXTURE_TEST_SUITE(test_add_mutation_diploid_population,
-                         diploid_population_popgenmut_fixture)
+                         diploid_population_mutation_fixture)
 
 BOOST_AUTO_TEST_CASE(test_add_mutation)
 {
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_add_mutation)
 
 BOOST_AUTO_TEST_CASE(test_add_mutation_from_object)
 {
-    fwdpp::popgenmut m(0.1, -0.1, 1, 0);
+    fwdpp::mutation m(0.1, -0.1, 1, 0);
     fwdpp::add_mutation(pop,
                         // individuals where we want to place the mutation
                         { 0, 1, 3, 5, 7, 9 },

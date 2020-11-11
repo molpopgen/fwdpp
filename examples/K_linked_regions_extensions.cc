@@ -10,11 +10,11 @@
 #include <sstream>
 #include <fwdpp/debug.hpp>
 // Use mutation model from sugar layer
-#include <fwdpp/popgenmut.hpp>
+#include <fwdpp/types/mutation.hpp>
 #include <fwdpp/extensions/callbacks.hpp>
 #include <fwdpp/extensions/regions.hpp>
 
-using mtype = fwdpp::popgenmut;
+using mtype = fwdpp::mutation;
 #define DIPLOID_POPULATION_SIM
 #include <common_ind.hpp>
 
@@ -137,7 +137,7 @@ main(int argc, char **argv)
             functions.push_back([&pop, &r, &generation, pselected,
                                  i](fwdpp::flagged_mutation_queue &recbin,
                                     diploid_population::mutation_container &mutations) {
-                return fwdpp::infsites_popgenmut(
+                return fwdpp::infsites_mutation(
                     recbin, mutations, r.get(), pop.mut_lookup, generation, pselected,
                     [&r, i]() { return gsl_ran_flat(r.get(), i, i + 1); },
                     []() { return 0.0; }, []() { return 0.0; });
