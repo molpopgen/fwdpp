@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Code coverage
           command: |
-              make coverage-local
+              make -C testsuite coverage-local
 
       - run:
           name: Build from make dist and run tests

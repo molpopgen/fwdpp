@@ -12,7 +12,7 @@ The coverage is calculated from the test suite and is automated via a ``make`` t
 
 .. code-block:: bash
 
-   make coverage-local
+   make -C testsuite coverage-local
 
 To clean up after a coverage calculation:
 
