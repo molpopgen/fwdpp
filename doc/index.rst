@@ -29,6 +29,11 @@ Welcome to fwdpp's documentation!
 
    rst/geneticmaps
 
+.. toctree::
+   :caption: Technical documentation
+
+   rst/develpersguide
+
 
 
 Indices and tables

@@ -100,7 +100,7 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 tree_sequences_tree_sequence_tests_CFLAGS=-std=c99
 
 AM_CPPFLAGS=-I../subprojects/nongpl/tskit/c -I../subprojects/nongpl/tskit/c/subprojects/kastore
-AM_CXXFLAGS=-W -Wall
+AM_CXXFLAGS=-W -Wall --coverage
 
 #AM_LIBS=-lboost_unit_test_framework
 

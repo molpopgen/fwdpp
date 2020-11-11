@@ -5,6 +5,7 @@
 *.pyc
 *.gcda
 *.gcno
+*.gcov
 Makefile
 Makefile.in
 config.h
