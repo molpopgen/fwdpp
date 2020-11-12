@@ -22,7 +22,7 @@ namespace fwdpp
 
         template <typename mmodel, typename DiploidType, typename haploid_genome_type,
                   typename MutationContainerType, typename queue_t>
-        inline typename std::result_of<mmodel(queue_t &, const haploid_genome_type &,
+        inline typename std::result_of<mmodel(const haploid_genome_type &, queue_t &,
                                               MutationContainerType &)>::type
         mmodel_dispatcher(const mmodel &m, const DiploidType &,
                           const haploid_genome_type &g, MutationContainerType &mutations,
@@ -31,8 +31,9 @@ namespace fwdpp
           Run-time dispatcher for mutation model
         */
         {
-            return m(recycling_bin, g, mutations);
+            return m(g, recycling_bin, mutations);
         }
+
         template <typename mmodel, typename DiploidType, typename haploid_genome_type,
                   typename MutationContainerType, typename queue_t>
         inline typename std::result_of<mmodel(queue_t &, const DiploidType &,

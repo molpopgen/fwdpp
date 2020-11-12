@@ -24,17 +24,19 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
 {
     using poptype = diploid_population_mutation_fixture::poptype;
     using mmodel_type = fwdpp::traits::mutation_model<poptype::mutation_container>;
-    rng_t rng{ 42 };
+    rng_t rng{42};
     const auto mmodel = [](fwdpp::flagged_mutation_queue &,
                            poptype::mutation_container &) -> std::size_t { return 1; };
 
     fwdpp::extensions::discrete_mut_model<poptype::mutation_container> m(
-        std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });
+        std::vector<mmodel_type>{mmodel}, std::vector<double>{1});
 
     auto bound_mmodel = fwdpp::extensions::bind_dmm(rng.get(), m);
 
-    auto is_a_mutation_model = fwdpp::traits::is_mutation_model<
-        decltype(bound_mmodel), poptype::mutation_container, poptype::genome_container>::value;
+    auto is_a_mutation_model
+        = fwdpp::traits::is_mutation_model<decltype(bound_mmodel),
+                                           poptype::mutation_container,
+                                           poptype::genome_container>::value;
 
     BOOST_REQUIRE(is_a_mutation_model);
 }
@@ -42,20 +44,24 @@ BOOST_AUTO_TEST_CASE(bind_mutation_model)
 BOOST_AUTO_TEST_CASE(bind_haploid_genome_dependent_mutation_model)
 {
     using poptype = diploid_population_mutation_fixture::poptype;
-    using mmodel_type = fwdpp::traits::mutation_model_haploid_genome<poptype::mutation_container,
-                                                             poptype::genome_container>;
-    rng_t rng{ 42 };
+    using mmodel_type
+        = fwdpp::traits::mutation_model_haploid_genome<poptype::mutation_container,
+                                                       poptype::genome_container>;
+    rng_t rng{42};
     const auto mmodel
-        = [](fwdpp::flagged_mutation_queue &, const poptype::haploid_genome_type &,
+        = [](const poptype::haploid_genome_type &, fwdpp::flagged_mutation_queue &,
              poptype::mutation_container &) -> std::size_t { return 1; };
 
-    fwdpp::extensions::discrete_mut_model<poptype::mutation_container, poptype::genome_container>
-        m(std::vector<mmodel_type>{ mmodel }, std::vector<double>{ 1 });
+    fwdpp::extensions::discrete_mut_model<poptype::mutation_container,
+                                          poptype::genome_container>
+        m(std::vector<mmodel_type>{mmodel}, std::vector<double>{1});
 
     auto bound_mmodel = fwdpp::extensions::bind_dmm(rng.get(), m);
 
-    auto is_a_mutation_model = fwdpp::traits::is_mutation_model<
-        decltype(bound_mmodel), poptype::mutation_container, poptype::genome_container>::value;
+    auto is_a_mutation_model
+        = fwdpp::traits::is_mutation_model<decltype(bound_mmodel),
+                                           poptype::mutation_container,
+                                           poptype::genome_container>::value;
 
     BOOST_REQUIRE(is_a_mutation_model);
 }
