@@ -1,4 +1,5 @@
-if BUNIT_TEST_PRESENT
+if BUNIT_TEST_PRESENT 
+if BUNIT_TEST_RUNTIME_PRESENT
 
 noinst_PROGRAMS=unit/fwdpp_unit_tests unit/extensions_unit_tests unit/sugar_unit_tests \
 				unit/genetic_map_tests \
@@ -100,14 +101,14 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 tree_sequences_tree_sequence_tests_CFLAGS=-std=c99
 
 AM_CPPFLAGS=-I../subprojects/nongpl/tskit/c -I../subprojects/nongpl/tskit/c/subprojects/kastore
-AM_CXXFLAGS=-W -Wall --coverage
+AM_CXXFLAGS=-W -Wall --coverage -DBOOST_TEST_DYN_LINK
 
-#AM_LIBS=-lboost_unit_test_framework
+AM_LIBS=-lboost_unit_test_framework
 
-#LIBS+=$(AM_LIBS)
+LIBS+=$(AM_LIBS)
 
 coverage-local: check coverage.sh
 	sh coverage.sh
 
 endif
-
+endif
