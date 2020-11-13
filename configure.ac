@@ -84,6 +84,9 @@ AC_LANG_SAVE
                                                             seem to be here.  Some example programs will not be
                                                             compiled])])
 	  AM_CONDITIONAL([BPO_TEST_LIB_PRESENT], test x$HAVEBPOLIB = x1)
+      AC_CHECK_LIB(boost_unit_test_framework,main,HAVEBOOSTTESTRUNTIME=1,[AC_MSG_WARN([boost_unit_test_framework runtime library does not
+                                                            seem to be here.  Unit tests will not be compiled])])
+      AM_CONDITIONAL([BUNIT_TEST_RUNTIME_PRESENT], test x$BUNITTEST = x1)
 AC_LANG_RESTORE
 
 dnl AC_CONFIG_HEADER(config.h)
