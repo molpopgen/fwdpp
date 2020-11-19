@@ -112,10 +112,10 @@ namespace fwdpp
                     parent.index, parent.haploid_genome1, parent.swapped,
                     generate_breakpoints, generate_mutations, mutation_recycling_bin,
                     pop);
-                auto range = process_new_mutations(haploid_genome_data.mutation_keys,
+                auto range_ = process_new_mutations(haploid_genome_data.mutation_keys,
                                                    pop.mutations, mutation_policy);
                 std::size_t offspring_haploid_genome = mutate_recombine(
-                    range, haploid_genome_data.breakpoints, parent.haploid_genome1,
+                    range_, haploid_genome_data.breakpoints, parent.haploid_genome1,
                     parent.haploid_genome2, pop.haploid_genomes, pop.mutations,
                     haploid_genome_recycling_bin, neutral, selected);
                 return std::make_pair(offspring_haploid_genome,
