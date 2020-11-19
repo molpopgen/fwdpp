@@ -61,7 +61,6 @@
  * the goal here it to show the book-keeping of parental fitnesses
  * and the mapping back to deme labels.
  */
-#include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #ifdef HAVE_LIBSEQUENCE
 #include <Sequence/SimData.hpp>
@@ -71,6 +70,10 @@
 #include <cassert>
 #include <unordered_set>
 #include <fwdpp/debug.hpp>
+#include <fwdpp/fitness_models.hpp>
+#include <fwdpp/sample_diploid.hpp>
+#include <fwdpp/sampling_functions.hpp>
+#include <fwdpp/util.hpp>
 #include <fwdpp/types/mutation.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/genetic_map/poisson_interval.hpp>

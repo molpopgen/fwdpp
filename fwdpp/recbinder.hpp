@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <functional>
+#include <gsl/gsl_rng.h>
 
 namespace fwdpp
 {

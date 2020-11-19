@@ -5,8 +5,8 @@
 */
 #include <config.h>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/diploid.hh>
 #include <fwdpp/debug.hpp>
+#include "../../fwdpp/internal/haploid_genome_cleaner.hpp"
 #include "../fixtures/fwdpp_fixtures.hpp"
 
 BOOST_FIXTURE_TEST_SUITE(haploid_genome_cleanerTest,

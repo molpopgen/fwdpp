@@ -9,11 +9,15 @@
   4.  Outputting a sample in "ms" format
 */
 #include <iostream>
+#include <iterator>
 #include <unordered_map>
 #include <type_traits>
 #include <vector>
-#include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
+#include <fwdpp/fitness_models.hpp>
+#include <fwdpp/sample_diploid.hpp>
+#include <fwdpp/sampling_functions.hpp>
+#include <fwdpp/util.hpp>
 #include <fwdpp/types/mutation.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/genetic_map/poisson_interval.hpp>

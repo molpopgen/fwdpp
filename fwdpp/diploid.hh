@@ -10,6 +10,8 @@
 #ifndef __DIPLOID_HH__
 #define __DIPLOID_HH__
 
+#warning("This header is deprecated and will be removed by 0.10.0 or soon thereafter")
+
 // namespace std
 #include <vector>
 #include <list>
