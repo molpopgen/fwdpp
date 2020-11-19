@@ -4,11 +4,14 @@
 */
 
 #include <iostream>
-#include <fwdpp/diploid.hh>
 #include <vector>
 #include <list>
 #include <sstream>
 #include <fwdpp/debug.hpp>
+#include <fwdpp/fitness_models.hpp>
+#include <fwdpp/sample_diploid.hpp>
+#include <fwdpp/sampling_functions.hpp>
+#include <fwdpp/util.hpp>
 // Use mutation model from sugar layer
 #include <fwdpp/types/mutation.hpp>
 #include <fwdpp/extensions/callbacks.hpp>

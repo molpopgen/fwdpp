@@ -5,12 +5,15 @@
   mutations with fixed 's' and 'h'.
  */
 
-#include <fwdpp/diploid.hh>
 #include <fwdpp/recbinder.hpp>
 #include <numeric>
 #include <functional>
 #include <cassert>
 #include <iomanip>
+#include <fwdpp/fitness_models.hpp>
+#include <fwdpp/sample_diploid.hpp>
+#include <fwdpp/sampling_functions.hpp>
+#include <fwdpp/util.hpp>
 #include <fwdpp/debug.hpp>
 #include <fwdpp/types/mutation.hpp>
 #include <fwdpp/genetic_map/genetic_map.hpp>
