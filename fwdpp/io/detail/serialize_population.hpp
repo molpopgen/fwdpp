@@ -1,6 +1,7 @@
 #ifndef FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 #define FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 
+#include <bits/c++config.h>
 #include <cstdint>
 #include <stdexcept>
 #include <fwdpp/io/scalar_serialization.hpp>
@@ -18,8 +19,7 @@ namespace fwdpp
         {
             template <typename streamtype, typename poptype>
             inline void
-            serialize_population_details(streamtype &buffer,
-                                         const poptype &pop,
+            serialize_population_details(streamtype &buffer, const poptype &pop,
                                          poptypes::DIPLOID_TAG)
             {
                 io::scalar_writer writer;
@@ -32,8 +32,14 @@ namespace fwdpp
                 if (!pop.fixations.empty())
                     {
                         // Step 3:the fixation times
-                        writer(buffer, &pop.fixation_times[0],
-                               pop.fixations.size());
+                        writer(buffer, &pop.fixation_times[0], pop.fixations.size());
+                    }
+                // Write mcounts
+                std::size_t num_mcounts = pop.mcounts.size();
+                writer(buffer, &num_mcounts);
+                if (num_mcounts)
+                    {
+                        writer(buffer, pop.mcounts.data(), pop.mcounts.size());
                     }
             }
 
@@ -51,14 +57,21 @@ namespace fwdpp
                 io::read_diploids(buffer, pop.diploids);
 
                 // update the mutation counts
-                fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations,
-                                                pop.mcounts);
+                // fwdpp_internal::process_haploid_genomes(pop.haploid_genomes,
+                //                                        pop.mutations, pop.mcounts);
                 fwdpp::io::read_mutations(buffer, pop.fixations);
                 if (!pop.fixations.empty())
                     {
                         pop.fixation_times.resize(pop.fixations.size());
-                        reader(buffer, &pop.fixation_times[0],
-                               pop.fixations.size());
+                        reader(buffer, &pop.fixation_times[0], pop.fixations.size());
+                    }
+
+                std::size_t num_mcounts{};
+                reader(buffer, &num_mcounts);
+                pop.mcounts.resize(num_mcounts);
+                if (num_mcounts)
+                    {
+                        reader(buffer, pop.mcounts.data(), num_mcounts);
                     }
 
                 // Finally, fill the lookup table:
