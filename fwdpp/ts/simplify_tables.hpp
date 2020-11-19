@@ -1,6 +1,7 @@
 #ifndef FWDPP_TS_SIMPLIFY_TABLES_HPP__
 #define FWDPP_TS_SIMPLIFY_TABLES_HPP__
 
+#include <cassert>
 #include <cstdint>
 #include <type_traits>
 #include <vector>
