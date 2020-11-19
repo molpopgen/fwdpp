@@ -90,7 +90,7 @@ namespace fwdpp
 
             template <typename... function_type_args>
             inline typename function_type::result_type
-            operator()(const gsl_rng *r, function_type_args &&... args) const
+            operator()(const gsl_rng *r, function_type_args &&...args) const
             {
                 auto region = gsl_ran_discrete(r, lookup.get());
                 return functions.at(region)(std::forward<function_type_args>(args)...);
@@ -119,11 +119,11 @@ namespace fwdpp
         bind_dmm_wrapper(const gsl_rng *r, const dmm_type &dmm, std::false_type)
         {
             return
-                [r, &dmm](flagged_mutation_queue &recycling_bin,
-                          const typename dmm_type::haploid_genome_container::value_type
+                [r, &dmm](const typename dmm_type::haploid_genome_container::value_type
                               &haploid_genome,
+                          flagged_mutation_queue &recycling_bin,
                           typename dmm_type::mutation_container &mutations) {
-                    return dmm(r, recycling_bin, haploid_genome, mutations);
+                    return dmm(r, haploid_genome, recycling_bin, mutations);
                 };
         }
 

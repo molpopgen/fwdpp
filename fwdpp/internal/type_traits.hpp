@@ -131,7 +131,7 @@ namespace fwdpp
             struct is_mutation_model<
                 MutationModel, MutationContainerType, GenomeContainerType,
                 typename void_t<typename std::result_of<MutationModel(
-                    flagged_mutation_queue &, typename GenomeContainerType::value_type &,
+                    typename GenomeContainerType::value_type &, flagged_mutation_queue &,
                     MutationContainerType &)>::type>::type,
                 typename std::enable_if<is_mutation<
                     typename MutationContainerType::value_type>::value>::type,
@@ -231,8 +231,8 @@ namespace fwdpp
                     typename GenomeContainerType::value_type>::value>::type>
             {
                 using type = std::function<std::size_t(
-                    flagged_mutation_queue &,
                     const typename GenomeContainerType::value_type &,
+                    flagged_mutation_queue &,
                     MutationContainerType &)>;
             };
 
