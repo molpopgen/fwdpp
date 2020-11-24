@@ -1,0 +1,5 @@
+boost
+autoconf
+automake
+make
+gsl
