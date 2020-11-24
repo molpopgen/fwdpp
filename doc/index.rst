@@ -32,6 +32,7 @@ Welcome to fwdpp's documentation!
 .. toctree::
    :caption: Technical documentation
 
+   rst/changelog
    rst/develpersguide
 
 
