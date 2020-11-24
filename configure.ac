@@ -51,7 +51,6 @@ AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile
 				 fwdpp/genetic_map/Makefile
 				 examples/Makefile testsuite/Makefile
 				 src/Makefile
-				 doc/fwdpp.doxygen
 				 .circleci/config.yml
 				 ]) 
 
