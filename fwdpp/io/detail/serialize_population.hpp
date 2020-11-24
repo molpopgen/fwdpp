@@ -1,7 +1,6 @@
 #ifndef FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 #define FWDPP_IO_SERIALIZE_POPULATION_DETAIL_HPP__
 
-#include <bits/c++config.h>
 #include <cstdint>
 #include <stdexcept>
 #include <fwdpp/io/scalar_serialization.hpp>
