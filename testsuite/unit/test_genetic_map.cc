@@ -10,6 +10,7 @@
 #include <fwdpp/genetic_map/genetic_map.hpp>
 #include <fwdpp/recbinder.hpp>
 #include <boost/test/unit_test.hpp>
+#include <stdexcept>
 #include "../fixtures/rng_fixture.hpp"
 
 std::vector<double>
@@ -268,13 +269,18 @@ BOOST_FIXTURE_TEST_SUITE(test_int64_types, rng_fixture)
 
 BOOST_AUTO_TEST_CASE(test_poisson_interval_callback_output)
 {
-    poisson_interval_int64 p(0, 1, 10);
+    poisson_interval_int64 p(0, 2, 10);
     auto rv = apply_callback(p, rng.get());
     BOOST_REQUIRE(!rv.empty());
     for (auto i : rv)
         {
             BOOST_REQUIRE_EQUAL(i, std::floor(i));
         }
+}
+
+BOOST_AUTO_TEST_CASE(test_poisson_interval_too_short)
+{
+    BOOST_REQUIRE_THROW({ poisson_interval_int64 p(0, 1, 10); }, std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_poisson_point_callback_output)
@@ -290,10 +296,15 @@ BOOST_AUTO_TEST_CASE(test_poisson_point_callback_output)
 
 BOOST_AUTO_TEST_CASE(test_binomial_interval_callback_output)
 {
-    binomial_interval_int64 p(0, 1, 1.);
+    binomial_interval_int64 p(0, 2, 1.);
     auto rv = apply_callback(p, rng.get());
     BOOST_REQUIRE(!rv.empty());
-    BOOST_REQUIRE_EQUAL(rv[0], 0);
+    BOOST_REQUIRE_EQUAL(rv[0], std::floor(rv[0]));
+}
+
+BOOST_AUTO_TEST_CASE(test_binomial_interval_too_short)
+{
+    BOOST_REQUIRE_THROW({ binomial_interval_int64 p(0, 1, 10); }, std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_CASE(test_binomial_point_callback_output)
@@ -316,6 +327,12 @@ BOOST_AUTO_TEST_CASE(test_fixed_number_crossovers_callback_output)
         {
             BOOST_REQUIRE_EQUAL(i, std::floor(i));
         }
+}
+
+BOOST_AUTO_TEST_CASE(test_fixed_interval_too_short)
+{
+    BOOST_REQUIRE_THROW({ fixed_number_crossovers_int64 p(0, 1, 10); },
+                        std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

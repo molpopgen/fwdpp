@@ -1,6 +1,8 @@
 #ifndef FWDPP_GENETIC_MAP_UNIT_HPP
 #define FWDPP_GENETIC_MAP_UNIT_HPP
 
+#include <stdexcept>
+#include <type_traits>
 #include <vector>
 #include <gsl/gsl_rng.h>
 #include <fwdpp/util/abstract_cloneable.hpp>
@@ -19,6 +21,32 @@
 
 namespace fwdpp
 {
+    namespace internal
+    {
+        template <typename T>
+        inline void
+        validate_minimum_interval_size(T b, T e, std::true_type)
+        {
+            if (e - b <= 1)
+                {
+                    throw std::invalid_argument(
+                        "discrete intervals must have length greater than one.");
+                }
+        }
+
+        template <typename T>
+        inline void validate_minimum_interval_size(T, T, std::false_type)
+        {
+        }
+
+        template <typename T>
+        inline void
+        validate_minimum_interval_size(T b, T e)
+        {
+            validate_minimum_interval_size(b, e, typename std::is_integral<T>::type());
+        }
+    }
+
     /// @struct genetic_map_unit genetic_map_unit.hpp fwdpp/genetic_map/genetic_map_unit.hpp
     /// @brief Interface class
     /// @ingroup genetic_map_types

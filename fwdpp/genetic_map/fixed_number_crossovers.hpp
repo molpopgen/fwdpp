@@ -28,6 +28,7 @@ namespace fwdpp
         /// @param n Number of braekpoints to generate
         /// @note The interval is half-open on [b, e).
         {
+            internal::validate_minimum_interval_size(b, e);
             if (!std::isfinite(b))
                 {
                     throw std::invalid_argument("beg must be finite");
