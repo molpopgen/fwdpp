@@ -29,6 +29,7 @@ namespace fwdpp
         /// @param m Mean number of breakpoints
         /// @note The interval is half-open on [b, e).
         {
+            internal::validate_minimum_interval_size(b, e);
             if (!std::isfinite(beg))
                 {
                     throw std::invalid_argument("beg must be finite");
