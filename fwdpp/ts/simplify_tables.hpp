@@ -11,19 +11,20 @@
 #include "recording/edge_buffer.hpp"
 #include "simplification/simplification.hpp"
 #include <fwdpp/ts/simplification_flags.hpp>
+#include <fwdpp/ts/simplify_tables_output.hpp>
 
 namespace fwdpp
 {
     namespace ts
     {
         template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
+                  typename SimplifyTablesOutputType>
         inline void
         simplify_tables(
             const NodeVector& samples, const simplification_flags /*flags*/,
             simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables, NodeVector& idmap,
-            PreservedVariantIndexes& preserved_variants)
+            TableCollectionType& input_tables,
+            SimplifyTablesOutputType& simplification_output)
         {
             static_assert(std::is_integral<typename NodeVector::value_type>::value,
                           "NodeVector::value_type must be an integer type");
@@ -31,13 +32,16 @@ namespace fwdpp
                           "NodeVector::value_type must be a signed type");
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
-            idmap.resize(input_tables.nodes.size());
-            std::fill(begin(idmap), end(idmap), NULL_INDEX);
+            simplification_output.clear();
+            simplification_output.idmap.resize(input_tables.nodes.size());
+            std::fill(begin(simplification_output.idmap),
+                      end(simplification_output.idmap), NULL_INDEX);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
             // a segment on [0,L).
-            simplification::record_sample_nodes(samples, input_tables, state, idmap);
+            simplification::record_sample_nodes(samples, input_tables, state,
+                                                simplification_output.idmap);
             // At this point, our edges are sorted by birth
             // order of parents, from present to past.
             // We can now work our way up the pedigree.
@@ -53,7 +57,8 @@ namespace fwdpp
                     edge_ptr = simplification::find_parent_child_segment_overlap(
                         input_tables.genome_length(), edge_ptr, edge_end, u, state);
                     simplification::merge_ancestors(input_tables.genome_length(),
-                                                    input_tables.nodes, u, state, idmap);
+                                                    input_tables.nodes, u, state,
+                                                    simplification_output.idmap);
                     if (state.new_edge_table.size() >= 1024
                         && new_edge_destination + state.new_edge_table.size() < edge_ptr)
                         {
@@ -71,47 +76,27 @@ namespace fwdpp
                 }
 
             // FIXME: figure out what to do with this?
-            assert(static_cast<std::size_t>(std::count_if(
-                       begin(idmap), end(idmap),
-                       [](const table_index_t i) { return i != NULL_INDEX; }))
-                   == state.new_node_table.size());
+            assert(
+                static_cast<std::size_t>(std::count_if(
+                    begin(simplification_output.idmap), end(simplification_output.idmap),
+                    [](const table_index_t i) { return i != NULL_INDEX; }))
+                == state.new_node_table.size());
 
-            simplification::simplify_mutations(state, input_tables, preserved_variants);
+            simplification::simplify_mutations(
+                state, input_tables, simplification_output.preserved_mutations);
             simplification::transfer_new_nodes_and_edges(new_edge_destination, state,
                                                          input_tables);
         }
 
         template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
-        inline void
-        simplify_tables(const NodeVector& samples, TableCollectionType& input_tables,
-                        simplification_flags flags, NodeVector& idmap,
-                        PreservedVariantIndexes& preserved_variants)
-        {
-            auto state = simplification::make_simplifier_internal_state(input_tables);
-            simplify_tables(samples, flags, state, input_tables, idmap,
-                            preserved_variants);
-        }
-
-        template <typename TableCollectionType, typename NodeVector>
-        inline void
-        simplify_tables(const NodeVector& samples, const simplification_flags flags,
-                        TableCollectionType& input_tables)
-        {
-            NodeVector idmap;
-            std::vector<std::size_t> preserved_variants;
-            simplify_tables(samples, flags, input_tables, idmap, preserved_variants);
-        }
-
-        template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
+                  typename SimplifyTablesOutputType>
         inline void
         simplify_tables(
             const NodeVector& samples, const NodeVector& alive_at_last_simplification,
             simplification_flags /*flags*/,
             simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables, edge_buffer& buffer, NodeVector& idmap,
-            PreservedVariantIndexes& preserved_variants)
+            TableCollectionType& input_tables, edge_buffer& buffer,
+            SimplifyTablesOutputType& simplification_output)
         {
             static_assert(std::is_integral<typename NodeVector::value_type>::value,
                           "NodeVector::value type must be an integer type");
@@ -119,13 +104,16 @@ namespace fwdpp
                           "NodeVector::value type must be a signed type");
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
-            idmap.resize(input_tables.nodes.size());
-            std::fill(begin(idmap), end(idmap), NULL_INDEX);
+            simplification_output.clear();
+            simplification_output.idmap.resize(input_tables.nodes.size());
+            std::fill(begin(simplification_output.idmap),
+                      end(simplification_output.idmap), NULL_INDEX);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
             // a segment on [0,L).
-            simplification::record_sample_nodes(samples, input_tables, state, idmap);
+            simplification::record_sample_nodes(samples, input_tables, state,
+                                                simplification_output.idmap);
 
             // NOTE: it may be better to require that alive_at_last_simplification
             // not be empty, so that we force it to be filled with
@@ -155,7 +143,8 @@ namespace fwdpp
 
                             simplification::merge_ancestors(
                                 input_tables.genome_length(), input_tables.nodes,
-                                static_cast<table_index_t>(parent), state, idmap);
+                                static_cast<table_index_t>(parent), state,
+                                simplification_output.idmap);
                         }
                     else if (*buffer_rend != edge_buffer::null && ptime <= max_time)
                         {
@@ -182,7 +171,7 @@ namespace fwdpp
                                 state);
                             simplification::merge_ancestors(input_tables.genome_length(),
                                                             input_tables.nodes, u, state,
-                                                            idmap);
+                                                            simplification_output.idmap);
                         }
                     if (ex.start != std::numeric_limits<std::size_t>::max())
                         {
@@ -202,7 +191,7 @@ namespace fwdpp
                                             edge_end, u, state);
                                     simplification::merge_ancestors(
                                         input_tables.genome_length(), input_tables.nodes,
-                                        u, state, idmap);
+                                        u, state, simplification_output.idmap);
                                 }
                             if (edge_ptr != input_tables.edges.cbegin() + offset)
                                 {
@@ -245,7 +234,7 @@ namespace fwdpp
                     state.overlapper.finalize_queue(input_tables.genome_length());
                     simplification::merge_ancestors(input_tables.genome_length(),
                                                     input_tables.nodes, ex.parent, state,
-                                                    idmap);
+                                                    simplification_output.idmap);
                 }
 
             // Handle the remaning edges
@@ -255,16 +244,19 @@ namespace fwdpp
                     edge_ptr = simplification::find_parent_child_segment_overlap(
                         input_tables.genome_length(), edge_ptr, edge_end, u, state);
                     simplification::merge_ancestors(input_tables.genome_length(),
-                                                    input_tables.nodes, u, state, idmap);
+                                                    input_tables.nodes, u, state,
+                                                    simplification_output.idmap);
                 }
 
             // FIXME: figure out what to do with this?
-            assert(static_cast<std::size_t>(std::count_if(
-                       begin(idmap), end(idmap),
-                       [](const table_index_t i) { return i != NULL_INDEX; }))
-                   == state.new_node_table.size());
+            assert(
+                static_cast<std::size_t>(std::count_if(
+                    begin(simplification_output.idmap), end(simplification_output.idmap),
+                    [](const table_index_t i) { return i != NULL_INDEX; }))
+                == state.new_node_table.size());
 
-            simplification::simplify_mutations(state, input_tables, preserved_variants);
+            simplification::simplify_mutations(
+                state, input_tables, simplification_output.preserved_mutations);
             input_tables.edges.resize(state.new_edge_table.size());
             std::move(begin(state.new_edge_table), end(state.new_edge_table),
                       begin(input_tables.edges));
@@ -273,6 +265,72 @@ namespace fwdpp
                       begin(input_tables.nodes));
             buffer.reset(input_tables.num_nodes());
         }
+
+        // Below, we have deprecated functions that take multiple outputs
+        // as arguments.  In 0.10.0, we introduced simplify_tables_output_t
+        // to hold all of these in a single object.
+
+        template <typename TableCollectionType, typename NodeVector,
+                  typename PreservedVariantIndexes>
+        [[deprecated]] inline void
+        simplify_tables(
+            const NodeVector& samples, const simplification_flags flags,
+            simplification::simplifier_internal_state<TableCollectionType>& state,
+            TableCollectionType& input_tables, NodeVector& idmap,
+            PreservedVariantIndexes& preserved_variants)
+        {
+            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+                simplification_output;
+            simplify_tables(samples, flags, state, input_tables, simplification_output);
+            idmap.swap(simplification_output.idmap);
+            preserved_variants.swap(simplification_output.preserved_mutations);
+        }
+
+        template <typename TableCollectionType, typename NodeVector,
+                  typename PreservedVariantIndexes>
+        [[deprecated]] inline void
+        simplify_tables(const NodeVector& samples, TableCollectionType& input_tables,
+                        simplification_flags flags, NodeVector& idmap,
+                        PreservedVariantIndexes& preserved_variants)
+        {
+            auto state = simplification::make_simplifier_internal_state(input_tables);
+            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+                simplification_output;
+            simplify_tables(samples, flags, state, input_tables, simplification_output);
+            idmap.swap(simplification_output.idmap);
+            preserved_variants.swap(simplification_output.preserved_mutations);
+        }
+
+        template <typename TableCollectionType, typename NodeVector>
+        [[deprecated]] inline void
+        simplify_tables(const NodeVector& samples, const simplification_flags flags,
+                        TableCollectionType& input_tables)
+        {
+            NodeVector idmap;
+            simplify_tables_output_t<NodeVector, std::vector<std::size_t>>
+                simplification_output;
+            simplify_tables(samples, flags, input_tables, simplification_output);
+            idmap.swap(simplification_output.idmap);
+        }
+
+        template <typename TableCollectionType, typename NodeVector,
+                  typename PreservedVariantIndexes>
+        [[deprecated]] inline void
+        simplify_tables(
+            const NodeVector& samples, const NodeVector& alive_at_last_simplification,
+            simplification_flags flags,
+            simplification::simplifier_internal_state<TableCollectionType>& state,
+            TableCollectionType& input_tables, edge_buffer& buffer, NodeVector& idmap,
+            PreservedVariantIndexes& preserved_variants)
+        {
+            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+                simplification_output;
+            simplify_tables(samples, alive_at_last_simplification, flags, state,
+                            input_tables, buffer, simplification_output);
+            idmap.swap(simplification_output.idmap);
+            preserved_variants.swap(simplification_output.preserved_mutations);
+        }
+
     }
 }
 
