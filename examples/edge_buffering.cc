@@ -1,3 +1,4 @@
+#include "fwdpp/ts/simplify_tables_output.hpp"
 #include <string>
 #include <iostream>
 #include <numeric>
@@ -225,13 +226,12 @@ template <typename SimplificationState>
 void
 sort_n_simplify(const std::vector<fwdpp::ts::table_index_t>& samples,
                 SimplificationState& state, fwdpp::ts::std_table_collection& tables,
-                std::vector<fwdpp::ts::table_index_t>& node_map)
+                fwdpp::ts::simplify_tables_output& simplification_output)
 {
     auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
     std::sort(begin(tables.edges), end(tables.edges), cmp);
-    std::vector<std::size_t> temp{};
     fwdpp::ts::simplify_tables(samples, fwdpp::ts::simplification_flags{}, state, tables,
-                               node_map, temp);
+                               simplification_output);
 }
 
 template <typename SimplificationState>
@@ -239,8 +239,8 @@ void
 flush_buffer_n_simplify(
     bool simplify_from_buffer, const std::vector<fwdpp::ts::table_index_t>& samples,
     const std::vector<fwdpp::ts::table_index_t>& alive_at_last_simplification,
-    std::vector<fwdpp::ts::table_index_t>& node_map, fwdpp::ts::edge_buffer& new_edges,
-    SimplificationState& state,
+    fwdpp::ts::simplify_tables_output& simplification_output,
+    fwdpp::ts::edge_buffer& new_edges, SimplificationState& state,
     fwdpp::ts::std_table_collection::edge_table& edge_liftover,
     fwdpp::ts::std_table_collection& tables)
 {
@@ -250,13 +250,12 @@ flush_buffer_n_simplify(
             max_time = std::max(max_time, tables.nodes[a].time);
         }
 
-    std::vector<std::size_t> temp{};
     if (simplify_from_buffer == false)
         {
             stitch_together_edges(alive_at_last_simplification, max_time, new_edges,
                                   edge_liftover, tables);
             fwdpp::ts::simplify_tables(samples, fwdpp::ts::simplification_flags{}, state,
-                                       tables, node_map, temp);
+                                       tables, simplification_output);
             // stitch_together_edges doesn't know about what happens during
             // simplify, so we need to manually reset the buffer's head/tail
             // sizes
@@ -268,7 +267,7 @@ flush_buffer_n_simplify(
             // resets new_edges
             fwdpp::ts::simplify_tables(samples, alive_at_last_simplification,
                                        fwdpp::ts::simplification_flags{}, state, tables,
-                                       new_edges, node_map, temp);
+                                       new_edges, simplification_output);
         }
 }
 
@@ -356,11 +355,13 @@ simulate(const command_line_options& options)
         }
 
     // The next bits are all for buffering
-    std::vector<fwdpp::ts::table_index_t> alive_at_last_simplification(tables.num_nodes());
+    std::vector<fwdpp::ts::table_index_t> alive_at_last_simplification(
+        tables.num_nodes());
     std::iota(begin(alive_at_last_simplification), end(alive_at_last_simplification), 0);
 
     std::vector<birth> births;
-    std::vector<fwdpp::ts::table_index_t> samples, node_map;
+    std::vector<fwdpp::ts::table_index_t> samples;
+    fwdpp::ts::simplify_tables_output simplification_output;
     bool simplified = false;
     double last_time_simplified = 0; //options.nsteps;
     double littler = options.rho / (4. * static_cast<double>(options.N));
@@ -378,26 +379,26 @@ simulate(const command_line_options& options)
                             samples.push_back(p.node0);
                             samples.push_back(p.node1);
                         }
-                    node_map.resize(tables.num_nodes());
 
                     if (options.buffer_new_edges == false)
                         {
-                            sort_n_simplify(samples, simplifier_state, tables, node_map);
+                            sort_n_simplify(samples, simplifier_state, tables,
+                                            simplification_output);
                         }
                     else
                         {
                             flush_buffer_n_simplify(
                                 options.simplify_from_buffer, samples,
-                                alive_at_last_simplification, node_map, buffer,
-                                simplifier_state, edge_liftover, tables);
+                                alive_at_last_simplification, simplification_output,
+                                buffer, simplifier_state, edge_liftover, tables);
                         }
                     simplified = true;
                     last_time_simplified = step;
                     //remap parent nodes
                     for (auto& p : parents)
                         {
-                            p.node0 = node_map[p.node0];
-                            p.node1 = node_map[p.node1];
+                            p.node0 = simplification_output.idmap[p.node0];
+                            p.node1 = simplification_output.idmap[p.node1];
                         }
                     if (options.buffer_new_edges == true)
                         {
@@ -422,17 +423,17 @@ simulate(const command_line_options& options)
                     samples.push_back(p.node0);
                     samples.push_back(p.node1);
                 }
-            node_map.resize(tables.num_nodes());
             if (options.buffer_new_edges == false)
                 {
-                    sort_n_simplify(samples, simplifier_state, tables, node_map);
+                    sort_n_simplify(samples, simplifier_state, tables,
+                                    simplification_output);
                 }
             else
                 {
                     flush_buffer_n_simplify(options.simplify_from_buffer, samples,
-                                            alive_at_last_simplification, node_map,
-                                            buffer, simplifier_state, edge_liftover,
-                                            tables);
+                                            alive_at_last_simplification,
+                                            simplification_output, buffer,
+                                            simplifier_state, edge_liftover, tables);
                 }
         }
     dump_table_collection_to_tskit(tables, options.treefile, options.nsteps, options.N);
