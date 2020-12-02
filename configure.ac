@@ -1,8 +1,8 @@
 AC_PREREQ(2.59)
 
 m4_define([FWDPP_MAJOR],0)
-m4_define([FWDPP_MINOR],9)
-m4_define([FWDPP_REVISION],2)
+m4_define([FWDPP_MINOR],10)
+m4_define([FWDPP_REVISION],0)
 AC_INIT([fwdpp], [FWDPP_MAJOR.FWDPP_MINOR.FWDPP_REVISION], [https://github.com/molpopgen/fwdpp])
 AC_DEFINE(FWDPP_MAJOR_VERSION,FWDPP_MAJOR,[Define major version number.])
 AC_DEFINE(FWDPP_MINOR_VERSION,FWDPP_MINOR,[Define major version number.])
