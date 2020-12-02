@@ -46,9 +46,6 @@ namespace fwdpp
             // node list and initialize their ancestry with
             // a segment on [0,L).
             simplification::record_sample_nodes(samples, input_tables, state, idmap);
-            // Add samples for any preserved nodes in the tables:
-            simplification::record_sample_nodes(input_tables.preserved_nodes,
-                                                input_tables, state, idmap);
             // At this point, our edges are sorted by birth
             // order of parents, from present to past.
             // We can now work our way up the pedigree.
@@ -79,20 +76,6 @@ namespace fwdpp
                     new_edge_destination
                         = std::copy(begin(state.new_edge_table),
                                     end(state.new_edge_table), new_edge_destination);
-                }
-
-            // When there are preserved nodes, we need to re map
-            // their input ids to output ids
-            // FIXME/NOTE: should we be doing this here,
-            // or expect the caller to do it?
-            for (auto& p : input_tables.preserved_nodes)
-                {
-                    if (idmap[p] == NULL_INDEX)
-                        {
-                            throw std::runtime_error(
-                                "preserved node output id maps to null");
-                        }
-                    p = idmap[p];
                 }
 
             // FIXME: figure out what to do with this?
@@ -151,9 +134,6 @@ namespace fwdpp
             // node list and initialize their ancestry with
             // a segment on [0,L).
             simplification::record_sample_nodes(samples, input_tables, state, idmap);
-            // Add samples for any preserved nodes in the tables:
-            simplification::record_sample_nodes(input_tables.preserved_nodes,
-                                                input_tables, state, idmap);
 
             // NOTE: it may be better to require that alive_at_last_simplification
             // not be empty, so that we force it to be filled with
@@ -284,15 +264,6 @@ namespace fwdpp
                         input_tables.genome_length(), edge_ptr, edge_end, u, state);
                     simplification::merge_ancestors(input_tables.genome_length(),
                                                     input_tables.nodes, u, state, idmap);
-                }
-            for (auto& p : input_tables.preserved_nodes)
-                {
-                    if (idmap[p] == NULL_INDEX)
-                        {
-                            throw std::runtime_error(
-                                "preserved node output id maps to null");
-                        }
-                    p = idmap[p];
                 }
 
             // FIXME: figure out what to do with this?

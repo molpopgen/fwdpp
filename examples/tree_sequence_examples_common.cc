@@ -273,7 +273,8 @@ test_serialization(const fwdpp::ts::std_table_collection &tables,
 void
 execute_expensive_leaf_test(const options &o,
                             const fwdpp::ts::std_table_collection &tables,
-                            const std::vector<fwdpp::ts::table_index_t> &samples)
+                            const std::vector<fwdpp::ts::table_index_t> &samples,
+                            const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
     if (o.leaf_test)
         {
@@ -281,7 +282,7 @@ execute_expensive_leaf_test(const options &o,
                          "while!\n";
             expensive_leaf_test(tables, samples);
             std::cout << "Passed with respect to last generation.\n";
-            expensive_leaf_test(tables, tables.preserved_nodes);
+            expensive_leaf_test(tables, preserved_nodes);
             std::cout << "Passed with respect to preserved samples.\n";
         }
 }
@@ -290,7 +291,8 @@ template <typename poptype>
 void
 execute_matrix_test_detail(const options &o, const poptype &pop,
                            const fwdpp::ts::std_table_collection &tables,
-                           const std::vector<fwdpp::ts::table_index_t> &samples)
+                           const std::vector<fwdpp::ts::table_index_t> &samples,
+                           const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
     if (o.matrix_test)
         {
@@ -322,16 +324,15 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
             //                    }
             //            }
             //    }
-            if (!tables.preserved_nodes.empty())
+            if (!preserved_nodes.empty())
                 {
                     std::cout << "Matrix test with respect to preserved "
                                  "samples...";
-                    matrix_runtime_test(tables, tables.preserved_nodes,
+                    matrix_runtime_test(tables, preserved_nodes,
                                         pop.mcounts_from_preserved_nodes);
                     std::cerr << "passed\n";
                     auto sc = samples;
-                    sc.insert(sc.end(), tables.preserved_nodes.begin(),
-                              tables.preserved_nodes.end());
+                    sc.insert(sc.end(), preserved_nodes.begin(), preserved_nodes.end());
                     auto mc(pop.mcounts);
                     std::transform(mc.begin(), mc.end(),
                                    pop.mcounts_from_preserved_nodes.begin(), mc.begin(),
@@ -344,11 +345,11 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
                                  "ancient sampling time point...";
                     sc.clear();
                     std::copy_if(
-                        tables.preserved_nodes.begin(), tables.preserved_nodes.end(),
+                        preserved_nodes.begin(), preserved_nodes.end(),
                         std::back_inserter(sc),
-                        [&tables](const fwdpp::ts::table_index_t n) {
+                        [&tables, &preserved_nodes](const fwdpp::ts::table_index_t n) {
                             return tables.nodes[n].time
-                                   == tables.nodes[tables.preserved_nodes.back()].time;
+                                   == tables.nodes[preserved_nodes.back()].time;
                         });
                     mc.clear();
                     fwdpp::ts::count_mutations(tables, pop.mutations, sc, mc);
@@ -361,14 +362,15 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
 void
 visit_sites_test(const options &o, const ts_examples_poptype &pop,
                  const fwdpp::ts::std_table_collection &tables,
-                 const std::vector<fwdpp::ts::table_index_t> &samples)
+                 const std::vector<fwdpp::ts::table_index_t> &samples,
+                 const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
     if (o.visit_sites_test)
         {
             auto mc(pop.mcounts);
             mc.clear();
             auto s(samples);
-            s.insert(end(s), begin(tables.preserved_nodes), end(tables.preserved_nodes));
+            s.insert(end(s), begin(preserved_nodes), end(preserved_nodes));
             fwdpp::ts::count_mutations(tables, pop.mutations, samples, mc);
             auto mc2(mc);
             std::fill(begin(mc2), end(mc2), 0);
@@ -393,9 +395,10 @@ visit_sites_test(const options &o, const ts_examples_poptype &pop,
 void
 execute_matrix_test(const options &o, const ts_examples_poptype &pop,
                     const fwdpp::ts::std_table_collection &tables,
-                    const std::vector<fwdpp::ts::table_index_t> &samples)
+                    const std::vector<fwdpp::ts::table_index_t> &samples,
+                    const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
-    execute_matrix_test_detail(o, pop, tables, samples);
+    execute_matrix_test_detail(o, pop, tables, samples, preserved_nodes);
 }
 
 void

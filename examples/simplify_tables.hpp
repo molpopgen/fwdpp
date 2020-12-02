@@ -10,20 +10,23 @@
 #include <fwdpp/ts/remove_fixations_from_gametes.hpp>
 #include <fwdpp/ts/recycling.hpp>
 #include "confirm_mutation_counts.hpp"
+#include "fwdpp/ts/definitions.hpp"
+#include "fwdpp/ts/exceptions.hpp"
 
 template <typename Simplifier, typename poptype>
 std::pair<std::vector<fwdpp::ts::table_index_t>, std::vector<std::size_t>>
 simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
-                fwdpp::ts::std_table_collection &tables,
-                Simplifier &simplifier,
+                fwdpp::ts::std_table_collection &tables, Simplifier &simplifier,
                 const fwdpp::ts::table_index_t first_sample_node,
                 const std::size_t num_samples,
+                std::vector<fwdpp::ts::table_index_t> &preserved_nodes,
                 const bool preserve_fixations = false)
 {
     fwdpp::ts::sort_tables_for_simplification(tables.edge_offset, tables);
     std::vector<std::int32_t> samples(num_samples);
     std::iota(samples.begin(), samples.end(), first_sample_node);
+    samples.insert(end(samples), begin(preserved_nodes), end(preserved_nodes));
     auto rv = simplifier.simplify(tables, samples);
     tables.edge_offset = tables.num_edges();
     tables.build_indexes();
@@ -32,15 +35,20 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
             s = rv.first[s];
             assert(s != fwdpp::ts::TS_NULL_NODE);
         }
+    for (auto &s : preserved_nodes)
+        {
+            s = rv.first[s];
+            assert(s != fwdpp::ts::TS_NULL_NODE);
+        }
     if (!preserve_fixations)
         {
-            fwdpp::ts::count_mutations(tables, pop.mutations, samples,
-                                       pop.mcounts,
-                                       mcounts_from_preserved_nodes);
+            samples.resize(num_samples);
+            fwdpp::ts::count_mutations(tables, pop.mutations, samples, preserved_nodes,
+                                       pop.mcounts, mcounts_from_preserved_nodes);
             auto itr = std::remove_if(
                 tables.mutations.begin(), tables.mutations.end(),
-                [&pop, &mcounts_from_preserved_nodes](
-                    const fwdpp::ts::mutation_record &mr) {
+                [&pop,
+                 &mcounts_from_preserved_nodes](const fwdpp::ts::mutation_record &mr) {
                     return pop.mcounts[mr.key] == 2 * pop.diploids.size()
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });
@@ -56,8 +64,8 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 mcounts_from_preserved_nodes, 2 * pop.diploids.size(), false);
 
             fwdpp::ts::flag_mutations_for_recycling(
-                pop, mcounts_from_preserved_nodes, 2 * pop.diploids.size(),
-                generation, std::false_type(), std::false_type());
+                pop, mcounts_from_preserved_nodes, 2 * pop.diploids.size(), generation,
+                std::false_type(), std::false_type());
             confirm_mutation_counts(pop, tables);
         }
     else // Need to remove non-preserved variants from the hash table
@@ -80,7 +88,7 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                         }
                 }
         }
-    
+
     return rv;
 }
 #endif

@@ -54,7 +54,7 @@ namespace fwdpp
         void
         count_mutations(const TableCollectionType& tables,
                         const MutationContainerType& mutations, SAMPLES&& samples,
-                        std::vector<std::uint32_t>& mcounts,
+                        SAMPLES&& preserved_nodes, std::vector<std::uint32_t>& mcounts,
                         std::vector<std::uint32_t>& acounts)
         {
             // Use Kelleher et al. (2016)'s Algorithm L
@@ -69,7 +69,7 @@ namespace fwdpp
             auto mtable_itr = tables.mutations.begin();
             auto mtable_end = tables.mutations.end();
             tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
-                                                  tables.preserved_nodes,
+                                                  std::forward<SAMPLES>(preserved_nodes),
                                                   update_samples_list(false));
             while (mti())
                 {

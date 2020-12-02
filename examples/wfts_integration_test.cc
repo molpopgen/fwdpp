@@ -71,42 +71,39 @@ main(int argc, char **argv)
     gm.add_callback(fwdpp::poisson_interval(0., 1., recrate));
     const auto recmap = fwdpp::recbinder(std::cref(gm), rng.get());
 
-    auto get_selection_coefficient
-        = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
+    auto get_selection_coefficient = make_dfe(o.N, rng, o.mean, o.shape, o.scoeff);
     const auto generate_mutation_position
         = [&rng]() { return gsl_rng_uniform(rng.get()); };
     const auto generate_h = [&o]() { return o.dominance; };
-    const auto make_mutation
-        = [&pop, &rng, &generation, generate_mutation_position,
-           get_selection_coefficient,
-           generate_h](fwdpp::flagged_mutation_queue &recbin,
-                       ts_examples_poptype::mutation_container &mutations) {
-              return fwdpp::infsites_mutation(
-                  recbin, mutations, rng.get(), pop.mut_lookup, generation,
-                  // 1.0 signifies 100% of mutations will be selected
-                  1.0, generate_mutation_position, get_selection_coefficient,
-                  generate_h);
-          };
+    const auto make_mutation =
+        [&pop, &rng, &generation, generate_mutation_position, get_selection_coefficient,
+         generate_h](fwdpp::flagged_mutation_queue &recbin,
+                     ts_examples_poptype::mutation_container &mutations) {
+            return fwdpp::infsites_mutation(
+                recbin, mutations, rng.get(), pop.mut_lookup, generation,
+                // 1.0 signifies 100% of mutations will be selected
+                1.0, generate_mutation_position, get_selection_coefficient, generate_h);
+        };
 
-    const auto mmodel = [&rng, &o,
-                         &make_mutation](fwdpp::flagged_mutation_queue &recbin,
-                                         ts_examples_poptype::mutation_container &mutations) {
-        std::vector<fwdpp::uint_t> rv;
-        unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
-        for (unsigned i = 0; i < nmuts; ++i)
-            {
-                rv.push_back(make_mutation(recbin, mutations));
-            }
-        std::sort(begin(rv), end(rv),
-                  [&mutations](const fwdpp::uint_t a, const fwdpp::uint_t b) {
-                      return mutations[a].pos < mutations[b].pos;
-                  });
-        return rv;
-    };
+    const auto mmodel =
+        [&rng, &o, &make_mutation](fwdpp::flagged_mutation_queue &recbin,
+                                   ts_examples_poptype::mutation_container &mutations) {
+            std::vector<fwdpp::uint_t> rv;
+            unsigned nmuts = gsl_ran_poisson(rng.get(), o.mu);
+            for (unsigned i = 0; i < nmuts; ++i)
+                {
+                    rv.push_back(make_mutation(recbin, mutations));
+                }
+            std::sort(begin(rv), end(rv),
+                      [&mutations](const fwdpp::uint_t a, const fwdpp::uint_t b) {
+                          return mutations[a].pos < mutations[b].pos;
+                      });
+            return rv;
+        };
 
     // Evolve pop for 20N generations
     fwdpp::ts::table_index_t first_parental_index = 0,
-                           next_index = 2 * pop.diploids.size();
+                             next_index = 2 * pop.diploids.size();
     bool simplified = false;
     std::vector<std::size_t> individual_labels(o.N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
@@ -129,9 +126,10 @@ main(int argc, char **argv)
     // issue that is easy to goof.
     auto ff = fwdpp::multiplicative_diploid(fwdpp::fitness(o.scaling));
 
-    auto genetics = fwdpp::make_genetic_parameters(
-        std::move(ff), std::move(mmodel), std::move(recmap));
+    auto genetics = fwdpp::make_genetic_parameters(std::move(ff), std::move(mmodel),
+                                                   std::move(recmap));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
+    std::vector<fwdpp::ts::table_index_t> preserved_nodes;
     for (; generation <= 10 * o.N; ++generation)
         {
             auto pick1 = [&lookup, &rng]() {
@@ -140,29 +138,25 @@ main(int argc, char **argv)
             auto pick2 = [&lookup, &rng](const std::size_t /*p1*/) {
                 return gsl_ran_discrete(rng.get(), lookup.get());
             };
-            evolve_generation(rng, pop, genetics, o.N, pick1, pick2,
-                              update_offspring, generation, tables,
-                              first_parental_index, next_index);
+            evolve_generation(rng, pop, genetics, o.N, pick1, pick2, update_offspring,
+                              generation, tables, first_parental_index, next_index);
             // Recalculate fitnesses and the lookup table.
             lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
             if (generation % o.gcint == 0.0)
                 {
                     auto rv = simplify_tables(
-                        pop, generation, pop.mcounts_from_preserved_nodes,
-                        tables, simplifier, tables.num_nodes() - 2 * o.N,
-                        2 * o.N, o.preserve_fixations);
+                        pop, generation, pop.mcounts_from_preserved_nodes, tables,
+                        simplifier, tables.num_nodes() - 2 * o.N, 2 * o.N,
+                        preserved_nodes, o.preserve_fixations);
                     if (!o.preserve_fixations)
                         {
-                            genetics.mutation_recycling_bin
-                                = fwdpp::ts::make_mut_queue(
-                                    pop.mcounts,
-                                    pop.mcounts_from_preserved_nodes);
+                            genetics.mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                                pop.mcounts, pop.mcounts_from_preserved_nodes);
                         }
                     else
                         {
-                            genetics.mutation_recycling_bin
-                                = fwdpp::ts::make_mut_queue(
-                                    rv.second, pop.mutations.size());
+                            genetics.mutation_recycling_bin = fwdpp::ts::make_mut_queue(
+                                rv.second, pop.mutations.size());
                         }
                     simplified = true;
                     next_index = tables.num_nodes();
@@ -223,56 +217,49 @@ main(int argc, char **argv)
                 // final generation as ancient samples.
                 && generation < 10 * o.N)
                 {
-                    gsl_ran_choose(
-                        rng.get(), individuals.data(), individuals.size(),
-                        individual_labels.data(), individual_labels.size(),
-                        sizeof(std::size_t));
+                    gsl_ran_choose(rng.get(), individuals.data(), individuals.size(),
+                                   individual_labels.data(), individual_labels.size(),
+                                   sizeof(std::size_t));
                     for (auto i : individuals)
                         {
-                            auto x = fwdpp::ts::get_parent_ids(
-                                first_parental_index, i, 0);
+                            auto x
+                                = fwdpp::ts::get_parent_ids(first_parental_index, i, 0);
                             assert(x.first >= first_parental_index);
                             assert(x.second >= first_parental_index);
                             assert(x.first < tables.num_nodes());
                             assert(x.second < tables.num_nodes());
-                            assert(tables.nodes[x.first].time
-                                   == generation);
-                            assert(tables.nodes[x.second].time
-                                   == generation);
-                            assert(std::find(tables.preserved_nodes.begin(),
-                                             tables.preserved_nodes.end(),
-                                             x.first)
-                                   == tables.preserved_nodes.end());
-                            assert(std::find(tables.preserved_nodes.begin(),
-                                             tables.preserved_nodes.end(),
-                                             x.second)
-                                   == tables.preserved_nodes.end());
-                            tables.preserved_nodes.push_back(x.first);
-                            tables.preserved_nodes.push_back(x.second);
+                            assert(tables.nodes[x.first].time == generation);
+                            assert(tables.nodes[x.second].time == generation);
+                            assert(std::find(preserved_nodes.begin(),
+                                             preserved_nodes.end(), x.first)
+                                   == preserved_nodes.end());
+                            assert(std::find(preserved_nodes.begin(),
+                                             preserved_nodes.end(), x.second)
+                                   == preserved_nodes.end());
+                            preserved_nodes.push_back(x.first);
+                            preserved_nodes.push_back(x.second);
                             // Record the metadata for our ancient samples
                             // Here, we record each individual's actual fitness.
                             // If we wanted relative fitness, then
                             // we'd have to copy fitnesses into a temp
                             // and normalize it appropriately.
                             ancient_sample_metadata.emplace_back(
-                                i, generation, fitnesses[i], x.first,
-                                x.second);
+                                i, generation, fitnesses[i], x.first, x.second);
                         }
                 }
         }
     if (!simplified)
         {
-            auto rv = simplify_tables(pop, generation,
-                                      pop.mcounts_from_preserved_nodes, tables,
-                                      simplifier, tables.num_nodes() - 2 * o.N,
-                                      2 * o.N, o.preserve_fixations);
+            auto rv = simplify_tables(pop, generation, pop.mcounts_from_preserved_nodes,
+                                      tables, simplifier, tables.num_nodes() - 2 * o.N,
+                                      2 * o.N, preserved_nodes, o.preserve_fixations);
             if (o.preserve_fixations)
                 {
                     std::vector<std::int32_t> samples(2 * o.N);
                     std::iota(samples.begin(), samples.end(), 0);
-                    fwdpp::ts::count_mutations(
-                        tables, pop.mutations, samples, pop.mcounts,
-                        pop.mcounts_from_preserved_nodes);
+                    fwdpp::ts::count_mutations(tables, pop.mutations, samples,
+                                               preserved_nodes, pop.mcounts,
+                                               pop.mcounts_from_preserved_nodes);
                 }
             confirm_mutation_counts(pop, tables);
             // When tracking ancient samples, the node ids of those samples change.
@@ -297,8 +284,7 @@ main(int argc, char **argv)
         }
     for (std::size_t i = 0; i < tables.sites.size(); ++i)
         {
-            if (tables.sites[i].position
-                != pop.mutations[tables.mutations[i].key].pos)
+            if (tables.sites[i].position != pop.mutations[tables.mutations[i].key].pos)
                 {
                     throw std::runtime_error("site table data are incorrect");
                 }
@@ -312,8 +298,7 @@ main(int argc, char **argv)
             if (tables.nodes[mr.n1].time != mr.time
                 || tables.nodes[mr.n2].time != mr.time)
                 {
-                    throw std::runtime_error(
-                        "invalid ancient sample metadata");
+                    throw std::runtime_error("invalid ancient sample metadata");
                 }
         }
     assert(tables.input_left.size() == tables.edges.size());
@@ -321,8 +306,8 @@ main(int argc, char **argv)
     std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
 
-    auto neutral_muts = apply_neutral_mutations(
-        o, rng, tables, pop, genetics.mutation_recycling_bin);
+    auto neutral_muts
+        = apply_neutral_mutations(o, rng, tables, pop, genetics.mutation_recycling_bin);
     if (!std::is_sorted(begin(tables.sites), end(tables.sites)))
         {
             throw std::runtime_error(
@@ -330,33 +315,30 @@ main(int argc, char **argv)
         }
     for (auto &mr : tables.mutations)
         {
-            if (pop.mutations[mr.key].pos
-                != tables.sites[mr.site].position)
+            if (pop.mutations[mr.key].pos != tables.sites[mr.site].position)
                 {
                     throw std::runtime_error("site table data incorrect after "
                                              "adding neutral mutations");
                 }
         }
 
-    fwdpp::ts::count_mutations(tables, pop.mutations, s, pop.mcounts,
+    fwdpp::ts::count_mutations(tables, pop.mutations, s, preserved_nodes, pop.mcounts,
                                pop.mcounts_from_preserved_nodes);
     for (std::size_t i = 0; i < pop.mutations.size(); ++i)
         {
             if (pop.mutations[i].neutral)
                 {
-                    if (!pop.mcounts[i]
-                        && !pop.mcounts_from_preserved_nodes[i])
+                    if (!pop.mcounts[i] && !pop.mcounts_from_preserved_nodes[i])
                         {
-                            throw std::runtime_error(
-                                "invalid final mutation count");
+                            throw std::runtime_error("invalid final mutation count");
                         }
                 }
         }
     std::cout << neutral_muts << '\n';
 
-    execute_expensive_leaf_test(o, tables, s);
-    execute_matrix_test(o, pop, tables, s);
+    execute_expensive_leaf_test(o, tables, s, preserved_nodes);
+    execute_matrix_test(o, pop, tables, s, preserved_nodes);
     execute_serialization_test(o, tables);
-	visit_sites_test(o, pop, tables, s);
+    visit_sites_test(o, pop, tables, s, preserved_nodes);
     write_sfs(o, rng, tables, s);
 }
