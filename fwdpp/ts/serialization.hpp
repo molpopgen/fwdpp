@@ -253,12 +253,6 @@ namespace fwdpp
                         o.write(reinterpret_cast<const char*>(tables.sites.data()),
                                 tables.sites.size() * sizeof(site));
                     }
-                std::size_t num_preserved_samples = tables.preserved_nodes.size();
-                sw(o, &num_preserved_samples);
-                if (num_preserved_samples)
-                    {
-                        sw(o, tables.preserved_nodes.data(), num_preserved_samples);
-                    }
             }
 
             template <typename TableCollectionType> struct deserialize_tables
@@ -370,12 +364,16 @@ namespace fwdpp
                             throw std::runtime_error(
                                 "invalid serialization version detected");
                         }
-                    std::size_t num_preserved_samples;
-                    sr(i, &num_preserved_samples);
-                    if (num_preserved_samples)
+                    if (TS_TABLES_VERSION < 4)
                         {
-                            tables.preserved_nodes.resize(num_preserved_samples);
-                            sr(i, tables.preserved_nodes.data(), num_preserved_samples);
+                            std::size_t num_preserved_samples;
+                            sr(i, &num_preserved_samples);
+                            if (num_preserved_samples)
+                                {
+                                    std::vector<table_index_t> preserved_nodes;
+                                    preserved_nodes.resize(num_preserved_samples);
+                                    sr(i, preserved_nodes.data(), num_preserved_samples);
+                                }
                         }
                     tables.build_indexes();
                     return tables;

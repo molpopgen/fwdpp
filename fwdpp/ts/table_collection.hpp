@@ -60,12 +60,10 @@ namespace fwdpp
             /// It can be used to make sure we only sort
             /// newly-added nodes.
             std::ptrdiff_t edge_offset;
-            /// A vector of dead/ancient sample nodes
-            std::vector<table_index_t> preserved_nodes;
 
             explicit table_collection(const double maxpos)
                 : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
-                  output_right{}, edge_offset{0}, preserved_nodes{}
+                  output_right{}, edge_offset{0}
             {
                 if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
@@ -77,7 +75,7 @@ namespace fwdpp
                              const double initial_time, table_index_t pop,
                              const double maxpos)
                 : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
-                  output_right{}, edge_offset{0}, preserved_nodes{}
+                  output_right{}, edge_offset{0}
             {
                 if (maxpos <= 0 || !std::isfinite(maxpos))
                     {
@@ -96,30 +94,7 @@ namespace fwdpp
                 nodes.clear();
                 edges.clear();
                 mutations.clear();
-                preserved_nodes.clear();
                 sites.clear();
-            }
-
-            void
-            record_preserved_nodes(const std::vector<table_index_t>& node_ids)
-            /// Take a list of nodes to record as "ancient samples".
-            /// Throws an exception if the nodes are already recorded as such.
-            {
-                for (auto i : node_ids)
-                    {
-                        if (static_cast<std::size_t>(i) >= nodes.size())
-                            {
-                                throw std::invalid_argument(
-                                    "node id larger than node table size");
-                            }
-                        if (std::find(preserved_nodes.begin(), preserved_nodes.end(), i)
-                            != preserved_nodes.end())
-                            {
-                                throw std::invalid_argument("node already recorded as a "
-                                                            "preserved_node");
-                            }
-                        preserved_nodes.push_back(i);
-                    }
             }
 
             table_index_t
@@ -237,8 +212,7 @@ namespace fwdpp
             {
                 return genome_length() == b.genome_length() && sites == b.sites
                        && edges == b.edges && nodes == b.nodes
-                       && mutations == b.mutations
-                       && preserved_nodes == b.preserved_nodes;
+                       && mutations == b.mutations;
             }
 
             inline bool

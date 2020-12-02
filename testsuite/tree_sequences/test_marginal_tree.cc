@@ -18,23 +18,20 @@ BOOST_FIXTURE_TEST_CASE(test_construction_with_sample_groups,
     BOOST_REQUIRE(samples == scopy);
 }
 
-BOOST_FIXTURE_TEST_CASE(
-    test_construction_with_sample_groups_and_preserved_nodes,
-    simple_table_collection_infinite_sites)
+BOOST_FIXTURE_TEST_CASE(test_construction_with_sample_groups_and_preserved_nodes,
+                        simple_table_collection_infinite_sites)
 {
     std::vector<fwdpp::ts::sample_group_map> groups;
     for (auto i : samples)
         {
             groups.emplace_back(i, 0);
         }
-    tables.preserved_nodes.push_back(samples.size());
-    fwdpp::ts::marginal_tree m(tables.nodes.size(), groups,
-                               tables.preserved_nodes, true);
-    BOOST_CHECK_EQUAL(m.sample_size(),
-                      groups.size() + tables.preserved_nodes.size());
+    std::vector<fwdpp::ts::table_index_t> preserved_nodes;
+    preserved_nodes.push_back(samples.size());
+    fwdpp::ts::marginal_tree m(tables.nodes.size(), groups, preserved_nodes, true);
+    BOOST_CHECK_EQUAL(m.sample_size(), groups.size() + preserved_nodes.size());
     decltype(samples) scopy(m.samples_list_begin(), m.samples_list_end());
-    samples.insert(end(samples), begin(tables.preserved_nodes),
-                   end(tables.preserved_nodes));
+    samples.insert(end(samples), begin(preserved_nodes), end(preserved_nodes));
     BOOST_REQUIRE(samples == scopy);
 }
 
@@ -42,10 +39,7 @@ BOOST_FIXTURE_TEST_CASE(test_sample_preserved_node_overlap,
                         simple_table_collection_infinite_sites)
 {
     BOOST_REQUIRE_THROW(
-        {
-            fwdpp::ts::marginal_tree m(tables.nodes.size(), samples,
-                                       samples, true);
-        },
+        { fwdpp::ts::marginal_tree m(tables.nodes.size(), samples, samples, true); },
         fwdpp::ts::samples_error);
 }
 BOOST_AUTO_TEST_SUITE_END()
