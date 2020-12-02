@@ -10,6 +10,7 @@
 #include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/recording.hpp>
 #include <fwdpp/ts/recording/diploid_offspring.hpp>
+#include <fwdpp/ts/make_simplifier_state.hpp>
 #include <fwdpp/ts/simplify_tables.hpp>
 
 #include <tskit.h>

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fwdpp/GSLrng_t.hpp>
 #include <fwdpp/ts/definitions.hpp>
+#include <fwdpp/ts/make_simplifier_state.hpp>
 #include <fwdpp/ts/simplify_tables.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
