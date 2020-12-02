@@ -2,7 +2,7 @@
 #include <limits>
 #include <cstdint>
 #include <iostream>
-#include <fwdpp/util/nested_forward_lists.hpp>
+#include <fwdpp/types/nested_forward_lists.hpp>
 #include <boost/test/unit_test.hpp>
 
 namespace
