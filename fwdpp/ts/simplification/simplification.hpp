@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <fwdpp/ts/definitions.hpp>
-#include <fwdpp/util/nested_forward_lists.hpp>
+#include <fwdpp/types/nested_forward_lists.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 

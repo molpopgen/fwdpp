@@ -9,7 +9,7 @@
 #include <cstdint>
 #include <vector>
 #include "../definitions.hpp"
-#include <fwdpp/util/nested_forward_lists.hpp>
+#include <fwdpp/types/nested_forward_lists.hpp>
 
 namespace fwdpp
 {
