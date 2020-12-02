@@ -60,12 +60,13 @@ namespace fwdpp
             /// node ID map and a vector of keys to mutations preserved in
             /// mutation tables
             {
-                std::vector<table_index_t> idmap;
-                std::vector<std::size_t> preserved_variants;
-                simplify_tables(samples, simplification_flags{}, _state, tables, idmap,
-                                preserved_variants);
+                simplify_tables_output simplification_output;
+                simplify_tables(samples, simplification_flags{}, _state, tables,
+                                simplification_output);
 
-                return std::make_pair(std::move(idmap), std::move(preserved_variants));
+                return std::make_pair(
+                    std::move(simplification_output.idmap),
+                    std::move(simplification_output.preserved_mutations));
             }
         };
 
