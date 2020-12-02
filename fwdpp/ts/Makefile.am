@@ -12,6 +12,7 @@ pkginclude_HEADERS= definitions.hpp \
 			table_simplifier.hpp \
 			make_simplifier_state.hpp \
 			simplify_tables.hpp \
+			simplify_tables_output.hpp \
 			simplification_flags.hpp \
 			get_parent_ids.hpp \
 			generate_offspring.hpp \
