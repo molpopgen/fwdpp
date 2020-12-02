@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <type_traits>
+#include <string>
 #include <utility>
 
 namespace fwdpp

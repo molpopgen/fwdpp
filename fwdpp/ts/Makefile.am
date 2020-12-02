@@ -10,6 +10,7 @@ pkginclude_HEADERS= definitions.hpp \
 			table_collection_functions.hpp \
 			std_table_collection.hpp \
 			table_simplifier.hpp \
+			make_simplifier_state.hpp \
 			simplify_tables.hpp \
 			simplification_flags.hpp \
 			get_parent_ids.hpp \
