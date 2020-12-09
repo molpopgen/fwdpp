@@ -309,7 +309,8 @@ namespace fwdpp
             NodeVector idmap;
             simplify_tables_output_t<NodeVector, std::vector<std::size_t>>
                 simplification_output;
-            simplify_tables(samples, flags, input_tables, simplification_output);
+            auto state = simplification::make_simplifier_internal_state(input_tables);
+            simplify_tables(samples, flags, state, input_tables, simplification_output);
             idmap.swap(simplification_output.idmap);
         }
 
