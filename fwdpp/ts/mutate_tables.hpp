@@ -37,7 +37,7 @@ namespace fwdpp
         /// The result of this function is to populate \a tables.mutations with neutral variants.
         ///
         /// The parameter \a make_mutation is a function that must conform to
-        /// std::function<new_variant_record(double, double, fwdpp::uint_t)>.  The three arguments
+        /// std::function<new_variant_record(double, double, double)>.  The three arguments
         /// are interpreted as "left", "right", and "time".  The function's return value
         /// allows us to properly update the site and mutation tables in \a tables.
         /// The new mutation must have a position on the half-open interval [left, right). The
@@ -78,6 +78,16 @@ namespace fwdpp
                 }
             auto mr = mark_multiple_roots(tables, std::forward<Samples>(samples));
             const double L = tables.genome_length();
+            const auto make_origin_time
+                = [&r](const double parent_time, const double child_time) {
+                      auto dt = child_time - parent_time;
+                      if (dt <= 0.0)
+                          {
+                              throw std::runtime_error("dt must be > 0.0");
+                          }
+                      auto x = gsl_ran_flat(r.get(), 0, dt);
+                      return child_time - x;
+                  };
             for (auto &i : mr)
                 {
                     auto dt = tables.nodes[i.first].time;
@@ -88,8 +98,7 @@ namespace fwdpp
                             nmuts += nm;
                             for (unsigned m = 0; m < nm; ++m)
                                 {
-                                    unsigned g = static_cast<unsigned>(
-                                        gsl_ran_flat(r.get(), 1, dt + 1));
+                                    auto g = make_origin_time(0, dt);
                                     new_variant_record r
                                         = make_mutation(j.first, j.second, g);
                                     auto newsite = tables.emplace_back_site(
@@ -109,13 +118,12 @@ namespace fwdpp
                     auto nm = gsl_ran_poisson(r.get(), mean);
                     for (unsigned m = 0; m < nm; ++m)
                         {
-                            unsigned g = static_cast<unsigned>(
-                                gsl_ran_flat(r.get(), pt + 1, ct + 1));
+                            auto g = make_origin_time(pt, ct);
                             new_variant_record r = make_mutation(e.left, e.right, g);
                             auto site = tables.emplace_back_site(r.s.position,
                                                                  r.s.ancestral_state);
-                            tables.emplace_back_mutation(
-                                e.child, r.key, site, r.derived_state, r.neutral);
+                            tables.emplace_back_mutation(e.child, r.key, site,
+                                                         r.derived_state, r.neutral);
                         }
                     nmuts += nm;
                 }
