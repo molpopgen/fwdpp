@@ -80,13 +80,23 @@ namespace fwdpp
             const double L = tables.genome_length();
             const auto make_origin_time
                 = [&r](const double parent_time, const double child_time) {
-                      auto dt = child_time - parent_time;
+                      auto fc = std::floor(child_time);
+                      auto cp = std::ceil(parent_time);
+                      auto dt = fc - cp;
                       if (dt <= 0.0)
                           {
-                              throw std::runtime_error("dt must be > 0.0");
+                              if (fc <= parent_time)
+                                  {
+                                      return std::numeric_limits<double>::quiet_NaN();
+                                  }
+                              return fc;
                           }
                       auto x = gsl_ran_flat(r.get(), 0, dt);
-                      return child_time - x;
+                      if (fc - x <= parent_time)
+                          {
+                              return std::numeric_limits<double>::quiet_NaN();
+                          }
+                      return fc - x;
                   };
             for (auto &i : mr)
                 {
