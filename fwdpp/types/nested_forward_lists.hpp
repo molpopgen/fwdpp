@@ -121,7 +121,7 @@ namespace fwdpp
         extend(Index at, Args&&... args)
         {
             throw_if_null(at);
-            if (data.size() >= std::numeric_limits<Index>::max() - 1)
+            if (static_cast<Index>(data.size()) >= std::numeric_limits<Index>::max() - 1)
                 {
                     throw nested_forward_lists_overflow(
                         "buffer has overflowed Index maximum");
@@ -240,7 +240,7 @@ namespace fwdpp
         Index
         convert_to_head_index(const_iterator i) const
         {
-            return std::distance(_head.cbegin(), i);
+            return static_cast<Index>(std::distance(_head.cbegin(), i));
         }
 
         Index
@@ -250,8 +250,10 @@ namespace fwdpp
         }
     };
 
+#if __cplusplus < 201703L
     template <typename T, typename Index, Index NullValue>
     constexpr Index nested_forward_lists<T, Index, NullValue>::null;
+#endif
 
     //template <typename nested_forward_lists_t>
     //inline typename nested_forward_lists_t::const_iterator

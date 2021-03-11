@@ -87,7 +87,7 @@ namespace fwdpp
                             auto not_equal = std::find_if(
                                 itr, breakpoints.end(),
                                 [itr](const double d) { return d != *itr; });
-                            int even = (std::distance(itr, not_equal) % 2 == 0.0);
+                            int even = ((std::distance(itr, not_equal) % 2) == 0);
                             odd_breakpoints.insert(odd_breakpoints.end(), start,
                                                    itr + 1 - even);
                             start = not_equal;

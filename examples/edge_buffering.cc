@@ -136,8 +136,8 @@ deaths_and_parents(const fwdpp::GSLrng_mt& rng, const std::vector<parent>& paren
         {
             if (gsl_rng_uniform(rng.get()) > psurvival)
                 {
-                    std::size_t parent0 = gsl_ran_flat(rng.get(), 0, parents.size());
-                    std::size_t parent1 = gsl_ran_flat(rng.get(), 0, parents.size());
+                    std::size_t parent0 = static_cast<std::size_t>(gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
+                    std::size_t parent1 = static_cast<std::size_t>(gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
                     births.emplace_back(i, parents[parent0], parents[parent1]);
                 }
         }
@@ -167,7 +167,7 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 bool buffer_new_edges, fwdpp::ts::edge_buffer& new_edges,
                 std::vector<parent>& parents, fwdpp::ts::std_table_collection& tables)
 {
-    std::size_t new_node_0, new_node_1;
+    fwdpp::ts::table_index_t new_node_0, new_node_1;
     for (auto& b : births)
         {
             auto p0n0 = b.p0node0;
@@ -363,7 +363,6 @@ simulate(const command_line_options& options)
     std::vector<fwdpp::ts::table_index_t> samples;
     fwdpp::ts::simplify_tables_output simplification_output;
     bool simplified = false;
-    double last_time_simplified = 0; //options.nsteps;
     double littler = options.rho / (4. * static_cast<double>(options.N));
     std::vector<double> breakpoints;
     for (unsigned step = 1; step <= options.nsteps; ++step)
@@ -393,7 +392,6 @@ simulate(const command_line_options& options)
                                 buffer, simplifier_state, edge_liftover, tables);
                         }
                     simplified = true;
-                    last_time_simplified = step;
                     //remap parent nodes
                     for (auto& p : parents)
                         {

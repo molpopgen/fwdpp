@@ -4,6 +4,8 @@
 #include <gsl/gsl_randist.h>
 
 #include <vector>
+#include <functional>
+#include <type_traits>
 #include "definitions.hpp"
 #include "mark_multiple_roots.hpp"
 #include "mutation_tools.hpp"
@@ -71,6 +73,14 @@ namespace fwdpp
         /// 2. Start the simulation with an existing, completely-coalesced, tree sequence. As far as fwdpp is concerned,
         /// this is left as an "exercise for the reader" at the moment.
         {
+            static_assert(
+                std::is_convertible<mfunction, const std::function<new_variant_record(
+                                                   double, double, double)>>::value
+                    || std::is_convertible<
+                        mfunction,
+                        const std::function<new_variant_record(
+                            const double, const double, const double)>>::value,
+                "invalid function type for mutate_tables");
             unsigned nmuts = 0;
             if (!(mu > 0.0))
                 {

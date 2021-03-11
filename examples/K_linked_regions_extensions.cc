@@ -123,7 +123,6 @@ main(int argc, char **argv)
     pop.mutations.reserve(
         size_t(2 * std::ceil(std::log(2 * N) * (theta) + 0.667 * (theta))));
     unsigned generation = 0;
-    double wbar;
 
     // Set up mutation models
     std::vector<double> locus_starts(K);

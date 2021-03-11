@@ -17,7 +17,8 @@ BOOST_FIXTURE_TEST_CASE(test_boundary, diploid_population_objects)
     // We add the mutation to the second haploid_genome of the pop
     fwdpp::fwdpp_internal::insert_new_mutation(
         haploid_genomes[1].mutations.begin(), haploid_genomes[1].mutations.end(),
-        mutations.size() - 1, mutations, haploid_genomes[1].mutations);
+        static_cast<fwdpp::uint_t>(mutations.size()) - 1, mutations,
+        haploid_genomes[1].mutations);
 
     BOOST_REQUIRE_EQUAL(mutations.back().pos, 1.5);
     std::vector<fwdpp::uint_t> new_mutations;
@@ -58,7 +59,7 @@ BOOST_FIXTURE_TEST_CASE(test_boundary_with_recurrent_mutation,
 /// fwdpp::mutation for extra resolution about how mutation vs
 /// inherited mutations are treated vis-a-vis crossover breakpoints
 {
-    poptype pop(diploids.size());
+    poptype pop(static_cast<fwdpp::uint_t>(diploids.size()));
     pop.diploids = diploids;
     pop.haploid_genomes = haploid_genomes;
     pop.mutations = mutations;
@@ -68,7 +69,8 @@ BOOST_FIXTURE_TEST_CASE(test_boundary_with_recurrent_mutation,
     // We add the mutation to the second haploid_genome of the pop
     fwdpp::fwdpp_internal::insert_new_mutation(
         pop.haploid_genomes[1].mutations.begin(), pop.haploid_genomes[1].mutations.end(),
-        pop.mutations.size() - 1, pop.mutations, pop.haploid_genomes[1].mutations);
+        static_cast<fwdpp::uint_t>(pop.mutations.size()) - 1, pop.mutations,
+        pop.haploid_genomes[1].mutations);
 
     BOOST_REQUIRE_EQUAL(pop.mutations.back().pos, 1.5);
     // We will now add another mutation at 1.5, which will be
@@ -76,7 +78,8 @@ BOOST_FIXTURE_TEST_CASE(test_boundary_with_recurrent_mutation,
     pop.mutations.emplace_back(1.5, 0.0, 1.0, 1, 9);
     BOOST_REQUIRE_EQUAL(pop.mutations.back().pos, 1.5);
     // The new mutation at 1.5 is at the end
-    std::vector<fwdpp::uint_t> new_mutations(1, pop.mutations.size() - 1);
+    std::vector<fwdpp::uint_t> new_mutations(
+        1, static_cast<fwdpp::uint_t>(pop.mutations.size()) - 1);
     std::vector<double> breakpoints{1.5, std::numeric_limits<double>::max()};
     auto q = fwdpp::make_haploid_genome_queue(pop.haploid_genomes);
     BOOST_REQUIRE_EQUAL(q.get().empty(), true);

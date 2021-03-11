@@ -161,7 +161,7 @@ namespace fwdpp
                                 throw samples_error(
                                     "invalid sample list");
                             }
-                        sample_index_map[s] = i;
+                        sample_index_map[s] = static_cast<table_index_t>(i);
                         left_sample[s] = right_sample[s] = sample_index_map[s];
                         above_sample[s] = 1;
                         // Initialize roots
@@ -186,7 +186,7 @@ namespace fwdpp
             table_index_t left_root;
 
             template <typename SAMPLES>
-            marginal_tree(table_index_t nnodes, const SAMPLES& samples,
+            marginal_tree(std::size_t nnodes, const SAMPLES& samples,
                           bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples)),
@@ -227,7 +227,7 @@ namespace fwdpp
             }
 
             template <typename SAMPLES>
-            marginal_tree(table_index_t nnodes, const SAMPLES& samples,
+            marginal_tree(std::size_t nnodes, const SAMPLES& samples,
                           const std::vector<table_index_t> preserved_nodes,
                           bool advancing_sample_list)
                 : num_nodes(nnodes),

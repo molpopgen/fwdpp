@@ -24,7 +24,8 @@ namespace fwdpp
                 {
                     auto site
                         = tables.emplace_back_site(mutations[k].pos, ancestral_state);
-                    if (site >= std::numeric_limits<table_index_t>::max())
+                    if (site >= static_cast<std::size_t>(
+                            std::numeric_limits<table_index_t>::max()))
                         {
                             throw std::invalid_argument("site index out of range");
                         }

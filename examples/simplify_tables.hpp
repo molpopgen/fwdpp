@@ -61,10 +61,10 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
             confirm_mutation_counts(pop, tables);
             fwdpp::ts::remove_fixations_from_haploid_genomes(
                 pop.haploid_genomes, pop.mutations, pop.mcounts,
-                mcounts_from_preserved_nodes, 2 * pop.diploids.size(), false);
+                mcounts_from_preserved_nodes, 2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()), false);
 
             fwdpp::ts::flag_mutations_for_recycling(
-                pop, mcounts_from_preserved_nodes, 2 * pop.diploids.size(), generation,
+                pop, mcounts_from_preserved_nodes, 2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()), generation,
                 std::false_type(), std::false_type());
             confirm_mutation_counts(pop, tables);
         }

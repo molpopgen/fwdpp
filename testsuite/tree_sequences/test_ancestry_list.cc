@@ -5,7 +5,7 @@
 namespace
 {
     std::int64_t
-    get_list_length(const fwdpp::ts::simplification::ancestry_list& al, std::size_t i)
+    get_list_length(const fwdpp::ts::simplification::ancestry_list& al, std::int32_t i)
     {
         int len = 0;
         auto f = al.head(i);

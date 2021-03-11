@@ -43,7 +43,7 @@ namespace fwdpp
             = std::distance(std::begin(indexes), new_indexes_end);
         for (std::size_t i = 0; i < new_indexes_size; ++i)
             {
-                reindex[indexes[i]] = i;
+                reindex[indexes[i]] = static_cast<uint_t>(i);
             }
         for (auto &g : pop.haploid_genomes)
             {
@@ -69,6 +69,10 @@ namespace fwdpp
                 reordered_mcounts.push_back(pop.mcounts[i]);
                 if (reordered_mcounts.back() > 0)
                     {
+                        if (reordered_muts.empty())
+                        {
+                            throw std::runtime_error("reordered_muts is empty");
+                        }
                         auto x = pop.mut_lookup.equal_range(
                             reordered_muts.back().pos);
                         while (x.first != x.second)
@@ -76,7 +80,7 @@ namespace fwdpp
                                 if (x.first->second == i)
                                     {
                                         x.first->second
-                                            = reordered_muts.size() - 1;
+                                            = static_cast<uint_t>(reordered_muts.size() - 1);
                                         break;
                                     }
                                 ++x.first;
