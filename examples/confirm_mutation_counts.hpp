@@ -28,7 +28,7 @@ confirm_mutation_counts(poptype &pop,
 
     for (auto &mr : tables.mutations)
         {
-            if (mr.node == fwdpp::ts::TS_NULL_NODE)
+            if (mr.node == fwdpp::ts::NULL_INDEX)
                 {
                     throw std::runtime_error(
                         "mutation node maps to null node");

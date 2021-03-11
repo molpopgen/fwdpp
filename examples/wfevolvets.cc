@@ -176,8 +176,8 @@ simplify_tables_remap_metadata(
     for (auto& md : metadata)
         {
             // Validate output
-            if (x.first[md.n1] == fwdpp::ts::TS_NULL_NODE
-                || x.first[md.n2] == fwdpp::ts::TS_NULL_NODE)
+            if (x.first[md.n1] == fwdpp::ts::NULL_INDEX
+                || x.first[md.n2] == fwdpp::ts::NULL_INDEX)
                 {
                     throw fwdpp::ts::tables_error("output node maps to null");
                 }

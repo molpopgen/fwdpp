@@ -168,8 +168,8 @@ main(int argc, char **argv)
                         {
                             md.n1 = rv.first[md.n1];
                             md.n2 = rv.first[md.n2];
-                            assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
-                            assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
+                            assert(md.n1 != fwdpp::ts::NULL_INDEX);
+                            assert(md.n2 != fwdpp::ts::NULL_INDEX);
                         }
                 }
             else
@@ -268,8 +268,8 @@ main(int argc, char **argv)
                 {
                     md.n1 = rv.first[md.n1];
                     md.n2 = rv.first[md.n2];
-                    assert(md.n1 != fwdpp::ts::TS_NULL_NODE);
-                    assert(md.n2 != fwdpp::ts::TS_NULL_NODE);
+                    assert(md.n1 != fwdpp::ts::NULL_INDEX);
+                    assert(md.n2 != fwdpp::ts::NULL_INDEX);
                 }
         }
     // This is an infinite-sites simulation, so we can do some
