@@ -69,3 +69,9 @@ jobs:
       - name: Run tests
         run: |
           make check
+
+      - name: Test debug build
+        run: |
+          make clean
+          ./configure CXXFLAGS= --enable-debug=yes
+          make -j 2
