@@ -29,12 +29,12 @@ namespace fwdpp
 
           public:
             using value_type = T;
-            explicit named_type(const T& value) : value_(value) {}
-            template <typename T_>
-            explicit named_type(
-                T_&& value,
-                typename std::enable_if<!std::is_reference<T_>::value>::value)
-                : value_(std::move(value))
+            explicit named_type(const T& value) : value_(value)
+            {
+            }
+            template <typename T_, typename = typename std::enable_if<
+                                       !std::is_reference<T_>::value, void>::type>
+            explicit named_type(T_&& value) : value_(std::move(value))
             {
             }
 
