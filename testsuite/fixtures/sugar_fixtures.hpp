@@ -48,7 +48,7 @@ struct diploid_population_objects
     poptype::genome_container haploid_genomes;
     std::vector<fwdpp::uint_t> neutral, selected;
 
-    using mutation_container = poptype::gcont_t::value_type::mutation_container;
+    using mutation_container = poptype::genome_container::value_type::mutation_container;
 
     diploid_population_objects()
         : diploids{}, mutations{}, haploid_genomes{}, neutral{}, selected{}

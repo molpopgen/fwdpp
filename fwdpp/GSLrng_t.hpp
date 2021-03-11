@@ -68,10 +68,10 @@ namespace fwdpp
         ~GSLrng_t() = default;
         GSLrng_t(const GSLrng_t &rng) = delete;
 		/// Move constructor
-        GSLrng_t(GSLrng_t &&) = default;
+        GSLrng_t(GSLrng_t &&) noexcept = default;
         GSLrng_t &operator=(GSLrng_t &) = delete;
 		/// Move assignment
-        GSLrng_t &operator=(GSLrng_t &&) = default;
+        GSLrng_t &operator=(GSLrng_t &&) noexcept = default;
 
         //! Return underlying pointer
         const gsl_rng *
