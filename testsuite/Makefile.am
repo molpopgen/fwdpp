@@ -18,6 +18,7 @@ unit_fwdpp_unit_tests_SOURCES=unit/fwdpp_unit_tests.cc unit/mutateTest.cc unit/g
 	unit/test_enum_bitflags.cc \
 	unit/test_nested_forward_lists.cc \
 	unit/test_validators.cc \
+	unit/test_named_type.cc \
 	fixtures/sugar_fixtures.cc \
 	fixtures/fwdpp_fixtures.hpp \
 	fixtures/sugar_fixtures.hpp \
