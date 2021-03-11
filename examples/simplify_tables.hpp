@@ -33,12 +33,12 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
     for (auto &s : samples)
         {
             s = rv.first[s];
-            assert(s != fwdpp::ts::TS_NULL_NODE);
+            assert(s != fwdpp::ts::NULL_INDEX);
         }
     for (auto &s : preserved_nodes)
         {
             s = rv.first[s];
-            assert(s != fwdpp::ts::TS_NULL_NODE);
+            assert(s != fwdpp::ts::NULL_INDEX);
         }
     if (!preserve_fixations)
         {
