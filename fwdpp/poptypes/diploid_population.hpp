@@ -27,9 +27,9 @@ namespace fwdpp
         {
           public:
             virtual ~diploid_population() = default;
-            diploid_population(diploid_population &&) = default;
+            diploid_population(diploid_population &&) noexcept = default;
             diploid_population(const diploid_population &) = default;
-            diploid_population &operator=(diploid_population &&) = default;
+            diploid_population &operator=(diploid_population &&) noexcept = default;
             diploid_population &operator=(const diploid_population &) = default;
             //! Population size
             uint_t N;

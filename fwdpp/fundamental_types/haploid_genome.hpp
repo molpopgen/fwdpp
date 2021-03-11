@@ -78,12 +78,12 @@ namespace fwdpp
         //! Copy constructor
         haploid_genome_base(haploid_genome_base const &) = default;
         //! Move constructor
-        haploid_genome_base(haploid_genome_base &&) = default;
+        haploid_genome_base(haploid_genome_base &&) noexcept = default;
 
         //! Assignment operator
         haploid_genome_base &operator=(haploid_genome_base const &) = default;
         //! Move assignment operator
-        haploid_genome_base &operator=(haploid_genome_base &&) = default;
+        haploid_genome_base &operator=(haploid_genome_base &&) noexcept = default;
         /*! \brief Equality operation
         */
         inline bool

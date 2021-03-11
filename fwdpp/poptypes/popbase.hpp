@@ -28,9 +28,9 @@ namespace fwdpp
 
           public:
             virtual ~popbase() = default;
-            popbase(popbase &&) = default;
+            popbase(popbase &&) noexcept = default;
             popbase(const popbase &) = default;
-            popbase &operator=(popbase &&) = default;
+            popbase &operator=(popbase &&) noexcept = default;
             popbase &operator=(const popbase &) = default;
             //! Mutation type
             using mutation_type = MutationType;
