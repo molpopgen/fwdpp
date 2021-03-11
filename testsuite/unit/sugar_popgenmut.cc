@@ -5,18 +5,17 @@
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/types/mutation.hpp>
 
-struct mutation_tuple_wrapper
+struct mutation_fixture
 {
-    fwdpp::mutation::constructor_tuple t;
     fwdpp::mutation m;
-    mutation_tuple_wrapper() : t(std::make_tuple(0.1, -0.1, 0.5, 3, 1)), m(t)
+    mutation_fixture() : m(0.1, -0.1, 0.5, 3, 1)
     {
     }
 };
 
 BOOST_AUTO_TEST_SUITE(test_mutation)
 
-BOOST_FIXTURE_TEST_CASE(test_mutation_from_tuple, mutation_tuple_wrapper)
+BOOST_FIXTURE_TEST_CASE(test_mutation_from_tuple, mutation_fixture)
 {
     BOOST_REQUIRE_EQUAL(m.pos, 0.1);
     BOOST_REQUIRE_EQUAL(m.s, -0.1);
@@ -26,7 +25,7 @@ BOOST_FIXTURE_TEST_CASE(test_mutation_from_tuple, mutation_tuple_wrapper)
     BOOST_REQUIRE_EQUAL(m.neutral, false);
 }
 
-BOOST_FIXTURE_TEST_CASE(test_mutation_comparison, mutation_tuple_wrapper)
+BOOST_FIXTURE_TEST_CASE(test_mutation_comparison, mutation_fixture)
 {
     auto m2 = m;
     BOOST_REQUIRE(m == m2);
@@ -34,7 +33,7 @@ BOOST_FIXTURE_TEST_CASE(test_mutation_comparison, mutation_tuple_wrapper)
     BOOST_REQUIRE(!(m == m2));
 }
 
-BOOST_FIXTURE_TEST_CASE(test_serialize_mutation, mutation_tuple_wrapper)
+BOOST_FIXTURE_TEST_CASE(test_serialize_mutation, mutation_fixture)
 {
     std::ostringstream o;
     fwdpp::io::serialize_mutation<fwdpp::mutation>()(o, m);

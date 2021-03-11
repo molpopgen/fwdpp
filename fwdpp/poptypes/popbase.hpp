@@ -106,7 +106,7 @@ namespace fwdpp
               and efficiently cleared, but only when needed.
 
             */
-            typename haploid_genome_t::mutation_container neutral, selected;
+            typename haploid_genome_type::mutation_container neutral, selected;
 
             /*!
               \brief Can be used to track positions of segregating mutations.
@@ -123,15 +123,15 @@ namespace fwdpp
             //! Constructor
             explicit popbase(
                 const uint_t &initial_haploid_genome_count,
-                typename haploid_genome_t::mutation_container::size_type reserve_size
+                typename haploid_genome_type::mutation_container::size_type reserve_size
                 = 100)
                 : // No muts in the population
-                  mutations(mcont_t()), mcounts(mcount_t()),
+                  mutations(mutation_container()), mcounts(mcount_t()),
                   mcounts_from_preserved_nodes(mcount_t()),
                   haploid_genomes(
-                      gcont(1, haploid_genome_t(initial_haploid_genome_count))),
-                  neutral(typename haploid_genome_t::mutation_container()),
-                  selected(typename haploid_genome_t::mutation_container()),
+                      gcont(1, haploid_genome_type(initial_haploid_genome_count))),
+                  neutral(typename haploid_genome_type::mutation_container()),
+                  selected(typename haploid_genome_type::mutation_container()),
                   mut_lookup(lookup_table_type()), fixations(mvector()),
                   fixation_times(ftvector())
             {

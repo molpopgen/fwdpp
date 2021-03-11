@@ -55,12 +55,12 @@ namespace fwdpp
             //! Constructor
             explicit diploid_population(
                 const uint_t &popsize,
-                typename popbase_t::haploid_genome_t::mutation_container::size_type
+                typename popbase_t::haploid_genome_type::mutation_container::size_type
                     reserve_size
                 = 100)
                 : popbase_t(2 * popsize, reserve_size), N(popsize),
                   // All N diploids contain the only haploid_genome in the pop
-                  diploids(dipvector_t(popsize, diploid_t(0, 0)))
+                  diploids(dipvector_t(popsize, diploid_type(0, 0)))
             {
             }
 
