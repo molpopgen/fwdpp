@@ -76,7 +76,7 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 bool buffer_new_edges, fwdpp::ts::edge_buffer& new_edges,
                 std::vector<parent>& parents, TableCollectionType& tables)
 {
-    std::size_t new_node_0, new_node_1;
+    fwdpp::ts::table_index_t new_node_0, new_node_1;
     for (auto& b : births)
         {
             auto p0n0 = b.p0node0;

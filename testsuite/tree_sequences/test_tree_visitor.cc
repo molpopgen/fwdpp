@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation,
                 {
                     if (is_sample[i] == 0)
                         {
-                            BOOST_REQUIRE(tv.tree().sample_group(i) < 0);
+                            BOOST_REQUIRE(tv.tree().sample_group(static_cast<fwdpp::ts::table_index_t>(i)) < 0);
                         }
                 }
         }
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation_with_recombination,
                 {
                     if (is_sample[i] == 0)
                         {
-                            BOOST_REQUIRE(tv.tree().sample_group(i) < 0);
+                            BOOST_REQUIRE(tv.tree().sample_group(static_cast<fwdpp::ts::table_index_t>(i)) < 0);
                         }
                 }
         }

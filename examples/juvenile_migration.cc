@@ -94,14 +94,16 @@ struct parent_lookup_tables
     // lookup1 and lookup2 to diploids in the population
     // object.
     std::vector<std::size_t> parents1, parents2;
+    parent_lookup_tables() : lookup1{nullptr}, lookup2{nullptr}, parents1{}, parents2{}
+    {
+    }
 };
 
 template <typename fitness_fxn>
 parent_lookup_tables
 migrate_and_calc_fitness(const gsl_rng *r, diploid_population &pop,
                          const fitness_fxn &wfxn, const fwdpp::uint_t N1,
-                         const fwdpp::uint_t N2, const double m12,
-                         const double m21)
+                         const fwdpp::uint_t N2, const double m12, const double m21)
 // This function will be called at the start of each generation.
 // The main goal is to return the lookup tables described above.
 // But, "while we're at it", it does some other stuff that
@@ -181,10 +183,9 @@ migrate_and_calc_fitness(const gsl_rng *r, diploid_population &pop,
 
 template <typename fitness_fxn, typename rec_fxn, typename mut_fxn>
 void
-evolve_two_demes(const gsl_rng *r, diploid_population &pop,
-                 const fwdpp::uint_t N1, const fwdpp::uint_t N2,
-                 const double m12, const double m21, const double mu,
-                 const fitness_fxn &wfxn, const rec_fxn &recfxn,
+evolve_two_demes(const gsl_rng *r, diploid_population &pop, const fwdpp::uint_t N1,
+                 const fwdpp::uint_t N2, const double m12, const double m21,
+                 const double mu, const fitness_fxn &wfxn, const rec_fxn &recfxn,
                  const mut_fxn &mutfxn)
 {
     // Handle mutation/haploid_genome "recycling":
@@ -211,17 +212,13 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
             std::size_t p2 = std::numeric_limits<std::size_t>::max();
             if (i < N1) // pick parents from pop 1
                 {
-                    p1 = lookups.parents1[gsl_ran_discrete(
-                        r, lookups.lookup1.get())];
-                    p2 = lookups.parents1[gsl_ran_discrete(
-                        r, lookups.lookup1.get())];
+                    p1 = lookups.parents1[gsl_ran_discrete(r, lookups.lookup1.get())];
+                    p2 = lookups.parents1[gsl_ran_discrete(r, lookups.lookup1.get())];
                 }
             else // pick parents from pop 2
                 {
-                    p1 = lookups.parents2[gsl_ran_discrete(
-                        r, lookups.lookup2.get())];
-                    p2 = lookups.parents2[gsl_ran_discrete(
-                        r, lookups.lookup2.get())];
+                    p1 = lookups.parents2[gsl_ran_discrete(r, lookups.lookup2.get())];
+                    p2 = lookups.parents2[gsl_ran_discrete(r, lookups.lookup2.get())];
                 }
             assert(p1 < parents.size());
             assert(p2 < parents.size());
@@ -241,13 +238,12 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
                 std::swap(p2g1, p2g2);
 
             mutate_recombine_update(r, pop.haploid_genomes, pop.mutations,
-                                    std::make_tuple(p1g1, p1g2, p2g1, p2g2),
-                                    recfxn, mutfxn, mu, gam_recycling_bin,
-                                    mut_recycling_bin, pop.diploids[i],
-                                    pop.neutral, pop.selected);
+                                    std::make_tuple(p1g1, p1g2, p2g1, p2g2), recfxn,
+                                    mutfxn, mu, gam_recycling_bin, mut_recycling_bin,
+                                    pop.diploids[i], pop.neutral, pop.selected);
         }
-    fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
-                                             2 * pop.diploids.size());
+    fwdpp::debug::validate_sum_haploid_genome_counts(
+        pop.haploid_genomes, 2 * static_cast<fwdpp::uint_t>(pop.diploids.size()));
 #ifndef NDEBUG
     for (const auto &dip : pop.diploids)
         {
@@ -260,7 +256,7 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
 
     // Update mutation counts
     fwdpp::fwdpp_internal::process_haploid_genomes(pop.haploid_genomes, pop.mutations,
-                                           pop.mcounts);
+                                                   pop.mcounts);
 
     assert(pop.mcounts.size() == pop.mutations.size());
 #ifndef NDEBUG
@@ -273,8 +269,8 @@ evolve_two_demes(const gsl_rng *r, diploid_population &pop,
 
     // Prune fixations from haploid_genomes
     fwdpp::fwdpp_internal::haploid_genome_cleaner(pop.haploid_genomes, pop.mutations,
-                                          pop.mcounts, 2 * (N1 + N2),
-                                          std::true_type());
+                                                  pop.mcounts, 2 * (N1 + N2),
+                                                  std::true_type());
 }
 
 int
@@ -282,11 +278,10 @@ main(int argc, char **argv)
 {
     if (argc != 12)
         {
-            std::cerr
-                << "Too few arguments.\n"
-                << "Usage: juvenile_migration N1 N1 m12 m21 theta_neutral "
-                   "theta_deleterious rho s h ngens "
-                   "seed\n";
+            std::cerr << "Too few arguments.\n"
+                      << "Usage: juvenile_migration N1 N1 m12 m21 theta_neutral "
+                         "theta_deleterious rho s h ngens "
+                         "seed\n";
             exit(0);
         }
     int argument = 1;
@@ -307,8 +302,7 @@ main(int argc, char **argv)
     const double mu_del = theta_del / double(4 * N);
     const double littler = rho / double(4 * N);
 
-    std::copy(argv, argv + argc,
-              std::ostream_iterator<char *>(std::cerr, " "));
+    std::copy(argv, argv + argc, std::ostream_iterator<char *>(std::cerr, " "));
     std::cerr << '\n';
 
     GSLrng r(seed);
@@ -322,9 +316,8 @@ main(int argc, char **argv)
 
     auto wfxn = fwdpp::multiplicative_diploid(fwdpp::fitness(1.));
     diploid_population pop(N);
-    pop.mutations.reserve(
-        size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
-                         + 0.667 * (theta_neutral + theta_del))));
+    pop.mutations.reserve(size_t(std::ceil(std::log(2 * N) * (theta_neutral + theta_del)
+                                           + 0.667 * (theta_neutral + theta_del))));
     unsigned generation = 0;
     const auto mmodel = [&pop, &r, &generation, s, h,
                          pselected](fwdpp::flagged_mutation_queue &recbin,
@@ -335,18 +328,16 @@ main(int argc, char **argv)
             [h]() { return h; });
     };
 
-    double wbar = 1;
     for (generation = 0; generation < ngens; ++generation)
         {
             fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes,
-                                                     2 * (N1 + N2));
+                                                             2 * (N1 + N2));
 
             // Call our fancy new evolve function
-            evolve_two_demes(r.get(), pop, N1, N2, m12, m21,
-                             mu_neutral + mu_del, wfxn, rec, mmodel);
-            fwdpp::update_mutations(pop.mutations, pop.fixations,
-                                    pop.fixation_times, pop.mut_lookup,
-                                    pop.mcounts, generation, 2 * N);
+            evolve_two_demes(r.get(), pop, N1, N2, m12, m21, mu_neutral + mu_del, wfxn,
+                             rec, mmodel);
+            fwdpp::update_mutations(pop.mutations, pop.fixations, pop.fixation_times,
+                                    pop.mut_lookup, pop.mcounts, generation, 2 * N);
             fwdpp::debug::validate_sum_haploid_genome_counts(pop.haploid_genomes, 2 * N);
         }
 }

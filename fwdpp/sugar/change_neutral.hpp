@@ -44,7 +44,7 @@ namespace fwdpp
                                       const typename mut_key_cont_t::value_type &vt)
 
                          { return p < mutations[vt].pos; }),
-                     mindex);
+                     static_cast<fwdpp::uint_t>(mindex));
         }
     } // namespace sugar
 

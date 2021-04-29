@@ -88,6 +88,10 @@ main(int argc, char **argv)
                         // The function to generation recombination positions:
                         rec, fwdpp::multiplicative_diploid(fwdpp::fitness(1.)),
                         pop.neutral, pop.selected);
+                    if(wbar < 0.0)
+                    {
+                        throw std::runtime_error("invalid wbar");
+                    }
                     fwdpp::update_mutations(pop.mutations, pop.fixations,
                                             pop.fixation_times, pop.mut_lookup,
                                             pop.mcounts, generation, 2 * N);

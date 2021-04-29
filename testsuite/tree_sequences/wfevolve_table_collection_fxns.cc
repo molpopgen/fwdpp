@@ -9,8 +9,10 @@ deaths_and_parents(const fwdpp::GSLrng_mt& rng, const std::vector<parent>& paren
         {
             if (gsl_rng_uniform(rng.get()) > psurvival)
                 {
-                    std::size_t parent0 = gsl_ran_flat(rng.get(), 0, parents.size());
-                    std::size_t parent1 = gsl_ran_flat(rng.get(), 0, parents.size());
+                    std::size_t parent0 = static_cast<std::size_t>(
+                        gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
+                    std::size_t parent1 = static_cast<std::size_t>(
+                        gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
                     births.emplace_back(i, parents[parent0], parents[parent1]);
                 }
         }

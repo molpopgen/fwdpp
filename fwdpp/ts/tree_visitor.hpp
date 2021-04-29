@@ -357,7 +357,7 @@ namespace fwdpp
                             {
                                 if (marginal.sample_index_map[s] != NULL_INDEX)
                                     {
-                                        table_index_t u = s;
+                                        table_index_t u = static_cast<table_index_t>(s);
                                         auto root = u;
                                         bool early_exit = false;
                                         while (u != NULL_INDEX)

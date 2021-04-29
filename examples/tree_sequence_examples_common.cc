@@ -24,16 +24,18 @@ apply_neutral_mutations_details(const options &o, const GSLrng &rng,
     std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
 
     std::iota(s.begin(), s.end(), 0);
-    const auto neutral_variant_maker = [&rng, &pop, &mutation_recycling_bin](
-                                           const double left, const double right,
-                                           const fwdpp::uint_t generation) {
-        auto key = fwdpp::infsites_mutation(
-            mutation_recycling_bin, pop.mutations, rng.get(), pop.mut_lookup, generation,
-            0.0, [left, right, &rng] { return gsl_ran_flat(rng.get(), left, right); },
-            []() { return 0.0; }, []() { return 0.0; });
-        return fwdpp::ts::new_variant_record(pop.mutations[key].pos, 0, key,
-                                             pop.mutations[key].neutral, 1);
-    };
+    const auto neutral_variant_maker
+        = [&rng, &pop, &mutation_recycling_bin](const double left, const double right,
+                                                const double generation) {
+              auto key = fwdpp::infsites_mutation(
+                  mutation_recycling_bin, pop.mutations, rng.get(), pop.mut_lookup,
+                  // NOTE: this is a problem for a pre/re capitation scenario
+                  static_cast<fwdpp::uint_t>(generation), 0.0,
+                  [left, right, &rng] { return gsl_ran_flat(rng.get(), left, right); },
+                  []() { return 0.0; }, []() { return 0.0; });
+              return fwdpp::ts::new_variant_record(pop.mutations[key].pos, 0, key,
+                                                   pop.mutations[key].neutral, 1);
+          };
     auto neutral_muts = fwdpp::ts::mutate_tables(rng, neutral_variant_maker, tables, s,
                                                  o.theta / static_cast<double>(4 * o.N));
     return neutral_muts;

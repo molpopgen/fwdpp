@@ -27,7 +27,7 @@ BOOST_FIXTURE_TEST_CASE(test_construction_with_sample_groups_and_preserved_nodes
             groups.emplace_back(i, 0);
         }
     std::vector<fwdpp::ts::table_index_t> preserved_nodes;
-    preserved_nodes.push_back(samples.size());
+    preserved_nodes.push_back(static_cast<fwdpp::ts::table_index_t>(samples.size()));
     fwdpp::ts::marginal_tree m(tables.nodes.size(), groups, preserved_nodes, true);
     BOOST_CHECK_EQUAL(m.sample_size(), groups.size() + preserved_nodes.size());
     decltype(samples) scopy(m.samples_list_begin(), m.samples_list_end());

@@ -112,7 +112,7 @@ namespace fwdpp
                                         p.mutations, n.begin(), n.end());
                                     n.insert(std::upper_bound(n.begin(), n.end(), pos,
                                                               inserter),
-                                             mindex);
+                                             static_cast<fwdpp::uint_t>(mindex));
                                 }
                             else
                                 {
@@ -120,7 +120,7 @@ namespace fwdpp
                                         p.mutations, s.begin(), s.end());
                                     s.insert(std::upper_bound(s.begin(), s.end(), pos,
                                                               inserter),
-                                             mindex);
+                                             static_cast<fwdpp::uint_t>(mindex));
                                 }
                             // update mutation count
                             p.mcounts[mindex] +=

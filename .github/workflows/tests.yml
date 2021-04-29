@@ -52,15 +52,25 @@ jobs:
         run: |
           autoreconf --install
 
-      - name: Configure C++14 build
-        if: matrix.cppflavor == 14
+      - name: Configure C++14 build (GCC)
+        if: ${{ matrix.cppflavor == 14 && matrix.compiler == 'gcc' }}
         run: |
-          CC=$CC CXX=$CXX ./configure
+          CC=$CC CXX=$CXX ./configure CXXFLAGS='-Wall -W -Wconversion -Wdeprecated -Werror -O2 -Weffc++ -Wno-sign-conversion'
 
-      - name: Configure C++17 build
-        if: matrix.cppflavor == 17
+      - name: Configure C++14 build (clang)
+        if: ${{ matrix.cppflavor == 14 && matrix.compiler == 'clang10' }}
         run: |
-          CC=$CC CXX=$CXX ./configure --enable-cpp17=true
+          CC=$CC CXX=$CXX ./configure CXXFLAGS='-Wall -W -Wconversion -Wdeprecated -Werror -O2 -Weffc++ -Wno-sign-conversion'
+
+      - name: Configure C++17 build (GCC)
+        if: ${{ matrix.cppflavor == 17 && matrix.compiler == 'gcc' }}
+        run: |
+          CC=$CC CXX=$CXX ./configure --enable-cpp17=true CXXFLAGS='-Wall -W -Wconversion -Wdeprecated -Werror  -Wno-sign-conversion -O2'
+
+      - name: Configure C++17 build (clang)
+        if: ${{ matrix.cppflavor == 17 && matrix.compiler == 'clang10' }}
+        run: |
+          CC=$CC CXX=$CXX ./configure --enable-cpp17=true CXXFLAGS='-Wall -W -Wconversion -Wdeprecated -Wno-sign-conversion -O2'
 
       - name: Build 
         run: |

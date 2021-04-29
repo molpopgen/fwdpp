@@ -44,7 +44,7 @@ namespace fwdpp
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const node& n) const
+                operator()(ostreamtype&, const node&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
@@ -91,7 +91,7 @@ namespace fwdpp
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const edge& e) const
+                operator()(ostreamtype&, const edge&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
@@ -142,7 +142,7 @@ namespace fwdpp
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const mutation_record& mr) const
+                operator()(ostreamtype&, const mutation_record&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }

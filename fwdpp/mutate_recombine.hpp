@@ -100,8 +100,8 @@ namespace fwdpp
             std::cref(haploid_genomes[g2]), std::cref(mutations));
     }
 
-    template <typename mutation_model, typename DiploidType, typename GenomeContainerType,
-              typename MutationContainerType>
+    template <typename mutation_model, typename DiploidType,
+              typename GenomeContainerType, typename MutationContainerType>
     std::vector<uint_t>
     generate_new_mutations(flagged_mutation_queue &recycling_bin, const gsl_rng *r,
                            const double &mu, const DiploidType &dip,
@@ -178,7 +178,7 @@ namespace fwdpp
     template <typename GenomeContainerType, typename MutationContainerType,
               typename queue_type, typename new_mutations_type,
               typename breakpoints_type>
-    uint_t
+    std::size_t
     mutate_recombine(
         const new_mutations_type &new_mutations, const breakpoints_type &breakpoints,
         const std::size_t g1, const std::size_t g2, GenomeContainerType &haploid_genomes,
