@@ -9,7 +9,7 @@ BOOST_AUTO_TEST_SUITE(test_site_visitor)
 BOOST_FIXTURE_TEST_CASE(test_simple_iteration, simple_table_collection_infinite_sites)
 {
     std::size_t num_sites = 0;
-    fwdpp::ts::site_visitor<fwdpp::ts::std_table_collection> sv(tables, samples);
+    fwdpp::ts::site_visitor<fwdpp::ts::table_collection> sv(tables, samples);
     decltype(sv()) i;
     while ((i = sv()) != end(sv))
         {

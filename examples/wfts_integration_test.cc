@@ -63,7 +63,7 @@ main(int argc, char **argv)
     GSLrng rng(o.seed);
 
     ts_examples_poptype pop(o.N);
-    fwdpp::ts::std_table_collection tables(
+    fwdpp::ts::table_collection tables(
         2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()), 0, 0, 1.0);
     auto simplifier = fwdpp::ts::make_table_simplifier(tables);
     unsigned generation = 1;

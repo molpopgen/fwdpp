@@ -18,7 +18,7 @@ namespace po = boost::program_options;
 template <typename poptype>
 int
 apply_neutral_mutations_details(const options &o, const GSLrng &rng,
-                                fwdpp::ts::std_table_collection &tables, poptype &pop,
+                                fwdpp::ts::table_collection &tables, poptype &pop,
                                 fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
     std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
@@ -43,7 +43,7 @@ apply_neutral_mutations_details(const options &o, const GSLrng &rng,
 
 int
 apply_neutral_mutations(const options &o, const GSLrng &rng,
-                        fwdpp::ts::std_table_collection &tables,
+                        fwdpp::ts::table_collection &tables,
                         ts_examples_poptype &pop,
                         fwdpp::flagged_mutation_queue &mutation_recycling_bin)
 {
@@ -159,7 +159,7 @@ make_dfe(const fwdpp::uint_t N, const GSLrng &r, const double mean, const double
 }
 
 void
-matrix_runtime_test(const fwdpp::ts::std_table_collection &tables,
+matrix_runtime_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::table_index_t> &samples,
                     const std::vector<fwdpp::uint_t> &mcounts)
 {
@@ -182,10 +182,10 @@ matrix_runtime_test(const fwdpp::ts::std_table_collection &tables,
 }
 
 void
-expensive_leaf_test(const fwdpp::ts::std_table_collection &tables,
+expensive_leaf_test(const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::table_index_t> &sample_list)
 {
-    fwdpp::ts::tree_visitor<fwdpp::ts::std_table_collection> mti(
+    fwdpp::ts::tree_visitor<fwdpp::ts::table_collection> mti(
         tables, sample_list, fwdpp::ts::update_samples_list(true));
     while (mti())
         {
@@ -228,7 +228,7 @@ expensive_leaf_test(const fwdpp::ts::std_table_collection &tables,
 }
 
 void
-test_serialization(const fwdpp::ts::std_table_collection &tables,
+test_serialization(const fwdpp::ts::table_collection &tables,
                    const std::string &filename)
 {
     std::ofstream o(filename.c_str());
@@ -236,7 +236,7 @@ test_serialization(const fwdpp::ts::std_table_collection &tables,
     o.close();
     std::ifstream i(filename.c_str());
     auto tables2
-        = fwdpp::ts::io::deserialize_tables<fwdpp::ts::std_table_collection>()(i);
+        = fwdpp::ts::io::deserialize_tables<fwdpp::ts::table_collection>()(i);
 
     if (tables.genome_length() != tables2.genome_length())
         {
@@ -274,7 +274,7 @@ test_serialization(const fwdpp::ts::std_table_collection &tables,
 
 void
 execute_expensive_leaf_test(const options &o,
-                            const fwdpp::ts::std_table_collection &tables,
+                            const fwdpp::ts::table_collection &tables,
                             const std::vector<fwdpp::ts::table_index_t> &samples,
                             const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
@@ -292,7 +292,7 @@ execute_expensive_leaf_test(const options &o,
 template <typename poptype>
 void
 execute_matrix_test_detail(const options &o, const poptype &pop,
-                           const fwdpp::ts::std_table_collection &tables,
+                           const fwdpp::ts::table_collection &tables,
                            const std::vector<fwdpp::ts::table_index_t> &samples,
                            const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
@@ -363,7 +363,7 @@ execute_matrix_test_detail(const options &o, const poptype &pop,
 
 void
 visit_sites_test(const options &o, const ts_examples_poptype &pop,
-                 const fwdpp::ts::std_table_collection &tables,
+                 const fwdpp::ts::table_collection &tables,
                  const std::vector<fwdpp::ts::table_index_t> &samples,
                  const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
@@ -396,7 +396,7 @@ visit_sites_test(const options &o, const ts_examples_poptype &pop,
 }
 void
 execute_matrix_test(const options &o, const ts_examples_poptype &pop,
-                    const fwdpp::ts::std_table_collection &tables,
+                    const fwdpp::ts::table_collection &tables,
                     const std::vector<fwdpp::ts::table_index_t> &samples,
                     const std::vector<fwdpp::ts::table_index_t> &preserved_nodes)
 {
@@ -405,7 +405,7 @@ execute_matrix_test(const options &o, const ts_examples_poptype &pop,
 
 void
 execute_serialization_test(const options &o,
-                           const fwdpp::ts::std_table_collection &tables)
+                           const fwdpp::ts::table_collection &tables)
 {
     if (!o.filename.empty())
         {
@@ -415,7 +415,7 @@ execute_serialization_test(const options &o,
 
 void
 write_sfs(const options &o, const GSLrng &rng,
-          const fwdpp::ts::std_table_collection &tables,
+          const fwdpp::ts::table_collection &tables,
           const std::vector<fwdpp::ts::table_index_t> &samples)
 {
     if (!o.sfsfilename.empty())

@@ -6,7 +6,7 @@
 #include <tskit.h>
 #include <memory>
 #include <functional>
-#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection.hpp>
 
 using table_collection_ptr
     = std::unique_ptr<tsk_table_collection_t,
@@ -15,7 +15,7 @@ using table_collection_ptr
 table_collection_ptr make_table_collection_ptr(double sequence_length);
 
 table_collection_ptr
-dump_table_collection_to_tskit(const fwdpp::ts::std_table_collection& tables,
+dump_table_collection_to_tskit(const fwdpp::ts::table_collection& tables,
                                double forward_time, std::vector<int> & samples);
 
 struct tsk_treeseq_wrapper

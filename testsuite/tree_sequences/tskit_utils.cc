@@ -56,7 +56,7 @@ make_table_collection_ptr(double sequence_length)
 }
 
 table_collection_ptr
-dump_table_collection_to_tskit(const fwdpp::ts::std_table_collection& tables,
+dump_table_collection_to_tskit(const fwdpp::ts::table_collection& tables,
                                double forward_time, std::vector<int>& samples)
 {
     if (samples.size() != tables.num_nodes())
