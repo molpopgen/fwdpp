@@ -52,7 +52,7 @@ evolve_generation(const rng_t& rng, poptype& pop,
                   const pick_parent1_fxn& pick1, const pick_parent2_fxn& pick2,
                   const offspring_metadata_fxn& update_offspring,
                   const fwdpp::uint_t generation,
-                  fwdpp::ts::std_table_collection& tables,
+                  fwdpp::ts::table_collection& tables,
                   std::int32_t first_parental_index, std::int32_t next_index)
 {
     fwdpp::debug::all_haploid_genomes_extant(pop);

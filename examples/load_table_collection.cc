@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <stdexcept>
-#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/serialization.hpp>
 
 int
@@ -24,7 +24,7 @@ main(int argc, char** argv)
             throw std::invalid_argument("cannot open file for reading");
         }
 
-    auto tables = fwdpp::ts::io::deserialize_tables<fwdpp::ts::std_table_collection>()(in);
+    auto tables = fwdpp::ts::io::deserialize_tables<fwdpp::ts::table_collection>()(in);
 
     std::cout << "Nodes:\n";
     for (auto&& n : tables.nodes)

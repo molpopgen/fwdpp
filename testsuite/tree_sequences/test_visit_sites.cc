@@ -10,8 +10,8 @@ BOOST_FIXTURE_TEST_CASE(test_simple_iteration, simple_table_collection_infinite_
     auto f
         = [&num_sites](
               const fwdpp::ts::marginal_tree& /*m*/, const fwdpp::ts::site& /*s*/,
-              const fwdpp::ts::std_table_collection::mutation_table::const_iterator b,
-              const fwdpp::ts::std_table_collection::mutation_table::const_iterator e) {
+              const fwdpp::ts::table_collection::mutation_table::const_iterator b,
+              const fwdpp::ts::table_collection::mutation_table::const_iterator e) {
               if (std::distance(b, e) != 1)
                   {
                       throw std::runtime_error("incorrect number of mutations");

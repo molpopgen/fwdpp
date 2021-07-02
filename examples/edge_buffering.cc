@@ -7,7 +7,7 @@
 #include <boost/program_options/value_semantic.hpp>
 #include <gsl/gsl_randist.h>
 #include <fwdpp/GSLrng_t.hpp>
-#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/recording.hpp>
 #include <fwdpp/ts/recording/diploid_offspring.hpp>
@@ -136,8 +136,10 @@ deaths_and_parents(const fwdpp::GSLrng_mt& rng, const std::vector<parent>& paren
         {
             if (gsl_rng_uniform(rng.get()) > psurvival)
                 {
-                    std::size_t parent0 = static_cast<std::size_t>(gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
-                    std::size_t parent1 = static_cast<std::size_t>(gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
+                    std::size_t parent0 = static_cast<std::size_t>(
+                        gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
+                    std::size_t parent1 = static_cast<std::size_t>(
+                        gsl_ran_flat(rng.get(), 0, static_cast<double>(parents.size())));
                     births.emplace_back(i, parents[parent0], parents[parent1]);
                 }
         }
@@ -165,7 +167,7 @@ void
 generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
                 double littler, std::vector<double>& breakpoints, double birth_time,
                 bool buffer_new_edges, fwdpp::ts::edge_buffer& new_edges,
-                std::vector<parent>& parents, fwdpp::ts::std_table_collection& tables)
+                std::vector<parent>& parents, fwdpp::ts::table_collection& tables)
 {
     fwdpp::ts::table_index_t new_node_0, new_node_1;
     for (auto& b : births)
@@ -225,7 +227,7 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
 template <typename SimplificationState>
 void
 sort_n_simplify(const std::vector<fwdpp::ts::table_index_t>& samples,
-                SimplificationState& state, fwdpp::ts::std_table_collection& tables,
+                SimplificationState& state, fwdpp::ts::table_collection& tables,
                 fwdpp::ts::simplify_tables_output& simplification_output)
 {
     auto cmp = fwdpp::ts::get_edge_sort_cmp(tables);
@@ -241,8 +243,8 @@ flush_buffer_n_simplify(
     const std::vector<fwdpp::ts::table_index_t>& alive_at_last_simplification,
     fwdpp::ts::simplify_tables_output& simplification_output,
     fwdpp::ts::edge_buffer& new_edges, SimplificationState& state,
-    fwdpp::ts::std_table_collection::edge_table& edge_liftover,
-    fwdpp::ts::std_table_collection& tables)
+    fwdpp::ts::table_collection::edge_table& edge_liftover,
+    fwdpp::ts::table_collection& tables)
 {
     double max_time = -1; //-1;//std::numeric_limits<double>::max();
     for (auto a : alive_at_last_simplification)
@@ -305,7 +307,7 @@ make_table_collection_ptr(double sequence_length)
 }
 
 void
-dump_table_collection_to_tskit(const fwdpp::ts::std_table_collection& tables,
+dump_table_collection_to_tskit(const fwdpp::ts::table_collection& tables,
                                const std::string treefile, double forward_time,
                                unsigned N)
 {
@@ -342,9 +344,9 @@ void
 simulate(const command_line_options& options)
 {
     fwdpp::GSLrng_mt rng(options.seed);
-    fwdpp::ts::std_table_collection tables(1.0);
+    fwdpp::ts::table_collection tables(1.0);
     fwdpp::ts::edge_buffer buffer;
-    fwdpp::ts::std_table_collection::edge_table edge_liftover;
+    fwdpp::ts::table_collection::edge_table edge_liftover;
     auto simplifier_state = fwdpp::ts::make_simplifier_state(tables);
     std::vector<parent> parents;
     for (unsigned i = 0; i < options.N; ++i)

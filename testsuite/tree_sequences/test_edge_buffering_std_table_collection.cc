@@ -1,6 +1,6 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
-#include <fwdpp/ts/std_table_collection.hpp>
+#include <fwdpp/ts/table_collection.hpp>
 #include "wfevolve_table_collection.hpp"
 #include "tskit_utils.hpp"
 
@@ -10,12 +10,12 @@ namespace
     {
         unsigned N;
         unsigned nsteps;
-        fwdpp::ts::std_table_collection tables_buffering, tables_sorting;
+        fwdpp::ts::table_collection tables_buffering, tables_sorting;
         wf_simulation_results results_buffering, results_sorting;
         std::vector<int> samples_buffering, samples_sorting;
 
         std::vector<int>
-        fill_samples(const fwdpp::ts::std_table_collection& tables,
+        fill_samples(const fwdpp::ts::table_collection& tables,
                      const wf_simulation_results& results)
         {
             std::vector<int> rv(tables.num_nodes(), 0);
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_SUITE(overlapping)
 
 BOOST_AUTO_TEST_CASE(test_no_recombination_overlapping)
 {
-    fwdpp::ts::std_table_collection tables_buffering{1.};
+    fwdpp::ts::table_collection tables_buffering{1.};
     auto tables_sorting{tables_buffering};
 
     unsigned seed = 42;
