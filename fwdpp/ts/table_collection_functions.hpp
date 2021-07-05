@@ -18,8 +18,8 @@ namespace fwdpp
          * @version 0.9.0 Added to library
          */
         {
-            return [&tables](const typename TableCollectionType::edge_t& a,
-                             const typename TableCollectionType::edge_t& b) {
+            return [&tables](const typename TableCollectionType::edge& a,
+                             const typename TableCollectionType::edge& b) {
                 auto ga = tables.nodes[a.parent].time;
                 auto gb = tables.nodes[b.parent].time;
                 if (ga == gb)
@@ -42,8 +42,8 @@ namespace fwdpp
         inline auto
         get_minimal_edge_sort_cmp(const TableCollectionType& tables)
         {
-            return [&tables](const typename TableCollectionType::edge_t& a,
-                             const typename TableCollectionType::edge_t& b) {
+            return [&tables](const typename TableCollectionType::edge& a,
+                             const typename TableCollectionType::edge& b) {
                 auto ga = tables.nodes[a.parent].time;
                 auto gb = tables.nodes[b.parent].time;
                 return ga > gb
@@ -105,8 +105,8 @@ namespace fwdpp
 
         template <typename TableCollectionType>
         inline void
-        record_site_during_rebuild(const typename TableCollectionType::site_t& s,
-                                   typename TableCollectionType::mutation_t& mr,
+        record_site_during_rebuild(const typename TableCollectionType::site& s,
+                                   typename TableCollectionType::mutation_record& mr,
                                    TableCollectionType& tables)
         {
             if (tables.sites.empty() || tables.sites.back().position != s.position)

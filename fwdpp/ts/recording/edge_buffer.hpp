@@ -24,7 +24,7 @@ namespace fwdpp
             //std::int64_t next;
 
             birth_data(double l, double r, table_index_t c)
-                : left{l}, right{r}, child{c}//, next{EDGE_BUFFER_NULL}
+                : left{l}, right{r}, child{c} //, next{EDGE_BUFFER_NULL}
             {
             }
         };
@@ -154,11 +154,10 @@ namespace fwdpp
                     auto n = new_edges.head(ex.parent);
                     while (n != edge_buffer::null)
                         {
-                            const auto & birth = new_edges.fetch(n);
+                            const auto& birth = new_edges.fetch(n);
                             edge_liftover.emplace_back(
-                                typename TableCollectionType::edge_t{
-                                    birth.left, birth.right,
-                                    ex.parent, birth.child});
+                                typename TableCollectionType::edge{
+                                    birth.left, birth.right, ex.parent, birth.child});
                             n = new_edges.next(n);
                         }
                 }
@@ -182,14 +181,14 @@ namespace fwdpp
             for (auto b = new_edges.rbegin(); b < new_edges.rend(); ++b)
                 {
                     auto parent = new_edges.convert_to_head_index(b);
-                    if(parent < 0)
-                    {
-                        throw std::runtime_error("negative parent value");
-                    }
-                    if(parent >= std::numeric_limits<table_index_t>::max())
-                    {
-                        throw std::overflow_error("parent value overflows");
-                    }
+                    if (parent < 0)
+                        {
+                            throw std::runtime_error("negative parent value");
+                        }
+                    if (parent >= std::numeric_limits<table_index_t>::max())
+                        {
+                            throw std::overflow_error("parent value overflows");
+                        }
                     auto cast_parent = static_cast<table_index_t>(parent);
                     auto ptime = tables.nodes[parent].time;
                     if (*b != edge_buffer::null && ptime > max_time)
@@ -197,11 +196,10 @@ namespace fwdpp
                             auto n = *b;
                             while (n != edge_buffer::null)
                                 {
-                                    const auto & birth = new_edges.fetch(n);
+                                    const auto& birth = new_edges.fetch(n);
                                     edge_liftover.emplace_back(
-                                        typename TableCollectionType::edge_t{
-                                            birth.left,
-                                            birth.right, cast_parent,
+                                        typename TableCollectionType::edge{
+                                            birth.left, birth.right, cast_parent,
                                             birth.child});
                                     n = new_edges.next(n);
                                 }

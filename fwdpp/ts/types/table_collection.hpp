@@ -13,37 +13,48 @@
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/ts/exceptions.hpp>
-#include "../definitions.hpp"
+#include "node.hpp"
+#include "edge.hpp"
+#include "site.hpp"
+#include "mutation_record.hpp"
+#include "generate_null_id.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        namespace detail
+        namespace types
         {
-            template <typename NodeTableType, typename EdgeTableType,
-                      typename SiteTableType, typename MutationTableType>
-            struct table_collection
+            template <typename SignedInteger> struct table_collection
             /*!
-		 * \brief A collection of tables for a single simulation.
-         *
-         * \version 0.7.0 Added to fwdpp
-         * \version 0.9.0 Made a template class
-		 */
+		     * \brief A collection of tables for a single simulation.
+             *
+             * \version 0.7.0 Added to fwdpp
+             * \version 0.9.0 Made a template class
+		     */
             {
               private:
                 /// Length of the genomic region.
                 double L;
 
               public:
-                using node_table = NodeTableType;
-                using edge_table = EdgeTableType;
-                using site_table = SiteTableType;
-                using mutation_table = MutationTableType;
-                using edge_t = typename EdgeTableType::value_type;
-                using node_t = typename NodeTableType::value_type;
-                using site_t = typename SiteTableType::value_type;
-                using mutation_t = typename MutationTableType::value_type;
+                static constexpr SignedInteger null = generate_null_id<SignedInteger>();
+
+                using id_type = SignedInteger;
+                using node = types::node<SignedInteger>;
+                using edge = types::edge<SignedInteger>;
+                using site = types::site;
+                using mutation_record = types::mutation_record<SignedInteger>;
+
+                using node_table = std::vector<node>;
+                using edge_table = std::vector<edge>;
+                using site_table = std::vector<site>;
+                using mutation_table = std::vector<mutation_record>;
+                using edge_t [[deprecated("use ::edge instead")]] = edge;
+                using node_t [[deprecated("use ::node instead")]] = node;
+                using site_t [[deprecated("use ::site instead")]] = site;
+                using mutation_t [[deprecated("use ::mutation_record instead")]]
+                = mutation_record;
 
                 /// Node table for this simulation
                 node_table nodes;
@@ -54,9 +65,9 @@ namespace fwdpp
                 /// Site table
                 site_table sites;
                 /// The input edge vector. "I" in \cite Kelleher2016-cb, page 13
-                std::vector<table_index_t> input_left;
+                std::vector<SignedInteger> input_left;
                 /// The output edge vector. "O" in \cite Kelleher2016-cb, page 13
-                std::vector<table_index_t> output_right;
+                std::vector<SignedInteger> output_right;
                 /// This reflects the length of
                 /// tables.edges after last simplification.
                 /// It can be used to make sure we only sort
@@ -73,8 +84,8 @@ namespace fwdpp
                         }
                 }
 
-                table_collection(const table_index_t num_initial_nodes,
-                                 const double initial_time, table_index_t pop,
+                table_collection(const id_type num_initial_nodes,
+                                 const double initial_time, id_type pop,
                                  const double maxpos)
                     : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
                       output_right{}, edge_offset{0}
@@ -83,9 +94,9 @@ namespace fwdpp
                         {
                             throw std::invalid_argument("maxpos must be > 0 and finite");
                         }
-                    for (table_index_t i = 0; i < num_initial_nodes; ++i)
+                    for (id_type i = 0; i < num_initial_nodes; ++i)
                         {
-                            nodes.push_back(node_t{pop, initial_time});
+                            nodes.push_back(node{pop, initial_time});
                         }
                 }
 
@@ -99,26 +110,25 @@ namespace fwdpp
                     sites.clear();
                 }
 
-                table_index_t
+                id_type
                 push_back_node(double time, std::int32_t pop)
                 {
-                    nodes.push_back(node_t{pop, time});
-                    return static_cast<table_index_t>(nodes.size() - 1);
+                    nodes.push_back(node{pop, time});
+                    return static_cast<id_type>(nodes.size() - 1);
                 }
 
                 template <typename... args>
-                table_index_t
+                id_type
                 emplace_back_node(args&&... Args)
                 {
-                    nodes.emplace_back(node_t{std::forward<args>(Args)...});
-                    return static_cast<table_index_t>(nodes.size() - 1);
+                    nodes.emplace_back(node{std::forward<args>(Args)...});
+                    return static_cast<id_type>(nodes.size() - 1);
                 }
 
                 std::size_t
-                push_back_edge(double l, double r, table_index_t parent,
-                               table_index_t child)
+                push_back_edge(double l, double r, id_type parent, id_type child)
                 {
-                    edges.push_back(edge_t{l, r, parent, child});
+                    edges.push_back(edge{l, r, parent, child});
                     return edges.size();
                 }
 
@@ -126,7 +136,7 @@ namespace fwdpp
                 std::size_t
                 emplace_back_edge(args&&... Args)
                 {
-                    edges.emplace_back(edge_t{std::forward<args>(Args)...});
+                    edges.emplace_back(edge{std::forward<args>(Args)...});
                     return edges.size();
                 }
 
@@ -134,7 +144,7 @@ namespace fwdpp
                 std::size_t
                 push_back_site(args&&... Args)
                 {
-                    sites.push_back(site_t{std::forward<args>(Args)...});
+                    sites.push_back(site{std::forward<args>(Args)...});
                     return sites.size() - 1;
                 }
 
@@ -142,7 +152,7 @@ namespace fwdpp
                 std::size_t
                 emplace_back_site(args&&... Args)
                 {
-                    sites.emplace_back(site_t{std::forward<args>(Args)...});
+                    sites.emplace_back(site{std::forward<args>(Args)...});
                     return sites.size() - 1;
                 }
 
@@ -150,7 +160,7 @@ namespace fwdpp
                 std::size_t
                 push_back_mutation(args&&... Args)
                 {
-                    mutations.push_back(mutation_t{std::forward<args>(Args)...});
+                    mutations.push_back(mutation_record{std::forward<args>(Args)...});
                     return mutations.size() - 1;
                 }
 
@@ -158,7 +168,7 @@ namespace fwdpp
                 std::size_t
                 emplace_back_mutation(args&&... Args)
                 {
-                    mutations.emplace_back(mutation_t{std::forward<args>(Args)...});
+                    mutations.emplace_back(mutation_record{std::forward<args>(Args)...});
                     return mutations.size() - 1;
                 }
 
