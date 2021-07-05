@@ -15,12 +15,12 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename NewEdgeFunction>
+        template <typename SignedInteger, typename NewEdgeFunction>
         inline void
-        split_breakpoints_add_edges(const std::vector<double>& breakpoints,
-                                    const std::tuple<table_index_t, table_index_t>& parents,
-                                    const table_index_t next_index,
-                                    const NewEdgeFunction f, double L)
+        split_breakpoints_add_edges(
+            const std::vector<double>& breakpoints,
+            const std::tuple<SignedInteger, SignedInteger>& parents,
+            const SignedInteger next_index, const NewEdgeFunction f, double L)
         {
             if (breakpoints.front() != 0.0)
                 {
@@ -54,11 +54,11 @@ namespace fwdpp
                 }
         }
 
-        template <typename NewEdgeFunction>
+        template <typename SignedInteger, typename NewEdgeFunction>
         inline void
         split_breakpoints(const std::vector<double>& breakpoints,
-                          const std::tuple<table_index_t, table_index_t>& parents,
-                          const table_index_t next_index, const NewEdgeFunction f,
+                          const std::tuple<SignedInteger, SignedInteger>& parents,
+                          const SignedInteger next_index, const NewEdgeFunction f,
                           double L)
         {
             if (breakpoints.empty())
@@ -101,21 +101,25 @@ namespace fwdpp
         }
 
         template <typename TableCollectionType>
-        inline table_index_t
-        record_diploid_offspring(const std::vector<double>& breakpoints,
-                                 const std::tuple<table_index_t, table_index_t>& parents,
-                                 const std::int32_t population, const double time,
-                                 TableCollectionType& tables)
+        inline typename TableCollectionType::id_type
+        record_diploid_offspring(
+            const std::vector<double>& breakpoints,
+            const std::tuple<typename TableCollectionType::id_type,
+                             typename TableCollectionType::id_type>& parents,
+            const std::int32_t population, const double time,
+            TableCollectionType& tables)
         {
             // TODO: carefully document how to index node times.
             auto next_index = tables.emplace_back_node(population, time);
-            if (next_index >= std::numeric_limits<table_index_t>::max())
+            if (next_index
+                >= std::numeric_limits<typename TableCollectionType::id_type>::max())
                 {
                     throw std::invalid_argument("node index too large");
                 }
             split_breakpoints(
                 breakpoints, parents, next_index,
-                [&tables](double l, double r, table_index_t p, table_index_t c) {
+                [&tables](double l, double r, typename TableCollectionType::id_type p,
+                          typename TableCollectionType::id_type c) {
                     tables.push_back_edge(l, r, p, c);
                 },
                 tables.genome_length());
@@ -123,21 +127,26 @@ namespace fwdpp
         }
 
         template <typename TableCollectionType>
-        inline table_index_t
-        record_diploid_offspring(const std::vector<double>& breakpoints,
-                                 const std::tuple<table_index_t, table_index_t>& parents,
-                                 const std::int32_t population, const double time,
-                                 TableCollectionType& tables, edge_buffer& buffer)
+        inline typename TableCollectionType::id_type
+        record_diploid_offspring(
+            const std::vector<double>& breakpoints,
+            const std::tuple<typename TableCollectionType::id_type,
+                             typename TableCollectionType::id_type>& parents,
+            const std::int32_t population, const double time,
+            TableCollectionType& tables,
+            edge_buffer<typename TableCollectionType::id_type>& buffer)
         {
             // TODO: carefully document how to index node times.
             auto next_index = tables.emplace_back_node(population, time);
-            if (next_index >= std::numeric_limits<table_index_t>::max())
+            if (next_index
+                >= std::numeric_limits<typename TableCollectionType::id_type>::max())
                 {
                     throw std::invalid_argument("node index too large");
                 }
             split_breakpoints(
                 breakpoints, parents, next_index,
-                [&buffer](double l, double r, table_index_t p, table_index_t c) {
+                [&buffer](double l, double r, typename TableCollectionType::id_type p,
+                          typename TableCollectionType::id_type c) {
                     buffer.extend(p, l, r, c);
                 },
                 tables.genome_length());

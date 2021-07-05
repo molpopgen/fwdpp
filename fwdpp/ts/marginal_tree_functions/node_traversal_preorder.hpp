@@ -6,31 +6,31 @@
 #include <memory>
 #include "children.hpp"
 #include "node_traversal_order.hpp"
+#include "../types/generate_null_id.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        class node_traversal_preorder : public node_traversal_order
+        template <typename SignedInteger>
+        class node_traversal_preorder : public node_traversal_order<SignedInteger>
         /// \brief Preorder traversal of nodes for a node_iterator
         /// \headerfile fwdpp/ts/marginal_tree_functions/node_traversal_preorder.hpp
         {
           private:
-            using node_stack
-                = std::stack<table_index_t, std::vector<table_index_t>>;
+            using node_stack = std::stack<SignedInteger, std::vector<SignedInteger>>;
             node_stack nstack;
-            table_index_t current_node;
+            SignedInteger current_node;
 
           public:
-            explicit node_traversal_preorder(table_index_t u)
-                : node_traversal_order(), nstack{ { u } }, current_node{
-                      NULL_INDEX
-                  }
+            explicit node_traversal_preorder(SignedInteger u)
+                : node_traversal_order<SignedInteger>(), nstack{{u}},
+                  current_node{types::generate_null_id<SignedInteger>()}
             {
             }
 
-            table_index_t
-            operator()(const marginal_tree& m) final
+            SignedInteger
+            operator()(const marginal_tree<SignedInteger>& m) final
             {
                 if (!nstack.empty())
                     {
@@ -40,15 +40,15 @@ namespace fwdpp
                             {
                                 process_children(
                                     m, current_node, false,
-                                    [this](table_index_t x) { nstack.push(x); });
+                                    [this](SignedInteger x) { nstack.push(x); });
                             }
                         return current_node;
                     }
-                return NULL_INDEX;
+                return types::generate_null_id<SignedInteger>();
             }
 
             void
-            initialize(table_index_t root) final
+            initialize(SignedInteger root) final
             {
                 nstack.push(root);
             }
@@ -59,12 +59,13 @@ namespace fwdpp
         {
         };
 
-        inline std::unique_ptr<node_traversal_order>
-        node_traversal_dispatch(table_index_t root, nodes_preorder)
+        template <typename SignedInteger>
+        inline std::unique_ptr<node_traversal_order<SignedInteger>>
+        node_traversal_dispatch(SignedInteger root, nodes_preorder)
         /// Handles dependency injection of node_traversal_preorder into node_iterator
         {
-            return std::unique_ptr<node_traversal_order>(
-                new node_traversal_preorder(root));
+            return std::unique_ptr<node_traversal_order<SignedInteger>>(
+                new node_traversal_preorder<SignedInteger>(root));
         }
 
     } // namespace ts

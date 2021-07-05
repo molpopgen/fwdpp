@@ -7,7 +7,7 @@ namespace fwdpp
 {
     namespace ts
     {
-        struct node_traversal_order
+        template <typename SignedInteger> struct node_traversal_order
         /// \brief Interface class for dependency injection
         ///        into node_iterator
         /// \headerfile fwdpp/ts/marginal_tree_functions/node_traversal_order.hpp
@@ -16,12 +16,11 @@ namespace fwdpp
             virtual ~node_traversal_order() = default;
             node_traversal_order(const node_traversal_order&) = default;
             node_traversal_order(node_traversal_order&&) = default;
-            node_traversal_order& operator=(const node_traversal_order&)
-                = default;
+            node_traversal_order& operator=(const node_traversal_order&) = default;
             node_traversal_order& operator=(node_traversal_order&&) = default;
 
-            virtual table_index_t operator()(const marginal_tree&) = 0;
-            virtual void initialize(table_index_t /*root*/) = 0;
+            virtual SignedInteger operator()(const marginal_tree<SignedInteger>&) = 0;
+            virtual void initialize(SignedInteger /*root*/) = 0;
         };
     } // namespace ts
 } // namespace fwdpp

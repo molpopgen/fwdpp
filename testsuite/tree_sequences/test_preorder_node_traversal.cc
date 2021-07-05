@@ -12,32 +12,35 @@ BOOST_FIXTURE_TEST_SUITE(test_simple_table_collection, simple_table_collection)
 
 BOOST_AUTO_TEST_CASE(test_construction)
 {
-    BOOST_REQUIRE_NO_THROW(
-        { fwdpp::ts::node_iterator(tv.tree(), fwdpp::ts::nodes_preorder()); });
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::ts::node_iterator<fwdpp::ts::table_collection::id_type>(
+            tv.tree(), fwdpp::ts::nodes_preorder());
+    });
 }
 
 BOOST_AUTO_TEST_CASE(test_complete_traversal)
 {
-    fwdpp::ts::node_iterator ni(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> nodes;
+    fwdpp::ts::node_iterator<fwdpp::ts::table_collection::id_type> ni(
+        tv.tree(), fwdpp::ts::nodes_preorder());
+    std::vector<fwdpp::ts::table_collection::id_type> nodes;
     auto n = ni();
-    while (n != fwdpp::ts::NULL_INDEX)
+    while (n != fwdpp::ts::table_collection::null)
         {
             nodes.push_back(n);
             n = ni();
         }
     BOOST_REQUIRE_EQUAL(
-        nodes == std::vector<fwdpp::ts::table_index_t>({ 6, 4, 0, 1, 5, 2, 3 }),
+        nodes
+            == std::vector<fwdpp::ts::table_collection::id_type>({6, 4, 0, 1, 5, 2, 3}),
         true);
-    auto nodes_from_fxn
-        = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
+    auto nodes_from_fxn = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
     BOOST_REQUIRE_EQUAL(nodes == nodes_from_fxn, true);
 }
 
 BOOST_AUTO_TEST_CASE(test_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 5, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 5, 2, 3 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes{5, 2, 3};
     BOOST_REQUIRE_EQUAL(n.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
@@ -47,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_subtree_traversal_after_decapitation)
     fwdpp::ts::decapitate(tables, 1., false);
     reset_visitor(false);
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes = { 4, 0, 1, 2, 3 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes = {4, 0, 1, 2, 3};
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(nodes.size() == expected_nodes.size(), true);
 }
@@ -59,31 +62,32 @@ BOOST_FIXTURE_TEST_SUITE(test_simple_table_collection_polytomy,
 
 BOOST_AUTO_TEST_CASE(test_construction)
 {
-    BOOST_REQUIRE_NO_THROW(
-        { fwdpp::ts::node_iterator(tv.tree(), fwdpp::ts::nodes_preorder()); });
+    BOOST_REQUIRE_NO_THROW({
+        fwdpp::ts::node_iterator<fwdpp::ts::table_collection::id_type>(
+            tv.tree(), fwdpp::ts::nodes_preorder());
+    });
 }
 
 BOOST_AUTO_TEST_CASE(test_complete_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
     BOOST_REQUIRE_EQUAL(n.size(), tables.num_nodes());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes{
-        7, 5, 0, 1, 2, 6, 3, 4
-    };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes{7, 5, 0, 1,
+                                                                     2, 6, 3, 4};
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
 BOOST_AUTO_TEST_CASE(test_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 5, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 5, 0, 1, 2 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes{5, 0, 1, 2};
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
 BOOST_AUTO_TEST_CASE(test_other_subtree_traversal)
 {
     auto n = fwdpp::ts::get_nodes(tv.tree(), 6, fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes{ 6, 3, 4 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes{6, 3, 4};
     BOOST_REQUIRE_EQUAL(n == expected_nodes, true);
 }
 
@@ -92,8 +96,8 @@ BOOST_AUTO_TEST_CASE(test_subtree_traversal_after_decaptitation)
     fwdpp::ts::decapitate(tables, 0., false);
     reset_visitor(false);
     auto nodes = fwdpp::ts::get_nodes(tv.tree(), fwdpp::ts::nodes_preorder());
-    std::vector<fwdpp::ts::table_index_t> expected_nodes
-        = { 5, 0, 1, 2, 6, 3, 4 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_nodes
+        = {5, 0, 1, 2, 6, 3, 4};
     BOOST_REQUIRE_EQUAL(nodes.size(), expected_nodes.size());
     BOOST_REQUIRE_EQUAL(nodes.size() == expected_nodes.size(), true);
 }

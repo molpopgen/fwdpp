@@ -12,6 +12,8 @@
 #include <fwdpp/types/nested_forward_lists.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
+#include "../types/generate_null_id.hpp"
+#include "../types/table_collection.hpp"
 
 namespace fwdpp
 {
@@ -19,11 +21,17 @@ namespace fwdpp
     {
         namespace simplification
         {
-            struct segment
+            template <typename SignedInteger> struct segment
             {
+                static_assert(std::is_integral<SignedInteger>::value,
+                              "SignedInteger must be an integral type");
+                static_assert(std::is_signed<SignedInteger>::value,
+                              "SignedInteger must be a signed type");
+                using id_type = SignedInteger;
+                static constexpr SignedInteger null = types::generate_null_id<id_type>();
                 double left, right;
-                table_index_t node;
-                segment(double l, double r, table_index_t n) : left{l}, right{r}, node{n}
+                id_type node;
+                segment(double l, double r, id_type n) : left{l}, right{r}, node{n}
                 {
                     if (right <= left)
                         {
@@ -32,17 +40,33 @@ namespace fwdpp
                 }
             };
 
-            struct mutation_node_map_entry
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger segment<SignedInteger>::null;
+#endif
+
+            template <typename SignedInteger> struct mutation_node_map_entry
             {
-                table_index_t node;
+                static_assert(std::is_integral<SignedInteger>::value,
+                              "SignedInteger must be an integral type");
+                static_assert(std::is_signed<SignedInteger>::value,
+                              "SignedInteger must be a signed type");
+                using id_type = SignedInteger;
+                static constexpr SignedInteger null = types::generate_null_id<id_type>();
+                id_type node;
                 std::size_t site, location;
-                mutation_node_map_entry(table_index_t n, std::size_t s, std::size_t l)
+                mutation_node_map_entry(id_type n, std::size_t s, std::size_t l)
                     : node(n), site(s), location(l)
                 {
                 }
             };
 
-            class segment_overlapper
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger mutation_node_map_entry<SignedInteger>::null;
+#endif
+
+            template <typename SignedInteger> class segment_overlapper
             /// This class is an iterable object
             /// over [left, right) -> segment
             /// mappings, where the segments
@@ -52,9 +76,15 @@ namespace fwdpp
             /// current genomic interval.
             {
               private:
-                std::vector<segment> segment_queue, overlapping;
-                std::vector<segment>::const_iterator sbeg, send;
-                std::vector<segment>::iterator overlapping_end;
+                static_assert(std::is_integral<SignedInteger>::value,
+                              "SignedInteger must be an integral type");
+                static_assert(std::is_signed<SignedInteger>::value,
+                              "SignedInteger must be a signed type");
+                using id_type = SignedInteger;
+                static constexpr SignedInteger null = types::generate_null_id<id_type>();
+                std::vector<segment<id_type>> segment_queue, overlapping;
+                typename std::vector<segment<id_type>>::const_iterator sbeg, send;
+                typename std::vector<segment<id_type>>::iterator overlapping_end;
                 double _left, _right;
 
                 inline double
@@ -161,11 +191,11 @@ namespace fwdpp
                 finalize_queue(double maxlen)
                 {
                     std::sort(std::begin(segment_queue), std::end(segment_queue),
-                              [](const segment& a, const segment& b) {
+                              [](const segment<id_type>& a, const segment<id_type>& b) {
                                   return a.left < b.left;
                               });
                     // Add sentinel
-                    segment_queue.emplace_back(maxlen, maxlen + 1.0, NULL_INDEX);
+                    segment_queue.emplace_back(maxlen, maxlen + 1.0, null);
                 }
 
                 std::int64_t
@@ -174,44 +204,52 @@ namespace fwdpp
                     return std::distance(std::begin(overlapping), overlapping_end);
                 }
 
-                inline const segment&
+                inline const segment<id_type>&
                 overlap_front() const
                 {
                     return overlapping.front();
                 }
 
-                std::vector<segment>::const_iterator
+                typename std::vector<segment<id_type>>::const_iterator
                 begin() const
                 {
                     return std::begin(overlapping);
                 }
 
-                std::vector<segment>::const_iterator
+                typename std::vector<segment<id_type>>::const_iterator
                 end() const
                 {
                     return overlapping_end;
                 }
             };
 
-            using ancestry_list = nested_forward_lists<segment, std::int32_t, -1>;
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger segment_overlapper<SignedInteger>::null;
+#endif
 
-            template <typename TableCollectionType> struct simplifier_internal_state
+            // FIXME: not generic enough!
+            using ancestry_list
+                = nested_forward_lists<segment<std::int32_t>, std::int32_t, -1>;
+
+            template <typename SignedInteger> struct simplifier_internal_state
             /// Holds data needed during tree sequence simplification
             /// \version Added in 0.9
             {
-                using table_type = TableCollectionType;
-                using edge_t = typename TableCollectionType::edge;
-                using node_t = typename TableCollectionType::node;
+                using table_type = types::table_collection<SignedInteger>;
+                using edge_t = typename table_type::edge;
+                using node_t = typename table_type::node;
                 typename table_type::edge_table new_edge_table;
                 typename table_type::edge_table temp_edge_buffer;
                 typename table_type::node_table new_node_table;
                 typename table_type::site_table new_site_table;
                 ancestry_list ancestry;
-                segment_overlapper overlapper;
+                segment_overlapper<typename table_type::id_type> overlapper;
                 // NOTE: the whole idea of mutation map could
                 // go away?  Should benchmark (later) with
                 // high-mutation rate simulations.
-                std::vector<mutation_node_map_entry> mutation_map;
+                std::vector<mutation_node_map_entry<typename table_type::id_type>>
+                    mutation_map;
 
                 simplifier_internal_state()
                     : new_edge_table{}, temp_edge_buffer{}, new_node_table{},
@@ -229,18 +267,19 @@ namespace fwdpp
                 }
             };
 
-            template <typename TableCollectionType>
-            inline simplifier_internal_state<TableCollectionType>
-            make_simplifier_internal_state(const TableCollectionType&)
+            template <typename SignedInteger>
+            inline simplifier_internal_state<SignedInteger>
+            make_simplifier_internal_state(const types::table_collection<SignedInteger>&)
             /// Convenience function to return a simplifier_internal_state
             {
-                return simplifier_internal_state<TableCollectionType>();
+                return simplifier_internal_state<SignedInteger>();
             }
 
             template <typename SimplifierState>
             inline void
             buffer_edge(SimplifierState& state, const double left, const double right,
-                        const table_index_t parent, const table_index_t child)
+                        const typename SimplifierState::table_type::id_type parent,
+                        const typename SimplifierState::table_type::id_type child)
             {
                 auto itr = std::find_if(
                     state.temp_edge_buffer.rbegin(), state.temp_edge_buffer.rend(),
@@ -285,9 +324,10 @@ namespace fwdpp
                 return state.temp_edge_buffer.size();
             }
 
+            template <typename SignedInteger>
             inline void
-            add_ancestry(table_index_t input_id, double left, double right,
-                         table_index_t node, ancestry_list& ancestry)
+            add_ancestry(SignedInteger input_id, double left, double right,
+                         SignedInteger node, ancestry_list& ancestry)
             {
                 if (ancestry.head(input_id) == ancestry_list::null)
                     {
@@ -312,24 +352,26 @@ namespace fwdpp
                     }
             }
 
-            template <typename TableCollectionType>
+            template <typename SignedInteger>
             inline void
             merge_ancestors(
                 double maxlen,
-                const typename TableCollectionType::node_table& input_node_table,
-                const table_index_t parent_input_id,
-                simplifier_internal_state<TableCollectionType>& state,
-                std::vector<table_index_t>& idmap)
+                const typename types::table_collection<SignedInteger>::node_table&
+                    input_node_table,
+                const SignedInteger parent_input_id,
+                simplifier_internal_state<SignedInteger>& state,
+                std::vector<SignedInteger>& idmap)
             {
                 auto output_id = idmap[parent_input_id];
-                bool is_sample = (output_id != NULL_INDEX);
+                bool is_sample
+                    = (output_id != types::table_collection<SignedInteger>::null);
                 if (is_sample == true)
                     {
                         state.ancestry.nullify_list(parent_input_id);
                     }
                 double previous_right = 0.0;
                 state.overlapper.init();
-                table_index_t ancestry_node = NULL_INDEX;
+                auto ancestry_node = types::table_collection<SignedInteger>::null;
                 state.temp_edge_buffer.clear();
                 while (state.overlapper() == true)
                     {
@@ -346,10 +388,12 @@ namespace fwdpp
                             }
                         else
                             {
-                                if (output_id == NULL_INDEX)
+                                if (output_id
+                                    == types::table_collection<SignedInteger>::null)
                                     {
                                         state.new_node_table.emplace_back(
-                                            typename TableCollectionType::node{
+                                            typename types::table_collection<
+                                                SignedInteger>::node{
                                                 input_node_table[parent_input_id].deme,
                                                 input_node_table[parent_input_id].time});
                                         output_id = static_cast<decltype(output_id)>(
@@ -381,7 +425,7 @@ namespace fwdpp
                         add_ancestry(parent_input_id, previous_right, maxlen, output_id,
                                      state.ancestry);
                     }
-                if (output_id != NULL_INDEX)
+                if (output_id != types::table_collection<SignedInteger>::null)
                     {
                         auto n = output_buffered_edges(state);
                         if (!n && !is_sample)
@@ -389,15 +433,17 @@ namespace fwdpp
                                 state.new_node_table.erase(begin(state.new_node_table)
                                                                + output_id,
                                                            end(state.new_node_table));
-                                idmap[parent_input_id] = NULL_INDEX;
+                                idmap[parent_input_id]
+                                    = types::table_collection<SignedInteger>::null;
                             }
                     }
             }
 
-            template <typename Iterator, typename SimplifierState>
+            template <typename Iterator, typename SimplifierState,
+                      typename SignedInteger>
             inline Iterator
             find_parent_child_segment_overlap(double maxlen, Iterator edge_ptr,
-                                              const Iterator edge_end, table_index_t u,
+                                              const Iterator edge_end, SignedInteger u,
                                               SimplifierState& state)
             {
                 state.overlapper.clear_queue();
@@ -426,30 +472,30 @@ namespace fwdpp
                 return edge_ptr;
             }
 
-            template <typename TableCollectionType>
+            template <typename SignedInteger>
             inline void
-            record_sample_nodes(const std::vector<table_index_t>& samples,
-                                const TableCollectionType& tables,
-                                simplifier_internal_state<TableCollectionType>& state,
-                                std::vector<table_index_t>& idmap)
+            record_sample_nodes(const std::vector<SignedInteger>& samples,
+                                const types::table_collection<SignedInteger>& tables,
+                                simplifier_internal_state<SignedInteger>& state,
+                                std::vector<SignedInteger>& idmap)
             /// \version 0.7.1 Throw exception if a sample is recorded twice
             {
                 for (const auto& s : samples)
                     {
                         // See GitHub issue 158
                         // for background
-                        if (idmap[s] != NULL_INDEX)
+                        if (idmap[s] != types::table_collection<SignedInteger>::null)
                             {
                                 throw std::invalid_argument("invalid sample list");
                             }
                         state.new_node_table.emplace_back(
-                            typename TableCollectionType::node{tables.nodes[s].deme,
-                                                               tables.nodes[s].time});
+                            typename types::table_collection<SignedInteger>::node{
+                                tables.nodes[s].deme, tables.nodes[s].time});
                         add_ancestry(
                             s, 0, tables.genome_length(),
-                            static_cast<table_index_t>(state.new_node_table.size() - 1),
+                            static_cast<SignedInteger>(state.new_node_table.size() - 1),
                             state.ancestry);
-                        idmap[s] = static_cast<table_index_t>(state.new_node_table.size()
+                        idmap[s] = static_cast<SignedInteger>(state.new_node_table.size()
                                                               - 1);
                     }
             }
@@ -466,11 +512,11 @@ namespace fwdpp
                 mr.site = new_site_table.size() - 1;
             }
 
-            template <typename TableCollectionType>
+            template <typename SignedInteger>
             inline void
             prep_mutation_simplification(
-                const TableCollectionType& input_tables,
-                std::vector<mutation_node_map_entry>& mutation_map)
+                const types::table_collection<SignedInteger>& input_tables,
+                std::vector<mutation_node_map_entry<SignedInteger>>& mutation_map)
             {
                 mutation_map.clear();
                 mutation_map.reserve(input_tables.mutations.size());
@@ -482,17 +528,17 @@ namespace fwdpp
 
                 std::sort(
                     begin(mutation_map), end(mutation_map),
-                    [&input_tables](const mutation_node_map_entry& a,
-                                    const mutation_node_map_entry& b) {
+                    [&input_tables](const mutation_node_map_entry<SignedInteger>& a,
+                                    const mutation_node_map_entry<SignedInteger>& b) {
                         return std::tie(a.node, input_tables.sites[a.site].position)
                                < std::tie(b.node, input_tables.sites[b.site].position);
                     });
             }
 
-            template <typename TableCollectionType, typename PreservedVariantIndexes>
+            template <typename SignedInteger, typename PreservedVariantIndexes>
             inline void
-            simplify_mutations(simplifier_internal_state<TableCollectionType>& state,
-                               TableCollectionType& input_tables,
+            simplify_mutations(simplifier_internal_state<SignedInteger>& state,
+                               types::table_collection<SignedInteger>& input_tables,
                                PreservedVariantIndexes& preserved_variants)
             // Remove all mutations that do not map to nodes
             // in the simplified tree.  The key here is
@@ -507,7 +553,7 @@ namespace fwdpp
                 // Set all output nodes to null for now.
                 for (auto& mr : input_tables.mutations)
                     {
-                        mr.node = NULL_INDEX;
+                        mr.node = types::table_collection<SignedInteger>::null;
                     }
 
                 // Map the input node id of a mutation to
@@ -557,8 +603,9 @@ namespace fwdpp
                 // ancestry and may be removed.
                 auto itr = std::remove_if(
                     begin(input_tables.mutations), end(input_tables.mutations),
-                    [](const typename TableCollectionType::mutation_record& mr) {
-                        return mr.node == NULL_INDEX;
+                    [](const typename types::table_collection<
+                        SignedInteger>::mutation_record& mr) {
+                        return mr.node == types::table_collection<SignedInteger>::null;
                     });
                 preserved_variants.clear();
                 preserved_variants.reserve(
@@ -574,20 +621,20 @@ namespace fwdpp
                 //TODO: replace assert with exception
                 assert(std::is_sorted(
                     begin(input_tables.mutations), end(input_tables.mutations),
-                    [&input_tables](
-                        const typename TableCollectionType::mutation_record& a,
-                        const typename TableCollectionType::mutation_record& b) {
+                    [&input_tables](const typename types::table_collection<
+                                        SignedInteger>::mutation_record& a,
+                                    const typename types::table_collection<
+                                        SignedInteger>::mutation_record& b) {
                         return input_tables.sites[a.site].position
                                < input_tables.sites[b.site].position;
                     }));
             }
 
-            template <typename Iterator, typename TableCollectionType>
+            template <typename Iterator, typename SignedInteger>
             inline void
-            transfer_new_nodes_and_edges(
-                const Iterator new_edge_destination,
-                simplifier_internal_state<TableCollectionType>& state,
-                TableCollectionType& tables)
+            transfer_new_nodes_and_edges(const Iterator new_edge_destination,
+                                         simplifier_internal_state<SignedInteger>& state,
+                                         types::table_collection<SignedInteger>& tables)
             /// Update the tables.  To keep memory use as sane as possible,
             /// we use resize-and-move here.  In theory, we can also do
             /// vector swaps, but that has a side-effect of keeping
@@ -602,9 +649,11 @@ namespace fwdpp
                 assert(edge_table_minimally_sorted(tables));
             }
 
+            template <typename SignedInteger>
             inline void
-            queue_children(table_index_t child, double left, double right,
-                           ancestry_list& ancestry, segment_overlapper& overlapper)
+            queue_children(SignedInteger child, double left, double right,
+                           ancestry_list& ancestry,
+                           segment_overlapper<SignedInteger>& overlapper)
             {
                 auto idx = ancestry.head(child);
                 while (idx != ancestry_list::null)
@@ -619,15 +668,16 @@ namespace fwdpp
                     }
             }
 
-            template <typename IntegerType>
+            template <typename SignedInteger>
             inline void
-            process_births_from_buffer(IntegerType n, edge_buffer& buffer,
+            process_births_from_buffer(SignedInteger n,
+                                       edge_buffer<SignedInteger>& buffer,
                                        ancestry_list& ancestry,
-                                       segment_overlapper& overlapper)
+                                       segment_overlapper<SignedInteger>& overlapper)
             {
-                static_assert(std::is_integral<IntegerType>::value,
+                static_assert(std::is_integral<SignedInteger>::value,
                               "IntegerType must be is_integral");
-                while (n != edge_buffer::null)
+                while (n != edge_buffer<SignedInteger>::null)
                     {
                         const auto& birth = buffer.fetch(n);
                         // Go through the ancestry of all children
@@ -637,7 +687,6 @@ namespace fwdpp
                         n = buffer.next(n);
                     }
             }
-
         }
     }
 }

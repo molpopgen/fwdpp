@@ -36,13 +36,13 @@ std::function<double()> make_dfe(const fwdpp::uint_t N, const GSLrng &r,
 
 void execute_matrix_test(const options &, const ts_examples_poptype &,
                          const fwdpp::ts::table_collection &,
-                         const std::vector<fwdpp::ts::table_index_t> &,
-                         const std::vector<fwdpp::ts::table_index_t> &);
+                         const std::vector<fwdpp::ts::table_collection::id_type> &,
+                         const std::vector<fwdpp::ts::table_collection::id_type> &);
 
 void execute_expensive_leaf_test(
     const options &o, const fwdpp::ts::table_collection &tables,
-    const std::vector<fwdpp::ts::table_index_t> &samples,
-    const std::vector<fwdpp::ts::table_index_t> &preserved_nodes);
+    const std::vector<fwdpp::ts::table_collection::id_type> &samples,
+    const std::vector<fwdpp::ts::table_collection::id_type> &preserved_nodes);
 
 void execute_serialization_test(const options &,
                                 const fwdpp::ts::table_collection &);
@@ -52,11 +52,11 @@ void test_serialization(const fwdpp::ts::table_collection &tables,
 
 void visit_sites_test(const options &o, const ts_examples_poptype &pop,
                       const fwdpp::ts::table_collection &tables,
-                      const std::vector<fwdpp::ts::table_index_t> &samples,
-                      const std::vector<fwdpp::ts::table_index_t> &preserved_nodes);
+                      const std::vector<fwdpp::ts::table_collection::id_type> &samples,
+                      const std::vector<fwdpp::ts::table_collection::id_type> &preserved_nodes);
 
 void write_sfs(const options &o, const GSLrng &rng,
                const fwdpp::ts::table_collection &tables,
-               const std::vector<fwdpp::ts::table_index_t> &samples);
+               const std::vector<fwdpp::ts::table_collection::id_type> &samples);
 
 #endif

@@ -37,8 +37,8 @@ namespace fwdpp
          */
         {
           private:
-            using simplifier_internal_state
-                = simplification::simplifier_internal_state<TableCollectionType>;
+            using simplifier_internal_state = simplification::simplifier_internal_state<
+                typename TableCollectionType::id_type>;
 
             simplifier_internal_state _state;
 
@@ -47,9 +47,10 @@ namespace fwdpp
             {
             }
 
-            std::pair<std::vector<table_index_t>, std::vector<std::size_t>>
+            std::pair<std::vector<typename TableCollectionType::id_type>,
+                      std::vector<std::size_t>>
             simplify(TableCollectionType& tables,
-                     const std::vector<table_index_t>& samples)
+                     const std::vector<typename TableCollectionType::id_type>& samples)
             /// Simplify algorithm is approximately the same
             /// logic as used in msprime 0.6.0
             ///
@@ -60,7 +61,8 @@ namespace fwdpp
             /// node ID map and a vector of keys to mutations preserved in
             /// mutation tables
             {
-                simplify_tables_output simplification_output;
+                simplify_tables_output<typename TableCollectionType::id_type>
+                    simplification_output;
                 simplify_tables(samples, simplification_flags{}, _state, tables,
                                 simplification_output);
 

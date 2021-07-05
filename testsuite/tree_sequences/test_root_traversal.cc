@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_roots)
 BOOST_AUTO_TEST_CASE(test_roots_after_decapitation)
 {
     fwdpp::ts::decapitate(tables, 0., false);
-    std::vector<fwdpp::ts::table_index_t> expected_roots{ 4, 5 };
+    std::vector<fwdpp::ts::table_collection::id_type> expected_roots{ 4, 5 };
 	reset_visitor(false);
     auto r = fwdpp::ts::get_roots(tv.tree());
     BOOST_REQUIRE_EQUAL(r.size(), 2);

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
+#include "../types/generate_null_id.hpp"
 #include "../marginal_tree.hpp"
 
 namespace fwdpp
@@ -12,19 +13,19 @@ namespace fwdpp
     {
         namespace detail
         {
+            template <typename SignedInteger>
             inline void
-            outgoing_leaf_counts(marginal_tree& marginal,
-                                 const std::int32_t parent,
-                                 const std::int32_t child)
+            outgoing_leaf_counts(marginal_tree<SignedInteger>& marginal,
+                                 const SignedInteger parent, const SignedInteger child)
             {
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
                 auto plc = marginal.preserved_leaf_counts[child];
-                if (lc+plc == 0)
-                {
-                    return;
-                }
-                while (p != NULL_INDEX)
+                if (lc + plc == 0)
+                    {
+                        return;
+                    }
+                while (p != types::generate_null_id<SignedInteger>())
                     {
                         marginal.leaf_counts[p] -= lc;
                         marginal.preserved_leaf_counts[p] -= plc;
@@ -34,19 +35,19 @@ namespace fwdpp
                     }
             }
 
+            template <typename SignedInteger>
             inline void
-            incoming_leaf_counts(marginal_tree& marginal,
-                                 const std::int32_t parent,
-                                 const std::int32_t child)
+            incoming_leaf_counts(marginal_tree<SignedInteger>& marginal,
+                                 const SignedInteger parent, const SignedInteger child)
             {
                 auto p = parent;
                 auto lc = marginal.leaf_counts[child];
                 auto plc = marginal.preserved_leaf_counts[child];
-                if (lc+plc == 0)
-                {
-                    return;
-                }
-                while (p != NULL_INDEX)
+                if (lc + plc == 0)
+                    {
+                        return;
+                    }
+                while (p != types::generate_null_id<SignedInteger>())
                     {
                         marginal.leaf_counts[p] += lc;
                         marginal.preserved_leaf_counts[p] += plc;
@@ -54,9 +55,10 @@ namespace fwdpp
                     }
             }
 
+            template <typename SignedInteger>
             inline void
-            update_samples_list(marginal_tree& marginal,
-                                const std::int32_t node)
+            update_samples_list(marginal_tree<SignedInteger>& marginal,
+                                const SignedInteger node)
             {
                 const auto& parents = marginal.parents;
                 const auto& sample_map = marginal.sample_index_map;
@@ -66,25 +68,30 @@ namespace fwdpp
                 auto& right = marginal.right_sample;
                 auto& left = marginal.left_sample;
                 auto& next = marginal.next_sample;
-                for (auto n = node; n != NULL_INDEX; n = parents[n])
+                for (auto n = node; n != types::generate_null_id<SignedInteger>();
+                     n = parents[n])
                     {
                         auto sample_index = sample_map[n];
-                        if (sample_index != NULL_INDEX)
+                        if (sample_index != types::generate_null_id<SignedInteger>())
                             {
                                 right[n] = left[n];
                             }
                         else
                             {
-                                left[n] = NULL_INDEX;
-                                right[n] = NULL_INDEX;
+                                left[n] = types::generate_null_id<SignedInteger>();
+                                right[n] = types::generate_null_id<SignedInteger>();
                             }
-                        for (auto v = left_child[n]; v != NULL_INDEX;
+                        for (auto v = left_child[n];
+                             v != types::generate_null_id<SignedInteger>();
                              v = right_sib[v])
                             {
-                                if (left[v] != NULL_INDEX)
+                                if (left[v] != types::generate_null_id<SignedInteger>())
                                     {
-                                        assert(right[v] != NULL_INDEX);
-                                        if (left[n] == NULL_INDEX)
+                                        assert(
+                                            right[v]
+                                            != types::generate_null_id<SignedInteger>());
+                                        if (left[n]
+                                            == types::generate_null_id<SignedInteger>())
                                             {
                                                 left[n] = left[v];
                                                 right[n] = right[v];

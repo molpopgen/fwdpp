@@ -14,7 +14,8 @@ namespace fwdpp
     {
         // TODO: consider flattening the return value to a vector
         template <typename TableCollectionType, typename SAMPLES>
-        inline std::map<table_index_t, std::vector<std::pair<double, double>>>
+        inline std::map<typename TableCollectionType::id_type,
+                        std::vector<std::pair<double, double>>>
         mark_multiple_roots(const TableCollectionType &tables, SAMPLES &&samples)
         /// \brief Identify root nodes in "marginal forests".
         ///
@@ -25,7 +26,9 @@ namespace fwdpp
         ///
         /// See fwdpp::ts::mutate_tables for discussion.
         {
-            std::map<table_index_t, std::vector<std::pair<double, double>>> rv;
+            std::map<typename TableCollectionType::id_type,
+                     std::vector<std::pair<double, double>>>
+                rv;
             tree_visitor<TableCollectionType> mti(tables, std::forward<SAMPLES>(samples),
                                                   update_samples_list(false));
             while (mti())
@@ -33,9 +36,10 @@ namespace fwdpp
                     auto &tree = mti.tree();
                     if (num_roots(tree) > 1)
                         {
-                            const auto func = [&rv, &tree](table_index_t root) {
-                                rv[root].emplace_back(tree.left, tree.right);
-                            };
+                            const auto func =
+                                [&rv, &tree](typename TableCollectionType::id_type root) {
+                                    rv[root].emplace_back(tree.left, tree.right);
+                                };
                             process_roots(tree, func);
                         }
                 }

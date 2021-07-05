@@ -7,12 +7,13 @@
 #include <vector>
 #include <stdexcept>
 #include <fwdpp/io/scalar_serialization.hpp>
-#include "edge.hpp"
-#include "node.hpp"
-#include "site.hpp"
-#include "mutation_record.hpp"
+#include "types/edge.hpp"
+#include "types/node.hpp"
+#include "types/site.hpp"
+#include "types/mutation_record.hpp"
 #include "serialization_version.hpp"
 #include "table_collection_functions.hpp"
+#include "definitions.hpp"
 
 /*! \namespace fwdpp::ts::io
  *  \brief Binary seriazliation of fwdpp::ts::table_collection
@@ -40,21 +41,22 @@ namespace fwdpp
     {
         namespace io
         {
-            template <std::size_t version> struct serialize_node
+            template <typename SignedInteger, std::size_t version> struct serialize_node
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype&, const node&) const
+                operator()(ostreamtype&, const types::node<SignedInteger>&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct serialize_node<TS_TABLES_VERSION>
+            template <typename SignedInteger>
+            struct serialize_node<SignedInteger, TS_TABLES_VERSION>
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const node& n) const
+                operator()(ostreamtype& o, const types::node<SignedInteger>& n) const
                 {
                     fwdpp::io::scalar_writer sw;
                     sw(o, &n.deme);
@@ -62,46 +64,49 @@ namespace fwdpp
                 }
             };
 
-            template <std::size_t version> struct deserialize_node
+            template <typename SignedInteger, std::size_t version>
+            struct deserialize_node
             {
                 template <typename istreamtype>
-                inline node
+                inline types::node<SignedInteger>
                 operator()(istreamtype&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct deserialize_node<TS_TABLES_VERSION>
+            template <typename SignedInteger>
+            struct deserialize_node<SignedInteger, TS_TABLES_VERSION>
             {
                 template <typename istreamtype>
-                inline node
+                inline types::node<SignedInteger>
                 operator()(istreamtype& o) const
                 {
                     fwdpp::io::scalar_reader sr;
-                    table_index_t deme;
+                    typename types::node<SignedInteger>::id_type deme;
                     double time;
                     sr(o, &deme);
                     sr(o, &time);
-                    return node{deme, time};
+                    return types::node<SignedInteger>{deme, time};
                 }
             };
 
-            template <std::size_t version> struct serialize_edge
+            template <typename SignedInteger, std::size_t version> struct serialize_edge
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype&, const edge&) const
+                operator()(ostreamtype&, const types::edge<SignedInteger>&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct serialize_edge<TS_TABLES_VERSION>
+            template <typename SignedInteger>
+            struct serialize_edge<SignedInteger, TS_TABLES_VERSION>
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const edge& e) const
+                operator()(ostreamtype& o, const types::edge<SignedInteger>& e) const
                 {
                     fwdpp::io::scalar_writer sw;
                     sw(o, &e.left);
@@ -111,49 +116,55 @@ namespace fwdpp
                 }
             };
 
-            template <std::size_t version> struct deserialize_edge
+            template <typename SignedInteger, std::size_t version>
+            struct deserialize_edge
             {
                 template <typename istreamtype>
-                inline edge
+                inline types::edge<SignedInteger>
                 operator()(istreamtype&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct deserialize_edge<TS_TABLES_VERSION>
+            template <typename SignedInteger>
+            struct deserialize_edge<SignedInteger, TS_TABLES_VERSION>
             {
                 template <typename istreamtype>
-                inline edge
+                inline types::edge<SignedInteger>
                 operator()(istreamtype& i) const
                 {
                     fwdpp::io::scalar_reader sr;
                     double left, right;
-                    table_index_t parent, child;
+                    typename types::edge<SignedInteger>::id_type parent, child;
                     sr(i, &left);
                     sr(i, &right);
                     sr(i, &parent);
                     sr(i, &child);
-                    return edge{left, right, parent, child};
+                    return types::edge<SignedInteger>{left, right, parent, child};
                 }
             };
 
-            template <std::size_t version> struct serialize_mutation_record
+            template <typename SignedInteger, std::size_t version>
+            struct serialize_mutation_record
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype&, const mutation_record&) const
+                operator()(ostreamtype&,
+                           const types::mutation_record<SignedInteger>&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct serialize_mutation_record<2>
+            template <typename SignedInteger>
+            struct serialize_mutation_record<SignedInteger, 2>
             /// \version 0.8.0 Changes from TS_TABLES_VERSION to 2
             {
                 template <typename ostreamtype>
                 inline void
-                operator()(ostreamtype& o, const mutation_record& mr) const
+                operator()(ostreamtype& o,
+                           const types::mutation_record<SignedInteger>& mr) const
                 {
                     fwdpp::io::scalar_writer sw;
                     sw(o, &mr.node);
@@ -161,31 +172,33 @@ namespace fwdpp
                 }
             };
 
-            template <std::size_t version> struct deserialize_mutation_record
+            template <typename SignedInteger, std::size_t version>
+            struct deserialize_mutation_record
             {
                 template <typename istreamtype>
-                inline mutation_record
+                inline types::mutation_record<SignedInteger>
                 operator()(istreamtype&) const
                 {
                     throw std::runtime_error("invalid serialization version");
                 }
             };
 
-            template <> struct deserialize_mutation_record<2>
+            template <typename SignedInteger>
+            struct deserialize_mutation_record<SignedInteger, 2>
             /// \version 0.8.0 Changed from TS_TABLES_VERSION to 2
             /// \note The fields site, derived_state, and neutral
             ///       are filled in with "junk" values.
             {
                 template <typename istreamtype>
-                inline mutation_record
+                inline types::mutation_record<SignedInteger>
                 operator()(istreamtype& i) const
                 {
                     fwdpp::io::scalar_reader sr;
-                    table_index_t node;
-                    decltype(mutation_record::key) key;
+                    typename types::mutation_record<SignedInteger>::id_type node;
+                    decltype(types::mutation_record<SignedInteger>::key) key;
                     sr(i, &node);
                     sr(i, &key);
-                    return mutation_record{
+                    return types::mutation_record<SignedInteger>{
                         node, key, std::numeric_limits<std::size_t>::max(),
                         std::numeric_limits<std::int8_t>::max(), true};
                 }
@@ -236,22 +249,27 @@ namespace fwdpp
                 if (!tables.edges.empty())
                     {
                         o.write(reinterpret_cast<const char*>(tables.edges.data()),
-                                tables.edges.size() * sizeof(edge));
+                                tables.edges.size()
+                                    * sizeof(typename TableCollectionType::edge));
                     }
                 if (!tables.nodes.empty())
                     {
                         o.write(reinterpret_cast<const char*>(tables.nodes.data()),
-                                tables.nodes.size() * sizeof(node));
+                                tables.nodes.size()
+                                    * sizeof(typename TableCollectionType::node));
                     }
                 if (!tables.mutations.empty())
                     {
-                        o.write(reinterpret_cast<const char*>(tables.mutations.data()),
-                                tables.mutations.size() * sizeof(mutation_record));
+                        o.write(
+                            reinterpret_cast<const char*>(tables.mutations.data()),
+                            tables.mutations.size()
+                                * sizeof(typename TableCollectionType::mutation_record));
                     }
                 if (!tables.sites.empty())
                     {
                         o.write(reinterpret_cast<const char*>(tables.sites.data()),
-                                tables.sites.size() * sizeof(site));
+                                tables.sites.size()
+                                    * sizeof(typename TableCollectionType::site));
                     }
             }
 
@@ -300,20 +318,26 @@ namespace fwdpp
                         {
                             tables.edges.resize(num_edges);
                             i.read(reinterpret_cast<char*>(tables.edges.data()),
-                                   num_edges * sizeof(edge));
+                                   num_edges
+                                       * sizeof(typename TableCollectionType::edge));
                             tables.nodes.resize(num_nodes);
                             i.read(reinterpret_cast<char*>(tables.nodes.data()),
-                                   num_nodes * sizeof(node));
+                                   num_nodes
+                                       * sizeof(typename TableCollectionType::node));
 
                             if (format == TS_TABLES_VERSION)
                                 {
                                     tables.mutations.resize(num_mutations);
                                     i.read(
                                         reinterpret_cast<char*>(tables.mutations.data()),
-                                        num_mutations * sizeof(mutation_record));
+                                        num_mutations
+                                            * sizeof(typename TableCollectionType::
+                                                         mutation_record));
                                     tables.sites.resize(num_sites);
                                     i.read(reinterpret_cast<char*>(tables.sites.data()),
-                                           num_sites * sizeof(site));
+                                           num_sites
+                                               * sizeof(
+                                                   typename TableCollectionType::site));
                                 }
                             else
                                 {
@@ -327,21 +351,29 @@ namespace fwdpp
                                     for (auto t : temp)
                                         {
                                             tables.mutations.emplace_back(
-                                                mutation_record{t.node, t.key,
-                                                                std::numeric_limits<
-                                                                    std::size_t>::max(),
-                                                                std::numeric_limits<
-                                                                    std::int8_t>::min(),
-                                                                true});
+                                                typename TableCollectionType::
+                                                    mutation_record{
+                                                        t.node, t.key,
+                                                        std::numeric_limits<
+                                                            std::size_t>::max(),
+                                                        std::numeric_limits<
+                                                            std::int8_t>::min(),
+                                                        true});
                                         }
                                 }
                         }
                     else if (format == 1)
                         {
-                            deserialize_edge<TS_TABLES_VERSION> edge_reader;
-                            deserialize_node<TS_TABLES_VERSION> node_reader;
+                            deserialize_edge<typename TableCollectionType::id_type,
+                                             TS_TABLES_VERSION>
+                                edge_reader;
+                            deserialize_node<typename TableCollectionType::id_type,
+                                             TS_TABLES_VERSION>
+                                node_reader;
                             // Format versions 1 and 2 have the same mutation_record type
-                            deserialize_mutation_record<2> mutation_record_reader;
+                            deserialize_mutation_record<
+                                typename TableCollectionType::id_type, 2>
+                                mutation_record_reader;
                             tables.edges.reserve(num_edges);
                             for (std::size_t j = 0; j < num_edges; ++j)
                                 {
@@ -370,7 +402,8 @@ namespace fwdpp
                             sr(i, &num_preserved_samples);
                             if (num_preserved_samples)
                                 {
-                                    std::vector<table_index_t> preserved_nodes;
+                                    std::vector<typename TableCollectionType::id_type>
+                                        preserved_nodes;
                                     preserved_nodes.resize(num_preserved_samples);
                                     sr(i, preserved_nodes.data(), num_preserved_samples);
                                 }

@@ -15,17 +15,20 @@ namespace
         unsigned nsteps;
         fwdpp::ts::table_collection tables;
         wf_simulation_results results;
-        std::vector<fwdpp::ts::sample_group_map> samples;
+        std::vector<fwdpp::ts::sample_group_map<fwdpp::ts::table_collection::id_type>>
+            samples;
 
-        std::vector<fwdpp::ts::sample_group_map>
+        std::vector<fwdpp::ts::sample_group_map<fwdpp::ts::table_collection::id_type>>
         fill_samples(const wf_simulation_results& results)
         {
-            std::vector<fwdpp::ts::sample_group_map> rv;
+            std::vector<
+                fwdpp::ts::sample_group_map<fwdpp::ts::table_collection::id_type>>
+                rv;
             for (auto& p : results.alive_individuals)
                 {
                     for (auto n : p.nodes)
                         {
-                            if (n < static_cast<fwdpp::ts::table_index_t>(
+                            if (n < static_cast<fwdpp::ts::table_collection::id_type>(
                                     results.alive_individuals.size()))
                                 {
                                     rv.emplace_back(n, 0);
@@ -51,8 +54,10 @@ namespace
     };
 
     bool
-    validate_sample_group_counts(const std::vector<fwdpp::ts::sample_group_map>& samples,
-                                 int group, int observed_number)
+    validate_sample_group_counts(
+        const std::vector<
+            fwdpp::ts::sample_group_map<fwdpp::ts::table_collection::id_type>>& samples,
+        int group, int observed_number)
     {
         int expected_number = 0;
         for (auto& s : samples)
@@ -113,7 +118,8 @@ BOOST_AUTO_TEST_SUITE(test_sample_groups)
 
 BOOST_FIXTURE_TEST_CASE(test_group_labels, simple_table_collection_polytomy)
 {
-    std::vector<fwdpp::ts::sample_group_map> groups;
+    std::vector<fwdpp::ts::sample_group_map<fwdpp::ts::table_collection::id_type>>
+        groups;
     for (auto i : samples)
         {
             groups.emplace_back(i, 0);
@@ -148,7 +154,7 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation,
                 {
                     for (auto n : p.nodes)
                         {
-                            if (n < static_cast<fwdpp::ts::table_index_t>(
+                            if (n < static_cast<fwdpp::ts::table_collection::id_type>(
                                     ll.results.alive_individuals.size()))
                                 {
                                     BOOST_REQUIRE_EQUAL(tv.tree().sample_group(n), 0);
@@ -169,7 +175,10 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation,
                 {
                     if (is_sample[i] == 0)
                         {
-                            BOOST_REQUIRE(tv.tree().sample_group(static_cast<fwdpp::ts::table_index_t>(i)) < 0);
+                            BOOST_REQUIRE(
+                                tv.tree().sample_group(
+                                    static_cast<fwdpp::ts::table_collection::id_type>(i))
+                                < 0);
                         }
                 }
         }
@@ -190,7 +199,7 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation_with_recombination,
                 {
                     for (auto n : p.nodes)
                         {
-                            if (n < static_cast<fwdpp::ts::table_index_t>(
+                            if (n < static_cast<fwdpp::ts::table_collection::id_type>(
                                     ll.results.alive_individuals.size()))
                                 {
                                     BOOST_REQUIRE_EQUAL(tv.tree().sample_group(n), 0);
@@ -211,7 +220,10 @@ BOOST_FIXTURE_TEST_CASE(test_group_labels_from_simulation_with_recombination,
                 {
                     if (is_sample[i] == 0)
                         {
-                            BOOST_REQUIRE(tv.tree().sample_group(static_cast<fwdpp::ts::table_index_t>(i)) < 0);
+                            BOOST_REQUIRE(
+                                tv.tree().sample_group(
+                                    static_cast<fwdpp::ts::table_collection::id_type>(i))
+                                < 0);
                         }
                 }
         }

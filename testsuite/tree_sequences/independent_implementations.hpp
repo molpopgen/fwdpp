@@ -8,21 +8,24 @@
 #include <vector>
 #include <fwdpp/ts/node.hpp>
 #include <fwdpp/ts/marginal_tree.hpp>
+#include <fwdpp/ts/table_collection.hpp>
 
-void get_tip(const fwdpp::ts::marginal_tree &m, fwdpp::ts::table_index_t u,
-             std::vector<fwdpp::ts::table_index_t> &samples);
+void get_tip(const fwdpp::ts::marginal_tree<fwdpp::ts::table_collection::id_type> &m,
+             fwdpp::ts::table_collection::id_type u,
+             std::vector<fwdpp::ts::table_collection::id_type> &samples);
 
-std::vector<fwdpp::ts::table_index_t>
-naive_get_samples(const fwdpp::ts::marginal_tree &m, fwdpp::ts::table_index_t u);
+std::vector<fwdpp::ts::table_collection::id_type> naive_get_samples(
+    const fwdpp::ts::marginal_tree<fwdpp::ts::table_collection::id_type> &m,
+    fwdpp::ts::table_collection::id_type u);
 
-std::size_t naive_num_samples(const fwdpp::ts::marginal_tree &m,
-                              fwdpp::ts::table_index_t u);
+std::size_t naive_num_samples(
+    const fwdpp::ts::marginal_tree<fwdpp::ts::table_collection::id_type> &m,
+    fwdpp::ts::table_collection::id_type u);
 
 // Sample-to-root implementation requiring O(nnodes) extra memory,
 // and makes multiple passes through same ancestral nodes.
-double
-naive_branch_length(const fwdpp::ts::marginal_tree &m,
-                    const std::vector<fwdpp::ts::node> &nodes,
-                    bool scale_by_length);
+double naive_branch_length(
+    const fwdpp::ts::marginal_tree<fwdpp::ts::table_collection::id_type> &m,
+    const std::vector<fwdpp::ts::node> &nodes, bool scale_by_length);
 
 #endif

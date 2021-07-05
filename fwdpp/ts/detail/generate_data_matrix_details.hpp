@@ -15,14 +15,14 @@ namespace fwdpp
     {
         namespace detail
         {
-            template<typename SITE_CONST_ITER, typename MUT_CONST_ITR>
+            template <typename SignedInteger, typename SITE_CONST_ITER,
+                      typename MUT_CONST_ITR>
             inline void
-            process_site_range(const marginal_tree & tree,
+            process_site_range(const marginal_tree<SignedInteger>& tree,
                                const SITE_CONST_ITER current_site,
-                               const std::pair<MUT_CONST_ITR,MUT_CONST_ITR> & muts,
+                               const std::pair<MUT_CONST_ITR, MUT_CONST_ITR>& muts,
                                bool record_neutral, bool record_selected,
-                               bool skip_fixed,
-                               std::vector<std::int8_t>& genotypes,
+                               bool skip_fixed, std::vector<std::int8_t>& genotypes,
                                data_matrix& dm)
             {
                 int neutral = -1, selected = -1;
@@ -39,19 +39,14 @@ namespace fwdpp
                         if ((mut->neutral && record_neutral)
                             || (!mut->neutral && record_selected))
                             {
-                                if (lc > 0
-                                    && (!skip_fixed
-                                        || (lc < genotypes.size())))
+                                if (lc > 0 && (!skip_fixed || (lc < genotypes.size())))
                                     {
-                                        const auto f
-                                            = [mut, &nsamples, &genotypes](
-                                                  fwdpp::ts::table_index_t u) {
-                                                  ++nsamples;
-                                                  genotypes[u]
-                                                      = mut->derived_state;
-                                              };
-                                        process_samples(tree, convert,
-                                                        mut->node, f);
+                                        const auto f = [mut, &nsamples,
+                                                        &genotypes](SignedInteger u) {
+                                            ++nsamples;
+                                            genotypes[u] = mut->derived_state;
+                                        };
+                                        process_samples(tree, convert, mut->node, f);
                                     }
                             }
                     }
@@ -64,20 +59,15 @@ namespace fwdpp
                     {
                         if (neutral != -1)
                             {
-                                dm.neutral.positions.push_back(
-                                    current_site->position);
-                                dm.neutral_keys.push_back(
-                                    (muts.second - 1)->key);
+                                dm.neutral.positions.push_back(current_site->position);
+                                dm.neutral_keys.push_back((muts.second - 1)->key);
                                 dm.neutral.data.insert(end(dm.neutral.data),
-                                                       begin(genotypes),
-                                                       end(genotypes));
+                                                       begin(genotypes), end(genotypes));
                             }
                         else
                             {
-                                dm.selected.positions.push_back(
-                                    current_site->position);
-                                dm.selected_keys.push_back(
-                                    (muts.second - 1)->key);
+                                dm.selected.positions.push_back(current_site->position);
+                                dm.selected_keys.push_back((muts.second - 1)->key);
                                 dm.selected.data.insert(end(dm.selected.data),
                                                         begin(genotypes),
                                                         end(genotypes));

@@ -3,6 +3,7 @@
 
 #include <gsl/gsl_randist.h>
 
+#include <cmath>
 #include <vector>
 #include <functional>
 #include <type_traits>

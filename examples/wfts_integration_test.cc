@@ -64,7 +64,8 @@ main(int argc, char **argv)
 
     ts_examples_poptype pop(o.N);
     fwdpp::ts::table_collection tables(
-        2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()), 0, 0, 1.0);
+        2 * static_cast<fwdpp::ts::table_collection::id_type>(pop.diploids.size()), 0, 0,
+        1.0);
     auto simplifier = fwdpp::ts::make_table_simplifier(tables);
     unsigned generation = 1;
     double recrate = o.rho / static_cast<double>(4 * o.N);
@@ -104,9 +105,10 @@ main(int argc, char **argv)
         };
 
     // Evolve pop for 20N generations
-    fwdpp::ts::table_index_t first_parental_index
+    fwdpp::ts::table_collection::id_type first_parental_index
         = 0,
-        next_index = 2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size());
+        next_index
+        = 2 * static_cast<fwdpp::ts::table_collection::id_type>(pop.diploids.size());
     bool simplified = false;
     std::vector<std::size_t> individual_labels(o.N);
     std::iota(individual_labels.begin(), individual_labels.end(), 0);
@@ -132,14 +134,16 @@ main(int argc, char **argv)
     auto genetics = fwdpp::make_genetic_parameters(std::move(ff), std::move(mmodel),
                                                    std::move(recmap));
     auto lookup = calculate_fitnesses(pop, fitnesses, genetics.gvalue);
-    std::vector<fwdpp::ts::table_index_t> preserved_nodes;
+    std::vector<fwdpp::ts::table_collection::id_type> preserved_nodes;
     for (; generation <= 10 * o.N; ++generation)
         {
             auto pick1 = [&lookup, &rng]() {
-                return static_cast<fwdpp::ts::table_index_t>(gsl_ran_discrete(rng.get(), lookup.get()));
+                return static_cast<fwdpp::ts::table_collection::id_type>(
+                    gsl_ran_discrete(rng.get(), lookup.get()));
             };
             auto pick2 = [&lookup, &rng](const auto /*p1*/) {
-                return static_cast<fwdpp::ts::table_index_t>(gsl_ran_discrete(rng.get(), lookup.get()));
+                return static_cast<fwdpp::ts::table_collection::id_type>(
+                    gsl_ran_discrete(rng.get(), lookup.get()));
             };
             evolve_generation(rng, pop, genetics, o.N, pick1, pick2, update_offspring,
                               generation, tables, first_parental_index, next_index);
@@ -150,7 +154,8 @@ main(int argc, char **argv)
                     auto rv = simplify_tables(
                         pop, generation, pop.mcounts_from_preserved_nodes, tables,
                         simplifier,
-                        static_cast<fwdpp::ts::table_index_t>(tables.num_nodes())
+                        static_cast<fwdpp::ts::table_collection::id_type>(
+                            tables.num_nodes())
                             - 2 * o.N,
                         2 * o.N, preserved_nodes, o.preserve_fixations);
                     if (!o.preserve_fixations)
@@ -164,8 +169,8 @@ main(int argc, char **argv)
                                 rv.second, pop.mutations.size());
                         }
                     simplified = true;
-                    next_index
-                        = static_cast<fwdpp::ts::table_index_t>(tables.num_nodes());
+                    next_index = static_cast<fwdpp::ts::table_collection::id_type>(
+                        tables.num_nodes());
                     first_parental_index = 0;
 
                     // When tracking ancient samples, the node ids of those samples change.
@@ -230,7 +235,7 @@ main(int argc, char **argv)
                         {
                             auto x = fwdpp::ts::get_parent_ids(
                                 first_parental_index,
-                                static_cast<fwdpp::ts::table_index_t>(i), 0);
+                                static_cast<fwdpp::ts::table_collection::id_type>(i), 0);
                             assert(x.first >= first_parental_index);
                             assert(x.second >= first_parental_index);
                             assert(x.first < static_cast<int>(tables.num_nodes()));
@@ -259,7 +264,8 @@ main(int argc, char **argv)
         {
             auto rv = simplify_tables(
                 pop, generation, pop.mcounts_from_preserved_nodes, tables, simplifier,
-                static_cast<fwdpp::ts::table_index_t>(tables.num_nodes()) - 2 * o.N,
+                static_cast<fwdpp::ts::table_collection::id_type>(tables.num_nodes())
+                    - 2 * o.N,
                 2 * o.N, preserved_nodes, o.preserve_fixations);
             if (o.preserve_fixations)
                 {
@@ -311,7 +317,7 @@ main(int argc, char **argv)
         }
     assert(tables.input_left.size() == tables.edges.size());
     assert(tables.output_right.size() == tables.edges.size());
-    std::vector<fwdpp::ts::table_index_t> s(2 * o.N);
+    std::vector<fwdpp::ts::table_collection::id_type> s(2 * o.N);
     std::iota(s.begin(), s.end(), 0);
 
     auto neutral_muts

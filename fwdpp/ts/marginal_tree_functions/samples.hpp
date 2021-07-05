@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <fwdpp/util/named_type.hpp>
 #include "../marginal_tree.hpp"
+#include "../types/generate_null_id.hpp"
 
 namespace fwdpp
 {
@@ -17,17 +18,17 @@ namespace fwdpp
         using convert_sample_index_to_nodes
             = strong_types::named_type<bool, convert_sample_index_to_nodes_t>;
 
-        class samples_iterator
+        template <typename SignedInteger> class samples_iterator
         /// \brief Faciliate traversal of the samples descending from a node
         /// \headerfile fwdpp/ts/marginal_tree_functions/samples.hpp
         {
           private:
-            const marginal_tree &t;
-            table_index_t current_sample, right_sample;
+            const marginal_tree<SignedInteger> &t;
+            SignedInteger current_sample, right_sample;
             bool convert_to_nodes;
 
-            inline const marginal_tree &
-            init_marginal(const marginal_tree &m)
+            inline const marginal_tree<SignedInteger> &
+            init_marginal(const marginal_tree<SignedInteger> &m)
             {
                 if (!m.advancing_sample_list())
                     {
@@ -37,8 +38,8 @@ namespace fwdpp
                 return m;
             }
 
-            inline table_index_t
-            init_left_sample(table_index_t u)
+            inline SignedInteger
+            init_left_sample(SignedInteger u)
             {
                 if (static_cast<std::size_t>(u) >= t.size())
                     {
@@ -47,8 +48,8 @@ namespace fwdpp
                 return t.left_sample[u];
             }
 
-            inline table_index_t
-            init_right_sample(table_index_t u)
+            inline SignedInteger
+            init_right_sample(SignedInteger u)
             {
                 if (static_cast<std::size_t>(u) >= t.size())
                     {
@@ -58,23 +59,22 @@ namespace fwdpp
             }
 
           public:
-            samples_iterator(const marginal_tree &m, table_index_t u,
+            samples_iterator(const marginal_tree<SignedInteger> &m, SignedInteger u,
                              convert_sample_index_to_nodes convert)
-                : t(init_marginal(m)), current_sample{ init_left_sample(u) },
-                  right_sample(init_right_sample(u)),
-                  convert_to_nodes(convert.get())
+                : t(init_marginal(m)), current_sample{init_left_sample(u)},
+                  right_sample(init_right_sample(u)), convert_to_nodes(convert.get())
             /// \param m A marginal_tree
             /// \param u A node index
             {
             }
 
-            inline table_index_t
+            inline SignedInteger
             operator()()
             /// Advance to the next sample
             ///
-            /// Returns fwdpp::ts::NULL_INDEX when no more samples remain.
+            /// Returns a null id when no more samples remain.
             {
-                if (current_sample == NULL_INDEX)
+                if (current_sample == types::generate_null_id<SignedInteger>())
                     {
                         //end of iteration
                         return current_sample;
@@ -84,7 +84,7 @@ namespace fwdpp
                     {
                         // We are at the end of the samples list for this node,
                         // so we ensure that iteration will end
-                        current_sample = NULL_INDEX;
+                        current_sample = types::generate_null_id<SignedInteger>();
                     }
                 else
                     {
@@ -97,12 +97,12 @@ namespace fwdpp
             inline bool
             operator()(const F &f)
             /// Apply a function to each sample
-            /// \param f A function equivalent to void (*process_sample)(table_index_t)
+            /// \param f A function equivalent to void (*process_sample)(SignedInteger)
             ///
             /// Returns false to signify end of iteration.
             {
                 auto s = this->operator()();
-                bool rv = (s != NULL_INDEX);
+                bool rv = (s != types::generate_null_id<SignedInteger>());
                 if (rv)
                     {
                         f(s);
@@ -111,41 +111,43 @@ namespace fwdpp
             }
         };
 
-        template <typename F>
+        template <typename SignedInteger, typename F>
         inline void
-        process_samples(const marginal_tree &m,
-                        convert_sample_index_to_nodes convert, table_index_t u,
+        process_samples(const marginal_tree<SignedInteger> &m,
+                        convert_sample_index_to_nodes convert, SignedInteger u,
                         const F &f)
         /// \brief Apply a function to the nodes descending from \a u
         /// \param m A fwdpp::ts::marginal_tree
         /// \param convert whether to iterate over sample nodes or sample list indexes
         /// \param u Index a fwdpp::ts::node
-        /// \param f A function equivalent to void (*foo)(table_index_t)
+        /// \param f A function equivalent to void (*foo)(SignedInteger)
         {
-            samples_iterator si(m, u, convert);
+            samples_iterator<SignedInteger> si(m, u, convert);
             while (si(f))
                 {
                 }
         }
 
-        inline std::vector<table_index_t>
-        get_samples(const marginal_tree &m, table_index_t u)
+        template <typename SignedInteger>
+        inline std::vector<SignedInteger>
+        get_samples(const marginal_tree<SignedInteger> &m, SignedInteger u)
         /// Return a vector of samples descending from node \a u in marginal_tree \a m.
         /// The return value contains node ids (as opposed to sample indexes)
         {
-            std::vector<table_index_t> rv;
+            std::vector<SignedInteger> rv;
             process_samples(m, convert_sample_index_to_nodes(true), u,
-                            [&rv](table_index_t x) { rv.push_back(x); });
+                            [&rv](SignedInteger x) { rv.push_back(x); });
             return rv;
         }
 
+        template <typename SignedInteger>
         inline int
-        num_samples(const marginal_tree &m, table_index_t u)
+        num_samples(const marginal_tree<SignedInteger> &m, SignedInteger u)
         /// Return the number of samples descending from node \a u in marginal_tree \a m.
         {
             int nsamples = 0;
             process_samples(m, convert_sample_index_to_nodes(false), u,
-                            [&nsamples](table_index_t /*x*/) { ++nsamples; });
+                            [&nsamples](SignedInteger /*x*/) { ++nsamples; });
             return nsamples;
         }
     } // namespace ts

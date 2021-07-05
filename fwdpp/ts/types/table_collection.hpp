@@ -235,7 +235,12 @@ namespace fwdpp
                     return !(*this == b);
                 }
             };
-        } // namespace detail
+
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger table_collection<SignedInteger>::null;
+#endif
+        } // namespace types
     }     // namespace ts
 } // namespace fwdpp
 
