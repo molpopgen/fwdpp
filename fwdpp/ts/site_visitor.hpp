@@ -127,7 +127,7 @@ namespace fwdpp
         };
 
         template <typename TableCollectionType>
-        inline typename TableCollectionType::site_table_t::const_iterator
+        inline typename TableCollectionType::site_table::const_iterator
         end(site_visitor<TableCollectionType>& sv)
         {
             return sv.end();

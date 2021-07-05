@@ -1,6 +1,6 @@
 pkgincludedir=$(prefix)/include/fwdpp/ts
 
-SUBDIRS=simplification recording detail recording marginal_tree_functions
+SUBDIRS=simplification recording detail recording marginal_tree_functions types
 
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \

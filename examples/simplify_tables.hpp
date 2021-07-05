@@ -47,8 +47,8 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                                        pop.mcounts, mcounts_from_preserved_nodes);
             auto itr = std::remove_if(
                 tables.mutations.begin(), tables.mutations.end(),
-                [&pop,
-                 &mcounts_from_preserved_nodes](const fwdpp::ts::mutation_record &mr) {
+                [&pop, &mcounts_from_preserved_nodes](
+                    const fwdpp::ts::table_collection::mutation_record &mr) {
                     return pop.mcounts[mr.key] == 2 * pop.diploids.size()
                            && mcounts_from_preserved_nodes[mr.key] == 0;
                 });

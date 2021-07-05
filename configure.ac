@@ -47,6 +47,7 @@ AC_CONFIG_FILES([Makefile fwdpp/version.hpp fwdpp/Makefile
                  fwdpp/ts/marginal_tree_functions/Makefile
                  fwdpp/ts/simplification/Makefile
                  fwdpp/ts/recording/Makefile
+                 fwdpp/ts/types/Makefile
 				 fwdpp/util/Makefile
 				 fwdpp/genetic_map/Makefile
 				 examples/Makefile testsuite/Makefile

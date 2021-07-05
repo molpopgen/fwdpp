@@ -200,8 +200,8 @@ namespace fwdpp
             /// \version Added in 0.9
             {
                 using table_type = TableCollectionType;
-                using edge_t = typename TableCollectionType::edge_t;
-                using node_t = typename TableCollectionType::node_t;
+                using edge_t = typename TableCollectionType::edge;
+                using node_t = typename TableCollectionType::node;
                 typename table_type::edge_table new_edge_table;
                 typename table_type::edge_table temp_edge_buffer;
                 typename table_type::node_table new_node_table;
@@ -349,7 +349,7 @@ namespace fwdpp
                                 if (output_id == NULL_INDEX)
                                     {
                                         state.new_node_table.emplace_back(
-                                            typename TableCollectionType::node_t{
+                                            typename TableCollectionType::node{
                                                 input_node_table[parent_input_id].deme,
                                                 input_node_table[parent_input_id].time});
                                         output_id = static_cast<decltype(output_id)>(
@@ -443,8 +443,8 @@ namespace fwdpp
                                 throw std::invalid_argument("invalid sample list");
                             }
                         state.new_node_table.emplace_back(
-                            typename TableCollectionType::node_t{tables.nodes[s].deme,
-                                                                 tables.nodes[s].time});
+                            typename TableCollectionType::node{tables.nodes[s].deme,
+                                                               tables.nodes[s].time});
                         add_ancestry(
                             s, 0, tables.genome_length(),
                             static_cast<table_index_t>(state.new_node_table.size() - 1),
@@ -557,7 +557,7 @@ namespace fwdpp
                 // ancestry and may be removed.
                 auto itr = std::remove_if(
                     begin(input_tables.mutations), end(input_tables.mutations),
-                    [](const typename TableCollectionType::mutation_t& mr) {
+                    [](const typename TableCollectionType::mutation_record& mr) {
                         return mr.node == NULL_INDEX;
                     });
                 preserved_variants.clear();
@@ -574,8 +574,9 @@ namespace fwdpp
                 //TODO: replace assert with exception
                 assert(std::is_sorted(
                     begin(input_tables.mutations), end(input_tables.mutations),
-                    [&input_tables](const typename TableCollectionType::mutation_t& a,
-                                    const typename TableCollectionType::mutation_t& b) {
+                    [&input_tables](
+                        const typename TableCollectionType::mutation_record& a,
+                        const typename TableCollectionType::mutation_record& b) {
                         return input_tables.sites[a.site].position
                                < input_tables.sites[b.site].position;
                     }));
