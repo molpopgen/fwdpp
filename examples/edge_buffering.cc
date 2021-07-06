@@ -357,8 +357,8 @@ simulate(const command_line_options& options)
     std::vector<parent> parents;
     for (unsigned i = 0; i < options.N; ++i)
         {
-            auto id0 = tables.emplace_back_node(0, 0.);
-            auto id1 = tables.emplace_back_node(0, 0.);
+            auto id0 = tables.emplace_back_node(0, 0., 0u);
+            auto id1 = tables.emplace_back_node(0, 0., 0u);
             parents.emplace_back(i, id0, id1);
         }
 

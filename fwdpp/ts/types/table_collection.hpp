@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <fwdpp/forward_types.hpp>
 #include <fwdpp/ts/exceptions.hpp>
+#include "../node_flags.hpp"
 #include "node.hpp"
 #include "edge.hpp"
 #include "site.hpp"
@@ -96,7 +97,7 @@ namespace fwdpp
                         }
                     for (id_type i = 0; i < num_initial_nodes; ++i)
                         {
-                            nodes.push_back(node{pop, initial_time});
+                            nodes.push_back(node{pop, initial_time, node_flags::NONE});
                         }
                 }
 
@@ -111,9 +112,9 @@ namespace fwdpp
                 }
 
                 id_type
-                push_back_node(double time, std::int32_t pop)
+                push_back_node(double time, id_type pop, std::uint32_t flags)
                 {
-                    nodes.push_back(node{pop, time});
+                    nodes.push_back(node{pop, time, flags});
                     return static_cast<id_type>(nodes.size() - 1);
                 }
 

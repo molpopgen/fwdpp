@@ -136,6 +136,34 @@ generate_births(const fwdpp::GSLrng_mt& rng, const std::vector<birth>& births,
 
 template <typename TableCollectionType, typename SimplificationState>
 void
+validate_flags_after_simplification(
+    const std::vector<fwdpp::ts::table_collection::id_type>& samples,
+    const TableCollectionType& tables, const SimplificationState& simplification_output)
+{
+    std::vector<fwdpp::ts::table_collection::id_type> is_sample(tables.nodes.size(), 0);
+    for (auto s : samples)
+        {
+            is_sample[simplification_output.idmap[s]] = 1;
+        }
+    for (std::size_t i = 0; i < tables.nodes.size(); ++i)
+        {
+            if (is_sample[i])
+                {
+                    if (!(tables.nodes[i].flags & fwdpp::ts::node_flags::IS_SAMPLE))
+                        {
+                            throw std::runtime_error(
+                                "a sample node does not have IS_SAMPLE set");
+                        }
+                }
+            else if (tables.nodes[i].flags & fwdpp::ts::node_flags::IS_SAMPLE)
+                {
+                    throw std::runtime_error("a non-sample node does has IS_SAMPLE set");
+                }
+        }
+}
+
+template <typename TableCollectionType, typename SimplificationState>
+void
 sort_n_simplify(const std::vector<fwdpp::ts::table_collection::id_type>& samples,
                 SimplificationState& state, TableCollectionType& tables,
                 fwdpp::ts::simplify_tables_output<typename TableCollectionType::id_type>&
@@ -145,6 +173,7 @@ sort_n_simplify(const std::vector<fwdpp::ts::table_collection::id_type>& samples
     std::sort(begin(tables.edges), end(tables.edges), cmp);
     fwdpp::ts::simplify_tables(samples, fwdpp::ts::simplification_flags{}, state, tables,
                                simplification_output);
+    validate_flags_after_simplification(samples, tables, simplification_output);
 }
 
 template <typename TableCollectionType, typename SimplificationState>
@@ -185,6 +214,7 @@ flush_buffer_n_simplify(
                                        fwdpp::ts::simplification_flags{}, state, tables,
                                        new_edges, simplification_output);
         }
+    validate_flags_after_simplification(samples, tables, simplification_output);
 }
 
 // NOTE: the SimulationPolicies type is a placeholder
@@ -208,8 +238,8 @@ wfevolve_table_collection(unsigned seed, unsigned N, unsigned nsteps, double psu
     std::vector<parent> parents;
     for (unsigned i = 0; i < N; ++i)
         {
-            auto id0 = tables.emplace_back_node(0, 0.);
-            auto id1 = tables.emplace_back_node(0, 0.);
+            auto id0 = tables.emplace_back_node(0, 0., fwdpp::ts::node_flags::NONE);
+            auto id1 = tables.emplace_back_node(0, 0., fwdpp::ts::node_flags::NONE);
             parents.emplace_back(i, id0, id1);
         }
 
@@ -305,7 +335,6 @@ wfevolve_table_collection(unsigned seed, unsigned N, unsigned nsteps, double psu
             stitch_together_edges(alive_at_last_simplification, max_time, buffer,
                                   edge_liftover, tables);
         }
-
     return wf_simulation_results{std::move(parents),
                                  std::vector<fwdpp::ts::table_collection::id_type>{}};
 }

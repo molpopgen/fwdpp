@@ -4,6 +4,7 @@
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
+#include <fwdpp/ts/node_flags.hpp>
 
 class simple_table_collection
 //        6
@@ -20,13 +21,13 @@ class simple_table_collection
     init_tables()
     {
         fwdpp::ts::table_collection t(1.);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(2, 0);
-        t.push_back_node(1, 0);
-        t.push_back_node(0, 0);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(2, 0, fwdpp::ts::node_flags::NONE);
+        t.push_back_node(1, 0, fwdpp::ts::node_flags::NONE);
+        t.push_back_node(0, 0, fwdpp::ts::node_flags::NONE);
         t.push_back_edge(0, 1, 6, 5);
         t.push_back_edge(0, 1, 6, 4);
         t.push_back_edge(0, 1, 5, 2);

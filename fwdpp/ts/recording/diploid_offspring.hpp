@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <fwdpp/ts/definitions.hpp>
+#include "../node_flags.hpp"
 #include "edge_buffer.hpp"
 
 namespace fwdpp
@@ -110,7 +111,8 @@ namespace fwdpp
             TableCollectionType& tables)
         {
             // TODO: carefully document how to index node times.
-            auto next_index = tables.emplace_back_node(population, time);
+            auto next_index
+                = tables.emplace_back_node(population, time, node_flags::NONE);
             if (next_index
                 >= std::numeric_limits<typename TableCollectionType::id_type>::max())
                 {
@@ -137,7 +139,7 @@ namespace fwdpp
             edge_buffer<typename TableCollectionType::id_type>& buffer)
         {
             // TODO: carefully document how to index node times.
-            auto next_index = tables.emplace_back_node(population, time);
+            auto next_index = tables.emplace_back_node(population, time, node_flags::NONE);
             if (next_index
                 >= std::numeric_limits<typename TableCollectionType::id_type>::max())
                 {

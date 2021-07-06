@@ -61,6 +61,7 @@ namespace fwdpp
                     fwdpp::io::scalar_writer sw;
                     sw(o, &n.deme);
                     sw(o, &n.time);
+                    sw(o, &n.flags);
                 }
             };
 
@@ -84,10 +85,12 @@ namespace fwdpp
                 {
                     fwdpp::io::scalar_reader sr;
                     typename types::node<SignedInteger>::id_type deme;
+                    std::uint32_t flags;
                     double time;
                     sr(o, &deme);
                     sr(o, &time);
-                    return types::node<SignedInteger>{deme, time};
+                    sr(o, &flags);
+                    return types::node<SignedInteger>{deme, time, flags};
                 }
             };
 
