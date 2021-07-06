@@ -2,10 +2,12 @@
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/ts/simplification/simplification.hpp>
 
+using ancestry_list = fwdpp::ts::simplification::ancestry_list<std::int32_t>;
+
 namespace
 {
     std::int64_t
-    get_list_length(const fwdpp::ts::simplification::ancestry_list& al, std::int32_t i)
+    get_list_length(const ancestry_list& al, std::int32_t i)
     {
         int len = 0;
         auto f = al.head(i);
@@ -25,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test_construct_and_fill)
 // The data added don't refer to valid
 // tree sequences and are just for testing
 {
-    fwdpp::ts::simplification::ancestry_list al;
+    ancestry_list al;
     al.reset(4);
     al.extend(0, 0., 1., 3);
     al.extend(1, 0., 0.5, 3);
@@ -37,7 +39,7 @@ BOOST_AUTO_TEST_CASE(test_construct_and_fill)
 
 BOOST_AUTO_TEST_CASE(test_fill_nullify_once_fill)
 {
-    fwdpp::ts::simplification::ancestry_list al;
+    ancestry_list al;
     al.reset(4);
     al.extend(0, 0., 1., 3);
     al.extend(1, 0., 0.5, 3);

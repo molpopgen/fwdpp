@@ -228,9 +228,9 @@ namespace fwdpp
             constexpr SignedInteger segment_overlapper<SignedInteger>::null;
 #endif
 
-            // FIXME: not generic enough!
+            template <typename SignedInteger>
             using ancestry_list
-                = nested_forward_lists<segment<std::int32_t>, std::int32_t, -1>;
+                = nested_forward_lists<segment<SignedInteger>, SignedInteger, -1>;
 
             template <typename SignedInteger> struct simplifier_internal_state
             /// Holds data needed during tree sequence simplification
@@ -243,7 +243,7 @@ namespace fwdpp
                 typename table_type::edge_table temp_edge_buffer;
                 typename table_type::node_table new_node_table;
                 typename table_type::site_table new_site_table;
-                ancestry_list ancestry;
+                ancestry_list<SignedInteger> ancestry;
                 segment_overlapper<typename table_type::id_type> overlapper;
                 // NOTE: the whole idea of mutation map could
                 // go away?  Should benchmark (later) with
@@ -327,29 +327,29 @@ namespace fwdpp
             template <typename SignedInteger>
             inline void
             add_ancestry(SignedInteger input_id, double left, double right,
-                         SignedInteger node, ancestry_list& ancestry)
+                         SignedInteger node, ancestry_list<SignedInteger>& ancestry)
             {
-                if (ancestry.head(input_id) == ancestry_list::null)
-                    {
-                        ancestry.extend(input_id, left, right, node);
-                    }
+                if(ancestry.head(input_id) == ancestry_list<SignedInteger>::null)
+                {
+                    ancestry.extend(input_id, left, right, node);
+                }
                 else
-                    {
-                        auto last_idx = ancestry.tail(input_id);
-                        if (last_idx == ancestry_list::null)
-                            {
-                                throw std::runtime_error("ancestry_list data invalid");
-                            }
-                        auto& last = ancestry.fetch(last_idx);
-                        if (last.right == left && last.node == node)
-                            {
-                                last.right = right;
-                            }
-                        else
-                            {
-                                ancestry.extend(input_id, left, right, node);
-                            }
-                    }
+                {
+                    auto last_idx = ancestry.tail(input_id);
+                    if (last_idx == ancestry_list<SignedInteger>::null)
+                        {
+                            throw std::runtime_error("ancestry_list data invalid");
+                        }
+                    auto& last = ancestry.fetch(last_idx);
+                    if (last.right == left && last.node == node)
+                        {
+                            last.right = right;
+                        }
+                    else
+                        {
+                            ancestry.extend(input_id, left, right, node);
+                        }
+                }
             }
 
             template <typename SignedInteger>
@@ -454,7 +454,7 @@ namespace fwdpp
                         // If the two segments overlap, we add the
                         // minimal overlap to our queue.
                         auto idx = state.ancestry.head(edge_ptr->child);
-                        while (idx != ancestry_list::null)
+                        while (idx != ancestry_list<SignedInteger>::null)
                             {
                                 auto& seg = state.ancestry.fetch(idx);
                                 if (seg.right > edge_ptr->left
@@ -569,12 +569,12 @@ namespace fwdpp
                         auto seg_idx = state.ancestry.head(n);
                         for (; map_itr < map_end && map_itr->node == n;)
                             {
-                                if (seg_idx == ancestry_list::null)
+                                if (seg_idx == ancestry_list<SignedInteger>::null)
                                     {
                                         ++map_itr;
                                         break;
                                     }
-                                while (seg_idx != ancestry_list::null
+                                while (seg_idx != ancestry_list<SignedInteger>::null
                                        && map_itr < map_end && map_itr->node == n)
                                     {
                                         auto& seg = state.ancestry.fetch(seg_idx);
@@ -652,11 +652,11 @@ namespace fwdpp
             template <typename SignedInteger>
             inline void
             queue_children(SignedInteger child, double left, double right,
-                           ancestry_list& ancestry,
+                           ancestry_list<SignedInteger>& ancestry,
                            segment_overlapper<SignedInteger>& overlapper)
             {
                 auto idx = ancestry.head(child);
-                while (idx != ancestry_list::null)
+                while (idx != ancestry_list<SignedInteger>::null)
                     {
                         auto& seg = ancestry.fetch(idx);
                         if (seg.right > left && right > seg.left)
@@ -672,7 +672,7 @@ namespace fwdpp
             inline void
             process_births_from_buffer(SignedInteger n,
                                        edge_buffer<SignedInteger>& buffer,
-                                       ancestry_list& ancestry,
+                                       ancestry_list<SignedInteger>& ancestry,
                                        segment_overlapper<SignedInteger>& overlapper)
             {
                 static_assert(std::is_integral<SignedInteger>::value,
