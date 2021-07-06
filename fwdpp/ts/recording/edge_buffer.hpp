@@ -31,7 +31,7 @@ namespace fwdpp
 
         template <typename SignedInteger>
         using edge_buffer
-            = nested_forward_lists<birth_data<SignedInteger>, std::int32_t, -1>;
+            = nested_forward_lists<birth_data<SignedInteger>, SignedInteger, -1>;
 
         // Below are functions for liftover of an edge buffer
         // to a table collection
