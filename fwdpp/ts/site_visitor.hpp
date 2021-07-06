@@ -49,7 +49,8 @@ namespace fwdpp
             tree_visitor<TableCollectionType>
             init_tree_visitor(const SAMPLES& samples)
             {
-                tree_visitor<TableCollectionType> tv(tables_, samples, update_samples_list(true));
+                tree_visitor<TableCollectionType> tv(tables_, samples,
+                                                     update_samples_list(true));
                 auto t = tv();
                 if (!t)
                     {
@@ -119,7 +120,7 @@ namespace fwdpp
                 return mutations_at_current_site;
             }
 
-            const marginal_tree&
+            const marginal_tree<typename TableCollectionType::id_type>&
             current_tree() const
             {
                 return tv.tree();

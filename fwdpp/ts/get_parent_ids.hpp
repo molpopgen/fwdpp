@@ -2,15 +2,16 @@
 #define FWDPP_TS_GET_PARENT_IDS_HPP
 
 #include <utility>
-#include "definitions.hpp"
+#include <type_traits>
 
 namespace fwdpp
 {
     namespace ts
     {
-        inline std::pair<table_index_t, table_index_t>
-        get_parent_ids(const table_index_t first_parental_index,
-                       const table_index_t parent, const int did_swap)
+        template <typename SignedInteger>
+        inline std::pair<SignedInteger, SignedInteger>
+        get_parent_ids(const SignedInteger first_parental_index,
+                       const SignedInteger parent, const int did_swap)
         /*! 
          * Convert the index of a parent into the two node IDs.
          *
@@ -22,10 +23,13 @@ namespace fwdpp
          * if a more complex set of rules are needed
          */
         {
+            static_assert(std::is_integral<SignedInteger>::value,
+                          "SignedInteger must be an integral type");
+            static_assert(std::is_signed<SignedInteger>::value,
+                          "SignedInteger must be a signed type");
             return std::make_pair(
-                first_parental_index + 2 * static_cast<table_index_t>(parent)
-                    + did_swap,
-                first_parental_index + 2 * static_cast<table_index_t>(parent)
+                first_parental_index + 2 * static_cast<SignedInteger>(parent) + did_swap,
+                first_parental_index + 2 * static_cast<SignedInteger>(parent)
                     + !did_swap);
         }
     } // namespace ts

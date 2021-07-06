@@ -2,24 +2,25 @@
 #define FWDPP_TS_MARGINAL_TREE_FUNCTIONS_CHILDREN_HPP
 
 #include "../marginal_tree.hpp"
+#include "../types/generate_null_id.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        class child_iterator
+        template <typename SignedInteger> class child_iterator
         /// \brief Faciliate traversal of a node's children.
-        /// \headerfile fwdpp/ts/marginal_tree_functions/children.hpp
+        /// \headerfile fwdpp/ts/marginal_tree<SignedInteger>_functions/children.hpp
         {
           private:
             bool left_to_right;
-            table_index_t current_child;
-            std::vector<table_index_t>::const_iterator sib_begin, sib_end;
+            SignedInteger current_child;
+            typename std::vector<SignedInteger>::const_iterator sib_begin, sib_end;
 
-            inline table_index_t
-            init_current_child(const marginal_tree& m, table_index_t n)
+            inline SignedInteger
+            init_current_child(const marginal_tree<SignedInteger>& m, SignedInteger n)
             {
-                if (n == NULL_INDEX)
+                if (n == types::generate_null_id<SignedInteger>())
                     {
                         throw std::invalid_argument("node is NULL");
                     }
@@ -35,27 +36,27 @@ namespace fwdpp
             }
 
           public:
-            child_iterator(const marginal_tree& m, table_index_t n,
+            child_iterator(const marginal_tree<SignedInteger>& m, SignedInteger n,
                            bool left_to_right_traversal)
                 : left_to_right(left_to_right_traversal),
                   current_child(init_current_child(m, n)),
-                  sib_begin(left_to_right ? begin(m.right_sib)
-                                          : begin(m.left_sib)),
+                  sib_begin(left_to_right ? begin(m.right_sib) : begin(m.left_sib)),
                   sib_end(left_to_right ? end(m.right_sib) : end(m.left_sib))
-            /// \param m A fwdpp::ts::marginal_tree
+            /// \param m A fwdpp::ts::marginal_tree<SignedInteger>
             /// \param n Index of a fwdpp::ts::node
             /// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
             {
             }
 
-            inline table_index_t
+            inline SignedInteger
             operator()()
             /// Advance to the next child.
-			///
-            /// Returns fwdpp::ts::NULL_INDEX when no more children remain.
+            ///
+            /// Returns fwdpp::ts::types::generate_null_id<SignedInteger>() when no more children remain.
             {
-                static_assert(NULL_INDEX < 0,
-                        "NULL_INDEX < 0 is false, so something needs to change here");
+                static_assert(types::generate_null_id<SignedInteger>() < 0,
+                              "types::generate_null_id<SignedInteger>() < 0 is false, "
+                              "so something needs to change here");
                 auto c = current_child;
                 if (c < 0)
                     {
@@ -73,12 +74,12 @@ namespace fwdpp
             inline bool
             operator()(const F& f)
             /// Apply a function to each child
-            /// \param f A function equivalent to void (*process_child)(table_index_t)
-			/// 
+            /// \param f A function equivalent to void (*process_child)(SignedInteger)
+            ///
             /// Returns false to signify end of iteration.
             {
                 auto c = this->operator()();
-                bool rv = (c != NULL_INDEX);
+                bool rv = (c != types::generate_null_id<SignedInteger>());
                 if (rv)
                     {
                         f(c);
@@ -87,47 +88,48 @@ namespace fwdpp
             }
         };
 
-        template <typename F>
+        template <typename SignedInteger, typename F>
         inline void
-        process_children(const marginal_tree& m, table_index_t n,
+        process_children(const marginal_tree<SignedInteger>& m, SignedInteger n,
                          bool left_to_right_traversal, const F& f)
-		/// \brief Apply a function to children of node \a n
-		/// \param m A fwdpp::ts::marginal_tree
-		/// \param n Index a fwdpp::ts::node
-		/// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
-		/// \param f A function equivalent to void (*process_child)(table_index_t)
+        /// \brief Apply a function to children of node \a n
+        /// \param m A fwdpp::ts::marginal_tree<SignedInteger>
+        /// \param n Index a fwdpp::ts::node
+        /// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
+        /// \param f A function equivalent to void (*process_child)(SignedInteger)
         {
-            child_iterator ci(m, n, left_to_right_traversal);
+            child_iterator<SignedInteger> ci(m, n, left_to_right_traversal);
             while (ci(f))
                 {
                 }
         }
 
-        inline std::vector<table_index_t>
-        get_children(const marginal_tree& m, table_index_t n,
+        template <typename SignedInteger>
+        inline std::vector<SignedInteger>
+        get_children(const marginal_tree<SignedInteger>& m, SignedInteger n,
                      bool left_to_right_traversal)
-		/// \brief Get all children of a node
-		/// \param m A fwdpp::ts::marginal_tree
-		/// \param n Index a fwdpp::ts::node
-		/// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
-		/// \return std::vector<fwdpp::ts::table_index_t>
+        /// \brief Get all children of a node
+        /// \param m A fwdpp::ts::marginal_tree<SignedInteger>
+        /// \param n Index a fwdpp::ts::node
+        /// \param left_to_right_traversal.  If `true`, traverse children left-to-right. Else, the opposite.
+        /// \return std::vector<fwdpp::ts::SignedInteger>
         {
-            std::vector<table_index_t> rv;
+            std::vector<SignedInteger> rv;
             process_children(m, n, left_to_right_traversal,
-                             [&rv](const table_index_t c) { rv.push_back(c); });
+                             [&rv](const SignedInteger c) { rv.push_back(c); });
             return rv;
         }
 
+        template <typename SignedInteger>
         inline int
-        num_children(const marginal_tree& m, table_index_t n)
-		/// \brief Return number of children of a node
-		/// \param m A fwdpp::ts::marginal_tree
-		/// \param n Index a fwdpp::ts::node
-		/// \return int
+        num_children(const marginal_tree<SignedInteger>& m, SignedInteger n)
+        /// \brief Return number of children of a node
+        /// \param m A fwdpp::ts::marginal_tree<SignedInteger>
+        /// \param n Index a fwdpp::ts::node
+        /// \return int
         {
             int nc = 0;
-            process_children(m, n, true,
-                             [&nc](const table_index_t /*c*/) { ++nc; });
+            process_children(m, n, true, [&nc](const SignedInteger /*c*/) { ++nc; });
             return nc;
         }
     } // namespace ts

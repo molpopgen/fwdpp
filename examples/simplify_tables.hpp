@@ -14,13 +14,13 @@
 #include "fwdpp/ts/exceptions.hpp"
 
 template <typename Simplifier, typename poptype>
-std::pair<std::vector<fwdpp::ts::table_index_t>, std::vector<std::size_t>>
+std::pair<std::vector<fwdpp::ts::table_collection::id_type>, std::vector<std::size_t>>
 simplify_tables(poptype &pop, const fwdpp::uint_t generation,
                 std::vector<fwdpp::uint_t> &mcounts_from_preserved_nodes,
                 fwdpp::ts::table_collection &tables, Simplifier &simplifier,
-                const fwdpp::ts::table_index_t first_sample_node,
+                const fwdpp::ts::table_collection::id_type first_sample_node,
                 const std::size_t num_samples,
-                std::vector<fwdpp::ts::table_index_t> &preserved_nodes,
+                std::vector<fwdpp::ts::table_collection::id_type> &preserved_nodes,
                 const bool preserve_fixations = false)
 {
     fwdpp::ts::sort_tables_for_simplification(tables.edge_offset, tables);
@@ -62,11 +62,16 @@ simplify_tables(poptype &pop, const fwdpp::uint_t generation,
             fwdpp::ts::remove_fixations_from_haploid_genomes(
                 pop.haploid_genomes, pop.mutations, pop.mcounts,
                 mcounts_from_preserved_nodes,
-                2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()), false);
+                2
+                    * static_cast<fwdpp::ts::table_collection::id_type>(
+                        pop.diploids.size()),
+                false);
 
             fwdpp::ts::flag_mutations_for_recycling(
                 pop, mcounts_from_preserved_nodes,
-                2 * static_cast<fwdpp::ts::table_index_t>(pop.diploids.size()),
+                2
+                    * static_cast<fwdpp::ts::table_collection::id_type>(
+                        pop.diploids.size()),
                 generation, std::false_type(), std::false_type());
             confirm_mutation_counts(pop, tables);
         }

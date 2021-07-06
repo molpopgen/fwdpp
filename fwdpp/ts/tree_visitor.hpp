@@ -32,16 +32,17 @@ namespace fwdpp
         /// \version 0.7.4 Updates tree roots during traversal.
         {
           private:
-            std::vector<table_index_t>::const_iterator j, jM, k, kM;
+            using id_type = typename TableCollectionType::id_type;
+            static constexpr id_type null = TableCollectionType::null;
+            typename std::vector<id_type>::const_iterator j, jM, k, kM;
             typename TableCollectionType::edge_table::const_iterator beg_edges,
                 end_edges;
             double x, maxpos;
-            marginal_tree marginal;
+            marginal_tree<id_type> marginal;
             bool advancing_sample_list;
 
             void
-            update_roots_outgoing(table_index_t p, table_index_t c,
-                                  marginal_tree& marginal)
+            update_roots_outgoing(id_type p, id_type c, marginal_tree<id_type>& marginal)
             // This is the algorithm used by tskit.
             // The method is applied to nodes p and c
             // AFTER the output index has been applied
@@ -67,15 +68,14 @@ namespace fwdpp
                         auto x = p;
                         auto root = x;
                         std::int8_t above_sample = 0;
-                        while (x != NULL_INDEX && above_sample == 0)
+                        while (x != null && above_sample == 0)
                             {
                                 // If this node is a sample, then
                                 // it must descend from a root,
                                 // which is why we OR this in the loop below.
-                                above_sample
-                                    = (marginal.sample_index_map[x] != NULL_INDEX);
+                                above_sample = (marginal.sample_index_map[x] != null);
                                 auto lc = marginal.left_child[x];
-                                while (lc != NULL_INDEX && above_sample == 0)
+                                while (lc != null && above_sample == 0)
                                     {
                                         above_sample
                                             = above_sample || marginal.above_sample[lc];
@@ -92,25 +92,25 @@ namespace fwdpp
                                 // Remove root from list of roots
                                 auto lroot = marginal.left_sib[root];
                                 auto rroot = marginal.right_sib[root];
-                                marginal.left_root = NULL_INDEX;
-                                if (lroot != NULL_INDEX)
+                                marginal.left_root = null;
+                                if (lroot != null)
                                     {
                                         marginal.right_sib[lroot] = rroot;
                                         marginal.left_root = lroot;
                                     }
-                                if (rroot != NULL_INDEX)
+                                if (rroot != null)
                                     {
                                         marginal.left_sib[rroot] = lroot;
                                         marginal.left_root = rroot;
                                     }
-                                marginal.left_sib[root] = NULL_INDEX;
-                                marginal.right_sib[root] = NULL_INDEX;
+                                marginal.left_sib[root] = null;
+                                marginal.right_sib[root] = null;
                             }
-                        if (marginal.left_root != NULL_INDEX)
+                        if (marginal.left_root != null)
                             {
                                 //Put c into a pre-existing root list
                                 auto lroot = marginal.left_sib[marginal.left_root];
-                                if (lroot != NULL_INDEX)
+                                if (lroot != null)
                                     {
                                         marginal.right_sib[lroot] = c;
                                     }
@@ -123,8 +123,8 @@ namespace fwdpp
             }
 
             void
-            update_roots_incoming(table_index_t p, table_index_t c, table_index_t lsib,
-                                  table_index_t rsib, marginal_tree& marginal)
+            update_roots_incoming(id_type p, id_type c, id_type lsib, id_type rsib,
+                                  marginal_tree<id_type>& marginal)
             // This is the algorithm used by tskit.  It is applied
             // AFTER the incoming node list has updated marginal.
             // Thus, p is parent to c.
@@ -143,7 +143,7 @@ namespace fwdpp
                         auto root = x;
 
                         std::int8_t above_sample = 0;
-                        while (x != NULL_INDEX && above_sample == 0)
+                        while (x != null && above_sample == 0)
                             {
                                 above_sample = marginal.above_sample[x];
                                 // c is above_sample and p is c's parent.
@@ -154,18 +154,18 @@ namespace fwdpp
                             }
                         if (above_sample == 0)
                             // If we are here, then the above loop terminated
-                            // by encountering a NULL node, because above_sample[x]
+                            // by encountering a null node, because above_sample[x]
                             // must have been 0 for all x. However, because c is
                             // above sample, all nodes encountered have been update
                             // to be above_sample as well. Thus, the new value of root
                             // replaces c in the root list.
                             {
                                 // Replace c with root in root list
-                                if (lsib != NULL_INDEX)
+                                if (lsib != null)
                                     {
                                         marginal.right_sib[lsib] = root;
                                     }
-                                if (rsib != NULL_INDEX)
+                                if (rsib != null)
                                     {
                                         marginal.left_sib[rsib] = root;
                                     }
@@ -181,13 +181,13 @@ namespace fwdpp
                             // it may also be removed, etc..
                             {
                                 // Remove c from root list
-                                marginal.left_root = NULL_INDEX;
-                                if (lsib != NULL_INDEX)
+                                marginal.left_root = null;
+                                if (lsib != null)
                                     {
                                         marginal.right_sib[lsib] = rsib;
                                         marginal.left_root = lsib;
                                     }
-                                if (rsib != NULL_INDEX)
+                                if (rsib != null)
                                     {
                                         marginal.left_sib[rsib] = lsib;
                                         marginal.left_root = rsib;
@@ -216,8 +216,8 @@ namespace fwdpp
             }
 
             tree_visitor(const TableCollectionType& tables,
-                         const std::vector<table_index_t>& samples,
-                         const std::vector<table_index_t>& preserved_nodes,
+                         const std::vector<id_type>& samples,
+                         const std::vector<id_type>& preserved_nodes,
                          update_samples_list update)
                 : j(tables.input_left.cbegin()), jM(tables.input_left.cend()),
                   k(tables.output_right.cbegin()), kM(tables.output_right.cend()),
@@ -236,7 +236,7 @@ namespace fwdpp
                     }
             }
 
-            const marginal_tree&
+            const marginal_tree<typename TableCollectionType::id_type>&
             tree() const
             /*! \brief Returns a handle to the current tree.
              *
@@ -263,7 +263,7 @@ namespace fwdpp
                                 const auto c = (beg_edges + *k)->child;
                                 const auto lsib = marginal.left_sib[c];
                                 const auto rsib = marginal.right_sib[c];
-                                if (lsib == NULL_INDEX)
+                                if (lsib == null)
                                     {
                                         marginal.left_child[p] = rsib;
                                     }
@@ -271,7 +271,7 @@ namespace fwdpp
                                     {
                                         marginal.right_sib[lsib] = rsib;
                                     }
-                                if (rsib == NULL_INDEX)
+                                if (rsib == null)
                                     {
                                         marginal.right_child[p] = lsib;
                                     }
@@ -279,9 +279,9 @@ namespace fwdpp
                                     {
                                         marginal.left_sib[rsib] = lsib;
                                     }
-                                marginal.parents[c] = NULL_INDEX;
-                                marginal.left_sib[c] = NULL_INDEX;
-                                marginal.right_sib[c] = NULL_INDEX;
+                                marginal.parents[c] = null;
+                                marginal.left_sib[c] = null;
+                                marginal.right_sib[c] = null;
                                 detail::outgoing_leaf_counts(marginal,
                                                              (beg_edges + *k)->parent,
                                                              (beg_edges + *k)->child);
@@ -300,17 +300,17 @@ namespace fwdpp
                                 const auto rchild = marginal.right_child[p];
                                 const auto lsib = marginal.left_sib[c];
                                 const auto rsib = marginal.right_sib[c];
-                                if (rchild == NULL_INDEX)
+                                if (rchild == null)
                                     {
                                         marginal.left_child[p] = c;
-                                        marginal.left_sib[c] = NULL_INDEX;
-                                        marginal.right_sib[c] = NULL_INDEX;
+                                        marginal.left_sib[c] = null;
+                                        marginal.right_sib[c] = null;
                                     }
                                 else
                                     {
                                         marginal.right_sib[rchild] = c;
                                         marginal.left_sib[c] = rchild;
-                                        marginal.right_sib[c] = NULL_INDEX;
+                                        marginal.right_sib[c] = null;
                                     }
                                 // The entry for the child refers to
                                 // the parent's location in the node table.
@@ -333,10 +333,9 @@ namespace fwdpp
                         // The root tracking functions will sometimes
                         // result in left_root not actually being the left_root.
                         // We loop through the left_sibs to fix that.
-                        if (marginal.left_root != NULL_INDEX)
+                        if (marginal.left_root != null)
                             {
-                                while (marginal.left_sib[marginal.left_root]
-                                       != NULL_INDEX)
+                                while (marginal.left_sib[marginal.left_root] != null)
                                     {
                                         marginal.left_root
                                             = marginal.left_sib[marginal.left_root];
@@ -345,7 +344,7 @@ namespace fwdpp
 #ifndef NDEBUG
                         // Validate the roots via brute-force.
                         auto lr = marginal.left_root;
-                        if (lr == NULL_INDEX)
+                        if (lr == null)
                             {
                                 throw std::runtime_error(
                                     "FWDPP DEBUG: left_root is null");
@@ -355,12 +354,12 @@ namespace fwdpp
                         for (std::size_t s = 0; s < marginal.sample_index_map.size();
                              ++s)
                             {
-                                if (marginal.sample_index_map[s] != NULL_INDEX)
+                                if (marginal.sample_index_map[s] != null)
                                     {
-                                        table_index_t u = static_cast<table_index_t>(s);
+                                        auto u = static_cast<id_type>(s);
                                         auto root = u;
                                         bool early_exit = false;
-                                        while (u != NULL_INDEX)
+                                        while (u != null)
                                             {
                                                 if (processed[u])
                                                     {
@@ -387,7 +386,7 @@ namespace fwdpp
                                 throw std::runtime_error("FWDPP DEBUG: num_roots "
                                                          "disagreement");
                             }
-                        while (lr != NULL_INDEX)
+                        while (lr != null)
                             {
                                 if (is_root[lr] != 1)
                                     {

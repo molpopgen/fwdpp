@@ -10,6 +10,7 @@
 #include "definitions.hpp"
 #include "recording/edge_buffer.hpp"
 #include "simplification/simplification.hpp"
+#include "types/table_collection.hpp"
 #include <fwdpp/ts/simplification_flags.hpp>
 #include <fwdpp/ts/simplify_tables_output.hpp>
 
@@ -17,25 +18,25 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename TableCollectionType, typename NodeVector,
-                  typename SimplifyTablesOutputType>
+        template <typename SignedInteger>
         inline void
-        simplify_tables(
-            const NodeVector& samples, const simplification_flags /*flags*/,
-            simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables,
-            SimplifyTablesOutputType& simplification_output)
+        simplify_tables(const std::vector<SignedInteger>& samples,
+                        const simplification_flags /*flags*/,
+                        simplification::simplifier_internal_state<SignedInteger>& state,
+                        types::table_collection<SignedInteger>& input_tables,
+                        simplify_tables_output<SignedInteger>& simplification_output)
         {
-            static_assert(std::is_integral<typename NodeVector::value_type>::value,
-                          "NodeVector::value_type must be an integer type");
-            static_assert(std::is_signed<typename NodeVector::value_type>::value,
-                          "NodeVector::value_type must be a signed type");
+            static_assert(std::is_integral<SignedInteger>::value,
+                          "SignedInteger must be an integer type");
+            static_assert(std::is_signed<SignedInteger>::value,
+                          "SignedInteger must be a signed type");
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
             simplification_output.clear();
             simplification_output.idmap.resize(input_tables.nodes.size());
             std::fill(begin(simplification_output.idmap),
-                      end(simplification_output.idmap), NULL_INDEX);
+                      end(simplification_output.idmap),
+                      types::table_collection<SignedInteger>::null);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
@@ -79,7 +80,9 @@ namespace fwdpp
             assert(
                 static_cast<std::size_t>(std::count_if(
                     begin(simplification_output.idmap), end(simplification_output.idmap),
-                    [](const table_index_t i) { return i != NULL_INDEX; }))
+                    [](const SignedInteger i) {
+                        return i != types::table_collection<SignedInteger>::null;
+                    }))
                 == state.new_node_table.size());
 
             simplification::simplify_mutations(
@@ -88,26 +91,23 @@ namespace fwdpp
                                                          input_tables);
         }
 
-        template <typename TableCollectionType, typename NodeVector,
-                  typename SimplifyTablesOutputType>
+        template <typename SignedInteger>
         inline void
-        simplify_tables(
-            const NodeVector& samples, const NodeVector& alive_at_last_simplification,
-            simplification_flags /*flags*/,
-            simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables, edge_buffer& buffer,
-            SimplifyTablesOutputType& simplification_output)
+        simplify_tables(const std::vector<SignedInteger>& samples,
+                        const std::vector<SignedInteger>& alive_at_last_simplification,
+                        simplification_flags /*flags*/,
+                        simplification::simplifier_internal_state<SignedInteger>& state,
+                        types::table_collection<SignedInteger>& input_tables,
+                        edge_buffer<SignedInteger>& buffer,
+                        simplify_tables_output<SignedInteger>& simplification_output)
         {
-            static_assert(std::is_integral<typename NodeVector::value_type>::value,
-                          "NodeVector::value type must be an integer type");
-            static_assert(std::is_signed<typename NodeVector::value_type>::value,
-                          "NodeVector::value type must be a signed type");
             state.clear();
             state.ancestry.reset(input_tables.nodes.size());
             simplification_output.clear();
             simplification_output.idmap.resize(input_tables.nodes.size());
             std::fill(begin(simplification_output.idmap),
-                      end(simplification_output.idmap), NULL_INDEX);
+                      end(simplification_output.idmap),
+                      types::table_collection<SignedInteger>::null);
 
             // We take our samples and add them to both the output
             // node list and initialize their ancestry with
@@ -130,7 +130,8 @@ namespace fwdpp
                 {
                     auto parent = buffer.convert_to_head_index(buffer_rend);
                     auto ptime = input_tables.nodes[parent].time;
-                    if (*buffer_rend != edge_buffer::null && ptime > max_time)
+                    if (*buffer_rend != edge_buffer<SignedInteger>::null
+                        && ptime > max_time)
                         // Then *b is a parent node born after the last
                         // simplification that did leave offspring
                         {
@@ -143,10 +144,11 @@ namespace fwdpp
 
                             simplification::merge_ancestors(
                                 input_tables.genome_length(), input_tables.nodes,
-                                static_cast<table_index_t>(parent), state,
+                                static_cast<SignedInteger>(parent), state,
                                 simplification_output.idmap);
                         }
-                    else if (*buffer_rend != edge_buffer::null && ptime <= max_time)
+                    else if (*buffer_rend != edge_buffer<SignedInteger>::null
+                             && ptime <= max_time)
                         {
                             break;
                         }
@@ -252,7 +254,9 @@ namespace fwdpp
             assert(
                 static_cast<std::size_t>(std::count_if(
                     begin(simplification_output.idmap), end(simplification_output.idmap),
-                    [](const table_index_t i) { return i != NULL_INDEX; }))
+                    [](const SignedInteger i) {
+                        return i != types::table_collection<SignedInteger>::null;
+                    }))
                 == state.new_node_table.size());
 
             simplification::simplify_mutations(
@@ -270,61 +274,62 @@ namespace fwdpp
         // as arguments.  In 0.10.0, we introduced simplify_tables_output_t
         // to hold all of these in a single object.
 
-        template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
+        template <typename SignedInteger, typename PreservedVariantIndexes>
         [[deprecated]] inline void
-        simplify_tables(
-            const NodeVector& samples, const simplification_flags flags,
-            simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables, NodeVector& idmap,
-            PreservedVariantIndexes& preserved_variants)
+        simplify_tables(const SignedInteger& samples, const simplification_flags flags,
+                        simplification::simplifier_internal_state<SignedInteger>& state,
+                        types::table_collection<SignedInteger>& input_tables,
+                        std::vector<SignedInteger>& idmap,
+                        PreservedVariantIndexes& preserved_variants)
         {
-            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+            simplify_tables_output_t<SignedInteger, PreservedVariantIndexes>
                 simplification_output;
             simplify_tables(samples, flags, state, input_tables, simplification_output);
             idmap.swap(simplification_output.idmap);
             preserved_variants.swap(simplification_output.preserved_mutations);
         }
 
-        template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
+        template <typename SignedInteger, typename PreservedVariantIndexes>
         [[deprecated]] inline void
-        simplify_tables(const NodeVector& samples, TableCollectionType& input_tables,
-                        simplification_flags flags, NodeVector& idmap,
+        simplify_tables(const std::vector<SignedInteger>& samples,
+                        types::table_collection<SignedInteger>& input_tables,
+                        simplification_flags flags, std::vector<SignedInteger>& idmap,
                         PreservedVariantIndexes& preserved_variants)
         {
             auto state = simplification::make_simplifier_internal_state(input_tables);
-            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+            simplify_tables_output_t<SignedInteger, PreservedVariantIndexes>
                 simplification_output;
             simplify_tables(samples, flags, state, input_tables, simplification_output);
             idmap.swap(simplification_output.idmap);
             preserved_variants.swap(simplification_output.preserved_mutations);
         }
 
-        template <typename TableCollectionType, typename NodeVector>
+        template <typename SignedInteger>
         [[deprecated]] inline void
-        simplify_tables(const NodeVector& samples, const simplification_flags flags,
-                        TableCollectionType& input_tables)
+        simplify_tables(const std::vector<SignedInteger>& samples,
+                        const simplification_flags flags,
+                        types::table_collection<SignedInteger>& input_tables)
         {
-            NodeVector idmap;
-            simplify_tables_output_t<NodeVector, std::vector<std::size_t>>
+            std::vector<SignedInteger> idmap;
+            simplify_tables_output_t<SignedInteger, std::vector<std::size_t>>
                 simplification_output;
             auto state = simplification::make_simplifier_internal_state(input_tables);
             simplify_tables(samples, flags, state, input_tables, simplification_output);
             idmap.swap(simplification_output.idmap);
         }
 
-        template <typename TableCollectionType, typename NodeVector,
-                  typename PreservedVariantIndexes>
+        template <typename SignedInteger, typename PreservedVariantIndexes>
         [[deprecated]] inline void
-        simplify_tables(
-            const NodeVector& samples, const NodeVector& alive_at_last_simplification,
-            simplification_flags flags,
-            simplification::simplifier_internal_state<TableCollectionType>& state,
-            TableCollectionType& input_tables, edge_buffer& buffer, NodeVector& idmap,
-            PreservedVariantIndexes& preserved_variants)
+        simplify_tables(const std::vector<SignedInteger>& samples,
+                        const std::vector<SignedInteger>& alive_at_last_simplification,
+                        simplification_flags flags,
+                        simplification::simplifier_internal_state<SignedInteger>& state,
+                        types::table_collection<SignedInteger>& input_tables,
+                        edge_buffer<SignedInteger>& buffer,
+                        std::vector<SignedInteger>& idmap,
+                        PreservedVariantIndexes& preserved_variants)
         {
-            simplify_tables_output_t<NodeVector, PreservedVariantIndexes>
+            simplify_tables_output_t<SignedInteger, PreservedVariantIndexes>
                 simplification_output;
             simplify_tables(samples, alive_at_last_simplification, flags, state,
                             input_tables, buffer, simplification_output);

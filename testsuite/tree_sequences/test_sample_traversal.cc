@@ -17,9 +17,10 @@ BOOST_FIXTURE_TEST_CASE(num_samples_simple_table_collection, simple_table_collec
     for (std::size_t i = 0; i < tables.nodes.size(); ++i)
         {
             BOOST_REQUIRE_EQUAL(
-                fwdpp::ts::num_samples(tv.tree(),
-                                       static_cast<fwdpp::ts::table_index_t>(i)),
-                naive_num_samples(tv.tree(), static_cast<fwdpp::ts::table_index_t>(i)));
+                fwdpp::ts::num_samples(
+                    tv.tree(), static_cast<fwdpp::ts::table_collection::id_type>(i)),
+                naive_num_samples(tv.tree(),
+                                  static_cast<fwdpp::ts::table_collection::id_type>(i)));
         }
 }
 
@@ -27,15 +28,16 @@ BOOST_FIXTURE_TEST_CASE(test_sample_lists, simple_table_collection)
 {
     for (std::size_t i = 0; i < tables.nodes.size(); ++i)
         {
-            auto x = fwdpp::ts::get_samples(tv.tree(),
-                                            static_cast<fwdpp::ts::table_index_t>(i));
-            auto y
-                = naive_get_samples(tv.tree(), static_cast<fwdpp::ts::table_index_t>(i));
+            auto x = fwdpp::ts::get_samples(
+                tv.tree(), static_cast<fwdpp::ts::table_collection::id_type>(i));
+            auto y = naive_get_samples(
+                tv.tree(), static_cast<fwdpp::ts::table_collection::id_type>(i));
             BOOST_CHECK_EQUAL(x.size(), y.size());
-            BOOST_CHECK(fwdpp::ts::get_samples(tv.tree(),
-                                               static_cast<fwdpp::ts::table_index_t>(i))
-                        == naive_get_samples(tv.tree(),
-                                             static_cast<fwdpp::ts::table_index_t>(i)));
+            BOOST_CHECK(
+                fwdpp::ts::get_samples(
+                    tv.tree(), static_cast<fwdpp::ts::table_collection::id_type>(i))
+                == naive_get_samples(
+                    tv.tree(), static_cast<fwdpp::ts::table_collection::id_type>(i)));
         }
 }
 
@@ -43,9 +45,10 @@ BOOST_FIXTURE_TEST_CASE(test_process_samples_as_nodes, simple_table_collection)
 {
     samples = {1, 2};
     reset_visitor(true);
-    std::vector<fwdpp::ts::table_index_t> s;
-    fwdpp::ts::process_samples(tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(true),
-                               6, [&s](fwdpp::ts::table_index_t u) { s.push_back(u); });
+    std::vector<fwdpp::ts::table_collection::id_type> s;
+    fwdpp::ts::process_samples(
+        tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(true), 6,
+        [&s](fwdpp::ts::table_collection::id_type u) { s.push_back(u); });
     BOOST_REQUIRE(s == samples);
 }
 
@@ -53,10 +56,10 @@ BOOST_FIXTURE_TEST_CASE(test_process_samples_as_indexes, simple_table_collection
 {
     samples = {1, 2};
     reset_visitor(true);
-    std::vector<fwdpp::ts::table_index_t> s;
-    fwdpp::ts::process_samples(tv.tree(),
-                               fwdpp::ts::convert_sample_index_to_nodes(false), 6,
-                               [&s](fwdpp::ts::table_index_t u) { s.push_back(u); });
+    std::vector<fwdpp::ts::table_collection::id_type> s;
+    fwdpp::ts::process_samples(
+        tv.tree(), fwdpp::ts::convert_sample_index_to_nodes(false), 6,
+        [&s](fwdpp::ts::table_collection::id_type u) { s.push_back(u); });
     for (auto& i : samples)
         {
             i -= 1;

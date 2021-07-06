@@ -43,7 +43,7 @@ class simple_table_collection_polytomy
 
   public:
     fwdpp::ts::table_collection tables;
-    std::vector<fwdpp::ts::table_index_t> samples;
+    std::vector<fwdpp::ts::table_collection::id_type> samples;
     // NOTE: tv is auto advanced to the first tree
     // by the constructor
     fwdpp::ts::tree_visitor<fwdpp::ts::table_collection> tv;
@@ -65,7 +65,7 @@ class simple_table_collection_polytomy
 
     void
     reset_visitor_and_samples(
-        const std::vector<fwdpp::ts::table_index_t>& new_samples_list,
+        const std::vector<fwdpp::ts::table_collection::id_type>& new_samples_list,
         bool update_samples_list)
     {
         samples = new_samples_list;

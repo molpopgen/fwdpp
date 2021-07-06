@@ -9,19 +9,19 @@ namespace fwdpp
 {
     namespace ts
     {
-        template <typename NodeIDMap, typename MutationIndexVector>
+        template <typename SignedInteger, typename UnsignedInteger>
         struct simplify_tables_output_t
         {
-            static_assert(std::is_integral<typename NodeIDMap::value_type>::value,
-                          "NodeIDMap::value_type must be integral");
-            static_assert(std::is_signed<typename NodeIDMap::value_type>::value,
-                          "NodeIDMap::value_type must be signed");
-            static_assert(sizeof(typename NodeIDMap::value_type)
-                              >= sizeof(table_index_t),
-                          "sizeof(NodeIDMap::value_type) must be >= "
-                          "sizeof(fwdpp::ts::table_index_t)");
-            NodeIDMap idmap;
-            MutationIndexVector preserved_mutations;
+            static_assert(std::is_integral<SignedInteger>::value,
+                          "SignedInteger must be integral");
+            static_assert(std::is_signed<SignedInteger>::value,
+                          "SignedInteger must be signed");
+            static_assert(std::is_integral<UnsignedInteger>::value,
+                          "UnsignedInteger must be integral");
+            static_assert(!std::is_signed<UnsignedInteger>::value,
+                          "UnsignedInteger must be signed");
+            std::vector<SignedInteger> idmap;
+            std::vector<UnsignedInteger> preserved_mutations;
 
             simplify_tables_output_t() : idmap{}, preserved_mutations{}
             {
@@ -35,9 +35,9 @@ namespace fwdpp
             }
         };
 
+        template <typename SignedInteger>
         using simplify_tables_output
-            = simplify_tables_output_t<std::vector<table_index_t>,
-                                       std::vector<std::size_t>>;
+            = simplify_tables_output_t<SignedInteger, std::size_t>;
     }
 }
 

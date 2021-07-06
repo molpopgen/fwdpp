@@ -4,44 +4,45 @@
 #include <type_traits>
 #include <stdexcept>
 #include "../marginal_tree.hpp"
+#include "../types/generate_null_id.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        class root_iterator
+        template <typename SignedInteger> class root_iterator
         /// Allows iteration over tree roots
         /// \note Tied to lifetime of a marginal_tree.
         /// \headerfile fwdpp/ts/marginal_tree_functions/roots.hpp
         {
           private:
-            table_index_t current_root;
-            std::vector<table_index_t>::const_iterator rsib_beg, rsib_end;
+            SignedInteger current_root;
+            typename std::vector<SignedInteger>::const_iterator rsib_beg, rsib_end;
 
           public:
-            explicit root_iterator(const marginal_tree& m)
+            explicit root_iterator(const marginal_tree<SignedInteger>& m)
                 : current_root(m.left_root), rsib_beg(begin(m.right_sib)),
                   rsib_end(end(m.right_sib))
             /// \param m A fwdpp::ts::marginal_tree
             {
-                if (current_root == NULL_INDEX)
+                if (current_root == types::generate_null_id<SignedInteger>())
                     {
                         throw std::invalid_argument("root list is empty");
                     }
                 if (rsib_beg == rsib_end)
                     {
-                        throw std::invalid_argument(
-                            "empty list of right sibs");
+                        throw std::invalid_argument("empty list of right sibs");
                     }
             }
 
-            inline table_index_t
+            inline SignedInteger
             operator()()
             /// \return The next root notde
             /// NULL_INDEX signals end of iteration
             {
-                static_assert(NULL_INDEX < 0,
-                        "NULL_INDEX < 0 is false, so something needs to change here");
+                static_assert(
+                    types::generate_null_id<SignedInteger>() < 0,
+                    "NULL_INDEX < 0 is false, so something needs to change here");
                 auto croot = current_root;
                 if (croot < 0)
                     {
@@ -62,7 +63,7 @@ namespace fwdpp
             /// \return true if there are more roots to iterate over, false otherwise.
             {
                 auto croot = this->operator()();
-                bool rv = (croot != NULL_INDEX);
+                bool rv = (croot != types::generate_null_id<SignedInteger>());
                 if (rv)
                     {
                         f(croot);
@@ -71,36 +72,38 @@ namespace fwdpp
             }
         };
 
-        template <typename F>
+        template <typename SignedInteger, typename F>
         inline void
-        process_roots(const marginal_tree& m, const F& f)
+        process_roots(const marginal_tree<SignedInteger>& m, const F& f)
         /// \brief Apply a function to all roots
         /// \param m A Fwdpp::ts::marginal_tree
-        /// \param f A function equivalent to void(*process_root)(table_index_t)
+        /// \param f A function equivalent to void(*process_root)(SignedInteger)
         {
-            root_iterator ri(m);
+            root_iterator<SignedInteger> ri(m);
             while (ri(f))
                 {
                 }
         }
 
-        inline std::vector<table_index_t>
-        get_roots(const marginal_tree& m)
+        template <typename SignedInteger>
+        inline std::vector<SignedInteger>
+        get_roots(const marginal_tree<SignedInteger>& m)
         /// \brief Get a vector of all roots
         /// \param m A Fwdpp::ts::marginal_tree
         {
-            std::vector<table_index_t> rv;
-            process_roots(m, [&rv](const table_index_t r) { rv.push_back(r); });
+            std::vector<SignedInteger> rv;
+            process_roots(m, [&rv](const SignedInteger r) { rv.push_back(r); });
             return rv;
         }
 
+        template <typename SignedInteger>
         inline int
-        num_roots(const marginal_tree& m)
+        num_roots(const marginal_tree<SignedInteger>& m)
         /// \brief Return number of roots
         /// \param m A Fwdpp::ts::marginal_tree
         {
             int nroots = 0;
-            process_roots(m, [&nroots](const table_index_t /*r*/) { ++nroots; });
+            process_roots(m, [&nroots](const SignedInteger /*r*/) { ++nroots; });
             return nroots;
         }
 

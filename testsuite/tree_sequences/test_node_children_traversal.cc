@@ -23,7 +23,7 @@ BOOST_FIXTURE_TEST_CASE(test_polytomy, simple_table_collection_polytomy)
     decltype(c) c2;
     fwdpp::ts::process_children(
         tv.tree(), 5, false,
-        [&c2](fwdpp::ts::table_index_t u) { c2.push_back(u); });
+        [&c2](fwdpp::ts::table_collection::id_type u) { c2.push_back(u); });
     BOOST_REQUIRE(c == c2);
 }
 

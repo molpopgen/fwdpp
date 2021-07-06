@@ -17,46 +17,51 @@ namespace fwdpp
     {
         //constexpr std::int64_t EDGE_BUFFER_NULL = -1;
 
-        struct birth_data
+        template <typename SignedInteger> struct birth_data
         {
             double left, right;
-            table_index_t child;
+            SignedInteger child;
             //std::int64_t next;
 
-            birth_data(double l, double r, table_index_t c)
+            birth_data(double l, double r, SignedInteger c)
                 : left{l}, right{r}, child{c} //, next{EDGE_BUFFER_NULL}
             {
             }
         };
 
-        using edge_buffer = nested_forward_lists<birth_data, std::int32_t, -1>;
+        template <typename SignedInteger>
+        using edge_buffer
+            = nested_forward_lists<birth_data<SignedInteger>, std::int32_t, -1>;
 
         // Below are functions for liftover of an edge buffer
         // to a table collection
 
-        struct parent_location
+        template <typename SignedInteger> struct parent_location
         {
-            table_index_t parent;
+            SignedInteger parent;
             std::size_t start, stop;
-            parent_location(table_index_t p, std::size_t start_, std::size_t stop_)
+            parent_location(SignedInteger p, std::size_t start_, std::size_t stop_)
                 : parent{p}, start{start_}, stop{stop_}
             {
             }
         };
 
         template <typename TableCollectionType>
-        inline std::vector<parent_location>
+        inline std::vector<parent_location<typename TableCollectionType::id_type>>
         find_pre_existing_edges(
             const TableCollectionType& tables,
-            const std::vector<table_index_t>& alive_at_last_simplification,
-            const fwdpp::ts::edge_buffer& new_edges)
+            const std::vector<typename TableCollectionType::id_type>&
+                alive_at_last_simplification,
+            const fwdpp::ts::edge_buffer<typename TableCollectionType::id_type>&
+                new_edges)
         // FIXME: the indexing step need go no farther than the time of the most
         // recent node in alive_at_last_simplification.
         {
-            std::vector<table_index_t> alive_with_new_edges;
+            std::vector<typename TableCollectionType::id_type> alive_with_new_edges;
             for (auto a : alive_at_last_simplification)
                 {
-                    if (new_edges.head(a) != edge_buffer::null)
+                    if (new_edges.head(a)
+                        != edge_buffer<typename TableCollectionType::id_type>::null)
                         {
                             alive_with_new_edges.push_back(a);
                         }
@@ -85,21 +90,25 @@ namespace fwdpp
                         }
                 }
 
-            std::vector<parent_location> existing_edges;
+            std::vector<parent_location<typename TableCollectionType::id_type>>
+                existing_edges;
             for (auto a : alive_with_new_edges)
                 {
                     existing_edges.emplace_back(a, starts[a], stops[a]);
                 }
 
             // Our only sort!!
-            std::sort(begin(existing_edges), end(existing_edges),
-                      [&tables](const parent_location& lhs, const parent_location& rhs) {
-                          // NOTE: have to take -time so that tuple sorting works
-                          auto t0 = -tables.nodes[lhs.parent].time;
-                          auto t1 = -tables.nodes[rhs.parent].time;
-                          return std::tie(t0, lhs.start, lhs.parent)
-                                 < std::tie(t1, rhs.start, rhs.parent);
-                      });
+            std::sort(
+                begin(existing_edges), end(existing_edges),
+                [&tables](
+                    const parent_location<typename TableCollectionType::id_type>& lhs,
+                    const parent_location<typename TableCollectionType::id_type>& rhs) {
+                    // NOTE: have to take -time so that tuple sorting works
+                    auto t0 = -tables.nodes[lhs.parent].time;
+                    auto t1 = -tables.nodes[rhs.parent].time;
+                    return std::tie(t0, lhs.start, lhs.parent)
+                           < std::tie(t1, rhs.start, rhs.parent);
+                });
 
             // FIXME: this should be debug only
             for (std::size_t i = 1; i < existing_edges.size(); ++i)
@@ -119,8 +128,10 @@ namespace fwdpp
         template <typename TableCollectionType>
         std::size_t
         handle_pre_existing_edges(
-            const TableCollectionType& tables, const edge_buffer& new_edges,
-            const std::vector<parent_location>& existing_edges,
+            const TableCollectionType& tables,
+            const edge_buffer<typename TableCollectionType::id_type>& new_edges,
+            const std::vector<parent_location<typename TableCollectionType::id_type>>&
+                existing_edges,
             typename TableCollectionType::edge_table& edge_liftover)
         {
             std::size_t offset = 0;
@@ -152,7 +163,7 @@ namespace fwdpp
                             offset = ex.stop + 1;
                         }
                     auto n = new_edges.head(ex.parent);
-                    while (n != edge_buffer::null)
+                    while (n != edge_buffer<typename TableCollectionType::id_type>::null)
                         {
                             const auto& birth = new_edges.fetch(n);
                             edge_liftover.emplace_back(
@@ -167,8 +178,9 @@ namespace fwdpp
         template <typename TableCollectionType>
         inline void
         copy_births_since_last_simplification(
-            const edge_buffer& new_edges, const TableCollectionType& tables,
-            double max_time, typename TableCollectionType::edge_table& edge_liftover)
+            const edge_buffer<typename TableCollectionType::id_type>& new_edges,
+            const TableCollectionType& tables, double max_time,
+            typename TableCollectionType::edge_table& edge_liftover)
         {
 
             // TODO: should validate data in new_edges
@@ -185,16 +197,21 @@ namespace fwdpp
                         {
                             throw std::runtime_error("negative parent value");
                         }
-                    if (parent >= std::numeric_limits<table_index_t>::max())
+                    if (parent >= std::numeric_limits<
+                            typename TableCollectionType::id_type>::max())
                         {
                             throw std::overflow_error("parent value overflows");
                         }
-                    auto cast_parent = static_cast<table_index_t>(parent);
+                    auto cast_parent
+                        = static_cast<typename TableCollectionType::id_type>(parent);
                     auto ptime = tables.nodes[parent].time;
-                    if (*b != edge_buffer::null && ptime > max_time)
+                    if (*b != edge_buffer<typename TableCollectionType::id_type>::null
+                        && ptime > max_time)
                         {
                             auto n = *b;
-                            while (n != edge_buffer::null)
+                            while (n
+                                   != edge_buffer<
+                                       typename TableCollectionType::id_type>::null)
                                 {
                                     const auto& birth = new_edges.fetch(n);
                                     edge_liftover.emplace_back(
@@ -204,7 +221,10 @@ namespace fwdpp
                                     n = new_edges.next(n);
                                 }
                         }
-                    else if (*b != edge_buffer::null && ptime <= max_time)
+                    else if (*b
+                                 != edge_buffer<
+                                     typename TableCollectionType::id_type>::null
+                             && ptime <= max_time)
                         {
                             break;
                         }
@@ -214,8 +234,10 @@ namespace fwdpp
         template <typename TableCollectionType>
         void
         stitch_together_edges(
-            const std::vector<table_index_t>& alive_at_last_simplification,
-            double max_time, edge_buffer& new_edges,
+            const std::vector<typename TableCollectionType::id_type>&
+                alive_at_last_simplification,
+            double max_time,
+            edge_buffer<typename TableCollectionType::id_type>& new_edges,
             typename TableCollectionType::edge_table& edge_liftover,
             TableCollectionType& tables)
         {

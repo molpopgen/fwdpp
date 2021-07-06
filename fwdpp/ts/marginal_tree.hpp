@@ -7,33 +7,41 @@
 #include <vector>
 #include <limits>
 #include <cstdint>
-#include "definitions.hpp"
+#include <type_traits>
 #include "exceptions.hpp"
+#include "types/generate_null_id.hpp"
 
 namespace fwdpp
 {
     namespace ts
     {
-        struct sample_group_map
+        template <typename SignedInteger = std::int32_t> struct sample_group_map
         /// \brief Maps a node id to a sample group
         ///
         /// When constructing a fwdpp::ts::tree_visitor,
         /// vectors of this type may be used to mark
         /// sample nodes as beloning to different "groups".
         {
-            /// fwdpp::ts::node id
-            table_index_t node_id;
+            static_assert(std::is_integral<SignedInteger>::value,
+                          "SignedInteger must be an integral type");
+            static_assert(std::is_signed<SignedInteger>::value,
+                          "SignedInteger must be a signed type");
+            /// node id
+            SignedInteger node_id;
             /// group label
             std::int32_t group;
-            sample_group_map(table_index_t n, std::int32_t g)
-                : node_id(n), group(g)
+            sample_group_map(SignedInteger n, std::int32_t g) : node_id(n), group(g)
             /// \param n A node id
             /// \param g A gropup label
             {
+                if (n == types::generate_null_id<SignedInteger>())
+                    {
+                        throw samples_error("null ID passed to sample_index_map");
+                    }
             }
         };
 
-        class marginal_tree
+        template <typename SignedInteger = std::int32_t> class marginal_tree
         /// \brief A non-recombining tree
         ///
         /// The tree is represented as a sparse tree
@@ -51,16 +59,23 @@ namespace fwdpp
         /// \version 0.8.0 Now holds a list of samples. Samples may be assigned to groups.
         {
           private:
+            static_assert(std::is_integral<SignedInteger>::value,
+                          "SignedInteger must be an integral type");
+            static_assert(std::is_signed<SignedInteger>::value,
+                          "SignedInteger must be a signed type");
             std::size_t num_nodes;
             std::vector<std::int32_t> sample_groups;
-            std::vector<table_index_t> samples_list;
+            std::vector<SignedInteger> samples_list;
             bool advancing_sample_list_;
 
+            static constexpr SignedInteger null
+                = types::generate_null_id<SignedInteger>();
+
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<table_index_t>& samples)
+            fill_sample_groups(const std::vector<SignedInteger>& samples)
             {
-                std::vector<std::int32_t> rv(
-                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                std::vector<std::int32_t> rv(num_nodes,
+                                             std::numeric_limits<std::int32_t>::min());
                 for (auto i : samples)
                     {
                         rv[i] = 0;
@@ -69,10 +84,11 @@ namespace fwdpp
             }
 
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<sample_group_map>& samples)
+            fill_sample_groups(
+                const std::vector<sample_group_map<SignedInteger>>& samples)
             {
-                std::vector<std::int32_t> rv(
-                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                std::vector<std::int32_t> rv(num_nodes,
+                                             std::numeric_limits<std::int32_t>::min());
                 for (auto i : samples)
                     {
                         rv[i.node_id] = i.group;
@@ -81,11 +97,11 @@ namespace fwdpp
             }
 
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<table_index_t>& samples_a,
-                               const std::vector<table_index_t>& samples_b)
+            fill_sample_groups(const std::vector<SignedInteger>& samples_a,
+                               const std::vector<SignedInteger>& samples_b)
             {
-                std::vector<std::int32_t> rv(
-                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                std::vector<std::int32_t> rv(num_nodes,
+                                             std::numeric_limits<std::int32_t>::min());
                 for (auto i : samples_a)
                     {
                         rv[i] = 0;
@@ -98,11 +114,12 @@ namespace fwdpp
             }
 
             std::vector<std::int32_t>
-            fill_sample_groups(const std::vector<sample_group_map>& samples_a,
-                               const std::vector<table_index_t>& samples_b)
+            fill_sample_groups(
+                const std::vector<sample_group_map<SignedInteger>>& samples_a,
+                const std::vector<SignedInteger>& samples_b)
             {
-                std::vector<std::int32_t> rv(
-                    num_nodes, std::numeric_limits<std::int32_t>::min());
+                std::vector<std::int32_t> rv(num_nodes,
+                                             std::numeric_limits<std::int32_t>::min());
                 for (auto i : samples_a)
                     {
                         rv[i.node_id] = 0;
@@ -114,16 +131,16 @@ namespace fwdpp
                 return rv;
             }
 
-            std::vector<table_index_t>
-            init_samples_list(const std::vector<table_index_t>& s)
+            std::vector<SignedInteger>
+            init_samples_list(const std::vector<SignedInteger>& s)
             {
                 return s;
             }
 
-            std::vector<table_index_t>
-            init_samples_list(const std::vector<sample_group_map>& s)
+            std::vector<SignedInteger>
+            init_samples_list(const std::vector<sample_group_map<SignedInteger>>& s)
             {
-                std::vector<table_index_t> rv;
+                std::vector<SignedInteger> rv;
                 for (auto& i : s)
                     {
                         rv.push_back(i.node_id);
@@ -131,18 +148,18 @@ namespace fwdpp
                 return rv;
             }
 
-            std::vector<table_index_t>
-            init_samples_list(const std::vector<table_index_t>& a,
-                              const std::vector<table_index_t>& b)
+            std::vector<SignedInteger>
+            init_samples_list(const std::vector<SignedInteger>& a,
+                              const std::vector<SignedInteger>& b)
             {
                 auto rv = a;
                 rv.insert(end(rv), begin(b), end(b));
                 return rv;
             }
 
-            std::vector<table_index_t>
-            init_samples_list(const std::vector<sample_group_map>& a,
-                              const std::vector<table_index_t>& b)
+            std::vector<SignedInteger>
+            init_samples_list(const std::vector<sample_group_map<SignedInteger>>& a,
+                              const std::vector<SignedInteger>& b)
             {
                 auto rv = init_samples_list(a);
                 rv.insert(end(rv), begin(b), end(b));
@@ -156,12 +173,11 @@ namespace fwdpp
                     {
                         auto s = samples_list[i];
                         // See GitHub issue #158 for background
-                        if (sample_index_map[s] != NULL_INDEX)
+                        if (sample_index_map[s] != null)
                             {
-                                throw samples_error(
-                                    "invalid sample list");
+                                throw samples_error("invalid sample list");
                             }
-                        sample_index_map[s] = static_cast<table_index_t>(i);
+                        sample_index_map[s] = static_cast<SignedInteger>(i);
                         left_sample[s] = right_sample[s] = sample_index_map[s];
                         above_sample[s] = 1;
                         // Initialize roots
@@ -177,46 +193,38 @@ namespace fwdpp
             }
 
           public:
-            std::vector<table_index_t> parents, leaf_counts,
-                preserved_leaf_counts, left_sib, right_sib, left_child,
-                right_child, left_sample, right_sample, next_sample,
-                sample_index_map;
+            using id_type = SignedInteger;
+            std::vector<id_type> parents, leaf_counts, preserved_leaf_counts, left_sib,
+                right_sib, left_child, right_child, left_sample, right_sample,
+                next_sample, sample_index_map;
             std::vector<std::int8_t> above_sample;
             double left, right;
-            table_index_t left_root;
+            id_type left_root;
 
             template <typename SAMPLES>
             marginal_tree(std::size_t nnodes, const SAMPLES& samples,
                           bool advancing_sample_list)
-                : num_nodes(nnodes),
-                  sample_groups(fill_sample_groups(samples)),
+                : num_nodes(nnodes), sample_groups(fill_sample_groups(samples)),
                   samples_list(init_samples_list(samples)),
-                  advancing_sample_list_(advancing_sample_list),
-                  parents(nnodes, NULL_INDEX), leaf_counts(nnodes, 0),
-                  preserved_leaf_counts(nnodes, 0),
-                  left_sib(nnodes, NULL_INDEX),
-                  right_sib(nnodes, NULL_INDEX),
-                  left_child(nnodes, NULL_INDEX),
-                  right_child(nnodes, NULL_INDEX),
-                  left_sample(nnodes, NULL_INDEX),
-                  right_sample(nnodes, NULL_INDEX),
-                  next_sample(nnodes, NULL_INDEX),
-                  sample_index_map(nnodes, NULL_INDEX),
+                  advancing_sample_list_(advancing_sample_list), parents(nnodes, null),
+                  leaf_counts(nnodes, 0), preserved_leaf_counts(nnodes, 0),
+                  left_sib(nnodes, null), right_sib(nnodes, null),
+                  left_child(nnodes, null), right_child(nnodes, null),
+                  left_sample(nnodes, null), right_sample(nnodes, null),
+                  next_sample(nnodes, null), sample_index_map(nnodes, null),
                   above_sample(nnodes, 0),
-                  left{ std::numeric_limits<double>::quiet_NaN() },
-                  right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(NULL_INDEX)
+                  left{std::numeric_limits<double>::quiet_NaN()},
+                  right{std::numeric_limits<double>::quiet_NaN()}, left_root(null)
             /// \param nnodes Number of nodes in table_collection
             /// \param samples The sample list
             ///
-            /// \a samples may be either std::vector<table_index_t> or
+            /// \a samples may be either std::vector<id_type> or
             /// std::vector<fwdpp::ts::sample_group_map>.  For the former, all
             /// sample nodes will be assigned group 0.
             {
                 if (samples_list.empty())
                     {
-                        throw samples_error(
-                            "marginal_tree: empty sample list");
+                        throw samples_error("marginal_tree: empty sample list");
                     }
                 init_samples();
                 for (auto s : samples_list)
@@ -228,61 +236,49 @@ namespace fwdpp
 
             template <typename SAMPLES>
             marginal_tree(std::size_t nnodes, const SAMPLES& samples,
-                          const std::vector<table_index_t> preserved_nodes,
+                          const std::vector<id_type> preserved_nodes,
                           bool advancing_sample_list)
                 : num_nodes(nnodes),
                   sample_groups(fill_sample_groups(samples, preserved_nodes)),
                   samples_list(init_samples_list(samples, preserved_nodes)),
-                  advancing_sample_list_(advancing_sample_list),
-                  parents(nnodes, NULL_INDEX), leaf_counts(nnodes, 0),
-                  preserved_leaf_counts(nnodes, 0),
-                  left_sib(nnodes, NULL_INDEX),
-                  right_sib(nnodes, NULL_INDEX),
-                  left_child(nnodes, NULL_INDEX),
-                  right_child(nnodes, NULL_INDEX),
-                  left_sample(nnodes, NULL_INDEX),
-                  right_sample(nnodes, NULL_INDEX),
-                  next_sample(nnodes, NULL_INDEX),
-                  sample_index_map(nnodes, NULL_INDEX),
+                  advancing_sample_list_(advancing_sample_list), parents(nnodes, null),
+                  leaf_counts(nnodes, 0), preserved_leaf_counts(nnodes, 0),
+                  left_sib(nnodes, null), right_sib(nnodes, null),
+                  left_child(nnodes, null), right_child(nnodes, null),
+                  left_sample(nnodes, null), right_sample(nnodes, null),
+                  next_sample(nnodes, null), sample_index_map(nnodes, null),
                   above_sample(nnodes, 0),
-                  left{ std::numeric_limits<double>::quiet_NaN() },
-                  right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(NULL_INDEX)
+                  left{std::numeric_limits<double>::quiet_NaN()},
+                  right{std::numeric_limits<double>::quiet_NaN()}, left_root(null)
             /// Constructor
             {
                 if (samples_list.empty())
                     {
-                        throw samples_error(
-                            "marginal_tree: empty sample list");
+                        throw samples_error("marginal_tree: empty sample list");
                     }
                 init_samples();
                 left_root = samples_list[0];
-                for(std::size_t i=0;i<samples.size();++i)
-                {
-                    leaf_counts[samples_list[i]]=1;
-                }
+                for (std::size_t i = 0; i < samples.size(); ++i)
+                    {
+                        leaf_counts[samples_list[i]] = 1;
+                    }
                 for (auto s : preserved_nodes)
                     {
                         preserved_leaf_counts[s] = 1;
                     }
             }
 
-            marginal_tree(table_index_t nnodes)
+            marginal_tree(id_type nnodes)
                 : num_nodes(nnodes), sample_groups{}, samples_list{},
-                  advancing_sample_list_(false), parents(nnodes, NULL_INDEX),
-                  leaf_counts{}, preserved_leaf_counts{},
-                  left_sib(nnodes, NULL_INDEX),
-                  right_sib(nnodes, NULL_INDEX),
-                  left_child(nnodes, NULL_INDEX),
-                  right_child(nnodes, NULL_INDEX),
-                  left_sample(nnodes, NULL_INDEX),
-                  right_sample(nnodes, NULL_INDEX),
-                  next_sample(nnodes, NULL_INDEX),
-                  sample_index_map(nnodes, NULL_INDEX),
+                  advancing_sample_list_(false),
+                  parents(nnodes, null), leaf_counts{}, preserved_leaf_counts{},
+                  left_sib(nnodes, null), right_sib(nnodes, null),
+                  left_child(nnodes, null), right_child(nnodes, null),
+                  left_sample(nnodes, null), right_sample(nnodes, null),
+                  next_sample(nnodes, null), sample_index_map(nnodes, null),
                   above_sample(nnodes, 0),
-                  left{ std::numeric_limits<double>::quiet_NaN() },
-                  right{ std::numeric_limits<double>::quiet_NaN() },
-                  left_root(NULL_INDEX)
+                  left{std::numeric_limits<double>::quiet_NaN()},
+                  right{std::numeric_limits<double>::quiet_NaN()}, left_root(null)
             /// Constructor
             /// \todo Document
             {
@@ -292,13 +288,13 @@ namespace fwdpp
             num_roots() const
             /// Return number of roots
             {
-                if (left_root == NULL_INDEX)
+                if (left_root == null)
                     {
                         throw std::runtime_error("left_root is NULL");
                     }
                 int nroots = 0;
                 auto lr = left_root;
-                while (lr != NULL_INDEX)
+                while (lr != null)
                     {
                         ++nroots;
                         lr = right_sib[lr];
@@ -313,22 +309,22 @@ namespace fwdpp
                 return samples_list.size();
             }
 
-            inline std::vector<table_index_t>::const_iterator
+            inline typename std::vector<id_type>::const_iterator
             samples_list_begin() const
             /// Beginning of samples list
             {
                 return begin(samples_list);
             }
 
-            inline std::vector<table_index_t>::const_iterator
+            inline typename std::vector<id_type>::const_iterator
             samples_list_end() const
             /// End itertor for samples list
             {
                 return end(samples_list);
             }
 
-            inline std::int32_t
-            sample_group(table_index_t u) const
+            inline id_type
+            sample_group(id_type u) const
             /// Return the sample group for node \u
             {
                 if (static_cast<std::size_t>(u) >= num_nodes)
@@ -351,14 +347,20 @@ namespace fwdpp
                 return num_nodes;
             }
 
-            inline table_index_t
-            sample_table_index_to_node(table_index_t u) const
+            inline id_type
+            sample_table_index_to_node(id_type u) const
             /// If u is a sample index, return the associated
             /// node id.
             {
                 return samples_list[u];
             }
         };
+
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger marginal_tree<SignedInteger>::null;
+#endif
+
     } // namespace ts
 } // namespace fwdpp
 
