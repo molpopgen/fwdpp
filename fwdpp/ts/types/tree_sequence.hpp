@@ -7,7 +7,7 @@
 #include "../marginal_tree.hpp"
 #include "../exceptions.hpp"
 #include "../node_flags.hpp"
-#include "../tree_sequence_flags.hpp"
+#include "../tree_flags.hpp"
 
 namespace fwdpp
 {
@@ -22,7 +22,6 @@ namespace fwdpp
                 std::vector<SignedInteger> samples_;
                 std::size_t num_trees_;
                 std::uint32_t flags_;
-                marginal_tree<SignedInteger> tree_;
 
                 static constexpr SignedInteger null
                     = types::table_collection<SignedInteger>::null;
@@ -91,10 +90,7 @@ namespace fwdpp
                     std::uint32_t flags)
                     : tables_{init_tables(std::move(tables))}, samples_{init_samples(
                                                                    *tables)},
-                      num_trees_{init_num_trees()}, flags_{flags},
-                      tree_{
-                          tables->nodes.size(), samples_,
-                          static_cast<bool>(flags_ & tree_sequence_flags::TRACK_SAMPLES)}
+                      num_trees_{init_num_trees()}, flags_{flags}
                 {
                 }
 
@@ -104,10 +100,7 @@ namespace fwdpp
                     : tables_{init_tables(std::move(tables))}, samples_{init_samples(
                                                                    *tables,
                                                                    std::move(samples))},
-                      num_trees_{init_num_trees()}, flags_{flags},
-                      tree_{
-                          tables->nodes.size(), samples_,
-                          static_cast<bool>(flags_ & tree_sequence_flags::TRACK_SAMPLES)}
+                      num_trees_{init_num_trees()}, flags_{flags}
                 {
                 }
             };

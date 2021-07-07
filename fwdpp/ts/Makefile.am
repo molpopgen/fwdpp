@@ -35,6 +35,6 @@ pkginclude_HEADERS= definitions.hpp \
 			visit_sites.hpp \
 			site_visitor.hpp \
 			recording.hpp \
-			tree_sequence_flags.hpp
+			tree_flags.hpp
 
 
