@@ -25,33 +25,51 @@ namespace fwdpp
               private:
                 std::reference_wrapper<const tree_sequence<SignedInteger>> treeseq_;
                 marginal_tree<SignedInteger> tree_;
+                std::size_t input_edge_index, output_edge_index;
+                double position;
+
+                bool
+                still_advancing() const
+                // assumes left-to-right iteration
+                {
+                    return (input_edge_index < tables().input_left.size()
+                            || position < tables().genome_length());
+                }
 
               public:
                 tree_iterator(const tree_sequence<SignedInteger>& ts,
                               std::uint32_t flags)
                     : treeseq_{ts}, tree_{ts.num_nodes(), ts.samples(),
-                                          static_cast<bool>(flags
-                                                            & tree_flags::TRACK_SAMPLES)}
+                                          static_cast<bool>(
+                                              flags & tree_flags::TRACK_SAMPLES)},
+                      input_edge_index{0}, output_edge_index{0}, position{0.}
                 {
                 }
 
                 const marginal_tree<SignedInteger>*
                 tree_ptr() const
                 {
-                    // FIXME: should be nullptr if no more trees
-                    return &tree_;
+                    return still_advancing() ? &tree_ : nullptr;
                 }
 
 #if __cplusplus >= 201703L
                 std::optional<std::reference_wrapper<const marginal_tree<SignedInteger>>>
                 tree() const
                 {
-                    // FIXME: should be nullopt if no more trees
-                    return std::optional<
-                        std::reference_wrapper<const marginal_tree<SignedInteger>>>{
-                        std::cref(tree_)};
+                    if (still_advancing())
+                        {
+                            return std::optional<std::reference_wrapper<
+                                const marginal_tree<SignedInteger>>>{std::cref(tree_)};
+                        }
+
+                    return std::nullopt;
                 }
 #endif
+                const types::table_collection<SignedInteger>&
+                tables() const
+                {
+                    return treeseq_.get().tables();
+                }
             };
 
             template <typename SignedInteger> class tree_sequence
@@ -156,6 +174,12 @@ namespace fwdpp
                 trees(std::uint32_t flags)
                 {
                     return tree_iterator<SignedInteger>{*this, flags};
+                }
+
+                const types::table_collection<SignedInteger>&
+                tables() const
+                {
+                    return *tables_;
                 }
             };
 
