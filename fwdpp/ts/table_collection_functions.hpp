@@ -171,6 +171,56 @@ namespace fwdpp
             sort_edge_table(edge_table_offset, tables);
             sort_mutation_table_and_rebuild_site_table(tables);
         }
+
+        template <typename TableCollectionType>
+        std::size_t
+        count_trees(const TableCollectionType& tables)
+        /// Count the number of trees.
+        /// Tables must be indexed.
+        ///
+        /// Implementation ported from forrustts.
+        {
+            if (!tables.indexed())
+                {
+                    throw tables_error("tables are not indexed");
+                }
+            std::size_t num_trees = 0;
+
+            auto input_edge = begin(tables.input_left);
+            auto output_edge = begin(tables.output_right);
+            const auto input_end = end(tables.input_left);
+            const auto output_end = end(tables.output_right);
+
+            double tree_left = 0.0;
+
+            while (input_edge < input_end || tree_left < tables.genome_length())
+                {
+                    while (output_edge < output_end
+                           && tables.edges[*output_edge].right == tree_left)
+                        {
+                            ++output_edge;
+                        }
+                    while (input_edge < input_end
+                           && tables.edges[*input_edge].left == tree_left)
+                        {
+                            ++input_edge;
+                        }
+                    auto tree_right = tables.genome_length();
+                    if (input_edge < input_end)
+                        {
+                            tree_right
+                                = std::min(tree_right, tables.edges[*input_edge].left);
+                        }
+                    if (output_edge < output_end)
+                        {
+                            tree_right
+                                = std::min(tree_right, tables.edges[*output_edge].right);
+                        }
+                    tree_left = tree_right;
+                    ++num_trees;
+                }
+            return num_trees;
+        }
     }
 }
 
