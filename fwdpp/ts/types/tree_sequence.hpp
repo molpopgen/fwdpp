@@ -21,7 +21,6 @@ namespace fwdpp
                 std::shared_ptr<const types::table_collection<SignedInteger>> tables_;
                 std::vector<SignedInteger> samples_;
                 std::size_t num_trees_;
-                std::uint32_t flags_;
 
                 static constexpr SignedInteger null
                     = types::table_collection<SignedInteger>::null;
@@ -86,21 +85,19 @@ namespace fwdpp
 
               public:
                 tree_sequence(
-                    std::shared_ptr<types::table_collection<SignedInteger>> tables,
-                    std::uint32_t flags)
-                    : tables_{init_tables(std::move(tables))}, samples_{init_samples(
-                                                                   *tables)},
-                      num_trees_{init_num_trees()}, flags_{flags}
+                    std::shared_ptr<types::table_collection<SignedInteger>> tables)
+                    : tables_{init_tables(std::move(tables))},
+                      samples_{init_samples(*tables)}, num_trees_{init_num_trees()}
                 {
                 }
 
                 tree_sequence(
                     std::shared_ptr<types::table_collection<SignedInteger>> tables,
-                    std::vector<SignedInteger> samples, std::uint32_t flags)
+                    std::vector<SignedInteger> samples)
                     : tables_{init_tables(std::move(tables))}, samples_{init_samples(
                                                                    *tables,
                                                                    std::move(samples))},
-                      num_trees_{init_num_trees()}, flags_{flags}
+                      num_trees_{init_num_trees()}
                 {
                 }
             };
