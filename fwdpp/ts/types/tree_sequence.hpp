@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "table_collection.hpp"
+#include "../node_flags.hpp"
 
 namespace fwdpp
 {
@@ -18,13 +19,79 @@ namespace fwdpp
                 std::vector<SignedInteger> samples_;
                 std::size_t num_trees_;
 
+                static constexpr SignedInteger null
+                    = types::table_collection<SignedInteger>::null;
+
+                std::shared_ptr<const types::table_collection<SignedInteger>>
+                init_tables(
+                    std::shared_ptr<const types::table_collection<SignedInteger>> tables)
+                {
+                    if (tables == nullptr)
+                        {
+                            throw std::invalid_argument(
+                                "input pointer to table_collection is nullptr");
+                        }
+                    return tables;
+                }
+
+                std::vector<SignedInteger>
+                init_samples(const types::table_collection<SignedInteger>& tables)
+                {
+                    std::vector<SignedInteger> rv;
+                    for (std::size_t i = 0; i < tables.nodes.size(); ++i)
+                        {
+                            if (tables.nodes[i].flags & node_flags::IS_SAMPLE)
+                                {
+                                    rv.push_back(static_cast<SignedInteger>(i));
+                                }
+                        }
+                    return rv;
+                }
+
+                std::vector<SignedInteger>
+                init_samples(const types::table_collection<SignedInteger>& tables,
+                             std::vector<SignedInteger> samples)
+                {
+                    std::vector<std::size_t> is_sample(tables.nodes.size(), 0);
+                    for (auto s : samples)
+                        {
+                            if (s == null)
+                                {
+                                    throw std::invalid_argument(
+                                        "input sample ID is null");
+                                }
+                            if (is_sample[static_cast<std::size_t>(s)] == 1)
+                                {
+                                    throw std::invalid_argument(
+                                        "node ID marked as sample multiple times");
+                                }
+                            is_sample[static_cast<std::size_t>(s)] = 1;
+                        }
+                    return samples;
+                }
+
               public:
                 tree_sequence(
                     std::shared_ptr<types::table_collection<SignedInteger>> tables)
-                    : tables_{std::move(tables)}
+                    : tables_{init_tables(std::move(tables))}, samples_{
+                                                                   init_samples(*tables)}
+                {
+                }
+
+                tree_sequence(
+                    std::shared_ptr<types::table_collection<SignedInteger>> tables,
+                    std::vector<SignedInteger> samples)
+                    : tables_{init_tables(std::move(tables))}, samples_{init_samples(
+                                                                   *tables,
+                                                                   std::move(samples))}
                 {
                 }
             };
+
+#if __cplusplus < 201703L
+            template <typename SignedInteger>
+            constexpr SignedInteger tree_sequence<SignedInteger>::null;
+#endif
         }
     }
 }
