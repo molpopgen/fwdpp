@@ -70,11 +70,17 @@ namespace fwdpp
                     return samples;
                 }
 
+                std::size_t
+                init_num_trees()
+                {
+                    return 0;
+                }
+
               public:
                 tree_sequence(
                     std::shared_ptr<types::table_collection<SignedInteger>> tables)
-                    : tables_{init_tables(std::move(tables))}, samples_{
-                                                                   init_samples(*tables)}
+                    : tables_{init_tables(std::move(tables))},
+                      samples_{init_samples(*tables)}, num_trees_{init_num_trees()}
                 {
                 }
 
@@ -83,7 +89,8 @@ namespace fwdpp
                     std::vector<SignedInteger> samples)
                     : tables_{init_tables(std::move(tables))}, samples_{init_samples(
                                                                    *tables,
-                                                                   std::move(samples))}
+                                                                   std::move(samples))},
+                      num_trees_{init_num_trees()}
                 {
                 }
             };
