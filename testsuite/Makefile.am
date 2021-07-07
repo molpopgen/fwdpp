@@ -96,7 +96,8 @@ tree_sequences_tree_sequence_tests_SOURCES=tree_sequences/tree_sequence_tests.cc
 										tree_sequences/test_diploid_recording.cc \
 										tree_sequences/wfevolve_table_collection_fxns.cc \
 										tree_sequences/test_edge_buffering_std_table_collection.cc \
-										tree_sequences/tskit_utils.cc
+										tree_sequences/tskit_utils.cc \
+										tree_sequences/test_tree_sequence.cc
 
 tree_sequences_tree_sequence_tests_CFLAGS=-std=c99
 
