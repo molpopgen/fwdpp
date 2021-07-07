@@ -181,6 +181,12 @@ namespace fwdpp
                 {
                     return *tables_;
                 }
+
+                void
+                advance_right()
+                // Move 1 tree left-to-right
+                {
+                }
             };
 
 #if __cplusplus < 201703L
