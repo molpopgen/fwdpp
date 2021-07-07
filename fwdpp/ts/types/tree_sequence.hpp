@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <memory>
 #include <vector>
+#if __cplusplus >= 201703L
+#include <optional>
+#endif
 #include "table_collection.hpp"
 #include "../marginal_tree.hpp"
 #include "../exceptions.hpp"
@@ -15,6 +18,42 @@ namespace fwdpp
     {
         namespace types
         {
+            template <typename SignedInteger> class tree_sequence;
+
+            template <typename SignedInteger> class tree_iterator
+            {
+              private:
+                const tree_sequence<SignedInteger>* treeseq_;
+                marginal_tree<SignedInteger> tree_;
+
+              public:
+                tree_iterator(const tree_sequence<SignedInteger>* ts,
+                              const std::vector<SignedInteger>& samples,
+                              std::uint32_t flags)
+                    : treeseq_{ts}, tree_{ts->nodes.size(), samples,
+                                          static_cast<bool>(flags
+                                                            & tree_flags::TRACK_SAMPLES)}
+                {
+                }
+
+                const marginal_tree<SignedInteger>*
+                tree_ptr() const
+                {
+                    // FIXME: should be nullptr if no more trees
+                    return &tree_;
+                }
+
+#if __cplusplus >= 201703L
+                std::optional<const marginal_tree<SignedInteger>&>
+                tree() const
+                {
+                    // FIXME: should be nullopt if no more trees
+                    return std::optional<const marginal_tree<SignedInteger>&>{
+                        std::cref(tree_)};
+                }
+#endif
+            };
+
             template <typename SignedInteger> class tree_sequence
             {
               private:
