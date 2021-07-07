@@ -23,14 +23,13 @@ namespace fwdpp
             template <typename SignedInteger> class tree_iterator
             {
               private:
-                const tree_sequence<SignedInteger>* treeseq_;
+                std::reference_wrapper<const tree_sequence<SignedInteger>> treeseq_;
                 marginal_tree<SignedInteger> tree_;
 
               public:
-                tree_iterator(const tree_sequence<SignedInteger>* ts,
-                              const std::vector<SignedInteger>& samples,
+                tree_iterator(const tree_sequence<SignedInteger>& ts,
                               std::uint32_t flags)
-                    : treeseq_{ts}, tree_{ts->nodes.size(), samples,
+                    : treeseq_{ts}, tree_{ts.num_nodes(), ts.samples(),
                                           static_cast<bool>(flags
                                                             & tree_flags::TRACK_SAMPLES)}
                 {
@@ -138,6 +137,24 @@ namespace fwdpp
                                                                    std::move(samples))},
                       num_trees_{init_num_trees()}
                 {
+                }
+
+                std::size_t
+                num_nodes() const
+                {
+                    return tables_->nodes.size();
+                }
+
+                const std::vector<SignedInteger>&
+                samples() const
+                {
+                    return samples_;
+                }
+
+                tree_iterator<SignedInteger>
+                trees(std::uint32_t flags)
+                {
+                    return tree_iterator<SignedInteger>{*this, flags};
                 }
             };
 
