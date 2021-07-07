@@ -43,11 +43,12 @@ namespace fwdpp
                 }
 
 #if __cplusplus >= 201703L
-                std::optional<const marginal_tree<SignedInteger>&>
+                std::optional<std::reference_wrapper<const marginal_tree<SignedInteger>>>
                 tree() const
                 {
                     // FIXME: should be nullopt if no more trees
-                    return std::optional<const marginal_tree<SignedInteger>&>{
+                    return std::optional<
+                        std::reference_wrapper<const marginal_tree<SignedInteger>>>{
                         std::cref(tree_)};
                 }
 #endif
