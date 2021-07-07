@@ -1,6 +1,7 @@
 #include <iostream>
 #include <boost/test/unit_test.hpp>
 #include <fwdpp/ts/table_collection.hpp>
+#include <fwdpp/ts/table_collection_functions.hpp>
 #include "wfevolve_table_collection.hpp"
 #include "tskit_utils.hpp"
 
@@ -104,9 +105,21 @@ BOOST_AUTO_TEST_CASE(test_kc_distance)
         ll.tables_buffering, ll.nsteps, ll.samples_buffering);
     auto tsk_tables_sort = dump_table_collection_to_tskit(ll.tables_buffering, ll.nsteps,
                                                           ll.samples_sorting);
+    ll.tables_buffering.build_indexes();
+    ll.tables_sorting.build_indexes();
     tsk_treeseq_wrapper treeseq_buffer(tsk_tables_buffer.get());
     tsk_treeseq_wrapper treeseq_sort(tsk_tables_buffer.get());
     double kc_distance = std::numeric_limits<double>::quiet_NaN();
+    auto ntrees_buffer = fwdpp::ts::count_trees(ll.tables_buffering);
+    BOOST_REQUIRE(ntrees_buffer > 0);
+    auto ntrees_sort = fwdpp::ts::count_trees(ll.tables_sorting);
+    BOOST_REQUIRE(ntrees_sort > 0);
+    BOOST_REQUIRE_EQUAL(ntrees_buffer, ntrees_sort);
+    BOOST_REQUIRE_EQUAL(static_cast<tsk_size_t>(ntrees_buffer),
+                        tsk_treeseq_get_num_trees(treeseq_buffer.get()));
+    BOOST_REQUIRE_EQUAL(static_cast<tsk_size_t>(ntrees_buffer),
+                        tsk_treeseq_get_num_trees(treeseq_sort.get()));
+
     BOOST_REQUIRE_NO_THROW({
         auto rv = tsk_treeseq_kc_distance(treeseq_buffer.get(), treeseq_sort.get(), 0.,
                                           &kc_distance);
