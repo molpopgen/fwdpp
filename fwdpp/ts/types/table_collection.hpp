@@ -37,6 +37,7 @@ namespace fwdpp
               private:
                 /// Length of the genomic region.
                 double L;
+                bool indexed_;
 
               public:
                 static constexpr SignedInteger null = generate_null_id<SignedInteger>();
@@ -76,8 +77,8 @@ namespace fwdpp
                 std::ptrdiff_t edge_offset;
 
                 explicit table_collection(const double maxpos)
-                    : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
-                      output_right{}, edge_offset{0}
+                    : L{maxpos}, indexed_{false}, nodes{}, edges{}, mutations{}, sites{},
+                      input_left{}, output_right{}, edge_offset{0}
                 {
                     if (maxpos <= 0 || !std::isfinite(maxpos))
                         {
@@ -88,8 +89,8 @@ namespace fwdpp
                 table_collection(const id_type num_initial_nodes,
                                  const double initial_time, id_type pop,
                                  const double maxpos)
-                    : L{maxpos}, nodes{}, edges{}, mutations{}, sites{}, input_left{},
-                      output_right{}, edge_offset{0}
+                    : L{maxpos}, indexed_{false}, nodes{}, edges{}, mutations{}, sites{},
+                      input_left{}, output_right{}, edge_offset{0}
                 {
                     if (maxpos <= 0 || !std::isfinite(maxpos))
                         {
@@ -114,6 +115,7 @@ namespace fwdpp
                 id_type
                 push_back_node(double time, id_type pop, std::uint32_t flags)
                 {
+                    indexed_ = false;
                     nodes.push_back(node{pop, time, flags});
                     return static_cast<id_type>(nodes.size() - 1);
                 }
@@ -122,6 +124,7 @@ namespace fwdpp
                 id_type
                 emplace_back_node(args&&... Args)
                 {
+                    indexed_ = false;
                     nodes.emplace_back(node{std::forward<args>(Args)...});
                     return static_cast<id_type>(nodes.size() - 1);
                 }
@@ -129,6 +132,7 @@ namespace fwdpp
                 std::size_t
                 push_back_edge(double l, double r, id_type parent, id_type child)
                 {
+                    indexed_ = false;
                     edges.push_back(edge{l, r, parent, child});
                     return edges.size();
                 }
@@ -137,6 +141,7 @@ namespace fwdpp
                 std::size_t
                 emplace_back_edge(args&&... Args)
                 {
+                    indexed_ = false;
                     edges.emplace_back(edge{std::forward<args>(Args)...});
                     return edges.size();
                 }
@@ -182,6 +187,7 @@ namespace fwdpp
                     output_right.clear();
                     input_left.resize(edges.size());
                     output_right.resize(edges.size());
+                    indexed_ = false;
                     std::iota(begin(input_left), end(input_left), 0);
                     std::iota(begin(output_right), end(output_right), 0);
                     std::sort(begin(input_left), end(input_left),
@@ -202,6 +208,7 @@ namespace fwdpp
                                       }
                                   return edges[i].right < edges[j].right;
                               });
+                    indexed_ = true;
                 }
 
                 std::size_t
@@ -220,6 +227,12 @@ namespace fwdpp
                 genome_length() const
                 {
                     return L;
+                }
+
+                inline bool
+                indexed() const
+                {
+                    return indexed_;
                 }
 
                 inline bool
