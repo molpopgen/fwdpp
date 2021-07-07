@@ -4,6 +4,7 @@ SUBDIRS=simplification recording detail recording marginal_tree_functions types
 
 pkginclude_HEADERS= definitions.hpp \
 			node.hpp \
+			node_flags.hpp \
 			edge.hpp \
 			site.hpp \
 			table_collection.hpp \

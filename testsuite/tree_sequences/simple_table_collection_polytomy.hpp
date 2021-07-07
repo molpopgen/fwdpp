@@ -4,6 +4,7 @@
 #include <fwdpp/ts/table_collection.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
 #include <fwdpp/ts/tree_visitor.hpp>
+#include <fwdpp/ts/node_flags.hpp>
 
 class simple_table_collection_polytomy
 //         7
@@ -20,15 +21,15 @@ class simple_table_collection_polytomy
     init_tables()
     {
         fwdpp::ts::table_collection t(1.);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0);
-        t.push_back_node(3, 0); // Node 4
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE);
+        t.push_back_node(3, 0, fwdpp::ts::node_flags::IS_SAMPLE); // Node 4
 
-        t.push_back_node(2, 0); // Node 5
-        t.push_back_node(1, 0); // Node 6
-        t.push_back_node(0, 0); // Node 7
+        t.push_back_node(2, 0, fwdpp::ts::node_flags::NONE);      // Node 5
+        t.push_back_node(1, 0, fwdpp::ts::node_flags::IS_SAMPLE); // Node 6
+        t.push_back_node(0, 0, fwdpp::ts::node_flags::IS_SAMPLE); // Node 7
         t.push_back_edge(0, 1, 7, 5);
         t.push_back_edge(0, 1, 7, 6);
         t.push_back_edge(0, 1, 6, 4);

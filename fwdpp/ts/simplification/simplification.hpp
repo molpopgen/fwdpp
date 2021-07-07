@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include <type_traits>
-#include <fwdpp/ts/definitions.hpp>
+#include <fwdpp/ts/node_flags.hpp>
 #include <fwdpp/types/nested_forward_lists.hpp>
 #include <fwdpp/ts/recording/edge_buffer.hpp>
 #include <fwdpp/ts/table_collection_functions.hpp>
@@ -329,27 +329,48 @@ namespace fwdpp
             add_ancestry(SignedInteger input_id, double left, double right,
                          SignedInteger node, ancestry_list<SignedInteger>& ancestry)
             {
-                if(ancestry.head(input_id) == ancestry_list<SignedInteger>::null)
-                {
-                    ancestry.extend(input_id, left, right, node);
-                }
+                if (ancestry.head(input_id) == ancestry_list<SignedInteger>::null)
+                    {
+                        ancestry.extend(input_id, left, right, node);
+                    }
                 else
-                {
-                    auto last_idx = ancestry.tail(input_id);
-                    if (last_idx == ancestry_list<SignedInteger>::null)
-                        {
-                            throw std::runtime_error("ancestry_list data invalid");
-                        }
-                    auto& last = ancestry.fetch(last_idx);
-                    if (last.right == left && last.node == node)
-                        {
-                            last.right = right;
-                        }
-                    else
-                        {
-                            ancestry.extend(input_id, left, right, node);
-                        }
-                }
+                    {
+                        auto last_idx = ancestry.tail(input_id);
+                        if (last_idx == ancestry_list<SignedInteger>::null)
+                            {
+                                throw std::runtime_error("ancestry_list data invalid");
+                            }
+                        auto& last = ancestry.fetch(last_idx);
+                        if (last.right == left && last.node == node)
+                            {
+                                last.right = right;
+                            }
+                        else
+                            {
+                                ancestry.extend(input_id, left, right, node);
+                            }
+                    }
+            }
+
+            template <typename SignedInteger>
+            inline SignedInteger
+            record_node(const std::vector<types::node<SignedInteger>>& input_nodes,
+                        const SignedInteger id, const bool is_sample,
+                        std::vector<types::node<SignedInteger>>& output_nodes,
+                        std::vector<SignedInteger>& idmap)
+            {
+                auto flags = input_nodes[static_cast<std::size_t>(id)].flags
+                             & ~node_flags::IS_SAMPLE;
+                if (is_sample)
+                    {
+                        flags |= node_flags::IS_SAMPLE;
+                    }
+                output_nodes.push_back(types::node<SignedInteger>{
+                    input_nodes[static_cast<std::size_t>(id)].deme,
+                    input_nodes[static_cast<std::size_t>(id)].time, flags});
+                idmap[static_cast<std::size_t>(id)]
+                    = static_cast<SignedInteger>(output_nodes.size()) - 1;
+                return idmap[static_cast<std::size_t>(id)];
             }
 
             template <typename SignedInteger>
@@ -391,15 +412,19 @@ namespace fwdpp
                                 if (output_id
                                     == types::table_collection<SignedInteger>::null)
                                     {
-                                        state.new_node_table.emplace_back(
-                                            typename types::table_collection<
-                                                SignedInteger>::node{
-                                                input_node_table[parent_input_id].deme,
-                                                input_node_table[parent_input_id].time});
-                                        output_id = static_cast<decltype(output_id)>(
-                                            state.new_node_table.size() - 1);
-                                        // update sample map
-                                        idmap[parent_input_id] = output_id;
+                                        output_id = record_node(
+                                            input_node_table, parent_input_id, is_sample,
+                                            state.new_node_table, idmap);
+
+                                        //state.new_node_table.emplace_back(
+                                        //    typename types::table_collection<
+                                        //        SignedInteger>::node{
+                                        //        input_node_table[parent_input_id].deme,
+                                        //        input_node_table[parent_input_id].time});
+                                        //output_id = static_cast<decltype(output_id)>(
+                                        //    state.new_node_table.size() - 1);
+                                        //// update sample map
+                                        //idmap[parent_input_id] = output_id;
                                     }
                                 ancestry_node = output_id;
                                 for (auto& x : state.overlapper)
@@ -488,15 +513,15 @@ namespace fwdpp
                             {
                                 throw std::invalid_argument("invalid sample list");
                             }
-                        state.new_node_table.emplace_back(
-                            typename types::table_collection<SignedInteger>::node{
-                                tables.nodes[s].deme, tables.nodes[s].time});
-                        add_ancestry(
-                            s, 0, tables.genome_length(),
-                            static_cast<SignedInteger>(state.new_node_table.size() - 1),
-                            state.ancestry);
-                        idmap[s] = static_cast<SignedInteger>(state.new_node_table.size()
-                                                              - 1);
+                        auto output_id = record_node(tables.nodes, s, true,
+                                                     state.new_node_table, idmap);
+                        //state.new_node_table.emplace_back(
+                        //    typename types::table_collection<SignedInteger>::node{
+                        //        tables.nodes[s].deme, tables.nodes[s].time});
+                        add_ancestry(s, 0, tables.genome_length(), output_id,
+                                     state.ancestry);
+                        //idmap[s] = static_cast<SignedInteger>(state.new_node_table.size()
+                        //                                      - 1);
                     }
             }
 

@@ -10,7 +10,7 @@ BOOST_AUTO_TEST_CASE(test_first_breakpoint_at_zero)
 {
 	std::vector<double> breakpoints{0, 0.5, std::numeric_limits<double>::max()};
 	fwdpp::ts::table_collection tables{1.};
-	tables.emplace_back_node(0, 0.);
+	tables.emplace_back_node(0, 0., 0u);
 
 	fwdpp::ts::record_diploid_offspring(breakpoints, std::make_tuple(0, 1),
 			0, 1., tables);

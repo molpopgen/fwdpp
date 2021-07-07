@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <cstdint>
 #include <type_traits>
 #include "generate_null_id.hpp"
 
@@ -27,6 +28,8 @@ namespace fwdpp
                 id_type deme;
                 /// Birth time of the node.
                 double time;
+                /// Bit flags
+                std::uint32_t flags;
             };
 
 #if __cplusplus < 201703L
