@@ -6,4 +6,5 @@ pkginclude_HEADERS= node.hpp \
 					mutation_record.hpp \
 					generate_null_id.hpp \
 					table_collection.hpp \
-					tree_sequence.hpp
+					tree_sequence.hpp \
+					marginal_tree.hpp
