@@ -27,14 +27,7 @@ namespace fwdpp
                 marginal_tree<SignedInteger> tree_;
                 std::size_t input_edge_index, output_edge_index;
                 double position;
-
-                bool
-                still_advancing() const
-                // assumes left-to-right iteration
-                {
-                    return (input_edge_index < tables().input_left.size()
-                            || position < tables().genome_length());
-                }
+                bool advanced_;
 
               public:
                 tree_iterator(const tree_sequence<SignedInteger>& ts,
@@ -42,21 +35,23 @@ namespace fwdpp
                     : treeseq_{ts}, tree_{ts.num_nodes(), ts.samples(),
                                           static_cast<bool>(
                                               flags & tree_flags::TRACK_SAMPLES)},
-                      input_edge_index{0}, output_edge_index{0}, position{0.}
+                      input_edge_index{0}, output_edge_index{0}, position{0.}, advanced_{
+                                                                                   false}
                 {
                 }
 
                 const marginal_tree<SignedInteger>*
                 tree_ptr() const
+                // tree() should be preferred for c++ >= 17
                 {
-                    return still_advancing() ? &tree_ : nullptr;
+                    return advanced_ ? &tree_ : nullptr;
                 }
 
 #if __cplusplus >= 201703L
                 std::optional<std::reference_wrapper<const marginal_tree<SignedInteger>>>
                 tree() const
                 {
-                    if (still_advancing())
+                    if (advanced_)
                         {
                             return std::optional<std::reference_wrapper<
                                 const marginal_tree<SignedInteger>>>{std::cref(tree_)};
@@ -69,6 +64,12 @@ namespace fwdpp
                 tables() const
                 {
                     return treeseq_.get().tables();
+                }
+
+                void
+                advance_right()
+                // Move 1 tree left-to-right
+                {
                 }
             };
 
@@ -180,12 +181,6 @@ namespace fwdpp
                 tables() const
                 {
                     return *tables_;
-                }
-
-                void
-                advance_right()
-                // Move 1 tree left-to-right
-                {
                 }
             };
 
