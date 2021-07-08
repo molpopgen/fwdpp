@@ -27,10 +27,11 @@ class node_traversal_preorder_test : public fwdpp::ts::node_traversal_order<std:
             {
                 current_node = nstack.top();
                 nstack.pop();
-                if (num_children(m, current_node) != 0)
+                if (fwdpp::ts::num_children(m, current_node) != 0)
                     {
-                        process_children(m, current_node, false,
-                                         [this](std::int32_t x) { nstack.push(x); });
+                        fwdpp::ts::process_children(
+                            m, current_node, false,
+                            [this](std::int32_t x) { nstack.push(x); });
                     }
                 return current_node;
             }
