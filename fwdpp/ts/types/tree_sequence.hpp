@@ -23,6 +23,9 @@ namespace fwdpp
             template <typename SignedInteger> class tree_iterator
             {
               private:
+                // NOTE: since tree stores the samples,
+                // we can probably just keep a shared_ptr to the tables here,
+                // adding a level of memory safety.
                 std::reference_wrapper<const tree_sequence<SignedInteger>> treeseq_;
                 marginal_tree<SignedInteger> tree_;
                 std::size_t input_edge_index, output_edge_index;
