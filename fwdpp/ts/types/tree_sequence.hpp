@@ -130,7 +130,7 @@ namespace fwdpp
                                                 tree_, (beg_edges + *current_output_edge)
                                                            ->parent);
                                         }
-                                    update_roots_outgoing(p, c, tree_);
+                                    detail::update_roots_outgoing(p, c, tree_);
                                     ++current_input_edge;
                                 }
                             while (current_input_edge < input_edge_end
@@ -174,7 +174,8 @@ namespace fwdpp
                                                 tree_, (beg_edges + *current_input_edge)
                                                            ->parent);
                                         }
-                                    update_roots_incoming(p, c, lsib, rsib, tree_);
+                                    detail::update_roots_incoming(p, c, lsib, rsib,
+                                                                  tree_);
 
                                     ++current_input_edge;
                                 }
