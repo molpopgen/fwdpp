@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <cstdint>
+#include <limits>
 
 namespace fwdpp
 {
@@ -15,6 +16,17 @@ namespace fwdpp
             {
                 double position;
                 std::int8_t ancestral_state;
+
+                site()
+                    : position{std::numeric_limits<double>::quiet_NaN()},
+                      ancestral_state{-1}
+                {
+                }
+
+                site(double position, std::int8_t ancestral_state)
+                    : position{position}, ancestral_state{ancestral_state}
+                {
+                }
             };
 
             inline bool

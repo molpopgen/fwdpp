@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 #include "generate_null_id.hpp"
 
@@ -30,6 +31,17 @@ namespace fwdpp
                 double time;
                 /// Bit flags
                 std::uint32_t flags;
+
+                node()
+                    : deme{null}, time{std::numeric_limits<double>::quiet_NaN()}, flags{
+                                                                                      0}
+                {
+                }
+
+                node(id_type deme, double time, std::uint32_t flags)
+                    : deme{deme}, time{time}, flags{flags}
+                {
+                }
             };
 
 #if __cplusplus < 201703L
@@ -39,8 +51,7 @@ namespace fwdpp
 
             template <typename SignedInteger>
             inline bool
-            operator==(const node<SignedInteger>& self,
-                       const node<SignedInteger>& other)
+            operator==(const node<SignedInteger>& self, const node<SignedInteger>& other)
             {
                 return std::tie(self.time, self.deme)
                        == std::tie(other.time, other.deme);

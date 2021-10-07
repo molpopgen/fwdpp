@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <limits>
 #include <type_traits>
 #include "generate_null_id.hpp"
 
@@ -34,6 +35,19 @@ namespace fwdpp
                 id_type parent;
                 /// Child ID
                 id_type child;
+
+                edge()
+                    : left{std::numeric_limits<double>::quiet_NaN()},
+                      right{std::numeric_limits<double>::quiet_NaN()},
+                      parent{null},
+                      child{null}
+                {
+                }
+
+                edge(double left, double right, id_type parent, id_type child)
+                    : left{left}, right{right}, parent{parent}, child{child}
+                {
+                }
             };
 
 #if __cplusplus < 201703L
@@ -43,8 +57,7 @@ namespace fwdpp
 
             template <typename SignedInteger>
             inline bool
-            operator==(const edge<SignedInteger>& self,
-                       const edge<SignedInteger>& other)
+            operator==(const edge<SignedInteger>& self, const edge<SignedInteger>& other)
             {
                 return std::tie(self.parent, self.child, self.left, self.right)
                        == std::tie(other.parent, other.child, other.left, other.right);
