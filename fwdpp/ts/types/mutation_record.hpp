@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <limits>
 #include <tuple>
 #include <type_traits>
 #include "generate_null_id.hpp"
@@ -30,6 +31,20 @@ namespace fwdpp
                 std::int8_t derived_state; // TODO: should this be a template type?
                 /// True if mutation affects fitness, otherwise false.
                 bool neutral;
+
+                mutation_record()
+                    : node{null}, key{std::numeric_limits<std::size_t>::max()},
+                      site{std::numeric_limits<std::size_t>::max()},
+                      derived_state{-1}, neutral{false}
+                {
+                }
+
+                mutation_record(id_type node, std::size_t key, std::size_t site,
+                                std::int8_t derived_state, bool neutral)
+                    : node{node}, key{key}, site{site},
+                      derived_state{derived_state}, neutral{neutral}
+                {
+                }
             };
 
 #if __cplusplus < 201703L
